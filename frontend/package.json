@@ -37,9 +37,10 @@
   },
   "dependencies": {
     "css-loader": "^5.0.0",
-    "style-loader": "^2.0.0",
     "phaser": "^3.50.0",
+    "phaser3-plugin-isometric": "0.0.7",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react-dom": "^16.8.6",
+    "style-loader": "^2.0.0"
   }
 }
