@@ -9,17 +9,28 @@ import './App.css';
 
 
 class App extends Component {
+  state = {
+
+  }
 
 
   constructor(props) {
     super(props);
   }
 
+  componentDidMount() {
+
+  }
+
+  componentWillUnmount() {
+
+  }
 
   render() {
     return (
       <React.Fragment>
         <div className="containerTop">
+
           <GameComponent
             config={{
               backgroundColor: '000000',
