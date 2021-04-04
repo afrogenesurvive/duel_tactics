@@ -11,6 +11,7 @@ var levelData=
 [1,0,0,0,0,1],
 [1,0,0,0,0,1],
 [1,1,1,1,1,1]];
+
 //x & y values of the direction vector for character movement
 var dX=0;
 var dY=0;
@@ -125,6 +126,7 @@ function createLevel(){//create minimap
     minimap.y=10;
     renderScene();//draw once the initial state
 }
+
 function addHero(){
     // sprite
     sorcerer = game.add.sprite(-50, 0, 'hero', '1.png');// keep him out side screen area
@@ -139,6 +141,7 @@ function addHero(){
     sorcerer.animations.add('northeast', ['25.png','26.png','27.png','28.png'], 6, true);
     sorcerer.animations.add('east', ['29.png','30.png','31.png','32.png'], 6, true);
 }
+
 function placeTile(tileType,i,j){//place minimap
     var tile='greenTile';
     if(tileType==1){
@@ -146,6 +149,7 @@ function placeTile(tileType,i,j){//place minimap
     }
     minimap.create(j * tileWidth, i * tileWidth, tile);
 }
+
 function renderScene(){
     gameScene.clear();//clear the previous frame then draw again
     var tileType=0;
@@ -162,6 +166,7 @@ function renderScene(){
     }
     normText.text='Hero is on x,y: '+heroMapTile.x +','+heroMapTile.y;
 }
+
 function drawHeroIso(){
     var isoPt= new Phaser.Point();//It is not advisable to create points in update loop
     var heroCornerPt=new Phaser.Point(heroMapPos.x-heroMapSprite.width/2,heroMapPos.y-heroMapSprite.height/2);
@@ -169,6 +174,7 @@ function drawHeroIso(){
     gameScene.renderXY(sorcererShadow,isoPt.x+borderOffset.x+shadowOffset.x, isoPt.y+borderOffset.y+shadowOffset.y, false);//draw shadow to render texture
     gameScene.renderXY(sorcerer,isoPt.x+borderOffset.x+heroWidth, isoPt.y+borderOffset.y-heroHeight, false);//draw hero to render texture
 }
+
 function drawTileIso(tileType,i,j){//place isometric level tiles
     var isoPt= new Phaser.Point();//It is not advisable to create point in update loop
     var cartPt=new Phaser.Point();//This is here for better code readability.
@@ -181,6 +187,7 @@ function drawTileIso(tileType,i,j){//place isometric level tiles
         gameScene.renderXY(floorSprite, isoPt.x+borderOffset.x, isoPt.y+borderOffset.y, false);
     }
 }
+
 function isWalkable(){//It is not advisable to create points in update loop, but for code readability.
     var able=true;
     var heroCornerPt=new Phaser.Point(heroMapPos.x-heroMapSprite.width/2,heroMapPos.y-heroMapSprite.height/2);

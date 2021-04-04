@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
+import tile from './assets/floor0.png'
 import './App.css';
 
 class App extends Component {
@@ -11,40 +12,13 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.canvasRef = React.createRef();
+
+
   }
 
   componentDidMount() {
 
-    const canvas = this.canvasRef.current;
-    const context = canvas.getContext('2d');
-    let x = canvas.width/2;
-    let y = canvas.height-30;
-    let dx = 1;
-    let dy = -1;
-
-
-    function drawBall() {
-
-
-      context.beginPath();
-      context.arc(x, y, 10, 0, Math.PI*2);
-      context.fillStyle = "#0095DD";
-      context.fill();
-      context.closePath();
-    }
-    // drawBall()
-
-    function draw() {
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        drawBall();
-        x += dx;
-        y += dy;
-    }
-    setInterval(draw, 10);
-    // for (let i = 0; i < 1000; i++) {
-    //   draw()
-    // }
-
+    this.draw();
 
   }
 
@@ -53,6 +27,36 @@ class App extends Component {
 
   }
 
+  draw = () => {
+
+    const canvas = this.canvasRef.current;
+    const context = canvas.getContext('2d');
+
+    const tile = this.refs.tile;
+    let gridWidth = 64;
+    let gridHeight = 32;
+    let spriteWidth = gridWidth;
+    let spriteHeight = tile.height/tile.width*gridWidth;
+    let csWidth = 650;
+    let csHeight = 400;
+    let ox = csWidth/2-spriteWidth/2;
+    let oy = spriteHeight;
+
+    function renderImage (x, y) {
+       context.drawImage(tile, ox + (x - y) * spriteWidth/2, oy + (y + x) * gridHeight/2-(spriteHeight-gridHeight),spriteWidth,spriteHeight)
+    }
+    function draw () {
+      for(var x = 0; x < 10; x++) {
+      for(var y = 0; y < 10; y++) {
+          renderImage(x,y)
+      }}
+    }
+
+    draw();
+
+  }
+
+
 
   render() {
     return (
@@ -60,11 +64,13 @@ class App extends Component {
         <div className="containerTop">
           <div className="containerInner">
             <canvas
-                width="800"
-                height="600"
+                width="650"
+                height="400"
                 ref={this.canvasRef}
-                className={this.state.canvasClass}
+                className="canvas"
               />
+
+            <img src={tile} className='hidden' ref="tile" alt="logo" />
           </div>
         </div>
       </React.Fragment>

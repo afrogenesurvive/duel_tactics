@@ -3,6 +3,10 @@ import Phaser from 'phaser';
 import { GameComponent } from 'phaser-react-tools';
 import { IonPhaser } from '@ion-phaser/react';
 
+import Preload from './scenes/preload';
+import Main from './scenes/main';
+import basicVars from './basicVars';
+
 import logoImg from './logo.png';
 import logo from './logo.svg';
 import './App.css';
@@ -27,6 +31,9 @@ class App extends Component {
   }
 
   render() {
+
+
+
     return (
       <React.Fragment>
         <div className="containerTop">
