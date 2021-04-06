@@ -10,7 +10,7 @@ export default class PreloadScene extends Phaser.Scene {
         let that = this;
 
         this.load.on("complete", () => {
-            that.scene.start("main-scene")
+            that.scene.start("level-1-scene")
         });
 
         this.load.image('heroTile', assetHeroTile);

@@ -4,6 +4,7 @@ import { GameComponent } from 'phaser-react-tools';
 import { IonPhaser } from '@ion-phaser/react';
 
 import Preload from './scenes/preload';
+import Level1 from './scenes/level1';
 import Main from './scenes/main';
 import basicVars from './basicVars';
 
@@ -43,28 +44,7 @@ class App extends Component {
               backgroundColor: '000000',
               height: 600,
               width: 800,
-              scene: {
-                preload: function () {
-                  console.log('preload')
-                  this.load.image('logo', logoImg);
-                },
-                create: function () {
-                  console.log('create')
-                  const logo = this.add.image(400, 150, 'logo');
-
-                  this.tweens.add({
-                      targets: logo,
-                      y: 450,
-                      duration: 2000,
-                      ease: "Power2",
-                      yoyo: true,
-                      loop: -1
-                  });
-                },
-                update: function () {
-
-                }
-              }
+              scene: [Preload, Level1]
             }}
           >
             {/* YOUR GAME UI GOES HERE */}
@@ -75,3 +55,26 @@ class App extends Component {
 }
 
 export default App;
+
+// scene: {
+//   preload: function () {
+//     console.log('preload')
+//     this.load.image('logo', logoImg);
+//   },
+//   create: function () {
+//     console.log('create')
+//     const logo = this.add.image(400, 150, 'logo');
+//
+//     this.tweens.add({
+//         targets: logo,
+//         y: 450,
+//         duration: 2000,
+//         ease: "Power2",
+//         yoyo: true,
+//         loop: -1
+//     });
+//   },
+//   update: function () {
+//
+//   }
+// }
