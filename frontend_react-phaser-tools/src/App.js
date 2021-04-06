@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import Phaser from 'phaser';
 import { GameComponent } from 'phaser-react-tools';
-import { IonPhaser } from '@ion-phaser/react';
 
-import Preload from './scenes/preload';
-import Level1 from './scenes/level1';
-import Main from './scenes/main';
+import PreloadScene from './scenes/PreloadScene'
+import Level1Scene from './scenes/Level1Scene'
+import Level2Scene from './scenes/Level2Scene'
 import basicVars from './basicVars';
 
 import logoImg from './logo.png';
@@ -44,7 +43,7 @@ class App extends Component {
               backgroundColor: '000000',
               height: 600,
               width: 800,
-              scene: [Preload, Level1]
+              scene: [PreloadScene, Level1Scene, Level2Scene]
             }}
           >
             {/* YOUR GAME UI GOES HERE */}

@@ -57,7 +57,7 @@
 
 .canvas {
   z-index: 1;
-  border: 10px solid black;
+  border: 5px solid black;
   position: absolute;
 
   left: 0;
@@ -66,8 +66,17 @@
 
 .canvas2 {
   /* display: none; */
+  z-index: 2;
+  border: 5px solid green;
+  position: absolute;
+
+  left: 0;
+  right: 0;
+}
+.canvas3 {
+  /* display: none; */
   z-index: 3;
-  border: 10px solid green;
+  border: 5px solid green;
   position: absolute;
 
   left: 0;

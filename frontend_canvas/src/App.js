@@ -5,9 +5,7 @@ import './App.css';
 
 class App extends Component {
   state = {
-
-
-
+    gridInfo: [],
   }
 
 
@@ -15,9 +13,10 @@ class App extends Component {
     super(props);
     this.canvasRef = React.createRef();
     this.canvasRef2 = React.createRef();
+    this.canvasRef3 = React.createRef();
 
-    this.tileColumnOffset = 64; // pixels
-    this.tileRowOffset = 32; // pixels
+    this.tileColumnOffset = 100; // pixels
+    this.tileRowOffset = 50; // pixels
     // this.tileColumnOffset = 100; // pixels
     // this.tileRowOffset = 50; // pixels
     this.originX = 0; // offset from left
@@ -27,6 +26,7 @@ class App extends Component {
     this.showCoordinates = true;
     this.selectedTileX = -1;
     this.selectedTileY = -1;
+    this.gridInfo = [];
   }
 
   componentDidMount() {
@@ -86,8 +86,14 @@ class App extends Component {
       // this.drawBall();
     });
 
+    canvas2.addEventListener("click", e => {
+      console.log('canvas click',e);
+      this.getCanvasClick(canvas2, e)
+    });
+
+
     canvas2.addEventListener("mousemove", e => {
-      console.log('canvas mousemove',e);
+      // console.log('canvas mousemove',e);
       let pageX;
       let pageY;
       let tileX;
@@ -99,7 +105,7 @@ class App extends Component {
 
       this.selectedTileX = tileX;
       this.selectedTileY = tileY;
-      console.log("mousemove selectedTile",tileX,tileY);
+      // console.log("mousemove selectedTile",tileX,tileY);
       // this.draw2();
       // this.drawSelected(tileX,tileY);
     });
@@ -109,6 +115,15 @@ class App extends Component {
       context2.clearRect(0, 0, canvas.width, canvas.height);
     })
 
+  }
+
+  getCanvasClick = (canvas, event) => {
+    const rect = canvas.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+    console.log("x: " + x + " y: " + y)
+
+    // check if any center point in the grid info array is within point x and point y +/- 5.5 or 7
   }
 
   drawBall = () => {
@@ -163,8 +178,10 @@ class App extends Component {
     let selectedTileX = this.selectedTileX;
     let selectedTileY = this.selectedTileY;
     let showCoordinates = this.showCoordinates;
+    let gridInfo = [];
 
     function redrawTiles () {
+      console.log('intial grid draw');
       for(var Xi = (Xtiles - 1); Xi >= 0; Xi--) {
         for(var Yi = 0; Yi < Ytiles; Yi++) {
           drawTile(Xi, Yi);
@@ -173,7 +190,8 @@ class App extends Component {
     }
 
     function drawTile (Xi, Yi) {
-      console.log('intial grid draw... tile', Xi, Yi);
+
+      // console.log('tile # ', Xi, Yi);
       let offX = Xi * tileColumnOffset / 2 + Yi * tileColumnOffset / 2 + originX;
       let offY = Yi * tileRowOffset / 2 - Xi * tileRowOffset / 2 + originY;
 
@@ -182,13 +200,13 @@ class App extends Component {
         context.fillStyle = 'yellow';
       else
         context.fillStyle = 'white';
-      context.moveTo(offX, offY + tileRowOffset / 2);
-      context.lineTo(offX + tileColumnOffset / 2, offY, offX + tileColumnOffset, offY + tileRowOffset / 2);
-      context.lineTo(offX + tileColumnOffset, offY + tileRowOffset / 2, offX + tileColumnOffset / 2, offY + tileRowOffset);
-      context.lineTo(offX + tileColumnOffset / 2, offY + tileRowOffset, offX, offY + tileRowOffset / 2);
-      context.stroke();
-      context.fill();
-      context.closePath();
+      // context.moveTo(offX, offY + tileRowOffset / 2);
+      // context.lineTo(offX + tileColumnOffset / 2, offY, offX + tileColumnOffset, offY + tileRowOffset / 2);
+      // context.lineTo(offX + tileColumnOffset, offY + tileRowOffset / 2, offX + tileColumnOffset / 2, offY + tileRowOffset);
+      // context.lineTo(offX + tileColumnOffset / 2, offY + tileRowOffset, offX, offY + tileRowOffset / 2);
+      // context.stroke();
+      // context.fill();
+      // context.closePath();
 
       // Draw tile outline
       var color = '#000000';
@@ -199,7 +217,14 @@ class App extends Component {
 
       if(showCoordinates) {
         context.fillStyle = 'black';
-        context.fillText(Xi + ", " + Yi, offX + tileColumnOffset/2 - 9, offY + tileRowOffset/2 + 3);
+        console.log('number:', Xi, Yi, 'centre:',offX + tileColumnOffset/2 -1, offY + tileRowOffset/2 -1);
+        gridInfo.push({number:{x:Xi,y:Yi},center:{x:offX + tileColumnOffset/2 -1,y:offY + tileRowOffset/2 -1}})
+
+        // context.fillText(Xi + ", " + Yi, offX + tileColumnOffset/2 - 9, offY + tileRowOffset/2 + 3);
+        context.fillText(Xi + ", " + Yi, offX + tileColumnOffset/2 - 9, offY + tileRowOffset/2 + 12);
+
+        context.fillStyle = "#0095DD";
+        context.fillRect(offX + tileColumnOffset/2 - 1, offY + tileRowOffset/2 - 1,2,2);
       }
     }
 
@@ -214,7 +239,13 @@ class App extends Component {
     }
 
     redrawTiles();
+    this.gridInfo = gridInfo;
+    // console.log('xx',this.gridInfo);
 
+  }
+
+  drawPlayers = () => {
+    
   }
 
   drawSelected = (argx,argy) => {
@@ -331,6 +362,14 @@ class App extends Component {
   }
 
 
+  // function isIntersecting(p1, p2, p3, p4) {
+  //   function CCW(p1, p2, p3) {
+  //       return (p3.y - p1.y) * (p2.x - p1.x) > (p2.y - p1.y) * (p3.x - p1.x);
+  //   }
+  //   return (CCW(p1, p3, p4) != CCW(p2, p3, p4)) && (CCW(p1, p2, p3) != CCW(p1, p2, p4));
+  // }
+
+
 
   render() {
     return (
@@ -348,6 +387,12 @@ class App extends Component {
               height="600"
               ref={this.canvasRef2}
               className="canvas2"
+            />
+            <canvas
+              width="1000"
+              height="600"
+              ref={this.canvasRef3}
+              className="canvas3"
             />
           </div>
           <img src={tile} className='hidden' ref="tile" alt="logo" />
