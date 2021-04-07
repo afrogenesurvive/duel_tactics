@@ -17,8 +17,8 @@ function startScene (event) {
     canvas.height = window.innerHeight;
 
     // get images
-    let floorImage = document.getElementById("floor");
-    let wallImage = document.getElementById("wall");
+    let floorImage = document.getElementById("floor"); //'../assets/floor2.png'
+    let wallImage = document.getElementById("wall"); //'../assets/wall2.png'
 
     // this is the calculation for the most common isometric angle (30 degrees)
     // because it's easy to calculate

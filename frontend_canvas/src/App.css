@@ -26,7 +26,7 @@
 }
 .containerInner {
   height: 610px;
-  width: 1010px;
+  width: 1110px;
   margin: 1px solid yellow;
   background-color: #ffffff;
 
@@ -74,7 +74,7 @@
   right: 0;
 }
 .canvas3 {
-  /* display: none; */
+  display: none;
   z-index: 3;
   border: 5px solid green;
   position: absolute;
