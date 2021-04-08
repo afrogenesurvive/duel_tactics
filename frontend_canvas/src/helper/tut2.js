@@ -44,8 +44,8 @@ function startScene (event) {
 
     // draw scene elements like our sprites, images, etc.
     function drawScene(time) {
-        for (var x = 0; x < 50; ++x) {
-            for (var y = 0; y < 50; ++y) {
+        for (var x = 0; x < 10; ++x) {
+            for (var y = 0; y < 10; ++y) {
                 let p = new Point();
                 p.x = x * tileWidth;
                 p.y = y * tileWidth;

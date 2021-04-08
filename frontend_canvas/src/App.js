@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import tile from './assets/floor0.png'
+import floor2 from './assets/floor2.png'
+import wall2 from './assets/wall2.png'
 import './App.css';
 
 class App extends Component {
@@ -28,6 +30,8 @@ class App extends Component {
     this.selectedTileY = -1;
     this.gridInfo = [];
     this.gridInfo2D = [];
+    this.gridInfo2 = [];
+    this.gridInfo2D2 = [];
     this.levelData =
     [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -45,11 +49,11 @@ class App extends Component {
       row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
       row2: ['x20x','x21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x'],
       row3: ['x30x','x31x','x32x','x33x','x34x','x35x','x36x','x37x','x38x','x39x'],
-      row4: ['x40x','x41x','x42x','x43x','x44x','x45x','x46x','x47x','x48x','x49x'],
+      row4: ['x40x','x41x','y42x','x43x','x44x','x45x','x46x','x47x','x48x','z49x'],
       row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58x','x59x'],
-      row6: ['x60x','x61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
+      row6: ['x60x','z61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
       row7: ['x70x','x71x','x72x','x73x','x74x','x75x','x76x','x77x','x78x','x79x'],
-      row8: ['x80x','x81x','x82x','x83x','x84x','x85x','x86x','x87x','x88x','x89x'],
+      row8: ['x80x','x81x','x82x','x83x','x84x','x85x','y86x','x87x','x88x','x89x'],
       row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
     }
 
@@ -60,7 +64,8 @@ class App extends Component {
     this.addListeners();
 
     // this.draw();
-    this.draw2();
+    // this.draw2();
+    this.draw3();
 
   }
 
@@ -133,6 +138,7 @@ class App extends Component {
 
     const canvas = this.canvasRef.current;
     const canvas2 = this.canvasRef2.current;
+    const canvas3 = this.canvasRef3.current;
     const context = canvas.getContext('2d');
     const context2 = canvas2.getContext('2d');
 
@@ -144,6 +150,10 @@ class App extends Component {
     canvas2.addEventListener("click", e => {
       // console.log('canvas click',e);
       this.getCanvasClick(canvas2, e)
+    });
+    canvas3.addEventListener("click", e => {
+      // console.log('canvas click',e);
+      this.getCanvasClick(canvas3, e)
     });
 
 
@@ -211,7 +221,6 @@ class App extends Component {
 
 
     function startProcessLevelData () {
-      console.log('intial grid draw');
       for(var Xi = (Xtiles - 1); Xi >= 0; Xi--) {
         for(var Yi = 0; Yi < Ytiles; Yi++) {
           // drawTile(Xi, Yi);
@@ -241,7 +250,7 @@ class App extends Component {
       }
     }
     startProcessLevelData();
-    this.processLevelData(gridInfo)
+    this.processLevelData(gridInfo,1)
     gridInfo = this.gridInfo;
 
 
@@ -353,7 +362,8 @@ class App extends Component {
     // this.processLevelData(gridInfo)
 
   }
-  processLevelData = (allCells) => {
+
+  processLevelData = (allCells,number) => {
     console.log('processing level data');
 
     // compare & combine w/ levelData2
@@ -375,11 +385,23 @@ class App extends Component {
       }
       gridInfo2d.push(newArray)
     }
-    this.gridInfo2D = gridInfo2d;
-    // console.log('gridInfo2d',this.gridInfo2D);
 
-    this.gridInfo = allCells;
-    // console.log('post parse gridInfo',this.gridInfo);
+    if (number === 1) {
+      console.log('bing');
+      this.gridInfo2D = gridInfo2d;
+      // console.log('gridInfo2d',this.gridInfo2D);
+
+      this.gridInfo = allCells;
+      // console.log('post parse gridInfo',this.gridInfo);
+    } else if (number === 2) {
+      console.log('bong');
+      this.gridInfo2D2 = gridInfo2d;
+      // console.log('gridInfo2d',this.gridInfo2D);
+
+      this.gridInfo2 = allCells;
+      // console.log('post parse gridInfo2',this.gridInfo2);
+    }
+
 
   }
 
@@ -398,13 +420,195 @@ class App extends Component {
 
   }
 
-
   // function isIntersecting(p1, p2, p3, p4) {
   //   function CCW(p1, p2, p3) {
   //       return (p3.y - p1.y) * (p2.x - p1.x) > (p2.y - p1.y) * (p3.x - p1.x);
   //   }
   //   return (CCW(p1, p3, p4) != CCW(p2, p3, p4)) && (CCW(p1, p2, p3) != CCW(p1, p2, p4));
   // }
+
+  draw3 = () => {
+    console.log('drawing grid 3');
+
+    // let Xtiles = this.Xtiles;
+    // let Ytiles = this.Ytiles;
+    let gridInfo2 = [];
+
+    class Point {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    let canvas3 = this.canvasRef3.current;
+    let context = canvas3.getContext('2d');
+    // canvas.width = window.innerWidth;
+    // canvas.height = window.innerHeight;
+    canvas3.width = 1100;
+    canvas3.height = 600;
+
+    // get images
+    let floor = this.refs.floor2;
+    let wall = this.refs.wall2;
+
+    // this is the calculation for the most common isometric angle (30 degrees)
+    // because it's easy to calculate
+    function cartesianToIsometric(cartPt) {
+        var tempPt = new Point();
+        tempPt.x = cartPt.x - cartPt.y;
+        tempPt.y = (cartPt.x + cartPt.y) / 2;
+        return (tempPt);
+    }
+
+    // isometric sprites sizes
+    let floorImageWidth = 103;
+    let floorImageHeight = 53;
+    let wallImageWidth = 103;
+    let wallImageHeight = 98;
+
+
+    // some offsets to center the scene
+    let sceneX = canvas3.width/2;
+    let sceneY = 150;
+    // Normally this should be the width of each square tile in top-down looking scene
+    // But, I couldn't figure out how the author reaches this value :(
+    let tileWidth = 50;
+
+
+    function startProcessLevelData () {
+
+      for (var x = 0; x < 10; x++) {
+          for (var y = 0; y < 10; y++) {
+          let p = new Point();
+          p.x = x * tileWidth;
+          p.y = y * tileWidth;
+
+          let iso = cartesianToIsometric(p);
+
+          let offset = {x: floorImageWidth/2, y: floorImageHeight}
+
+          // console.log('offsets',offset.x,offset.y);
+          // apply offset to center scene for a better view
+          iso.x += sceneX
+          iso.y += sceneY
+          let center = {
+            x: iso.x - offset.x/2+23,
+            y: iso.y - offset.y/2-2,
+          }
+
+          gridInfo2.push({
+            number:{x:x,y:y},
+            center:{x:center.x,y:center.y},
+            vertices:
+            {
+              a:center.y-(25),
+              c:center.y+(25),
+              b:center.x+(50),
+              d:center.x-(50),
+            },
+            side: Math.sqrt((25)^2+(50)^2),
+            levelData: '',
+          })
+        }
+      }
+
+    }
+    startProcessLevelData();
+    this.processLevelData(gridInfo2,2)
+    gridInfo2 = this.gridInfo2;
+
+    // draw scene elements like our sprites, images, etc.
+    function drawScene(time) {
+      console.log('gridInfo2 @ draw tiles',gridInfo2);
+
+        // for (var x = 9; x >= 0; x--) {
+        //     for (var y = 9; y >= 0; y--) {
+        for (var x = 0; x < 10; x++) {
+            for (var y = 0; y < 10; y++) {
+        // for(var Xi = (Xtiles - 1); Xi >= 0; Xi--) {
+        //   for(var Yi = 0; Yi < Ytiles; Yi++) {
+                let p = new Point();
+                p.x = x * tileWidth;
+                p.y = y * tileWidth;
+                // p.x = x * tileWidth;
+                // p.y = y * tileWidth;
+                let iso = cartesianToIsometric(p);
+
+                let offset = {x: floorImageWidth/2, y: floorImageHeight}
+
+                console.log('offsets',offset.x,offset.y);
+                // apply offset to center scene for a better view
+                iso.x += sceneX
+                iso.y += sceneY
+
+
+                let cellLevelData;
+                let allCells = gridInfo2;
+                for (const elem of allCells) {
+                  if (elem.number.x === x && elem.number.y === y) {
+                    // console.log('level data for this cell',elem.levelData);
+                    cellLevelData = elem.levelData;
+                  }
+                }
+
+                // apply offset to place each isometric image from its bottom center.
+                // the default pivot point (top left) won't do good if our image has height like the wall image here
+
+                context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
+
+                context.fillStyle = 'black';
+                context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
+
+                context.fillStyle = "#0095DD";
+                context.fillRect(iso.x - offset.x/2+23, iso.y - offset.y/2-2,2,2);
+                // ctx.fillText(""+x+","+y+"",iso.x - offset.x,iso.y - offset.y)
+
+                let walledTiles = ['0,0','9,0','0,9']
+                if (walledTiles.includes(''+x+','+y+'')) {
+                  offset = {x: wallImageWidth/2, y: wallImageHeight}
+                  context.drawImage(wall, iso.x - offset.x, iso.y - offset.y);
+                }
+
+                if(cellLevelData.charAt(0) === 'y') {
+                  console.log('beep');
+                  offset = {x: wallImageWidth/2, y: wallImageHeight}
+                  context.drawImage(wall, iso.x - offset.x, iso.y - offset.y);
+
+                }
+                if(cellLevelData.charAt(0) === 'z') {
+                  offset = {x: wallImageWidth/2, y: wallImageHeight}
+                  context.drawImage(wall, iso.x - offset.x, iso.y - offset.y);
+
+                  let isoHeight = wallImageHeight - floorImageHeight
+                  offset.y += isoHeight
+                  context.drawImage(wall, iso.x - offset.x, iso.y - offset.y);
+
+                }
+
+                // place some walls on every three
+                // if(y % 3 == 0 && x % 3 == 0){
+                //     offset = {x: wallImageWidth/2, y: wallImageHeight}
+                //     context.drawImage(wall, iso.x - offset.x, iso.y - offset.y);
+                //
+                //     // put some more on second level floor
+                //     // if(y % 6 == 0 && x % 6 == 0){
+                //     //     let isoHeight = wallImageHeight - floorImageHeight
+                //     //     offset.y += isoHeight
+                //     //     context.drawImage(wall, iso.x - offset.x, iso.y - offset.y);
+                //     // }
+                //
+                // }
+
+            }
+        }
+    }
+
+    drawScene();
+
+    // this.gridInfo2 = gridInfo2;
+    // console.log('gridInfo2',this.gridInfo2);
+
+  }
 
 
 
@@ -433,6 +637,8 @@ class App extends Component {
             />
           </div>
           <img src={tile} className='hidden' ref="tile" alt="logo" />
+          <img src={floor2} className='hidden' ref="floor2" alt="logo" />
+          <img src={wall2} className='hidden' ref="wall2" alt="logo" />
         </div>
       </React.Fragment>
     )
