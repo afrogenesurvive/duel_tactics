@@ -5,6 +5,8 @@ import floor2 from './assets/floor2.png'
 import wall2 from './assets/wall2.png'
 import './App.css';
 
+import pointInPolygon from 'point-in-polygon';
+
 class App extends Component {
   state = {
     gridInfo: [],
@@ -188,10 +190,19 @@ class App extends Component {
     const y = event.clientY - rect.top
     console.log("x: " + x + " y: " + y)
 
-    // if
-    // this.tileColumnOffset = 100;
-    // this.tileRowOffset = 50;
-    // check if any center point in the grid info array is within point x and point y +/- 5.5 or 7
+    for(const cell of this.gridInfo2) {
+      let point = [x,y];
+      let polygon = [];
+      for (const vertex of cell.vertices) {
+        let vertexPoint = [vertex.x,vertex.y];
+        polygon.push(vertexPoint)
+      }
+      let pip = pointInPolygon(point, polygon)
+      // console.log('point',point,'cell',cell.number,'polygon',polygon,'pip',pip);
+      if (pip === true) {
+        console.log("you've clicked on cell",cell.number);
+      }
+    }
 
   }
 
@@ -236,13 +247,18 @@ class App extends Component {
           gridInfo.push({
             number:{x:Xi,y:Yi},
             center:{x:center.x,y:center.y},
-            vertices:
-            {
-              a:center.y-(tileRowOffset/2),
-              c:center.y+(tileRowOffset/2),
-              b:center.x+(tileColumnOffset/2),
-              d:center.x-(tileColumnOffset/2),
-            },
+            vertices: [
+              {x:center.x, y:center.y+(tileRowOffset/2)},
+              {x:center.x+(tileColumnOffset/2), y:center.y},
+              {x:center.x, y:center.y-(tileRowOffset/2)},
+              {x:center.x-(tileColumnOffset/2), y:center.y},
+            ],
+            // {
+            //   a:{x:center.x, y:center.y+(tileRowOffset/2)},
+            //   b:{x:center.x+(tileColumnOffset/2), y:center.y},
+            //   c:{x:center.x, y:center.y+(tileRowOffset/2)},
+            //   d:{x:center.x-(tileColumnOffset/2), y:center.y},
+            // },
             side: Math.sqrt((tileRowOffset/2)^2+(tileColumnOffset/2)^2),
             levelData: '',
           })
@@ -269,25 +285,6 @@ class App extends Component {
 
       let offX = Xi * tileColumnOffset / 2 + Yi * tileColumnOffset / 2 + originX;
       let offY = Yi * tileRowOffset / 2 - Xi * tileRowOffset / 2 + originY;
-
-      // // parse grindInfo
-      // let center = {
-      //   x: offX + tileColumnOffset/2 -1,
-      //   y: offY + tileRowOffset/2 -1,
-      // }
-      // gridInfo.push({
-      //   number:{x:Xi,y:Yi},
-      //   center:{x:center.x,y:center.y},
-      //   vertices:
-      //   {
-      //     a:center.y-(tileRowOffset/2),
-      //     c:center.y+(tileRowOffset/2),
-      //     b:center.x+(tileColumnOffset/2),
-      //     d:center.x-(tileColumnOffset/2),
-      //   },
-      //   side: Math.sqrt((tileRowOffset/2)^2+(tileColumnOffset/2)^2),
-      //   levelData: '',
-      // })
 
       //check tile levelData
       let cellLevelData;
@@ -387,14 +384,12 @@ class App extends Component {
     }
 
     if (number === 1) {
-      console.log('bing');
       this.gridInfo2D = gridInfo2d;
       // console.log('gridInfo2d',this.gridInfo2D);
 
       this.gridInfo = allCells;
       // console.log('post parse gridInfo',this.gridInfo);
     } else if (number === 2) {
-      console.log('bong');
       this.gridInfo2D2 = gridInfo2d;
       // console.log('gridInfo2d',this.gridInfo2D);
 
@@ -499,13 +494,18 @@ class App extends Component {
           gridInfo2.push({
             number:{x:x,y:y},
             center:{x:center.x,y:center.y},
-            vertices:
-            {
-              a:center.y-(25),
-              c:center.y+(25),
-              b:center.x+(50),
-              d:center.x-(50),
-            },
+            vertices: [
+              {x:center.x, y:center.y+25},
+              {x:center.x+50, y:center.y},
+              {x:center.x, y:center.y-25},
+              {x:center.x-50, y:center.y},
+            ],
+            // {
+            //   a:{x:center.x, y:center.y+25},
+            //   b:{x:center.x+50, y:center.y},
+            //   c:{x:center.x, y:center.y+25},
+            //   d:{x:center.x-50, y:center.y},
+            // },
             side: Math.sqrt((25)^2+(50)^2),
             levelData: '',
           })
@@ -519,7 +519,7 @@ class App extends Component {
 
     // draw scene elements like our sprites, images, etc.
     function drawScene(time) {
-      console.log('gridInfo2 @ draw tiles',gridInfo2);
+        // console.log('gridInfo2 @ draw scene',gridInfo2);
 
         // for (var x = 9; x >= 0; x--) {
         //     for (var y = 9; y >= 0; y--) {
@@ -536,7 +536,6 @@ class App extends Component {
 
                 let offset = {x: floorImageWidth/2, y: floorImageHeight}
 
-                console.log('offsets',offset.x,offset.y);
                 // apply offset to center scene for a better view
                 iso.x += sceneX
                 iso.y += sceneY
@@ -570,7 +569,6 @@ class App extends Component {
                 }
 
                 if(cellLevelData.charAt(0) === 'y') {
-                  console.log('beep');
                   offset = {x: wallImageWidth/2, y: wallImageHeight}
                   context.drawImage(wall, iso.x - offset.x, iso.y - offset.y);
 
