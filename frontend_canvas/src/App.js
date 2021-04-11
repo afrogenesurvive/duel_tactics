@@ -70,12 +70,13 @@ class App extends Component {
       row8: ['x80x','x81x','x82x','x83x','x84x','x85x','y86x','x87x','x88x','x89x'],
       row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
     };
-    this.player = {
+    this.player1 = {
+      number: 1,
       startPosition: {
         cell: {
           number: {
-            x: 3,
-            y: 3,
+            x: 4,
+            y: 5,
           },
           center: {
             x: 0,
@@ -115,11 +116,20 @@ class App extends Component {
       action: 'idle',
       moving: {
         state: false,
+        step: 0,
         course: '',
+        origin: {
+          x: 0,
+          y: 0,
+        },
         destination: {
           x: 0,
           y: 0,
         }
+      },
+      strafing: {
+        state: false,
+        direction: '',
       },
       attacking: {
         state: false,
@@ -136,6 +146,10 @@ class App extends Component {
       last: 0,
       step: 1 / 60,
       fps: 0,
+
+      secondsPassed: 0,
+      oldTimeStamp: 0,
+      movingSpeed: 30,
     };
     this.keyPressed = {
       north: false,
@@ -161,10 +175,16 @@ class App extends Component {
 
   }
 
+  // implement a prePlayer update function
+  //   check which player is inputting or both
+  //     if one
+  //       pass which player to playerupdate and drawplayerstep
+  //     if both call 2 functions, one player 1, and one 2 player 2, choose which gets called 1st at random
+
+
   componentDidMount() {
 
-
-    this.stepper.last = this.timestamp();
+    // this.stepper.last = this.timestamp();
     // this.stepper.now = this.timestamp();
     // // this.stepper.dt = this.stepper.dt + (this.stepper.now - this.stepper.last);
     // this.stepper.dt = this.stepper.dt + Math.min(1, (this.stepper.now - this.stepper.last) / 1000);
@@ -214,9 +234,6 @@ class App extends Component {
   getCanvasClick = (canvas, event) => {
     const rect = canvas.getBoundingClientRect()
 
-    // 222 is distance between canvas and left right window border
-    // 158 is distance between canvas and left right window border
-
     const x = (event.clientX - rect.left) - 222;
     const y = (event.clientY - rect.top) - 158;
     // console.log('clicked',x,y,);
@@ -231,7 +248,7 @@ class App extends Component {
       let pip = pointInPolygon(point, polygon)
       // console.log('point',point,'cell',cell.number,'polygon',polygon,'pip',pip);
       if (pip === true) {
-        console.log("clicke a cell",cell.number,"x: " + x + " y: " + y);
+        console.log("clicked a cell",cell.number,"x: " + x + " y: " + y);
       }
     }
 
@@ -241,10 +258,10 @@ class App extends Component {
 
     console.log('handling key press', event, state);
 
-
-    // switch() {
-    //   case 'north' :
-    //
+    // keyInput = event value
+    // switch(keyInput) {
+    //   case northInputKey :
+    //    this.keyPressd.north = state
     //   break;
     // }
 
@@ -256,21 +273,26 @@ class App extends Component {
   }
 
   gameLoop = () => {
+    let ts = window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
+    // console.log('timeStamp',ts);
+    this.stepper.secondsPassed = (ts - this.stepper.oldTimeStamp) / 1000;
+    this.stepper.oldTimeStamp = ts;
+    this.stepper.secondsPassed = Math.min(this.stepper.secondsPassed, 0.1);
 
-    this.stepper.now = this.timestamp();
-    this.stepper.dt = this.stepper.dt + Math.min(1, (this.stepper.now - this.stepper.last) / 1000);
 
-    console.log('gameLoop : last', this.stepper.last,'now',this.stepper.now, 'dt',this.stepper.dt, 'step',this.stepper.step);
+    this.stepper.now = ts;
+    this.stepper.dt = this.stepper.dt + Math.min(1, (this.stepper.now - this.stepper.last) / 100);
 
-    console.log('run player update',this.stepper.dt > this.stepper.step,' 2: ',this.stepper.dt - this.stepper.step);
     while(this.stepper.dt > this.stepper.step) {
       this.stepper.dt = this.dt - this.stepper.step;
-      this.playerUpdate(this.stepper.step);
+      // this.playerUpdate(this.stepper.step);
     }
+    // console.log('timeStamp',ts,'seconds',this.stepper.secondsPassed,'step',this.stepper.step,'dt',this.stepper.dt);
+    this.playerUpdate(this.stepper.secondsPassed, this.stepper.step);
+
 
     // this.drawPlayerStep(this.dt);
     this.stepper.last = this.stepper.now;
-    console.log('last',this.stepper.last);
 
     requestAnimationFrame(this.gameLoop);
 
@@ -308,9 +330,10 @@ class App extends Component {
 
 
 
-  playerUpdate = (step) => {
-    console.log('updating player');
+  playerUpdate = (seconds,step) => {
+    // console.log('updating player');
 
+    // let direction;
     // check set this.keyPressed
       // check for all true keyPressed object keys using
       // Object.keys(obj).forEach(function(key,index) {
@@ -323,10 +346,11 @@ class App extends Component {
       // }
 
     // if player.moving === true
-      // check player.currentPosition.cell.center,
       // check course function
-      // calculate this.player.nextPosition by plugging current pos into course function
-      // if next position = course destination, this.player.moving = false, action = idle
+      // calculate this.player.nextPosition by plugging current position, into this.lineMoveincrementer(player, currentPosition, target, origin)
+
+      // if this.player.nextPosition.center = traget.center,
+        // this.player.moving = false, action = idle, moving.stepPrercent = 0
 
     // if not moving
       // check if key pressed is a move key
@@ -338,21 +362,27 @@ class App extends Component {
                 // (check grindinfo against target cell no x,y for walled cells, check other player current position against targets)
                   // if target grid is free
                     // can move
-                    // start a course (set a function) and destination based on current position
-                    // moving = true
+                    // destination = target.center
+                    // start a course (set a function) based destination and current position
+                      // the greater the number of incremental steps the smoother and slower the movement????
+                    // moving.state = true
                     // action = moving
-                    // player next position = player currentPosition
+                    // player.moving.origin = current position
+
+                    // player next position = this.lineMoveincrementer(player, currentPosition, target)
 
                 // if target is not free
                   // do nothing
             //
             // if key pressed !== this.player.direction and strafe == false
-            //   change direction based on key pressed
+            //   player direction = direction
             //
-            // if strafe == true
+            // key pressed !== this.player.direction and strafe ==  true
+            // set strafeDirection = keypressed
               // find strafe target
-            //     check if target  is free
-            //       if not free do nothing
+                      // if free
+                      // callLineCrmenter
+            //        if not free do nothing
 
 
 
@@ -386,7 +416,7 @@ class App extends Component {
     let canvas2 = this.canvasRef2.current;
     let context2 = canvas2.getContext('2d');
 
-    let player = this.player;
+    let player = this.player1;
 
     let playerImgs = {
       idle: {
@@ -603,6 +633,87 @@ class App extends Component {
   }
 
 
+  lineCrementer = (player, currentPosition, target, origin) => {
+
+
+    // player.moving.stepPercent + 1
+    // let newPosition
+
+    // line: percent is 0-1
+    // function getLineXYatPercent(startPt,endPt,player.moving.stepPercent) {
+    //   let dx = endPt.x-startPt.x;
+    //   let dy = endPt.y-startPt.y;
+    //   let X = startPt.x + dx*percent;
+    //   let Y = startPt.y + dy*percent;
+    //
+    //   newPosition = {x:X,y:Y}
+    // }
+
+
+    // let newX = x+increment
+    //
+    // line equation for y
+    // y = (((origin.y-player.target.center.y)/(origin.x-player.target.center.x))*(newx-origin.x))+origin.y
+    //
+    // newPosition = {x:newX, y: y}
+    //
+    // this.player.nextPosition =
+
+
+
+
+  }
+
+  getTarget = () => {
+
+    // currentPosition.cell.number, direction
+
+    // if straing == true direction = strafedirection
+    //
+    // let targetCellNumber = {x: 0,y: 0}
+    // switch(direction) {
+    //   case 'north' :
+    //     targetCellNumber = {
+    //       x: currrenPosition.x,
+    //       y: currrenPosition.y-1
+    //     }
+    //   break;
+    //   case 'north' :
+    //     targetCellNumber = {
+    //       x: currrenPosition.x,
+    //       y: currrenPosition.y-1
+    //     }
+    //   break;
+    // }
+
+    // loop grindinfo for to match number and find center
+    // check level data for obstacles for  any macthes with target cell targetCellNumber
+      // check other player current position for match
+
+      // if match free = false
+      // occupant = {
+      //   type: 'player/obstacle',
+        // player: player1/player2
+      // }
+
+    // return {
+    //   cell: {
+    //     number: {
+    //       x: 0,
+    //       y: 0,
+    //     },
+    //     center: {
+    //       x: 0,
+    //       y: 0,
+    //     },
+    //     free: targetFree,
+          // occupant
+    //   }
+    // }
+
+  }
+
+
   draw2 = () => {
     console.log("drawing grid 2");
 
@@ -763,7 +874,7 @@ class App extends Component {
     let canvas2 = this.canvasRef2.current;
     let context2 = canvas2.getContext('2d');
 
-    let player = this.player;
+    let player = this.player1;
 
     let playerImg = this.refs.playerImgIdleNorth;
 
@@ -787,7 +898,7 @@ class App extends Component {
     }
     // console.log(point.x,point.y);
 
-    this.player.currentPosition.cell.number = {
+    this.player1.currentPosition.cell.number = {
       x: player.startPosition.cell.number.x ,
       y: player.startPosition.cell.number.y
     }
@@ -799,7 +910,7 @@ class App extends Component {
     // context2.translate(-point.x, -point.y);
     // context2.save()
 
-    // window.requestAnimationFrame(this.gameLoop);
+    window.requestAnimationFrame(this.gameLoop);
 
   }
 

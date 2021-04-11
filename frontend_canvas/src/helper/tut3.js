@@ -29,6 +29,8 @@ function init(){
 
 
 
+
+
 // Game loop with time based animation control & ime limiting
 let rectX = 0;
 let rectY = 0;
