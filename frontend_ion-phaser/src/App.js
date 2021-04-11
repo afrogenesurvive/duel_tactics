@@ -2,6 +2,12 @@ import React, { Component } from 'react'
 import Phaser from 'phaser'
 import { IonPhaser } from '@ion-phaser/react'
 
+
+import Example from './scenes/Example'
+import PreloadScene from './scenes/PreloadScene'
+import Level1Scene from './scenes/Level1Scene'
+import Level2Scene from './scenes/Level2Scene'
+
 import logoImg from './logo.png';
 
 class App extends Component {
@@ -10,29 +16,8 @@ class App extends Component {
     game: {
       width: 800,
       height: 600,
-      type: Phaser.AUTO,
-      scene: {
-        preload: function () {
-          console.log('preload')
-          this.load.image('logo', logoImg);
-        },
-        create: function () {
-          console.log('create')
-          const logo = this.add.image(400, 150, 'logo');
-
-          this.tweens.add({
-              targets: logo,
-              y: 450,
-              duration: 2000,
-              ease: "Power2",
-              yoyo: true,
-              loop: -1
-          });
-        },
-        update: function () {
-
-        }
-      }
+      type: Phaser.WEBGL,
+      scene: [Example]
     }
   }
 

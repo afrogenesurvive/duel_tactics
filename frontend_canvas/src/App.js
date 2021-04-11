@@ -2,7 +2,19 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import tile from './assets/floor0.png'
 import floor2 from './assets/floor2.png'
+import wall from './assets/wall.png'
 import wall2 from './assets/wall2.png'
+import wall3 from './assets/wall3.png'
+
+import playerImgIdleNorth from './assets/player/playerImg.png'
+import playerImgIdleNorthWest from './assets/player/playerImg.png'
+import playerImgIdleNorthEast from './assets/player/playerImg.png'
+import playerImgIdleWest from './assets/player/playerImg.png'
+import playerImgIdleEast from './assets/player/playerImg.png'
+import playerImgIdleSouth from './assets/player/playerImg.png'
+import playerImgIdleSouthWest from './assets/player/playerImg.png'
+import playerImgIdleSouthEast from './assets/player/playerImg.png'
+
 import './App.css';
 
 import pointInPolygon from 'point-in-polygon';
@@ -51,23 +63,115 @@ class App extends Component {
       row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
       row2: ['x20x','x21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x'],
       row3: ['x30x','x31x','x32x','x33x','x34x','x35x','x36x','x37x','x38x','x39x'],
-      row4: ['x40x','x41x','y42x','x43x','x44x','x45x','x46x','x47x','x48x','z49x'],
-      row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58x','x59x'],
+      row4: ['x40x','x41x','z42x','x43x','x44x','x45x','x46x','x47x','x48x','z49x'],
+      row5: ['x50x','x51x','x52x','y53x','x54x','x55x','x56x','x57x','x58x','x59x'],
       row6: ['x60x','z61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
       row7: ['x70x','x71x','x72x','x73x','x74x','x75x','x76x','x77x','x78x','x79x'],
       row8: ['x80x','x81x','x82x','x83x','x84x','x85x','y86x','x87x','x88x','x89x'],
       row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
+    };
+    this.player = {
+      startPosition: {
+        cell: {
+          number: {
+            x: 3,
+            y: 3,
+          },
+          center: {
+            x: 0,
+            y: 0,
+          }
+        }
+      },
+      currentPosition: {
+        cell: {
+          number: {
+            x: 0,
+            y: 0,
+          },
+          center: {
+            x: 0,
+            y: 0,
+          }
+        }
+      },
+      nextPosition: {
+        x: 0,
+        y: 0,
+      },
+      target: {
+        cell: {
+          number: {
+            x: 0,
+            y: 0,
+          },
+          center: {
+            x: 0,
+            y: 0,
+          }
+        }
+      },
+      direction: 'north',
+      action: 'idle',
+      moving: {
+        state: false,
+        course: '',
+        destination: {
+          x: 0,
+          y: 0,
+        }
+      },
+      attacking: {
+        state: false,
+        count: 0,
+      },
+      defending: {
+        state: false,
+        count: 0,
+      },
+    };
+    this.stepper = {
+      now: 0,
+      dt: 0,
+      last: 0,
+      step: 1 / 60,
+      fps: 0,
+    };
+    this.keyPressed = {
+      north: false,
+      south: false,
+      east: false,
+      west: false,
+      northEast: false,
+      northWest: false,
+      southEast: false,
+      southWest: false,
+      attack: false,
+      defend: false,
+      strafe: false,
+    };
+    this.clicked = {
+      cell: {
+        number: {
+          x: 0,
+          y: 0,
+        }
+      }
     }
 
   }
 
   componentDidMount() {
 
-    this.addListeners();
 
-    // this.draw();
-    // this.draw2();
-    this.draw3();
+    this.stepper.last = this.timestamp();
+    // this.stepper.now = this.timestamp();
+    // // this.stepper.dt = this.stepper.dt + (this.stepper.now - this.stepper.last);
+    // this.stepper.dt = this.stepper.dt + Math.min(1, (this.stepper.now - this.stepper.last) / 1000);
+    // console.log('last',this.stepper.last,'now:',this.stepper.now, 'dt',this.stepper.dt);
+
+    this.addListeners();
+    this.drawGridInit();
 
   }
 
@@ -76,35 +180,102 @@ class App extends Component {
 
   }
 
-  draw = () => {
-    console.log('draw grid');
+  addListeners = () => {
+    console.log('adding listeners');
 
     const canvas = this.canvasRef.current;
-    const context = canvas.getContext('2d');
+    const canvas2 = this.canvasRef2.current;
+    const canvas3 = this.canvasRef3.current;
 
-    const tile = this.refs.tile;
-    let gridWidth = 64;
-    let gridHeight = 32;
-    let spriteWidth = gridWidth;
-    let spriteHeight = tile.height/tile.width*gridWidth;
-    let csWidth = 650;
-    let csHeight = 400;
-    let ox = csWidth/2-spriteWidth/2;
-    let oy = spriteHeight;
+    // canvas.addEventListener("click", e => {
+    //   console.log('canvas click',e);
+    //   // this.drawBall();
+    // });
 
-    function renderImage (x, y) {
-       context.drawImage(tile, ox + (x - y) * spriteWidth/2, oy + (y + x) * gridHeight/2-(spriteHeight-gridHeight),spriteWidth,spriteHeight)
-    }
-    function draw () {
-      for(var x = 0; x < 10; x++) {
-      for(var y = 0; y < 10; y++) {
-          renderImage(x,y)
-      }}
-    }
+    canvas2.addEventListener("click", e => {
+      this.getCanvasClick(canvas3, e)
+    });
 
-    draw();
+    document.addEventListener("keydown", e => {
+      this.handleKeyPress(e, true)
+    });
+    document.addEventListener("keyup", e => {
+      this.handleKeyPress(e, false)
+    });
+
+    canvas2.addEventListener("mousemove", e => {
+
+      // this.getCanvasClick(canvas2, e)
+    });
+
 
   }
+
+  getCanvasClick = (canvas, event) => {
+    const rect = canvas.getBoundingClientRect()
+
+    // 222 is distance between canvas and left right window border
+    // 158 is distance between canvas and left right window border
+
+    const x = (event.clientX - rect.left) - 222;
+    const y = (event.clientY - rect.top) - 158;
+    // console.log('clicked',x,y,);
+
+    for(const cell of this.gridInfo2) {
+      let point = [x,y];
+      let polygon = [];
+      for (const vertex of cell.vertices) {
+        let vertexPoint = [vertex.x,vertex.y];
+        polygon.push(vertexPoint)
+      }
+      let pip = pointInPolygon(point, polygon)
+      // console.log('point',point,'cell',cell.number,'polygon',polygon,'pip',pip);
+      if (pip === true) {
+        console.log("clicke a cell",cell.number,"x: " + x + " y: " + y);
+      }
+    }
+
+  }
+
+  handleKeyPress = (event, state) => {
+
+    console.log('handling key press', event, state);
+
+
+    // switch() {
+    //   case 'north' :
+    //
+    //   break;
+    // }
+
+  }
+
+
+  timestamp = () => {
+    return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
+  }
+
+  gameLoop = () => {
+
+    this.stepper.now = this.timestamp();
+    this.stepper.dt = this.stepper.dt + Math.min(1, (this.stepper.now - this.stepper.last) / 1000);
+
+    console.log('gameLoop : last', this.stepper.last,'now',this.stepper.now, 'dt',this.stepper.dt, 'step',this.stepper.step);
+
+    console.log('run player update',this.stepper.dt > this.stepper.step,' 2: ',this.stepper.dt - this.stepper.step);
+    while(this.stepper.dt > this.stepper.step) {
+      this.stepper.dt = this.dt - this.stepper.step;
+      this.playerUpdate(this.stepper.step);
+    }
+
+    // this.drawPlayerStep(this.dt);
+    this.stepper.last = this.stepper.now;
+    console.log('last',this.stepper.last);
+
+    requestAnimationFrame(this.gameLoop);
+
+  }
+
   drawBall = () => {
     console.log("Drawinig ball");
 
@@ -135,76 +306,302 @@ class App extends Component {
 
   }
 
-  addListeners = () => {
-    console.log('adding listeners');
-
-    const canvas = this.canvasRef.current;
-    const canvas2 = this.canvasRef2.current;
-    const canvas3 = this.canvasRef3.current;
-    const context = canvas.getContext('2d');
-    const context2 = canvas2.getContext('2d');
-
-    canvas.addEventListener("click", e => {
-      console.log('canvas click',e);
-      // this.drawBall();
-    });
-
-    canvas2.addEventListener("click", e => {
-      // console.log('canvas click',e);
-      this.getCanvasClick(canvas2, e)
-    });
-    canvas3.addEventListener("click", e => {
-      // console.log('canvas click',e);
-      this.getCanvasClick(canvas3, e)
-    });
 
 
-    canvas2.addEventListener("mousemove", e => {
-      // console.log('canvas mousemove',e);
-      let pageX;
-      let pageY;
-      let tileX;
-      let tileY;
-      pageX = e.pageX - this.tileColumnOffset / 2 - this.originX;
-      pageY = e.pageY - this.tileRowOffset / 2 - this.originY;
-      tileX = Math.round(e.pageX / this.tileColumnOffset - e.pageY / this.tileRowOffset);
-      tileY = Math.round(e.pageX / this.tileColumnOffset + e.pageY / this.tileRowOffset);
+  playerUpdate = (step) => {
+    console.log('updating player');
 
-      this.selectedTileX = tileX;
-      this.selectedTileY = tileY;
-      // console.log("mousemove selectedTile",tileX,tileY);
-      // this.draw2();
-      // this.drawSelected(tileX,tileY);
-      this.getCanvasClick(canvas2, e)
-    });
+    // check set this.keyPressed
+      // check for all true keyPressed object keys using
+      // Object.keys(obj).forEach(function(key,index) {
+      //   // key: the name of the object key
+      //   // index: the ordinal position of the key within the object
+      // });
+      // OR
+      // for (const [key, value] of Object.entries(object1)) {
+      //   console.log(`${key}: ${value}`);
+      // }
 
-    canvas2.addEventListener("mouseout", e => {
-      console.log('canvas 2 mouseout');
-      context2.clearRect(0, 0, canvas.width, canvas.height);
-    })
+    // if player.moving === true
+      // check player.currentPosition.cell.center,
+      // check course function
+      // calculate this.player.nextPosition by plugging current pos into course function
+      // if next position = course destination, this.player.moving = false, action = idle
+
+    // if not moving
+      // check if key pressed is a move key
+        // if is a move key
+
+            // if key pressed === this.player.direction & strafe == false
+              // find target w/ cell -> direction
+                // check if target is free
+                // (check grindinfo against target cell no x,y for walled cells, check other player current position against targets)
+                  // if target grid is free
+                    // can move
+                    // start a course (set a function) and destination based on current position
+                    // moving = true
+                    // action = moving
+                    // player next position = player currentPosition
+
+                // if target is not free
+                  // do nothing
+            //
+            // if key pressed !== this.player.direction and strafe == false
+            //   change direction based on key pressed
+            //
+            // if strafe == true
+              // find strafe target
+            //     check if target  is free
+            //       if not free do nothing
+
+
+
+        // if no move key pressed
+
+          // check if attack or defend key pressed
+            // if currently attacking or defending
+            //   check attack or defend count
+            //     if action count is less than action limit
+            //       action count ++
+            //
+            //     if aciton count == limit
+            //       action = false & count = 0
+            //
+            // if not currently attacking or defending
+              // attacking/defending = true
+              // action = attack or defend
+
+              //   count = 1
+
+          // player next position = player currentPosition
+
+
+
 
   }
-  getCanvasClick = (canvas, event) => {
-    const rect = canvas.getBoundingClientRect()
-    const x = event.clientX - rect.left
-    const y = event.clientY - rect.top
-    console.log("x: " + x + " y: " + y)
 
-    for(const cell of this.gridInfo2) {
-      let point = [x,y];
-      let polygon = [];
-      for (const vertex of cell.vertices) {
-        let vertexPoint = [vertex.x,vertex.y];
-        polygon.push(vertexPoint)
-      }
-      let pip = pointInPolygon(point, polygon)
-      // console.log('point',point,'cell',cell.number,'polygon',polygon,'pip',pip);
-      if (pip === true) {
-        console.log("you've clicked on cell",cell.number);
-      }
+  drawPlayerStep = () => {
+    // console.log('drawing player step');
+
+    let canvas2 = this.canvasRef2.current;
+    let context2 = canvas2.getContext('2d');
+
+    let player = this.player;
+
+    let playerImgs = {
+      idle: {
+        north: this.refs.playerImgIdleNorth,
+        northWest: this.refs.playerImgIdleNorth,
+        northEast: this.refs.playerImgIdleEast,
+        south: this.refs.playerImgIdleSouth,
+        southWest: this.refs.playerImgIdleSouthWest,
+        southEast: this.refs.playerImgIdleSouthEast,
+        east: this.refs.playerImgIdleEast,
+        west: this.refs.playerImgIdleWest,
+      },
+      walking: {
+        north: this.refs.playerImgIdleNorth,
+        northWest: this.refs.playerImgIdleNorth,
+        northEast: this.refs.playerImgIdleEast,
+        south: this.refs.playerImgIdleSouth,
+        southWest: this.refs.playerImgIdleSouthWest,
+        southEast: this.refs.playerImgIdleSouthEast,
+        east: this.refs.playerImgIdleEast,
+        west: this.refs.playerImgIdleWest,
+      },
+      attacking: {
+        north: this.refs.playerImgIdleNorth,
+        northWest: this.refs.playerImgIdleNorth,
+        northEast: this.refs.playerImgIdleEast,
+        south: this.refs.playerImgIdleSouth,
+        southWest: this.refs.playerImgIdleSouthWest,
+        southEast: this.refs.playerImgIdleSouthEast,
+        east: this.refs.playerImgIdleEast,
+        west: this.refs.playerImgIdleWest,
+      },
+      defending: {
+        north: this.refs.playerImgIdleNorth,
+        northWest: this.refs.playerImgIdleNorth,
+        northEast: this.refs.playerImgIdleEast,
+        south: this.refs.playerImgIdleSouth,
+        southWest: this.refs.playerImgIdleSouthWest,
+        southEast: this.refs.playerImgIdleSouthEast,
+        east: this.refs.playerImgIdleEast,
+        west: this.refs.playerImgIdleWest,
+      },
+
+    };
+    // let playerImgs = {
+    //   idle: {
+    //     north: this.refs.playerImgIdleNorth,
+    //     northWest: this.refs.playerImgIdleNorth,
+    //     northEast: this.refs.playerImgIdleEast,
+    //     south: this.refs.playerImgIdleSouth,
+    //     southWest: this.refs.playerImgIdleSouthWest,
+    //     southEast: this.refs.playerImgIdleSouthEast,
+    //     east: this.refs.playerImgIdleEast,
+    //     west: this.refs.playerImgIdleWest,
+    //   },
+    //   walking: {
+    //     north: this.refs.playerImgWalkNorth,
+    //     northWest: this.refs.playerImgWalkNorth,
+    //     northEast: this.refs.playerImgWalkEast,
+    //     south: this.refs.playerImgWalkSouth,
+    //     southWest: this.refs.playerImgWalkSouthWest,
+    //     southEast: this.refs.playerImgWalkSouthEast,
+    //     east: this.refs.playerImgWalkEast,
+    //     west: this.refs.playerImgWalkWest,
+    //   },
+    //   attacking: {
+    //     north: this.refs.playerImgAttackNorth,
+    //     northWest: this.refs.playerImgAttackNorth,
+    //     northEast: this.refs.playerImgAttackEast,
+    //     south: this.refs.playerImgAttackSouth,
+    //     southWest: this.refs.playerImgAttackSouthWest,
+    //     southEast: this.refs.playerImgAttackSouthEast,
+    //     east: this.refs.playerImgAttackEast,
+    //     west: this.refs.playerImgAttackWest,
+    //   },
+    //   defending: {
+    //     north: this.refs.playerImgDefendNorth,
+    //     northWest: this.refs.playerImgDefendNorth,
+    //     northEast: this.refs.playerImgDefendEast,
+    //     south: this.refs.playerImgDefendSouth,
+    //     southWest: this.refs.playerImgDefendSouthWest,
+    //     southEast: this.refs.playerImgDefendSouthEast,
+    //     east: this.refs.playerImgDefendEast,
+    //     west: this.refs.playerImgDefendWest,
+    //   },
+    //
+    // };
+
+    let point = {
+      x: player.nextPosition.x,
+      y: player.nextPosition.y,
+    };
+
+    let updatedPlayerImg;
+
+    switch(this.player.action) {
+      case 'idle':
+        switch(this.player.direction) {
+          case 'north' :
+            updatedPlayerImg = playerImgs.idle.north;
+          break;
+          case 'northWest' :
+            updatedPlayerImg = playerImgs.idle.northWest;
+          break;
+          case 'northEast' :
+            updatedPlayerImg = playerImgs.idle.northEast;
+          break;
+          case 'east' :
+            updatedPlayerImg = playerImgs.idle.east;
+          break;
+          case 'west' :
+            updatedPlayerImg = playerImgs.idle.west;
+          break;
+          case 'south' :
+            updatedPlayerImg = playerImgs.idle.south;
+          break;
+          case 'southWest' :
+            updatedPlayerImg = playerImgs.idle.southWest;
+          break;
+          case 'southEast' :
+            updatedPlayerImg = playerImgs.idle.southEast;
+          break;
+        }
+      break;
+      case 'walking':
+        switch(this.player.direction) {
+          case 'north' :
+            updatedPlayerImg = playerImgs.walking.north;
+          break;
+          case 'northWest' :
+            updatedPlayerImg = playerImgs.walking.northWest;
+          break;
+          case 'northEast' :
+            updatedPlayerImg = playerImgs.walking.northEast;
+          break;
+          case 'east' :
+            updatedPlayerImg = playerImgs.walking.east;
+          break;
+          case 'west' :
+            updatedPlayerImg = playerImgs.walking.west;
+          break;
+          case 'south' :
+            updatedPlayerImg = playerImgs.walking.south;
+          break;
+          case 'southWest' :
+            updatedPlayerImg = playerImgs.walking.southWest;
+          break;
+          case 'southEast' :
+            updatedPlayerImg = playerImgs.walking.southEast;
+          break;
+        }
+      break;
+      case 'attacking':
+        switch(this.player.direction) {
+          case 'north' :
+            updatedPlayerImg = playerImgs.attacking.north;
+          break;
+          case 'northWest' :
+            updatedPlayerImg = playerImgs.attacking.northWest;
+          break;
+          case 'northEast' :
+            updatedPlayerImg = playerImgs.attacking.northEast;
+          break;
+          case 'east' :
+            updatedPlayerImg = playerImgs.attacking.east;
+          break;
+          case 'west' :
+            updatedPlayerImg = playerImgs.attacking.west;
+          break;
+          case 'south' :
+            updatedPlayerImg = playerImgs.attacking.south;
+          break;
+          case 'southWest' :
+            updatedPlayerImg = playerImgs.attacking.southWest;
+          break;
+          case 'southEast' :
+            updatedPlayerImg = playerImgs.attacking.southEast;
+          break;
+        }
+      break;
+      case 'defending':
+        switch(this.player.direction) {
+          case 'north' :
+            updatedPlayerImg = playerImgs.defending.north;
+          break;
+          case 'northWest' :
+            updatedPlayerImg = playerImgs.defending.northWest;
+          break;
+          case 'northEast' :
+            updatedPlayerImg = playerImgs.defending.northEast;
+          break;
+          case 'east' :
+            updatedPlayerImg = playerImgs.defending.east;
+          break;
+          case 'west' :
+            updatedPlayerImg = playerImgs.defending.west;
+          break;
+          case 'south' :
+            updatedPlayerImg = playerImgs.defending.south;
+          break;
+          case 'southWest' :
+            updatedPlayerImg = playerImgs.defending.southWest;
+          break;
+          case 'southEast' :
+            updatedPlayerImg = playerImgs.defending.southEast;
+          break;
+        }
+      break;
     }
 
+    context2.clearRect(0, 0, canvas2.width, canvas2.height);
+    context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+
   }
+
 
   draw2 = () => {
     console.log("drawing grid 2");
@@ -360,6 +757,52 @@ class App extends Component {
 
   }
 
+  drawPlayerInit = (gridInfo) => {
+    console.log('drawing initial player');
+
+    let canvas2 = this.canvasRef2.current;
+    let context2 = canvas2.getContext('2d');
+
+    let player = this.player;
+
+    let playerImg = this.refs.playerImgIdleNorth;
+
+    let point = {
+      x: 0,
+      y: 0,
+    };
+
+    for (const cell of gridInfo) {
+      // console.log('xxxx',cell.number.x,cell.number.y,'center',cell.center.x,cell.center.y);
+      if (
+        cell.number.x === player.startPosition.cell.number.x &&
+        cell.number.y === player.startPosition.cell.number.y
+      ) {
+        // console.log('bing',player.startPosition.cell.center.x,player.startPosition.cell.center.y);
+        // console.log('bing',cell.number.y,player.startPosition.cell.number.y);
+        point.x = cell.center.x;
+        point.y = cell.center.y;
+      }
+
+    }
+    // console.log(point.x,point.y);
+
+    this.player.currentPosition.cell.number = {
+      x: player.startPosition.cell.number.x ,
+      y: player.startPosition.cell.number.y
+    }
+
+    // context2.translate(point.x,point.y);
+    // context2.rotate(120);
+    context2.drawImage(playerImg, point.x-20, point.y-20, 40,40);
+    // context2.rotate(-120);
+    // context2.translate(-point.x, -point.y);
+    // context2.save()
+
+    // window.requestAnimationFrame(this.gameLoop);
+
+  }
+
   processLevelData = (allCells,number) => {
     console.log('processing level data');
 
@@ -400,30 +843,8 @@ class App extends Component {
 
   }
 
-  drawPlayers = () => {
-
-    // context.clearRect(0, 0, canvas.width, canvas.height);
-
-  }
-
-  drawSelected = (argx,argy) => {
-    console.log("drawing grid selected");
-
-    const canvas2 = this.canvasRef2.current;
-    const context2 = canvas2.getContext('2d');
-
-
-  }
-
-  // function isIntersecting(p1, p2, p3, p4) {
-  //   function CCW(p1, p2, p3) {
-  //       return (p3.y - p1.y) * (p2.x - p1.x) > (p2.y - p1.y) * (p3.x - p1.x);
-  //   }
-  //   return (CCW(p1, p3, p4) != CCW(p2, p3, p4)) && (CCW(p1, p2, p3) != CCW(p1, p2, p4));
-  // }
-
-  draw3 = () => {
-    console.log('drawing grid 3');
+  drawGridInit = () => {
+    console.log('drawing initial grid');
 
     // let Xtiles = this.Xtiles;
     // let Ytiles = this.Ytiles;
@@ -435,16 +856,18 @@ class App extends Component {
             this.y = y;
         }
     }
-    let canvas3 = this.canvasRef3.current;
-    let context = canvas3.getContext('2d');
+    let canvas = this.canvasRef.current;
+    let context = canvas.getContext('2d');
     // canvas.width = window.innerWidth;
     // canvas.height = window.innerHeight;
-    canvas3.width = 1100;
-    canvas3.height = 600;
+    canvas.width = 1100;
+    canvas.height = 600;
 
     // get images
     let floor = this.refs.floor2;
-    let wall = this.refs.wall2;
+    let wall = this.refs.wall;
+    let wall2 = this.refs.wall2;
+    let wall3 = this.refs.wall3;
 
     // this is the calculation for the most common isometric angle (30 degrees)
     // because it's easy to calculate
@@ -463,7 +886,7 @@ class App extends Component {
 
 
     // some offsets to center the scene
-    let sceneX = canvas3.width/2;
+    let sceneX = canvas.width/2;
     let sceneY = 150;
     // Normally this should be the width of each square tile in top-down looking scene
     // But, I couldn't figure out how the author reaches this value :(
@@ -474,38 +897,35 @@ class App extends Component {
 
       for (var x = 0; x < 10; x++) {
           for (var y = 0; y < 10; y++) {
-          let p = new Point();
-          p.x = x * tileWidth;
-          p.y = y * tileWidth;
 
-          let iso = cartesianToIsometric(p);
+            let p = new Point();
+            p.x = x * tileWidth;
+            p.y = y * tileWidth;
+            // p.x = x * tileWidth;
+            // p.y = y * tileWidth;
+            let iso = cartesianToIsometric(p);
 
-          let offset = {x: floorImageWidth/2, y: floorImageHeight}
+            let offset = {x: floorImageWidth/2, y: floorImageHeight}
 
-          // console.log('offsets',offset.x,offset.y);
-          // apply offset to center scene for a better view
-          iso.x += sceneX
-          iso.y += sceneY
-          let center = {
-            x: iso.x - offset.x/2+23,
-            y: iso.y - offset.y/2-2,
-          }
+            // apply offset to center scene for a better view
+            iso.x += sceneX
+            iso.y += sceneY
+
+            let center = {
+              x: iso.x - offset.x/2+23,
+              y: iso.y - offset.y/2-2,
+            }
 
           gridInfo2.push({
             number:{x:x,y:y},
             center:{x:center.x,y:center.y},
+            drawCenter:{x:center.x,y:center.y},
             vertices: [
               {x:center.x, y:center.y+25},
               {x:center.x+50, y:center.y},
               {x:center.x, y:center.y-25},
               {x:center.x-50, y:center.y},
             ],
-            // {
-            //   a:{x:center.x, y:center.y+25},
-            //   b:{x:center.x+50, y:center.y},
-            //   c:{x:center.x, y:center.y+25},
-            //   d:{x:center.x-50, y:center.y},
-            // },
             side: Math.sqrt((25)^2+(50)^2),
             levelData: '',
           })
@@ -540,6 +960,10 @@ class App extends Component {
                 iso.x += sceneX
                 iso.y += sceneY
 
+                let center = {
+                  x: iso.x - offset.x/2+23,
+                  y: iso.y - offset.y/2-2,
+                }
 
                 let cellLevelData;
                 let allCells = gridInfo2;
@@ -559,27 +983,41 @@ class App extends Component {
                 context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
 
                 context.fillStyle = "#0095DD";
-                context.fillRect(iso.x - offset.x/2+23, iso.y - offset.y/2-2,2,2);
+                context.fillRect(center.x, center.y,5,5);
+
+                let vertices = [
+                  {x:center.x, y:center.y+25},
+                  {x:center.x+50, y:center.y},
+                  {x:center.x, y:center.y-25},
+                  {x:center.x-50, y:center.y},
+                ];
+
+                for (const vertex of vertices) {
+                  context.fillStyle = "black";
+                  context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
+                }
+
+                // context.fillRect(iso.x - offset.x/2+23, iso.y - offset.y/2-2,5,5);
                 // ctx.fillText(""+x+","+y+"",iso.x - offset.x,iso.y - offset.y)
 
                 let walledTiles = ['0,0','9,0','0,9']
                 if (walledTiles.includes(''+x+','+y+'')) {
                   offset = {x: wallImageWidth/2, y: wallImageHeight}
-                  context.drawImage(wall, iso.x - offset.x, iso.y - offset.y);
+                  context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
                 }
 
                 if(cellLevelData.charAt(0) === 'y') {
                   offset = {x: wallImageWidth/2, y: wallImageHeight}
-                  context.drawImage(wall, iso.x - offset.x, iso.y - offset.y);
+                  context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
 
                 }
                 if(cellLevelData.charAt(0) === 'z') {
                   offset = {x: wallImageWidth/2, y: wallImageHeight}
-                  context.drawImage(wall, iso.x - offset.x, iso.y - offset.y);
+                  context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
 
                   let isoHeight = wallImageHeight - floorImageHeight
                   offset.y += isoHeight
-                  context.drawImage(wall, iso.x - offset.x, iso.y - offset.y);
+                  context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
 
                 }
 
@@ -602,7 +1040,7 @@ class App extends Component {
     }
 
     drawScene();
-
+    this.drawPlayerInit(gridInfo2);
     // this.gridInfo2 = gridInfo2;
     // console.log('gridInfo2',this.gridInfo2);
 
@@ -636,7 +1074,17 @@ class App extends Component {
           </div>
           <img src={tile} className='hidden' ref="tile" alt="logo" />
           <img src={floor2} className='hidden' ref="floor2" alt="logo" />
+          <img src={wall} className='hidden' ref="wall" alt="logo" />
           <img src={wall2} className='hidden' ref="wall2" alt="logo" />
+          <img src={wall3} className='hidden' ref="wall3" alt="logo" />
+          <img src={playerImgIdleNorth} className='hidden' ref="playerImgIdleNorth" alt="logo" />
+          <img src={playerImgIdleNorthWest} className='hidden' ref="playerImgIdleNorthWest" alt="logo" />
+          <img src={playerImgIdleNorthEast} className='hidden' ref="playerImgIdleNorthEast" alt="logo" />
+          <img src={playerImgIdleSouth} className='hidden' ref="playerImgIdleSouth" alt="logo" />
+          <img src={playerImgIdleSouthWest} className='hidden' ref="playerImgIdleSouthWest" alt="logo" />
+          <img src={playerImgIdleSouthEast} className='hidden' ref="playerImgIdleSouthEast" alt="logo" />
+          <img src={playerImgIdleEast} className='hidden' ref="playerImgIdleSouthEast" alt="logo" />
+          <img src={playerImgIdleWest} className='hidden' ref="playerImgIdleSouthEast" alt="logo" />
         </div>
       </React.Fragment>
     )

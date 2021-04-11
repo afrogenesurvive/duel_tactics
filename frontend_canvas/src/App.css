@@ -67,15 +67,17 @@
 .canvas2 {
   /* display: none; */
   z-index: 2;
-  border: 5px solid green;
+  border: 5px solid purple;
   position: absolute;
 
   left: 0;
   right: 0;
+
+  background-color: rgba(168,218,220, 0.5);
 }
 .canvas3 {
-  /* display: none; */
-  z-index: 3;
+  display: none;
+  z-index: -1;
   border: 5px solid green;
   position: absolute;
 
