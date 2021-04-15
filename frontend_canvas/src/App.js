@@ -6,14 +6,14 @@ import wall from './assets/wall.png'
 import wall2 from './assets/wall2.png'
 import wall3 from './assets/wall3.png'
 
-import playerImgIdleNorth from './assets/player/playerImg.png'
-import playerImgIdleNorthWest from './assets/player/playerImg.png'
-import playerImgIdleNorthEast from './assets/player/playerImg.png'
-import playerImgIdleWest from './assets/player/playerImg.png'
-import playerImgIdleEast from './assets/player/playerImg.png'
-import playerImgIdleSouth from './assets/player/playerImg.png'
-import playerImgIdleSouthWest from './assets/player/playerImg.png'
-import playerImgIdleSouthEast from './assets/player/playerImg.png'
+import playerImgIdleNorth from './assets/player/idle/playerImgNorth.png'
+import playerImgIdleNorthWest from './assets/player/idle/playerImgNorthWest.png'
+import playerImgIdleNorthEast from './assets/player/idle/playerImgNorthEast.png'
+import playerImgIdleWest from './assets/player/idle/playerImgWest.png'
+import playerImgIdleEast from './assets/player/idle/playerImgEast.png'
+import playerImgIdleSouth from './assets/player/idle/playerImgSouth.png'
+import playerImgIdleSouthWest from './assets/player/idle/playerImgSouthWest.png'
+import playerImgIdleSouthEast from './assets/player/idle/playerImgSouthEast.png'
 
 import './App.css';
 
@@ -75,8 +75,8 @@ class App extends Component {
       startPosition: {
         cell: {
           number: {
-            x: 4,
-            y: 5,
+            x: 3,
+            y: 2,
           },
           center: {
             x: 0,
@@ -109,8 +109,13 @@ class App extends Component {
           center: {
             x: 0,
             y: 0,
-          }
-        }
+          },
+        },
+        free: true,
+        occupant: {
+          type: '',
+          player: '',
+        },
       },
       direction: 'north',
       action: 'idle',
@@ -119,8 +124,14 @@ class App extends Component {
         step: 0,
         course: '',
         origin: {
-          x: 0,
-          y: 0,
+          number: {
+            x: 0,
+            y: 0,
+          },
+          center: {
+            x: 0,
+            y: 0,
+          },
         },
         destination: {
           x: 0,
@@ -134,10 +145,12 @@ class App extends Component {
       attacking: {
         state: false,
         count: 0,
+        limit: 5,
       },
       defending: {
         state: false,
         count: 0,
+        limit: 5,
       },
     };
     this.stepper = {
@@ -150,6 +163,13 @@ class App extends Component {
       secondsPassed: 0,
       oldTimeStamp: 0,
       movingSpeed: 30,
+      frameCount: 0,
+
+      fps2: 30,
+      interval: 1000/30,
+      lastTime: 0,
+      currentTime: (new Date()).getTime(),
+      deltaTime: 0,
     };
     this.keyPressed = {
       north: false,
@@ -172,6 +192,7 @@ class App extends Component {
         }
       }
     }
+
 
   }
 
@@ -233,6 +254,7 @@ class App extends Component {
 
   getCanvasClick = (canvas, event) => {
     const rect = canvas.getBoundingClientRect()
+    // 222 is distance from canvas edge to left or right window border
 
     const x = (event.clientX - rect.left) - 222;
     const y = (event.clientY - rect.top) - 158;
@@ -256,30 +278,51 @@ class App extends Component {
 
   handleKeyPress = (event, state) => {
 
-    console.log('handling key press', event, state);
+    // console.log('handling key press', event.key, state);
 
-    // keyInput = event value
-    // switch(keyInput) {
-    //   case northInputKey :
-    //    this.keyPressd.north = state
-    //   break;
-    // }
+    let keyInput = event.key
+    switch(keyInput) {
+      case 'q' :
+       this.keyPressed.northWest = state;
+      break;
+      case 'w' :
+       this.keyPressed.north = state;
+      break;
+      case 'e' :
+       this.keyPressed.northEast = state
+      break;
+      case 'a' :
+       this.keyPressed.west = state
+      break;
+      case 'd' :
+       this.keyPressed.east = state
+      break;
+      case 's' :
+       this.keyPressed.south = state
+      break;
+      case 'z' :
+       this.keyPressed.southWest = state
+      break;
+      case 'c' :
+       this.keyPressed.southEast = state
+      break;
+      // case 'strafeKey' :
+      //  this.keyPressed.strafe = state
+      // this.player1.strafing.state = true
+      // break;
+    }
+
+    this.playerUpdate()
 
   }
 
-
-  timestamp = () => {
-    return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
-  }
 
   gameLoop = () => {
+
     let ts = window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
-    // console.log('timeStamp',ts);
-    this.stepper.secondsPassed = (ts - this.stepper.oldTimeStamp) / 1000;
-    this.stepper.oldTimeStamp = ts;
-    this.stepper.secondsPassed = Math.min(this.stepper.secondsPassed, 0.1);
 
 
+    // ------ Looper Stepper #1 -------
     this.stepper.now = ts;
     this.stepper.dt = this.stepper.dt + Math.min(1, (this.stepper.now - this.stepper.last) / 100);
 
@@ -287,15 +330,37 @@ class App extends Component {
       this.stepper.dt = this.dt - this.stepper.step;
       // this.playerUpdate(this.stepper.step);
     }
-    // console.log('timeStamp',ts,'seconds',this.stepper.secondsPassed,'step',this.stepper.step,'dt',this.stepper.dt);
-    this.playerUpdate(this.stepper.secondsPassed, this.stepper.step);
-
-
     // this.drawPlayerStep(this.dt);
     this.stepper.last = this.stepper.now;
+    // -----------
+
+
+    // ------ Looper Stepper #2 -------
+    this.stepper.secondsPassed = (ts - this.stepper.oldTimeStamp) / 1000;
+    this.stepper.oldTimeStamp = ts;
+    this.stepper.secondsPassed = Math.min(this.stepper.secondsPassed, 0.1);
+    this.stepper.frameCount++;
+
+    // this.playerUpdate(this.stepper.secondsPassed, this.stepper.step);
+    // this.drawPlayerStep();
+    // -----------
+
+
+    // ------ Looper Stepper #3 -------
+    this.stepper.currentTime = (new Date()).getTime();
+    this.stepper.deltaTime = (this.stepper.currentTime-this.stepper.lastTime);
+
+    if(this.stepper.deltaTime > this.stepper.interval) {
+        // console.log('update loop step');
+
+        // this.playerUpdate(this.stepper.deltaTime,this.stepper.interval);
+        this.stepper.lastTime = this.stepper.currentTime - (this.stepper.deltaTime % this.stepper.interval);
+    }
+    // this.drawPlayerStep();
+    // -----------
+
 
     requestAnimationFrame(this.gameLoop);
-
   }
 
   drawBall = () => {
@@ -330,83 +395,181 @@ class App extends Component {
 
 
 
-  playerUpdate = (seconds,step) => {
-    // console.log('updating player');
+  playerUpdate = (delta,interval) => {
+    console.log('updating player');
 
-    // let direction;
-    // check set this.keyPressed
-      // check for all true keyPressed object keys using
-      // Object.keys(obj).forEach(function(key,index) {
-      //   // key: the name of the object key
-      //   // index: the ordinal position of the key within the object
-      // });
-      // OR
-      // for (const [key, value] of Object.entries(object1)) {
-      //   console.log(`${key}: ${value}`);
-      // }
+    let keyPressedDirection;
 
-    // if player.moving === true
-      // check course function
-      // calculate this.player.nextPosition by plugging current position, into this.lineMoveincrementer(player, currentPosition, target, origin)
+      for (const [key, value] of Object.entries(this.keyPressed)) {
+        // console.log(`${key}: ${value} ....`);
+        if (
+          key !== 'strafe' &&
+          key !== 'attack' &&
+          key !== 'defend' &&
+          value === true
+        ) {
+          console.log('pressed',key);
+          keyPressedDirection = key;
+        }
+      }
 
-      // if this.player.nextPosition.center = traget.center,
-        // this.player.moving = false, action = idle, moving.stepPrercent = 0
+      let player = this.player1;
+      let nextPosition;
 
-    // if not moving
-      // check if key pressed is a move key
-        // if is a move key
+      if (player.moving.state === true) {
+        console.log('player is moving');
 
-            // if key pressed === this.player.direction & strafe == false
-              // find target w/ cell -> direction
-                // check if target is free
-                // (check grindinfo against target cell no x,y for walled cells, check other player current position against targets)
-                  // if target grid is free
-                    // can move
-                    // destination = target.center
-                    // start a course (set a function) based destination and current position
-                      // the greater the number of incremental steps the smoother and slower the movement????
-                    // moving.state = true
-                    // action = moving
-                    // player.moving.origin = current position
+        nextPosition = this.lineCrementer(player);
+        if (nextPosition === player.target.center) {
+          console.log('next position is destination');
 
-                    // player next position = this.lineMoveincrementer(player, currentPosition, target)
+          player.action = 'idle';
+          player.moving = {
+            state: false,
+            step: 0,
+            course: '',
+            origin: {
+              number: {
+                x: 0,
+                y: 0,
+              },
+              center: {
+                x: 0,
+                y: 0,
+              },
+            },
+            destination: {
+              x: 0,
+              y: 0,
+            }
+          }
+        }
+        player.nextPosition = nextPosition;
 
-                // if target is not free
-                  // do nothing
-            //
-            // if key pressed !== this.player.direction and strafe == false
-            //   player direction = direction
-            //
-            // key pressed !== this.player.direction and strafe ==  true
-            // set strafeDirection = keypressed
-              // find strafe target
-                      // if free
-                      // callLineCrmenter
-            //        if not free do nothing
+      } else if (player.moving.state === false) {
+        console.log('player is NOT moving');
 
+        if (
+          this.keyPressed.north === true ||
+          this.keyPressed.south === true ||
+          this.keyPressed.east === true ||
+          this.keyPressed.west === true ||
+          this.keyPressed.northEast === true ||
+          this.keyPressed.northWest === true ||
+          this.keyPressed.southEast === true ||
+          this.keyPressed.southWest === true
+        ) {
+          console.log('move key pressed');
+          if (
+            keyPressedDirection === player.direction &&
+            player.strafing.state === false
+          ) {
+            let target = this.getTarget()
+            // console.log('non strafe can move target acquired',target);
 
+            if (target.free === true) {
+              console.log('target is free');
 
-        // if no move key pressed
+              player.moving = {
+                state: false,
+                step: 0,
+                course: '',
+                origin: {
+                  number: player.currentPosition.cell.number,
+                  center: player.currentPosition.cell.center,
+                },
+                destination: target.cell.center
+              }
 
-          // check if attack or defend key pressed
-            // if currently attacking or defending
-            //   check attack or defend count
-            //     if action count is less than action limit
-            //       action count ++
-            //
-            //     if aciton count == limit
-            //       action = false & count = 0
-            //
-            // if not currently attacking or defending
-              // attacking/defending = true
-              // action = attack or defend
+              nextPosition = this.lineCrementer(player);
+              player.nextPosition = nextPosition;
 
-              //   count = 1
+            }
+          } else if (
+            keyPressedDirection !== player.direction &&
+            player.strafing.state === false
+          ) {
+            player.direction = keyPressedDirection;
+            console.log('change player direction to',keyPressedDirection);
 
-          // player next position = player currentPosition
+          } else if (
+            keyPressedDirection !== player.direction &&
+            player.strafing.state === true
+          ) {
 
+            player.strafing.direction = keyPressedDirection;
+            let target = this.getTarget();
 
+            if (target.free === true) {
 
+              nextPosition = this.lineCrementer(player);
+              player.nextPosition = nextPosition;
+
+            }
+          }
+
+        } else if (
+          this.keyPressed.attack === true ||
+          this.keyPressed.defend === true
+        ) {
+          console.log('non-move key pressed');
+          if (
+            player.action === 'attacking' ||
+            player.action === 'defending'
+          ) {
+
+            if (this.keyPressed.attack === true) {
+              if (player.attacking.count < player.attacking.limit) {
+                player.attacking.count++;
+              }
+              if (player.attacking.count >= player.attacking.limit) {
+                player.attacking = {
+                  state: false,
+                  count: 0,
+                  limit: player.attacking.limit
+                }
+              }
+            }
+            if (this.keyPressed.defend === true) {
+              if (player.defending.count < player.defending.limit) {
+                player.defending.count++;
+              }
+              if (player.defending.count >= player.defending.limit) {
+                player.defending = {
+                  state: false,
+                  count: 0,
+                  limit: player.defending.limit
+                }
+              }
+            }
+          }
+          if (
+            player.action !== 'attacking' ||
+            player.action !== 'defending'
+          ) {
+            if (this.keyPressed.attack === true) {
+              player.action = 'attacking';
+              player.attacking = {
+                state: true,
+                count: 1,
+                limit: player.attacking.limit,
+              }
+            }
+            if (this.keyPressed.defend === true) {
+              player.action = 'defending';
+              player.defending = {
+                state: true,
+                count: 1,
+                limit: player.defending.limit,
+              }
+            }
+          }
+
+        }
+
+      }
+
+    this.player1 = player;
 
   }
 
@@ -461,49 +624,6 @@ class App extends Component {
       },
 
     };
-    // let playerImgs = {
-    //   idle: {
-    //     north: this.refs.playerImgIdleNorth,
-    //     northWest: this.refs.playerImgIdleNorth,
-    //     northEast: this.refs.playerImgIdleEast,
-    //     south: this.refs.playerImgIdleSouth,
-    //     southWest: this.refs.playerImgIdleSouthWest,
-    //     southEast: this.refs.playerImgIdleSouthEast,
-    //     east: this.refs.playerImgIdleEast,
-    //     west: this.refs.playerImgIdleWest,
-    //   },
-    //   walking: {
-    //     north: this.refs.playerImgWalkNorth,
-    //     northWest: this.refs.playerImgWalkNorth,
-    //     northEast: this.refs.playerImgWalkEast,
-    //     south: this.refs.playerImgWalkSouth,
-    //     southWest: this.refs.playerImgWalkSouthWest,
-    //     southEast: this.refs.playerImgWalkSouthEast,
-    //     east: this.refs.playerImgWalkEast,
-    //     west: this.refs.playerImgWalkWest,
-    //   },
-    //   attacking: {
-    //     north: this.refs.playerImgAttackNorth,
-    //     northWest: this.refs.playerImgAttackNorth,
-    //     northEast: this.refs.playerImgAttackEast,
-    //     south: this.refs.playerImgAttackSouth,
-    //     southWest: this.refs.playerImgAttackSouthWest,
-    //     southEast: this.refs.playerImgAttackSouthEast,
-    //     east: this.refs.playerImgAttackEast,
-    //     west: this.refs.playerImgAttackWest,
-    //   },
-    //   defending: {
-    //     north: this.refs.playerImgDefendNorth,
-    //     northWest: this.refs.playerImgDefendNorth,
-    //     northEast: this.refs.playerImgDefendEast,
-    //     south: this.refs.playerImgDefendSouth,
-    //     southWest: this.refs.playerImgDefendSouthWest,
-    //     southEast: this.refs.playerImgDefendSouthEast,
-    //     east: this.refs.playerImgDefendEast,
-    //     west: this.refs.playerImgDefendWest,
-    //   },
-    //
-    // };
 
     let point = {
       x: player.nextPosition.x,
@@ -633,11 +753,16 @@ class App extends Component {
   }
 
 
-  lineCrementer = (player, currentPosition, target, origin) => {
+  lineCrementer = () => {
+    console.log('line crementer');
 
+    let player = this.player1;
+    let currentPosition = player.currentPosition.cell.center;
+    let target = player.target;
+    let increment = 5;
 
-    // player.moving.stepPercent + 1
-    // let newPosition
+    player.moving.stepPercent = player.moving.stepPercent + 1;
+    let newPosition;
 
     // line: percent is 0-1
     // function getLineXYatPercent(startPt,endPt,player.moving.stepPercent) {
@@ -650,69 +775,156 @@ class App extends Component {
     // }
 
 
-    // let newX = x+increment
-    //
+    let newX = currentPosition.x+increment;
+
+    console.log(player.moving.origin.center.y,player.target.cell.center.y,player.moving.origin.center.x,player.target.cell.center.x,newX);
+
     // line equation for y
-    // y = (((origin.y-player.target.center.y)/(origin.x-player.target.center.x))*(newx-origin.x))+origin.y
-    //
-    // newPosition = {x:newX, y: y}
-    //
-    // this.player.nextPosition =
+    let y = (((player.moving.origin.center.y-player.target.cell.center.y)/(player.moving.origin.center.x-player.target.cell.center.x))*(newX-player.moving.origin.center.x))+player.moving.origin.center.y
+    newPosition = {x:newX, y: y}
 
+    console.log('oldPos',currentPosition.x,currentPosition.y);
+    console.log('newPos',newPosition.x,newPosition.y);
+    
+    player.nextPosition = newPosition
+    this.player1 = player;
 
-
+    return newPosition;
 
   }
 
   getTarget = () => {
+    console.log('checking target');
 
-    // currentPosition.cell.number, direction
+    let gridInfo = this.gridInfo2;
+    let player = this.player1;
+    let currentPosition = player.currentPosition.cell.number;
+    let direction = player.direction;
+    let target = {
+      cell: {
+        number: {
+          x: 0,
+          y: 0,
+        },
+        center: {
+          x: 0,
+          y: 0,
+        },
+      },
+      free: true,
+      occupant: {
+        type: '',
+        player: '',
+      },
+    }
 
-    // if straing == true direction = strafedirection
-    //
-    // let targetCellNumber = {x: 0,y: 0}
-    // switch(direction) {
-    //   case 'north' :
-    //     targetCellNumber = {
-    //       x: currrenPosition.x,
-    //       y: currrenPosition.y-1
-    //     }
-    //   break;
-    //   case 'north' :
-    //     targetCellNumber = {
-    //       x: currrenPosition.x,
-    //       y: currrenPosition.y-1
-    //     }
-    //   break;
-    // }
+    if (player.strafing.state === true) {
+      console.log('acquire strafe target');
+      direction = this.player.strafing.direction;
+    }
 
-    // loop grindinfo for to match number and find center
-    // check level data for obstacles for  any macthes with target cell targetCellNumber
+    let targetCellNumber = {x: 0,y: 0}
+    let targetCellCenter = {x: 0,y: 0}
+    switch(direction) {
+      case 'north' :
+        targetCellNumber = {
+          x: currentPosition.x,
+          y: currentPosition.y-1
+        }
+      break;
+      case 'northEast' :
+        targetCellNumber = {
+          x: currentPosition.x+1,
+          y: currentPosition.y-1
+        }
+      break;
+      case 'northWest' :
+        targetCellNumber = {
+          x: currentPosition.x-1,
+          y: currentPosition.y-1
+        }
+      break;
+      case 'east' :
+        targetCellNumber = {
+          x: currentPosition.x+1,
+          y: currentPosition.y
+        }
+      break;
+      case 'west' :
+        targetCellNumber = {
+          x: currentPosition.x-1,
+          y: currentPosition.y
+        }
+      break;
+      case 'south' :
+        targetCellNumber = {
+          x: currentPosition.x,
+          y: currentPosition.y+1
+        }
+      break;
+      case 'southEast' :
+        targetCellNumber = {
+          x: currentPosition.x+1,
+          y: currentPosition.y+1
+        }
+      break;
+      case 'southWest' :
+        targetCellNumber = {
+          x: currentPosition.x-1,
+          y: currentPosition.y+1
+        }
+      break;
+    }
+
+    for (const cell of gridInfo) {
+      // console.log('cellnumber',cell.number,'target cell number',targetCellNumber);
+      let xMatch = cell.number.x === targetCellNumber.x;
+      let yMatch = cell.number.y === targetCellNumber.y;
+      if (
+        xMatch === true && yMatch === true
+      ) {
+        targetCellCenter = cell.center;
+        console.log('found target details');
+      }
+    }
+    target.cell = {
+      number: targetCellNumber,
+      center: targetCellCenter
+    };
+
+    for (const [key, row] of Object.entries(this.levelData2)) {
+      for (const cell of row) {
+        if (
+          cell.charAt(0) === 'y' ||
+          cell.charAt(0) ===  'z'
+        ) {
+
+          let obstaclePosition = {
+            x: Number(key.charAt(3)),
+            y: row.indexOf(cell),
+          }
+          // console.log('found obstacle during map scan @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
+          if (targetCellNumber === obstaclePosition) {
+            console.log('an obstacle is in your way');
+            target.free = false;
+            target.occupant.type = 'obstacle';
+          }
+        }
+
+      }
+    }
       // check other player current position for match
-
       // if match free = false
       // occupant = {
       //   type: 'player/obstacle',
         // player: player1/player2
       // }
 
-    // return {
-    //   cell: {
-    //     number: {
-    //       x: 0,
-    //       y: 0,
-    //     },
-    //     center: {
-    //       x: 0,
-    //       y: 0,
-    //     },
-    //     free: targetFree,
-          // occupant
-    //   }
-    // }
+    player.target = target;
+    this.player1 = player;
+    return target;
 
   }
-
 
   draw2 = () => {
     console.log("drawing grid 2");
@@ -868,7 +1080,7 @@ class App extends Component {
 
   }
 
-  drawPlayerInit = (gridInfo) => {
+  drawPlayerInit = (gridInfo, canvas) => {
     console.log('drawing initial player');
 
     let canvas2 = this.canvasRef2.current;
@@ -876,7 +1088,7 @@ class App extends Component {
 
     let player = this.player1;
 
-    let playerImg = this.refs.playerImgIdleNorth;
+    let playerImg = this.refs.playerImgIdleSouthEast;
 
     let point = {
       x: 0,
@@ -893,15 +1105,20 @@ class App extends Component {
         // console.log('bing',cell.number.y,player.startPosition.cell.number.y);
         point.x = cell.center.x;
         point.y = cell.center.y;
+
       }
 
     }
     // console.log(point.x,point.y);
 
-    this.player1.currentPosition.cell.number = {
-      x: player.startPosition.cell.number.x ,
-      y: player.startPosition.cell.number.y
+    this.player1.currentPosition.cell = {
+      number: {
+        x: player.startPosition.cell.number.x ,
+        y: player.startPosition.cell.number.y
+      },
+      center : point
     }
+
 
     // context2.translate(point.x,point.y);
     // context2.rotate(120);
@@ -957,8 +1174,12 @@ class App extends Component {
   drawGridInit = () => {
     console.log('drawing initial grid');
 
-    // let Xtiles = this.Xtiles;
-    // let Ytiles = this.Ytiles;
+    let canvas = this.canvasRef.current;
+    let context = canvas.getContext('2d');
+
+    canvas.width = 1100;
+    canvas.height = 600;
+
     let gridInfo2 = [];
 
     class Point {
@@ -967,14 +1188,7 @@ class App extends Component {
             this.y = y;
         }
     }
-    let canvas = this.canvasRef.current;
-    let context = canvas.getContext('2d');
-    // canvas.width = window.innerWidth;
-    // canvas.height = window.innerHeight;
-    canvas.width = 1100;
-    canvas.height = 600;
 
-    // get images
     let floor = this.refs.floor2;
     let wall = this.refs.wall;
     let wall2 = this.refs.wall2;
@@ -995,14 +1209,10 @@ class App extends Component {
     let wallImageWidth = 103;
     let wallImageHeight = 98;
 
-
     // some offsets to center the scene
     let sceneX = canvas.width/2;
     let sceneY = 150;
-    // Normally this should be the width of each square tile in top-down looking scene
-    // But, I couldn't figure out how the author reaches this value :(
     let tileWidth = 50;
-
 
     function startProcessLevelData () {
 
@@ -1050,21 +1260,14 @@ class App extends Component {
 
     // draw scene elements like our sprites, images, etc.
     function drawScene(time) {
-        // console.log('gridInfo2 @ draw scene',gridInfo2);
 
-        // for (var x = 9; x >= 0; x--) {
-        //     for (var y = 9; y >= 0; y--) {
         for (var x = 0; x < 10; x++) {
             for (var y = 0; y < 10; y++) {
-        // for(var Xi = (Xtiles - 1); Xi >= 0; Xi--) {
-        //   for(var Yi = 0; Yi < Ytiles; Yi++) {
                 let p = new Point();
                 p.x = x * tileWidth;
                 p.y = y * tileWidth;
-                // p.x = x * tileWidth;
-                // p.y = y * tileWidth;
-                let iso = cartesianToIsometric(p);
 
+                let iso = cartesianToIsometric(p);
                 let offset = {x: floorImageWidth/2, y: floorImageHeight}
 
                 // apply offset to center scene for a better view
@@ -1132,28 +1335,16 @@ class App extends Component {
 
                 }
 
-                // place some walls on every three
-                // if(y % 3 == 0 && x % 3 == 0){
-                //     offset = {x: wallImageWidth/2, y: wallImageHeight}
-                //     context.drawImage(wall, iso.x - offset.x, iso.y - offset.y);
-                //
-                //     // put some more on second level floor
-                //     // if(y % 6 == 0 && x % 6 == 0){
-                //     //     let isoHeight = wallImageHeight - floorImageHeight
-                //     //     offset.y += isoHeight
-                //     //     context.drawImage(wall, iso.x - offset.x, iso.y - offset.y);
-                //     // }
-                //
-                // }
-
             }
         }
     }
 
     drawScene();
-    this.drawPlayerInit(gridInfo2);
+
+    this.drawPlayerInit(gridInfo2, canvas);
     // this.gridInfo2 = gridInfo2;
     // console.log('gridInfo2',this.gridInfo2);
+
 
   }
 
