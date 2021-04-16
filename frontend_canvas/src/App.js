@@ -22,8 +22,8 @@ import pointInPolygon from 'point-in-polygon';
 class App extends Component {
   state = {
     gridInfo: [],
-  }
 
+  }
 
   constructor(props) {
     super(props);
@@ -205,14 +205,20 @@ class App extends Component {
 
   componentDidMount() {
 
-    // this.stepper.last = this.timestamp();
-    // this.stepper.now = this.timestamp();
-    // // this.stepper.dt = this.stepper.dt + (this.stepper.now - this.stepper.last);
-    // this.stepper.dt = this.stepper.dt + Math.min(1, (this.stepper.now - this.stepper.last) / 1000);
-    // console.log('last',this.stepper.last,'now:',this.stepper.now, 'dt',this.stepper.dt);
+    let canvas = this.canvasRef.current;
+    let context = canvas.getContext('2d');
 
-    this.addListeners();
-    this.drawGridInit();
+    let canvas2 = this.canvasRef2.current;
+    let context2 = canvas2.getContext('2d');
+
+    this.refs.playerImgIdleWest.onload = () => {
+      this.addListeners();
+      // this.drawPlayerInit(canvas2, context2);
+      this.drawGridInit(canvas, context);
+      // window.requestAnimationFrame(this.gameLoop(canvas, canvas2, context, context2));
+    }
+
+
 
   }
 
@@ -278,7 +284,7 @@ class App extends Component {
 
   handleKeyPress = (event, state) => {
 
-    // console.log('handling key press', event.key, state);
+    console.log('handling key press', event.key, state);
 
     let keyInput = event.key
     switch(keyInput) {
@@ -306,21 +312,20 @@ class App extends Component {
       case 'c' :
        this.keyPressed.southEast = state
       break;
-      // case 'strafeKey' :
-      //  this.keyPressed.strafe = state
-      // this.player1.strafing.state = true
-      // break;
+      case 'Shift' :
+       this.keyPressed.strafe = state
+       this.player1.strafing.state = state
+      break;
     }
 
     this.playerUpdate()
 
   }
 
-
   gameLoop = () => {
 
-    let ts = window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
 
+    let ts = window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
 
     // ------ Looper Stepper #1 -------
     this.stepper.now = ts;
@@ -351,9 +356,9 @@ class App extends Component {
     this.stepper.deltaTime = (this.stepper.currentTime-this.stepper.lastTime);
 
     if(this.stepper.deltaTime > this.stepper.interval) {
-        // console.log('update loop step');
+        // console.log('update loop step...dt',this.stepper.deltaTime,'interval',this.stepper.interval);
 
-        // this.playerUpdate(this.stepper.deltaTime,this.stepper.interval);
+        // this.playerUpdate();
         this.stepper.lastTime = this.stepper.currentTime - (this.stepper.deltaTime % this.stepper.interval);
     }
     // this.drawPlayerStep();
@@ -394,8 +399,7 @@ class App extends Component {
   }
 
 
-
-  playerUpdate = (delta,interval) => {
+  playerUpdate = () => {
     console.log('updating player');
 
     let keyPressedDirection;
@@ -471,7 +475,7 @@ class App extends Component {
               console.log('target is free');
 
               player.moving = {
-                state: false,
+                state: true,
                 step: 0,
                 course: '',
                 origin: {
@@ -491,6 +495,10 @@ class App extends Component {
           ) {
             player.direction = keyPressedDirection;
             console.log('change player direction to',keyPressedDirection);
+            player.nextPosition = {
+              x: player.currentPosition.cell.center.x,
+              y: player.currentPosition.cell.center.y
+            }
 
           } else if (
             keyPressedDirection !== player.direction &&
@@ -571,21 +579,23 @@ class App extends Component {
 
     this.player1 = player;
 
+    this.drawPlayerStep();
+
   }
 
   drawPlayerStep = () => {
-    // console.log('drawing player step');
+    console.log('drawing player step');
 
-    let canvas2 = this.canvasRef2.current;
-    let context2 = canvas2.getContext('2d');
+    const canvas2 = this.canvasRef2.current;
+    const context2 = canvas2.getContext('2d');
 
     let player = this.player1;
 
     let playerImgs = {
       idle: {
         north: this.refs.playerImgIdleNorth,
-        northWest: this.refs.playerImgIdleNorth,
-        northEast: this.refs.playerImgIdleEast,
+        northWest: this.refs.playerImgIdleNorthWest,
+        northEast: this.refs.playerImgIdleNorthEast,
         south: this.refs.playerImgIdleSouth,
         southWest: this.refs.playerImgIdleSouthWest,
         southEast: this.refs.playerImgIdleSouthEast,
@@ -594,8 +604,8 @@ class App extends Component {
       },
       walking: {
         north: this.refs.playerImgIdleNorth,
-        northWest: this.refs.playerImgIdleNorth,
-        northEast: this.refs.playerImgIdleEast,
+        northWest: this.refs.playerImgIdleNorthWest,
+        northEast: this.refs.playerImgIdleNorthEast,
         south: this.refs.playerImgIdleSouth,
         southWest: this.refs.playerImgIdleSouthWest,
         southEast: this.refs.playerImgIdleSouthEast,
@@ -604,8 +614,8 @@ class App extends Component {
       },
       attacking: {
         north: this.refs.playerImgIdleNorth,
-        northWest: this.refs.playerImgIdleNorth,
-        northEast: this.refs.playerImgIdleEast,
+        northWest: this.refs.playerImgIdleNorthWest,
+        northEast: this.refs.playerImgIdleNorthEast,
         south: this.refs.playerImgIdleSouth,
         southWest: this.refs.playerImgIdleSouthWest,
         southEast: this.refs.playerImgIdleSouthEast,
@@ -614,15 +624,14 @@ class App extends Component {
       },
       defending: {
         north: this.refs.playerImgIdleNorth,
-        northWest: this.refs.playerImgIdleNorth,
-        northEast: this.refs.playerImgIdleEast,
+        northWest: this.refs.playerImgIdleNorthWest,
+        northEast: this.refs.playerImgIdleNorthEast,
         south: this.refs.playerImgIdleSouth,
         southWest: this.refs.playerImgIdleSouthWest,
         southEast: this.refs.playerImgIdleSouthEast,
         east: this.refs.playerImgIdleEast,
         west: this.refs.playerImgIdleWest,
       },
-
     };
 
     let point = {
@@ -631,124 +640,174 @@ class App extends Component {
     };
 
     let updatedPlayerImg;
+    let newDirection;
 
-    switch(this.player.action) {
+    switch(player.action) {
       case 'idle':
-        switch(this.player.direction) {
+        switch(player.direction) {
           case 'north' :
             updatedPlayerImg = playerImgs.idle.north;
+            newDirection = 'north';
           break;
           case 'northWest' :
             updatedPlayerImg = playerImgs.idle.northWest;
+            newDirection = 'northWest';
           break;
           case 'northEast' :
             updatedPlayerImg = playerImgs.idle.northEast;
+            newDirection = 'northEast';
           break;
           case 'east' :
             updatedPlayerImg = playerImgs.idle.east;
+            newDirection = 'east';
           break;
           case 'west' :
             updatedPlayerImg = playerImgs.idle.west;
+            newDirection = 'west';
           break;
           case 'south' :
             updatedPlayerImg = playerImgs.idle.south;
+            newDirection = 'south';
           break;
           case 'southWest' :
             updatedPlayerImg = playerImgs.idle.southWest;
+            newDirection = 'southWest';
           break;
           case 'southEast' :
             updatedPlayerImg = playerImgs.idle.southEast;
+            newDirection = 'southEast';
           break;
         }
       break;
       case 'walking':
-        switch(this.player.direction) {
+        switch(player.direction) {
           case 'north' :
             updatedPlayerImg = playerImgs.walking.north;
+            newDirection = 'north';
           break;
           case 'northWest' :
             updatedPlayerImg = playerImgs.walking.northWest;
+            newDirection = 'northWest';
           break;
           case 'northEast' :
             updatedPlayerImg = playerImgs.walking.northEast;
+            newDirection = 'northEast';
           break;
           case 'east' :
             updatedPlayerImg = playerImgs.walking.east;
+            newDirection = 'east';
           break;
           case 'west' :
             updatedPlayerImg = playerImgs.walking.west;
+            newDirection = 'west';
           break;
           case 'south' :
             updatedPlayerImg = playerImgs.walking.south;
+            newDirection = 'south';
           break;
           case 'southWest' :
             updatedPlayerImg = playerImgs.walking.southWest;
+            newDirection = 'southWest';
           break;
           case 'southEast' :
             updatedPlayerImg = playerImgs.walking.southEast;
+            newDirection = 'southEast';
           break;
         }
       break;
       case 'attacking':
-        switch(this.player.direction) {
+        switch(player.direction) {
           case 'north' :
             updatedPlayerImg = playerImgs.attacking.north;
+            newDirection = 'north';
           break;
           case 'northWest' :
             updatedPlayerImg = playerImgs.attacking.northWest;
+            newDirection = 'northWest';
           break;
           case 'northEast' :
             updatedPlayerImg = playerImgs.attacking.northEast;
+            newDirection = 'northEast';
           break;
           case 'east' :
             updatedPlayerImg = playerImgs.attacking.east;
+            newDirection = 'east';
           break;
           case 'west' :
             updatedPlayerImg = playerImgs.attacking.west;
+            newDirection = 'west';
           break;
           case 'south' :
             updatedPlayerImg = playerImgs.attacking.south;
+            newDirection = 'south';
           break;
           case 'southWest' :
             updatedPlayerImg = playerImgs.attacking.southWest;
+            newDirection = 'southWest';
           break;
           case 'southEast' :
             updatedPlayerImg = playerImgs.attacking.southEast;
+            newDirection = 'southEast';
           break;
         }
       break;
       case 'defending':
-        switch(this.player.direction) {
+        switch(player.direction) {
           case 'north' :
             updatedPlayerImg = playerImgs.defending.north;
+            newDirection = 'north';
           break;
           case 'northWest' :
             updatedPlayerImg = playerImgs.defending.northWest;
+            newDirection = 'northWest';
           break;
           case 'northEast' :
             updatedPlayerImg = playerImgs.defending.northEast;
+            newDirection = 'northEast';
           break;
           case 'east' :
             updatedPlayerImg = playerImgs.defending.east;
+            newDirection = 'east';
           break;
           case 'west' :
             updatedPlayerImg = playerImgs.defending.west;
+            newDirection = 'west';
           break;
           case 'south' :
             updatedPlayerImg = playerImgs.defending.south;
+            newDirection = 'south';
           break;
           case 'southWest' :
             updatedPlayerImg = playerImgs.defending.southWest;
+            newDirection = 'southWest';
           break;
           case 'southEast' :
             updatedPlayerImg = playerImgs.defending.southEast;
+            newDirection = 'southEast';
           break;
         }
       break;
     }
 
+    // console.log('updatedPlayerImg',updatedPlayerImg);
+    // console.log('current pos',player.currentPosition.cell.center.x,player.currentPosition.cell.center.y);
+    // console.log('next pos',player.nextPosition.x,player.nextPosition.y);
+
     context2.clearRect(0, 0, canvas2.width, canvas2.height);
-    context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+
+    if (
+      newDirection === 'east' ||
+      newDirection === 'west' ||
+      newDirection === 'north' ||
+      newDirection === 'south'
+    ) {
+      context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 50,50);
+    } else {
+      context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+    }
+
+    player.moving.state = false;
+    this.player1 = player;
 
   }
 
@@ -774,18 +833,15 @@ class App extends Component {
     //   newPosition = {x:X,y:Y}
     // }
 
-
     let newX = currentPosition.x+increment;
-
-    console.log(player.moving.origin.center.y,player.target.cell.center.y,player.moving.origin.center.x,player.target.cell.center.x,newX);
 
     // line equation for y
     let y = (((player.moving.origin.center.y-player.target.cell.center.y)/(player.moving.origin.center.x-player.target.cell.center.x))*(newX-player.moving.origin.center.x))+player.moving.origin.center.y
     newPosition = {x:newX, y: y}
 
-    console.log('oldPos',currentPosition.x,currentPosition.y);
-    console.log('newPos',newPosition.x,newPosition.y);
-    
+    console.log('line crementer oldPos',currentPosition.x,currentPosition.y);
+    console.log('line crementer newPos',newPosition.x,newPosition.y);
+
     player.nextPosition = newPosition
     this.player1 = player;
 
@@ -1080,15 +1136,19 @@ class App extends Component {
 
   }
 
-  drawPlayerInit = (gridInfo, canvas) => {
+  drawPlayerInit = (gridInfo) => {
+  // drawPlayerInit = (canvas, context) => {
     console.log('drawing initial player');
+
+    let canvas = this.canvasRef.current;
+    let context = canvas.getContext('2d');
 
     let canvas2 = this.canvasRef2.current;
     let context2 = canvas2.getContext('2d');
 
     let player = this.player1;
 
-    let playerImg = this.refs.playerImgIdleSouthEast;
+    let playerImg = this.refs.playerImgIdleNorth;
 
     let point = {
       x: 0,
@@ -1096,20 +1156,16 @@ class App extends Component {
     };
 
     for (const cell of gridInfo) {
-      // console.log('xxxx',cell.number.x,cell.number.y,'center',cell.center.x,cell.center.y);
       if (
         cell.number.x === player.startPosition.cell.number.x &&
         cell.number.y === player.startPosition.cell.number.y
       ) {
-        // console.log('bing',player.startPosition.cell.center.x,player.startPosition.cell.center.y);
-        // console.log('bing',cell.number.y,player.startPosition.cell.number.y);
         point.x = cell.center.x;
         point.y = cell.center.y;
 
       }
 
     }
-    // console.log(point.x,point.y);
 
     this.player1.currentPosition.cell = {
       number: {
@@ -1119,13 +1175,12 @@ class App extends Component {
       center : point
     }
 
-
     // context2.translate(point.x,point.y);
     // context2.rotate(120);
-    context2.drawImage(playerImg, point.x-20, point.y-20, 40,40);
+    context2.drawImage(playerImg, point.x-25, point.y-25, 50,50);
     // context2.rotate(-120);
     // context2.translate(-point.x, -point.y);
-    // context2.save()
+    // context.save()
 
     window.requestAnimationFrame(this.gameLoop);
 
@@ -1171,11 +1226,11 @@ class App extends Component {
 
   }
 
-  drawGridInit = () => {
+  drawGridInit = (canvas, context) => {
     console.log('drawing initial grid');
 
-    let canvas = this.canvasRef.current;
-    let context = canvas.getContext('2d');
+    // let canvas = this.canvasRef.current;
+    // let context = canvas.getContext('2d');
 
     canvas.width = 1100;
     canvas.height = 600;
@@ -1211,7 +1266,7 @@ class App extends Component {
 
     // some offsets to center the scene
     let sceneX = canvas.width/2;
-    let sceneY = 150;
+    let sceneY = 140;
     let tileWidth = 50;
 
     function startProcessLevelData () {
@@ -1341,13 +1396,9 @@ class App extends Component {
 
     drawScene();
 
-    this.drawPlayerInit(gridInfo2, canvas);
-    // this.gridInfo2 = gridInfo2;
-    // console.log('gridInfo2',this.gridInfo2);
-
+    this.drawPlayerInit(gridInfo2);
 
   }
-
 
 
   render() {
@@ -1374,19 +1425,22 @@ class App extends Component {
               className="canvas3"
             />
           </div>
+
           <img src={tile} className='hidden' ref="tile" alt="logo" />
           <img src={floor2} className='hidden' ref="floor2" alt="logo" />
           <img src={wall} className='hidden' ref="wall" alt="logo" />
           <img src={wall2} className='hidden' ref="wall2" alt="logo" />
           <img src={wall3} className='hidden' ref="wall3" alt="logo" />
-          <img src={playerImgIdleNorth} className='hidden' ref="playerImgIdleNorth" alt="logo" />
-          <img src={playerImgIdleNorthWest} className='hidden' ref="playerImgIdleNorthWest" alt="logo" />
-          <img src={playerImgIdleNorthEast} className='hidden' ref="playerImgIdleNorthEast" alt="logo" />
-          <img src={playerImgIdleSouth} className='hidden' ref="playerImgIdleSouth" alt="logo" />
-          <img src={playerImgIdleSouthWest} className='hidden' ref="playerImgIdleSouthWest" alt="logo" />
-          <img src={playerImgIdleSouthEast} className='hidden' ref="playerImgIdleSouthEast" alt="logo" />
-          <img src={playerImgIdleEast} className='hidden' ref="playerImgIdleSouthEast" alt="logo" />
-          <img src={playerImgIdleWest} className='hidden' ref="playerImgIdleSouthEast" alt="logo" />
+
+          <img src={playerImgIdleNorth} className='hidden playerImgs2' ref="playerImgIdleNorth" alt="logo" />
+          <img src={playerImgIdleNorthWest} className='hidden playerImgs' ref="playerImgIdleNorthWest" alt="logo" />
+          <img src={playerImgIdleNorthEast} className='hidden playerImgs' ref="playerImgIdleNorthEast" alt="logo" />
+          <img src={playerImgIdleSouth} className='hidden playerImgs2' ref="playerImgIdleSouth" alt="logo" />
+          <img src={playerImgIdleSouthWest} className='hidden playerImgs' ref="playerImgIdleSouthWest" alt="logo" />
+          <img src={playerImgIdleSouthEast} className='hidden playerImgs' ref="playerImgIdleSouthEast" alt="logo" />
+          <img src={playerImgIdleEast} className='hidden playerImgs2' ref="playerImgIdleEast" alt="logo" />
+          <img src={playerImgIdleWest} className='hidden playerImgs2' ref="playerImgIdleWest" alt="logo" />
+
         </div>
       </React.Fragment>
     )

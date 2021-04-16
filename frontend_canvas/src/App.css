@@ -50,6 +50,16 @@
     transform: rotate(360deg);
   }
 }
+.playerImgs {
+  height: 40px !important;
+  width: 40px !important;
+  border: 1px solid red;
+}
+.playerImgs2 {
+  height: 50px !important;
+  width: 50px !important;
+  border: 1px solid red;
+}
 
 .hidden {
   display: none;
