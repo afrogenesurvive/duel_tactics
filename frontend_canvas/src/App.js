@@ -424,7 +424,9 @@ class App extends Component {
         console.log('player is moving');
 
         nextPosition = this.lineCrementer(player);
-        if (nextPosition === player.target.center) {
+        if (
+          nextPosition.x === player.target.center.x
+        ) {
           console.log('next position is destination');
 
           player.action = 'idle';
@@ -538,6 +540,7 @@ class App extends Component {
                 }
               }
             }
+
             if (this.keyPressed.defend === true) {
               if (player.defending.count < player.defending.limit) {
                 player.defending.count++;
@@ -572,6 +575,7 @@ class App extends Component {
               }
             }
           }
+
 
         }
 
@@ -641,6 +645,7 @@ class App extends Component {
 
     let updatedPlayerImg;
     let newDirection;
+
 
     switch(player.action) {
       case 'idle':
@@ -806,11 +811,10 @@ class App extends Component {
       context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
     }
 
-    player.moving.state = false;
+    // player.moving.state = false;
     this.player1 = player;
 
   }
-
 
   lineCrementer = () => {
     console.log('line crementer');
@@ -820,27 +824,32 @@ class App extends Component {
     let target = player.target;
     let increment = 5;
 
-    player.moving.stepPercent = player.moving.stepPercent + 1;
+    player.moving.step = player.moving.step + .1;
     let newPosition;
 
     // line: percent is 0-1
-    // function getLineXYatPercent(startPt,endPt,player.moving.stepPercent) {
-    //   let dx = endPt.x-startPt.x;
-    //   let dy = endPt.y-startPt.y;
-    //   let X = startPt.x + dx*percent;
-    //   let Y = startPt.y + dy*percent;
-    //
-    //   newPosition = {x:X,y:Y}
-    // }
+    let startPt = currentPosition;
+    let endPt = target.cell.center;
+    let percent = player.moving.step;
+
+    function getLineXYatPercent(startPt,endPt,percent) {
+      let dx = endPt.x-startPt.x;
+      let dy = endPt.y-startPt.y;
+      let X = startPt.x + dx*percent;
+      let Y = startPt.y + dy*percent;
+
+      newPosition = {x:X,y:Y}
+    }
+    getLineXYatPercent(startPt,endPt,percent);
 
     let newX = currentPosition.x+increment;
-
     // line equation for y
     let y = (((player.moving.origin.center.y-player.target.cell.center.y)/(player.moving.origin.center.x-player.target.cell.center.x))*(newX-player.moving.origin.center.x))+player.moving.origin.center.y
-    newPosition = {x:newX, y: y}
+    // newPosition = {x:newX, y: y}
 
-    console.log('line crementer oldPos',currentPosition.x,currentPosition.y);
-    console.log('line crementer newPos',newPosition.x,newPosition.y);
+    // console.log('line crementer target',player.target.cell.center.x,player.target.cell.center.y,'%',player.moving.step);
+    // console.log('line crementer oldPos',currentPosition.x,currentPosition.y);
+    // console.log('line crementer newPos',newPosition.x,newPosition.y);
 
     player.nextPosition = newPosition
     this.player1 = player;
@@ -1137,7 +1146,6 @@ class App extends Component {
   }
 
   drawPlayerInit = (gridInfo) => {
-  // drawPlayerInit = (canvas, context) => {
     console.log('drawing initial player');
 
     let canvas = this.canvasRef.current;
@@ -1172,7 +1180,14 @@ class App extends Component {
         x: player.startPosition.cell.number.x ,
         y: player.startPosition.cell.number.y
       },
-      center : point
+      center : {
+        x: point.x,
+        y: point.y
+      }
+    }
+    this.player1.nextPosition = {
+      x: point.x,
+      y: point.y
     }
 
     // context2.translate(point.x,point.y);
@@ -1182,7 +1197,7 @@ class App extends Component {
     // context2.translate(-point.x, -point.y);
     // context.save()
 
-    window.requestAnimationFrame(this.gameLoop);
+    // window.requestAnimationFrame(this.gameLoop);
 
   }
 
