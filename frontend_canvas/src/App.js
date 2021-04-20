@@ -59,13 +59,13 @@ class App extends Component {
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
     this.levelData2 = {
-      row0: ['y00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','y09x'],
+      row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
       row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
-      row2: ['x20x','x21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x'],
+      row2: ['x20x','x21x','x22x','x23x','x24x','y25x','x26x','x27x','x28x','x29x'],
       row3: ['x30x','x31x','x32x','x33x','x34x','x35x','x36x','x37x','x38x','x39x'],
       row4: ['x40x','x41x','z42x','x43x','x44x','x45x','x46x','x47x','x48x','z49x'],
       row5: ['x50x','x51x','x52x','y53x','x54x','x55x','x56x','x57x','x58x','x59x'],
-      row6: ['x60x','z61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
+      row6: ['x60x','x61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
       row7: ['x70x','x71x','x72x','x73x','x74x','x75x','x76x','x77x','x78x','x79x'],
       row8: ['x80x','x81x','x82x','x83x','x84x','x85x','y86x','x87x','x88x','x89x'],
       row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
@@ -116,6 +116,7 @@ class App extends Component {
           type: '',
           player: '',
         },
+        void: false
       },
       direction: 'north',
       action: 'idle',
@@ -152,6 +153,11 @@ class App extends Component {
         count: 0,
         limit: 5,
       },
+      falling: {
+        state: false,
+        count: 0,
+        limit: 5,
+      }
     };
     this.stepper = {
       now: 0,
@@ -213,12 +219,12 @@ class App extends Component {
 
     this.refs.playerImgIdleWest.onload = () => {
       this.addListeners();
-      // this.drawPlayerInit(canvas2, context2);
-      this.drawGridInit(canvas, context);
-      // window.requestAnimationFrame(this.gameLoop(canvas, canvas2, context, context2));
+
+      this.drawGridInit(canvas, context, canvas2, context2);
+
+      this.drawPlayerInit(canvas2, context2);
+      window.requestAnimationFrame(this.gameLoop);
     }
-
-
 
   }
 
@@ -266,7 +272,7 @@ class App extends Component {
     const y = (event.clientY - rect.top) - 158;
     // console.log('clicked',x,y,);
 
-    for(const cell of this.gridInfo2) {
+    for(const cell of this.gridInfo) {
       let point = [x,y];
       let polygon = [];
       for (const vertex of cell.vertices) {
@@ -324,7 +330,6 @@ class App extends Component {
 
   gameLoop = () => {
 
-
     let ts = window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
 
     // ------ Looper Stepper #1 -------
@@ -333,7 +338,7 @@ class App extends Component {
 
     while(this.stepper.dt > this.stepper.step) {
       this.stepper.dt = this.dt - this.stepper.step;
-      // this.playerUpdate(this.stepper.step);
+      // this.playerUpdate();
     }
     // this.drawPlayerStep(this.dt);
     this.stepper.last = this.stepper.now;
@@ -364,38 +369,7 @@ class App extends Component {
     // this.drawPlayerStep();
     // -----------
 
-
     requestAnimationFrame(this.gameLoop);
-  }
-
-  drawBall = () => {
-    console.log("Drawinig ball");
-
-    const canvas = this.canvasRef.current;
-    const context = canvas.getContext('2d');
-
-    let x = canvas.width/2;
-    let y = canvas.height-30;
-    let dx = 2;
-    let dy = -2;
-
-    function drawBall() {
-        context.beginPath();
-        context.arc(x, y, 10, 0, Math.PI*2);
-        context.fillStyle = "#0095DD";
-        context.fill();
-        context.closePath();
-    }
-
-    function draw() {
-        // context.clearRect(0, 0, canvas.width, canvas.height);
-        drawBall();
-        x += dx;
-        y += dy;
-    }
-
-    setInterval(draw, 10);
-
   }
 
 
@@ -422,10 +396,11 @@ class App extends Component {
 
       if (player.moving.state === true) {
         console.log('player is moving');
-
         nextPosition = this.lineCrementer(player);
+
         if (
-          nextPosition.x === player.target.center.x
+          nextPosition.x === player.target.cell.center.x &&
+          nextPosition.y === player.target.cell.center.y
         ) {
           console.log('next position is destination');
 
@@ -450,11 +425,17 @@ class App extends Component {
             }
           }
         }
+
+        if (player.target.void === true) {
+          console.log('to the firmament!!!');
+          player.falling.state = true;
+        }
+
+        player.currentPosition.cell = player.target.cell;
         player.nextPosition = nextPosition;
 
       } else if (player.moving.state === false) {
         console.log('player is NOT moving');
-
         if (
           this.keyPressed.north === true ||
           this.keyPressed.south === true ||
@@ -490,6 +471,9 @@ class App extends Component {
               nextPosition = this.lineCrementer(player);
               player.nextPosition = nextPosition;
 
+            }
+            if (target.free === false) {
+              console.log('target is NOT free');
             }
           } else if (
             keyPressedDirection !== player.direction &&
@@ -590,8 +574,11 @@ class App extends Component {
   drawPlayerStep = () => {
     console.log('drawing player step');
 
-    const canvas2 = this.canvasRef2.current;
-    const context2 = canvas2.getContext('2d');
+    let canvas = this.canvasRef.current;
+    let context = canvas.getContext('2d');
+
+    let canvas2 = this.canvasRef2.current;
+    let context2 = canvas2.getContext('2d');
 
     let player = this.player1;
 
@@ -794,24 +781,34 @@ class App extends Component {
       break;
     }
 
-    // console.log('updatedPlayerImg',updatedPlayerImg);
-    // console.log('current pos',player.currentPosition.cell.center.x,player.currentPosition.cell.center.y);
-    // console.log('next pos',player.nextPosition.x,player.nextPosition.y);
-
-    context2.clearRect(0, 0, canvas2.width, canvas2.height);
-
     if (
-      newDirection === 'east' ||
-      newDirection === 'west' ||
-      newDirection === 'north' ||
-      newDirection === 'south'
+      player.falling.state === true
     ) {
-      context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 50,50);
-    } else {
-      context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+      console.log('currently falling off the edge');
+
+      // increment counter & change draw y coords based on count
+      // at limit reset  falling state and counter and current position, target, moving, action
+
+    } else if (
+      player.action !== 'attacking' ||
+      player.action !== 'defending'
+    ) {
+
+      context2.clearRect(0, 0, canvas2.width, canvas2.height);
+
+      if (
+        newDirection === 'east' ||
+        newDirection === 'west' ||
+        newDirection === 'north' ||
+        newDirection === 'south'
+      ) {
+        context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+      } else {
+        context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+      }
+
     }
 
-    // player.moving.state = false;
     this.player1 = player;
 
   }
@@ -822,7 +819,7 @@ class App extends Component {
     let player = this.player1;
     let currentPosition = player.currentPosition.cell.center;
     let target = player.target;
-    let increment = 5;
+    let increment = 2;
 
     player.moving.step = player.moving.step + .1;
     let newPosition;
@@ -847,9 +844,9 @@ class App extends Component {
     let y = (((player.moving.origin.center.y-player.target.cell.center.y)/(player.moving.origin.center.x-player.target.cell.center.x))*(newX-player.moving.origin.center.x))+player.moving.origin.center.y
     // newPosition = {x:newX, y: y}
 
-    // console.log('line crementer target',player.target.cell.center.x,player.target.cell.center.y,'%',player.moving.step);
-    // console.log('line crementer oldPos',currentPosition.x,currentPosition.y);
-    // console.log('line crementer newPos',newPosition.x,newPosition.y);
+    console.log('line crementer target',player.target.cell.center.x,player.target.cell.center.y,'%',player.moving.step);
+    console.log('line crementer oldPos',currentPosition.x,currentPosition.y);
+    console.log('line crementer newPos',newPosition.x,newPosition.y);
 
     player.nextPosition = newPosition
     this.player1 = player;
@@ -857,11 +854,10 @@ class App extends Component {
     return newPosition;
 
   }
-
   getTarget = () => {
     console.log('checking target');
 
-    let gridInfo = this.gridInfo2;
+    let gridInfo = this.gridInfo;
     let player = this.player1;
     let currentPosition = player.currentPosition.cell.number;
     let direction = player.direction;
@@ -876,11 +872,12 @@ class App extends Component {
           y: 0,
         },
       },
-      free: true,
+      free: false,
       occupant: {
         type: '',
         player: '',
       },
+      void: false
     }
 
     if (player.strafing.state === true) {
@@ -888,8 +885,143 @@ class App extends Component {
       direction = this.player.strafing.direction;
     }
 
-    let targetCellNumber = {x: 0,y: 0}
-    let targetCellCenter = {x: 0,y: 0}
+    let targetCellNumber = {x: 0,y: 0};
+    let targetCellCenter = {x: 0,y: 0};
+
+    if (
+      currentPosition.x === 0 &&
+      direction === 'west'
+    ) {
+      console.log("Into the void!! West");
+      target.void = true;
+
+    } else if (
+      currentPosition.y === 0 &&
+      direction === 'north'
+    ) {
+      console.log("Into the void!! North");
+      target.void = true;
+
+    } else if (
+      currentPosition.x === 9 &&
+      direction === 'east'
+    ) {
+      console.log("Into the void!! East");
+      target.void = true;
+
+    } else if (
+      currentPosition.y === 9 &&
+      direction === 'south'
+    ) {
+      console.log("Into the void!! South");
+      target.void = true;
+
+    } else {
+      console.log('target is NOT the void');
+
+      // switch(direction) {
+      //   case 'north' :
+      //     targetCellNumber = {
+      //       x: currentPosition.x,
+      //       y: currentPosition.y-1
+      //     }
+      //   break;
+      //   case 'northEast' :
+      //     targetCellNumber = {
+      //       x: currentPosition.x+1,
+      //       y: currentPosition.y-1
+      //     }
+      //   break;
+      //   case 'northWest' :
+      //     targetCellNumber = {
+      //       x: currentPosition.x-1,
+      //       y: currentPosition.y-1
+      //     }
+      //   break;
+      //   case 'east' :
+      //     targetCellNumber = {
+      //       x: currentPosition.x+1,
+      //       y: currentPosition.y
+      //     }
+      //   break;
+      //   case 'west' :
+      //     targetCellNumber = {
+      //       x: currentPosition.x-1,
+      //       y: currentPosition.y
+      //     }
+      //   break;
+      //   case 'south' :
+      //     targetCellNumber = {
+      //       x: currentPosition.x,
+      //       y: currentPosition.y+1
+      //     }
+      //   break;
+      //   case 'southEast' :
+      //     targetCellNumber = {
+      //       x: currentPosition.x+1,
+      //       y: currentPosition.y+1
+      //     }
+      //   break;
+      //   case 'southWest' :
+      //     targetCellNumber = {
+      //       x: currentPosition.x-1,
+      //       y: currentPosition.y+1
+      //     }
+      //   break;
+      // }
+      //
+      // for (const cell of gridInfo) {
+      //   let xMatch = cell.number.x === targetCellNumber.x;
+      //   let yMatch = cell.number.y === targetCellNumber.y;
+      //   if (
+      //     xMatch === true && yMatch === true
+      //   ) {
+      //     targetCellCenter = cell.center;
+      //     console.log('found target details');
+      //   }
+      // }
+      //
+      // target.cell = {
+      //   number: targetCellNumber,
+      //   center: targetCellCenter
+      // };
+      //
+      // let obstacleObstructFound = false;
+      // for (const [key, row] of Object.entries(this.levelData2)) {
+      //   for (const cell of row) {
+      //     if (
+      //       cell.charAt(0) === 'y' ||
+      //       cell.charAt(0) ===  'z'
+      //     ) {
+      //
+      //       let obstaclePosition = {
+      //         x: Number(cell.charAt(1)),
+      //         y: row.indexOf(cell),
+      //       }
+      //       // console.log('found obstacle during map scan @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
+      //       if (
+      //         targetCellNumber.x === obstaclePosition.x &&
+      //         targetCellNumber.y === obstaclePosition.y
+      //       ) {
+      //         console.log('an obstacle is in your way');
+      //         target.free = false;
+      //         target.occupant.type = 'obstacle';
+      //         obstacleObstructFound = true;
+      //       }
+      //     }
+      //   }
+      //
+      // }
+      // if (obstacleObstructFound !== true ) {
+      //   target.free = true;
+      //   target.occupant = {
+      //     type: '',
+      //     player: ''
+      //   }
+      // }
+
+    }
+
     switch(direction) {
       case 'north' :
         targetCellNumber = {
@@ -942,7 +1074,6 @@ class App extends Component {
     }
 
     for (const cell of gridInfo) {
-      // console.log('cellnumber',cell.number,'target cell number',targetCellNumber);
       let xMatch = cell.number.x === targetCellNumber.x;
       let yMatch = cell.number.y === targetCellNumber.y;
       if (
@@ -957,6 +1088,7 @@ class App extends Component {
       center: targetCellCenter
     };
 
+    let obstacleObstructFound = false;
     for (const [key, row] of Object.entries(this.levelData2)) {
       for (const cell of row) {
         if (
@@ -965,19 +1097,31 @@ class App extends Component {
         ) {
 
           let obstaclePosition = {
-            x: Number(key.charAt(3)),
+            x: Number(cell.charAt(1)),
             y: row.indexOf(cell),
           }
           // console.log('found obstacle during map scan @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
-          if (targetCellNumber === obstaclePosition) {
+          if (
+            targetCellNumber.x === obstaclePosition.x &&
+            targetCellNumber.y === obstaclePosition.y
+          ) {
             console.log('an obstacle is in your way');
             target.free = false;
             target.occupant.type = 'obstacle';
+            obstacleObstructFound = true;
           }
         }
+      }
 
+    }
+    if (obstacleObstructFound !== true ) {
+      target.free = true;
+      target.occupant = {
+        type: '',
+        player: ''
       }
     }
+
       // check other player current position for match
       // if match free = false
       // occupant = {
@@ -990,170 +1134,251 @@ class App extends Component {
     return target;
 
   }
+  cartesianToIsometric = (cartPt) => {
 
-  draw2 = () => {
-    console.log("drawing grid 2");
-
-    const canvas = this.canvasRef.current;
-    const context = canvas.getContext('2d');
-
-    const width = 1100;
-    const height = 600;
-    // context.clearRect(0, 0, canvas.width, canvas.height);
-
-    this.originX = width / 2 - this.Xtiles * this.tileColumnOffset / 2;
-    this.originY = height / 2;
-
-    let Xtiles = this.Xtiles;
-    let Ytiles = this.Ytiles;
-    let tileColumnOffset = this.tileColumnOffset;
-    let originX = this.originX;
-    let tileRowOffset = this.tileRowOffset;
-    let originY = this.originY;
-    let selectedTileX = this.selectedTileX;
-    let selectedTileY = this.selectedTileY;
-    let showCoordinates = this.showCoordinates;
-    let gridInfo = [];
-
-
-    function startProcessLevelData () {
-      for(var Xi = (Xtiles - 1); Xi >= 0; Xi--) {
-        for(var Yi = 0; Yi < Ytiles; Yi++) {
-          // drawTile(Xi, Yi);
-
-          let offX = Xi * tileColumnOffset / 2 + Yi * tileColumnOffset / 2 + originX;
-          let offY = Yi * tileRowOffset / 2 - Xi * tileRowOffset / 2 + originY;
-
-          // parse grindInfo
-          let center = {
-            x: offX + tileColumnOffset/2 -1,
-            y: offY + tileRowOffset/2 -1,
-          }
-          gridInfo.push({
-            number:{x:Xi,y:Yi},
-            center:{x:center.x,y:center.y},
-            vertices: [
-              {x:center.x, y:center.y+(tileRowOffset/2)},
-              {x:center.x+(tileColumnOffset/2), y:center.y},
-              {x:center.x, y:center.y-(tileRowOffset/2)},
-              {x:center.x-(tileColumnOffset/2), y:center.y},
-            ],
-            // {
-            //   a:{x:center.x, y:center.y+(tileRowOffset/2)},
-            //   b:{x:center.x+(tileColumnOffset/2), y:center.y},
-            //   c:{x:center.x, y:center.y+(tileRowOffset/2)},
-            //   d:{x:center.x-(tileColumnOffset/2), y:center.y},
-            // },
-            side: Math.sqrt((tileRowOffset/2)^2+(tileColumnOffset/2)^2),
-            levelData: '',
-          })
+    class Point {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
         }
-      }
-    }
-    startProcessLevelData();
-    this.processLevelData(gridInfo,1)
-    gridInfo = this.gridInfo;
-
-
-
-    function redrawTiles () {
-      console.log('intial grid draw');
-      for(var Xi = (Xtiles - 1); Xi >= 0; Xi--) {
-        for(var Yi = 0; Yi < Ytiles; Yi++) {
-          drawTile(Xi, Yi);
-        }
-      }
     }
 
-    function drawTile (Xi, Yi) {
-      // console.log('cell/tile # ', Xi, Yi);
-
-      let offX = Xi * tileColumnOffset / 2 + Yi * tileColumnOffset / 2 + originX;
-      let offY = Yi * tileRowOffset / 2 - Xi * tileRowOffset / 2 + originY;
-
-      //check tile levelData
-      let cellLevelData;
-      let allCells = gridInfo;
-      for (const elem of allCells) {
-        if (elem.number.x === Xi && elem.number.y === Yi) {
-          console.log('level data for this cell',elem.levelData);
-          cellLevelData = elem.levelData;
-        }
-      }
-
-      // Draw tile interior
-      // if( Xi === selectedTileX && Yi === selectedTileY) {
-      //   context.fillStyle = 'yellow';
-      // }
-      // if(cellLevelData !== '') {
-      //   context.fillStyle = 'yellow';
-      // }
-      if(cellLevelData.charAt(0) === 'y') {
-        context.fillStyle = 'yellow';
-      }
-      else {
-        context.fillStyle = 'white';
-      }
-      context.moveTo(offX, offY + tileRowOffset / 2);
-      context.lineTo(offX + tileColumnOffset / 2, offY, offX + tileColumnOffset, offY + tileRowOffset / 2);
-      context.lineTo(offX + tileColumnOffset, offY + tileRowOffset / 2, offX + tileColumnOffset / 2, offY + tileRowOffset);
-      context.lineTo(offX + tileColumnOffset / 2, offY + tileRowOffset, offX, offY + tileRowOffset / 2);
-      context.stroke();
-      context.fill();
-      context.closePath();
-
-      // Draw tile outline
-      var color = '#000000';
-      drawLine(offX, offY + tileRowOffset / 2, offX + tileColumnOffset / 2, offY, color);
-      drawLine(offX + tileColumnOffset / 2, offY, offX + tileColumnOffset, offY + tileRowOffset / 2, color);
-      drawLine(offX + tileColumnOffset, offY + tileRowOffset / 2, offX + tileColumnOffset / 2, offY + tileRowOffset, color);
-      drawLine(offX + tileColumnOffset / 2, offY + tileRowOffset, offX, offY + tileRowOffset / 2, color);
-
-      if(showCoordinates) {
-        context.fillStyle = 'black';
-
-        let center = {
-          x: offX + tileColumnOffset/2 -1,
-          y: offY + tileRowOffset/2 -1,
-        }
-
-        // cell number
-        // context.fillText(Xi + ", " + Yi, offX + tileColumnOffset/2 - 9, offY + tileRowOffset/2 + 3);
-        context.fillText(Xi + ", " + Yi, offX + tileColumnOffset/2 - 9, offY + tileRowOffset/2 + 12);
-
-        // draw centre marker dots
-        context.fillStyle = "#0095DD";
-        context.fillRect(center.x, center.y,2,2);
-      }
-    }
-
-    function drawLine (x1, y1, x2, y2, color) {
-      color = typeof color !== 'undefined' ? color : 'white';
-      context.strokeStyle = color;
-      context.beginPath();
-      context.lineWidth = 1;
-      context.moveTo(x1, y1);
-      context.lineTo(x2, y2);
-      context.stroke();
-    }
-
-    redrawTiles();
-    // this.gridInfo = gridInfo;
-    console.log('this.gridInfo',this.gridInfo);
-    console.log('this.gridInfo2D',this.gridInfo2D);
-    // this.processLevelData(gridInfo)
+    var tempPt = new Point();
+    tempPt.x = cartPt.x - cartPt.y;
+    tempPt.y = (cartPt.x + cartPt.y) / 2;
+    return (tempPt);
 
   }
 
-  drawPlayerInit = (gridInfo) => {
+  startProcessLevelData = (canvas) => {
+
+    let gridInfo = [];
+
+    let canvasWidth = 1100;
+    let canvasHeight = 600;
+
+    // isometric sprites sizes
+    let floorImageWidth = 103;
+    let floorImageHeight = 53;
+    let wallImageWidth = 103;
+    let wallImageHeight = 98;
+    // some offsets to center the scene
+    let sceneX = canvasWidth/2;
+    let sceneY = 140;
+    let tileWidth = 50;
+
+    class Point {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    for (var x = 0; x < 10; x++) {
+        for (var y = 0; y < 10; y++) {
+
+          let p = new Point();
+          p.x = x * tileWidth;
+          p.y = y * tileWidth;
+          // p.x = x * tileWidth;
+          // p.y = y * tileWidth;
+          let iso = this.cartesianToIsometric(p);
+
+          let offset = {x: floorImageWidth/2, y: floorImageHeight}
+
+          // apply offset to center scene for a better view
+          iso.x += sceneX
+          iso.y += sceneY
+
+          let center = {
+            x: iso.x - offset.x/2+23,
+            y: iso.y - offset.y/2-2,
+          }
+
+        gridInfo.push({
+          number:{x:x,y:y},
+          center:{x:center.x,y:center.y},
+          drawCenter:{x:center.x,y:center.y},
+          vertices: [
+            {x:center.x, y:center.y+25},
+            {x:center.x+50, y:center.y},
+            {x:center.x, y:center.y-25},
+            {x:center.x-50, y:center.y},
+          ],
+          side: Math.sqrt((25)^2+(50)^2),
+          levelData: '',
+          edge: {
+            state: false,
+            side: ''
+          }
+        })
+      }
+    }
+    this.gridInfo = gridInfo;
+
+  }
+  processLevelData = (allCells) => {
+    console.log('processing level data');
+
+    // compare & combine w/ levelData2
+    for(const elem of allCells) {
+      let levelData2Row = 'row'+elem.number.x;
+      let elemLevelData = this.levelData2[levelData2Row][elem.number.y];
+      elem.levelData = elemLevelData;
+    }
+
+    // gridInfo to 2D array
+    let gridInfo2d = [];
+    for (let i = 0; i <= 9; i++) {
+    // for (let i = 9; i >= 0; i--) {
+      let newArray = [];
+      for (var j = 0; j < allCells.length; j++) {
+        if (allCells[j]['number'].x === i) {
+          newArray.push(allCells[j])
+        }
+      }
+      gridInfo2d.push(newArray)
+    }
+
+    this.gridInfo2D = gridInfo2d;
+    // console.log('gridInfo2d',this.gridInfo2D);
+
+    this.gridInfo = allCells;
+    // console.log('post parse gridInfo',this.gridInfo);
+
+  }
+
+  drawGridInit = (canvas, context, canvas2, context2) => {
+    console.log('drawing initial grid');
+
+    canvas.width = 1100;
+    canvas.height = 600;
+
+    let gridInfo = [];
+
+    class Point {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    let floor = this.refs.floor2;
+    let wall = this.refs.wall;
+    let wall2 = this.refs.wall2;
+    let wall3 = this.refs.wall3;
+
+    // isometric sprites sizes
+    let floorImageWidth = 103;
+    let floorImageHeight = 53;
+    let wallImageWidth = 103;
+    let wallImageHeight = 98;
+
+    // some offsets to center the scene
+    let sceneX = canvas.width/2;
+    let sceneY = 140;
+    let tileWidth = 50;
+
+    this.startProcessLevelData(canvas);
+
+    gridInfo = this.gridInfo;
+
+    this.processLevelData(gridInfo)
+
+
+    for (var x = 0; x < 10; x++) {
+        for (var y = 0; y < 10; y++) {
+            let p = new Point();
+            p.x = x * tileWidth;
+            p.y = y * tileWidth;
+
+            let iso = this.cartesianToIsometric(p);
+            let offset = {x: floorImageWidth/2, y: floorImageHeight}
+
+            // apply offset to center scene for a better view
+            iso.x += sceneX
+            iso.y += sceneY
+
+            let center = {
+              x: iso.x - offset.x/2+23,
+              y: iso.y - offset.y/2-2,
+            }
+
+            let cellLevelData;
+            let allCells = gridInfo;
+            for (const elem of allCells) {
+              if (elem.number.x === x && elem.number.y === y) {
+                // console.log('level data for this cell',elem.levelData);
+                cellLevelData = elem.levelData;
+              }
+            }
+
+
+            context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
+
+            context.fillStyle = 'black';
+            context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
+
+            context.fillStyle = "#0095DD";
+            context.fillRect(center.x, center.y,5,5);
+
+            let vertices = [
+              {x:center.x, y:center.y+25},
+              {x:center.x+50, y:center.y},
+              {x:center.x, y:center.y-25},
+              {x:center.x-50, y:center.y},
+            ];
+
+            for (const vertex of vertices) {
+              context.fillStyle = "black";
+              context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
+            }
+
+            // Draw player
+            // if (
+            //   x === this.player1.startPosition.cell.number.x &&
+            //   y === this.player1.startPosition.cell.number.y
+            // ) {
+            //   // console.log('this is the player cell',x,y);
+            //   this.drawPlayerInit(canvas2, context2)
+            // }
+
+
+            let walledTiles = []
+            if (walledTiles.includes(''+x+','+y+'')) {
+              offset = {x: wallImageWidth/2, y: wallImageHeight}
+              context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
+            }
+
+
+            if(cellLevelData.charAt(0) === 'y') {
+              offset = {x: wallImageWidth/2, y: wallImageHeight}
+              context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
+
+            }
+            if(cellLevelData.charAt(0) === 'z') {
+              offset = {x: wallImageWidth/2, y: wallImageHeight}
+              context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+
+              let isoHeight = wallImageHeight - floorImageHeight
+              offset.y += isoHeight
+              context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+
+            }
+
+        }
+    }
+
+    // draw scene elements like our sprites, images, etc.
+
+    // this.drawPlayerInit(gridInfo2);
+
+  }
+  drawPlayerInit = (canvas, context) => {
+
     console.log('drawing initial player');
 
-    let canvas = this.canvasRef.current;
-    let context = canvas.getContext('2d');
-
-    let canvas2 = this.canvasRef2.current;
-    let context2 = canvas2.getContext('2d');
-
+    let gridInfo = this.gridInfo;
     let player = this.player1;
 
     let playerImg = this.refs.playerImgIdleNorth;
@@ -1192,226 +1417,12 @@ class App extends Component {
 
     // context2.translate(point.x,point.y);
     // context2.rotate(120);
-    context2.drawImage(playerImg, point.x-25, point.y-25, 50,50);
+    context.drawImage(playerImg, point.x-30, point.y-30, 60,60);
     // context2.rotate(-120);
     // context2.translate(-point.x, -point.y);
     // context.save()
 
     // window.requestAnimationFrame(this.gameLoop);
-
-  }
-
-  processLevelData = (allCells,number) => {
-    console.log('processing level data');
-
-    // compare & combine w/ levelData2
-    for(const elem of allCells) {
-      let levelData2Row = 'row'+elem.number.x;
-      let elemLevelData = this.levelData2[levelData2Row][elem.number.y];
-      elem.levelData = elemLevelData;
-    }
-
-    // gridInfo to 2D array
-    let gridInfo2d = [];
-    for (let i = 0; i <= 9; i++) {
-    // for (let i = 9; i >= 0; i--) {
-      let newArray = [];
-      for (var j = 0; j < allCells.length; j++) {
-        if (allCells[j]['number'].x === i) {
-          newArray.push(allCells[j])
-        }
-      }
-      gridInfo2d.push(newArray)
-    }
-
-    if (number === 1) {
-      this.gridInfo2D = gridInfo2d;
-      // console.log('gridInfo2d',this.gridInfo2D);
-
-      this.gridInfo = allCells;
-      // console.log('post parse gridInfo',this.gridInfo);
-    } else if (number === 2) {
-      this.gridInfo2D2 = gridInfo2d;
-      // console.log('gridInfo2d',this.gridInfo2D);
-
-      this.gridInfo2 = allCells;
-      // console.log('post parse gridInfo2',this.gridInfo2);
-    }
-
-
-  }
-
-  drawGridInit = (canvas, context) => {
-    console.log('drawing initial grid');
-
-    // let canvas = this.canvasRef.current;
-    // let context = canvas.getContext('2d');
-
-    canvas.width = 1100;
-    canvas.height = 600;
-
-    let gridInfo2 = [];
-
-    class Point {
-        constructor(x, y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-    let floor = this.refs.floor2;
-    let wall = this.refs.wall;
-    let wall2 = this.refs.wall2;
-    let wall3 = this.refs.wall3;
-
-    // this is the calculation for the most common isometric angle (30 degrees)
-    // because it's easy to calculate
-    function cartesianToIsometric(cartPt) {
-        var tempPt = new Point();
-        tempPt.x = cartPt.x - cartPt.y;
-        tempPt.y = (cartPt.x + cartPt.y) / 2;
-        return (tempPt);
-    }
-
-    // isometric sprites sizes
-    let floorImageWidth = 103;
-    let floorImageHeight = 53;
-    let wallImageWidth = 103;
-    let wallImageHeight = 98;
-
-    // some offsets to center the scene
-    let sceneX = canvas.width/2;
-    let sceneY = 140;
-    let tileWidth = 50;
-
-    function startProcessLevelData () {
-
-      for (var x = 0; x < 10; x++) {
-          for (var y = 0; y < 10; y++) {
-
-            let p = new Point();
-            p.x = x * tileWidth;
-            p.y = y * tileWidth;
-            // p.x = x * tileWidth;
-            // p.y = y * tileWidth;
-            let iso = cartesianToIsometric(p);
-
-            let offset = {x: floorImageWidth/2, y: floorImageHeight}
-
-            // apply offset to center scene for a better view
-            iso.x += sceneX
-            iso.y += sceneY
-
-            let center = {
-              x: iso.x - offset.x/2+23,
-              y: iso.y - offset.y/2-2,
-            }
-
-          gridInfo2.push({
-            number:{x:x,y:y},
-            center:{x:center.x,y:center.y},
-            drawCenter:{x:center.x,y:center.y},
-            vertices: [
-              {x:center.x, y:center.y+25},
-              {x:center.x+50, y:center.y},
-              {x:center.x, y:center.y-25},
-              {x:center.x-50, y:center.y},
-            ],
-            side: Math.sqrt((25)^2+(50)^2),
-            levelData: '',
-          })
-        }
-      }
-
-    }
-    startProcessLevelData();
-    this.processLevelData(gridInfo2,2)
-    gridInfo2 = this.gridInfo2;
-
-    // draw scene elements like our sprites, images, etc.
-    function drawScene(time) {
-
-        for (var x = 0; x < 10; x++) {
-            for (var y = 0; y < 10; y++) {
-                let p = new Point();
-                p.x = x * tileWidth;
-                p.y = y * tileWidth;
-
-                let iso = cartesianToIsometric(p);
-                let offset = {x: floorImageWidth/2, y: floorImageHeight}
-
-                // apply offset to center scene for a better view
-                iso.x += sceneX
-                iso.y += sceneY
-
-                let center = {
-                  x: iso.x - offset.x/2+23,
-                  y: iso.y - offset.y/2-2,
-                }
-
-                let cellLevelData;
-                let allCells = gridInfo2;
-                for (const elem of allCells) {
-                  if (elem.number.x === x && elem.number.y === y) {
-                    // console.log('level data for this cell',elem.levelData);
-                    cellLevelData = elem.levelData;
-                  }
-                }
-
-                // apply offset to place each isometric image from its bottom center.
-                // the default pivot point (top left) won't do good if our image has height like the wall image here
-
-                context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
-
-                context.fillStyle = 'black';
-                context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
-
-                context.fillStyle = "#0095DD";
-                context.fillRect(center.x, center.y,5,5);
-
-                let vertices = [
-                  {x:center.x, y:center.y+25},
-                  {x:center.x+50, y:center.y},
-                  {x:center.x, y:center.y-25},
-                  {x:center.x-50, y:center.y},
-                ];
-
-                for (const vertex of vertices) {
-                  context.fillStyle = "black";
-                  context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
-                }
-
-                // context.fillRect(iso.x - offset.x/2+23, iso.y - offset.y/2-2,5,5);
-                // ctx.fillText(""+x+","+y+"",iso.x - offset.x,iso.y - offset.y)
-
-                let walledTiles = ['0,0','9,0','0,9']
-                if (walledTiles.includes(''+x+','+y+'')) {
-                  offset = {x: wallImageWidth/2, y: wallImageHeight}
-                  context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
-                }
-
-                if(cellLevelData.charAt(0) === 'y') {
-                  offset = {x: wallImageWidth/2, y: wallImageHeight}
-                  context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
-
-                }
-                if(cellLevelData.charAt(0) === 'z') {
-                  offset = {x: wallImageWidth/2, y: wallImageHeight}
-                  context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
-
-                  let isoHeight = wallImageHeight - floorImageHeight
-                  offset.y += isoHeight
-                  context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
-
-                }
-
-            }
-        }
-    }
-
-    drawScene();
-
-    this.drawPlayerInit(gridInfo2);
 
   }
 
