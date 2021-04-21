@@ -270,6 +270,7 @@ class App extends Component {
 
     const x = (event.clientX - rect.left) - 222;
     const y = (event.clientY - rect.top) - 158;
+    let insideGrid = false;
     // console.log('clicked',x,y,);
 
     for(const cell of this.gridInfo) {
@@ -282,8 +283,12 @@ class App extends Component {
       let pip = pointInPolygon(point, polygon)
       // console.log('point',point,'cell',cell.number,'polygon',polygon,'pip',pip);
       if (pip === true) {
+        insideGrid = true;
         console.log("clicked a cell",cell.number,"x: " + x + " y: " + y);
       }
+    }
+    if ( insideGrid === false ) {
+      console.log("clicked the canvas", 'x: ',x,'y: ',y);
     }
 
   }
@@ -398,41 +403,49 @@ class App extends Component {
         console.log('player is moving');
         nextPosition = this.lineCrementer(player);
 
+        player.currentPosition.cell = player.target.cell;
+        player.nextPosition = nextPosition;
+
         if (
           nextPosition.x === player.target.cell.center.x &&
           nextPosition.y === player.target.cell.center.y
         ) {
           console.log('next position is destination');
 
-          player.action = 'idle';
-          player.moving = {
-            state: false,
-            step: 0,
-            course: '',
-            origin: {
-              number: {
+          if (player.target.void === false) {
+            player.action = 'idle';
+            player.moving = {
+              state: false,
+              step: 0,
+              course: '',
+              origin: {
+                number: {
+                  x: 0,
+                  y: 0,
+                },
+                center: {
+                  x: 0,
+                  y: 0,
+                },
+              },
+              destination: {
                 x: 0,
                 y: 0,
-              },
-              center: {
-                x: 0,
-                y: 0,
-              },
-            },
-            destination: {
-              x: 0,
-              y: 0,
+              }
             }
+
+
+          } else if (
+            nextPosition.x === player.target.cell.center.x &&
+            nextPosition.y === player.target.cell.center.y &&
+            player.target.void === true) {
+            console.log(' at the void center. You can fall now!!');
+
+            // player.falling.state = true;
+            // next position is current position
           }
-        }
 
-        if (player.target.void === true) {
-          console.log('to the firmament!!!');
-          player.falling.state = true;
         }
-
-        player.currentPosition.cell = player.target.cell;
-        player.nextPosition = nextPosition;
 
       } else if (player.moving.state === false) {
         console.log('player is NOT moving');
@@ -454,7 +467,10 @@ class App extends Component {
             let target = this.getTarget()
             // console.log('non strafe can move target acquired',target);
 
-            if (target.free === true) {
+            if (
+              target.free === true &&
+              player.target.void === false
+            ) {
               console.log('target is free');
 
               player.moving = {
@@ -472,9 +488,31 @@ class App extends Component {
               player.nextPosition = nextPosition;
 
             }
+
             if (target.free === false) {
               console.log('target is NOT free');
             }
+
+            if (player.target.void === true) {
+              console.log('target is VOID!!','#x',target.cell.number.x,'#y',target.cell.number.y);
+
+              // player.moving = {
+              //   state: true,
+              //   step: 0,
+              //   course: '',
+              //   origin: {
+              //     number: player.currentPosition.cell.number,
+              //     center: player.currentPosition.cell.center,
+              //   },
+              //   destination: target.cell.center
+              // }
+
+              nextPosition = this.lineCrementer(player);
+              // player.nextPosition = nextPosition;
+              // console.log('next position',nextPosition);
+
+            }
+
           } else if (
             keyPressedDirection !== player.direction &&
             player.strafing.state === false
@@ -786,15 +824,18 @@ class App extends Component {
     ) {
       console.log('currently falling off the edge');
 
-      // increment counter & change draw y coords based on count
-      // at limit reset  falling state and counter and current position, target, moving, action
+      // when count == limit reset  falling state and counter and current position, target, moving, action
 
-    } else if (
+    }
+
+    if (
       player.action !== 'attacking' ||
       player.action !== 'defending'
     ) {
 
       context2.clearRect(0, 0, canvas2.width, canvas2.height);
+
+      // call draw whole grid with new points and img here
 
       if (
         newDirection === 'east' ||
@@ -844,6 +885,16 @@ class App extends Component {
     let y = (((player.moving.origin.center.y-player.target.cell.center.y)/(player.moving.origin.center.x-player.target.cell.center.x))*(newX-player.moving.origin.center.x))+player.moving.origin.center.y
     // newPosition = {x:newX, y: y}
 
+    if (
+      player.falling.state === true
+    ) {
+      console.log('currently falling off the edge');
+
+      // increment counter & change nextPosition point coords based on count
+        // move down y axis
+
+    }
+
     console.log('line crementer target',player.target.cell.center.x,player.target.cell.center.y,'%',player.moving.step);
     console.log('line crementer oldPos',currentPosition.x,currentPosition.y);
     console.log('line crementer newPos',newPosition.x,newPosition.y);
@@ -856,6 +907,9 @@ class App extends Component {
   }
   getTarget = () => {
     console.log('checking target');
+
+    let canvas2 = this.canvasRef.current;
+    let context2 = canvas2.getContext('2d');
 
     let gridInfo = this.gridInfo;
     let player = this.player1;
@@ -892,133 +946,25 @@ class App extends Component {
       currentPosition.x === 0 &&
       direction === 'west'
     ) {
-      console.log("Into the void!! West");
       target.void = true;
 
     } else if (
       currentPosition.y === 0 &&
       direction === 'north'
     ) {
-      console.log("Into the void!! North");
       target.void = true;
 
     } else if (
       currentPosition.x === 9 &&
       direction === 'east'
     ) {
-      console.log("Into the void!! East");
       target.void = true;
 
     } else if (
       currentPosition.y === 9 &&
       direction === 'south'
     ) {
-      console.log("Into the void!! South");
       target.void = true;
-
-    } else {
-      console.log('target is NOT the void');
-
-      // switch(direction) {
-      //   case 'north' :
-      //     targetCellNumber = {
-      //       x: currentPosition.x,
-      //       y: currentPosition.y-1
-      //     }
-      //   break;
-      //   case 'northEast' :
-      //     targetCellNumber = {
-      //       x: currentPosition.x+1,
-      //       y: currentPosition.y-1
-      //     }
-      //   break;
-      //   case 'northWest' :
-      //     targetCellNumber = {
-      //       x: currentPosition.x-1,
-      //       y: currentPosition.y-1
-      //     }
-      //   break;
-      //   case 'east' :
-      //     targetCellNumber = {
-      //       x: currentPosition.x+1,
-      //       y: currentPosition.y
-      //     }
-      //   break;
-      //   case 'west' :
-      //     targetCellNumber = {
-      //       x: currentPosition.x-1,
-      //       y: currentPosition.y
-      //     }
-      //   break;
-      //   case 'south' :
-      //     targetCellNumber = {
-      //       x: currentPosition.x,
-      //       y: currentPosition.y+1
-      //     }
-      //   break;
-      //   case 'southEast' :
-      //     targetCellNumber = {
-      //       x: currentPosition.x+1,
-      //       y: currentPosition.y+1
-      //     }
-      //   break;
-      //   case 'southWest' :
-      //     targetCellNumber = {
-      //       x: currentPosition.x-1,
-      //       y: currentPosition.y+1
-      //     }
-      //   break;
-      // }
-      //
-      // for (const cell of gridInfo) {
-      //   let xMatch = cell.number.x === targetCellNumber.x;
-      //   let yMatch = cell.number.y === targetCellNumber.y;
-      //   if (
-      //     xMatch === true && yMatch === true
-      //   ) {
-      //     targetCellCenter = cell.center;
-      //     console.log('found target details');
-      //   }
-      // }
-      //
-      // target.cell = {
-      //   number: targetCellNumber,
-      //   center: targetCellCenter
-      // };
-      //
-      // let obstacleObstructFound = false;
-      // for (const [key, row] of Object.entries(this.levelData2)) {
-      //   for (const cell of row) {
-      //     if (
-      //       cell.charAt(0) === 'y' ||
-      //       cell.charAt(0) ===  'z'
-      //     ) {
-      //
-      //       let obstaclePosition = {
-      //         x: Number(cell.charAt(1)),
-      //         y: row.indexOf(cell),
-      //       }
-      //       // console.log('found obstacle during map scan @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
-      //       if (
-      //         targetCellNumber.x === obstaclePosition.x &&
-      //         targetCellNumber.y === obstaclePosition.y
-      //       ) {
-      //         console.log('an obstacle is in your way');
-      //         target.free = false;
-      //         target.occupant.type = 'obstacle';
-      //         obstacleObstructFound = true;
-      //       }
-      //     }
-      //   }
-      //
-      // }
-      // if (obstacleObstructFound !== true ) {
-      //   target.free = true;
-      //   target.occupant = {
-      //     type: '',
-      //     player: ''
-      //   }
-      // }
 
     }
 
@@ -1080,9 +1026,50 @@ class App extends Component {
         xMatch === true && yMatch === true
       ) {
         targetCellCenter = cell.center;
-        console.log('found target details');
+        // console.log('found target details');
       }
     }
+
+    // find center of void cell
+    if (target.void === true) {
+
+      let x = target.cell.number.x;
+      let y = target.cell.number.y;
+      let canvasWidth = 1100;
+      let canvasHeight = 600;
+      let floorImageWidth = 103;
+      let floorImageHeight = 53;
+      let sceneX = canvasWidth/2;
+      let sceneY = 140;
+      let tileWidth = 50;
+
+      class Point {
+          constructor(x, y) {
+              this.x = x;
+              this.y = y;
+          }
+      }
+
+      let p = new Point();
+      p.x = x * tileWidth;
+      p.y = y * tileWidth;
+      let iso = this.cartesianToIsometric(p);
+      let offset = {x: floorImageWidth/2, y: floorImageHeight}
+
+      iso.x += sceneX
+      iso.y += sceneY
+
+      let center = {
+        x: iso.x - offset.x/2+23,
+        y: iso.y - offset.y/2-2,
+      }
+      console.log('void cell center calculation','x',center.x,'y',center.y);
+
+      context2.fillStyle = "#0095DD";
+      context2.fillRect(center.x, center.y,5,5);
+
+    }
+
     target.cell = {
       number: targetCellNumber,
       center: targetCellCenter
@@ -1180,10 +1167,7 @@ class App extends Component {
           let p = new Point();
           p.x = x * tileWidth;
           p.y = y * tileWidth;
-          // p.x = x * tileWidth;
-          // p.y = y * tileWidth;
           let iso = this.cartesianToIsometric(p);
-
           let offset = {x: floorImageWidth/2, y: floorImageHeight}
 
           // apply offset to center scene for a better view
