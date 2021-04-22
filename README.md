@@ -3,11 +3,11 @@
 
 ## What is it??
 
-- Grid based tactics game about melee dueling.
+- Isometric grid based tactics game about melee dueling.
 - Timing, direction and board position are of the utmost importance in securing a win.
 
 
-### Features:
+## Features:
 
 - 8 way gird based movement
 - Attacking, defending, strafed movement

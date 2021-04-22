@@ -404,6 +404,15 @@ class App extends Component {
       let player = this.player1;
       let nextPosition;
 
+      if (player.dead.state === true) {
+
+        player.nextPosition = {
+          x: -30,
+          y: -30,
+        }
+
+      }
+
       if (player.moving.state === true) {
         console.log('player is moving');
         nextPosition = this.lineCrementer(player);
@@ -1141,6 +1150,58 @@ class App extends Component {
 
     let targetCellNumber = {x: 0,y: 0};
     let targetCellCenter = {x: 0,y: 0};
+
+    if (
+      currentPosition.x === 0 &&
+      currentPosition.y === 0
+    ) {
+      if (
+        direction === 'north' ||
+        direction === 'northEast' ||
+        direction === 'northWest'
+      ) {
+        target.void = true;
+        voidDirection = 'north';
+      }
+    }
+    if (
+      currentPosition.x === 0 &&
+      currentPosition.y === 9
+    ) {
+      if (
+        direction === 'south' ||
+        direction === 'southEast'
+      ) {
+        target.void = true;
+        voidDirection = 'south';
+      }
+    }
+    if (
+      currentPosition.x === 9 &&
+      currentPosition.y === 9
+    ) {
+      if (
+        direction === 'south' ||
+        direction === 'southWest' ||
+        direction === 'southEast'
+      ) {
+        target.void = true;
+        voidDirection = 'south';
+      }
+    }
+    if (
+      currentPosition.x === 9 &&
+      currentPosition.y === 0
+    ) {
+      if (
+        direction === 'east' ||
+        direction === 'southEast'
+      ) {
+        target.void = true;
+        voidDirection = 'east';
+      }
+    }
+
 
     if (
       currentPosition.x === 0
