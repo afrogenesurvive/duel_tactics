@@ -17,6 +17,8 @@ import playerImgIdleSouthEast from './assets/player/idle/playerImgSouthEast.png'
 
 import './App.css';
 
+import DebugBox from './debugBox'
+
 import pointInPolygon from 'point-in-polygon';
 
 class App extends Component {
@@ -156,7 +158,10 @@ class App extends Component {
       falling: {
         state: false,
         count: 0,
-        limit: 5,
+        limit: 7,
+      },
+      dead: {
+        state: false,
       }
     };
     this.stepper = {
@@ -399,209 +404,225 @@ class App extends Component {
       let player = this.player1;
       let nextPosition;
 
-      if (player.moving.state === true) {
-        console.log('player is moving');
-        nextPosition = this.lineCrementer(player);
+      // if (player.dead.state !== true) {
 
-        player.currentPosition.cell = player.target.cell;
-        player.nextPosition = nextPosition;
+        if (player.moving.state === true) {
+          console.log('player is moving');
+          nextPosition = this.lineCrementer(player);
 
-        if (
-          nextPosition.x === player.target.cell.center.x &&
-          nextPosition.y === player.target.cell.center.y
-        ) {
-          console.log('next position is destination');
+          player.currentPosition.cell = player.target.cell;
+          player.nextPosition = nextPosition;
 
-          if (player.target.void === false) {
-            player.action = 'idle';
-            player.moving = {
-              state: false,
-              step: 0,
-              course: '',
-              origin: {
-                number: {
-                  x: 0,
-                  y: 0,
-                },
-                center: {
-                  x: 0,
-                  y: 0,
-                },
-              },
-              destination: {
-                x: 0,
-                y: 0,
-              }
-            }
-
-
-          } else if (
-            nextPosition.x === player.target.cell.center.x &&
-            nextPosition.y === player.target.cell.center.y &&
-            player.target.void === true) {
-            console.log(' at the void center. You can fall now!!');
-
-            // player.falling.state = true;
-            // next position is current position
-          }
-
-        }
-
-      } else if (player.moving.state === false) {
-        console.log('player is NOT moving');
-        if (
-          this.keyPressed.north === true ||
-          this.keyPressed.south === true ||
-          this.keyPressed.east === true ||
-          this.keyPressed.west === true ||
-          this.keyPressed.northEast === true ||
-          this.keyPressed.northWest === true ||
-          this.keyPressed.southEast === true ||
-          this.keyPressed.southWest === true
-        ) {
-          console.log('move key pressed');
           if (
-            keyPressedDirection === player.direction &&
-            player.strafing.state === false
+            nextPosition.x === player.target.cell.center.x &&
+            nextPosition.y === player.target.cell.center.y
           ) {
-            let target = this.getTarget()
-            // console.log('non strafe can move target acquired',target);
+            console.log('next position is destination');
 
-            if (
-              target.free === true &&
-              player.target.void === false
-            ) {
-              console.log('target is free');
-
+            if (player.target.void === false) {
+              player.action = 'idle';
               player.moving = {
-                state: true,
+                state: false,
                 step: 0,
                 course: '',
                 origin: {
-                  number: player.currentPosition.cell.number,
-                  center: player.currentPosition.cell.center,
+                  number: {
+                    x: 0,
+                    y: 0,
+                  },
+                  center: {
+                    x: 0,
+                    y: 0,
+                  },
                 },
-                destination: target.cell.center
+                destination: {
+                  x: 0,
+                  y: 0,
+                }
               }
 
-              nextPosition = this.lineCrementer(player);
-              player.nextPosition = nextPosition;
 
+            } else if (
+              nextPosition.x === player.target.cell.center.x &&
+              nextPosition.y === player.target.cell.center.y &&
+              player.target.void === true) {
+              console.log(' at the void center. You can fall now!!');
+
+              player.falling.state = true;
+              // next position is current position
             }
 
-            if (target.free === false) {
-              console.log('target is NOT free');
-            }
-
-            if (player.target.void === true) {
-              console.log('target is VOID!!','#x',target.cell.number.x,'#y',target.cell.number.y);
-
-              // player.moving = {
-              //   state: true,
-              //   step: 0,
-              //   course: '',
-              //   origin: {
-              //     number: player.currentPosition.cell.number,
-              //     center: player.currentPosition.cell.center,
-              //   },
-              //   destination: target.cell.center
-              // }
-
-              nextPosition = this.lineCrementer(player);
-              // player.nextPosition = nextPosition;
-              // console.log('next position',nextPosition);
-
-            }
-
-          } else if (
-            keyPressedDirection !== player.direction &&
-            player.strafing.state === false
-          ) {
-            player.direction = keyPressedDirection;
-            console.log('change player direction to',keyPressedDirection);
-            player.nextPosition = {
-              x: player.currentPosition.cell.center.x,
-              y: player.currentPosition.cell.center.y
-            }
-
-          } else if (
-            keyPressedDirection !== player.direction &&
-            player.strafing.state === true
-          ) {
-
-            player.strafing.direction = keyPressedDirection;
-            let target = this.getTarget();
-
-            if (target.free === true) {
-
-              nextPosition = this.lineCrementer(player);
-              player.nextPosition = nextPosition;
-
-            }
           }
 
-        } else if (
-          this.keyPressed.attack === true ||
-          this.keyPressed.defend === true
-        ) {
-          console.log('non-move key pressed');
+        } else if (player.moving.state === false) {
+          console.log('player is NOT moving');
           if (
-            player.action === 'attacking' ||
-            player.action === 'defending'
+            this.keyPressed.north === true ||
+            this.keyPressed.south === true ||
+            this.keyPressed.east === true ||
+            this.keyPressed.west === true ||
+            this.keyPressed.northEast === true ||
+            this.keyPressed.northWest === true ||
+            this.keyPressed.southEast === true ||
+            this.keyPressed.southWest === true
           ) {
+            console.log('move key pressed');
+            if (
+              keyPressedDirection === player.direction &&
+              player.strafing.state === false
+            ) {
+              let target = this.getTarget()
+              // console.log('non strafe can move target acquired',target);
 
-            if (this.keyPressed.attack === true) {
-              if (player.attacking.count < player.attacking.limit) {
-                player.attacking.count++;
+              if (
+                target.free === true &&
+                player.target.void === false
+              ) {
+                console.log('target is free');
+
+
+                if (player.dead.state === true) {
+
+                  player.nextPosition = {
+                    x: -30,
+                    y: -30,
+                  }
+
+                } else {
+
+                  player.moving = {
+                    state: true,
+                    step: 0,
+                    course: '',
+                    origin: {
+                      number: player.currentPosition.cell.number,
+                      center: player.currentPosition.cell.center,
+                    },
+                    destination: target.cell.center
+                  }
+                  nextPosition = this.lineCrementer(player);
+                  player.nextPosition = nextPosition;
+
+                }
+
+
+
               }
-              if (player.attacking.count >= player.attacking.limit) {
+
+              if (target.free === false) {
+                console.log('target is NOT free');
+              }
+
+              if (player.target.void === true) {
+                console.log('target is VOID!!');
+
+                player.moving = {
+                  state: true,
+                  step: 0,
+                  course: '',
+                  origin: {
+                    number: player.currentPosition.cell.number,
+                    center: player.currentPosition.cell.center,
+                  },
+                  destination: target.cell.center
+                }
+
+                nextPosition = this.lineCrementer(player);
+                player.nextPosition = nextPosition;
+              }
+
+
+            } else if (
+              keyPressedDirection !== player.direction &&
+              player.strafing.state === false
+            ) {
+              player.direction = keyPressedDirection;
+              console.log('change player direction to',keyPressedDirection);
+              player.nextPosition = {
+                x: player.currentPosition.cell.center.x,
+                y: player.currentPosition.cell.center.y
+              }
+
+            } else if (
+              keyPressedDirection !== player.direction &&
+              player.strafing.state === true
+            ) {
+
+              player.strafing.direction = keyPressedDirection;
+              let target = this.getTarget();
+
+              if (target.free === true) {
+
+                nextPosition = this.lineCrementer(player);
+                player.nextPosition = nextPosition;
+
+              }
+            }
+
+          } else if (
+            this.keyPressed.attack === true ||
+            this.keyPressed.defend === true
+          ) {
+            console.log('non-move key pressed');
+            if (
+              player.action === 'attacking' ||
+              player.action === 'defending'
+            ) {
+
+              if (this.keyPressed.attack === true) {
+                if (player.attacking.count < player.attacking.limit) {
+                  player.attacking.count++;
+                }
+                if (player.attacking.count >= player.attacking.limit) {
+                  player.attacking = {
+                    state: false,
+                    count: 0,
+                    limit: player.attacking.limit
+                  }
+                }
+              }
+
+              if (this.keyPressed.defend === true) {
+                if (player.defending.count < player.defending.limit) {
+                  player.defending.count++;
+                }
+                if (player.defending.count >= player.defending.limit) {
+                  player.defending = {
+                    state: false,
+                    count: 0,
+                    limit: player.defending.limit
+                  }
+                }
+              }
+            }
+            if (
+              player.action !== 'attacking' ||
+              player.action !== 'defending'
+            ) {
+              if (this.keyPressed.attack === true) {
+                player.action = 'attacking';
                 player.attacking = {
-                  state: false,
-                  count: 0,
-                  limit: player.attacking.limit
+                  state: true,
+                  count: 1,
+                  limit: player.attacking.limit,
                 }
               }
-            }
-
-            if (this.keyPressed.defend === true) {
-              if (player.defending.count < player.defending.limit) {
-                player.defending.count++;
-              }
-              if (player.defending.count >= player.defending.limit) {
+              if (this.keyPressed.defend === true) {
+                player.action = 'defending';
                 player.defending = {
-                  state: false,
-                  count: 0,
-                  limit: player.defending.limit
+                  state: true,
+                  count: 1,
+                  limit: player.defending.limit,
                 }
               }
             }
-          }
-          if (
-            player.action !== 'attacking' ||
-            player.action !== 'defending'
-          ) {
-            if (this.keyPressed.attack === true) {
-              player.action = 'attacking';
-              player.attacking = {
-                state: true,
-                count: 1,
-                limit: player.attacking.limit,
-              }
-            }
-            if (this.keyPressed.defend === true) {
-              player.action = 'defending';
-              player.defending = {
-                state: true,
-                count: 1,
-                limit: player.defending.limit,
-              }
-            }
-          }
 
+
+          }
 
         }
 
-      }
+      // }
 
     this.player1 = player;
 
@@ -822,9 +843,67 @@ class App extends Component {
     if (
       player.falling.state === true
     ) {
-      console.log('currently falling off the edge');
+      console.log('falling off the edge');
+      if (player.falling.count === player.falling.limit) {
+        console.log("dead and gone");
+        player.action = 'idle';
+        player.falling = {
+          state: false,
+          count: 0,
+          limit: 10,
+        }
+        player.target = {
+          cell: {
+            number: {
+              x: 0,
+              y: 0,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            },
+          },
+          free: true,
+          occupant: {
+            type: '',
+            player: '',
+          },
+          void: false
+        };
+        player.moving = {
+          state: false,
+          step: 0,
+          course: '',
+          origin: {
+            number: {
+              x: 0,
+              y: 0,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            },
+          },
+          destination: {
+            x: 0,
+            y: 0,
+          }
+        };
+        player.currentPosition = {
+          cell: {
+            number: {
+              x: -30,
+              y: -30,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            }
+          }
+        };
 
-      // when count == limit reset  falling state and counter and current position, target, moving, action
+        player.dead.state = true;
+      }
 
     }
 
@@ -890,12 +969,17 @@ class App extends Component {
     ) {
       console.log('currently falling off the edge');
 
-      // increment counter & change nextPosition point coords based on count
-        // move down y axis
+      player.falling.count++;
+      console.log('fall count',player.falling.count);
+      newPosition = {
+        x: currentPosition.x,
+        y: currentPosition.y+20,
+      }
+      player.currentPosition.cell.center = newPosition;
 
     }
 
-    console.log('line crementer target',player.target.cell.center.x,player.target.cell.center.y,'%',player.moving.step);
+    // console.log('line crementer target',player.target.cell.center.x,player.target.cell.center.y,'%',player.moving.step);
     console.log('line crementer oldPos',currentPosition.x,currentPosition.y);
     console.log('line crementer newPos',newPosition.x,newPosition.y);
 
@@ -915,6 +999,7 @@ class App extends Component {
     let player = this.player1;
     let currentPosition = player.currentPosition.cell.number;
     let direction = player.direction;
+    let voidDirection;
     let target = {
       cell: {
         number: {
@@ -944,28 +1029,36 @@ class App extends Component {
 
     if (
       currentPosition.x === 0 &&
-      direction === 'west'
+      direction === 'west' ||
+      direction === 'northWest' ||
+      direction === 'southWest'
     ) {
       target.void = true;
-
+      voidDirection = 'west';
     } else if (
       currentPosition.y === 0 &&
-      direction === 'north'
+      direction === 'north' ||
+      direction === 'northWest' ||
+      direction === 'northEast'
     ) {
       target.void = true;
-
+      voidDirection = 'north';
     } else if (
       currentPosition.x === 9 &&
-      direction === 'east'
+      direction === 'east' ||
+      direction === 'northEast' ||
+      direction === 'southEast'
     ) {
       target.void = true;
-
+      voidDirection = 'east';
     } else if (
       currentPosition.y === 9 &&
-      direction === 'south'
+      direction === 'south' ||
+      direction === 'southEast' ||
+      direction === 'southWest'
     ) {
       target.void = true;
-
+      voidDirection = 'south';
     }
 
     switch(direction) {
@@ -1019,7 +1112,9 @@ class App extends Component {
       break;
     }
 
+    let cellSideLength;
     for (const cell of gridInfo) {
+      cellSideLength = cell.side;
       let xMatch = cell.number.x === targetCellNumber.x;
       let yMatch = cell.number.y === targetCellNumber.y;
       if (
@@ -1033,40 +1128,40 @@ class App extends Component {
     // find center of void cell
     if (target.void === true) {
 
-      let x = target.cell.number.x;
-      let y = target.cell.number.y;
-      let canvasWidth = 1100;
-      let canvasHeight = 600;
-      let floorImageWidth = 103;
-      let floorImageHeight = 53;
-      let sceneX = canvasWidth/2;
-      let sceneY = 140;
-      let tileWidth = 50;
-
-      class Point {
-          constructor(x, y) {
-              this.x = x;
-              this.y = y;
+      let voidCenter = {
+        x: 0,
+        y: 0,
+      }
+      switch(voidDirection) {
+        case 'north' :
+          voidCenter = {
+            x: player.currentPosition.cell.center.x+40,
+            y: player.currentPosition.cell.center.y-30,
           }
+        break;
+        case 'south' :
+          voidCenter = {
+            x: player.currentPosition.cell.center.x-50,
+            y: player.currentPosition.cell.center.y+30,
+          }
+        break;
+        case 'west' :
+          voidCenter = {
+            x: player.currentPosition.cell.center.x-50,
+            y: player.currentPosition.cell.center.y-30,
+          }
+        break;
+        case 'east' :
+          voidCenter = {
+            x: player.currentPosition.cell.center.x+50,
+            y: player.currentPosition.cell.center.y+30,
+          }
+        break;
       }
+      targetCellCenter = voidCenter;
 
-      let p = new Point();
-      p.x = x * tileWidth;
-      p.y = y * tileWidth;
-      let iso = this.cartesianToIsometric(p);
-      let offset = {x: floorImageWidth/2, y: floorImageHeight}
-
-      iso.x += sceneX
-      iso.y += sceneY
-
-      let center = {
-        x: iso.x - offset.x/2+23,
-        y: iso.y - offset.y/2-2,
-      }
-      console.log('void cell center calculation','x',center.x,'y',center.y);
-
-      context2.fillStyle = "#0095DD";
-      context2.fillRect(center.x, center.y,5,5);
+      context2.fillStyle = "#e63946";
+      context2.fillRect(voidCenter.x, voidCenter.y,5,5);
 
     }
 
@@ -1151,7 +1246,7 @@ class App extends Component {
     let wallImageHeight = 98;
     // some offsets to center the scene
     let sceneX = canvasWidth/2;
-    let sceneY = 140;
+    let sceneY = 120;
     let tileWidth = 50;
 
     class Point {
@@ -1260,7 +1355,7 @@ class App extends Component {
 
     // some offsets to center the scene
     let sceneX = canvas.width/2;
-    let sceneY = 140;
+    let sceneY = 120;
     let tileWidth = 50;
 
     this.startProcessLevelData(canvas);
@@ -1433,6 +1528,11 @@ class App extends Component {
               height="600"
               ref={this.canvasRef3}
               className="canvas3"
+            />
+          </div>
+
+          <div className="debugDisplay">
+            <DebugBox
             />
           </div>
 

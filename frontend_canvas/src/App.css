@@ -25,7 +25,7 @@
   color: white;
 }
 .containerInner {
-  height: 610px;
+  height: 600px;
   width: 1110px;
   margin: 1px solid yellow;
   background-color: #ffffff;
@@ -93,4 +93,15 @@
 
   left: 0;
   right: 0;
+}
+
+.debugDisplay {
+  height: 250px;
+  width: 400px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  border: 2px solid green;
+  background-color: #ffffff;
+  z-index: 3;
 }

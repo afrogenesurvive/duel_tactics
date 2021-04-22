@@ -40,6 +40,7 @@ class App extends Component {
 
           <GameComponent
             config={{
+              type: Phaser.AUTO,
               backgroundColor: '000000',
               height: 600,
               width: 800,
