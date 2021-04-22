@@ -82,6 +82,8 @@ class Example extends Phaser.Scene
     {
         //  Parse the data out of the map
         const data = Vars.scene.cache.json.get('map');
+        console.log('???',Vars.scene.cache);
+        console.log('!!!',data);
 
         const tilewidth = data.tilewidth;
         const tileheight = data.tileheight;

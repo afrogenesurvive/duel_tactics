@@ -40,7 +40,7 @@ skeletons: [],
 tileWidthHalf: undefined,
 tileHeightHalf: undefined,
 d: 0,
-scene: undefined,
+scene: 'xx',
 }
 
 exports.Vars = Vars;

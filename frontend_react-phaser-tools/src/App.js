@@ -40,11 +40,31 @@ class App extends Component {
 
           <GameComponent
             config={{
-              type: Phaser.AUTO,
-              backgroundColor: '000000',
-              height: 600,
               width: 800,
-              scene: [PreloadScene, Level1Scene, Level2Scene]
+              height: 600,
+              backgroundColor: '#1a1a2d',
+              scene: {
+                preload: function () {
+                  console.log('preload')
+                  this.load.image('logo', logoImg);
+                },
+                create: function () {
+                  console.log('create')
+                  const logo = this.add.image(400, 150, 'logo');
+
+                  this.tweens.add({
+                      targets: logo,
+                      y: 450,
+                      duration: 2000,
+                      ease: "Power2",
+                      yoyo: true,
+                      loop: -1
+                  });
+                },
+                update: function () {
+
+                }
+              }
             }}
           >
             {/* YOUR GAME UI GOES HERE */}
@@ -55,26 +75,3 @@ class App extends Component {
 }
 
 export default App;
-
-// scene: {
-//   preload: function () {
-//     console.log('preload')
-//     this.load.image('logo', logoImg);
-//   },
-//   create: function () {
-//     console.log('create')
-//     const logo = this.add.image(400, 150, 'logo');
-//
-//     this.tweens.add({
-//         targets: logo,
-//         y: 450,
-//         duration: 2000,
-//         ease: "Power2",
-//         yoyo: true,
-//         loop: -1
-//     });
-//   },
-//   update: function () {
-//
-//   }
-// }
