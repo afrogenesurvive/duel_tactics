@@ -1578,6 +1578,7 @@ class App extends Component {
   }
 
   drawPlayerInit = (canvas, context) => {
+
     console.log('drawing initial player');
 
     let gridInfo = this.gridInfo;
