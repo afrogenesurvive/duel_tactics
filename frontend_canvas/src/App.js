@@ -224,7 +224,7 @@ class App extends Component {
 
       this.drawGridInit(canvas, context, canvas2, context2);
 
-      this.drawPlayerInit(canvas2, context2);
+      // this.drawPlayerInit(canvas2, context2);
       window.requestAnimationFrame(this.gameLoop);
     }
 
@@ -326,7 +326,7 @@ class App extends Component {
       case 'c' :
        this.keyPressed.southEast = state
       break;
-      case 'Shift' :
+      case ' ' :
        this.keyPressed.strafe = state
        this.player1.strafing.state = state
       break;
@@ -427,6 +427,8 @@ class App extends Component {
           console.log('next position is destination');
 
           if (player.target.void === false) {
+            player.currentPosition.cell = player.target.cell;
+
             player.action = 'idle';
             player.moving = {
               state: false,
@@ -554,11 +556,23 @@ class App extends Component {
             keyPressedDirection !== player.direction &&
             player.strafing.state === true
           ) {
-
+            console.log('look mom im strafing');
             player.strafing.direction = keyPressedDirection;
             let target = this.getTarget();
 
             if (target.free === true) {
+              console.log('strafe target free');
+
+              player.moving = {
+                state: true,
+                step: 0,
+                course: '',
+                origin: {
+                  number: player.currentPosition.cell.number,
+                  center: player.currentPosition.cell.center,
+                },
+                destination: target.cell.center
+              }
 
               nextPosition = this.lineCrementer(player);
               player.nextPosition = nextPosition;
@@ -644,6 +658,39 @@ class App extends Component {
     let canvas2 = this.canvasRef2.current;
     let context2 = canvas2.getContext('2d');
 
+    // grid materials
+    canvas.width = 1100;
+    canvas.height = 600;
+
+    let gridInfo = [];
+
+    class Point {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    let floor = this.refs.floor2;
+    let wall = this.refs.wall;
+    let wall2 = this.refs.wall2;
+    let wall3 = this.refs.wall3;
+
+    // isometric sprites sizes
+    let floorImageWidth = 103;
+    let floorImageHeight = 53;
+    let wallImageWidth = 103;
+    let wallImageHeight = 98;
+
+    // some offsets to center the scene
+    let sceneX = canvas.width/2;
+    let sceneY = 120;
+    let tileWidth = 50;
+
+    gridInfo = this.gridInfo;
+
+
+    // player materials
     let player = this.player1;
 
     let playerImgs = {
@@ -919,19 +966,117 @@ class App extends Component {
 
       context2.clearRect(0, 0, canvas2.width, canvas2.height);
 
-      // call draw whole grid with new points, img & direction here
-        // run the following
+      console.log('currentPosition',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
+      console.log('moving state',player.moving.state,'moving step',player.moving.step);
+      console.log('target',player.target.cell.number.x,player.target.cell.number.y);
 
-      if (
-        newDirection === 'east' ||
-        newDirection === 'west' ||
-        newDirection === 'north' ||
-        newDirection === 'south'
-      ) {
-        context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-      } else {
-        context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
-      }
+        for (var x = 0; x < 10; x++) {
+            for (var y = 0; y < 10; y++) {
+                let p = new Point();
+                p.x = x * tileWidth;
+                p.y = y * tileWidth;
+
+                let iso = this.cartesianToIsometric(p);
+                let offset = {x: floorImageWidth/2, y: floorImageHeight}
+
+                // apply offset to center scene for a better view
+                iso.x += sceneX
+                iso.y += sceneY
+
+                let center = {
+                  x: iso.x - offset.x/2+23,
+                  y: iso.y - offset.y/2-2,
+                }
+
+                let cellLevelData;
+                let allCells = gridInfo;
+                for (const elem of allCells) {
+                  if (elem.number.x === x && elem.number.y === y) {
+                    // console.log('level data for this cell',elem.levelData);
+                    cellLevelData = elem.levelData;
+                  }
+                }
+
+
+                context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
+
+                context.fillStyle = 'black';
+                context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
+
+                context.fillStyle = "#0095DD";
+                context.fillRect(center.x, center.y,5,5);
+
+                let vertices = [
+                  {x:center.x, y:center.y+25},
+                  {x:center.x+50, y:center.y},
+                  {x:center.x, y:center.y-25},
+                  {x:center.x-50, y:center.y},
+                ];
+
+                for (const vertex of vertices) {
+                  context.fillStyle = "black";
+                  context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
+                }
+
+
+
+                // Draw player here!!!
+                if (
+                  x === player.currentPosition.cell.number.x &&
+                  y === player.currentPosition.cell.number.y
+                ) {
+
+                  if (
+                    newDirection === 'east' ||
+                    newDirection === 'west' ||
+                    newDirection === 'north' ||
+                    newDirection === 'south'
+                  ) {
+                    context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  } else {
+                    context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  }
+
+                }
+
+
+                let walledTiles = []
+                if (walledTiles.includes(''+x+','+y+'')) {
+                  offset = {x: wallImageWidth/2, y: wallImageHeight}
+                  context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
+                }
+
+
+                if(cellLevelData.charAt(0) === 'y') {
+                  offset = {x: wallImageWidth/2, y: wallImageHeight}
+                  context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
+
+                }
+                if(cellLevelData.charAt(0) === 'z') {
+                  offset = {x: wallImageWidth/2, y: wallImageHeight}
+                  context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+
+                  let isoHeight = wallImageHeight - floorImageHeight
+                  offset.y += isoHeight
+                  context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+
+                }
+
+            }
+        }
+
+
+
+      // if (
+      //   newDirection === 'east' ||
+      //   newDirection === 'west' ||
+      //   newDirection === 'north' ||
+      //   newDirection === 'south'
+      // ) {
+      //   context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+      // } else {
+      //   context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+      // }
 
     }
 
@@ -1056,63 +1201,7 @@ class App extends Component {
 
   }
 
-  lineCrementer = () => {
-    console.log('line crementer');
 
-    let player = this.player1;
-    let currentPosition = player.currentPosition.cell.center;
-    let target = player.target;
-    let increment = 2;
-
-    player.moving.step = player.moving.step + .1;
-    let newPosition;
-
-    // line: percent is 0-1
-    let startPt = currentPosition;
-    let endPt = target.cell.center;
-    let percent = player.moving.step;
-
-    function getLineXYatPercent(startPt,endPt,percent) {
-      let dx = endPt.x-startPt.x;
-      let dy = endPt.y-startPt.y;
-      let X = startPt.x + dx*percent;
-      let Y = startPt.y + dy*percent;
-
-      newPosition = {x:X,y:Y}
-    }
-    getLineXYatPercent(startPt,endPt,percent);
-
-    let newX = currentPosition.x+increment;
-    // line equation for y
-    let y = (((player.moving.origin.center.y-player.target.cell.center.y)/(player.moving.origin.center.x-player.target.cell.center.x))*(newX-player.moving.origin.center.x))+player.moving.origin.center.y
-    // newPosition = {x:newX, y: y}
-
-    if (
-      player.falling.state === true
-    ) {
-      console.log('currently falling off the edge');
-
-      player.falling.count++;
-      console.log('fall count',player.falling.count);
-      newPosition = {
-        x: currentPosition.x,
-        y: currentPosition.y+20,
-      }
-      player.currentPosition.cell.center = newPosition;
-
-    }
-
-    // console.log('line crementer target',player.target.cell.center.x,player.target.cell.center.y,'%',player.moving.step);
-    console.log('line crementer oldPos',currentPosition.x,currentPosition.y);
-    console.log('line crementer newPos',newPosition.x,newPosition.y);
-
-    player.nextPosition = newPosition
-
-    this.player1 = player;
-
-    return newPosition;
-
-  }
   getTarget = () => {
     console.log('checking target');
 
@@ -1144,12 +1233,13 @@ class App extends Component {
     }
 
     if (player.strafing.state === true) {
-      console.log('acquire strafe target');
-      direction = this.player.strafing.direction;
+      // console.log('acquire strafe target');
+      direction = player.strafing.direction;
     }
 
     let targetCellNumber = {x: 0,y: 0};
     let targetCellCenter = {x: 0,y: 0};
+
 
     if (
       currentPosition.x === 0 &&
@@ -1201,7 +1291,6 @@ class App extends Component {
         voidDirection = 'east';
       }
     }
-
 
     if (
       currentPosition.x === 0
@@ -1405,6 +1494,61 @@ class App extends Component {
     return target;
 
   }
+  lineCrementer = () => {
+    console.log('line crementer');
+
+    let player = this.player1;
+    let currentPosition = player.currentPosition.cell.center;
+    let target = player.target;
+    let increment = 10;
+
+    player.moving.step = player.moving.step + .1;
+    let newPosition;
+
+    // line: percent is 0-1
+    let startPt = currentPosition;
+    let endPt = target.cell.center;
+    let percent = player.moving.step;
+
+    function getLineXYatPercent(startPt,endPt,percent) {
+      let dx = endPt.x-startPt.x;
+      let dy = endPt.y-startPt.y;
+      let X = startPt.x + dx*percent;
+      let Y = startPt.y + dy*percent;
+
+      newPosition = {x:X,y:Y}
+    }
+    getLineXYatPercent(startPt,endPt,percent);
+
+    let newX = currentPosition.x+increment;
+    // line equation for y
+    let y = (((player.moving.origin.center.y-player.target.cell.center.y)/(player.moving.origin.center.x-player.target.cell.center.x))*(newX-player.moving.origin.center.x))+player.moving.origin.center.y
+    // newPosition = {x:newX, y: y}
+
+    if (player.falling.state === true) {
+      console.log('currently falling off the edge');
+
+      player.falling.count++;
+      console.log('fall count',player.falling.count);
+      newPosition = {
+        x: currentPosition.x,
+        y: currentPosition.y+20,
+      }
+      player.currentPosition.cell.center = newPosition;
+
+    }
+
+    // console.log('line crementer target',player.target.cell.center.x,player.target.cell.center.y,'%',player.moving.step);
+    console.log('line crementer oldPos',currentPosition.x,currentPosition.y);
+    console.log('line crementer newPos',newPosition.x,newPosition.y);
+
+    player.nextPosition = newPosition
+
+    this.player1 = player;
+
+    return newPosition;
+
+  }
   cartesianToIsometric = (cartPt) => {
 
     class Point {
@@ -1603,13 +1747,13 @@ class App extends Component {
         }
 
         // Draw player
-        // if (
-        //   x === this.player1.startPosition.cell.number.x &&
-        //   y === this.player1.startPosition.cell.number.y
-        // ) {
-        //   // console.log('this is the player cell',x,y);
-        //   this.drawPlayerInit(canvas2, context2)
-        // }
+        if (
+          x === this.player1.startPosition.cell.number.x &&
+          y === this.player1.startPosition.cell.number.y
+        ) {
+          // console.log('this is the player cell',x,y);
+          this.drawPlayerInit(canvas, context)
+        }
 
 
         let walledTiles = []
@@ -1637,7 +1781,6 @@ class App extends Component {
     }
 
   }
-
   drawPlayerInit = (canvas, context) => {
 
     console.log('drawing initial player');
