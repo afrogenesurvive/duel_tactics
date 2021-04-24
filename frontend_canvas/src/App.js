@@ -62,7 +62,7 @@ class App extends Component {
       row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
       row2: ['x20x','x21x','x22x','x23x','x24x','y25x','x26x','x27x','x28x','x29x'],
       row3: ['x30x','x31x','x32x','x33x','x34x','x35x','x36x','x37x','x38x','x39x'],
-      row4: ['x40x','x41x','z42x','x43x','x44x','x45x','x46x','x47x','x48x','z49x'],
+      row4: ['x40x','x41x','y42x','x43x','x44x','x45x','x46x','x47x','x48x','z49x'],
       row5: ['x50x','x51x','x52x','y53x','x54x','x55x','x56x','x57x','x58x','x59x'],
       row6: ['x60x','x61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
       row7: ['x70x','x71x','x72x','x73x','x74x','x75x','x76x','x77x','x78x','x79x'],
@@ -155,7 +155,7 @@ class App extends Component {
       falling: {
         state: false,
         count: 0,
-        limit: 7,
+        limit: 5,
       },
       dead: {
         state: false,
@@ -417,7 +417,9 @@ class App extends Component {
         console.log('player is moving');
         nextPosition = this.lineCrementer(player);
 
-        player.currentPosition.cell = player.target.cell;
+        // SNAP TO TARGET
+        // player.currentPosition.cell = player.target.cell;
+
         player.nextPosition = nextPosition;
 
         if (
@@ -902,7 +904,7 @@ class App extends Component {
         player.falling = {
           state: false,
           count: 0,
-          limit: 10,
+          limit: 7,
         }
         player.target = {
           cell: {
@@ -953,7 +955,6 @@ class App extends Component {
             }
           }
         };
-
         player.dead.state = true;
       }
 
@@ -966,241 +967,137 @@ class App extends Component {
 
       context2.clearRect(0, 0, canvas2.width, canvas2.height);
 
-      console.log('currentPosition',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
-      console.log('moving state',player.moving.state,'moving step',player.moving.step);
-      console.log('target',player.target.cell.number.x,player.target.cell.number.y);
+      for (var x = 0; x < 10; x++) {
+        for (var y = 0; y < 10; y++) {
+          let p = new Point();
+          p.x = x * tileWidth;
+          p.y = y * tileWidth;
 
-        for (var x = 0; x < 10; x++) {
-            for (var y = 0; y < 10; y++) {
-                let p = new Point();
-                p.x = x * tileWidth;
-                p.y = y * tileWidth;
+          let iso = this.cartesianToIsometric(p);
+          let offset = {x: floorImageWidth/2, y: floorImageHeight}
 
-                let iso = this.cartesianToIsometric(p);
-                let offset = {x: floorImageWidth/2, y: floorImageHeight}
+          // apply offset to center scene for a better view
+          iso.x += sceneX
+          iso.y += sceneY
 
-                // apply offset to center scene for a better view
-                iso.x += sceneX
-                iso.y += sceneY
+          let center = {
+            x: iso.x - offset.x/2+23,
+            y: iso.y - offset.y/2-2,
+          }
 
-                let center = {
-                  x: iso.x - offset.x/2+23,
-                  y: iso.y - offset.y/2-2,
-                }
-
-                let cellLevelData;
-                let allCells = gridInfo;
-                for (const elem of allCells) {
-                  if (elem.number.x === x && elem.number.y === y) {
-                    // console.log('level data for this cell',elem.levelData);
-                    cellLevelData = elem.levelData;
-                  }
-                }
-
-
-                context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
-
-                context.fillStyle = 'black';
-                context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
-
-                context.fillStyle = "#0095DD";
-                context.fillRect(center.x, center.y,5,5);
-
-                let vertices = [
-                  {x:center.x, y:center.y+25},
-                  {x:center.x+50, y:center.y},
-                  {x:center.x, y:center.y-25},
-                  {x:center.x-50, y:center.y},
-                ];
-
-                for (const vertex of vertices) {
-                  context.fillStyle = "black";
-                  context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
-                }
-
-
-
-                // Draw player here!!!
-                if (
-                  x === player.currentPosition.cell.number.x &&
-                  y === player.currentPosition.cell.number.y
-                ) {
-
-                  if (
-                    newDirection === 'east' ||
-                    newDirection === 'west' ||
-                    newDirection === 'north' ||
-                    newDirection === 'south'
-                  ) {
-                    context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                  } else {
-                    context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
-                  }
-
-                }
-
-
-                let walledTiles = []
-                if (walledTiles.includes(''+x+','+y+'')) {
-                  offset = {x: wallImageWidth/2, y: wallImageHeight}
-                  context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
-                }
-
-
-                if(cellLevelData.charAt(0) === 'y') {
-                  offset = {x: wallImageWidth/2, y: wallImageHeight}
-                  context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
-
-                }
-                if(cellLevelData.charAt(0) === 'z') {
-                  offset = {x: wallImageWidth/2, y: wallImageHeight}
-                  context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
-
-                  let isoHeight = wallImageHeight - floorImageHeight
-                  offset.y += isoHeight
-                  context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
-
-                }
-
+          let cellLevelData;
+          let allCells = gridInfo;
+          for (const elem of allCells) {
+            if (elem.number.x === x && elem.number.y === y) {
+              // console.log('level data for this cell',elem.levelData);
+              cellLevelData = elem.levelData;
             }
+          }
+
+          context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
+
+          context.fillStyle = 'black';
+          context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
+
+          context.fillStyle = "#0095DD";
+          context.fillRect(center.x, center.y,5,5);
+
+          let vertices = [
+            {x:center.x, y:center.y+25},
+            {x:center.x+50, y:center.y},
+            {x:center.x, y:center.y-25},
+            {x:center.x-50, y:center.y},
+          ];
+
+          for (const vertex of vertices) {
+            context.fillStyle = "black";
+            context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
+          }
+
+          // Draw player here!!!
+          if (
+            x === player.currentPosition.cell.number.x &&
+            y === player.currentPosition.cell.number.y
+          ) {
+            console.log('-- currently drawing',x,y);
+            console.log('-- currentPosition',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
+            console.log('-- moving state',player.moving.state,'moving step',player.moving.step);
+            console.log('-- target',player.target.cell.number.x,player.target.cell.number.y);
+            console.log('-- direction',player.direction);
+
+            if (
+              newDirection === 'east' ||
+              newDirection === 'west' ||
+              newDirection === 'north' ||
+              newDirection === 'south'
+            ) {
+              context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+            } else {
+              context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+            }
+          }
+
+
+          // I think this is the One (depth sort solution)
+
+          // check for surrounding obstacles & if falling and void are true
+          // if (player.moving.state === true) {
+          //   if (
+          //     player.direction === direction
+          //   ) {
+          //     if (
+          //       x === player.currentPosition.cell.number.x+1 &&
+          //       y === player.currentPosition.cell.number.y+1
+          //     ) {
+          //       console.log('-- currently drawing',x,y);
+          //       console.log('-- currentPosition',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
+          //       console.log('-- moving state',player.moving.state,'moving step',player.moving.step);
+          //       console.log('-- target',player.target.cell.number.x,player.target.cell.number.y);
+          //       console.log('-- direction',player.direction);
+          //
+          //       if (
+          //         newDirection === 'east' ||
+          //         newDirection === 'west' ||
+          //         newDirection === 'north' ||
+          //         newDirection === 'south'
+          //       ) {
+          //         context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+          //       } else {
+          //         context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+          //       }
+          //     }
+          //   }
+          // }
+
+
+          let walledTiles = []
+          if (walledTiles.includes(''+x+','+y+'')) {
+            offset = {x: wallImageWidth/2, y: wallImageHeight}
+            context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
+          }
+
+          if(cellLevelData.charAt(0) === 'y') {
+            offset = {x: wallImageWidth/2, y: wallImageHeight}
+            context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
+          }
+
+          if(cellLevelData.charAt(0) === 'z') {
+            offset = {x: wallImageWidth/2, y: wallImageHeight}
+            context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+
+            let isoHeight = wallImageHeight - floorImageHeight
+            offset.y += isoHeight
+            context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+          }
+
         }
-
-
-
-      // if (
-      //   newDirection === 'east' ||
-      //   newDirection === 'west' ||
-      //   newDirection === 'north' ||
-      //   newDirection === 'south'
-      // ) {
-      //   context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-      // } else {
-      //   context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
-      // }
+      }
 
     }
 
     this.player1 = player;
 
   }
-  drawLevelStep = (canvas, context) => {
-    console.log('draw level step');
-
-    canvas.width = 1100;
-    canvas.height = 600;
-
-    let gridInfo = [];
-
-    class Point {
-        constructor(x, y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-    let floor = this.refs.floor2;
-    let wall = this.refs.wall;
-    let wall2 = this.refs.wall2;
-    let wall3 = this.refs.wall3;
-
-    // isometric sprites sizes
-    let floorImageWidth = 103;
-    let floorImageHeight = 53;
-    let wallImageWidth = 103;
-    let wallImageHeight = 98;
-
-    // some offsets to center the scene
-    let sceneX = canvas.width/2;
-    let sceneY = 120;
-    let tileWidth = 50;
-
-    gridInfo = this.gridInfo;
-
-    for (var x = 0; x < 10; x++) {
-        for (var y = 0; y < 10; y++) {
-            let p = new Point();
-            p.x = x * tileWidth;
-            p.y = y * tileWidth;
-
-            let iso = this.cartesianToIsometric(p);
-            let offset = {x: floorImageWidth/2, y: floorImageHeight}
-
-            // apply offset to center scene for a better view
-            iso.x += sceneX
-            iso.y += sceneY
-
-            let center = {
-              x: iso.x - offset.x/2+23,
-              y: iso.y - offset.y/2-2,
-            }
-
-            let cellLevelData;
-            let allCells = gridInfo;
-            for (const elem of allCells) {
-              if (elem.number.x === x && elem.number.y === y) {
-                // console.log('level data for this cell',elem.levelData);
-                cellLevelData = elem.levelData;
-              }
-            }
-
-
-            context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
-
-            context.fillStyle = 'black';
-            context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
-
-            context.fillStyle = "#0095DD";
-            context.fillRect(center.x, center.y,5,5);
-
-            let vertices = [
-              {x:center.x, y:center.y+25},
-              {x:center.x+50, y:center.y},
-              {x:center.x, y:center.y-25},
-              {x:center.x-50, y:center.y},
-            ];
-
-            for (const vertex of vertices) {
-              context.fillStyle = "black";
-              context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
-            }
-
-            // Draw player here!!!
-            // if (
-            //   x === this.player1.startPosition.cell.number.x &&
-            //   y === this.player1.startPosition.cell.number.y
-            // ) {
-            //   // console.log('this is the player cell',x,y);
-            //   this.drawPlayerInit(canvas2, context2)
-            // }
-
-
-            let walledTiles = []
-            if (walledTiles.includes(''+x+','+y+'')) {
-              offset = {x: wallImageWidth/2, y: wallImageHeight}
-              context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
-            }
-
-
-            if(cellLevelData.charAt(0) === 'y') {
-              offset = {x: wallImageWidth/2, y: wallImageHeight}
-              context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
-
-            }
-            if(cellLevelData.charAt(0) === 'z') {
-              offset = {x: wallImageWidth/2, y: wallImageHeight}
-              context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
-
-              let isoHeight = wallImageHeight - floorImageHeight
-              offset.y += isoHeight
-              context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
-
-            }
-
-        }
-    }
-
-  }
-
 
   getTarget = () => {
     console.log('checking target');
@@ -1405,7 +1302,6 @@ class App extends Component {
 
     // find center of void cell
     if (target.void === true) {
-
       let voidCenter = {
         x: 0,
         y: 0,
@@ -1413,7 +1309,7 @@ class App extends Component {
       switch(voidDirection) {
         case 'north' :
           voidCenter = {
-            x: player.currentPosition.cell.center.x+40,
+            x: player.currentPosition.cell.center.x+50,
             y: player.currentPosition.cell.center.y-30,
           }
         break;
@@ -1500,7 +1396,7 @@ class App extends Component {
     let player = this.player1;
     let currentPosition = player.currentPosition.cell.center;
     let target = player.target;
-    let increment = 10;
+    let increment = 2;
 
     player.moving.step = player.moving.step + .1;
     let newPosition;
@@ -1509,6 +1405,7 @@ class App extends Component {
     let startPt = currentPosition;
     let endPt = target.cell.center;
     let percent = player.moving.step;
+    // console.log('linecrement %',percent);
 
     function getLineXYatPercent(startPt,endPt,percent) {
       let dx = endPt.x-startPt.x;
@@ -1529,18 +1426,19 @@ class App extends Component {
       console.log('currently falling off the edge');
 
       player.falling.count++;
-      console.log('fall count',player.falling.count);
+      // console.log('fall count',player.falling.count);
+
       newPosition = {
-        x: currentPosition.x,
-        y: currentPosition.y+20,
+        x: target.cell.center.x,
+        y: target.cell.center.y+player.falling.count*10,
       }
       player.currentPosition.cell.center = newPosition;
 
     }
 
     // console.log('line crementer target',player.target.cell.center.x,player.target.cell.center.y,'%',player.moving.step);
-    console.log('line crementer oldPos',currentPosition.x,currentPosition.y);
-    console.log('line crementer newPos',newPosition.x,newPosition.y);
+    // console.log('line crementer oldPos',currentPosition.x,currentPosition.y);
+    // console.log('line crementer newPos',newPosition.x,newPosition.y);
 
     player.nextPosition = newPosition
 
