@@ -74,8 +74,8 @@ class App extends Component {
       startPosition: {
         cell: {
           number: {
-            x: 2,
-            y: 2,
+            x: 1,
+            y: 1,
           },
           center: {
             x: 0,
@@ -525,7 +525,7 @@ class App extends Component {
             }
 
             if (player.target.void === true) {
-              console.log('target is VOID!!');
+              console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
 
               player.moving = {
                 state: true,
@@ -1014,26 +1014,137 @@ class App extends Component {
             context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
           }
 
-          // Draw player here!!!
+
+
           if (
-            x === player.currentPosition.cell.number.x &&
-            y === player.currentPosition.cell.number.y
+            player.target.void === false &&
+            player.currentPosition.cell.number.x !== 0 &&
+            player.currentPosition.cell.number.x !== 9
           ) {
-            console.log('-- currently drawing',x,y);
-            console.log('-- currentPosition',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
-            console.log('-- moving state',player.moving.state,'moving step',player.moving.step);
-            console.log('-- target',player.target.cell.number.x,player.target.cell.number.y);
-            console.log('-- direction',player.direction);
 
             if (
-              newDirection === 'east' ||
-              newDirection === 'west' ||
-              newDirection === 'north' ||
-              newDirection === 'south'
+              player.direction === 'north' ||
+              player.direction === 'northWest' ||
+              player.direction === 'west'
             ) {
-              context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-            } else {
-              context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+              if (
+                x === player.currentPosition.cell.number.x &&
+                y === player.currentPosition.cell.number.y
+              ) {
+                if (
+                  newDirection === 'east' ||
+                  newDirection === 'west' ||
+                  newDirection === 'north' ||
+                  newDirection === 'south'
+                ) {
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                } else {
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                }
+              }
+            }
+
+            if (
+              player.direction === 'east' ||
+              player.direction === 'south' ||
+              player.direction === 'southEast'
+            ) {
+              if (
+                x === player.target.cell.number.x &&
+                y === player.target.cell.number.y
+              ) {
+                if (
+                  newDirection === 'east' ||
+                  newDirection === 'west' ||
+                  newDirection === 'north' ||
+                  newDirection === 'south'
+                ) {
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                } else {
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                }
+              }
+            }
+
+            if (
+              player.direction === 'northEast'
+            ) {
+              if (
+                x === player.target.cell.number.x+1 &&
+                y === player.target.cell.number.y
+              ) {
+                if (
+                  newDirection === 'east' ||
+                  newDirection === 'west' ||
+                  newDirection === 'north' ||
+                  newDirection === 'south'
+                ) {
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                } else {
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                }
+              }
+            }
+            if (
+              player.direction === 'southWest'
+            ) {
+              if (
+                x === player.currentPosition.cell.number.x &&
+                y === player.currentPosition.cell.number.y+1
+              ) {
+                if (
+                  newDirection === 'east' ||
+                  newDirection === 'west' ||
+                  newDirection === 'north' ||
+                  newDirection === 'south'
+                ) {
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                } else {
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                }
+              }
+            }
+
+          } else {
+            if (
+              x === player.currentPosition.cell.number.x &&
+              y === player.currentPosition.cell.number.y
+            ) {
+              // console.log('-- currently drawing',x,y);
+              // console.log('-- currentPosition',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
+              // console.log('-- moving state',player.moving.state,'moving step',player.moving.step);
+              // console.log('-- target',player.target.cell.number.x,player.target.cell.number.y);
+              // console.log('-- direction',player.direction);
+              // console.log('-- origin',player.moving.origin.number.x,player.moving.origin.number.y);
+
+              if (
+                newDirection === 'east' ||
+                newDirection === 'west' ||
+                newDirection === 'north' ||
+                newDirection === 'south'
+              ) {
+                context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+              } else {
+                context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+              }
+            }
+          }
+
+          if (player.falling.state === true) {
+            if (
+              x === 0 &&
+              y === 0
+            ) {
+              if (
+                newDirection === 'east' ||
+                newDirection === 'west' ||
+                newDirection === 'north' ||
+                newDirection === 'south'
+              ) {
+                context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+              } else {
+                context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+              }
             }
           }
 
@@ -1049,11 +1160,6 @@ class App extends Component {
           //       x === player.currentPosition.cell.number.x+1 &&
           //       y === player.currentPosition.cell.number.y+1
           //     ) {
-          //       console.log('-- currently drawing',x,y);
-          //       console.log('-- currentPosition',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
-          //       console.log('-- moving state',player.moving.state,'moving step',player.moving.step);
-          //       console.log('-- target',player.target.cell.number.x,player.target.cell.number.y);
-          //       console.log('-- direction',player.direction);
           //
           //       if (
           //         newDirection === 'east' ||
@@ -1314,16 +1420,36 @@ class App extends Component {
           }
         break;
         case 'south' :
+        if (
+          player.currentPosition.cell.number.x === 0 &&
+          player.currentPosition.cell.number.y === 9
+        ) {
+          voidCenter = {
+            x: player.currentPosition.cell.center.x-30,
+            y: player.currentPosition.cell.center.y+15,
+          }
+        } else {
           voidCenter = {
             x: player.currentPosition.cell.center.x-50,
             y: player.currentPosition.cell.center.y+30,
           }
+        }
         break;
         case 'west' :
+        if (
+          player.currentPosition.cell.number.x === 0 &&
+          player.currentPosition.cell.number.y === 9
+        ) {
+          voidCenter = {
+            x: player.currentPosition.cell.center.x-30,
+            y: player.currentPosition.cell.center.y-15,
+          }
+        } else {
           voidCenter = {
             x: player.currentPosition.cell.center.x-50,
             y: player.currentPosition.cell.center.y-30,
           }
+        }
         break;
         case 'east' :
           voidCenter = {
@@ -1426,11 +1552,11 @@ class App extends Component {
       console.log('currently falling off the edge');
 
       player.falling.count++;
-      // console.log('fall count',player.falling.count);
+      console.log('fall count',player.falling.count);
 
       newPosition = {
         x: target.cell.center.x,
-        y: target.cell.center.y+player.falling.count*10,
+        y: target.cell.center.y+player.falling.count*5,
       }
       player.currentPosition.cell.center = newPosition;
 
