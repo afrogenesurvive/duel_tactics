@@ -21,7 +21,12 @@ const DebugBox = props => {
         </li>
         <li className="debugBoxListItem">
           <p className="debugBoxText">
-            ...
+            Target: {props.player1.target.cell.number.x}, {props.player1.target.cell.number.y}
+          </p>
+        </li>
+        <li className="debugBoxListItem">
+          <p className="debugBoxText">
+            Direction: {props.player1.direction}
           </p>
         </li>
       </ul>

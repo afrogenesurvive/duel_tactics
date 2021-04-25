@@ -102,7 +102,7 @@
 
 .debugDisplay {
   height: 200px;
-  width: 400px;
+  width: 250px;
   position: absolute;
   bottom: 15px;
   right: 15px;
@@ -111,5 +111,5 @@
   background-color: #ffffff;
   z-index: 3;
 
-  display: none;
+  /* display: none; */
 }
