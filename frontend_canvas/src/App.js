@@ -15,6 +15,15 @@ import playerImgIdleSouth from './assets/player/idle/playerImgSouth.png'
 import playerImgIdleSouthWest from './assets/player/idle/playerImgSouthWest.png'
 import playerImgIdleSouthEast from './assets/player/idle/playerImgSouthEast.png'
 
+import player2ImgIdleNorth from './assets/player/idle/player2ImgNorth.png'
+import player2ImgIdleNorthWest from './assets/player/idle/player2ImgNorthWest.png'
+import player2ImgIdleNorthEast from './assets/player/idle/player2ImgNorthEast.png'
+import player2ImgIdleWest from './assets/player/idle/player2ImgWest.png'
+import player2ImgIdleEast from './assets/player/idle/player2ImgEast.png'
+import player2ImgIdleSouth from './assets/player/idle/player2ImgSouth.png'
+import player2ImgIdleSouthWest from './assets/player/idle/player2ImgSouthWest.png'
+import player2ImgIdleSouthEast from './assets/player/idle/player2ImgSouthEast.png'
+
 import './App.css';
 
 import DebugBox from './debugBox'
@@ -168,7 +177,7 @@ class App extends Component {
     this.players = [
       {
         number: 1
-      }
+      },
       {
         number: 2
       }
@@ -327,7 +336,7 @@ class App extends Component {
     let canvas2 = this.canvasRef2.current;
     let context2 = canvas2.getContext('2d');
 
-    this.refs.playerImgIdleWest.onload = () => {
+    this.refs.player2ImgIdleWest.onload = () => {
       this.addListeners();
 
       this.drawGridInit(canvas, context, canvas2, context2);
@@ -903,6 +912,7 @@ class App extends Component {
     let updatedPlayerImg;
     let newDirection;
 
+    // fix me
     switch(player.action) {
       case 'idle':
         switch(player.direction) {
@@ -2228,6 +2238,10 @@ class App extends Component {
 
     // set this.keyPressed and set current player to ai player
 
+    // step1: turn and move in all directions
+
+    // step2: move w/pathfinding to a tile surrounding player1 and target them
+
   }
 
 
@@ -2268,14 +2282,23 @@ class App extends Component {
           <img src={wall2} className='hidden' ref="wall2" alt="logo" />
           <img src={wall3} className='hidden' ref="wall3" alt="logo" />
 
-          <img src={playerImgIdleNorth} className='hidden playerImgs2' ref="playerImgIdleNorth" alt="logo" />
+          <img src={playerImgIdleNorth} className='hidden playerImgs' ref="playerImgIdleNorth" alt="logo" />
           <img src={playerImgIdleNorthWest} className='hidden playerImgs' ref="playerImgIdleNorthWest" alt="logo" />
           <img src={playerImgIdleNorthEast} className='hidden playerImgs' ref="playerImgIdleNorthEast" alt="logo" />
-          <img src={playerImgIdleSouth} className='hidden playerImgs2' ref="playerImgIdleSouth" alt="logo" />
+          <img src={playerImgIdleSouth} className='hidden playerImgs' ref="playerImgIdleSouth" alt="logo" />
           <img src={playerImgIdleSouthWest} className='hidden playerImgs' ref="playerImgIdleSouthWest" alt="logo" />
           <img src={playerImgIdleSouthEast} className='hidden playerImgs' ref="playerImgIdleSouthEast" alt="logo" />
-          <img src={playerImgIdleEast} className='hidden playerImgs2' ref="playerImgIdleEast" alt="logo" />
-          <img src={playerImgIdleWest} className='hidden playerImgs2' ref="playerImgIdleWest" alt="logo" />
+          <img src={playerImgIdleEast} className='hidden playerImgs' ref="playerImgIdleEast" alt="logo" />
+          <img src={playerImgIdleWest} className='hidden playerImgs' ref="playerImgIdleWest" alt="logo" />
+
+          <img src={player2ImgIdleNorth} className='hidden playerImgs' ref="player2ImgIdleNorth" alt="logo" />
+          <img src={player2ImgIdleNorthWest} className='hidden playerImgs' ref="player2ImgIdleNorthWest" alt="logo" />
+          <img src={player2ImgIdleNorthEast} className='hidden playerImgs' ref="player2ImgIdleNorthEast" alt="logo" />
+          <img src={player2ImgIdleSouth} className='hidden playerImgs' ref="player2ImgIdleSouth" alt="logo" />
+          <img src={player2ImgIdleSouthWest} className='hidden playerImgs' ref="player2ImgIdleSouthWest" alt="logo" />
+          <img src={player2ImgIdleSouthEast} className='hidden playerImgs' ref="player2ImgIdleSouthEast" alt="logo" />
+          <img src={player2ImgIdleEast} className='hidden playerImgs' ref="player2ImgIdleEast" alt="logo" />
+          <img src={player2ImgIdleWest} className='hidden playerImgs' ref="player2ImgIdleWest" alt="logo" />
 
         </div>
       </React.Fragment>
