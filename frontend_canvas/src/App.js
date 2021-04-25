@@ -164,13 +164,22 @@ class App extends Component {
       row8: ['x80x','x81x','x82x','x83x','x84x','x85x','y86x','x87x','x88x','x89x'],
       row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
     };
+    this.currentPlayer = 1;
+    this.players = [
+      {
+        number: 1
+      }
+      {
+        number: 2
+      }
+    ]
     this.player1 = {
       number: 1,
       startPosition: {
         cell: {
           number: {
-            x: 8,
-            y: 8,
+            x: 5,
+            y: 6,
           },
           center: {
             x: 0,
@@ -215,7 +224,7 @@ class App extends Component {
       direction: 'north',
       turning: {
         delayCount: 0,
-        limit: .3,
+        limit: 3,
       },
       action: 'idle',
       moving: {
@@ -470,6 +479,7 @@ class App extends Component {
     if(this.stepper.deltaTime > this.stepper.interval) {
         // console.log('update loop step...dt',this.stepper.deltaTime,'interval',this.stepper.interval);
 
+        // this.aiAct();
         this.playerUpdate();
         this.stepper.lastTime = this.stepper.currentTime - (this.stepper.deltaTime % this.stepper.interval);
     }
@@ -603,7 +613,7 @@ class App extends Component {
                   y: -30,
                 }
 
-              } else {
+              } else if (player.turning.delayCount === 0) {
                 player.action = 'moving';
                 player.moving = {
                   state: true,
@@ -659,9 +669,12 @@ class App extends Component {
           ) {
             // console.log('change player direction to',keyPressedDirection);
             if (player.turning.delayCount < player.turning.limit) {
-              player.turning.delayCount = player.turning.delayCount+0.3
+              player.turning.delayCount = player.turning.delayCount+1
               console.log('turning delayed',player.turning.delayCount);
-            } else {
+            }
+            if (
+              player.turning.delayCount >= player.turning.limit
+            ) {
                 player.direction = keyPressedDirection;
                 player.turning.delayCount = 0;
                 console.log('turning',player.turning.delayCount);
@@ -838,6 +851,8 @@ class App extends Component {
 
     // player materials
     let player = this.player1;
+
+    // add new sets for 2nd player/ai enemy
     let playerImgs = {
       idle: {
         north: this.refs.playerImgIdleNorth,
@@ -880,6 +895,7 @@ class App extends Component {
         west: this.refs.playerImgIdleWest,
       },
     };
+
     let point = {
       x: player.nextPosition.x,
       y: player.nextPosition.y,
@@ -891,6 +907,7 @@ class App extends Component {
       case 'idle':
         switch(player.direction) {
           case 'north' :
+            // change based on which player is currently acting
             updatedPlayerImg = playerImgs.idle.north;
             newDirection = 'north';
           break;
@@ -961,6 +978,42 @@ class App extends Component {
         }
       break;
       case 'strafe moving':
+        switch(player.direction) {
+          case 'north' :
+            updatedPlayerImg = playerImgs.walking.north;
+            newDirection = 'north';
+          break;
+          case 'northWest' :
+            updatedPlayerImg = playerImgs.walking.northWest;
+            newDirection = 'northWest';
+          break;
+          case 'northEast' :
+            updatedPlayerImg = playerImgs.walking.northEast;
+            newDirection = 'northEast';
+          break;
+          case 'east' :
+            updatedPlayerImg = playerImgs.walking.east;
+            newDirection = 'east';
+          break;
+          case 'west' :
+            updatedPlayerImg = playerImgs.walking.west;
+            newDirection = 'west';
+          break;
+          case 'south' :
+            updatedPlayerImg = playerImgs.walking.south;
+            newDirection = 'south';
+          break;
+          case 'southWest' :
+            updatedPlayerImg = playerImgs.walking.southWest;
+            newDirection = 'southWest';
+          break;
+          case 'southEast' :
+            updatedPlayerImg = playerImgs.walking.southEast;
+            newDirection = 'southEast';
+          break;
+        }
+      break;
+      case 'falling':
         switch(player.direction) {
           case 'north' :
             updatedPlayerImg = playerImgs.walking.north;
@@ -1205,9 +1258,7 @@ class App extends Component {
 
           }
 
-          if (
-            player.target.void === false
-          ) {
+          if (player.target.void === false) {
             if (
               player.direction === 'north' ||
               player.direction === 'northWest' ||
@@ -1769,6 +1820,14 @@ class App extends Component {
       }
 
     }
+
+    // check other player & enemies current position for match
+    // if match free = false, set obstacleObstructFound
+    // occupant = {
+    //   type: 'player/obstacle',
+      // player: player1/player2
+    // }
+
     if (obstacleObstructFound !== true ) {
       target.free = true;
       target.occupant = {
@@ -1777,12 +1836,7 @@ class App extends Component {
       }
     }
 
-      // check other player & enemies current position for match
-      // if match free = false
-      // occupant = {
-      //   type: 'player/obstacle',
-        // player: player1/player2
-      // }
+
 
     player.target = target;
     this.player1 = player;
@@ -2027,16 +2081,8 @@ class App extends Component {
             cellLevelData = elem.levelData;
           }
         }
-        let player = this.player1;
 
         context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
-        if (
-          x === player.startPosition.cell.number.x &&
-          y === player.startPosition.cell.number.y
-        ) {
-          console.log('drawing tile');
-        }
-
 
         context.fillStyle = 'black';
         context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
@@ -2057,7 +2103,8 @@ class App extends Component {
         }
 
         // Draw player
-        // let player = this.player1;
+        let player = this.player1;
+        // iterate through players array and execute the following for each
 
         if (
           x === player.startPosition.cell.number.x &&
@@ -2084,12 +2131,31 @@ class App extends Component {
 
               player.currentPosition.cell = {
                 number: {
-                  x: player.startPosition.cell.number.x ,
+                  x: player.startPosition.cell.number.x,
                   y: player.startPosition.cell.number.y
                 },
                 center : {
                   x: point.x,
                   y: point.y
+                }
+              }
+              player.moving = {
+                state: false,
+                step: 0,
+                course: '',
+                origin: {
+                  number: {
+                    x: player.startPosition.cell.number.x,
+                    y: player.startPosition.cell.number.y,
+                  },
+                  center: {
+                    x: point.x,
+                    y: point.y,
+                  },
+                },
+                destination: {
+                  x: 0,
+                  y: 0,
                 }
               }
               player.nextPosition = {
@@ -2101,8 +2167,9 @@ class App extends Component {
               this.setState({
                 player1: player
               })
+              this.getTarget();
 
-              console.log('** playerDrawLog Init**');
+              console.log('** Init playerDrawLog **');
               console.log('-- currently drawing --',x,y);
               console.log('-- current position --',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
               console.log('-- moving state --',player.moving.state);
@@ -2115,8 +2182,6 @@ class App extends Component {
 
             }
           }
-
-          // this.drawPlayerInit(canvas, context)
         }
 
 
@@ -2145,72 +2210,6 @@ class App extends Component {
     }
 
   }
-  drawPlayerInit = (canvas, context) => {
-
-    console.log('drawing initial player');
-
-    let gridInfo = this.gridInfo;
-    let player = this.player1;
-
-    let playerImg = this.refs.playerImgIdleNorth;
-    player.dead.state = false;
-
-    let point = {
-      x: 0,
-      y: 0,
-    };
-
-    for (const cell of gridInfo) {
-      if (
-        cell.number.x === player.startPosition.cell.number.x &&
-        cell.number.y === player.startPosition.cell.number.y
-      ) {
-        point.x = cell.center.x;
-        point.y = cell.center.y;
-
-
-        player.currentPosition.cell = {
-          number: {
-            x: player.startPosition.cell.number.x ,
-            y: player.startPosition.cell.number.y
-          },
-          center : {
-            x: point.x,
-            y: point.y
-          }
-        }
-        player.nextPosition = {
-          x: point.x,
-          y: point.y
-        }
-
-        context.drawImage(playerImg, point.x-30, point.y-30, 60,60);
-
-      }
-    }
-
-    // player.currentPosition.cell = {
-    //   number: {
-    //     x: player.startPosition.cell.number.x ,
-    //     y: player.startPosition.cell.number.y
-    //   },
-    //   center : {
-    //     x: point.x,
-    //     y: point.y
-    //   }
-    // }
-    // player.nextPosition = {
-    //   x: point.x,
-    //   y: point.y
-    // }
-    //
-    // context.drawImage(playerImg, point.x-30, point.y-30, 60,60);
-
-    this.player1 = player;
-
-    // window.requestAnimationFrame(this.gameLoop);
-
-  }
 
   restart = () => {
     // console.log('resetting');
@@ -2223,6 +2222,11 @@ class App extends Component {
 
     this.drawGridInit(canvas, context, canvas2, context2);
     // this.drawPlayerInit(canvas2, context2);
+
+  }
+  aiAct = () => {
+
+    // set this.keyPressed and set current player to ai player
 
   }
 
