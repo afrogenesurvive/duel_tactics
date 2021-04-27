@@ -176,10 +176,200 @@ class App extends Component {
     this.currentPlayer = 1;
     this.players = [
       {
-        number: 1
+        number: 1,
+        startPosition: {
+          cell: {
+            number: {
+              x: 8,
+              y: 2,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            }
+          }
+        },
+        currentPosition: {
+          cell: {
+            number: {
+              x: 0,
+              y: 0,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            }
+          }
+        },
+        nextPosition: {
+          x: 0,
+          y: 0,
+        },
+        target: {
+          cell: {
+            number: {
+              x: 0,
+              y: 0,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            },
+          },
+          free: true,
+          occupant: {
+            type: '',
+            player: '',
+          },
+          void: false
+        },
+        direction: 'north',
+        turning: {
+          state: undefined,
+          toDirection: '',
+          delayCount: 0,
+          limit: 2.1,
+        },
+        action: 'idle',
+        moving: {
+          state: false,
+          step: 0,
+          course: '',
+          origin: {
+            number: {
+              x: 0,
+              y: 0,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            },
+          },
+          destination: {
+            x: 0,
+            y: 0,
+          }
+        },
+        strafing: {
+          state: false,
+          direction: '',
+        },
+        attacking: {
+          state: false,
+          count: 0,
+          limit: 5,
+        },
+        defending: {
+          state: false,
+          count: 0,
+          limit: 5,
+        },
+        falling: {
+          state: false,
+          count: 0,
+          limit: 5,
+        },
+        dead: {
+          state: false,
+        }
       },
       {
-        number: 2
+        number: 2,
+        startPosition: {
+          cell: {
+            number: {
+              x: 2,
+              y: 2,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            }
+          }
+        },
+        currentPosition: {
+          cell: {
+            number: {
+              x: 0,
+              y: 0,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            }
+          }
+        },
+        nextPosition: {
+          x: 0,
+          y: 0,
+        },
+        target: {
+          cell: {
+            number: {
+              x: 0,
+              y: 0,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            },
+          },
+          free: true,
+          occupant: {
+            type: '',
+            player: '',
+          },
+          void: false
+        },
+        direction: 'north',
+        turning: {
+          state: undefined,
+          toDirection: '',
+          delayCount: 0,
+          limit: 2.1,
+        },
+        action: 'idle',
+        moving: {
+          state: false,
+          step: 0,
+          course: '',
+          origin: {
+            number: {
+              x: 0,
+              y: 0,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            },
+          },
+          destination: {
+            x: 0,
+            y: 0,
+          }
+        },
+        strafing: {
+          state: false,
+          direction: '',
+        },
+        attacking: {
+          state: false,
+          count: 0,
+          limit: 5,
+        },
+        defending: {
+          state: false,
+          count: 0,
+          limit: 5,
+        },
+        falling: {
+          state: false,
+          count: 0,
+          limit: 5,
+        },
+        dead: {
+          state: false,
+        }
       }
     ]
     this.player1 = {
@@ -187,8 +377,8 @@ class App extends Component {
       startPosition: {
         cell: {
           number: {
-            x: 5,
-            y: 6,
+            x: 8,
+            y: 2,
           },
           center: {
             x: 0,
@@ -232,8 +422,10 @@ class App extends Component {
       },
       direction: 'north',
       turning: {
+        state: undefined,
+        toDirection: '',
         delayCount: 0,
-        limit: 3,
+        limit: 2.1,
       },
       action: 'idle',
       moving: {
@@ -342,6 +534,7 @@ class App extends Component {
       this.drawGridInit(canvas, context, canvas2, context2);
 
       window.requestAnimationFrame(this.gameLoop);
+
     }
 
   }
@@ -414,42 +607,60 @@ class App extends Component {
 
     // console.log('handling key press', event.key, state);
 
+    let direction;
     let keyInput = event.key
+
     switch(keyInput) {
       case 'q' :
        this.keyPressed.northWest = state;
+       direction = 'northWest';
       break;
       case 'w' :
        this.keyPressed.north = state;
+       direction = 'north';
       break;
       case 'e' :
-       this.keyPressed.northEast = state
+       this.keyPressed.northEast = state;
+       direction = 'northEast';
       break;
       case 'a' :
-       this.keyPressed.west = state
+       this.keyPressed.west = state;
+       direction = 'west';
       break;
       case 'd' :
-       this.keyPressed.east = state
+       this.keyPressed.east = state;
+       direction = 'east';
       break;
       case 's' :
-       this.keyPressed.south = state
+       this.keyPressed.south = state;
+       direction = 'south';
       break;
       case 'z' :
-       this.keyPressed.southWest = state
+       this.keyPressed.southWest = state;
+       direction = 'southWest';
       break;
       case 'c' :
-       this.keyPressed.southEast = state
+       this.keyPressed.southEast = state;
+       direction = 'southEast';
       break;
       case ' ' :
-        this.keyPressed.strafe = state
-        this.player1.strafing.state = state
+        this.keyPressed.strafe = state;
+        this.player1.strafing.state = state;
       break;
       case 'r' :
        this.restart();
       break;
     }
 
-    this.playerUpdate()
+    let player = this.player1;
+
+    if (player.turning.state === true && player.turning.toDirection === direction) {
+      if (this.keyPressed[direction] == false) {
+        player.turning.state = false;
+      }
+    }
+
+    // this.playerUpdate()
 
   }
 
@@ -492,6 +703,7 @@ class App extends Component {
         this.playerUpdate();
         this.stepper.lastTime = this.stepper.currentTime - (this.stepper.deltaTime % this.stepper.interval);
     }
+    // this.playerUpdate();
     // this.drawPlayerStep();
     // -----------
 
@@ -518,6 +730,34 @@ class App extends Component {
 
       let player = this.player1;
       let nextPosition;
+
+      if (player.turning.state === false) {
+        player.direction = player.turning.toDirection;
+        player.nextPosition = {
+          x: player.currentPosition.cell.center.x,
+          y: player.currentPosition.cell.center.y
+        }
+        player.moving = {
+          state: false,
+          step: 0,
+          course: '',
+          origin: {
+            number: {
+              x: player.currentPosition.cell.number.x,
+              y: player.currentPosition.cell.number.y
+            },
+            center: {
+              x: player.currentPosition.cell.center.x,
+              y: player.currentPosition.cell.center.y
+            },
+          },
+          destination: player.target.cell.center
+        }
+
+        player.turning.toDirection = '';
+        player.turning.state = undefined;
+        this.getTarget();
+      }
 
       if (player.dead.state === true) {
 
@@ -645,14 +885,11 @@ class App extends Component {
 
               }
 
-
-
             }
 
             if (target.free === false) {
               // console.log('target is NOT free');
             }
-
             if (player.target.void === true) {
               // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
 
@@ -672,50 +909,58 @@ class App extends Component {
             }
 
 
-          } else if (
-            keyPressedDirection !== player.direction &&
-            player.strafing.state === false
-          ) {
-            // console.log('change player direction to',keyPressedDirection);
-            if (player.turning.delayCount < player.turning.limit) {
-              player.turning.delayCount = player.turning.delayCount+1
-              console.log('turning delayed',player.turning.delayCount);
-            }
-            if (
-              player.turning.delayCount >= player.turning.limit
-            ) {
-                player.direction = keyPressedDirection;
-                player.turning.delayCount = 0;
-                console.log('turning',player.turning.delayCount);
-            }
+          } else if (keyPressedDirection !== player.direction && player.strafing.state === false) {
+            console.log('change player direction to',keyPressedDirection);
+
+            // if (player.turning.state === false) {
+            //
+            // }
+
+            player.turning.state = true;
+            player.turning.toDirection = keyPressedDirection;
 
 
-            player.nextPosition = {
-              x: player.currentPosition.cell.center.x,
-              y: player.currentPosition.cell.center.y
-            }
-            player.moving = {
-              state: false,
-              step: 0,
-              course: '',
-              origin: {
-                number: {
-                  x: player.currentPosition.cell.number.x,
-                  y: player.currentPosition.cell.number.y
-                },
-                center: {
-                  x: player.currentPosition.cell.center.x,
-                  y: player.currentPosition.cell.center.y
-                },
-              },
-              destination: player.target.cell.center
-            }
-            this.getTarget();
+            // if (player.turning.state === true) {
+            //   console.log('the turning',this.keyPressed[player.turning.toDirection]);
+            //
+            // }
 
-          } else if (
-            keyPressedDirection !== player.direction &&
-            player.strafing.state === true
-          ) {
+            // if (player.turning.delayCount < player.turning.limit) {
+            //   player.turning.delayCount = player.turning.delayCount+.3
+            //   // console.log('turning delayed',player.turning.delayCount,'direction',keyPressedDirection,'pressed',this.keyPressed[keyPressedDirection]);
+            // }
+            // if (
+            //   player.turning.delayCount >= player.turning.limit
+            // ) {
+            //     player.direction = keyPressedDirection;
+            //     player.turning.delayCount = 0;
+            //     // console.log('turning',player.turning.delayCount);
+            // }
+
+            //     player.direction = keyPressedDirection;
+            // player.nextPosition = {
+            //   x: player.currentPosition.cell.center.x,
+            //   y: player.currentPosition.cell.center.y
+            // }
+            // player.moving = {
+            //   state: false,
+            //   step: 0,
+            //   course: '',
+            //   origin: {
+            //     number: {
+            //       x: player.currentPosition.cell.number.x,
+            //       y: player.currentPosition.cell.number.y
+            //     },
+            //     center: {
+            //       x: player.currentPosition.cell.center.x,
+            //       y: player.currentPosition.cell.center.y
+            //     },
+            //   },
+            //   destination: player.target.cell.center
+            // }
+            // this.getTarget();
+
+          } else if (keyPressedDirection !== player.direction && player.strafing.state === true) {
             // console.log('look mom im strafing');
             player.strafing.direction = keyPressedDirection;
             let target = this.getTarget();
@@ -746,15 +991,9 @@ class App extends Component {
             }
           }
 
-        } else if (
-          this.keyPressed.attack === true ||
-          this.keyPressed.defend === true
-        ) {
+        } else if (this.keyPressed.attack === true || this.keyPressed.defend === true) {
           // console.log('non-move key pressed');
-          if (
-            player.action === 'attacking' ||
-            player.action === 'defending'
-          ) {
+          if (player.action === 'attacking' || player.action === 'defending') {
 
             if (this.keyPressed.attack === true) {
               if (player.attacking.count < player.attacking.limit) {
@@ -782,10 +1021,7 @@ class App extends Component {
               }
             }
           }
-          if (
-            player.action !== 'attacking' ||
-            player.action !== 'defending'
-          ) {
+          if (player.action !== 'attacking' || player.action !== 'defending') {
             if (this.keyPressed.attack === true) {
               player.action = 'attacking';
               player.attacking = {
@@ -803,7 +1039,6 @@ class App extends Component {
               }
             }
           }
-
 
         }
 
@@ -1199,10 +1434,7 @@ class App extends Component {
 
     }
 
-    if (
-      player.action !== 'attacking' ||
-      player.action !== 'defending'
-    ) {
+    if (player.action !== 'attacking' || player.action !== 'defending') {
 
       context2.clearRect(0, 0, canvas2.width, canvas2.height);
 
@@ -1265,10 +1497,9 @@ class App extends Component {
             console.log('-- target --',player.target.cell.number.x,player.target.cell.number.y);
             console.log('-- direction --',player.direction);
             console.log('-- origin --',player.moving.origin.number.x,player.moving.origin.number.y);
-
           }
 
-          if (player.target.void === false) {
+          if (player.target.void === false && player.moving.state === true) {
             if (
               player.direction === 'north' ||
               player.direction === 'northWest' ||
@@ -1318,22 +1549,45 @@ class App extends Component {
             if (
               player.direction === 'northEast'
             ) {
+              // east ege disappearing bug fix
               if (
-                x === player.moving.origin.number.x+1 &&
-                y === player.moving.origin.number.y
+                player.target.cell.number.x === 9
               ) {
                 if (
-                  newDirection === 'east' ||
-                  newDirection === 'west' ||
-                  newDirection === 'north' ||
-                  newDirection === 'south'
+                  x === 9 &&
+                  y === player.target.cell.number.y+1
                 ) {
-                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                } else {
-                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  if (
+                    newDirection === 'east' ||
+                    newDirection === 'west' ||
+                    newDirection === 'north' ||
+                    newDirection === 'south'
+                  ) {
+                    context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  } else {
+                    context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  }
+                  // playerDrawLog(x,y)
                 }
-                // playerDrawLog(x,y)
+              } else {
+                if (
+                  x === player.moving.origin.number.x+1 &&
+                  y === player.moving.origin.number.y
+                ) {
+                  if (
+                    newDirection === 'east' ||
+                    newDirection === 'west' ||
+                    newDirection === 'north' ||
+                    newDirection === 'south'
+                  ) {
+                    context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  } else {
+                    context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  }
+                  // playerDrawLog(x,y)
+                }
               }
+
             }
             if (
               player.direction === 'southWest'
@@ -1505,7 +1759,6 @@ class App extends Component {
               // playerDrawLog(x,y)
             }
           }
-
 
           let walledTiles = []
           if (walledTiles.includes(''+x+','+y+'')) {
