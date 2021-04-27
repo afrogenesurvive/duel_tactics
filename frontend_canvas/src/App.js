@@ -501,6 +501,19 @@ class App extends Component {
       defend: false,
       strafe: false,
     };
+    this.keyPressed2 = {
+      north: false,
+      south: false,
+      east: false,
+      west: false,
+      northEast: false,
+      northWest: false,
+      southEast: false,
+      southWest: false,
+      attack: false,
+      defend: false,
+      strafe: false,
+    };
     this.clicked = {
       cell: {
         number: {
@@ -614,47 +627,57 @@ class App extends Component {
       case 'q' :
        this.keyPressed.northWest = state;
        direction = 'northWest';
+       this.currentPlayer = 1;
       break;
       case 'w' :
        this.keyPressed.north = state;
        direction = 'north';
+       this.currentPlayer = 1;
       break;
       case 'e' :
        this.keyPressed.northEast = state;
        direction = 'northEast';
+       this.currentPlayer = 1;
       break;
       case 'a' :
        this.keyPressed.west = state;
        direction = 'west';
+       this.currentPlayer = 1;
       break;
       case 'd' :
        this.keyPressed.east = state;
        direction = 'east';
+       this.currentPlayer = 1;
       break;
       case 's' :
        this.keyPressed.south = state;
        direction = 'south';
+       this.currentPlayer = 1;
       break;
       case 'z' :
        this.keyPressed.southWest = state;
        direction = 'southWest';
+       this.currentPlayer = 1;
       break;
       case 'c' :
        this.keyPressed.southEast = state;
        direction = 'southEast';
+       this.currentPlayer = 1;
       break;
       case ' ' :
         this.keyPressed.strafe = state;
         this.player1.strafing.state = state;
+        this.currentPlayer = 1;
       break;
       case 'r' :
        this.restart();
       break;
     }
 
-    let player = this.player1;
+    let player = this.players[this.currentPlayer-1];
 
     if (player.turning.state === true && player.turning.toDirection === direction) {
+      // check current player 1st!!!
       if (this.keyPressed[direction] == false) {
         player.turning.state = false;
       }
@@ -715,6 +738,8 @@ class App extends Component {
 
     let keyPressedDirection;
 
+    // check current player 1st to choose array!!!
+
       for (const [key, value] of Object.entries(this.keyPressed)) {
         // console.log(`${key}: ${value} ....`);
         if (
@@ -728,7 +753,7 @@ class App extends Component {
         }
       }
 
-      let player = this.player1;
+      let player = this.players[this.currentPlayer-1];
       let nextPosition;
 
       if (player.turning.state === false) {
@@ -910,7 +935,7 @@ class App extends Component {
 
 
           } else if (keyPressedDirection !== player.direction && player.strafing.state === false) {
-            console.log('change player direction to',keyPressedDirection);
+            // console.log('change player direction to',keyPressedDirection);
 
             // if (player.turning.state === false) {
             //
@@ -1045,7 +1070,7 @@ class App extends Component {
       }
 
 
-    this.player1 = player;
+    this.players[this.currentPlayer-1] = player;
     this.setState({
       player1: player
     })
@@ -1094,9 +1119,10 @@ class App extends Component {
     gridInfo = this.gridInfo;
 
     // player materials
-    let player = this.player1;
+    let player = this.players[this.currentPlayer-1];
 
-    // add new sets for 2nd player/ai enemy
+
+    // add new sets for 2nd player
     let playerImgs = {
       idle: {
         north: this.refs.playerImgIdleNorth,
@@ -1144,6 +1170,9 @@ class App extends Component {
       x: player.nextPosition.x,
       y: player.nextPosition.y,
     };
+
+    // set 1 img for each player
+
     let updatedPlayerImg;
     let newDirection;
 
@@ -1368,9 +1397,14 @@ class App extends Component {
       break;
     }
 
-    if (
-      player.falling.state === true
-    ) {
+
+    // for (const plyr of this.players) {
+    //
+    //   // run the following
+    //
+    // }
+
+    if (player.falling.state === true) {
       // console.log('falling off the edge');
       if (player.falling.count === player.falling.limit) {
         // console.log("dead and gone");
@@ -1433,6 +1467,9 @@ class App extends Component {
       }
 
     }
+
+
+
 
     if (player.action !== 'attacking' || player.action !== 'defending') {
 
@@ -1498,6 +1535,12 @@ class App extends Component {
             console.log('-- direction --',player.direction);
             console.log('-- origin --',player.moving.origin.number.x,player.moving.origin.number.y);
           }
+
+          // for (const plyr of this.players) {
+          //
+          //   // run the following
+          //
+          // }
 
           if (player.target.void === false && player.moving.state === true) {
             if (
@@ -1760,6 +1803,8 @@ class App extends Component {
             }
           }
 
+
+
           let walledTiles = []
           if (walledTiles.includes(''+x+','+y+'')) {
             offset = {x: wallImageWidth/2, y: wallImageHeight}
@@ -1785,7 +1830,7 @@ class App extends Component {
 
     }
 
-    this.player1 = player;
+    this.players[this.currentPlayer-1] = player;
     this.setState({
       player1: player
     })
@@ -1799,7 +1844,7 @@ class App extends Component {
     let context2 = canvas2.getContext('2d');
 
     let gridInfo = this.gridInfo;
-    let player = this.player1;
+    let player = this.players[this.currentPlayer-1];
     let currentPosition = player.currentPosition.cell.number;
     let direction = player.direction;
     let voidDirection;
@@ -2102,7 +2147,7 @@ class App extends Component {
 
 
     player.target = target;
-    this.player1 = player;
+    this.players[this.currentPlayer-1] = player;
     this.setState({
       player1: player
     })
@@ -2112,7 +2157,7 @@ class App extends Component {
   lineCrementer = () => {
     // console.log('line crementer');
 
-    let player = this.player1;
+    let player = this.players[this.currentPlayer-1];
     let currentPosition = player.currentPosition.cell.center;
     let target = player.target;
     let increment = 2;
@@ -2161,7 +2206,7 @@ class App extends Component {
 
     player.nextPosition = newPosition
 
-    this.player1 = player;
+    this.players[this.currentPlayer-1] = player;
     this.setState({
       player1: player
     })
@@ -2366,86 +2411,179 @@ class App extends Component {
         }
 
         // Draw player
-        let player = this.player1;
+        // let player = this.players[this.currentPlayer-1];
+        // this.players[this.currentPlayer-1] = player;
+
         // iterate through players array and execute the following for each
 
-        if (
-          x === player.startPosition.cell.number.x &&
-          y === player.startPosition.cell.number.y
-        ) {
-          // console.log('this is the player cell',x,y);
+        for (const player of this.players) {
 
-          let playerImg = this.refs.playerImgIdleNorth;
-          player.dead.state = false;
+          if (
+            x === player.startPosition.cell.number.x &&
+            y === player.startPosition.cell.number.y
+          ) {
+            // console.log('this is the player cell',x,y);
 
-          let point = {
-            x: 0,
-            y: 0,
-          };
+            // let playerImg = this.refs.playerImgIdleNorth;
+            let playerImg;
 
-          for (const cell of gridInfo) {
-            if (
-              cell.number.x === player.startPosition.cell.number.x &&
-              cell.number.y === player.startPosition.cell.number.y
-            ) {
-              point.x = cell.center.x;
-              point.y = cell.center.y;
+            if (player.number === 1) {
+              playerImg = this.refs.playerImgIdleNorth;
+            }
+            if (player.number === 2) {
+              playerImg = this.refs.player2ImgIdleNorth;
+            }
+
+            player.dead.state = false;
+
+            let point = {
+              x: 0,
+              y: 0,
+            };
+
+            for (const cell of gridInfo) {
+              if (
+                cell.number.x === player.startPosition.cell.number.x &&
+                cell.number.y === player.startPosition.cell.number.y
+              ) {
+                point.x = cell.center.x;
+                point.y = cell.center.y;
 
 
-              player.currentPosition.cell = {
-                number: {
-                  x: player.startPosition.cell.number.x,
-                  y: player.startPosition.cell.number.y
-                },
-                center : {
+                player.currentPosition.cell = {
+                  number: {
+                    x: player.startPosition.cell.number.x,
+                    y: player.startPosition.cell.number.y
+                  },
+                  center : {
+                    x: point.x,
+                    y: point.y
+                  }
+                }
+                player.moving = {
+                  state: false,
+                  step: 0,
+                  course: '',
+                  origin: {
+                    number: {
+                      x: player.startPosition.cell.number.x,
+                      y: player.startPosition.cell.number.y,
+                    },
+                    center: {
+                      x: point.x,
+                      y: point.y,
+                    },
+                  },
+                  destination: {
+                    x: 0,
+                    y: 0,
+                  }
+                }
+                player.nextPosition = {
                   x: point.x,
                   y: point.y
                 }
+
+                this.player1 = player;
+                this.setState({
+                  player1: player
+                })
+                this.getTarget();
+
+                console.log('** Init playerDrawLog **');
+                console.log('-- currently drawing --',x,y);
+                console.log('-- current position --',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
+                console.log('-- moving state --',player.moving.state);
+                console.log('-- moving step --',player.moving.step);
+                console.log('-- target --',player.target.cell.number.x,player.target.cell.number.y);
+                console.log('-- direction --',player.direction);
+                console.log('-- origin --',player.moving.origin.number.x,player.moving.origin.number.y);
+
+                context.drawImage(playerImg, point.x-30, point.y-30, 60,60);
+
               }
-              player.moving = {
-                state: false,
-                step: 0,
-                course: '',
-                origin: {
-                  number: {
-                    x: player.startPosition.cell.number.x,
-                    y: player.startPosition.cell.number.y,
-                  },
-                  center: {
-                    x: point.x,
-                    y: point.y,
-                  },
-                },
-                destination: {
-                  x: 0,
-                  y: 0,
-                }
-              }
-              player.nextPosition = {
-                x: point.x,
-                y: point.y
-              }
-
-              this.player1 = player;
-              this.setState({
-                player1: player
-              })
-              this.getTarget();
-
-              console.log('** Init playerDrawLog **');
-              console.log('-- currently drawing --',x,y);
-              console.log('-- current position --',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
-              console.log('-- moving state --',player.moving.state);
-              console.log('-- moving step --',player.moving.step);
-              console.log('-- target --',player.target.cell.number.x,player.target.cell.number.y);
-              console.log('-- direction --',player.direction);
-              console.log('-- origin --',player.moving.origin.number.x,player.moving.origin.number.y);
-
-              context.drawImage(playerImg, point.x-30, point.y-30, 60,60);
-
             }
           }
+
         }
+
+        // if (
+        //   x === player.startPosition.cell.number.x &&
+        //   y === player.startPosition.cell.number.y
+        // ) {
+        //   // console.log('this is the player cell',x,y);
+        //
+        //   let playerImg = this.refs.playerImgIdleNorth;
+        //   player.dead.state = false;
+        //
+        //   let point = {
+        //     x: 0,
+        //     y: 0,
+        //   };
+        //
+        //   for (const cell of gridInfo) {
+        //     if (
+        //       cell.number.x === player.startPosition.cell.number.x &&
+        //       cell.number.y === player.startPosition.cell.number.y
+        //     ) {
+        //       point.x = cell.center.x;
+        //       point.y = cell.center.y;
+        //
+        //
+        //       player.currentPosition.cell = {
+        //         number: {
+        //           x: player.startPosition.cell.number.x,
+        //           y: player.startPosition.cell.number.y
+        //         },
+        //         center : {
+        //           x: point.x,
+        //           y: point.y
+        //         }
+        //       }
+        //       player.moving = {
+        //         state: false,
+        //         step: 0,
+        //         course: '',
+        //         origin: {
+        //           number: {
+        //             x: player.startPosition.cell.number.x,
+        //             y: player.startPosition.cell.number.y,
+        //           },
+        //           center: {
+        //             x: point.x,
+        //             y: point.y,
+        //           },
+        //         },
+        //         destination: {
+        //           x: 0,
+        //           y: 0,
+        //         }
+        //       }
+        //       player.nextPosition = {
+        //         x: point.x,
+        //         y: point.y
+        //       }
+        //
+        //       this.player1 = player;
+        //       this.setState({
+        //         player1: player
+        //       })
+        //       this.getTarget();
+        //
+        //       console.log('** Init playerDrawLog **');
+        //       console.log('-- currently drawing --',x,y);
+        //       console.log('-- current position --',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
+        //       console.log('-- moving state --',player.moving.state);
+        //       console.log('-- moving step --',player.moving.step);
+        //       console.log('-- target --',player.target.cell.number.x,player.target.cell.number.y);
+        //       console.log('-- direction --',player.direction);
+        //       console.log('-- origin --',player.moving.origin.number.x,player.moving.origin.number.y);
+        //
+        //       context.drawImage(playerImg, point.x-30, point.y-30, 60,60);
+        //
+        //     }
+        //   }
+        // }
 
 
         let walledTiles = []
