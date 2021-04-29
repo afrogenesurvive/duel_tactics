@@ -29,6 +29,11 @@ const DebugBox = props => {
             Direction: {props.player.direction}
           </p>
         </li>
+        <li className="debugBoxListItem">
+          <p className="debugBoxText">
+            Points: {props.player.points}
+          </p>
+        </li>
       </ul>
     </div>
   )

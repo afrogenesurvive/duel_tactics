@@ -5,9 +5,9 @@
 .debugBoxList {
   padding: 0;
   list-style-type: none;
-  /* columns: 2;
+  columns: 2;
   -webkit-columns: 2;
-  -moz-columns: 2; */
+  -moz-columns: 2;
 }
 
 .debugBoxListItem {
@@ -17,4 +17,5 @@
 .debugBoxText {
   color: #000000;
   font-size: 1rem;
+  margin-bottom: .5rem;
 }

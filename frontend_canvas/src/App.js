@@ -114,10 +114,24 @@ class App extends Component {
       attacking: {
         state: false,
         count: 0,
-        limit: 5,
+        limit: 10,
       },
-      attacked: {
-        state: false
+      success: {
+        attackSuccess: {
+          state: false,
+          count: 0,
+          limit: 7,
+        },
+        defendSuccess: {
+          state: false,
+          count: 0,
+          limit: 7,
+        },
+        deflected: {
+          state: false,
+          count: 0,
+          limit: 15,
+        }
       },
       defending: {
         state: false,
@@ -131,7 +145,9 @@ class App extends Component {
       },
       dead: {
         state: false,
-      }
+      },
+      respawn: false,
+      points: 0,
     },
     player2: {
       number: 2,
@@ -215,18 +231,29 @@ class App extends Component {
       attacking: {
         state: false,
         count: 0,
-        limit: 5,
+        limit: 10,
       },
-      attacked: {
-        state: false
+      success: {
+        attackSuccess: {
+          state: false,
+          count: 0,
+          limit: 7,
+        },
+        defendSuccess: {
+          state: false,
+          count: 0,
+          limit: 7,
+        },
+        deflected: {
+          state: false,
+          count: 0,
+          limit: 15,
+        }
       },
       defending: {
         state: false,
         count: 0,
         limit: 5,
-      },
-      defended: {
-        state: false
       },
       falling: {
         state: false,
@@ -235,7 +262,9 @@ class App extends Component {
       },
       dead: {
         state: false,
-      }
+      },
+      respawn: false,
+      points: 0,
     }
   }
 
@@ -254,6 +283,17 @@ class App extends Component {
     this.showCoordinates = true;
     this.selectedTileX = -1;
     this.selectedTileY = -1;
+
+    this.canvasWidth = 1100;
+    this.canvasHeight = 600;
+    this.floorImageWidth = 103;
+    this.floorImageHeight = 53;
+    this.wallImageWidth = 103;
+    this.wallImageHeight = 98;
+    this.sceneX = 1100/2;
+    this.sceneY = 120;
+    this.tileWidth = 50;
+
     this.gridInfo = [];
     this.gridInfo2D = [];
     this.gridInfo2 = [];
@@ -368,8 +408,22 @@ class App extends Component {
           count: 0,
           limit: 10,
         },
-        attacked: {
-          state: false
+        success: {
+          attackSuccess: {
+            state: false,
+            count: 0,
+            limit: 7,
+          },
+          defendSuccess: {
+            state: false,
+            count: 0,
+            limit: 7,
+          },
+          deflected: {
+            state: false,
+            count: 0,
+            limit: 15,
+          }
         },
         defending: {
           state: false,
@@ -383,7 +437,9 @@ class App extends Component {
         },
         dead: {
           state: false,
-        }
+        },
+        respawn: false,
+        points: 0,
       },
       {
         number: 2,
@@ -469,8 +525,22 @@ class App extends Component {
           count: 0,
           limit: 10,
         },
-        attacked: {
-          state: false
+        success: {
+          attackSuccess: {
+            state: false,
+            count: 0,
+            limit: 7,
+          },
+          defendSuccess: {
+            state: false,
+            count: 0,
+            limit: 7,
+          },
+          deflected: {
+            state: false,
+            count: 0,
+            limit: 15,
+          }
         },
         defending: {
           state: false,
@@ -487,107 +557,11 @@ class App extends Component {
         },
         dead: {
           state: false,
-        }
+        },
+        respawn: false,
+        points: 0,
       }
     ]
-    this.player1 = {
-      number: 1,
-      startPosition: {
-        cell: {
-          number: {
-            x: 8,
-            y: 2,
-          },
-          center: {
-            x: 0,
-            y: 0,
-          }
-        }
-      },
-      currentPosition: {
-        cell: {
-          number: {
-            x: 0,
-            y: 0,
-          },
-          center: {
-            x: 0,
-            y: 0,
-          }
-        }
-      },
-      nextPosition: {
-        x: 0,
-        y: 0,
-      },
-      target: {
-        cell: {
-          number: {
-            x: 0,
-            y: 0,
-          },
-          center: {
-            x: 0,
-            y: 0,
-          },
-        },
-        free: true,
-        occupant: {
-          type: '',
-          player: '',
-        },
-        void: false
-      },
-      direction: 'north',
-      turning: {
-        state: undefined,
-        toDirection: '',
-        delayCount: 0,
-        limit: 2.1,
-      },
-      action: 'idle',
-      moving: {
-        state: false,
-        step: 0,
-        course: '',
-        origin: {
-          number: {
-            x: 0,
-            y: 0,
-          },
-          center: {
-            x: 0,
-            y: 0,
-          },
-        },
-        destination: {
-          x: 0,
-          y: 0,
-        }
-      },
-      strafing: {
-        state: false,
-        direction: '',
-      },
-      attacking: {
-        state: false,
-        count: 0,
-        limit: 5,
-      },
-      defending: {
-        state: false,
-        count: 0,
-        limit: 5,
-      },
-      falling: {
-        state: false,
-        count: 0,
-        limit: 5,
-      },
-      dead: {
-        state: false,
-      }
-    };
     this.stepper = {
       now: 0,
       dt: 0,
@@ -796,8 +770,11 @@ class App extends Component {
         this.players[0].strafing.state = state;
         this.currentPlayer = 1;
       break;
+      case '1' :
+        this.respawn(this.players[0])
+      break;
       case 'r' :
-       this.restart();
+        this.restartGame();
       break;
 
       case 'u' :
@@ -852,6 +829,9 @@ class App extends Component {
         this.keyPressed[1].strafe = state;
         this.players[1].strafing.state = state;
         this.currentPlayer = 2;
+      break;
+      case '0' :
+        this.respawn(this.players[1])
       break;
     }
 
@@ -915,84 +895,17 @@ class App extends Component {
         keyPressedDirection = key;
       }
     }
-
-    // let player = this.players[this.currentPlayer-1];
     let nextPosition;
 
-    if (player.turning.state === false) {
-      player.direction = player.turning.toDirection;
-      player.nextPosition = {
-        x: player.currentPosition.cell.center.x,
-        y: player.currentPosition.cell.center.y
-      }
-      player.moving = {
-        state: false,
-        step: 0,
-        course: '',
-        origin: {
-          number: {
-            x: player.currentPosition.cell.number.x,
-            y: player.currentPosition.cell.number.y
-          },
-          center: {
-            x: player.currentPosition.cell.center.x,
-            y: player.currentPosition.cell.center.y
-          },
-        },
-        destination: player.target.cell.center
-      }
-      player.turning.toDirection = '';
-      player.turning.state = undefined;
-      this.getTarget(player);
-    }
 
-    if (player.dead.state === true) {
-      player.nextPosition = {
-        x: -30,
-        y: -30,
-      }
-    }
+    // deflection check
+      // if true,  AND  and less than limit increment and return/do nothing,
+      // if true and equal to/greater than limit resetting
 
-    if (player.attacking.state === true) {
-      // console.log('continue attacking');
-      if (player.attacking.count < player.attacking.limit) {
-        player.attacking.count++;
-        // console.log('attack count',player.attacking.count, player.attacking.limit);
-      }
-      if (player.attacking.count >= player.attacking.limit) {
+    // else {
 
 
-        this.getTarget(player)
-        if (player.target.occupant.type === 'player') {
-          if (this.players.[player.target.occupant.player-1].defending.state === false) {
-            this.players.[player.target.occupant.player-1].dead.state = true;
-            // this.players.[player.target.occupant.player-1].action = 'dead';
-          } else {
-            // console.log('attackdefended');
-          }
-        }
-
-        player.attacking = {
-          state: false,
-          count: 0,
-          limit: player.attacking.limit
-        }
-        player.action = 'idle';
-      }
-    }
-
-    if (player.defending.state === false) {
-      // console.log('stop defending');
-      player.defending = {
-          state: false,
-          count: 0,
-          limit: player.defending.limit
-        }
-        player.action = 'idle';
-    }
-
-
-
+    // DON'T READ INPUTS. JUST MOVE!!
     if (player.moving.state === true) {
 
       // console.log('player',player.number,' moving');
@@ -1038,10 +951,94 @@ class App extends Component {
 
       }
 
-    } else if (player.moving.state === false) {
+    }
 
+    // CAN READ INPUTS
+    else if (player.moving.state === false) {
+
+      // CHECK & UPDATE ACTIONS IN PROGRESS!!
+      if (player.turning.state === false) {
+        player.direction = player.turning.toDirection;
+        player.nextPosition = {
+          x: player.currentPosition.cell.center.x,
+          y: player.currentPosition.cell.center.y
+        }
+        player.moving = {
+          state: false,
+          step: 0,
+          course: '',
+          origin: {
+            number: {
+              x: player.currentPosition.cell.number.x,
+              y: player.currentPosition.cell.number.y
+            },
+            center: {
+              x: player.currentPosition.cell.center.x,
+              y: player.currentPosition.cell.center.y
+            },
+          },
+          destination: player.target.cell.center
+        }
+        player.turning.toDirection = '';
+        player.turning.state = undefined;
+        this.getTarget(player);
+      }
+      if (player.defending.state === false) {
+        // console.log('stop defending');
+        player.defending = {
+            state: false,
+            count: 0,
+            limit: player.defending.limit
+          }
+          player.action = 'idle';
+      }
+
+      if (player.dead.state === true) {
+        player.nextPosition = {
+          x: -30,
+          y: -30,
+        }
+      }
+      if (player.attacking.state === true) {
+        if (player.attacking.count < player.attacking.limit) {
+          player.attacking.count++;
+        }
+        if (player.attacking.count >= player.attacking.limit) {
+
+          this.getTarget(player)
+          if (player.target.occupant.type === 'player') {
+            if (this.players.[player.target.occupant.player-1].defending.state === false) {
+
+              // set player attack success!!!
+
+              let opposingPlayer;
+              if (player.number === 1) {
+                opposingPlayer = this.players[1]
+              } else if (player.number === 2) {
+                opposingPlayer = this.players[0]
+              }
+              player.points++;
+              this.killPlayer(opposingPlayer);
+            } else {
+              // console.log('attackdefended');
+
+              // set oppsing player defend success & player attack deflected
+            }
+          }
+
+          player.attacking = {
+            state: false,
+            count: 0,
+            limit: player.attacking.limit
+          }
+          player.action = 'idle';
+        }
+      }
+
+
+      // CAN READ MOVE INPUTS!!
       if (player.attacking.state === false && player.defending.state === false) {
-        // console.log('here');
+        // CONFIRM MOVE KEYPRESS!!
         if (
           this.keyPressed[player.number-1].north === true ||
           this.keyPressed[player.number-1].south === true ||
@@ -1052,15 +1049,11 @@ class App extends Component {
           this.keyPressed[player.number-1].southEast === true ||
           this.keyPressed[player.number-1].southWest === true
         ) {
-          // console.log('move key pressed');
+          // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
           if (keyPressedDirection === player.direction && player.strafing.state === false) {
-            // console.log('player',player.number,' moving');
             let target = this.getTarget(player)
 
-            if (
-              target.free === true &&
-              player.target.void === false
-            ) {
+            if (target.free === true && player.target.void === false) {
 
               if (player.dead.state === true) {
 
@@ -1116,6 +1109,7 @@ class App extends Component {
             }
 
           }
+          // CHANGE DIRECTION IF NOT STRAFING!!
           else if (keyPressedDirection !== player.direction && player.strafing.state === false) {
             // console.log('change player direction to',keyPressedDirection);
             // console.log('player',player.number,' turn-start');
@@ -1123,6 +1117,7 @@ class App extends Component {
             player.turning.toDirection = keyPressedDirection;
 
           }
+          // MOVE WHILE STRAFING!!
           else if (keyPressedDirection !== player.direction && player.strafing.state === true) {
 
             player.strafing.direction = keyPressedDirection;
@@ -1152,20 +1147,18 @@ class App extends Component {
           }
         }
       }
-
-      // else
+      // CAN READ NON-MOVE INPUTS!!
       if (player.strafing.state === false) {
 
         if (this.keyPressed[player.number-1].attack === true || this.keyPressed[player.number-1].defend === true) {
-          // console.log('non-move key pressed');
+
+          // ALREADY ATTACKING/DEFENDING!!
           if (player.attacking.state === true || player.defending.state === true) {
 
-            // console.log('continue attacking');
             if (this.keyPressed[player.number-1].attack === true) {
               // console.log('already attacking');
             }
-            //
-            if (this.keyPressed.defend === true) {
+            if (this.keyPressed[player.number-1].defend === true) {
               // console.log('already defending');
             }
           }
@@ -1192,83 +1185,15 @@ class App extends Component {
             }
           }
         }
-
       }
-
-      // if (this.keyPressed[player.number-1].attack === true || this.keyPressed[player.number-1].defend === true) {
-      //   // console.log('non-move key pressed');
-      //   if (player.attacking.state === true || player.defending.state === true) {
-      //
-      //     // console.log('continue attacking');
-      //     if (this.keyPressed[player.number-1].attack === true) {
-      //       // console.log('already attacking');
-      //       // if (player.attacking.count < player.attacking.limit) {
-      //       //   player.attacking.count++;
-      //       // }
-      //       // if (player.attacking.count >= player.attacking.limit) {
-      //       //   player.attacking = {
-      //       //     state: false,
-      //       //     count: 0,
-      //       //     limit: player.attacking.limit
-      //       //   }
-      //       // }
-      //     }
-      //     //
-      //     if (this.keyPressed.defend === true) {
-      //       // console.log('already defending');
-      //       // if (player.defending.count < player.defending.limit) {
-      //       //   player.defending.count++;
-      //       // }
-      //       // if (player.defending.count >= player.defending.limit) {
-      //       //   player.defending = {
-      //       //     state: false,
-      //       //     count: 0,
-      //       //     limit: player.defending.limit
-      //       //   }
-      //       // }
-      //     }
-      //   }
-      //
-      //   if (player.attacking.state === false && player.defending.state === false) {
-      //
-      //     if (this.keyPressed[player.number-1].attack === true) {
-      //       // console.log('start attacking');
-      //       this.getTarget(player)
-      //       if (player.target.occupant.type === 'player') {
-      //         if (this.players.[player.target.occupant.player-1].defending.state === false) {
-      //           this.players.[player.target.occupant.player-1].dead.state = true;
-      //           // this.players.[player.target.occupant.player-1].action = 'dead';
-      //         } else {
-      //           // console.log('attackdefended');
-      //         }
-      //       }
-      //
-      //       player.action = 'attacking';
-      //       player.attacking = {
-      //         state: true,
-      //         count: 1,
-      //         limit: player.attacking.limit,
-      //       }
-      //
-      //     }
-      //     if (this.keyPressed[player.number-1].defend === true) {
-      //       // console.log('start defending');
-      //       player.action = 'defending';
-      //       player.defending = {
-      //         state: true,
-      //         count: 1,
-      //         limit: player.defending.limit,
-      //       }
-      //     }
-      //   }
-      // }
-
     }
 
+    // attack/defend success check and increment or reset!!!
+
+    // }
 
 
     this.players[player.number-1] = player;
-    // this.players[this.currentPlayer-1] = player;
     if (player.number === 1) {
       this.setState({
         player1: player
@@ -1283,22 +1208,19 @@ class App extends Component {
     this.drawPlayerStep(player.number, canvas, context);
 
   }
+
   drawPlayerStep = (playerNumber, canvas, context) => {
     // console.log('drawing player step',playerNumber);
 
-    // grid materials
     canvas.width = 1100;
     canvas.height = 600;
-
     let gridInfo = [];
-
     class Point {
         constructor(x, y) {
             this.x = x;
             this.y = y;
         }
     }
-
     let floor = this.refs.floor2;
     let wall = this.refs.wall;
     let wall2 = this.refs.wall2;
@@ -1318,9 +1240,7 @@ class App extends Component {
     gridInfo = this.gridInfo;
 
     let player = this.players[playerNumber-1]
-    // let player = this.players[this.currentPlayer-1];
 
-    // add new sets for 2nd player
     let playerImgs = [
       {
         idle: {
@@ -1343,6 +1263,16 @@ class App extends Component {
           east: this.refs.playerImgIdleEast,
           west: this.refs.playerImgIdleWest,
         },
+        strafing: {
+          north: this.refs.playerImgIdleNorth,
+          northWest: this.refs.playerImgIdleNorthWest,
+          northEast: this.refs.playerImgIdleNorthEast,
+          south: this.refs.playerImgIdleSouth,
+          southWest: this.refs.playerImgIdleSouthWest,
+          southEast: this.refs.playerImgIdleSouthEast,
+          east: this.refs.playerImgIdleEast,
+          west: this.refs.playerImgIdleWest,
+        },
         attacking: {
           north: this.refs.playerImgIdleNorth,
           northWest: this.refs.playerImgIdleNorthWest,
@@ -1354,6 +1284,26 @@ class App extends Component {
           west: this.refs.playerImgIdleWest,
         },
         defending: {
+          north: this.refs.playerImgIdleNorth,
+          northWest: this.refs.playerImgIdleNorthWest,
+          northEast: this.refs.playerImgIdleNorthEast,
+          south: this.refs.playerImgIdleSouth,
+          southWest: this.refs.playerImgIdleSouthWest,
+          southEast: this.refs.playerImgIdleSouthEast,
+          east: this.refs.playerImgIdleEast,
+          west: this.refs.playerImgIdleWest,
+        },
+        deflected: {
+          north: this.refs.playerImgIdleNorth,
+          northWest: this.refs.playerImgIdleNorthWest,
+          northEast: this.refs.playerImgIdleNorthEast,
+          south: this.refs.playerImgIdleSouth,
+          southWest: this.refs.playerImgIdleSouthWest,
+          southEast: this.refs.playerImgIdleSouthEast,
+          east: this.refs.playerImgIdleEast,
+          west: this.refs.playerImgIdleWest,
+        },
+        falling: {
           north: this.refs.playerImgIdleNorth,
           northWest: this.refs.playerImgIdleNorthWest,
           northEast: this.refs.playerImgIdleNorthEast,
@@ -1385,6 +1335,16 @@ class App extends Component {
           east: this.refs.player2ImgIdleEast,
           west: this.refs.player2ImgIdleWest,
         },
+        strafing: {
+          north: this.refs.player2ImgIdleNorth,
+          northWest: this.refs.player2ImgIdleNorthWest,
+          northEast: this.refs.player2ImgIdleNorthEast,
+          south: this.refs.player2ImgIdleSouth,
+          southWest: this.refs.player2ImgIdleSouthWest,
+          southEast: this.refs.player2ImgIdleSouthEast,
+          east: this.refs.player2ImgIdleEast,
+          west: this.refs.player2ImgIdleWest,
+        },
         attacking: {
           north: this.refs.player2ImgIdleNorth,
           northWest: this.refs.player2ImgIdleNorthWest,
@@ -1405,6 +1365,26 @@ class App extends Component {
           east: this.refs.player2ImgIdleEast,
           west: this.refs.player2ImgIdleWest,
         },
+        deflected: {
+          north: this.refs.player2ImgIdleNorth,
+          northWest: this.refs.player2ImgIdleNorthWest,
+          northEast: this.refs.player2ImgIdleNorthEast,
+          south: this.refs.player2ImgIdleSouth,
+          southWest: this.refs.player2ImgIdleSouthWest,
+          southEast: this.refs.player2ImgIdleSouthEast,
+          east: this.refs.player2ImgIdleEast,
+          // west: this.refs.player2ImgIdleWest,
+        },
+        falling: {
+          north: this.refs.player2ImgIdleNorth,
+          northWest: this.refs.player2ImgIdleNorthWest,
+          northEast: this.refs.player2ImgIdleNorthEast,
+          south: this.refs.player2ImgIdleSouth,
+          southWest: this.refs.player2ImgIdleSouthWest,
+          southEast: this.refs.player2ImgIdleSouthEast,
+          east: this.refs.player2ImgIdleEast,
+          // west: this.refs.player2ImgIdleWest,
+        },
       }
     ]
 
@@ -1414,462 +1394,341 @@ class App extends Component {
     if (player.falling.state === true) {
 
       if (player.falling.count === player.falling.limit) {
-        player.action = 'idle';
-        player.falling = {
-          state: false,
-          count: 0,
-          limit: 7,
-        }
-        player.target = {
-          cell: {
-            number: {
-              x: 0,
-              y: 0,
-            },
-            center: {
-              x: 0,
-              y: 0,
-            },
-          },
-          free: true,
-          occupant: {
-            type: '',
-            player: '',
-          },
-          void: false
-        };
-        player.moving = {
-          state: false,
-          step: 0,
-          course: '',
-          origin: {
-            number: {
-              x: 0,
-              y: 0,
-            },
-            center: {
-              x: 0,
-              y: 0,
-            },
-          },
-          destination: {
-            x: 0,
-            y: 0,
-          }
-        };
-        player.currentPosition = {
-          cell: {
-            number: {
-              x: -30,
-              y: -30,
-            },
-            center: {
-              x: 0,
-              y: 0,
-            }
-          }
-        };
-        player.dead.state = true;
+        this.killPlayer(player)
       }
 
     }
 
-    // if (player.action !== 'attacking' || player.action !== 'defending') {
+    for (var x = 0; x < 10; x++) {
+      for (var y = 0; y < 10; y++) {
 
-      // context2.clearRect(0, 0, canvas2.width, canvas2.height);
+        let p = new Point();
+        p.x = x * tileWidth;
+        p.y = y * tileWidth;
 
-      for (var x = 0; x < 10; x++) {
-        for (var y = 0; y < 10; y++) {
-          // console.log('cell draw order',x,y);
-          let p = new Point();
-          p.x = x * tileWidth;
-          p.y = y * tileWidth;
+        let iso = this.cartesianToIsometric(p);
+        let offset = {x: floorImageWidth/2, y: floorImageHeight}
 
-          let iso = this.cartesianToIsometric(p);
-          let offset = {x: floorImageWidth/2, y: floorImageHeight}
+        iso.x += sceneX
+        iso.y += sceneY
 
-          iso.x += sceneX
-          iso.y += sceneY
+        let center = {
+          x: iso.x - offset.x/2+23,
+          y: iso.y - offset.y/2-2,
+        }
 
-          let center = {
-            x: iso.x - offset.x/2+23,
-            y: iso.y - offset.y/2-2,
+        let cellLevelData;
+        let allCells = gridInfo;
+        for (const elem of allCells) {
+          if (elem.number.x === x && elem.number.y === y) {
+            cellLevelData = elem.levelData;
+          }
+        }
+
+        context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
+
+        context.fillStyle = 'black';
+        context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
+
+        context.fillStyle = "green";
+        context.fillRect(center.x, center.y,5,5);
+
+        let vertices = [
+          {x:center.x, y:center.y+25},
+          {x:center.x+50, y:center.y},
+          {x:center.x, y:center.y-25},
+          {x:center.x-50, y:center.y},
+        ];
+
+        for (const vertex of vertices) {
+          context.fillStyle = "yellow";
+          context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
+        }
+
+        function playerDrawLog (x,y,plyr) {
+          console.log('** playerDrawLog **');
+          console.log('-- player --',plyr.number);
+          console.log('-- strafing --',plyr.strafing.state);
+          console.log('-- turning --',plyr.turning.state);
+          console.log('-- currently drawing --',x,y);
+          console.log('-- current position --',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y);
+          console.log('-- moving state --',plyr.moving.state);
+          console.log('-- moving step --',plyr.moving.step);
+          console.log('-- target --',plyr.target.cell.number.x,plyr.target.cell.number.y);
+          console.log('-- direction --',plyr.direction);
+          console.log('-- origin --',plyr.moving.origin.number.x,plyr.moving.origin.number.y);
+          console.log('-- action --',plyr.action);
+        }
+
+        for (const plyr of this.players) {
+
+          let point = {
+            x: plyr.nextPosition.x,
+            y: plyr.nextPosition.y,
+          };
+
+          switch(plyr.action) {
+
+            case 'idle':
+              switch(plyr.direction) {
+                case 'north' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].idle.north;
+                  newDirection = 'north';
+                break;
+                case 'northWest' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].idle.northWest;
+                  newDirection = 'northWest';
+                break;
+                case 'northEast' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].idle.northEast;
+                  newDirection = 'northEast';
+                break;
+                case 'east' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].idle.east;
+                  newDirection = 'east';
+                break;
+                case 'west' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].idle.west;
+                  newDirection = 'west';
+                break;
+                case 'south' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].idle.south;
+                  newDirection = 'south';
+                break;
+                case 'southWest' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].idle.southWest;
+                  newDirection = 'southWest';
+                break;
+                case 'southEast' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].idle.southEast;
+                  newDirection = 'southEast';
+                break;
+              }
+            break;
+            case 'moving':
+              switch(plyr.direction) {
+                case 'north' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].walking.north;
+                  newDirection = 'north';
+                break;
+                case 'northWest' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].walking.northWest;
+                  newDirection = 'northWest';
+                break;
+                case 'northEast' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].walking.northEast;
+                  newDirection = 'northEast';
+                break;
+                case 'east' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].walking.east;
+                  newDirection = 'east';
+                break;
+                case 'west' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].walking.west;
+                  newDirection = 'west';
+                break;
+                case 'south' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].walking.south;
+                  newDirection = 'south';
+                break;
+                case 'southWest' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].walking.southWest;
+                  newDirection = 'southWest';
+                break;
+                case 'southEast' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].walking.southEast;
+                  newDirection = 'southEast';
+                break;
+              }
+            break;
+            case 'strafe moving':
+              switch(plyr.direction) {
+                case 'north' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].strafing.north;
+                  newDirection = 'north';
+                break;
+                case 'northWest' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].strafing.northWest;
+                  newDirection = 'northWest';
+                break;
+                case 'northEast' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].strafing.northEast;
+                  newDirection = 'northEast';
+                break;
+                case 'east' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].strafing.east;
+                  newDirection = 'east';
+                break;
+                case 'west' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].strafing.west;
+                  newDirection = 'west';
+                break;
+                case 'south' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].strafing.south;
+                  newDirection = 'south';
+                break;
+                case 'southWest' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].strafing.southWest;
+                  newDirection = 'southWest';
+                break;
+                case 'southEast' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].strafing.southEast;
+                  newDirection = 'southEast';
+                break;
+              }
+            break;
+            case 'falling':
+              switch(plyr.direction) {
+                case 'north' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].falling.north;
+                  newDirection = 'north';
+                break;
+                case 'northWest' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].falling.northWest;
+                  newDirection = 'northWest';
+                break;
+                case 'northEast' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].falling.northEast;
+                  newDirection = 'northEast';
+                break;
+                case 'east' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].falling.east;
+                  newDirection = 'east';
+                break;
+                case 'west' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].falling.west;
+                  newDirection = 'west';
+                break;
+                case 'south' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].falling.south;
+                  newDirection = 'south';
+                break;
+                case 'southWest' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].falling.southWest;
+                  newDirection = 'southWest';
+                break;
+                case 'southEast' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].falling.southEast;
+                  newDirection = 'southEast';
+                break;
+              }
+            break;
+            case 'attacking':
+              switch(plyr.direction) {
+                case 'north' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].attacking.north;
+                  newDirection = 'north';
+                break;
+                case 'northWest' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].attacking.northWest;
+                  newDirection = 'northWest';
+                break;
+                case 'northEast' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].attacking.northEast;
+                  newDirection = 'northEast';
+                break;
+                case 'east' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].attacking.east;
+                  newDirection = 'east';
+                break;
+                case 'west' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].attacking.west;
+                  newDirection = 'west';
+                break;
+                case 'south' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].attacking.south;
+                  newDirection = 'south';
+                break;
+                case 'southWest' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].attacking.southWest;
+                  newDirection = 'southWest';
+                break;
+                case 'southEast' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].attacking.southEast;
+                  newDirection = 'southEast';
+                break;
+              }
+            break;
+            case 'defending':
+              switch(plyr.direction) {
+                case 'north' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].defending.north;
+                  newDirection = 'north';
+                break;
+                case 'northWest' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].defending.northWest;
+                  newDirection = 'northWest';
+                break;
+                case 'northEast' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].defending.northEast;
+                  newDirection = 'northEast';
+                break;
+                case 'east' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].defending.east;
+                  newDirection = 'east';
+                break;
+                case 'west' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].defending.west;
+                  newDirection = 'west';
+                break;
+                case 'south' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].defending.south;
+                  newDirection = 'south';
+                break;
+                case 'southWest' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].defending.southWest;
+                  newDirection = 'southWest';
+                break;
+                case 'southEast' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].defending.southEast;
+                  newDirection = 'southEast';
+                break;
+              }
+            break;
+            case 'deflected' :
+              switch(plyr.direction) {
+                case 'north' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].deflected.north;
+                  newDirection = 'north';
+                break;
+                case 'northWest' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].deflected.northWest;
+                  newDirection = 'northWest';
+                break;
+                case 'northEast' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].deflected.northEast;
+                  newDirection = 'northEast';
+                break;
+                case 'east' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].deflected.east;
+                  newDirection = 'east';
+                break;
+                case 'west' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].deflected.west;
+                  newDirection = 'west';
+                break;
+                case 'south' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].deflected.south;
+                  newDirection = 'south';
+                break;
+                case 'southWest' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].deflected.southWest;
+                  newDirection = 'southWest';
+                break;
+                case 'southEast' :
+                  updatedPlayerImg = playerImgs[plyr.number-1].deflected.southEast;
+                  newDirection = 'southEast';
+                break;
+              }
+            break;
+            case 'dead':
+              updatedPlayerImg = playerImgs[plyr.number-1].idle.north;
+            break;
           }
 
-          let cellLevelData;
-          let allCells = gridInfo;
-          for (const elem of allCells) {
-            if (elem.number.x === x && elem.number.y === y) {
-              cellLevelData = elem.levelData;
-            }
-          }
-
-          context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
-
-          context.fillStyle = 'black';
-          context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
-
-          context.fillStyle = "green";
-          context.fillRect(center.x, center.y,5,5);
-
-          let vertices = [
-            {x:center.x, y:center.y+25},
-            {x:center.x+50, y:center.y},
-            {x:center.x, y:center.y-25},
-            {x:center.x-50, y:center.y},
-          ];
-
-          for (const vertex of vertices) {
-            context.fillStyle = "yellow";
-            context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
-          }
-
-          function playerDrawLog (x,y) {
-            console.log('** playerDrawLog **');
-            console.log('-- player --',player.number);
-            console.log('-- strafing --',player.strafing.state);
-            console.log('-- turning --',player.turning.state);
-            console.log('-- currently drawing --',x,y);
-            console.log('-- current position --',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
-            console.log('-- moving state --',player.moving.state);
-            console.log('-- moving step --',player.moving.step);
-            console.log('-- target --',player.target.cell.number.x,player.target.cell.number.y);
-            console.log('-- direction --',player.direction);
-            console.log('-- origin --',player.moving.origin.number.x,player.moving.origin.number.y);
-          }
-
-          for (const plyr of this.players) {
-
-            let point = {
-              x: plyr.nextPosition.x,
-              y: plyr.nextPosition.y,
-            };
-
-            switch(plyr.action) {
-              case 'dead':
-                updatedPlayerImg = playerImgs[plyr.number-1].idle.north;
-              break;
-              case 'idle':
-                switch(plyr.direction) {
-                  case 'north' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].idle.north;
-                    newDirection = 'north';
-                  break;
-                  case 'northWest' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].idle.northWest;
-                    newDirection = 'northWest';
-                  break;
-                  case 'northEast' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].idle.northEast;
-                    newDirection = 'northEast';
-                  break;
-                  case 'east' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].idle.east;
-                    newDirection = 'east';
-                  break;
-                  case 'west' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].idle.west;
-                    newDirection = 'west';
-                  break;
-                  case 'south' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].idle.south;
-                    newDirection = 'south';
-                  break;
-                  case 'southWest' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].idle.southWest;
-                    newDirection = 'southWest';
-                  break;
-                  case 'southEast' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].idle.southEast;
-                    newDirection = 'southEast';
-                  break;
-                }
-              break;
-              case 'moving':
-                switch(plyr.direction) {
-                  case 'north' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.north;
-                    newDirection = 'north';
-                  break;
-                  case 'northWest' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.northWest;
-                    newDirection = 'northWest';
-                  break;
-                  case 'northEast' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.northEast;
-                    newDirection = 'northEast';
-                  break;
-                  case 'east' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.east;
-                    newDirection = 'east';
-                  break;
-                  case 'west' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.west;
-                    newDirection = 'west';
-                  break;
-                  case 'south' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.south;
-                    newDirection = 'south';
-                  break;
-                  case 'southWest' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.southWest;
-                    newDirection = 'southWest';
-                  break;
-                  case 'southEast' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.southEast;
-                    newDirection = 'southEast';
-                  break;
-                }
-              break;
-              case 'strafe moving':
-                switch(plyr.direction) {
-                  case 'north' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.north;
-                    newDirection = 'north';
-                  break;
-                  case 'northWest' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.northWest;
-                    newDirection = 'northWest';
-                  break;
-                  case 'northEast' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.northEast;
-                    newDirection = 'northEast';
-                  break;
-                  case 'east' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.east;
-                    newDirection = 'east';
-                  break;
-                  case 'west' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.west;
-                    newDirection = 'west';
-                  break;
-                  case 'south' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.south;
-                    newDirection = 'south';
-                  break;
-                  case 'southWest' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.southWest;
-                    newDirection = 'southWest';
-                  break;
-                  case 'southEast' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.southEast;
-                    newDirection = 'southEast';
-                  break;
-                }
-              break;
-              case 'falling':
-                switch(plyr.direction) {
-                  case 'north' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.north;
-                    newDirection = 'north';
-                  break;
-                  case 'northWest' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.northWest;
-                    newDirection = 'northWest';
-                  break;
-                  case 'northEast' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.northEast;
-                    newDirection = 'northEast';
-                  break;
-                  case 'east' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.east;
-                    newDirection = 'east';
-                  break;
-                  case 'west' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.west;
-                    newDirection = 'west';
-                  break;
-                  case 'south' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.south;
-                    newDirection = 'south';
-                  break;
-                  case 'southWest' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.southWest;
-                    newDirection = 'southWest';
-                  break;
-                  case 'southEast' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].walking.southEast;
-                    newDirection = 'southEast';
-                  break;
-                }
-              break;
-              case 'attacking':
-                switch(plyr.direction) {
-                  case 'north' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].attacking.north;
-                    newDirection = 'north';
-                  break;
-                  case 'northWest' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].attacking.northWest;
-                    newDirection = 'northWest';
-                  break;
-                  case 'northEast' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].attacking.northEast;
-                    newDirection = 'northEast';
-                  break;
-                  case 'east' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].attacking.east;
-                    newDirection = 'east';
-                  break;
-                  case 'west' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].attacking.west;
-                    newDirection = 'west';
-                  break;
-                  case 'south' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].attacking.south;
-                    newDirection = 'south';
-                  break;
-                  case 'southWest' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].attacking.southWest;
-                    newDirection = 'southWest';
-                  break;
-                  case 'southEast' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].attacking.southEast;
-                    newDirection = 'southEast';
-                  break;
-                }
-              break;
-              case 'defending':
-                switch(plyr.direction) {
-                  case 'north' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].defending.north;
-                    newDirection = 'north';
-                  break;
-                  case 'northWest' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].defending.northWest;
-                    newDirection = 'northWest';
-                  break;
-                  case 'northEast' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].defending.northEast;
-                    newDirection = 'northEast';
-                  break;
-                  case 'east' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].defending.east;
-                    newDirection = 'east';
-                  break;
-                  case 'west' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].defending.west;
-                    newDirection = 'west';
-                  break;
-                  case 'south' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].defending.south;
-                    newDirection = 'south';
-                  break;
-                  case 'southWest' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].defending.southWest;
-                    newDirection = 'southWest';
-                  break;
-                  case 'southEast' :
-                    updatedPlayerImg = playerImgs[plyr.number-1].defending.southEast;
-                    newDirection = 'southEast';
-                  break;
-                }
-              break;
-            }
-
-            if (plyr.target.void === false && plyr.moving.state === true) {
-              if (plyr.direction === 'north' || plyr.direction === 'northWest' || plyr.direction === 'west') {
-                if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
-                  if (
-                    plyr.direction === 'east' ||
-                    // newDirection === 'east' ||
-                    plyr.direction === 'west' ||
-                    // newDirection === 'west' ||
-                    plyr.direction === 'north' ||
-                    // newDirection === 'north' ||
-                    plyr.direction === 'south'
-                    // newDirection === 'south'
-                  ) {
-                    context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                  } else {
-                    context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
-                  }
-                  // playerDrawLog(x,y)
-                }
-              }
-              if (plyr.direction === 'east' || plyr.direction === 'south' || plyr.direction === 'southEast') {
-                if (x === plyr.target.cell.number.x && y === plyr.target.cell.number.y) {
-                  if (
-                    plyr.direction === 'east' ||
-                    // newDirection === 'east' ||
-                    plyr.direction === 'west' ||
-                    // newDirection === 'west' ||
-                    plyr.direction === 'north' ||
-                    // newDirection === 'north' ||
-                    plyr.direction === 'south'
-                    // newDirection === 'south'
-                  ) {
-                    context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                  } else {
-                    context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
-                  }
-                  // playerDrawLog(x,y)
-                }
-              }
-              if (plyr.direction === 'northEast') {
-                // east edge disappearing bug fix
-                if (plyr.target.cell.number.x === 9) {
-                  if (x === 9 && y === plyr.target.cell.number.y+1) {
-                    if (
-                      plyr.direction === 'east' ||
-                      // newDirection === 'east' ||
-                      plyr.direction === 'west' ||
-                      // newDirection === 'west' ||
-                      plyr.direction === 'north' ||
-                      // newDirection === 'north' ||
-                      plyr.direction === 'south'
-                      // newDirection === 'south'
-                    ) {
-                      context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                    } else {
-                      context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
-                    }
-                    // playerDrawLog(x,y)
-                  }
-                } else {
-                  if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
-                    if (
-                      plyr.direction === 'east' ||
-                      // newDirection === 'east' ||
-                      plyr.direction === 'west' ||
-                      // newDirection === 'west' ||
-                      plyr.direction === 'north' ||
-                      // newDirection === 'north' ||
-                      plyr.direction === 'south'
-                      // newDirection === 'south'
-                    ) {
-                      context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                    } else {
-                      context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
-                    }
-                    // playerDrawLog(x,y)
-                  }
-                }
-
-              }
-              if (plyr.direction === 'southWest') {
-                if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
-                  if (
-                    plyr.direction === 'east' ||
-                    // newDirection === 'east' ||
-                    plyr.direction === 'west' ||
-                    // newDirection === 'west' ||
-                    plyr.direction === 'north' ||
-                    // newDirection === 'north' ||
-                    plyr.direction === 'south'
-                    // newDirection === 'south'
-                  ) {
-                    context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                  } else {
-                    context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
-                  }
-                  // playerDrawLog(x,y)
-                }
-              }
-            }
-            else {
+          if (plyr.target.void === false && plyr.moving.state === true) {
+            if (plyr.direction === 'north' || plyr.direction === 'northWest' || plyr.direction === 'west') {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
-
                 if (
                   plyr.direction === 'east' ||
                   // newDirection === 'east' ||
@@ -1884,37 +1743,32 @@ class App extends Component {
                 } else {
                   context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
-
-                if (plyr.attacking.state === true) {
-
-                  if (plyr.attacking.count > 0 && plyr.attacking.count < 3) {
-                    context.fillStyle = "green";
-                    context.beginPath();
-                    context.arc(point.x-20, point.y-20, 5, 0, 2 * Math.PI);
-                    context.fill();
-                  }
-
-                  if (plyr.attacking.count > plyr.attacking.limit-4 && plyr.attacking.count < plyr.attacking.limit+1) {
-                    context.fillStyle = "brown";
-                    context.beginPath();
-                    context.arc(point.x-18, point.y-18, 15, 0, 2 * Math.PI);
-                    context.fill();
-                  }
-
-                }
-                if (plyr.defending.state === true) {
-                  context.fillStyle = "blue";
-                  context.beginPath();
-                  context.arc(point.x-18, point.y-18, 15, 0, 2 * Math.PI);
-                  context.fill();
-                }
-                // playerDrawLog(x,y)
+                // playerDrawLog(x,y,plyr)
               }
             }
-
-            if (plyr.strafing.state === true) {
-              if (plyr.strafing.direction === 'north' || plyr.strafing.direction === 'northWest' || plyr.strafing.direction === 'west') {
-                if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+            if (plyr.direction === 'east' || plyr.direction === 'south' || plyr.direction === 'southEast') {
+              if (x === plyr.target.cell.number.x && y === plyr.target.cell.number.y) {
+                if (
+                  plyr.direction === 'east' ||
+                  // newDirection === 'east' ||
+                  plyr.direction === 'west' ||
+                  // newDirection === 'west' ||
+                  plyr.direction === 'north' ||
+                  // newDirection === 'north' ||
+                  plyr.direction === 'south'
+                  // newDirection === 'south'
+                ) {
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                } else {
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                }
+                // playerDrawLog(x,y,plyr)
+              }
+            }
+            if (plyr.direction === 'northEast') {
+              // east edge disappearing bug fix
+              if (plyr.target.cell.number.x === 9) {
+                if (x === 9 && y === plyr.target.cell.number.y+1) {
                   if (
                     plyr.direction === 'east' ||
                     // newDirection === 'east' ||
@@ -1929,29 +1783,9 @@ class App extends Component {
                   } else {
                     context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                   }
-                  // playerDrawLog(x,y)
+                  // playerDrawLog(x,y,plyr)
                 }
-              }
-              if (plyr.strafing.direction === 'east' || plyr.strafing.direction === 'south' || plyr.strafing.direction === 'southEast') {
-                if (x === plyr.target.cell.number.x && y === plyr.target.cell.number.y) {
-                  if (
-                    plyr.direction === 'east' ||
-                    // newDirection === 'east' ||
-                    plyr.direction === 'west' ||
-                    // newDirection === 'west' ||
-                    plyr.direction === 'north' ||
-                    // newDirection === 'north' ||
-                    plyr.direction === 'south'
-                    // newDirection === 'south'
-                  ) {
-                    context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                  } else {
-                    context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
-                  }
-                  // playerDrawLog(x,y)
-                }
-              }
-              if (plyr.strafing.direction === 'northEast') {
+              } else {
                 if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
                   if (
                     plyr.direction === 'east' ||
@@ -1970,29 +1804,95 @@ class App extends Component {
                   // playerDrawLog(x,y)
                 }
               }
-              if (plyr.strafing.direction === 'southWest') {
-                if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
-                  if (
-                    plyr.direction === 'east' ||
-                    // newDirection === 'east' ||
-                    plyr.direction === 'west' ||
-                    // newDirection === 'west' ||
-                    plyr.direction === 'north' ||
-                    // newDirection === 'north' ||
-                    plyr.direction === 'south'
-                    // newDirection === 'south'
-                  ) {
-                    context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                  } else {
-                    context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
-                  }
-                  // playerDrawLog(x,y)
+
+            }
+            if (plyr.direction === 'southWest') {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
+                if (
+                  plyr.direction === 'east' ||
+                  // newDirection === 'east' ||
+                  plyr.direction === 'west' ||
+                  // newDirection === 'west' ||
+                  plyr.direction === 'north' ||
+                  // newDirection === 'north' ||
+                  plyr.direction === 'south'
+                  // newDirection === 'south'
+                ) {
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                } else {
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
+                // playerDrawLog(x,y,plyr)
               }
             }
-            if (plyr.falling.state === true) {
+          }
+          else if (plyr.moving.state === false) {
+            if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
 
-              if (x === 0 && y === 0) {
+              if (
+                plyr.direction === 'east' ||
+                // newDirection === 'east' ||
+                plyr.direction === 'west' ||
+                // newDirection === 'west' ||
+                plyr.direction === 'north' ||
+                // newDirection === 'north' ||
+                plyr.direction === 'south'
+                // newDirection === 'south'
+              ) {
+                context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+              } else {
+                context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+              }
+
+              if (plyr.attacking.state === true) {
+
+                if (plyr.attacking.count > 0 && plyr.attacking.count < 3) {
+                  context.fillStyle = "green";
+                  context.beginPath();
+                  context.arc(point.x-20, point.y-20, 5, 0, 2 * Math.PI);
+                  context.fill();
+                }
+
+                if (plyr.attacking.count > plyr.attacking.limit-4 && plyr.attacking.count < plyr.attacking.limit+1) {
+                  context.fillStyle = "brown";
+                  context.beginPath();
+                  context.arc(point.x-18, point.y-18, 15, 0, 2 * Math.PI);
+                  context.fill();
+                }
+
+              }
+              if (plyr.defending.state === true) {
+                context.fillStyle = "blue";
+                context.beginPath();
+                context.arc(point.x-18, point.y-18, 15, 0, 2 * Math.PI);
+                context.fill();
+              }
+              // playerDrawLog(x,y,plyr)
+            }
+          }
+
+          if (plyr.strafing.state === true) {
+            if (plyr.strafing.direction === 'north' || plyr.strafing.direction === 'northWest' || plyr.strafing.direction === 'west') {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+                if (
+                  plyr.direction === 'east' ||
+                  // newDirection === 'east' ||
+                  plyr.direction === 'west' ||
+                  // newDirection === 'west' ||
+                  plyr.direction === 'north' ||
+                  // newDirection === 'north' ||
+                  plyr.direction === 'south'
+                  // newDirection === 'south'
+                ) {
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                } else {
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                }
+                // playerDrawLog(x,y,plyr)
+              }
+            }
+            if (plyr.strafing.direction === 'east' || plyr.strafing.direction === 'south' || plyr.strafing.direction === 'southEast') {
+              if (x === plyr.target.cell.number.x && y === plyr.target.cell.number.y) {
                 if (
                   plyr.direction === 'east' ||
                   // newDirection === 'east' ||
@@ -2010,35 +1910,215 @@ class App extends Component {
                 // playerDrawLog(x,y)
               }
             }
-
-
+            if (plyr.strafing.direction === 'northEast') {
+              if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
+                if (
+                  plyr.direction === 'east' ||
+                  // newDirection === 'east' ||
+                  plyr.direction === 'west' ||
+                  // newDirection === 'west' ||
+                  plyr.direction === 'north' ||
+                  // newDirection === 'north' ||
+                  plyr.direction === 'south'
+                  // newDirection === 'south'
+                ) {
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                } else {
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                }
+                // playerDrawLog(x,y)
+              }
+            }
+            if (plyr.strafing.direction === 'southWest') {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
+                if (
+                  plyr.direction === 'east' ||
+                  // newDirection === 'east' ||
+                  plyr.direction === 'west' ||
+                  // newDirection === 'west' ||
+                  plyr.direction === 'north' ||
+                  // newDirection === 'north' ||
+                  plyr.direction === 'south'
+                  // newDirection === 'south'
+                ) {
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                } else {
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                }
+                // playerDrawLog(x,y)
+              }
+            }
           }
+          if (plyr.falling.state === true) {
 
-          let walledTiles = []
-          if (walledTiles.includes(''+x+','+y+'')) {
-            offset = {x: wallImageWidth/2, y: wallImageHeight}
-            context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
+            if (x === 0 && y === 0) {
+              if (
+                plyr.direction === 'east' ||
+                // newDirection === 'east' ||
+                plyr.direction === 'west' ||
+                // newDirection === 'west' ||
+                plyr.direction === 'north' ||
+                // newDirection === 'north' ||
+                plyr.direction === 'south'
+                // newDirection === 'south'
+              ) {
+                context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+              } else {
+                context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+              }
+              // playerDrawLog(x,y,plyr)
+            }
           }
+          if (plyr.respawn === true) {
+            console.log('respawning... confirm dead player',plyr.dead.state);
 
-          if(cellLevelData.charAt(0) === 'y') {
-            offset = {x: wallImageWidth/2, y: wallImageHeight}
-            context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
-          }
+            let respawnPoint = {
+              number: {
+                x: 0,
+                y: 0,
+              },
+              center: {
+                x: 0,
+                y: 0,
+              }
+            }
+            let altRespawnPoint = {
+              number: {
+                x: 0,
+                y: 0,
+              },
+              center: {
+                x: 0,
+                y: 0,
+              }
+            }
 
-          if(cellLevelData.charAt(0) === 'z') {
-            offset = {x: wallImageWidth/2, y: wallImageHeight}
-            context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+            let respawnCellOccupied = false;
 
-            let isoHeight = wallImageHeight - floorImageHeight
-            offset.y += isoHeight
-            context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
-          }
+            console.log('matching grid info with start position');
+            for (const elem of allCells) {
+              if (
+                elem.number.x === 9 &&
+                elem.number.y === 9
+              ){
+                altRespawnPoint.number.x = elem.number.x;
+                altRespawnPoint.number.y = elem.number.y;
+                altRespawnPoint.center.x = elem.center.x;
+                altRespawnPoint.center.y = elem.center.y;
+              }
+
+              if (
+                elem.number.x === plyr.startPosition.cell.number.x &&
+                elem.number.y === plyr.startPosition.cell.number.y
+              )
+              {
+
+                console.log('found your start position');
+
+                console.log('checking for obstacles');
+                for (const [key, row] of Object.entries(this.levelData2)) {
+                  for (const cell of row) {
+                    if (
+                      cell.charAt(0) === 'y' ||
+                      cell.charAt(0) ===  'z'
+                    ) {
+                      let obstaclePosition = {
+                        x: Number(cell.charAt(1)),
+                        y: row.indexOf(cell),
+                      }
+                      // console.log('found obstacle during map scan @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
+                      if (
+                        elem.number.x === obstaclePosition.x &&
+                        elem.number.y === obstaclePosition.y
+                      ) {
+                        console.log('an obstacle is in your way');
+                        respawnCellOccupied = true;
+                      }
+                    }
+                  }
+                }
+
+                let opposingPlayer;
+                if (plyr.number === 1) {
+                  opposingPlayer = this.players[1]
+                } else if (plyr.number === 2) {
+                  opposingPlayer = this.players[0]
+                }
+
+                console.log('checking for other player');
+                if (
+                  elem.number.x === opposingPlayer.currentPosition.cell.number.x &&
+                  elem.number.y === opposingPlayer.currentPosition.cell.number.y
+                )
+                {
+                  console.log('opposing player is in your way');
+                  respawnCellOccupied = true;
+                };
+
+                if (
+                  respawnCellOccupied === false
+                  // elem.number.x === plyr.startPosition.cell.number.x &&
+                  // elem.number.y === plyr.startPosition.cell.number.y
+                ) {
+                  console.log('starting point cell is free. You may respawn there');
+                  respawnPoint.number.x = elem.number.x;
+                  respawnPoint.number.y = elem.number.y;
+                  respawnPoint.center.x = elem.center.x;
+                  respawnPoint.center.y = elem.center.y;
+                } else if (respawnCellOccupied === true) {
+                  console.log('original spawn point occupied! spawning at cell 9,9');
+                  respawnPoint = altRespawnPoint;
+                }
+
+              }
+
+            }
+
+              if (plyr.number === 1) {
+                updatedPlayerImg = this.refs.playerImgIdleNorth;
+              }
+              if (plyr.number === 2) {
+                updatedPlayerImg = this.refs.player2ImgIdleNorth;
+              }
+
+              plyr.currentPosition.cell = respawnPoint;
+              plyr.currentPosition.cell = respawnPoint;
+              this.getTarget(plyr)
+              playerDrawLog(respawnPoint.center.x,respawnPoint.center.y,plyr)
+
+              context.drawImage(updatedPlayerImg, respawnPoint.center.x-20, respawnPoint.center.y-20, 40,40);
+
+              plyr.respawn = false;
+
+            }
+
+          this.players[plyr.number-1] = plyr;
+
+        }
+
+        let walledTiles = []
+        if (walledTiles.includes(''+x+','+y+'')) {
+          offset = {x: wallImageWidth/2, y: wallImageHeight}
+          context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
+        }
+
+        if(cellLevelData.charAt(0) === 'y') {
+          offset = {x: wallImageWidth/2, y: wallImageHeight}
+          context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
+        }
+
+        if(cellLevelData.charAt(0) === 'z') {
+          offset = {x: wallImageWidth/2, y: wallImageHeight}
+          context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+
+          let isoHeight = wallImageHeight - floorImageHeight
+          offset.y += isoHeight
+          context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
         }
       }
-    // }
+    }
 
     this.players[player.number-1] = player;
-    // this.players[this.currentPlayer-1] = player;
     if (player.number === 1) {
       this.setState({
         player1: player
@@ -2089,6 +2169,7 @@ class App extends Component {
     let targetCellNumber = {x: 0,y: 0};
     let targetCellCenter = {x: 0,y: 0};
 
+    // VOID CHECK & SET!!
     if (currentPosition.x === 0 && currentPosition.y === 0) {
       if (
         direction === 'north' ||
@@ -2127,7 +2208,6 @@ class App extends Component {
         voidDirection = 'east';
       }
     }
-
     if (currentPosition.x === 0) {
       if (
         direction === 'west' ||
@@ -2165,7 +2245,6 @@ class App extends Component {
         voidDirection = 'south';
       }
     }
-
 
     switch(direction) {
       case 'north' :
@@ -2218,6 +2297,7 @@ class App extends Component {
       break;
     }
 
+    // FIND CENTER!!
     let cellSideLength;
     for (const cell of gridInfo) {
       cellSideLength = cell.side;
@@ -2316,7 +2396,6 @@ class App extends Component {
           }
         }
       }
-
     }
 
     let opposingPlayer;
@@ -2336,7 +2415,6 @@ class App extends Component {
       target.occupant = {
         type: 'player',
         player: opposingPlayer.number
-        // player: 'player'+opposingPlayer.number+''
       };
     }
 
@@ -2348,10 +2426,8 @@ class App extends Component {
       }
     }
 
-
     player.target = target;
     this.players[player.number-1] = player;
-    // this.players[this.currentPlayer-1] = player;
     if (player.number === 1) {
       this.setState({
         player1: player
@@ -2369,7 +2445,6 @@ class App extends Component {
   lineCrementer = (player) => {
     // console.log('line crementer',player.number);
 
-    // let player = this.players[this.currentPlayer-1];
     let currentPosition = player.currentPosition.cell.center;
     let target = player.target;
     let increment = 2;
@@ -2393,12 +2468,9 @@ class App extends Component {
     getLineXYatPercent(startPt,endPt,percent);
 
     let newX = currentPosition.x+increment;
-    // let y = (((player.moving.origin.center.y-player.target.cell.center.y)/(player.moving.origin.center.x-player.target.cell.center.x))*(newX-player.moving.origin.center.x))+player.moving.origin.center.y
-    // newPosition = {x:newX, y: y}
 
     if (player.falling.state === true) {
       player.falling.count++;
-      // console.log('fall count',player.falling.count);
 
       newPosition = {
         x: target.cell.center.x,
@@ -2414,7 +2486,6 @@ class App extends Component {
     player.nextPosition = newPosition
 
     this.players[player.number-1] = player;
-    // this.players[this.currentPlayer-1] = player;
     if (player.number === 1) {
       this.setState({
         player1: player
@@ -2442,6 +2513,86 @@ class App extends Component {
     tempPt.x = cartPt.x - cartPt.y;
     tempPt.y = (cartPt.x + cartPt.y) / 2;
     return (tempPt);
+
+  }
+
+  respawn = (player) => {
+    console.log('respawning',player.number);
+    this.players[player.number-1].respawn = true;
+  }
+  killPlayer = (player) => {
+    console.log('killing player',player.number);
+
+    player.action = 'idle';
+    player.falling = {
+      state: false,
+      count: 0,
+      limit: 7,
+    }
+    player.target = {
+      cell: {
+        number: {
+          x: 0,
+          y: 0,
+        },
+        center: {
+          x: 0,
+          y: 0,
+        },
+      },
+      free: true,
+      occupant: {
+        type: '',
+        player: '',
+      },
+      void: false
+    };
+    player.moving = {
+      state: false,
+      step: 0,
+      course: '',
+      origin: {
+        number: {
+          x: 0,
+          y: 0,
+        },
+        center: {
+          x: 0,
+          y: 0,
+        },
+      },
+      destination: {
+        x: 0,
+        y: 0,
+      }
+    };
+    player.currentPosition = {
+      cell: {
+        number: {
+          x: -30,
+          y: -30,
+        },
+        center: {
+          x: 0,
+          y: 0,
+        }
+      }
+    };
+    player.dead.state = true;
+    player.points--;
+
+    this.players[player.number-1] = player;
+
+    // if (player.number === 1) {
+    //   this.setState({
+    //     player1: player
+    //   })
+    // }
+    // if (player.number === 2) {
+    //   this.setState({
+    //     player2: player
+    //   })
+    // }
 
   }
 
@@ -2713,17 +2864,17 @@ class App extends Component {
 
                 this.getTarget(player);
 
-                // console.log('** playerDrawLog **');
-                // console.log('-- player --',player.number);
-                // console.log('-- strafing --',player.strafing.state);
-                // console.log('-- turning --',player.turning.state);
-                // console.log('-- currently drawing --',x,y);
-                // console.log('-- current position --',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
-                // console.log('-- moving state --',player.moving.state);
-                // console.log('-- moving step --',player.moving.step);
-                // console.log('-- target --',player.target.cell.number.x,player.target.cell.number.y);
-                // console.log('-- direction --',player.direction);
-                // console.log('-- origin --',player.moving.origin.number.x,player.moving.origin.number.y);
+                console.log('** playerDrawLog **');
+                console.log('-- player --',player.number);
+                console.log('-- strafing --',player.strafing.state);
+                console.log('-- turning --',player.turning.state);
+                console.log('-- currently drawing --',x,y);
+                console.log('-- current position --',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
+                console.log('-- moving state --',player.moving.state);
+                console.log('-- moving step --',player.moving.step);
+                console.log('-- target --',player.target.cell.number.x,player.target.cell.number.y);
+                console.log('-- direction --',player.direction);
+                console.log('-- origin --',player.moving.origin.number.x,player.moving.origin.number.y);
 
                 context.drawImage(playerImg, point.x-30, point.y-30, 60,60);
 
@@ -2757,7 +2908,7 @@ class App extends Component {
     }
   }
 
-  restart = () => {
+  restartGame = () => {
     // console.log('resetting');
 
     let canvas = this.canvasRef.current;
@@ -2770,6 +2921,7 @@ class App extends Component {
     // this.drawPlayerInit(canvas2, context2);
 
   }
+
   aiAct = () => {
 
     // set this.keyPressed and set current player to ai player

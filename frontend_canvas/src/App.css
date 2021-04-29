@@ -101,8 +101,8 @@
 }
 
 .debugDisplay {
-  height: 200px;
-  width: 250px;
+  height: 180px;
+  width: 400px;
   position: absolute;
   bottom: 15px;
   right: 15px;
@@ -114,8 +114,8 @@
   /* display: none; */
 }
 .debugDisplay2 {
-  height: 200px;
-  width: 250px;
+  height: 180px;
+  width: 400px;
   position: absolute;
   bottom: 15px;
   left: 15px;
