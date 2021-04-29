@@ -845,6 +845,7 @@ class App extends Component {
       }
     }
 
+    // IF USING DEFEND COUNTING, ONLY CHECK FOR KEY RELEASE ONCE LIMIT IS REACHED!!
     if (player.defending.state === true) {
       if (this.keyPressed[this.currentPlayer-1].defend === false) {
         // console.log('player',player.number,' stop defending');
@@ -999,6 +1000,7 @@ class App extends Component {
           y: -30,
         }
       }
+
       if (player.attacking.state === true) {
         if (player.attacking.count < player.attacking.limit) {
           player.attacking.count++;
@@ -1034,7 +1036,9 @@ class App extends Component {
           player.action = 'idle';
         }
       }
+      // IF USING DEFEND COUNT USE AN IF TRUE INCREMENT, IF LIMIT DO NOTHING WAIT FOR KEYPRESS HANDLER TO FALSIFY
 
+      
 
       // CAN READ MOVE INPUTS!!
       if (player.attacking.state === false && player.defending.state === false) {
