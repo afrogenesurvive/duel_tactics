@@ -1144,73 +1144,145 @@ class App extends Component {
       }
 
       // else
-      if (this.keyPressed[player.number-1].attack === true || this.keyPressed[player.number-1].defend === true) {
-        // console.log('non-move key pressed');
-        if (player.attacking.state === true || player.defending.state === true) {
+      if (player.strafing.state === false) {
 
-          // console.log('continue attacking');
-          if (this.keyPressed[player.number-1].attack === true) {
-            // console.log('already attacking');
-            // if (player.attacking.count < player.attacking.limit) {
-            //   player.attacking.count++;
-            // }
-            // if (player.attacking.count >= player.attacking.limit) {
-            //   player.attacking = {
-            //     state: false,
-            //     count: 0,
-            //     limit: player.attacking.limit
-            //   }
-            // }
+        if (this.keyPressed[player.number-1].attack === true || this.keyPressed[player.number-1].defend === true) {
+          // console.log('non-move key pressed');
+          if (player.attacking.state === true || player.defending.state === true) {
+
+            // console.log('continue attacking');
+            if (this.keyPressed[player.number-1].attack === true) {
+              // console.log('already attacking');
+              // if (player.attacking.count < player.attacking.limit) {
+              //   player.attacking.count++;
+              // }
+              // if (player.attacking.count >= player.attacking.limit) {
+              //   player.attacking = {
+              //     state: false,
+              //     count: 0,
+              //     limit: player.attacking.limit
+              //   }
+              // }
+            }
+            //
+            if (this.keyPressed.defend === true) {
+              // console.log('already defending');
+              // if (player.defending.count < player.defending.limit) {
+              //   player.defending.count++;
+              // }
+              // if (player.defending.count >= player.defending.limit) {
+              //   player.defending = {
+              //     state: false,
+              //     count: 0,
+              //     limit: player.defending.limit
+              //   }
+              // }
+            }
           }
-          //
-          if (this.keyPressed.defend === true) {
-            // console.log('already defending');
-            // if (player.defending.count < player.defending.limit) {
-            //   player.defending.count++;
-            // }
-            // if (player.defending.count >= player.defending.limit) {
-            //   player.defending = {
-            //     state: false,
-            //     count: 0,
-            //     limit: player.defending.limit
-            //   }
-            // }
-          }
-        }
 
-        if (player.attacking.state === false && player.defending.state === false) {
+          if (player.attacking.state === false && player.defending.state === false) {
 
-          if (this.keyPressed[player.number-1].attack === true) {
-            // console.log('start attacking');
-            this.getTarget(player)
-            if (player.target.occupant.type === 'player') {
-              if (this.players.[player.target.occupant.player-1].defending.state === false) {
-                this.players.[player.target.occupant.player-1].dead.state = true;
-                // this.players.[player.target.occupant.player-1].action = 'dead';
-              } else {
-                // console.log('attackdefended');
+            if (this.keyPressed[player.number-1].attack === true) {
+              // console.log('start attacking');
+              this.getTarget(player)
+              if (player.target.occupant.type === 'player') {
+                if (this.players.[player.target.occupant.player-1].defending.state === false) {
+                  this.players.[player.target.occupant.player-1].dead.state = true;
+                  // this.players.[player.target.occupant.player-1].action = 'dead';
+                } else {
+                  // console.log('attackdefended');
+                }
+              }
+
+              player.action = 'attacking';
+              player.attacking = {
+                state: true,
+                count: 1,
+                limit: player.attacking.limit,
+              }
+
+            }
+            if (this.keyPressed[player.number-1].defend === true) {
+              // console.log('start defending');
+              player.action = 'defending';
+              player.defending = {
+                state: true,
+                count: 1,
+                limit: player.defending.limit,
               }
             }
-
-            player.action = 'attacking';
-            player.attacking = {
-              state: true,
-              count: 1,
-              limit: player.attacking.limit,
-            }
-
-          }
-          if (this.keyPressed[player.number-1].defend === true) {
-            // console.log('start defending');
-            player.action = 'defending';
-            player.defending = {
-              state: true,
-              count: 1,
-              limit: player.defending.limit,
-            }
           }
         }
+
       }
+
+      // if (this.keyPressed[player.number-1].attack === true || this.keyPressed[player.number-1].defend === true) {
+      //   // console.log('non-move key pressed');
+      //   if (player.attacking.state === true || player.defending.state === true) {
+      //
+      //     // console.log('continue attacking');
+      //     if (this.keyPressed[player.number-1].attack === true) {
+      //       // console.log('already attacking');
+      //       // if (player.attacking.count < player.attacking.limit) {
+      //       //   player.attacking.count++;
+      //       // }
+      //       // if (player.attacking.count >= player.attacking.limit) {
+      //       //   player.attacking = {
+      //       //     state: false,
+      //       //     count: 0,
+      //       //     limit: player.attacking.limit
+      //       //   }
+      //       // }
+      //     }
+      //     //
+      //     if (this.keyPressed.defend === true) {
+      //       // console.log('already defending');
+      //       // if (player.defending.count < player.defending.limit) {
+      //       //   player.defending.count++;
+      //       // }
+      //       // if (player.defending.count >= player.defending.limit) {
+      //       //   player.defending = {
+      //       //     state: false,
+      //       //     count: 0,
+      //       //     limit: player.defending.limit
+      //       //   }
+      //       // }
+      //     }
+      //   }
+      //
+      //   if (player.attacking.state === false && player.defending.state === false) {
+      //
+      //     if (this.keyPressed[player.number-1].attack === true) {
+      //       // console.log('start attacking');
+      //       this.getTarget(player)
+      //       if (player.target.occupant.type === 'player') {
+      //         if (this.players.[player.target.occupant.player-1].defending.state === false) {
+      //           this.players.[player.target.occupant.player-1].dead.state = true;
+      //           // this.players.[player.target.occupant.player-1].action = 'dead';
+      //         } else {
+      //           // console.log('attackdefended');
+      //         }
+      //       }
+      //
+      //       player.action = 'attacking';
+      //       player.attacking = {
+      //         state: true,
+      //         count: 1,
+      //         limit: player.attacking.limit,
+      //       }
+      //
+      //     }
+      //     if (this.keyPressed[player.number-1].defend === true) {
+      //       // console.log('start defending');
+      //       player.action = 'defending';
+      //       player.defending = {
+      //         state: true,
+      //         count: 1,
+      //         limit: player.defending.limit,
+      //       }
+      //     }
+      //   }
+      // }
 
     }
 
