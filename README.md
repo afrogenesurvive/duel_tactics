@@ -16,7 +16,10 @@
 
 ## Why was it made??
 
-- Inspired by something similar I made some years ago.
+- Inspired by something similar I made some years ago. "Grid of Fire"
+<img src="https://i.imgur.com/jBxsAPl.png" height="440" />
+<a href="https://github.com/michaelstoneg/wdi_ldn_32i_project1_thundergrid" target="_blank">Github rep0</a>
+
 - I love grid based tactics games like Final Fantasy Tactics (ps) and Rebelstar Tactical Command (gba)
 
 
@@ -25,6 +28,9 @@
 - ReactJS
 - HTML Canvas
 - Elbow grease
+
+- Early  Progress
+<img src="https://imgur.com/dWfEA2E" height="440" />
 
 - Might rebuild with an engine (G-Develop or Godot) later
 
