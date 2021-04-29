@@ -264,13 +264,13 @@ class App extends Component {
     this.levelData2 = {
       row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
       row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
-      row2: ['x20x','x21x','x22x','x23x','x24x','y25x','x26x','x27x','x28x','x29x'],
-      row3: ['x30x','x31x','x32x','x33x','x34x','x35x','x36x','x37x','x38x','x39x'],
-      row4: ['x40x','x41x','y42x','x43x','x44x','x45x','x46x','x47x','x48x','z49x'],
-      row5: ['x50x','x51x','x52x','y53x','x54x','x55x','x56x','x57x','x58x','x59x'],
-      row6: ['x60x','x61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
-      row7: ['x70x','x71x','x72x','x73x','x74x','x75x','x76x','x77x','x78x','x79x'],
-      row8: ['x80x','x81x','x82x','x83x','x84x','x85x','y86x','x87x','x88x','x89x'],
+      row2: ['x20x','z21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x'],
+      row3: ['x30x','x31x','x32x','x33x','x34x','y35x','x36x','x37x','x38x','x39x'],
+      row4: ['x40x','x41x','x42x','x43x','x44x','y45x','x46x','x47x','x48x','z49x'],
+      row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58x','x59x'],
+      row6: ['x60x','y61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
+      row7: ['x70x','y71x','x72x','x73x','x74x','x75x','x76x','x77x','x78x','x79x'],
+      row8: ['x80x','x81x','x82x','x83x','y84x','x85x','y86x','x87x','x88x','x89x'],
       row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
     };
     this.currentPlayer = 1;
@@ -280,7 +280,7 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 8,
+              x: 7,
               y: 2,
             },
             center: {
@@ -323,7 +323,7 @@ class App extends Component {
           },
           void: false
         },
-        direction: 'north',
+        direction: 'west',
         turning: {
           state: undefined,
           toDirection: '',
@@ -421,7 +421,7 @@ class App extends Component {
           },
           void: false
         },
-        direction: 'north',
+        direction: 'east',
         turning: {
           state: undefined,
           toDirection: '',
@@ -588,19 +588,6 @@ class App extends Component {
       currentTime: (new Date()).getTime(),
       deltaTime: 0,
     };
-    // this.keyPressed = {
-    //   north: false,
-    //   south: false,
-    //   east: false,
-    //   west: false,
-    //   northEast: false,
-    //   northWest: false,
-    //   southEast: false,
-    //   southWest: false,
-    //   attack: false,
-    //   defend: false,
-    //   strafe: false,
-    // };
     this.keyPressed = [
       {
         north: false,
@@ -658,7 +645,7 @@ class App extends Component {
     this.refs.player2ImgIdleWest.onload = () => {
       this.addListeners();
 
-      this.drawGridInit(canvas, context, canvas2, context2);
+      this.drawGridInit(canvas, context);
 
       window.requestAnimationFrame(this.gameLoop);
 
@@ -844,68 +831,37 @@ class App extends Component {
       }
     }
 
-    for (const player of this.players) {
-      this.playerUpdate(player);
-    }
-    // this.playerUpdate(player);
+    // for (const player of this.players) {
+    //   this.playerUpdate(player);
+    // }
 
   }
 
   gameLoop = () => {
 
+    let canvas = this.canvasRef.current;
+    let context = canvas.getContext('2d');
+
     let ts = window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
-
-    // ------ Looper Stepper #1 -------
-    this.stepper.now = ts;
-    this.stepper.dt = this.stepper.dt + Math.min(1, (this.stepper.now - this.stepper.last) / 100);
-
-    while(this.stepper.dt > this.stepper.step) {
-      this.stepper.dt = this.dt - this.stepper.step;
-      // this.playerUpdate();
-    }
-    // this.drawPlayerStep(this.dt);
-    this.stepper.last = this.stepper.now;
-    // -----------
-
-
-    // ------ Looper Stepper #2 -------
-    this.stepper.secondsPassed = (ts - this.stepper.oldTimeStamp) / 1000;
-    this.stepper.oldTimeStamp = ts;
-    this.stepper.secondsPassed = Math.min(this.stepper.secondsPassed, 0.1);
-    this.stepper.frameCount++;
-
-    // this.playerUpdate(this.stepper.secondsPassed, this.stepper.step);
-    // this.drawPlayerStep();
-    // -----------
-
-
-    // ------ Looper Stepper #3 -------
     this.stepper.currentTime = (new Date()).getTime();
     this.stepper.deltaTime = (this.stepper.currentTime-this.stepper.lastTime);
 
     if(this.stepper.deltaTime > this.stepper.interval) {
-        // console.log('update loop step...dt',this.stepper.deltaTime,'interval',this.stepper.interval);
+      // console.log('update loop step...dt',this.stepper.deltaTime,'interval',this.stepper.interval);
 
-        // this.aiAct();
-        // for (const player of this.players) {
-        //   // console.log('xx',player.number);
-        //   this.playerUpdate(player);
-        // }
-
-        this.stepper.lastTime = this.stepper.currentTime - (this.stepper.deltaTime % this.stepper.interval);
+      // this.aiAct();
+      for (const player of this.players) {
+        this.playerUpdate(player, canvas, context);
+      }
+      this.stepper.lastTime = this.stepper.currentTime - (this.stepper.deltaTime % this.stepper.interval);
     }
-    // this.playerUpdate();
-    // this.drawPlayerStep();
-    // -----------
-
     requestAnimationFrame(this.gameLoop);
   }
 
-  playerUpdate = (player) => {
+  playerUpdate = (player, canvas, context) => {
     // console.log('updating player',player.number);
 
     let keyPressedDirection;
-
     for (const [key, value] of Object.entries(this.keyPressed[player.number-1])) {
       // console.log(`${key}: ${value} ....`);
       if (
@@ -914,21 +870,13 @@ class App extends Component {
         key !== 'defend' &&
         value === true
       ) {
-        console.log('pressed',key);
+        // console.log('pressed',key);
         keyPressedDirection = key;
       }
     }
 
     // let player = this.players[this.currentPlayer-1];
     let nextPosition;
-
-    // if (player.turning.state === true && player.turning.toDirection === keyPressedDirection) {
-    //   console.log('player',player.number,' turn-ing');
-    //   if (this.keyPressed[player.number-1][keyPressedDirection] === false) {
-    //     console.log('player',player.number,' turn-stop');
-    //     player.turning.state = false;
-    //   }
-    // }
 
     if (player.turning.state === false) {
       player.direction = player.turning.toDirection;
@@ -1184,17 +1132,11 @@ class App extends Component {
       })
     }
 
-    this.drawPlayerStep(player.number);
+    this.drawPlayerStep(player.number, canvas, context);
 
   }
-  drawPlayerStep = (playerNumber) => {
+  drawPlayerStep = (playerNumber, canvas, context) => {
     // console.log('drawing player step',playerNumber);
-
-    let canvas = this.canvasRef.current;
-    let context = canvas.getContext('2d');
-
-    let canvas2 = this.canvasRef2.current;
-    let context2 = canvas2.getContext('2d');
 
     // grid materials
     canvas.width = 1100;
@@ -1318,363 +1260,8 @@ class App extends Component {
       }
     ]
 
-    // if (player.number === 1) {
-    //   playerImgs = {
-    //     idle: {
-    //       north: this.refs.playerImgIdleNorth,
-    //       northWest: this.refs.playerImgIdleNorthWest,
-    //       northEast: this.refs.playerImgIdleNorthEast,
-    //       south: this.refs.playerImgIdleSouth,
-    //       southWest: this.refs.playerImgIdleSouthWest,
-    //       southEast: this.refs.playerImgIdleSouthEast,
-    //       east: this.refs.playerImgIdleEast,
-    //       west: this.refs.playerImgIdleWest,
-    //     },
-    //     walking: {
-    //       north: this.refs.playerImgIdleNorth,
-    //       northWest: this.refs.playerImgIdleNorthWest,
-    //       northEast: this.refs.playerImgIdleNorthEast,
-    //       south: this.refs.playerImgIdleSouth,
-    //       southWest: this.refs.playerImgIdleSouthWest,
-    //       southEast: this.refs.playerImgIdleSouthEast,
-    //       east: this.refs.playerImgIdleEast,
-    //       west: this.refs.playerImgIdleWest,
-    //     },
-    //     attacking: {
-    //       north: this.refs.playerImgIdleNorth,
-    //       northWest: this.refs.playerImgIdleNorthWest,
-    //       northEast: this.refs.playerImgIdleNorthEast,
-    //       south: this.refs.playerImgIdleSouth,
-    //       southWest: this.refs.playerImgIdleSouthWest,
-    //       southEast: this.refs.playerImgIdleSouthEast,
-    //       east: this.refs.playerImgIdleEast,
-    //       west: this.refs.playerImgIdleWest,
-    //     },
-    //     defending: {
-    //       north: this.refs.playerImgIdleNorth,
-    //       northWest: this.refs.playerImgIdleNorthWest,
-    //       northEast: this.refs.playerImgIdleNorthEast,
-    //       south: this.refs.playerImgIdleSouth,
-    //       southWest: this.refs.playerImgIdleSouthWest,
-    //       southEast: this.refs.playerImgIdleSouthEast,
-    //       east: this.refs.playerImgIdleEast,
-    //       west: this.refs.playerImgIdleWest,
-    //     },
-    //   };
-    // } else if (player.number === 2) {
-    //   playerImgs = {
-    //     idle: {
-    //       north: this.refs.player2ImgIdleNorth,
-    //       northWest: this.refs.player2ImgIdleNorthWest,
-    //       northEast: this.refs.player2ImgIdleNorthEast,
-    //       south: this.refs.player2ImgIdleSouth,
-    //       southWest: this.refs.player2ImgIdleSouthWest,
-    //       southEast: this.refs.player2ImgIdleSouthEast,
-    //       east: this.refs.player2ImgIdleEast,
-    //       west: this.refs.player2ImgIdleWest,
-    //     },
-    //     walking: {
-    //       north: this.refs.player2ImgIdleNorth,
-    //       northWest: this.refs.player2ImgIdleNorthWest,
-    //       northEast: this.refs.player2ImgIdleNorthEast,
-    //       south: this.refs.player2ImgIdleSouth,
-    //       southWest: this.refs.player2ImgIdleSouthWest,
-    //       southEast: this.refs.player2ImgIdleSouthEast,
-    //       east: this.refs.player2ImgIdleEast,
-    //       west: this.refs.player2ImgIdleWest,
-    //     },
-    //     attacking: {
-    //       north: this.refs.player2ImgIdleNorth,
-    //       northWest: this.refs.player2ImgIdleNorthWest,
-    //       northEast: this.refs.player2ImgIdleNorthEast,
-    //       south: this.refs.player2ImgIdleSouth,
-    //       southWest: this.refs.player2ImgIdleSouthWest,
-    //       southEast: this.refs.player2ImgIdleSouthEast,
-    //       east: this.refs.player2ImgIdleEast,
-    //       west: this.refs.player2ImgIdleWest,
-    //     },
-    //     defending: {
-    //       north: this.refs.player2ImgIdleNorth,
-    //       northWest: this.refs.player2ImgIdleNorthWest,
-    //       northEast: this.refs.player2ImgIdleNorthEast,
-    //       south: this.refs.player2ImgIdleSouth,
-    //       southWest: this.refs.player2ImgIdleSouthWest,
-    //       southEast: this.refs.player2ImgIdleSouthEast,
-    //       east: this.refs.player2ImgIdleEast,
-    //       west: this.refs.player2ImgIdleWest,
-    //     },
-    //   };
-    // }
-    // let playerImgs = {
-    //   idle: {
-    //     north: this.refs.playerImgIdleNorth,
-    //     northWest: this.refs.playerImgIdleNorthWest,
-    //     northEast: this.refs.playerImgIdleNorthEast,
-    //     south: this.refs.playerImgIdleSouth,
-    //     southWest: this.refs.playerImgIdleSouthWest,
-    //     southEast: this.refs.playerImgIdleSouthEast,
-    //     east: this.refs.playerImgIdleEast,
-    //     west: this.refs.playerImgIdleWest,
-    //   },
-    //   walking: {
-    //     north: this.refs.playerImgIdleNorth,
-    //     northWest: this.refs.playerImgIdleNorthWest,
-    //     northEast: this.refs.playerImgIdleNorthEast,
-    //     south: this.refs.playerImgIdleSouth,
-    //     southWest: this.refs.playerImgIdleSouthWest,
-    //     southEast: this.refs.playerImgIdleSouthEast,
-    //     east: this.refs.playerImgIdleEast,
-    //     west: this.refs.playerImgIdleWest,
-    //   },
-    //   attacking: {
-    //     north: this.refs.playerImgIdleNorth,
-    //     northWest: this.refs.playerImgIdleNorthWest,
-    //     northEast: this.refs.playerImgIdleNorthEast,
-    //     south: this.refs.playerImgIdleSouth,
-    //     southWest: this.refs.playerImgIdleSouthWest,
-    //     southEast: this.refs.playerImgIdleSouthEast,
-    //     east: this.refs.playerImgIdleEast,
-    //     west: this.refs.playerImgIdleWest,
-    //   },
-    //   defending: {
-    //     north: this.refs.playerImgIdleNorth,
-    //     northWest: this.refs.playerImgIdleNorthWest,
-    //     northEast: this.refs.playerImgIdleNorthEast,
-    //     south: this.refs.playerImgIdleSouth,
-    //     southWest: this.refs.playerImgIdleSouthWest,
-    //     southEast: this.refs.playerImgIdleSouthEast,
-    //     east: this.refs.playerImgIdleEast,
-    //     west: this.refs.playerImgIdleWest,
-    //   },
-    // };
-
-    // let point = {
-    //   x: player.nextPosition.x,
-    //   y: player.nextPosition.y,
-    // };
-
     let updatedPlayerImg;
     let newDirection;
-
-    // switch(player.action) {
-    //
-    //   case 'idle':
-    //     switch(player.direction) {
-    //       case 'north' :
-    //         updatedPlayerImg = playerImgs.idle.north;
-    //         newDirection = 'north';
-    //       break;
-    //       case 'northWest' :
-    //         updatedPlayerImg = playerImgs.idle.northWest;
-    //         newDirection = 'northWest';
-    //       break;
-    //       case 'northEast' :
-    //         updatedPlayerImg = playerImgs.idle.northEast;
-    //         newDirection = 'northEast';
-    //       break;
-    //       case 'east' :
-    //         updatedPlayerImg = playerImgs.idle.east;
-    //         newDirection = 'east';
-    //       break;
-    //       case 'west' :
-    //         updatedPlayerImg = playerImgs.idle.west;
-    //         newDirection = 'west';
-    //       break;
-    //       case 'south' :
-    //         updatedPlayerImg = playerImgs.idle.south;
-    //         newDirection = 'south';
-    //       break;
-    //       case 'southWest' :
-    //         updatedPlayerImg = playerImgs.idle.southWest;
-    //         newDirection = 'southWest';
-    //       break;
-    //       case 'southEast' :
-    //         updatedPlayerImg = playerImgs.idle.southEast;
-    //         newDirection = 'southEast';
-    //       break;
-    //     }
-    //   break;
-    //   case 'moving':
-    //     switch(player.direction) {
-    //       case 'north' :
-    //         updatedPlayerImg = playerImgs.walking.north;
-    //         newDirection = 'north';
-    //       break;
-    //       case 'northWest' :
-    //         updatedPlayerImg = playerImgs.walking.northWest;
-    //         newDirection = 'northWest';
-    //       break;
-    //       case 'northEast' :
-    //         updatedPlayerImg = playerImgs.walking.northEast;
-    //         newDirection = 'northEast';
-    //       break;
-    //       case 'east' :
-    //         updatedPlayerImg = playerImgs.walking.east;
-    //         newDirection = 'east';
-    //       break;
-    //       case 'west' :
-    //         updatedPlayerImg = playerImgs.walking.west;
-    //         newDirection = 'west';
-    //       break;
-    //       case 'south' :
-    //         updatedPlayerImg = playerImgs.walking.south;
-    //         newDirection = 'south';
-    //       break;
-    //       case 'southWest' :
-    //         updatedPlayerImg = playerImgs.walking.southWest;
-    //         newDirection = 'southWest';
-    //       break;
-    //       case 'southEast' :
-    //         updatedPlayerImg = playerImgs.walking.southEast;
-    //         newDirection = 'southEast';
-    //       break;
-    //     }
-    //   break;
-    //   case 'strafe moving':
-    //     switch(player.direction) {
-    //       case 'north' :
-    //         updatedPlayerImg = playerImgs.walking.north;
-    //         newDirection = 'north';
-    //       break;
-    //       case 'northWest' :
-    //         updatedPlayerImg = playerImgs.walking.northWest;
-    //         newDirection = 'northWest';
-    //       break;
-    //       case 'northEast' :
-    //         updatedPlayerImg = playerImgs.walking.northEast;
-    //         newDirection = 'northEast';
-    //       break;
-    //       case 'east' :
-    //         updatedPlayerImg = playerImgs.walking.east;
-    //         newDirection = 'east';
-    //       break;
-    //       case 'west' :
-    //         updatedPlayerImg = playerImgs.walking.west;
-    //         newDirection = 'west';
-    //       break;
-    //       case 'south' :
-    //         updatedPlayerImg = playerImgs.walking.south;
-    //         newDirection = 'south';
-    //       break;
-    //       case 'southWest' :
-    //         updatedPlayerImg = playerImgs.walking.southWest;
-    //         newDirection = 'southWest';
-    //       break;
-    //       case 'southEast' :
-    //         updatedPlayerImg = playerImgs.walking.southEast;
-    //         newDirection = 'southEast';
-    //       break;
-    //     }
-    //   break;
-    //   case 'falling':
-    //     switch(player.direction) {
-    //       case 'north' :
-    //         updatedPlayerImg = playerImgs.walking.north;
-    //         newDirection = 'north';
-    //       break;
-    //       case 'northWest' :
-    //         updatedPlayerImg = playerImgs.walking.northWest;
-    //         newDirection = 'northWest';
-    //       break;
-    //       case 'northEast' :
-    //         updatedPlayerImg = playerImgs.walking.northEast;
-    //         newDirection = 'northEast';
-    //       break;
-    //       case 'east' :
-    //         updatedPlayerImg = playerImgs.walking.east;
-    //         newDirection = 'east';
-    //       break;
-    //       case 'west' :
-    //         updatedPlayerImg = playerImgs.walking.west;
-    //         newDirection = 'west';
-    //       break;
-    //       case 'south' :
-    //         updatedPlayerImg = playerImgs.walking.south;
-    //         newDirection = 'south';
-    //       break;
-    //       case 'southWest' :
-    //         updatedPlayerImg = playerImgs.walking.southWest;
-    //         newDirection = 'southWest';
-    //       break;
-    //       case 'southEast' :
-    //         updatedPlayerImg = playerImgs.walking.southEast;
-    //         newDirection = 'southEast';
-    //       break;
-    //     }
-    //   break;
-    //   case 'attacking':
-    //     switch(player.direction) {
-    //       case 'north' :
-    //         updatedPlayerImg = playerImgs.attacking.north;
-    //         newDirection = 'north';
-    //       break;
-    //       case 'northWest' :
-    //         updatedPlayerImg = playerImgs.attacking.northWest;
-    //         newDirection = 'northWest';
-    //       break;
-    //       case 'northEast' :
-    //         updatedPlayerImg = playerImgs.attacking.northEast;
-    //         newDirection = 'northEast';
-    //       break;
-    //       case 'east' :
-    //         updatedPlayerImg = playerImgs.attacking.east;
-    //         newDirection = 'east';
-    //       break;
-    //       case 'west' :
-    //         updatedPlayerImg = playerImgs.attacking.west;
-    //         newDirection = 'west';
-    //       break;
-    //       case 'south' :
-    //         updatedPlayerImg = playerImgs.attacking.south;
-    //         newDirection = 'south';
-    //       break;
-    //       case 'southWest' :
-    //         updatedPlayerImg = playerImgs.attacking.southWest;
-    //         newDirection = 'southWest';
-    //       break;
-    //       case 'southEast' :
-    //         updatedPlayerImg = playerImgs.attacking.southEast;
-    //         newDirection = 'southEast';
-    //       break;
-    //     }
-    //   break;
-    //   case 'defending':
-    //     switch(player.direction) {
-    //       case 'north' :
-    //         updatedPlayerImg = playerImgs.defending.north;
-    //         newDirection = 'north';
-    //       break;
-    //       case 'northWest' :
-    //         updatedPlayerImg = playerImgs.defending.northWest;
-    //         newDirection = 'northWest';
-    //       break;
-    //       case 'northEast' :
-    //         updatedPlayerImg = playerImgs.defending.northEast;
-    //         newDirection = 'northEast';
-    //       break;
-    //       case 'east' :
-    //         updatedPlayerImg = playerImgs.defending.east;
-    //         newDirection = 'east';
-    //       break;
-    //       case 'west' :
-    //         updatedPlayerImg = playerImgs.defending.west;
-    //         newDirection = 'west';
-    //       break;
-    //       case 'south' :
-    //         updatedPlayerImg = playerImgs.defending.south;
-    //         newDirection = 'south';
-    //       break;
-    //       case 'southWest' :
-    //         updatedPlayerImg = playerImgs.defending.southWest;
-    //         newDirection = 'southWest';
-    //       break;
-    //       case 'southEast' :
-    //         updatedPlayerImg = playerImgs.defending.southEast;
-    //         newDirection = 'southEast';
-    //       break;
-    //     }
-    //   break;
-    // }
 
     if (player.falling.state === true) {
 
@@ -1741,7 +1328,7 @@ class App extends Component {
 
     if (player.action !== 'attacking' || player.action !== 'defending') {
 
-      context2.clearRect(0, 0, canvas2.width, canvas2.height);
+      // context2.clearRect(0, 0, canvas2.width, canvas2.height);
 
       for (var x = 0; x < 10; x++) {
         for (var y = 0; y < 10; y++) {
@@ -1801,7 +1388,6 @@ class App extends Component {
             console.log('-- target --',player.target.cell.number.x,player.target.cell.number.y);
             console.log('-- direction --',player.direction);
             console.log('-- origin --',player.moving.origin.number.x,player.moving.origin.number.y);
-            // console.log('-- img --', updatedPlayerImg);
           }
 
           for (const plyr of this.players) {
@@ -2054,7 +1640,7 @@ class App extends Component {
                   } else {
                     context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                   }
-                  playerDrawLog(x,y)
+                  // playerDrawLog(x,y)
                 }
               }
 
@@ -2081,7 +1667,7 @@ class App extends Component {
                   } else {
                     context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                   }
-                  playerDrawLog(x,y)
+                  // playerDrawLog(x,y)
                 }
               }
 
@@ -2110,7 +1696,7 @@ class App extends Component {
                     } else {
                       context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                     }
-                    playerDrawLog(x,y)
+                    // playerDrawLog(x,y)
                   }
                 } else {
                   if (
@@ -2131,7 +1717,7 @@ class App extends Component {
                     } else {
                       context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                     }
-                    playerDrawLog(x,y)
+                    // playerDrawLog(x,y)
                   }
                 }
 
@@ -2157,7 +1743,7 @@ class App extends Component {
                   } else {
                     context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                   }
-                  playerDrawLog(x,y)
+                  // playerDrawLog(x,y)
                 }
               }
             }
@@ -2181,7 +1767,7 @@ class App extends Component {
                 } else {
                   context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
-                playerDrawLog(x,y)
+                // playerDrawLog(x,y)
               }
             }
 
@@ -2209,7 +1795,7 @@ class App extends Component {
                   } else {
                     context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                   }
-                  playerDrawLog(x,y)
+                  // playerDrawLog(x,y)
                 }
               }
 
@@ -2236,7 +1822,7 @@ class App extends Component {
                   } else {
                     context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                   }
-                  playerDrawLog(x,y)
+                  // playerDrawLog(x,y)
                 }
               }
 
@@ -2261,7 +1847,7 @@ class App extends Component {
                   } else {
                     context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                   }
-                  playerDrawLog(x,y)
+                  // playerDrawLog(x,y)
                 }
               }
               if (
@@ -2285,7 +1871,7 @@ class App extends Component {
                   } else {
                     context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                   }
-                  playerDrawLog(x,y)
+                  // playerDrawLog(x,y)
                 }
               }
             }
@@ -2309,250 +1895,11 @@ class App extends Component {
                 } else {
                   context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
-                playerDrawLog(x,y)
+                // playerDrawLog(x,y)
               }
             }
 
           }
-
-          // if (player.target.void === false && player.moving.state === true) {
-          //   if (
-          //     player.direction === 'north' ||
-          //     player.direction === 'northWest' ||
-          //     player.direction === 'west'
-          //   ) {
-          //     if (
-          //       x === player.moving.origin.number.x &&
-          //       y === player.moving.origin.number.y
-          //     ) {
-          //       if (
-          //         newDirection === 'east' ||
-          //         newDirection === 'west' ||
-          //         newDirection === 'north' ||
-          //         newDirection === 'south'
-          //       ) {
-          //         context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-          //       } else {
-          //         context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
-          //       }
-          //       playerDrawLog(x,y)
-          //     }
-          //   }
-          //
-          //   if (
-          //     player.direction === 'east' ||
-          //     player.direction === 'south' ||
-          //     player.direction === 'southEast'
-          //   ) {
-          //     if (
-          //       x === player.target.cell.number.x &&
-          //       y === player.target.cell.number.y
-          //     ) {
-          //       if (
-          //         newDirection === 'east' ||
-          //         newDirection === 'west' ||
-          //         newDirection === 'north' ||
-          //         newDirection === 'south'
-          //       ) {
-          //         context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-          //       } else {
-          //         context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
-          //       }
-          //       playerDrawLog(x,y)
-          //     }
-          //   }
-          //
-          //   if (
-          //     player.direction === 'northEast'
-          //   ) {
-          //     // east edge disappearing bug fix
-          //     if (
-          //       player.target.cell.number.x === 9
-          //     ) {
-          //       if (
-          //         x === 9 &&
-          //         y === player.target.cell.number.y+1
-          //       ) {
-          //         if (
-          //           newDirection === 'east' ||
-          //           newDirection === 'west' ||
-          //           newDirection === 'north' ||
-          //           newDirection === 'south'
-          //         ) {
-          //           context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-          //         } else {
-          //           context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
-          //         }
-          //         playerDrawLog(x,y)
-          //       }
-          //     } else {
-          //       if (
-          //         x === player.moving.origin.number.x+1 &&
-          //         y === player.moving.origin.number.y
-          //       ) {
-          //         if (
-          //           newDirection === 'east' ||
-          //           newDirection === 'west' ||
-          //           newDirection === 'north' ||
-          //           newDirection === 'south'
-          //         ) {
-          //           context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-          //         } else {
-          //           context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
-          //         }
-          //         playerDrawLog(x,y)
-          //       }
-          //     }
-          //
-          //   }
-          //   if (
-          //     player.direction === 'southWest'
-          //   ) {
-          //     if (
-          //       x === player.moving.origin.number.x &&
-          //       y === player.moving.origin.number.y+1
-          //     ) {
-          //       if (
-          //         newDirection === 'east' ||
-          //         newDirection === 'west' ||
-          //         newDirection === 'north' ||
-          //         newDirection === 'south'
-          //       ) {
-          //         context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-          //       } else {
-          //         context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
-          //       }
-          //       playerDrawLog(x,y)
-          //     }
-          //   }
-          // }
-          // else {
-          //   if (
-          //     x === player.moving.origin.number.x &&
-          //     y === player.moving.origin.number.y
-          //   ) {
-          //
-          //     if (
-          //       newDirection === 'east' ||
-          //       newDirection === 'west' ||
-          //       newDirection === 'north' ||
-          //       newDirection === 'south'
-          //     ) {
-          //       context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-          //     } else {
-          //       context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
-          //     }
-          //     playerDrawLog(x,y)
-          //   }
-          // }
-          // if (player.strafing.state === true) {
-          //   if (
-          //     player.strafing.direction === 'north' ||
-          //     player.strafing.direction === 'northWest' ||
-          //     player.strafing.direction === 'west'
-          //   ) {
-          //     if (
-          //       x === player.moving.origin.number.x &&
-          //       y === player.moving.origin.number.y
-          //     ) {
-          //       if (
-          //         newDirection === 'east' ||
-          //         newDirection === 'west' ||
-          //         newDirection === 'north' ||
-          //         newDirection === 'south'
-          //       ) {
-          //         context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-          //       } else {
-          //         context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
-          //       }
-          //       // playerDrawLog(x,y)
-          //     }
-          //   }
-          //
-          //   if (
-          //     player.strafing.direction === 'east' ||
-          //     player.strafing.direction === 'south' ||
-          //     player.strafing.direction === 'southEast'
-          //   ) {
-          //     if (
-          //       x === player.target.cell.number.x &&
-          //       y === player.target.cell.number.y
-          //     ) {
-          //       if (
-          //         newDirection === 'east' ||
-          //         newDirection === 'west' ||
-          //         newDirection === 'north' ||
-          //         newDirection === 'south'
-          //       ) {
-          //         context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-          //       } else {
-          //         context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
-          //       }
-          //       // playerDrawLog(x,y)
-          //     }
-          //   }
-          //
-          //   if (
-          //     player.strafing.direction === 'northEast'
-          //   ) {
-          //     if (
-          //       x === player.moving.origin.number.x+1 &&
-          //       y === player.moving.origin.number.y
-          //     ) {
-          //       if (
-          //         newDirection === 'east' ||
-          //         newDirection === 'west' ||
-          //         newDirection === 'north' ||
-          //         newDirection === 'south'
-          //       ) {
-          //         context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-          //       } else {
-          //         context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
-          //       }
-          //       // playerDrawLog(x,y)
-          //     }
-          //   }
-          //   if (
-          //     player.strafing.direction === 'southWest'
-          //   ) {
-          //     if (
-          //       x === player.moving.origin.number.x &&
-          //       y === player.moving.origin.number.y+1
-          //     ) {
-          //       if (
-          //         newDirection === 'east' ||
-          //         newDirection === 'west' ||
-          //         newDirection === 'north' ||
-          //         newDirection === 'south'
-          //       ) {
-          //         context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-          //       } else {
-          //         context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
-          //       }
-          //       // playerDrawLog(x,y)
-          //     }
-          //   }
-          // }
-          // if (player.falling.state === true) {
-          //
-          //   if (
-          //     x === 0 &&
-          //     y === 0
-          //   ) {
-          //     if (
-          //       newDirection === 'east' ||
-          //       newDirection === 'west' ||
-          //       newDirection === 'north' ||
-          //       newDirection === 'south'
-          //     ) {
-          //       context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-          //     } else {
-          //       context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
-          //     }
-          //     // playerDrawLog(x,y)
-          //   }
-          // }
-
 
           let walledTiles = []
           if (walledTiles.includes(''+x+','+y+'')) {
@@ -2595,8 +1942,8 @@ class App extends Component {
   getTarget = (player) => {
     // console.log('checking target',player.number);
 
-    let canvas2 = this.canvasRef.current;
-    let context2 = canvas2.getContext('2d');
+    let canvas = this.canvasRef.current;
+    let context = canvas.getContext('2d');
 
     let gridInfo = this.gridInfo;
     // let player = this.players[this.currentPlayer-1];
@@ -2844,8 +2191,8 @@ class App extends Component {
       }
       targetCellCenter = voidCenter;
 
-      context2.fillStyle = "#e63946";
-      context2.fillRect(voidCenter.x, voidCenter.y,5,5);
+      context.fillStyle = "#e63946";
+      context.fillRect(voidCenter.x, voidCenter.y,5,5);
     }
 
     target.cell = {
@@ -2888,9 +2235,10 @@ class App extends Component {
     }
 
     if (
-      targetCellNumber.x === opposingPlayer.currentPosition.cell.number.x,
+      targetCellNumber.x === opposingPlayer.currentPosition.cell.number.x &&
       targetCellNumber.y === opposingPlayer.currentPosition.cell.number.y
     ) {
+      // console.log('opposing player is in your way');
       target.free = false;
       obstacleObstructFound = true;
       target.occupant = {
@@ -3099,7 +2447,7 @@ class App extends Component {
 
   }
 
-  drawGridInit = (canvas, context, canvas2, context2) => {
+  drawGridInit = (canvas, context) => {
     console.log('drawing initial');
 
     canvas.width = 1100;
@@ -3272,14 +2620,17 @@ class App extends Component {
 
                 this.getTarget(player);
 
-                console.log('** Init playerDrawLog **');
-                console.log('-- currently drawing --',x,y);
-                console.log('-- current position --',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
-                console.log('-- moving state --',player.moving.state);
-                console.log('-- moving step --',player.moving.step);
-                console.log('-- target --',player.target.cell.number.x,player.target.cell.number.y);
-                console.log('-- direction --',player.direction);
-                console.log('-- origin --',player.moving.origin.number.x,player.moving.origin.number.y);
+                // console.log('** playerDrawLog **');
+                // console.log('-- player --',player.number);
+                // console.log('-- strafing --',player.strafing.state);
+                // console.log('-- turning --',player.turning.state);
+                // console.log('-- currently drawing --',x,y);
+                // console.log('-- current position --',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
+                // console.log('-- moving state --',player.moving.state);
+                // console.log('-- moving step --',player.moving.step);
+                // console.log('-- target --',player.target.cell.number.x,player.target.cell.number.y);
+                // console.log('-- direction --',player.direction);
+                // console.log('-- origin --',player.moving.origin.number.x,player.moving.origin.number.y);
 
                 context.drawImage(playerImg, point.x-30, point.y-30, 60,60);
 
@@ -3288,84 +2639,6 @@ class App extends Component {
           }
 
         }
-
-        // if (
-        //   x === player.startPosition.cell.number.x &&
-        //   y === player.startPosition.cell.number.y
-        // ) {
-        //   // console.log('this is the player cell',x,y);
-        //
-        //   let playerImg = this.refs.playerImgIdleNorth;
-        //   player.dead.state = false;
-        //
-        //   let point = {
-        //     x: 0,
-        //     y: 0,
-        //   };
-        //
-        //   for (const cell of gridInfo) {
-        //     if (
-        //       cell.number.x === player.startPosition.cell.number.x &&
-        //       cell.number.y === player.startPosition.cell.number.y
-        //     ) {
-        //       point.x = cell.center.x;
-        //       point.y = cell.center.y;
-        //
-        //
-        //       player.currentPosition.cell = {
-        //         number: {
-        //           x: player.startPosition.cell.number.x,
-        //           y: player.startPosition.cell.number.y
-        //         },
-        //         center : {
-        //           x: point.x,
-        //           y: point.y
-        //         }
-        //       }
-        //       player.moving = {
-        //         state: false,
-        //         step: 0,
-        //         course: '',
-        //         origin: {
-        //           number: {
-        //             x: player.startPosition.cell.number.x,
-        //             y: player.startPosition.cell.number.y,
-        //           },
-        //           center: {
-        //             x: point.x,
-        //             y: point.y,
-        //           },
-        //         },
-        //         destination: {
-        //           x: 0,
-        //           y: 0,
-        //         }
-        //       }
-        //       player.nextPosition = {
-        //         x: point.x,
-        //         y: point.y
-        //       }
-        //
-        //       this.player1 = player;
-        //       this.setState({
-        //         player1: player
-        //       })
-        //       this.getTarget();
-        //
-        //       console.log('** Init playerDrawLog **');
-        //       console.log('-- currently drawing --',x,y);
-        //       console.log('-- current position --',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
-        //       console.log('-- moving state --',player.moving.state);
-        //       console.log('-- moving step --',player.moving.step);
-        //       console.log('-- target --',player.target.cell.number.x,player.target.cell.number.y);
-        //       console.log('-- direction --',player.direction);
-        //       console.log('-- origin --',player.moving.origin.number.x,player.moving.origin.number.y);
-        //
-        //       context.drawImage(playerImg, point.x-30, point.y-30, 60,60);
-        //
-        //     }
-        //   }
-        // }
 
         let walledTiles = []
         if (walledTiles.includes(''+x+','+y+'')) {
