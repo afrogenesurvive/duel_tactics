@@ -366,7 +366,7 @@ class App extends Component {
         attacking: {
           state: false,
           count: 0,
-          limit: 5,
+          limit: 10,
         },
         attacked: {
           state: false
@@ -467,7 +467,7 @@ class App extends Component {
         attacking: {
           state: false,
           count: 0,
-          limit: 5,
+          limit: 10,
         },
         attacked: {
           state: false
@@ -955,20 +955,30 @@ class App extends Component {
 
     if (player.attacking.state === true) {
       // console.log('continue attacking');
-      // if (this.keyPressed[player.number-1].attack === true) {
-        if (player.attacking.count < player.attacking.limit) {
-          player.attacking.count++;
-          // console.log('attack count',player.attacking.count, player.attacking.limit);
-        }
-        if (player.attacking.count >= player.attacking.limit) {
-          player.attacking = {
-            state: false,
-            count: 0,
-            limit: player.attacking.limit
+      if (player.attacking.count < player.attacking.limit) {
+        player.attacking.count++;
+        // console.log('attack count',player.attacking.count, player.attacking.limit);
+      }
+      if (player.attacking.count >= player.attacking.limit) {
+
+
+        this.getTarget(player)
+        if (player.target.occupant.type === 'player') {
+          if (this.players.[player.target.occupant.player-1].defending.state === false) {
+            this.players.[player.target.occupant.player-1].dead.state = true;
+            // this.players.[player.target.occupant.player-1].action = 'dead';
+          } else {
+            // console.log('attackdefended');
           }
-          player.action = 'idle';
         }
-      // }
+
+        player.attacking = {
+          state: false,
+          count: 0,
+          limit: player.attacking.limit
+        }
+        player.action = 'idle';
+      }
     }
 
     if (player.defending.state === false) {
@@ -1153,30 +1163,10 @@ class App extends Component {
             // console.log('continue attacking');
             if (this.keyPressed[player.number-1].attack === true) {
               // console.log('already attacking');
-              // if (player.attacking.count < player.attacking.limit) {
-              //   player.attacking.count++;
-              // }
-              // if (player.attacking.count >= player.attacking.limit) {
-              //   player.attacking = {
-              //     state: false,
-              //     count: 0,
-              //     limit: player.attacking.limit
-              //   }
-              // }
             }
             //
             if (this.keyPressed.defend === true) {
               // console.log('already defending');
-              // if (player.defending.count < player.defending.limit) {
-              //   player.defending.count++;
-              // }
-              // if (player.defending.count >= player.defending.limit) {
-              //   player.defending = {
-              //     state: false,
-              //     count: 0,
-              //     limit: player.defending.limit
-              //   }
-              // }
             }
           }
 
@@ -1184,23 +1174,12 @@ class App extends Component {
 
             if (this.keyPressed[player.number-1].attack === true) {
               // console.log('start attacking');
-              this.getTarget(player)
-              if (player.target.occupant.type === 'player') {
-                if (this.players.[player.target.occupant.player-1].defending.state === false) {
-                  this.players.[player.target.occupant.player-1].dead.state = true;
-                  // this.players.[player.target.occupant.player-1].action = 'dead';
-                } else {
-                  // console.log('attackdefended');
-                }
-              }
-
               player.action = 'attacking';
               player.attacking = {
                 state: true,
                 count: 1,
                 limit: player.attacking.limit,
               }
-
             }
             if (this.keyPressed[player.number-1].defend === true) {
               // console.log('start defending');
@@ -1789,15 +1768,8 @@ class App extends Component {
             }
 
             if (plyr.target.void === false && plyr.moving.state === true) {
-              if (
-                plyr.direction === 'north' ||
-                plyr.direction === 'northWest' ||
-                plyr.direction === 'west'
-              ) {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y
-                ) {
+              if (plyr.direction === 'north' || plyr.direction === 'northWest' || plyr.direction === 'west') {
+                if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                   if (
                     plyr.direction === 'east' ||
                     // newDirection === 'east' ||
@@ -1815,16 +1787,8 @@ class App extends Component {
                   // playerDrawLog(x,y)
                 }
               }
-
-              if (
-                plyr.direction === 'east' ||
-                plyr.direction === 'south' ||
-                plyr.direction === 'southEast'
-              ) {
-                if (
-                  x === plyr.target.cell.number.x &&
-                  y === plyr.target.cell.number.y
-                ) {
+              if (plyr.direction === 'east' || plyr.direction === 'south' || plyr.direction === 'southEast') {
+                if (x === plyr.target.cell.number.x && y === plyr.target.cell.number.y) {
                   if (
                     plyr.direction === 'east' ||
                     // newDirection === 'east' ||
@@ -1842,18 +1806,10 @@ class App extends Component {
                   // playerDrawLog(x,y)
                 }
               }
-
-              if (
-                plyr.direction === 'northEast'
-              ) {
+              if (plyr.direction === 'northEast') {
                 // east edge disappearing bug fix
-                if (
-                  plyr.target.cell.number.x === 9
-                ) {
-                  if (
-                    x === 9 &&
-                    y === plyr.target.cell.number.y+1
-                  ) {
+                if (plyr.target.cell.number.x === 9) {
+                  if (x === 9 && y === plyr.target.cell.number.y+1) {
                     if (
                       plyr.direction === 'east' ||
                       // newDirection === 'east' ||
@@ -1871,10 +1827,7 @@ class App extends Component {
                     // playerDrawLog(x,y)
                   }
                 } else {
-                  if (
-                    x === plyr.moving.origin.number.x+1 &&
-                    y === plyr.moving.origin.number.y
-                  ) {
+                  if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
                     if (
                       plyr.direction === 'east' ||
                       // newDirection === 'east' ||
@@ -1894,13 +1847,8 @@ class App extends Component {
                 }
 
               }
-              if (
-                plyr.direction === 'southWest'
-              ) {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y+1
-                ) {
+              if (plyr.direction === 'southWest') {
+                if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
                   if (
                     plyr.direction === 'east' ||
                     // newDirection === 'east' ||
@@ -1920,10 +1868,7 @@ class App extends Component {
               }
             }
             else {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
 
                 if (
                   plyr.direction === 'east' ||
@@ -1939,16 +1884,28 @@ class App extends Component {
                 } else {
                   context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
+
                 if (plyr.attacking.state === true) {
-                  context.fillStyle = "purple";
-                  context.beginPath();
-                  context.arc(point.x-18, point.y-18, 10, 0, 2 * Math.PI);
-                  context.fill();
+
+                  if (plyr.attacking.count > 0 && plyr.attacking.count < 3) {
+                    context.fillStyle = "green";
+                    context.beginPath();
+                    context.arc(point.x-20, point.y-20, 5, 0, 2 * Math.PI);
+                    context.fill();
+                  }
+
+                  if (plyr.attacking.count > plyr.attacking.limit-4 && plyr.attacking.count < plyr.attacking.limit+1) {
+                    context.fillStyle = "brown";
+                    context.beginPath();
+                    context.arc(point.x-18, point.y-18, 15, 0, 2 * Math.PI);
+                    context.fill();
+                  }
+
                 }
                 if (plyr.defending.state === true) {
                   context.fillStyle = "blue";
                   context.beginPath();
-                  context.arc(point.x-18, point.y-18, 10, 0, 2 * Math.PI);
+                  context.arc(point.x-18, point.y-18, 15, 0, 2 * Math.PI);
                   context.fill();
                 }
                 // playerDrawLog(x,y)
@@ -1956,15 +1913,8 @@ class App extends Component {
             }
 
             if (plyr.strafing.state === true) {
-              if (
-                plyr.strafing.direction === 'north' ||
-                plyr.strafing.direction === 'northWest' ||
-                plyr.strafing.direction === 'west'
-              ) {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y
-                ) {
+              if (plyr.strafing.direction === 'north' || plyr.strafing.direction === 'northWest' || plyr.strafing.direction === 'west') {
+                if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                   if (
                     plyr.direction === 'east' ||
                     // newDirection === 'east' ||
@@ -1982,16 +1932,8 @@ class App extends Component {
                   // playerDrawLog(x,y)
                 }
               }
-
-              if (
-                plyr.strafing.direction === 'east' ||
-                plyr.strafing.direction === 'south' ||
-                plyr.strafing.direction === 'southEast'
-              ) {
-                if (
-                  x === plyr.target.cell.number.x &&
-                  y === plyr.target.cell.number.y
-                ) {
+              if (plyr.strafing.direction === 'east' || plyr.strafing.direction === 'south' || plyr.strafing.direction === 'southEast') {
+                if (x === plyr.target.cell.number.x && y === plyr.target.cell.number.y) {
                   if (
                     plyr.direction === 'east' ||
                     // newDirection === 'east' ||
@@ -2009,14 +1951,8 @@ class App extends Component {
                   // playerDrawLog(x,y)
                 }
               }
-
-              if (
-                plyr.strafing.direction === 'northEast'
-              ) {
-                if (
-                  x === plyr.moving.origin.number.x+1 &&
-                  y === plyr.moving.origin.number.y
-                ) {
+              if (plyr.strafing.direction === 'northEast') {
+                if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
                   if (
                     plyr.direction === 'east' ||
                     // newDirection === 'east' ||
@@ -2034,13 +1970,8 @@ class App extends Component {
                   // playerDrawLog(x,y)
                 }
               }
-              if (
-                plyr.strafing.direction === 'southWest'
-              ) {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y+1
-                ) {
+              if (plyr.strafing.direction === 'southWest') {
+                if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
                   if (
                     plyr.direction === 'east' ||
                     // newDirection === 'east' ||
@@ -2061,10 +1992,7 @@ class App extends Component {
             }
             if (plyr.falling.state === true) {
 
-              if (
-                x === 0 &&
-                y === 0
-              ) {
+              if (x === 0 && y === 0) {
                 if (
                   plyr.direction === 'east' ||
                   // newDirection === 'east' ||
