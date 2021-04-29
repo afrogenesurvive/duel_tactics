@@ -37,7 +37,7 @@ class App extends Component {
       startPosition: {
         cell: {
           number: {
-            x: 8,
+            x: 7,
             y: 2,
           },
           center: {
@@ -80,7 +80,7 @@ class App extends Component {
         },
         void: false
       },
-      direction: 'north',
+      direction: 'west',
       turning: {
         state: undefined,
         toDirection: '',
@@ -115,6 +115,9 @@ class App extends Component {
         state: false,
         count: 0,
         limit: 5,
+      },
+      attacked: {
+        state: false
       },
       defending: {
         state: false,
@@ -131,11 +134,11 @@ class App extends Component {
       }
     },
     player2: {
-      number: 1,
+      number: 2,
       startPosition: {
         cell: {
           number: {
-            x: 8,
+            x: 2,
             y: 2,
           },
           center: {
@@ -178,7 +181,7 @@ class App extends Component {
         },
         void: false
       },
-      direction: 'north',
+      direction: 'east',
       turning: {
         state: undefined,
         toDirection: '',
@@ -214,10 +217,16 @@ class App extends Component {
         count: 0,
         limit: 5,
       },
+      attacked: {
+        state: false
+      },
       defending: {
         state: false,
         count: 0,
         limit: 5,
+      },
+      defended: {
+        state: false
       },
       falling: {
         state: false,
@@ -359,6 +368,9 @@ class App extends Component {
           count: 0,
           limit: 5,
         },
+        attacked: {
+          state: false
+        },
         defending: {
           state: false,
           count: 0,
@@ -457,10 +469,16 @@ class App extends Component {
           count: 0,
           limit: 5,
         },
+        attacked: {
+          state: false
+        },
         defending: {
           state: false,
           count: 0,
           limit: 5,
+        },
+        defended: {
+          state: false
         },
         falling: {
           state: false,
@@ -765,6 +783,14 @@ class App extends Component {
        direction = 'southEast';
        this.currentPlayer = 1;
       break;
+      case 'v' :
+       this.keyPressed[0].attack = state;
+       this.currentPlayer = 1;
+      break;
+      case 'b' :
+       this.keyPressed[0].defend = state;
+       this.currentPlayer = 1;
+      break;
       case ' ' :
         this.keyPressed[0].strafe = state;
         this.players[0].strafing.state = state;
@@ -814,6 +840,14 @@ class App extends Component {
        direction = 'southEast';
        this.currentPlayer = 2;
       break;
+      case 'n' :
+       this.keyPressed[1].attack = state;
+       this.currentPlayer = 2;
+      break;
+      case 'h' :
+       this.keyPressed[1].defend = state;
+       this.currentPlayer = 2;
+      break;
       case '/' :
         this.keyPressed[1].strafe = state;
         this.players[1].strafing.state = state;
@@ -828,6 +862,13 @@ class App extends Component {
       if (this.keyPressed[this.currentPlayer-1][direction] == false) {
         // console.log('player',player.number,' turn-stop');
         player.turning.state = false;
+      }
+    }
+
+    if (player.defending.state === true) {
+      if (this.keyPressed[this.currentPlayer-1].defend === false) {
+        // console.log('player',player.number,' stop defending');
+        player.defending.state = false;
       }
     }
 
@@ -912,7 +953,38 @@ class App extends Component {
       }
     }
 
+    if (player.attacking.state === true) {
+      // console.log('continue attacking');
+      // if (this.keyPressed[player.number-1].attack === true) {
+        if (player.attacking.count < player.attacking.limit) {
+          player.attacking.count++;
+          // console.log('attack count',player.attacking.count, player.attacking.limit);
+        }
+        if (player.attacking.count >= player.attacking.limit) {
+          player.attacking = {
+            state: false,
+            count: 0,
+            limit: player.attacking.limit
+          }
+          player.action = 'idle';
+        }
+      // }
+    }
+
+    if (player.defending.state === false) {
+      // console.log('stop defending');
+      player.defending = {
+          state: false,
+          count: 0,
+          limit: player.defending.limit
+        }
+        player.action = 'idle';
+    }
+
+
+
     if (player.moving.state === true) {
+
       // console.log('player',player.number,' moving');
       nextPosition = this.lineCrementer(player);
       // player.currentPosition.cell = player.target.cell;
@@ -958,38 +1030,96 @@ class App extends Component {
 
     } else if (player.moving.state === false) {
 
-      if (
-        this.keyPressed[player.number-1].north === true ||
-        this.keyPressed[player.number-1].south === true ||
-        this.keyPressed[player.number-1].east === true ||
-        this.keyPressed[player.number-1].west === true ||
-        this.keyPressed[player.number-1].northEast === true ||
-        this.keyPressed[player.number-1].northWest === true ||
-        this.keyPressed[player.number-1].southEast === true ||
-        this.keyPressed[player.number-1].southWest === true
-      ) {
-        // console.log('move key pressed');
+      if (player.attacking.state === false && player.defending.state === false) {
+        // console.log('here');
         if (
-          keyPressedDirection === player.direction &&
-          player.strafing.state === false
+          this.keyPressed[player.number-1].north === true ||
+          this.keyPressed[player.number-1].south === true ||
+          this.keyPressed[player.number-1].east === true ||
+          this.keyPressed[player.number-1].west === true ||
+          this.keyPressed[player.number-1].northEast === true ||
+          this.keyPressed[player.number-1].northWest === true ||
+          this.keyPressed[player.number-1].southEast === true ||
+          this.keyPressed[player.number-1].southWest === true
         ) {
-          // console.log('player',player.number,' moving');
-          let target = this.getTarget(player)
+          // console.log('move key pressed');
+          if (keyPressedDirection === player.direction && player.strafing.state === false) {
+            // console.log('player',player.number,' moving');
+            let target = this.getTarget(player)
 
-          if (
-            target.free === true &&
-            player.target.void === false
-          ) {
+            if (
+              target.free === true &&
+              player.target.void === false
+            ) {
 
-            if (player.dead.state === true) {
+              if (player.dead.state === true) {
 
-              player.nextPosition = {
-                x: -30,
-                y: -30,
+                player.nextPosition = {
+                  x: -30,
+                  y: -30,
+                }
+
+              } else if (player.turning.delayCount === 0) {
+                player.action = 'moving';
+                player.moving = {
+                  state: true,
+                  step: 0,
+                  course: '',
+                  origin: {
+                    number: {
+                      x: player.currentPosition.cell.number.x,
+                      y: player.currentPosition.cell.number.y
+                    },
+                    center: {
+                      x: player.currentPosition.cell.center,
+                      y: player.currentPosition.cell.center
+                    },
+                  },
+                  destination: target.cell.center
+                }
+                nextPosition = this.lineCrementer(player);
+                player.nextPosition = nextPosition;
+
               }
 
-            } else if (player.turning.delayCount === 0) {
-              player.action = 'moving';
+            }
+
+            if (target.free === false) {
+              // console.log('target is NOT free');
+            }
+            if (player.target.void === true) {
+              // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
+
+              player.moving = {
+                state: true,
+                step: 0,
+                course: '',
+                origin: {
+                  number: player.currentPosition.cell.number,
+                  center: player.currentPosition.cell.center,
+                },
+                destination: target.cell.center
+              }
+
+              nextPosition = this.lineCrementer(player);
+              player.nextPosition = nextPosition;
+            }
+
+          }
+          else if (keyPressedDirection !== player.direction && player.strafing.state === false) {
+            // console.log('change player direction to',keyPressedDirection);
+            // console.log('player',player.number,' turn-start');
+            player.turning.state = true;
+            player.turning.toDirection = keyPressedDirection;
+
+          }
+          else if (keyPressedDirection !== player.direction && player.strafing.state === true) {
+
+            player.strafing.direction = keyPressedDirection;
+            let target = this.getTarget(player);
+
+            if (target.free === true) {
+              player.action = 'strafe moving';
               player.moving = {
                 state: true,
                 step: 0,
@@ -1000,113 +1130,78 @@ class App extends Component {
                     y: player.currentPosition.cell.number.y
                   },
                   center: {
-                    x: player.currentPosition.cell.center,
-                    y: player.currentPosition.cell.center
+                    x: player.currentPosition.cell.center.x,
+                    y: player.currentPosition.cell.center.y
                   },
                 },
                 destination: target.cell.center
               }
               nextPosition = this.lineCrementer(player);
               player.nextPosition = nextPosition;
-
             }
-
-          }
-
-          if (target.free === false) {
-            // console.log('target is NOT free');
-          }
-          if (player.target.void === true) {
-            // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
-
-            player.moving = {
-              state: true,
-              step: 0,
-              course: '',
-              origin: {
-                number: player.currentPosition.cell.number,
-                center: player.currentPosition.cell.center,
-              },
-              destination: target.cell.center
-            }
-
-            nextPosition = this.lineCrementer(player);
-            player.nextPosition = nextPosition;
-          }
-
-        } else if (keyPressedDirection !== player.direction && player.strafing.state === false) {
-          // console.log('change player direction to',keyPressedDirection);
-          // console.log('player',player.number,' turn-start');
-          player.turning.state = true;
-          player.turning.toDirection = keyPressedDirection;
-
-        } else if (keyPressedDirection !== player.direction && player.strafing.state === true) {
-
-          player.strafing.direction = keyPressedDirection;
-          let target = this.getTarget(player);
-
-          if (target.free === true) {
-            player.action = 'strafe moving';
-            player.moving = {
-              state: true,
-              step: 0,
-              course: '',
-              origin: {
-                number: {
-                  x: player.currentPosition.cell.number.x,
-                  y: player.currentPosition.cell.number.y
-                },
-                center: {
-                  x: player.currentPosition.cell.center.x,
-                  y: player.currentPosition.cell.center.y
-                },
-              },
-              destination: target.cell.center
-            }
-            nextPosition = this.lineCrementer(player);
-            player.nextPosition = nextPosition;
           }
         }
-      } else if (this.keyPressed[player.number-1].attack === true || this.keyPressed[player.number-1].defend === true) {
+      }
+
+      // else
+      if (this.keyPressed[player.number-1].attack === true || this.keyPressed[player.number-1].defend === true) {
         // console.log('non-move key pressed');
-        if (player.action === 'attacking' || player.action === 'defending') {
+        if (player.attacking.state === true || player.defending.state === true) {
 
-          if (this.keyPressed.attack === true) {
-            if (player.attacking.count < player.attacking.limit) {
-              player.attacking.count++;
-            }
-            if (player.attacking.count >= player.attacking.limit) {
-              player.attacking = {
-                state: false,
-                count: 0,
-                limit: player.attacking.limit
-              }
-            }
+          // console.log('continue attacking');
+          if (this.keyPressed[player.number-1].attack === true) {
+            // console.log('already attacking');
+            // if (player.attacking.count < player.attacking.limit) {
+            //   player.attacking.count++;
+            // }
+            // if (player.attacking.count >= player.attacking.limit) {
+            //   player.attacking = {
+            //     state: false,
+            //     count: 0,
+            //     limit: player.attacking.limit
+            //   }
+            // }
           }
-
+          //
           if (this.keyPressed.defend === true) {
-            if (player.defending.count < player.defending.limit) {
-              player.defending.count++;
-            }
-            if (player.defending.count >= player.defending.limit) {
-              player.defending = {
-                state: false,
-                count: 0,
-                limit: player.defending.limit
-              }
-            }
+            // console.log('already defending');
+            // if (player.defending.count < player.defending.limit) {
+            //   player.defending.count++;
+            // }
+            // if (player.defending.count >= player.defending.limit) {
+            //   player.defending = {
+            //     state: false,
+            //     count: 0,
+            //     limit: player.defending.limit
+            //   }
+            // }
           }
         }
-        if (player.action !== 'attacking' || player.action !== 'defending') {
-          if (this.keyPressed.attack === true) {
+
+        if (player.attacking.state === false && player.defending.state === false) {
+
+          if (this.keyPressed[player.number-1].attack === true) {
+            // console.log('start attacking');
+            this.getTarget(player)
+            if (player.target.occupant.type === 'player') {
+              if (this.players.[player.target.occupant.player-1].defending.state === false) {
+                this.players.[player.target.occupant.player-1].dead.state = true;
+                // this.players.[player.target.occupant.player-1].action = 'dead';
+              } else {
+                // console.log('attackdefended');
+              }
+            }
+
             player.action = 'attacking';
             player.attacking = {
               state: true,
               count: 1,
               limit: player.attacking.limit,
             }
+
           }
-          if (this.keyPressed.defend === true) {
+          if (this.keyPressed[player.number-1].defend === true) {
+            // console.log('start defending');
             player.action = 'defending';
             player.defending = {
               state: true,
@@ -1118,6 +1213,8 @@ class App extends Component {
       }
 
     }
+
+
 
     this.players[player.number-1] = player;
     // this.players[this.currentPlayer-1] = player;
@@ -1326,7 +1423,7 @@ class App extends Component {
 
     }
 
-    if (player.action !== 'attacking' || player.action !== 'defending') {
+    // if (player.action !== 'attacking' || player.action !== 'defending') {
 
       // context2.clearRect(0, 0, canvas2.width, canvas2.height);
 
@@ -1398,6 +1495,9 @@ class App extends Component {
             };
 
             switch(plyr.action) {
+              case 'dead':
+                updatedPlayerImg = playerImgs[plyr.number-1].idle.north;
+              break;
               case 'idle':
                 switch(plyr.direction) {
                   case 'north' :
@@ -1767,6 +1867,18 @@ class App extends Component {
                 } else {
                   context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
+                if (plyr.attacking.state === true) {
+                  context.fillStyle = "purple";
+                  context.beginPath();
+                  context.arc(point.x-18, point.y-18, 10, 0, 2 * Math.PI);
+                  context.fill();
+                }
+                if (plyr.defending.state === true) {
+                  context.fillStyle = "blue";
+                  context.beginPath();
+                  context.arc(point.x-18, point.y-18, 10, 0, 2 * Math.PI);
+                  context.fill();
+                }
                 // playerDrawLog(x,y)
               }
             }
@@ -1899,6 +2011,7 @@ class App extends Component {
               }
             }
 
+
           }
 
           let walledTiles = []
@@ -1922,7 +2035,7 @@ class App extends Component {
           }
         }
       }
-    }
+    // }
 
     this.players[player.number-1] = player;
     // this.players[this.currentPlayer-1] = player;
@@ -1976,11 +2089,7 @@ class App extends Component {
     let targetCellNumber = {x: 0,y: 0};
     let targetCellCenter = {x: 0,y: 0};
 
-
-    if (
-      currentPosition.x === 0 &&
-      currentPosition.y === 0
-    ) {
+    if (currentPosition.x === 0 && currentPosition.y === 0) {
       if (
         direction === 'north' ||
         direction === 'northEast' ||
@@ -1990,10 +2099,7 @@ class App extends Component {
         voidDirection = 'north';
       }
     }
-    if (
-      currentPosition.x === 0 &&
-      currentPosition.y === 9
-    ) {
+    if (currentPosition.x === 0 && currentPosition.y === 9) {
       if (
         direction === 'south' ||
         direction === 'southEast'
@@ -2002,10 +2108,7 @@ class App extends Component {
         voidDirection = 'south';
       }
     }
-    if (
-      currentPosition.x === 9 &&
-      currentPosition.y === 9
-    ) {
+    if (currentPosition.x === 9 && currentPosition.y === 9) {
       if (
         direction === 'south' ||
         direction === 'southWest' ||
@@ -2015,10 +2118,7 @@ class App extends Component {
         voidDirection = 'south';
       }
     }
-    if (
-      currentPosition.x === 9 &&
-      currentPosition.y === 0
-    ) {
+    if (currentPosition.x === 9 && currentPosition.y === 0) {
       if (
         direction === 'east' ||
         direction === 'southEast'
@@ -2028,9 +2128,7 @@ class App extends Component {
       }
     }
 
-    if (
-      currentPosition.x === 0
-    ) {
+    if (currentPosition.x === 0) {
       if (
         direction === 'west' ||
         direction === 'northWest' ||
@@ -2039,9 +2137,7 @@ class App extends Component {
         target.void = true;
         voidDirection = 'west';
       }
-    } else if (
-      currentPosition.y === 0
-    ) {
+    } else if (currentPosition.y === 0) {
       if (
         direction === 'north' ||
         direction === 'northWest' ||
@@ -2050,9 +2146,7 @@ class App extends Component {
         target.void = true;
         voidDirection = 'north';
       }
-    } else if (
-      currentPosition.x === 9
-    ) {
+    } else if (currentPosition.x === 9) {
       if (
         direction === 'east' ||
         direction === 'northEast' ||
@@ -2061,9 +2155,7 @@ class App extends Component {
         target.void = true;
         voidDirection = 'east';
       }
-    } else if (
-      currentPosition.y === 9
-    ) {
+    } else if (currentPosition.y === 9) {
       if (
         direction === 'south' ||
         direction === 'southEast' ||
@@ -2243,7 +2335,8 @@ class App extends Component {
       obstacleObstructFound = true;
       target.occupant = {
         type: 'player',
-        player: 'player'+opposingPlayer.number+''
+        player: opposingPlayer.number
+        // player: 'player'+opposingPlayer.number+''
       };
     }
 
