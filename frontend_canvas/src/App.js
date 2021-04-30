@@ -845,16 +845,19 @@ class App extends Component {
       }
     }
 
-    // IF USING DEFEND COUNTING, ONLY CHECK FOR KEY RELEASE ONCE LIMIT IS REACHED!!
-    if (player.defending.state === true) {
+
+
+    if (player.defending.state === true && player.defending.count === 0) {
       if (this.keyPressed[this.currentPlayer-1].defend === false) {
-        // console.log('player',player.number,' stop defending');
+        // console.log('player',player.number,' stop defending1');
         player.defending.state = false;
       }
     }
 
+    // let canvas = this.canvasRef.current;
+    // let context = canvas.getContext('2d');
     // for (const player of this.players) {
-    //   this.playerUpdate(player);
+    //   this.playerUpdate(player, canvas, context);
     // }
 
   }
@@ -984,8 +987,8 @@ class App extends Component {
         player.turning.state = undefined;
         this.getTarget(player);
       }
-      if (player.defending.state === false) {
-        // console.log('stop defending');
+      if (player.defending.state === false && player.defending.count === 0) {
+        
         player.defending = {
             state: false,
             count: 0,
@@ -1036,9 +1039,20 @@ class App extends Component {
           player.action = 'idle';
         }
       }
-      // IF USING DEFEND COUNT USE AN IF TRUE INCREMENT, IF LIMIT DO NOTHING WAIT FOR KEYPRESS HANDLER TO FALSIFY
 
-      
+      // DEFEND DELAY FOR ANIMATION!!
+      if (player.defending.count > 0 && player.defending.count < player.defending.limit+1) {
+        player.defending.count++;
+      } else if (player.defending.count >= player.defending.limit && player.defending.state === false) {
+
+        player.action = 'defending';
+        player.defending = {
+          state: true,
+          count: 0,
+          limit: player.defending.limit,
+        }
+      }
+
 
       // CAN READ MOVE INPUTS!!
       if (player.attacking.state === false && player.defending.state === false) {
@@ -1180,11 +1194,15 @@ class App extends Component {
             }
             if (this.keyPressed[player.number-1].defend === true) {
               // console.log('start defending');
-              player.action = 'defending';
-              player.defending = {
-                state: true,
-                count: 1,
-                limit: player.defending.limit,
+
+              if (player.defending.count === 0) {
+                player.defending = {
+                  state: false,
+                  count: 1,
+                  limit: player.defending.limit,
+                }
+              } else {
+                // console.log('cant start defend. might already be in progress');
               }
             }
           }
