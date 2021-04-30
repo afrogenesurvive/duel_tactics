@@ -2218,15 +2218,26 @@ class App extends Component {
                   updatedPlayerImg = this.refs.player2ImgIdleNorth;
                 }
 
+
                 plyr.dead.state = false;
                 plyr.currentPosition.cell = respawnPoint;
                 plyr.nextPosition = respawnPoint.center;
                 this.getTarget(plyr)
-                // this.players[plyr.number-1] = plyr;
-
-                context.drawImage(updatedPlayerImg, respawnPoint.center.x-25, respawnPoint.center.y-50, 50,50);
+                plyr.moving = {
+                  state: false,
+                  step: 0,
+                  course: '',
+                  origin: {
+                    number: respawnPoint.number,
+                    center: respawnPoint.center,
+                  },
+                  destination: this.players[plyr.number-1].target.cell.center
+                }
+                plyr.direction = 'north';
                 plyr.respawn = false;
                 this.players[plyr.number-1] = plyr;
+
+                context.drawImage(updatedPlayerImg, respawnPoint.center.x-25, respawnPoint.center.y-50, 50,50);
               }
 
             }
