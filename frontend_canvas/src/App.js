@@ -958,8 +958,6 @@ class App extends Component {
     // CAN READ INPUTS
     else if (player.moving.state === false) {
 
-
-
       // KEY PRESS RELEASE CHECKS!!
       if (player.turning.state === false) {
         player.direction = player.turning.toDirection;
@@ -1117,7 +1115,6 @@ class App extends Component {
             }
             if (player.target.void === true) {
               // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
-
               player.moving = {
                 state: true,
                 step: 0,
@@ -1421,7 +1418,6 @@ class App extends Component {
     let newDirection;
 
     if (player.falling.state === true) {
-
       if (player.falling.count === player.falling.limit) {
         this.killPlayer(player)
       }
@@ -1899,6 +1895,117 @@ class App extends Component {
               // playerDrawLog(x,y,plyr)
             }
           }
+          else if (plyr.target.void === true && plyr.moving.state === true) {
+
+            if (plyr.moving.origin.number.x === 9 && plyr.moving.origin.number.y !== 0 && plyr.moving.origin.number.y !== 9) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y + 1) {
+                if (
+                  plyr.direction === 'east' ||
+                  // newDirection === 'east' ||
+                  plyr.direction === 'west' ||
+                  // newDirection === 'west' ||
+                  plyr.direction === 'north' ||
+                  // newDirection === 'north' ||
+                  plyr.direction === 'south'
+                  // newDirection === 'south'
+                ) {
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                } else {
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                }
+              }
+            }
+            if (plyr.moving.origin.number.x === 9 && plyr.moving.origin.number.y === 0) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+                if (
+                  plyr.direction === 'east' ||
+                  // newDirection === 'east' ||
+                  plyr.direction === 'west' ||
+                  // newDirection === 'west' ||
+                  plyr.direction === 'north' ||
+                  // newDirection === 'north' ||
+                  plyr.direction === 'south'
+                  // newDirection === 'south'
+                ) {
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                } else {
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                }
+              }
+            }
+            if (plyr.moving.origin.number.x === 9 && plyr.moving.origin.number.y === 9) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+                if (
+                  plyr.direction === 'east' ||
+                  // newDirection === 'east' ||
+                  plyr.direction === 'west' ||
+                  // newDirection === 'west' ||
+                  plyr.direction === 'north' ||
+                  // newDirection === 'north' ||
+                  plyr.direction === 'south'
+                  // newDirection === 'south'
+                ) {
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                } else {
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                }
+              }
+            }
+            if (plyr.moving.origin.number.x === 0 && plyr.moving.origin.number.y === 9) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+                if (
+                  plyr.direction === 'east' ||
+                  // newDirection === 'east' ||
+                  plyr.direction === 'west' ||
+                  // newDirection === 'west' ||
+                  plyr.direction === 'north' ||
+                  // newDirection === 'north' ||
+                  plyr.direction === 'south'
+                  // newDirection === 'south'
+                ) {
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                } else {
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                }
+              }
+            }
+            if (plyr.moving.origin.number.x === 0 && plyr.moving.origin.number.y === 0) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+                if (
+                  plyr.direction === 'east' ||
+                  // newDirection === 'east' ||
+                  plyr.direction === 'west' ||
+                  // newDirection === 'west' ||
+                  plyr.direction === 'north' ||
+                  // newDirection === 'north' ||
+                  plyr.direction === 'south'
+                  // newDirection === 'south'
+                ) {
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                } else {
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                }
+              }
+            }
+            else {
+              if (x === plyr.moving.origin.number.x + 1 && y === plyr.moving.origin.number.y) {
+                if (
+                  plyr.direction === 'east' ||
+                  // newDirection === 'east' ||
+                  plyr.direction === 'west' ||
+                  // newDirection === 'west' ||
+                  plyr.direction === 'north' ||
+                  // newDirection === 'north' ||
+                  plyr.direction === 'south'
+                  // newDirection === 'south'
+                ) {
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                } else {
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                }
+              }
+            }
+          }
 
           if (plyr.strafing.state === true) {
             if (plyr.strafing.direction === 'north' || plyr.strafing.direction === 'northWest' || plyr.strafing.direction === 'west') {
@@ -1999,129 +2106,128 @@ class App extends Component {
             }
           }
           if (plyr.respawn === true) {
-            console.log('respawning... confirm dead player',plyr.dead.state);
 
-            let respawnPoint = {
-              number: {
-                x: 0,
-                y: 0,
-              },
-              center: {
-                x: 0,
-                y: 0,
+            if (
+              x === plyr.startPosition.cell.number.x &&
+              y === plyr.startPosition.cell.number.y
+            ) {
+              // console.log('respawning... confirm dead player',plyr.dead.state,x,y);
+
+              let respawnPoint = {
+                number: {
+                  x: 0,
+                  y: 0,
+                },
+                center: {
+                  x: 0,
+                  y: 0,
+                }
               }
-            }
-            let altRespawnPoint = {
-              number: {
-                x: 0,
-                y: 0,
-              },
-              center: {
-                x: 0,
-                y: 0,
-              }
-            }
-
-            let respawnCellOccupied = false;
-
-            console.log('matching grid info with start position');
-            for (const elem of allCells) {
-              if (
-                elem.number.x === 9 &&
-                elem.number.y === 9
-              ){
-                altRespawnPoint.number.x = elem.number.x;
-                altRespawnPoint.number.y = elem.number.y;
-                altRespawnPoint.center.x = elem.center.x;
-                altRespawnPoint.center.y = elem.center.y;
+              let altRespawnPoint = {
+                number: {
+                  x: 0,
+                  y: 0,
+                },
+                center: {
+                  x: 0,
+                  y: 0,
+                }
               }
 
-              if (
-                elem.number.x === plyr.startPosition.cell.number.x &&
-                elem.number.y === plyr.startPosition.cell.number.y
-              )
-              {
+              let respawnCellOccupied = false;
 
-                console.log('found your start position');
+              // console.log('matching grid info with start position');
+              for (const elem of allCells) {
+                if (
+                  elem.number.x === 9 &&
+                  elem.number.y === 9
+                ){
+                  altRespawnPoint.number.x = elem.number.x;
+                  altRespawnPoint.number.y = elem.number.y;
+                  altRespawnPoint.center.x = elem.center.x;
+                  altRespawnPoint.center.y = elem.center.y;
+                }
 
-                console.log('checking for obstacles');
-                for (const [key, row] of Object.entries(this.levelData2)) {
-                  for (const cell of row) {
-                    if (
-                      cell.charAt(0) === 'y' ||
-                      cell.charAt(0) ===  'z'
-                    ) {
-                      let obstaclePosition = {
-                        x: Number(cell.charAt(1)),
-                        y: row.indexOf(cell),
-                      }
-                      // console.log('found obstacle during map scan @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
+                if (
+                  elem.number.x === plyr.startPosition.cell.number.x &&
+                  elem.number.y === plyr.startPosition.cell.number.y
+                )
+                {
+                  // console.log('found your start position');
+                  // console.log('checking for obstacles');
+                  for (const [key, row] of Object.entries(this.levelData2)) {
+                    for (const cell of row) {
                       if (
-                        elem.number.x === obstaclePosition.x &&
-                        elem.number.y === obstaclePosition.y
+                        cell.charAt(0) === 'y' ||
+                        cell.charAt(0) ===  'z'
                       ) {
-                        console.log('an obstacle is in your way');
-                        respawnCellOccupied = true;
+                        let obstaclePosition = {
+                          x: Number(cell.charAt(1)),
+                          y: row.indexOf(cell),
+                        }
+                        // console.log('found obstacle during map scan @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
+                        if (
+                          elem.number.x === obstaclePosition.x &&
+                          elem.number.y === obstaclePosition.y
+                        ) {
+                          // console.log('an obstacle is in your way');
+                          respawnCellOccupied = true;
+                        }
                       }
                     }
                   }
+
+                  let opposingPlayer;
+                  if (plyr.number === 1) {
+                    opposingPlayer = this.players[1]
+                  } else if (plyr.number === 2) {
+                    opposingPlayer = this.players[0]
+                  }
+
+                  // console.log('checking for other player');
+                  if (
+                    elem.number.x === opposingPlayer.currentPosition.cell.number.x &&
+                    elem.number.y === opposingPlayer.currentPosition.cell.number.y
+                  )
+                  {
+                    // console.log('opposing player is in your way');
+                    respawnCellOccupied = true;
+                  };
+
+                  if (
+                    respawnCellOccupied === false
+                  ) {
+                    // console.log('starting point cell is free. You may respawn there');
+                    respawnPoint.number.x = elem.number.x;
+                    respawnPoint.number.y = elem.number.y;
+                    respawnPoint.center.x = elem.center.x;
+                    respawnPoint.center.y = elem.center.y;
+                  } else if (respawnCellOccupied === true) {
+                    // console.log('original spawn point occupied! spawning at cell 9,9');
+                    respawnPoint = altRespawnPoint;
+                  }
+
                 }
 
-                let opposingPlayer;
+              }
+
                 if (plyr.number === 1) {
-                  opposingPlayer = this.players[1]
-                } else if (plyr.number === 2) {
-                  opposingPlayer = this.players[0]
+                  updatedPlayerImg = this.refs.playerImgIdleNorth;
+                }
+                if (plyr.number === 2) {
+                  updatedPlayerImg = this.refs.player2ImgIdleNorth;
                 }
 
-                console.log('checking for other player');
-                if (
-                  elem.number.x === opposingPlayer.currentPosition.cell.number.x &&
-                  elem.number.y === opposingPlayer.currentPosition.cell.number.y
-                )
-                {
-                  console.log('opposing player is in your way');
-                  respawnCellOccupied = true;
-                };
+                plyr.dead.state = false;
+                plyr.currentPosition.cell = respawnPoint;
+                plyr.nextPosition = respawnPoint.center;
+                this.getTarget(plyr)
+                // this.players[plyr.number-1] = plyr;
 
-                if (
-                  respawnCellOccupied === false
-                  // elem.number.x === plyr.startPosition.cell.number.x &&
-                  // elem.number.y === plyr.startPosition.cell.number.y
-                ) {
-                  console.log('starting point cell is free. You may respawn there');
-                  respawnPoint.number.x = elem.number.x;
-                  respawnPoint.number.y = elem.number.y;
-                  respawnPoint.center.x = elem.center.x;
-                  respawnPoint.center.y = elem.center.y;
-                } else if (respawnCellOccupied === true) {
-                  console.log('original spawn point occupied! spawning at cell 9,9');
-                  respawnPoint = altRespawnPoint;
-                }
-
+                context.drawImage(updatedPlayerImg, respawnPoint.center.x-25, respawnPoint.center.y-50, 50,50);
+                plyr.respawn = false;
+                this.players[plyr.number-1] = plyr;
               }
-
-            }
-
-              if (plyr.number === 1) {
-                updatedPlayerImg = this.refs.playerImgIdleNorth;
-              }
-              if (plyr.number === 2) {
-                updatedPlayerImg = this.refs.player2ImgIdleNorth;
-              }
-
-              plyr.currentPosition.cell = respawnPoint;
-              plyr.currentPosition.cell = respawnPoint;
-              this.getTarget(plyr)
-              playerDrawLog(respawnPoint.center.x,respawnPoint.center.y,plyr)
-
-              context.fillStyle = "green";
-              // context.fillRect(center.x, center.y,5,5);
-
-              context.drawImage(updatedPlayerImg, 300, 300, 40,40);
-              // context.drawImage(updatedPlayerImg, respawnPoint.center.x-20, respawnPoint.center.y-20, 40,40);
-
-              plyr.respawn = false;
 
             }
 
@@ -2557,6 +2663,7 @@ class App extends Component {
     console.log('killing player',player.number);
 
     player.action = 'idle';
+    player.direction = 'north';
     player.falling = {
       state: false,
       count: 0,
@@ -2613,6 +2720,8 @@ class App extends Component {
     };
     player.dead.state = true;
     player.points--;
+
+    // this.getTarget(player)
 
     this.players[player.number-1] = player;
 
@@ -2958,6 +3067,7 @@ class App extends Component {
   aiAct = () => {
 
     // set this.keyPressed and set current player to ai player
+      // maybe w/ own version of key release for turning, defending and strafe
 
     // step1: turn and move in all directions
 
