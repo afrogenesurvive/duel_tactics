@@ -845,8 +845,6 @@ class App extends Component {
       }
     }
 
-
-
     if (player.defending.state === true && player.defending.count === 0) {
       if (this.keyPressed[this.currentPlayer-1].defend === false) {
         // console.log('player',player.number,' stop defending1');
@@ -960,7 +958,9 @@ class App extends Component {
     // CAN READ INPUTS
     else if (player.moving.state === false) {
 
-      // CHECK & UPDATE ACTIONS IN PROGRESS!!
+
+
+      // KEY PRESS RELEASE CHECKS!!
       if (player.turning.state === false) {
         player.direction = player.turning.toDirection;
         player.nextPosition = {
@@ -988,22 +988,30 @@ class App extends Component {
         this.getTarget(player);
       }
       if (player.defending.state === false && player.defending.count === 0) {
-        
+
         player.defending = {
-            state: false,
-            count: 0,
-            limit: player.defending.limit
-          }
-          player.action = 'idle';
+          state: false,
+          count: 0,
+          limit: player.defending.limit
+        }
+        player.action = 'idle';
+      }
+      if (this.keyPressed[player.number-1].defend === false && player.defending.state === true) {
+        player.defending = {
+          state: false,
+          count: 0,
+          limit: player.defending.limit
+        }
+        player.action = 'idle';
       }
 
+      // CHECK & UPDATE ACTIONS IN PROGRESS!!
       if (player.dead.state === true) {
         player.nextPosition = {
           x: -30,
           y: -30,
         }
       }
-
       if (player.attacking.state === true) {
         if (player.attacking.count < player.attacking.limit) {
           player.attacking.count++;
@@ -1039,12 +1047,12 @@ class App extends Component {
           player.action = 'idle';
         }
       }
-
-      // DEFEND DELAY FOR ANIMATION!!
+      // defend start delay
       if (player.defending.count > 0 && player.defending.count < player.defending.limit+1) {
         player.defending.count++;
+        console.log('defend winding up',player.defending.count++, 'player',player.number);
       } else if (player.defending.count >= player.defending.limit && player.defending.state === false) {
-
+        console.log('defend wind up limit cap','player',player.number);
         player.action = 'defending';
         player.defending = {
           state: true,
@@ -1052,7 +1060,6 @@ class App extends Component {
           limit: player.defending.limit,
         }
       }
-
 
       // CAN READ MOVE INPUTS!!
       if (player.attacking.state === false && player.defending.state === false) {
@@ -2108,7 +2115,11 @@ class App extends Component {
               this.getTarget(plyr)
               playerDrawLog(respawnPoint.center.x,respawnPoint.center.y,plyr)
 
-              context.drawImage(updatedPlayerImg, respawnPoint.center.x-20, respawnPoint.center.y-20, 40,40);
+              context.fillStyle = "green";
+              // context.fillRect(center.x, center.y,5,5);
+
+              context.drawImage(updatedPlayerImg, 300, 300, 40,40);
+              // context.drawImage(updatedPlayerImg, respawnPoint.center.x-20, respawnPoint.center.y-20, 40,40);
 
               plyr.respawn = false;
 
