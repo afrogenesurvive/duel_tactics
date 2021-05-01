@@ -321,8 +321,8 @@ class App extends Component {
     this.levelData2 = {
       row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
       row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
-      row2: ['x20x','z21x','x22x','x23x','y24x','x25x','x26x','x27x','x28x','x29x'],
-      row3: ['x30x','x31x','x32x','y33x','x34x','y35x','x36x','x37x','x38x','x39x'],
+      row2: ['x20x','z21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x'],
+      row3: ['x30x','x31x','x32x','y33x','x34x','x35x','x36x','x37x','x38x','x39x'],
       row4: ['x40x','x41x','x42x','x43x','y44x','x45x','x46x','x47x','x48x','z49x'],
       row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58x','x59x'],
       row6: ['x60x','y61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
@@ -1522,7 +1522,7 @@ class App extends Component {
           southWest: this.refs.player2ImgIdleSouthWest,
           southEast: this.refs.player2ImgIdleSouthEast,
           east: this.refs.player2ImgIdleEast,
-          // west: this.refs.player2ImgIdleWest,
+          west: this.refs.player2ImgIdleWest,
         },
         falling: {
           north: this.refs.player2ImgIdleNorth,
@@ -1532,7 +1532,7 @@ class App extends Component {
           southWest: this.refs.player2ImgIdleSouthWest,
           southEast: this.refs.player2ImgIdleSouthEast,
           east: this.refs.player2ImgIdleEast,
-          // west: this.refs.player2ImgIdleWest,
+          west: this.refs.player2ImgIdleWest,
         },
       }
     ]
@@ -1976,7 +1976,7 @@ class App extends Component {
             }
           }
           else if (plyr.moving.state === false) {
-            if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
+            if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
 
               if (
                 plyr.direction === 'east' ||
