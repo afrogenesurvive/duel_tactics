@@ -1041,6 +1041,7 @@ class App extends Component {
             y: -30,
           }
         }
+        // ATTACK/DEFEND/DEFLECT CHECL!!
         if (player.attacking.state === true) {
           if (player.attacking.count < player.attacking.limit) {
             player.attacking.count++;
@@ -1067,7 +1068,8 @@ class App extends Component {
 
                 player.points++;
                 this.killPlayer(opposingPlayer);
-              } else {
+              }
+              else {
                 // console.log('attackdefended');
 
                 this.players[opposingPlayer.number-1].success.defendSuccess = {
@@ -1082,6 +1084,7 @@ class App extends Component {
                   let canPushback = this.pushBack(opposingPlayer);
                 }
 
+                  // PUSHBACK DEFLECT!!
                   // let shouldDeflectPushBack = this.rnJesus(1,3);
                   // if (shouldDeflectPushBack === 1) {
                   //   let canPushback = this.pushBack(player);
