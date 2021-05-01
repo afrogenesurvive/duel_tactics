@@ -37,8 +37,8 @@ class App extends Component {
       startPosition: {
         cell: {
           number: {
-            x: 3,
-            y: 3,
+            x: 4,
+            y: 5,
           },
           center: {
             x: 0,
@@ -159,7 +159,7 @@ class App extends Component {
         cell: {
           number: {
             x: 2,
-            y: 3,
+            y: 5,
           },
           center: {
             x: 0,
@@ -337,8 +337,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 3,
-              y: 3,
+              x: 4,
+              y: 5,
             },
             center: {
               x: 0,
@@ -459,7 +459,7 @@ class App extends Component {
           cell: {
             number: {
               x: 2,
-              y: 3,
+              y: 5,
             },
             center: {
               x: 0,
@@ -782,24 +782,14 @@ class App extends Component {
        this.currentPlayer = 1;
       break;
       case ' ' :
-
-        // if (this.keyPressed[0].strafe === true && this.players[0].moving.state === true) {
-        //   console.log('you are mid strafe, keep starfing. if you hear the strafe, its a key up. Ingore it.')
-        // }
-        // else  {
-        //   console.log('you arent starfing or moving so if you hear the strafe key, its a key down');
-
-
-        //   this.keyPressed[0].strafe = state;
-        //   this.players[0].strafing.state = state;
-        //   this.currentPlayer = 1;
-        // }
         this.keyPressed[0].strafe = state;
         this.players[0].strafing.state = state;
         this.currentPlayer = 1;
       break;
       case '1' :
-        this.respawn(this.players[0])
+        if (this.players[0].dead.state === true) {
+          this.respawn(this.players[0])
+        }
       break;
       case 'r' :
         this.restartGame();
@@ -859,7 +849,9 @@ class App extends Component {
         this.currentPlayer = 2;
       break;
       case '0' :
-        this.respawn(this.players[1])
+        if (this.players[1].dead.state === true) {
+          this.respawn(this.players[1])
+        }
       break;
     }
 
@@ -2018,6 +2010,7 @@ class App extends Component {
                 } else {
                   context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 }
+                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
               } else {
                 if (plyr.success.deflected.state === true) {
 
@@ -2049,6 +2042,7 @@ class App extends Component {
                 } else {
                   context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
+                // context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
               }
 
               if (plyr.attacking.state === true) {
@@ -2077,6 +2071,41 @@ class App extends Component {
                 context.fill();
               }
               if (plyr.success.deflected.state === true) {
+
+                if (plyr.direction === 'north') {
+                  // check the cell behind based on facing
+                  // if it's a void cell d
+                  if (
+                    x === plyr.currentPosition.cell.number.x &&
+                    y === plyr.currentPosition.cell.number.y
+                  ) {
+
+                  }
+                  context.drawImage(updatedPlayerImg, point.x-35, point.y-20, 55,55);
+                }
+                if (plyr.direction === 'northEast') {
+                  context.drawImage(updatedPlayerImg, point.x-35, point.y-25, 55,55);
+                }
+                if (plyr.direction === 'northWest') {
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-15, 55,55);
+                }
+                if (plyr.direction === 'east') {
+                  context.drawImage(updatedPlayerImg, point.x-35, point.y-30, 55,55);
+                }
+                if (plyr.direction === 'west') {
+                  context.drawImage(updatedPlayerImg, point.x-15, point.y-20, 55,55);
+                }
+                if (plyr.direction === 'south') {
+                  context.drawImage(updatedPlayerImg, point.x-15, point.y-30, 55,55);
+                }
+                if (plyr.direction === 'southEast') {
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
+                }
+                if (plyr.direction === 'southWest') {
+                  context.drawImage(updatedPlayerImg, point.x-15, point.y-25, 55,55);
+                }
+
+
                 context.fillStyle = "#f3722c";
                 context.fillRect(point.x-20, point.y-20,15,15);
               }
@@ -2365,22 +2394,17 @@ class App extends Component {
                     }
                   }
 
-                  let opposingPlayer;
-                  if (plyr.number === 1) {
-                    opposingPlayer = this.players[1]
-                  } else if (plyr.number === 2) {
-                    opposingPlayer = this.players[0]
-                  }
-
                   // console.log('checking for other player');
-                  if (
-                    elem.number.x === opposingPlayer.currentPosition.cell.number.x &&
-                    elem.number.y === opposingPlayer.currentPosition.cell.number.y
-                  )
-                  {
-                    // console.log('opposing player is in your way');
-                    respawnCellOccupied = true;
-                  };
+                  for (const plyr2 of this.players) {
+                    if (plyr2.number !== plyr.number) {
+                      if (
+                        elem.number.x === plyr2.currentPosition.cell.number.x &&
+                        elem.number.y === plyr2.currentPosition.cell.number.y
+                      ) {
+                        respawnCellOccupied = true;
+                      }
+                    }
+                  }
 
                   if (
                     respawnCellOccupied === false
@@ -2407,6 +2431,7 @@ class App extends Component {
                 }
 
 
+                console.log();
                 plyr.dead.state = false;
                 plyr.currentPosition.cell = respawnPoint;
                 plyr.nextPosition = respawnPoint.center;
@@ -2416,11 +2441,39 @@ class App extends Component {
                   step: 0,
                   course: '',
                   origin: {
-                    number: respawnPoint.number,
-                    center: respawnPoint.center,
+                    number: {
+                      x: respawnPoint.number.x,
+                      y: respawnPoint.number.y
+                    },
+                    center: {
+                      x: respawnPoint.center.x,
+                      y: respawnPoint.center.y
+                    },
                   },
-                  destination: this.players[plyr.number-1].target.cell.center
+                  destination: {
+                    x: this.players[plyr.number-1].target.cell.center.x,
+                    y: this.players[plyr.number-1].target.cell.center.y
+                  }
                 }
+                // {
+                //   state: false,
+                //   step: 0,
+                //   course: '',
+                //   origin: {
+                //     number: {
+                //       x: 0,
+                //       y: 0,
+                //     },
+                //     center: {
+                //       x: 0,
+                //       y: 0,
+                //     },
+                //   },
+                //   destination: {
+                //     x: 0,
+                //     y: 0,
+                //   }
+                // }
                 plyr.direction = 'north';
                 plyr.respawn = false;
                 this.players[plyr.number-1] = plyr;
@@ -2429,7 +2482,6 @@ class App extends Component {
               }
 
             }
-
 
 
           this.players[plyr.number-1] = plyr;
@@ -2738,24 +2790,21 @@ class App extends Component {
       }
     }
 
-    let opposingPlayer;
-    if (player.number === 1) {
-      opposingPlayer = this.players[1]
-    } else if (player.number === 2) {
-      opposingPlayer = this.players[0]
-    }
-
-    if (
-      targetCellNumber.x === opposingPlayer.currentPosition.cell.number.x &&
-      targetCellNumber.y === opposingPlayer.currentPosition.cell.number.y
-    ) {
-      // console.log('opposing player is in your way');
-      target.free = false;
-      obstacleObstructFound = true;
-      target.occupant = {
-        type: 'player',
-        player: opposingPlayer.number
-      };
+    for (const plyr2 of this.players) {
+      if (plyr2.number !== player.number) {
+        if (
+          targetCellNumber.x === plyr2.currentPosition.cell.number.x &&
+          targetCellNumber.y === plyr2.currentPosition.cell.number.y
+        ) {
+          // console.log('opposing player is in your way');
+          target.free = false;
+          obstacleObstructFound = true;
+          target.occupant = {
+            type: 'player',
+            player: plyr2.number
+          };
+        }
+      }
     }
 
     if (obstacleObstructFound !== true ) {
