@@ -321,9 +321,9 @@ class App extends Component {
     this.levelData2 = {
       row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
       row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
-      row2: ['x20x','z21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x'],
-      row3: ['x30x','x31x','x32x','x33x','x34x','x35x','x36x','x37x','x38x','x39x'],
-      row4: ['x40x','x41x','x42x','x43x','x44x','x45x','x46x','x47x','x48x','z49x'],
+      row2: ['x20x','z21x','x22x','x23x','y24x','x25x','x26x','x27x','x28x','x29x'],
+      row3: ['x30x','x31x','x32x','y33x','x34x','y35x','x36x','x37x','x38x','x39x'],
+      row4: ['x40x','x41x','x42x','x43x','y44x','x45x','x46x','x47x','x48x','z49x'],
       row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58x','x59x'],
       row6: ['x60x','y61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
       row7: ['x70x','y71x','x72x','x73x','x74x','x75x','x76x','x77x','x78x','x79x'],
@@ -782,6 +782,18 @@ class App extends Component {
        this.currentPlayer = 1;
       break;
       case ' ' :
+
+        // if (this.keyPressed[0].strafe === true && this.players[0].moving.state === true) {
+        //   console.log('you are mid strafe, keep starfing. if you hear the strafe, its a key up. Ingore it.')
+        // }
+        // else  {
+        //   console.log('you arent starfing or moving so if you hear the strafe key, its a key down');
+
+
+        //   this.keyPressed[0].strafe = state;
+        //   this.players[0].strafing.state = state;
+        //   this.currentPlayer = 1;
+        // }
         this.keyPressed[0].strafe = state;
         this.players[0].strafing.state = state;
         this.currentPlayer = 1;
@@ -927,7 +939,7 @@ class App extends Component {
       }
     }
 
-    // DEFLECTED PLAYER CAN'T DO ANYTHING!! (maybe do the same for push back)
+    // DEFLECTED PLAYER CAN'T DO ANYTHING!!
     if (player.success.deflected.state === false) {
 
       // DON'T READ INPUTS. JUST MOVE!!
@@ -1041,7 +1053,7 @@ class App extends Component {
             y: -30,
           }
         }
-        // ATTACK/DEFEND/DEFLECT CHECL!!
+        // ATTACK/DEFEND/DEFLECT CHECK!!
         if (player.attacking.state === true) {
           if (player.attacking.count < player.attacking.limit) {
             player.attacking.count++;
@@ -1231,6 +1243,7 @@ class App extends Component {
               let target = this.getTarget(player);
 
               if (target.free === true) {
+                // console.log('start strafing');
                 player.action = 'strafe moving';
                 player.moving = {
                   state: true,
@@ -1300,7 +1313,7 @@ class App extends Component {
         }
       }
 
-
+      // DISPLAY ATTACK AND DEFENSE SUCCESS!
       if (player.success.attackSuccess.state === true) {
         if (player.success.attackSuccess.count < player.success.attackSuccess.limit) {
           player.success.attackSuccess.count++
@@ -1328,7 +1341,7 @@ class App extends Component {
 
     }
 
-
+    // SYNC W/ GLOBAL PLAYER DATA
     this.players[player.number-1] = player;
     if (player.number === 1) {
       this.setState({
