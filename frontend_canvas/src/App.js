@@ -924,7 +924,6 @@ class App extends Component {
         count: 0,
         limit: player.success.deflected.limit,
         predeflect: player.success.deflected.predeflect,
-        wobble: player.success.deflected.wobble,
       }
     }
 
@@ -975,7 +974,13 @@ class App extends Component {
             player.action = 'falling';
           }
 
-          player.pushBack.state = false;
+          if (player.pushBack.state === true) {
+            player.pushBack.state = false;
+            player.strafing = {
+              state: false,
+              direction: ''
+            }
+          }
         }
 
       }
@@ -1070,24 +1075,44 @@ class App extends Component {
                   count: 1,
                   limit: this.players[opposingPlayer.number-1].success.defendSuccess.limit
                 }
-                // roll dice for push back chance (1:7)
-                  // check if pushback is possible
-                    // if not possible do nothing if possible it runs itself
+
+                let shouldPushBack = this.rnJesus(1,4);
+                console.log('pushBack',shouldPushBack===1);
+                if (shouldPushBack === 1) {
+                  let canPushback = this.pushBack(opposingPlayer);
+                }
 
 
-                // roll dice for push back chance (1:4)
-                  // if push back & push back possible it runs itself
-                      // if pushback returns canPushabck set predeflect
-                        // if pre deflect is true and pushback is false
-                          // execute deflect and reset predeflect
-                  // if push breturns not possible, run deflection
+                  // let shouldDeflectPushBack = this.rnJesus(1,6);
+                  // if (shouldDeflectPushBack === 1) {
+                  //   let canPushback = this.pushBack(opposingPlayer);
+                  //   if (canPushback === true) {
+                  //     player.success.deflected.predeflect = true;
+                  //   }
+                  //   else if (canPushback === false) {
+                  //     player.success.deflected = {
+                  //       state: true,
+                  //       count: 1,
+                  //       limit: player.success.deflected.limit,
+                  //       predeflect: player.success.deflected.predeflect,
+                  //     }
+                  //   }
+                  // }
+                  // if (player.pushBack.state === false && player.success.deflected.predeflect === true) {
+                  //   player.success.deflected = {
+                  //     state: true,
+                  //     count: 1,
+                  //     limit: player.success.deflected.limit,
+                  //     predeflect: player.success.deflected.predeflect,
+                  //   }
+                  // }
+
 
                 player.success.deflected = {
                   state: true,
                   count: 1,
                   limit: player.success.deflected.limit,
                   predeflect: player.success.deflected.predeflect,
-                  wobble: player.success.deflected.wobble,
                 }
 
               }
@@ -2813,14 +2838,36 @@ class App extends Component {
     return (tempPt);
 
   }
+  rnJesus = (min,max) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
 
   pushBack = (player) => {
     console.log('pushing back');
 
+    let opposingPlayer;
+    if (player.number === 1) {
+      opposingPlayer = this.players[1]
+    } else if (player.number === 2) {
+      opposingPlayer = this.players[0]
+    }
+
+    let pushBackDirection = opposingPlayer.direction;
+    player.strafing = {
+      state: true,
+      direction: pushBackDirection
+    }
+
     let target = this.getTarget(player)
 
     if (target.free === true && player.target.void === false) {
-      player.action = 'moving';
+      // player.action = 'moving';
+
+
+      player.action = 'strafe moving';
+
       player.moving = {
         state: true,
         step: 0,
@@ -2843,27 +2890,35 @@ class App extends Component {
     }
     if (target.free === false) {
           // console.log('target is NOT free');
-        }
+    }
     if (player.target.void === true) {
-          // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
-          player.moving = {
-            state: true,
-            step: 0,
-            course: '',
-            origin: {
-              number: player.currentPosition.cell.number,
-              center: player.currentPosition.cell.center,
-            },
-            destination: target.cell.center
-          }
+      // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
+      player.action = 'strafe moving';
+      player.moving = {
+        state: true,
+        step: 0,
+        course: '',
+        origin: {
+          number: player.currentPosition.cell.number,
+          center: player.currentPosition.cell.center,
+        },
+        destination: target.cell.center
+      }
 
-          let nextPosition = this.lineCrementer(player);
-          player.nextPosition = nextPosition;
-        }
+      let nextPosition = this.lineCrementer(player);
+      player.nextPosition = nextPosition;
+    }
 
-        // set player
-        // return if push back is possible
+    // this.players[player.number-1] = player;
 
+    if (target.free === true) {
+      player.pushBack.state = true;
+      this.players[player.number-1] = player;
+      return true
+    } else {
+      this.players[player.number-1] = player;
+      return false
+    }
 
   }
   respawn = (player) => {
