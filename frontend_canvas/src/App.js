@@ -1058,7 +1058,7 @@ class App extends Component {
               }
 
               if (this.players.[player.target.occupant.player-1].defending.state === false) {
-
+                // console.log('attack success');
                 player.success.attackSuccess = {
                   state: true,
                   count: 1,
@@ -1082,14 +1082,15 @@ class App extends Component {
                   let canPushback = this.pushBack(opposingPlayer);
                 }
 
-
-                  // let shouldDeflectPushBack = this.rnJesus(1,6);
+                  // let shouldDeflectPushBack = this.rnJesus(1,3);
                   // if (shouldDeflectPushBack === 1) {
-                  //   let canPushback = this.pushBack(opposingPlayer);
+                  //   let canPushback = this.pushBack(player);
                   //   if (canPushback === true) {
+                  //     console.log('predeflect --> pushback ---> deflect');
                   //     player.success.deflected.predeflect = true;
                   //   }
                   //   else if (canPushback === false) {
+                  //     console.log('no pushback ---> deflect just deflect');
                   //     player.success.deflected = {
                   //       state: true,
                   //       count: 1,
@@ -1098,7 +1099,8 @@ class App extends Component {
                   //     }
                   //   }
                   // }
-                  // if (player.pushBack.state === false && player.success.deflected.predeflect === true) {
+                  // if (player.pushBack.state === false && player.success.deflected.predeflect === true && player.moving.state === false) {
+                  //   console.log('pushback ---> deflect');
                   //   player.success.deflected = {
                   //     state: true,
                   //     count: 1,
@@ -1106,7 +1108,6 @@ class App extends Component {
                   //     predeflect: player.success.deflected.predeflect,
                   //   }
                   // }
-
 
                 player.success.deflected = {
                   state: true,
