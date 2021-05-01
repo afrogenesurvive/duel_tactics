@@ -130,7 +130,7 @@ class App extends Component {
         deflected: {
           state: false,
           count: 0,
-          limit: 30,
+          limit: 15,
           predeflect: false,
         }
       },
@@ -251,7 +251,7 @@ class App extends Component {
         deflected: {
           state: false,
           count: 0,
-          limit: 30,
+          limit: 15,
           predeflect: false,
         }
       },
@@ -430,7 +430,7 @@ class App extends Component {
           deflected: {
             state: false,
             count: 0,
-            limit: 30,
+            limit: 15,
             predeflect: false,
           }
         },
@@ -551,7 +551,7 @@ class App extends Component {
           deflected: {
             state: false,
             count: 0,
-            limit: 30,
+            limit: 15,
             predeflect: false,
           }
         },
