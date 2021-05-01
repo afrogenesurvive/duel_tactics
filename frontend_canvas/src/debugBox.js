@@ -34,6 +34,27 @@ const DebugBox = props => {
             Points: {props.player.points}
           </p>
         </li>
+        {props.player.success.attackSuccess.state === true && (
+          <li className="debugBoxListItem">
+            <p className="debugBoxText">
+              Attack Success!
+            </p>
+          </li>
+        )}
+        {props.player.success.defendSuccess.state === true && (
+          <li className="debugBoxListItem">
+            <p className="debugBoxText">
+              Defend Success!
+            </p>
+          </li>
+        )}
+        {props.player.success.deflected.state === true && (
+          <li className="debugBoxListItem">
+            <p className="debugBoxText">
+              Attack Deflected!!!
+            </p>
+          </li>
+        )}
       </ul>
     </div>
   )

@@ -120,17 +120,17 @@ class App extends Component {
         attackSuccess: {
           state: false,
           count: 0,
-          limit: 7,
+          limit: 10,
         },
         defendSuccess: {
           state: false,
           count: 0,
-          limit: 7,
+          limit: 10,
         },
         deflected: {
           state: false,
           count: 0,
-          limit: 15,
+          limit: 30,
         }
       },
       defending: {
@@ -237,17 +237,17 @@ class App extends Component {
         attackSuccess: {
           state: false,
           count: 0,
-          limit: 7,
+          limit: 10,
         },
         defendSuccess: {
           state: false,
           count: 0,
-          limit: 7,
+          limit: 10,
         },
         deflected: {
           state: false,
           count: 0,
-          limit: 15,
+          limit: 30,
         }
       },
       defending: {
@@ -412,17 +412,17 @@ class App extends Component {
           attackSuccess: {
             state: false,
             count: 0,
-            limit: 7,
+            limit: 10,
           },
           defendSuccess: {
             state: false,
             count: 0,
-            limit: 7,
+            limit: 10,
           },
           deflected: {
             state: false,
             count: 0,
-            limit: 15,
+            limit: 30,
           }
         },
         defending: {
@@ -529,17 +529,17 @@ class App extends Component {
           attackSuccess: {
             state: false,
             count: 0,
-            limit: 7,
+            limit: 10,
           },
           defendSuccess: {
             state: false,
             count: 0,
-            limit: 7,
+            limit: 10,
           },
           deflected: {
             state: false,
             count: 0,
-            limit: 15,
+            limit: 30,
           }
         },
         defending: {
@@ -900,127 +900,131 @@ class App extends Component {
     let nextPosition;
 
 
-    // deflection check
-      // if true,  AND  and less than limit increment and return/do nothing,
-      // if true and equal to/greater than limit resetting
+    if (player.success.deflected.state === true && player.success.deflected.count < player.success.deflected.limit) {
+      player.success.deflected.count++
+    } else if (player.success.deflected.state === true && player.success.deflected.count >= player.success.deflected.limit) {
+      player.success.deflected = {
+        state: false,
+        count: 0,
+        limit: player.success.deflected.limit
+      }
+    }
 
-    // else {
+    // DEFLECTED PLAYER CAN'T DO ANYTHING!! (maybe do the same for push back)
+    if (player.success.deflected.state === false) {
 
+      // DON'T READ INPUTS. JUST MOVE!!
+      if (player.moving.state === true) {
 
-    // DON'T READ INPUTS. JUST MOVE!!
-    if (player.moving.state === true) {
+        // console.log('player',player.number,' moving');
+        nextPosition = this.lineCrementer(player);
+        // player.currentPosition.cell = player.target.cell;
+        player.nextPosition = nextPosition;
 
-      // console.log('player',player.number,' moving');
-      nextPosition = this.lineCrementer(player);
-      // player.currentPosition.cell = player.target.cell;
-      player.nextPosition = nextPosition;
+        if (
+          nextPosition.x === player.target.cell.center.x &&
+          nextPosition.y === player.target.cell.center.y
+        ) {
+          // console.log('next position is destination');
+          if (player.target.void === false) {
+            player.currentPosition.cell = player.target.cell;
+            player.action = 'idle';
+            player.moving = {
+              state: false,
+              step: 0,
+              course: '',
+              origin: {
+                number: {
+                  x: player.target.cell.number.x,
+                  y: player.target.cell.number.y
+                },
+                center: {
+                  x: player.target.cell.center.x,
+                  y: player.target.cell.center.y
+                },
+              },
+              destination: {
+                x: 0,
+                y: 0,
+              }
+            }
+          } else if (
+            nextPosition.x === player.target.cell.center.x &&
+            nextPosition.y === player.target.cell.center.y &&
+            player.target.void === true
+          ) {
+            player.falling.state = true;
+            player.action = 'falling';
+          }
 
-      if (
-        nextPosition.x === player.target.cell.center.x &&
-        nextPosition.y === player.target.cell.center.y
-      ) {
-        // console.log('next position is destination');
-        if (player.target.void === false) {
-          player.currentPosition.cell = player.target.cell;
-          player.action = 'idle';
+        }
+
+      }
+
+      // CAN READ INPUTS
+      else if (player.moving.state === false) {
+
+        // KEY PRESS RELEASE CHECKS!!
+        if (player.turning.state === false) {
+          // console.log('turn complete');
+          player.direction = player.turning.toDirection;
+          player.nextPosition = {
+            x: player.currentPosition.cell.center.x,
+            y: player.currentPosition.cell.center.y
+          }
           player.moving = {
             state: false,
             step: 0,
             course: '',
             origin: {
               number: {
-                x: player.target.cell.number.x,
-                y: player.target.cell.number.y
+                x: player.currentPosition.cell.number.x,
+                y: player.currentPosition.cell.number.y
               },
               center: {
-                x: player.target.cell.center.x,
-                y: player.target.cell.center.y
+                x: player.currentPosition.cell.center.x,
+                y: player.currentPosition.cell.center.y
               },
             },
-            destination: {
-              x: 0,
-              y: 0,
-            }
+            destination: player.target.cell.center
           }
-        } else if (
-          nextPosition.x === player.target.cell.center.x &&
-          nextPosition.y === player.target.cell.center.y &&
-          player.target.void === true
-        ) {
-          player.falling.state = true;
-          player.action = 'falling';
+          player.turning.toDirection = '';
+          player.turning.state = undefined;
+          this.getTarget(player);
+        }
+        if (player.defending.state === false && player.defending.count === 0) {
+
+          player.defending = {
+            state: false,
+            count: 0,
+            limit: player.defending.limit
+          }
+          player.action = 'idle';
+        }
+        if (this.keyPressed[player.number-1].defend === false && player.defending.state === true) {
+          player.defending = {
+            state: false,
+            count: 0,
+            limit: player.defending.limit
+          }
+          player.action = 'idle';
         }
 
-      }
-
-    }
-
-    // CAN READ INPUTS
-    else if (player.moving.state === false) {
-
-      // KEY PRESS RELEASE CHECKS!!
-      if (player.turning.state === false) {
-        player.direction = player.turning.toDirection;
-        player.nextPosition = {
-          x: player.currentPosition.cell.center.x,
-          y: player.currentPosition.cell.center.y
+        // CHECK & UPDATE ACTIONS IN PROGRESS!!
+        if (player.dead.state === true) {
+          player.nextPosition = {
+            x: -30,
+            y: -30,
+          }
         }
-        player.moving = {
-          state: false,
-          step: 0,
-          course: '',
-          origin: {
-            number: {
-              x: player.currentPosition.cell.number.x,
-              y: player.currentPosition.cell.number.y
-            },
-            center: {
-              x: player.currentPosition.cell.center.x,
-              y: player.currentPosition.cell.center.y
-            },
-          },
-          destination: player.target.cell.center
-        }
-        player.turning.toDirection = '';
-        player.turning.state = undefined;
-        this.getTarget(player);
-      }
-      if (player.defending.state === false && player.defending.count === 0) {
+        if (player.attacking.state === true) {
+          if (player.attacking.count < player.attacking.limit) {
+            player.attacking.count++;
+          }
+          if (player.attacking.count >= player.attacking.limit) {
 
-        player.defending = {
-          state: false,
-          count: 0,
-          limit: player.defending.limit
-        }
-        player.action = 'idle';
-      }
-      if (this.keyPressed[player.number-1].defend === false && player.defending.state === true) {
-        player.defending = {
-          state: false,
-          count: 0,
-          limit: player.defending.limit
-        }
-        player.action = 'idle';
-      }
-
-      // CHECK & UPDATE ACTIONS IN PROGRESS!!
-      if (player.dead.state === true) {
-        player.nextPosition = {
-          x: -30,
-          y: -30,
-        }
-      }
-      if (player.attacking.state === true) {
-        if (player.attacking.count < player.attacking.limit) {
-          player.attacking.count++;
-        }
-        if (player.attacking.count >= player.attacking.limit) {
-
-          this.getTarget(player)
-          if (player.target.occupant.type === 'player') {
-            if (this.players.[player.target.occupant.player-1].defending.state === false) {
-
-              // set player attack success!!!
+            this.getTarget(player)
+            if (player.target.occupant.type === 'player') {
 
               let opposingPlayer;
               if (player.number === 1) {
@@ -1028,65 +1032,144 @@ class App extends Component {
               } else if (player.number === 2) {
                 opposingPlayer = this.players[0]
               }
-              player.points++;
-              this.killPlayer(opposingPlayer);
-            } else {
-              // console.log('attackdefended');
 
-              // set oppsing player defend success & player attack deflected
-            }
-          }
+              if (this.players.[player.target.occupant.player-1].defending.state === false) {
 
-          player.attacking = {
-            state: false,
-            count: 0,
-            limit: player.attacking.limit
-          }
-          player.action = 'idle';
-        }
-      }
-      // defend start delay
-      if (player.defending.count > 0 && player.defending.count < player.defending.limit+1) {
-        player.defending.count++;
-        console.log('defend winding up',player.defending.count++, 'player',player.number);
-      } else if (player.defending.count >= player.defending.limit && player.defending.state === false) {
-        console.log('defend wind up limit cap','player',player.number);
-        player.action = 'defending';
-        player.defending = {
-          state: true,
-          count: 0,
-          limit: player.defending.limit,
-        }
-      }
-
-      // CAN READ MOVE INPUTS!!
-      if (player.attacking.state === false && player.defending.state === false) {
-        // CONFIRM MOVE KEYPRESS!!
-        if (
-          this.keyPressed[player.number-1].north === true ||
-          this.keyPressed[player.number-1].south === true ||
-          this.keyPressed[player.number-1].east === true ||
-          this.keyPressed[player.number-1].west === true ||
-          this.keyPressed[player.number-1].northEast === true ||
-          this.keyPressed[player.number-1].northWest === true ||
-          this.keyPressed[player.number-1].southEast === true ||
-          this.keyPressed[player.number-1].southWest === true
-        ) {
-          // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
-          if (keyPressedDirection === player.direction && player.strafing.state === false) {
-            let target = this.getTarget(player)
-
-            if (target.free === true && player.target.void === false) {
-
-              if (player.dead.state === true) {
-
-                player.nextPosition = {
-                  x: -30,
-                  y: -30,
+                player.success.attackSuccess = {
+                  state: true,
+                  count: 1,
+                  limit: player.success.attackSuccess.limit
                 }
 
-              } else if (player.turning.delayCount === 0) {
-                player.action = 'moving';
+                player.points++;
+                this.killPlayer(opposingPlayer);
+              } else {
+                // console.log('attackdefended');
+
+                this.players[opposingPlayer.number-1].success.defendSuccess = {
+                  state: true,
+                  count: 1,
+                  limit: this.players[opposingPlayer.number-1].success.defendSuccess.limit
+                }
+                player.success.deflected = {
+                  state: true,
+                  count: 1,
+                  limit: player.success.deflected.limit
+                }
+
+              }
+            }
+
+            player.attacking = {
+              state: false,
+              count: 0,
+              limit: player.attacking.limit
+            }
+            player.action = 'idle';
+          }
+        }
+        // DEFENSE DELAY!!
+        if (player.defending.count > 0 && player.defending.count < player.defending.limit+1) {
+          player.defending.count++;
+          console.log('defend winding up',player.defending.count++, 'player',player.number);
+        } else if (player.defending.count >= player.defending.limit && player.defending.state === false) {
+          console.log('defend wind up limit cap','player',player.number);
+          player.action = 'defending';
+          player.defending = {
+            state: true,
+            count: 0,
+            limit: player.defending.limit,
+          }
+        }
+
+        // CAN READ MOVE INPUTS!!
+        if (player.attacking.state === false && player.defending.state === false) {
+          // CONFIRM MOVE KEYPRESS!!
+          if (
+            this.keyPressed[player.number-1].north === true ||
+            this.keyPressed[player.number-1].south === true ||
+            this.keyPressed[player.number-1].east === true ||
+            this.keyPressed[player.number-1].west === true ||
+            this.keyPressed[player.number-1].northEast === true ||
+            this.keyPressed[player.number-1].northWest === true ||
+            this.keyPressed[player.number-1].southEast === true ||
+            this.keyPressed[player.number-1].southWest === true
+          ) {
+            // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
+            if (keyPressedDirection === player.direction && player.strafing.state === false) {
+              let target = this.getTarget(player)
+
+              if (target.free === true && player.target.void === false) {
+
+                if (player.dead.state === true) {
+
+                  player.nextPosition = {
+                    x: -30,
+                    y: -30,
+                  }
+
+                } else if (player.turning.delayCount === 0) {
+                  player.action = 'moving';
+                  player.moving = {
+                    state: true,
+                    step: 0,
+                    course: '',
+                    origin: {
+                      number: {
+                        x: player.currentPosition.cell.number.x,
+                        y: player.currentPosition.cell.number.y
+                      },
+                      center: {
+                        x: player.currentPosition.cell.center,
+                        y: player.currentPosition.cell.center
+                      },
+                    },
+                    destination: target.cell.center
+                  }
+                  nextPosition = this.lineCrementer(player);
+                  player.nextPosition = nextPosition;
+
+                }
+
+              }
+
+              if (target.free === false) {
+                // console.log('target is NOT free');
+              }
+              if (player.target.void === true) {
+                // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
+                player.moving = {
+                  state: true,
+                  step: 0,
+                  course: '',
+                  origin: {
+                    number: player.currentPosition.cell.number,
+                    center: player.currentPosition.cell.center,
+                  },
+                  destination: target.cell.center
+                }
+
+                nextPosition = this.lineCrementer(player);
+                player.nextPosition = nextPosition;
+              }
+
+            }
+            // CHANGE DIRECTION IF NOT STRAFING!!
+            else if (keyPressedDirection !== player.direction && player.strafing.state === false) {
+              // console.log('change player direction to',keyPressedDirection);
+              // console.log('player',player.number,' turn-start');
+              player.turning.state = true;
+              player.turning.toDirection = keyPressedDirection;
+
+            }
+            // MOVE WHILE STRAFING!!
+            else if (keyPressedDirection !== player.direction && player.strafing.state === true) {
+
+              player.strafing.direction = keyPressedDirection;
+              let target = this.getTarget(player);
+
+              if (target.free === true) {
+                player.action = 'strafe moving';
                 player.moving = {
                   state: true,
                   step: 0,
@@ -1097,125 +1180,439 @@ class App extends Component {
                       y: player.currentPosition.cell.number.y
                     },
                     center: {
-                      x: player.currentPosition.cell.center,
-                      y: player.currentPosition.cell.center
+                      x: player.currentPosition.cell.center.x,
+                      y: player.currentPosition.cell.center.y
                     },
                   },
                   destination: target.cell.center
                 }
                 nextPosition = this.lineCrementer(player);
                 player.nextPosition = nextPosition;
-
               }
-
-            }
-
-            if (target.free === false) {
-              // console.log('target is NOT free');
-            }
-            if (player.target.void === true) {
-              // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
-              player.moving = {
-                state: true,
-                step: 0,
-                course: '',
-                origin: {
-                  number: player.currentPosition.cell.number,
-                  center: player.currentPosition.cell.center,
-                },
-                destination: target.cell.center
-              }
-
-              nextPosition = this.lineCrementer(player);
-              player.nextPosition = nextPosition;
-            }
-
-          }
-          // CHANGE DIRECTION IF NOT STRAFING!!
-          else if (keyPressedDirection !== player.direction && player.strafing.state === false) {
-            // console.log('change player direction to',keyPressedDirection);
-            // console.log('player',player.number,' turn-start');
-            player.turning.state = true;
-            player.turning.toDirection = keyPressedDirection;
-
-          }
-          // MOVE WHILE STRAFING!!
-          else if (keyPressedDirection !== player.direction && player.strafing.state === true) {
-
-            player.strafing.direction = keyPressedDirection;
-            let target = this.getTarget(player);
-
-            if (target.free === true) {
-              player.action = 'strafe moving';
-              player.moving = {
-                state: true,
-                step: 0,
-                course: '',
-                origin: {
-                  number: {
-                    x: player.currentPosition.cell.number.x,
-                    y: player.currentPosition.cell.number.y
-                  },
-                  center: {
-                    x: player.currentPosition.cell.center.x,
-                    y: player.currentPosition.cell.center.y
-                  },
-                },
-                destination: target.cell.center
-              }
-              nextPosition = this.lineCrementer(player);
-              player.nextPosition = nextPosition;
             }
           }
         }
-      }
-      // CAN READ NON-MOVE INPUTS!!
-      if (player.strafing.state === false) {
+        // CAN READ NON-MOVE INPUTS!!
+        if (player.strafing.state === false) {
 
-        if (this.keyPressed[player.number-1].attack === true || this.keyPressed[player.number-1].defend === true) {
+          if (this.keyPressed[player.number-1].attack === true || this.keyPressed[player.number-1].defend === true) {
 
-          // ALREADY ATTACKING/DEFENDING!!
-          if (player.attacking.state === true || player.defending.state === true) {
+            // ALREADY ATTACKING/DEFENDING!!
+            if (player.attacking.state === true || player.defending.state === true) {
 
-            if (this.keyPressed[player.number-1].attack === true) {
-              // console.log('already attacking');
-            }
-            if (this.keyPressed[player.number-1].defend === true) {
-              // console.log('already defending');
-            }
-          }
-
-          if (player.attacking.state === false && player.defending.state === false) {
-
-            if (this.keyPressed[player.number-1].attack === true) {
-              // console.log('start attacking');
-              player.action = 'attacking';
-              player.attacking = {
-                state: true,
-                count: 1,
-                limit: player.attacking.limit,
+              if (this.keyPressed[player.number-1].attack === true) {
+                // console.log('already attacking');
+              }
+              if (this.keyPressed[player.number-1].defend === true) {
+                // console.log('already defending');
               }
             }
-            if (this.keyPressed[player.number-1].defend === true) {
-              // console.log('start defending');
 
-              if (player.defending.count === 0) {
-                player.defending = {
-                  state: false,
+            if (player.attacking.state === false && player.defending.state === false) {
+
+              if (this.keyPressed[player.number-1].attack === true) {
+                // console.log('start attacking');
+                player.action = 'attacking';
+                player.attacking = {
+                  state: true,
                   count: 1,
-                  limit: player.defending.limit,
+                  limit: player.attacking.limit,
                 }
-              } else {
-                // console.log('cant start defend. might already be in progress');
+              }
+              if (this.keyPressed[player.number-1].defend === true) {
+                // console.log('start defending');
+
+                if (player.defending.count === 0) {
+                  player.defending = {
+                    state: false,
+                    count: 1,
+                    limit: player.defending.limit,
+                  }
+                } else {
+                  // console.log('cant start defend. might already be in progress');
+                }
               }
             }
           }
         }
       }
+
+
+      if (player.success.attackSuccess.state === true) {
+        if (player.success.attackSuccess.count < player.success.attackSuccess.limit) {
+          player.success.attackSuccess.count++
+        }
+        else if (player.success.attackSuccess.count >= player.success.attackSuccess.limit) {
+          player.success.attackSuccess = {
+            state: false,
+            count: 0,
+            limit: player.success.attackSuccess.limit
+          }
+        }
+      }
+      if (player.success.defendSuccess.state === true) {
+        if (player.success.defendSuccess.count < player.success.defendSuccess.limit) {
+          player.success.defendSuccess.count++
+        }
+        else if (player.success.defendSuccess.count >= player.success.defendSuccess.limit) {
+          player.success.defendSuccess = {
+            state: false,
+            count: 0,
+            limit: player.success.defendSuccess.limit
+          }
+        }
+      }
+
     }
 
-    // attack/defend success check and increment or reset!!!
-
+    // // DON'T READ INPUTS. JUST MOVE!!
+    // if (player.moving.state === true) {
+    //
+    //   // console.log('player',player.number,' moving');
+    //   nextPosition = this.lineCrementer(player);
+    //   // player.currentPosition.cell = player.target.cell;
+    //   player.nextPosition = nextPosition;
+    //
+    //   if (
+    //     nextPosition.x === player.target.cell.center.x &&
+    //     nextPosition.y === player.target.cell.center.y
+    //   ) {
+    //     // console.log('next position is destination');
+    //     if (player.target.void === false) {
+    //       player.currentPosition.cell = player.target.cell;
+    //       player.action = 'idle';
+    //       player.moving = {
+    //         state: false,
+    //         step: 0,
+    //         course: '',
+    //         origin: {
+    //           number: {
+    //             x: player.target.cell.number.x,
+    //             y: player.target.cell.number.y
+    //           },
+    //           center: {
+    //             x: player.target.cell.center.x,
+    //             y: player.target.cell.center.y
+    //           },
+    //         },
+    //         destination: {
+    //           x: 0,
+    //           y: 0,
+    //         }
+    //       }
+    //     } else if (
+    //       nextPosition.x === player.target.cell.center.x &&
+    //       nextPosition.y === player.target.cell.center.y &&
+    //       player.target.void === true
+    //     ) {
+    //       player.falling.state = true;
+    //       player.action = 'falling';
+    //     }
+    //
+    //   }
+    //
+    // }
+    //
+    // // CAN READ INPUTS
+    // else if (player.moving.state === false) {
+    //
+    //   // KEY PRESS RELEASE CHECKS!!
+    //   if (player.turning.state === false) {
+    //     // console.log('turn complete');
+    //     player.direction = player.turning.toDirection;
+    //     player.nextPosition = {
+    //       x: player.currentPosition.cell.center.x,
+    //       y: player.currentPosition.cell.center.y
+    //     }
+    //     player.moving = {
+    //       state: false,
+    //       step: 0,
+    //       course: '',
+    //       origin: {
+    //         number: {
+    //           x: player.currentPosition.cell.number.x,
+    //           y: player.currentPosition.cell.number.y
+    //         },
+    //         center: {
+    //           x: player.currentPosition.cell.center.x,
+    //           y: player.currentPosition.cell.center.y
+    //         },
+    //       },
+    //       destination: player.target.cell.center
+    //     }
+    //     player.turning.toDirection = '';
+    //     player.turning.state = undefined;
+    //     this.getTarget(player);
+    //   }
+    //   if (player.defending.state === false && player.defending.count === 0) {
+    //
+    //     player.defending = {
+    //       state: false,
+    //       count: 0,
+    //       limit: player.defending.limit
+    //     }
+    //     player.action = 'idle';
+    //   }
+    //   if (this.keyPressed[player.number-1].defend === false && player.defending.state === true) {
+    //     player.defending = {
+    //       state: false,
+    //       count: 0,
+    //       limit: player.defending.limit
+    //     }
+    //     player.action = 'idle';
+    //   }
+    //
+    //   // CHECK & UPDATE ACTIONS IN PROGRESS!!
+    //   if (player.dead.state === true) {
+    //     player.nextPosition = {
+    //       x: -30,
+    //       y: -30,
+    //     }
+    //   }
+    //   if (player.attacking.state === true) {
+    //     if (player.attacking.count < player.attacking.limit) {
+    //       player.attacking.count++;
+    //     }
+    //     if (player.attacking.count >= player.attacking.limit) {
+    //
+    //       this.getTarget(player)
+    //       if (player.target.occupant.type === 'player') {
+    //
+    //         let opposingPlayer;
+    //         if (player.number === 1) {
+    //           opposingPlayer = this.players[1]
+    //         } else if (player.number === 2) {
+    //           opposingPlayer = this.players[0]
+    //         }
+    //
+    //         if (this.players.[player.target.occupant.player-1].defending.state === false) {
+    //
+    //           player.success.attackSuccess = {
+    //             state: true,
+    //             count: 1,
+    //             limit: player.success.attackSuccess.limit
+    //           }
+    //
+    //           player.points++;
+    //           this.killPlayer(opposingPlayer);
+    //         } else {
+    //           console.log('attackdefended');
+    //
+    //           this.players[opposingPlayer.number-1].success.defendSuccess = {
+    //             state: true,
+    //             count: 1,
+    //             limit: this.players[opposingPlayer.number-1].success.defendSuccess.limit
+    //           }
+    //           player.success.deflected = {
+    //             state: true,
+    //             count: 1,
+    //             limit: player.success.deflected.limit
+    //           }
+    //
+    //         }
+    //       }
+    //
+    //       player.attacking = {
+    //         state: false,
+    //         count: 0,
+    //         limit: player.attacking.limit
+    //       }
+    //       player.action = 'idle';
+    //     }
+    //   }
+    //   // defend start delay
+    //   if (player.defending.count > 0 && player.defending.count < player.defending.limit+1) {
+    //     player.defending.count++;
+    //     console.log('defend winding up',player.defending.count++, 'player',player.number);
+    //   } else if (player.defending.count >= player.defending.limit && player.defending.state === false) {
+    //     console.log('defend wind up limit cap','player',player.number);
+    //     player.action = 'defending';
+    //     player.defending = {
+    //       state: true,
+    //       count: 0,
+    //       limit: player.defending.limit,
+    //     }
+    //   }
+    //
+    //   // CAN READ MOVE INPUTS!!
+    //   if (player.attacking.state === false && player.defending.state === false) {
+    //     // CONFIRM MOVE KEYPRESS!!
+    //     if (
+    //       this.keyPressed[player.number-1].north === true ||
+    //       this.keyPressed[player.number-1].south === true ||
+    //       this.keyPressed[player.number-1].east === true ||
+    //       this.keyPressed[player.number-1].west === true ||
+    //       this.keyPressed[player.number-1].northEast === true ||
+    //       this.keyPressed[player.number-1].northWest === true ||
+    //       this.keyPressed[player.number-1].southEast === true ||
+    //       this.keyPressed[player.number-1].southWest === true
+    //     ) {
+    //       // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
+    //       if (keyPressedDirection === player.direction && player.strafing.state === false) {
+    //         let target = this.getTarget(player)
+    //
+    //         if (target.free === true && player.target.void === false) {
+    //
+    //           if (player.dead.state === true) {
+    //
+    //             player.nextPosition = {
+    //               x: -30,
+    //               y: -30,
+    //             }
+    //
+    //           } else if (player.turning.delayCount === 0) {
+    //             player.action = 'moving';
+    //             player.moving = {
+    //               state: true,
+    //               step: 0,
+    //               course: '',
+    //               origin: {
+    //                 number: {
+    //                   x: player.currentPosition.cell.number.x,
+    //                   y: player.currentPosition.cell.number.y
+    //                 },
+    //                 center: {
+    //                   x: player.currentPosition.cell.center,
+    //                   y: player.currentPosition.cell.center
+    //                 },
+    //               },
+    //               destination: target.cell.center
+    //             }
+    //             nextPosition = this.lineCrementer(player);
+    //             player.nextPosition = nextPosition;
+    //
+    //           }
+    //
+    //         }
+    //
+    //         if (target.free === false) {
+    //           // console.log('target is NOT free');
+    //         }
+    //         if (player.target.void === true) {
+    //           // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
+    //           player.moving = {
+    //             state: true,
+    //             step: 0,
+    //             course: '',
+    //             origin: {
+    //               number: player.currentPosition.cell.number,
+    //               center: player.currentPosition.cell.center,
+    //             },
+    //             destination: target.cell.center
+    //           }
+    //
+    //           nextPosition = this.lineCrementer(player);
+    //           player.nextPosition = nextPosition;
+    //         }
+    //
+    //       }
+    //       // CHANGE DIRECTION IF NOT STRAFING!!
+    //       else if (keyPressedDirection !== player.direction && player.strafing.state === false) {
+    //         // console.log('change player direction to',keyPressedDirection);
+    //         // console.log('player',player.number,' turn-start');
+    //         player.turning.state = true;
+    //         player.turning.toDirection = keyPressedDirection;
+    //
+    //       }
+    //       // MOVE WHILE STRAFING!!
+    //       else if (keyPressedDirection !== player.direction && player.strafing.state === true) {
+    //
+    //         player.strafing.direction = keyPressedDirection;
+    //         let target = this.getTarget(player);
+    //
+    //         if (target.free === true) {
+    //           player.action = 'strafe moving';
+    //           player.moving = {
+    //             state: true,
+    //             step: 0,
+    //             course: '',
+    //             origin: {
+    //               number: {
+    //                 x: player.currentPosition.cell.number.x,
+    //                 y: player.currentPosition.cell.number.y
+    //               },
+    //               center: {
+    //                 x: player.currentPosition.cell.center.x,
+    //                 y: player.currentPosition.cell.center.y
+    //               },
+    //             },
+    //             destination: target.cell.center
+    //           }
+    //           nextPosition = this.lineCrementer(player);
+    //           player.nextPosition = nextPosition;
+    //         }
+    //       }
+    //     }
+    //   }
+    //   // CAN READ NON-MOVE INPUTS!!
+    //   if (player.strafing.state === false) {
+    //
+    //     if (this.keyPressed[player.number-1].attack === true || this.keyPressed[player.number-1].defend === true) {
+    //
+    //       // ALREADY ATTACKING/DEFENDING!!
+    //       if (player.attacking.state === true || player.defending.state === true) {
+    //
+    //         if (this.keyPressed[player.number-1].attack === true) {
+    //           // console.log('already attacking');
+    //         }
+    //         if (this.keyPressed[player.number-1].defend === true) {
+    //           // console.log('already defending');
+    //         }
+    //       }
+    //
+    //       if (player.attacking.state === false && player.defending.state === false) {
+    //
+    //         if (this.keyPressed[player.number-1].attack === true) {
+    //           // console.log('start attacking');
+    //           player.action = 'attacking';
+    //           player.attacking = {
+    //             state: true,
+    //             count: 1,
+    //             limit: player.attacking.limit,
+    //           }
+    //         }
+    //         if (this.keyPressed[player.number-1].defend === true) {
+    //           // console.log('start defending');
+    //
+    //           if (player.defending.count === 0) {
+    //             player.defending = {
+    //               state: false,
+    //               count: 1,
+    //               limit: player.defending.limit,
+    //             }
+    //           } else {
+    //             // console.log('cant start defend. might already be in progress');
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
+    //
+    //
+    // if (player.success.attackSuccess.state === true) {
+    //   if (player.success.attackSuccess.count < player.success.attackSuccess.limit) {
+    //     player.success.attackSuccess.count++
+    //   }
+    //   else if (player.success.attackSuccess.count >= player.success.attackSuccess.limit) {
+    //     player.success.attackSuccess = {
+    //       state: false,
+    //       count: 0,
+    //       limit: player.success.attackSuccess.limit
+    //     }
+    //   }
+    // }
+    // if (player.success.defendSuccess.state === true) {
+    //   if (player.success.defendSuccess.count < player.success.defendSuccess.limit) {
+    //     player.success.defendSuccess.count++
+    //   }
+    //   else if (player.success.defendSuccess.count >= player.success.defendSuccess.limit) {
+    //     player.success.defendSuccess = {
+    //       state: false,
+    //       count: 0,
+    //       limit: player.success.defendSuccess.limit
+    //     }
+    //   }
     // }
 
 
@@ -2667,11 +3064,11 @@ class App extends Component {
   }
 
   respawn = (player) => {
-    console.log('respawning',player.number);
+    // console.log('respawning',player.number);
     this.players[player.number-1].respawn = true;
   }
   killPlayer = (player) => {
-    console.log('killing player',player.number);
+    // console.log('killing player',player.number);
 
     player.action = 'idle';
     player.direction = 'north';
