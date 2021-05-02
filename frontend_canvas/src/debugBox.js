@@ -63,6 +63,13 @@ const DebugBox = props => {
             </p>
           </li>
         )}
+        {props.player.pushBack.state === true && (
+          <li className="debugBoxListItem">
+            <p className="debugBoxText">
+              Pushed Back!!!
+            </p>
+          </li>
+        )}
       </ul>
     </div>
   )

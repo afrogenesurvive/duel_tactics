@@ -153,6 +153,9 @@ class App extends Component {
       },
       respawn: false,
       points: 0,
+      speed: {
+        move: .1
+      },
     },
     player2: {
       number: 2,
@@ -275,6 +278,9 @@ class App extends Component {
       },
       respawn: false,
       points: 0,
+      speed: {
+        move: .1
+      },
     }
   }
 
@@ -433,7 +439,7 @@ class App extends Component {
           deflected: {
             state: false,
             count: 0,
-            limit: 10,
+            limit: 15,
             predeflect: false,
           }
         },
@@ -455,6 +461,10 @@ class App extends Component {
         },
         respawn: false,
         points: 0,
+        speed: {
+          move: .1,
+          range: [.05,.1,.125,.2]
+        },
       },
       {
         number: 2,
@@ -555,7 +565,7 @@ class App extends Component {
           deflected: {
             state: false,
             count: 0,
-            limit: 10,
+            limit: 15,
             predeflect: false,
           }
         },
@@ -580,6 +590,9 @@ class App extends Component {
         },
         respawn: false,
         points: 0,
+        speed: {
+          move: .1
+        },
       }
     ]
     this.stepper = {
@@ -1059,7 +1072,6 @@ class App extends Component {
           }
           player.action = 'idle';
         }
-
         if (player.strafeReleaseHook === true ) {
           player.strafing.state = false;
           player.strafeReleaseHook = false;
@@ -1082,7 +1094,7 @@ class App extends Component {
             this.getTarget(player)
             if (player.target.occupant.type === 'player') {
 
-
+              // ATTACK SUCCESS!!
               if (this.players.[player.target.occupant.player-1].defending.state === false) {
                 // console.log('attack success');
                 player.success.attackSuccess = {
@@ -1094,8 +1106,11 @@ class App extends Component {
                 player.points++;
                 this.killPlayer(this.players[player.target.occupant.player-1]);
               }
+              // ATTACK DEFENDED!!
               else {
                 // console.log('attackdefended');
+
+                this.moveSpeed = .2;
 
                 this.players[player.target.occupant.player-1].success.defendSuccess = {
                   state: true,
@@ -1109,40 +1124,68 @@ class App extends Component {
                   let canPushback = this.pushBack(this.players[player.target.occupant.player-1],player.direction);
                 }
 
-                  // PUSHBACK DEFLECT!!
-                  // let shouldDeflectPushBack = this.rnJesus(1,3);
-                  // if (shouldDeflectPushBack === 1) {
-                  //   let canPushback = this.pushBack(player);
-                  //   if (canPushback === true) {
-                  //     console.log('predeflect --> pushback ---> deflect');
-                  //     player.success.deflected.predeflect = true;
-                  //   }
-                  //   else if (canPushback === false) {
-                  //     console.log('no pushback ---> deflect just deflect');
-                  //     player.success.deflected = {
-                  //       state: true,
-                  //       count: 1,
-                  //       limit: player.success.deflected.limit,
-                  //       predeflect: player.success.deflected.predeflect,
-                  //     }
-                  //   }
-                  // }
-                  // if (player.pushBack.state === false && player.success.deflected.predeflect === true && player.moving.state === false) {
-                  //   console.log('pushback ---> deflect');
-                  //   player.success.deflected = {
-                  //     state: true,
-                  //     count: 1,
-                  //     limit: player.success.deflected.limit,
-                  //     predeflect: player.success.deflected.predeflect,
-                  //   }
-                  // }
+                // PUSHBACK DEFLECT!!
+                let shouldDeflectPushBack = this.rnJesus(1,4);
+                if (shouldDeflectPushBack === 1) {
+                  let pushBackDirection;
+                  switch(player.direction) {
+                    case 'north' :
+                      pushBackDirection = 'south';
+                    break;
+                    case 'south' :
+                      pushBackDirection = 'north';
+                    break;
+                    case 'east' :
+                      pushBackDirection = 'west';
+                    break;
+                    case 'west' :
+                      pushBackDirection = 'east';
+                    break;
+                    case 'northEast' :
+                      pushBackDirection = 'southWest';
+                    break;
+                    case 'northWest' :
+                      pushBackDirection = 'southEast';
+                    break;
+                    case 'southWest' :
+                      pushBackDirection = 'northEast';
+                    break;
+                    case 'southEast' :
+                      pushBackDirection = 'northWest';
+                    break;
+                  }
 
-                player.success.deflected = {
-                  state: true,
-                  count: 1,
-                  limit: player.success.deflected.limit,
-                  predeflect: player.success.deflected.predeflect,
+                  let canPushback = this.pushBack(player,pushBackDirection);
+                  if (canPushback === true) {
+                    // console.log('predeflect --> pushback');
+                    player.success.deflected.predeflect = true;
+                  }
+                  else if (canPushback === false) {
+                    // console.log('no pushback ---> just deflect');
+                    player.success.deflected = {
+                      state: true,
+                      count: 1,
+                      limit: player.success.deflected.limit,
+                      predeflect: player.success.deflected.predeflect,
+                    }
+                  }
                 }
+                else if (shouldDeflectPushBack !== 1) {
+                  // console.log('no pushback ---> just deflect');
+                  player.success.deflected = {
+                    state: true,
+                    count: 1,
+                    limit: player.success.deflected.limit,
+                    predeflect: player.success.deflected.predeflect,
+                  }
+                }
+
+                // player.success.deflected = {
+                //   state: true,
+                //   count: 1,
+                //   limit: player.success.deflected.limit,
+                //   predeflect: player.success.deflected.predeflect,
+                // }
 
               }
             }
@@ -1168,6 +1211,16 @@ class App extends Component {
             limit: player.defending.limit,
           }
         }
+        // COMPLETE PUSHBACK DEFLECT FLOW!
+        if (player.pushBack.state === false && player.success.deflected.predeflect === true && player.moving.state === false) {
+          // console.log('predefelct --> pushback ---> deflect');
+          player.success.deflected = {
+            state: true,
+            count: 1,
+            limit: player.success.deflected.limit,
+            predeflect: false,
+          }
+        }
 
         // CAN READ MOVE INPUTS!!
         if (player.attacking.state === false && player.defending.state === false) {
@@ -1187,6 +1240,8 @@ class App extends Component {
               let target = this.getTarget(player)
 
               if (target.free === true && player.target.void === false) {
+
+                this.moveSpeed = player.speed.move;
 
                 if (player.dead.state === true) {
 
@@ -1225,6 +1280,9 @@ class App extends Component {
               }
               if (player.target.void === true) {
                 // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
+
+                this.moveSpeed = player.speed.move;
+
                 player.moving = {
                   state: true,
                   step: 0,
@@ -1256,6 +1314,9 @@ class App extends Component {
               let target = this.getTarget(player);
 
               if (target.free === true) {
+
+                this.moveSpeed = player.speed.move;
+
                 // console.log('start strafing');
                 player.action = 'strafe moving';
                 player.moving = {
@@ -1627,7 +1688,6 @@ class App extends Component {
             x: plyr.nextPosition.x,
             y: plyr.nextPosition.y,
           };
-
           switch(plyr.action) {
 
             case 'idle':
@@ -1886,7 +1946,6 @@ class App extends Component {
               updatedPlayerImg = playerImgs[plyr.number-1].idle.north;
             break;
           }
-
 
           if (plyr.target.void === false && plyr.moving.state === true) {
             if (plyr.direction === 'north' || plyr.direction === 'northWest' || plyr.direction === 'west') {
@@ -2486,12 +2545,10 @@ class App extends Component {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
           context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
         }
-
         if(cellLevelData.charAt(0) === 'y') {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
           context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
         }
-
         if(cellLevelData.charAt(0) === 'z') {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
           context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
@@ -3041,9 +3098,10 @@ class App extends Component {
 
     let currentPosition = player.currentPosition.cell.center;
     let target = player.target;
-    let increment = 2;
+    let moveSpeed = this.moveSpeed;
 
-    player.moving.step = player.moving.step + .1;
+    player.moving.step = player.moving.step + moveSpeed;
+    // console.log('mover stepper',player.moving.step);
     let newPosition;
 
     // line: percent is 0-1
@@ -3056,12 +3114,9 @@ class App extends Component {
       let dy = endPt.y-startPt.y;
       let X = startPt.x + dx*percent;
       let Y = startPt.y + dy*percent;
-
       newPosition = {x:X,y:Y}
     }
     getLineXYatPercent(startPt,endPt,percent);
-
-    let newX = currentPosition.x+increment;
 
     if (player.falling.state === true) {
       player.falling.count++;
@@ -3265,6 +3320,18 @@ class App extends Component {
     //     player2: player
     //   })
     // }
+
+  }
+  restartGame = () => {
+    // console.log('resetting');
+
+    let canvas = this.canvasRef.current;
+    let context = canvas.getContext('2d');
+
+    let canvas2 = this.canvasRef2.current;
+    let context2 = canvas2.getContext('2d');
+
+    this.drawGridInit(canvas, context, canvas2, context2);
 
   }
 
@@ -3536,17 +3603,17 @@ class App extends Component {
 
                 this.getTarget(player);
 
-                console.log('** playerDrawLog **');
-                console.log('-- player --',player.number);
-                console.log('-- strafing --',player.strafing.state);
-                console.log('-- turning --',player.turning.state);
-                console.log('-- currently drawing --',x,y);
-                console.log('-- current position --',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
-                console.log('-- moving state --',player.moving.state);
-                console.log('-- moving step --',player.moving.step);
-                console.log('-- target --',player.target.cell.number.x,player.target.cell.number.y);
-                console.log('-- direction --',player.direction);
-                console.log('-- origin --',player.moving.origin.number.x,player.moving.origin.number.y);
+                // console.log('** playerDrawLog Init **');
+                // console.log('-- player --',player.number);
+                // console.log('-- strafing --',player.strafing.state);
+                // console.log('-- turning --',player.turning.state);
+                // console.log('-- currently drawing --',x,y);
+                // console.log('-- current position --',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
+                // console.log('-- moving state --',player.moving.state);
+                // console.log('-- moving step --',player.moving.step);
+                // console.log('-- target --',player.target.cell.number.x,player.target.cell.number.y);
+                // console.log('-- direction --',player.direction);
+                // console.log('-- origin --',player.moving.origin.number.x,player.moving.origin.number.y);
 
                 context.drawImage(playerImg, point.x-30, point.y-30, 60,60);
 
@@ -3578,20 +3645,6 @@ class App extends Component {
         }
       }
     }
-  }
-
-  restartGame = () => {
-    // console.log('resetting');
-
-    let canvas = this.canvasRef.current;
-    let context = canvas.getContext('2d');
-
-    let canvas2 = this.canvasRef2.current;
-    let context2 = canvas2.getContext('2d');
-
-    this.drawGridInit(canvas, context, canvas2, context2);
-    // this.drawPlayerInit(canvas2, context2);
-
   }
 
   aiAct = () => {
