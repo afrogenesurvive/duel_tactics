@@ -782,6 +782,26 @@ class App extends Component {
        this.currentPlayer = 1;
       break;
       case ' ' :
+        // if (this.players[0].moving.state === true && state === false && this.keyPressed[0].strafe === true) {
+        //   if (this.players[0].moving.state === true && this.keyPressed[0].strafe === true) {
+        //     console.log('youre mid strafe, keep going');
+        //   }
+        //   // if (this.players[0].moving.state === false && this.keyPressed[0].strafe === true) {
+        //   //   this.keyPressed[0].strafe = state;
+        //   //   this.players[0].strafing.state = state;
+        //   //   this.currentPlayer = 1;
+        //   // }
+        // } else {
+        //   // if (this.players[0].moving.state === false && this.keyPressed[0].strafe === true) {
+        //   //   this.keyPressed[0].strafe = state;
+        //   //   this.players[0].strafing.state = state;
+        //   //   this.currentPlayer = 1;
+        //   // }
+        //   console.log('hh');
+        //   this.keyPressed[0].strafe = state;
+        //   this.players[0].strafing.state = state;
+        //   this.currentPlayer = 1;
+        // }
         this.keyPressed[0].strafe = state;
         this.players[0].strafing.state = state;
         this.currentPlayer = 1;
@@ -947,6 +967,12 @@ class App extends Component {
           nextPosition.y === player.target.cell.center.y
         ) {
           // console.log('next position is destination');
+          // if (player.strafing.state === true ) {
+          //   player.strafing = {
+          //     state: false,
+          //     direction: ''
+          //   }
+          // }
           if (player.target.void === false) {
             player.currentPosition.cell = player.target.cell;
             player.action = 'idle';
@@ -1055,12 +1081,12 @@ class App extends Component {
             this.getTarget(player)
             if (player.target.occupant.type === 'player') {
 
-              let opposingPlayer;
-              if (player.number === 1) {
-                opposingPlayer = this.players[1]
-              } else if (player.number === 2) {
-                opposingPlayer = this.players[0]
-              }
+              // let opposingPlayer;
+              // if (player.number === 1) {
+              //   opposingPlayer = this.players[1]
+              // } else if (player.number === 2) {
+              //   opposingPlayer = this.players[0]
+              // }
 
               if (this.players.[player.target.occupant.player-1].defending.state === false) {
                 // console.log('attack success');
@@ -1071,21 +1097,22 @@ class App extends Component {
                 }
 
                 player.points++;
-                this.killPlayer(opposingPlayer);
+                this.killPlayer(this.players.[player.target.occupant.player-1]);
               }
               else {
                 // console.log('attackdefended');
 
-                this.players[opposingPlayer.number-1].success.defendSuccess = {
+                this.players[player.target.occupant.player-1].success.defendSuccess = {
                   state: true,
                   count: 1,
-                  limit: this.players[opposingPlayer.number-1].success.defendSuccess.limit
+                  limit: this.players[player.target.occupant.player-1].success.defendSuccess.limit
                 }
 
                 let shouldPushBack = this.rnJesus(1,4);
                 console.log('pushBack',shouldPushBack===1);
                 if (shouldPushBack === 1) {
-                  let canPushback = this.pushBack(opposingPlayer);
+                  // this.getTarget(this.players[player.target.occupant.player-1])
+                  let canPushback = this.pushBack(this.players[player.target.occupant.player-1],player.direction);
                 }
 
                   // PUSHBACK DEFLECT!!
@@ -1867,8 +1894,91 @@ class App extends Component {
           }
 
 
-          if (plyr.target.void === false && plyr.moving.state === true) {
+          if (plyr.target.void === false && plyr.moving.state === true && plyr.strafing.state === false) {
+            if (plyr.direction === 'north') {
+              if (
+                plyr.target.cell.number.x !== plyr.moving.origin.number.x &&
+                plyr.target.cell.number.y !== plyr.moving.origin.number.y+1
+              ) {
+                console.log('mid strafe key release, draw at either target or origin');
+              } else {
+                // console.log('regular move draw. carray on');a
+              }
+            }
+            if (plyr.direction === 'northWest') {
+              if (
+                plyr.target.cell.number.x !== plyr.moving.origin.number.x-1 &&
+                plyr.target.cell.number.y !== plyr.moving.origin.number.y-1
+              ) {
+                console.log('mid strafe key release, draw at either target or origin');
+              } else {
+                // console.log('regular move draw. carray on');a
+              }
+            }
+            if (plyr.direction === 'northEast') {
+              if (
+                plyr.target.cell.number.x !== plyr.moving.origin.number.x+1 &&
+                plyr.target.cell.number.y !== plyr.moving.origin.number.y-1
+              ) {
+                console.log('mid strafe key release, draw at either target or origin');
+              } else {
+                // console.log('regular move draw. carray on');a
+              }
+            }
+            if (plyr.direction === 'west') {
+              if (
+                plyr.target.cell.number.x !== plyr.moving.origin.number.x+1 &&
+                plyr.target.cell.number.y !== plyr.moving.origin.number.y
+              ) {
+                console.log('mid strafe key release, draw at either target or origin');
+              } else {
+                // console.log('regular move draw. carray on');a
+              }
+            }
+            if (plyr.direction === 'east') {
+              if (
+                plyr.target.cell.number.x !== plyr.moving.origin.number.x-1 &&
+                plyr.target.cell.number.y !== plyr.moving.origin.number.y
+              ) {
+                console.log('mid strafe key release, draw at either target or origin');
+              } else {
+                // console.log('regular move draw. carray on');a
+              }
+            }
+            if (plyr.direction === 'south') {
+              if (
+                plyr.target.cell.number.x !== plyr.moving.origin.number.x &&
+                plyr.target.cell.number.y !== plyr.moving.origin.number.y+1
+              ) {
+                console.log('mid strafe key release, draw at either target or origin');
+              } else {
+                // console.log('regular move draw. carray on');a
+              }
+            }
+            if (plyr.direction === 'southEast') {
+              if (
+                plyr.target.cell.number.x !== plyr.moving.origin.number.x+1 &&
+                plyr.target.cell.number.y !== plyr.moving.origin.number.y+1
+              ) {
+                console.log('mid strafe key release, draw at either target or origin');
+              } else {
+                // console.log('regular move draw. carray on');a
+              }
+            }
+            if (plyr.direction === 'southWest') {
+              if (
+                plyr.target.cell.number.x !== plyr.moving.origin.number.x-1 &&
+                plyr.target.cell.number.y !== plyr.moving.origin.number.y+1
+              ) {
+                console.log('mid strafe key release, draw at either target or origin');
+              } else {
+                // console.log('regular move draw. carray on');a
+              }
+            }
+
+
             if (plyr.direction === 'north' || plyr.direction === 'northWest' || plyr.direction === 'west') {
+
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 if (
                   plyr.direction === 'east' ||
@@ -2126,7 +2236,7 @@ class App extends Component {
             }
           }
 
-          if (plyr.strafing.state === true) {
+          if (plyr.strafing.state === true && plyr.moving.state === true) {
             if (plyr.strafing.direction === 'north' || plyr.strafing.direction === 'northWest' || plyr.strafing.direction === 'west') {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 if (
@@ -2147,7 +2257,7 @@ class App extends Component {
               }
             }
             if (plyr.strafing.direction === 'east' || plyr.strafing.direction === 'south' || plyr.strafing.direction === 'southEast') {
-              if (x === plyr.target.cell.number.x && y === plyr.target.cell.number.y) {
+              if (x === plyr.target.cell.number.x+1 && y === plyr.target.cell.number.y) {
                 if (
                   plyr.direction === 'east' ||
                   // newDirection === 'east' ||
@@ -2384,7 +2494,7 @@ class App extends Component {
               }
 
             }
-          if ( plyr.success.deflected.state === true) {
+          if (plyr.success.deflected.state === true) {
 
             if (plyr.direction === 'north') {
               if (
@@ -2883,23 +2993,25 @@ class App extends Component {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
-  pushBack = (player) => {
-    console.log('pushing back');
+  pushBack = (player,hitByPlyrDirection) => {
+    console.log('pushing back',hitByPlyrDirection);
 
-    let opposingPlayer;
-    if (player.number === 1) {
-      opposingPlayer = this.players[1]
-    } else if (player.number === 2) {
-      opposingPlayer = this.players[0]
-    }
+// this.players[player.target.occupant.player-1]
+    // let opposingPlayer;
+    // if (player.number === 1) {
+    //   opposingPlayer = this.players[1]
+    // } else if (player.number === 2) {
+    //   opposingPlayer = this.players[0]
+    // }
 
-    let pushBackDirection = opposingPlayer.direction;
+    let pushBackDirection = hitByPlyrDirection;
     player.strafing = {
       state: true,
       direction: pushBackDirection
     }
 
     let target = this.getTarget(player)
+    // let target = player.target;
 
     if (target.free === true && player.target.void === false) {
       // player.action = 'moving';
