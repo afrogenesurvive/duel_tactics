@@ -326,7 +326,7 @@ class App extends Component {
       row4: ['x40x','x41x','x42x','x43x','y44x','x45x','x46x','x47x','x48x','z49x'],
       row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58x','x59x'],
       row6: ['x60x','y61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
-      row7: ['x70x','y71x','x72x','x73x','x74x','x75x','x76x','x77x','x78x','x79x'],
+      row7: ['x70x','y71x','x72x','x73x','x74x','x75x','x76x','y77x','x78x','x79x'],
       row8: ['x80x','x81x','x82x','x83x','y84x','x85x','y86x','x87x','x88x','x89x'],
       row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
     };
@@ -2756,7 +2756,6 @@ class App extends Component {
         }
       }
     }
-
     for (const plyr2 of this.players) {
       if (plyr2.number !== player.number) {
         if (
@@ -2773,6 +2772,219 @@ class App extends Component {
         }
       }
     }
+
+
+    let found = 0;
+    switch(direction) {
+      case 'northEast' :
+
+      for (const [key, row] of Object.entries(this.levelData2)) {
+        for (const cell of row) {
+          if (
+            cell.charAt(0) === 'y' ||
+            cell.charAt(0) ===  'z'
+          ) {
+
+            let obstaclePosition = {
+              x: Number(cell.charAt(1)),
+              y: row.indexOf(cell),
+            }
+            // console.log('found obstacle during map scan 2 @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
+
+            if (
+              player.moving.origin.number.x === obstaclePosition.x && player.moving.origin.number.y-1 === obstaclePosition.y
+            ) {
+              found = found + 1;
+              // console.log('found 1',found);
+            }
+            if (
+              player.moving.origin.number.x+1 === obstaclePosition.x && player.moving.origin.number.y === obstaclePosition.y
+            ) {
+              found = found + 1;
+              // console.log('found 1',found);
+            }
+          }
+        }
+      }
+      for (const plyr2 of this.players) {
+        if (plyr2.number !== player.number) {
+
+          if (
+            player.moving.origin.number.x === plyr2.currentPosition.cell.number.x && player.moving.origin.number.y-1 === plyr2.currentPosition.cell.number.y
+          ) {
+            found = found + 1;
+            // console.log('found 1',found);
+          }
+          if (
+            player.moving.origin.number.x+1 === plyr2.currentPosition.cell.number.x && player.moving.origin.number.y === plyr2.currentPosition.cell.number.y
+          ) {
+            found = found + 1;
+            // console.log('found 1',found);
+          }
+        }
+      }
+      if (found === 2) {
+        // console.log('found 2');
+        target.free = false;
+        obstacleObstructFound = true;
+        found = 0;
+      }
+      break;
+      case 'northWest' :
+      for (const [key, row] of Object.entries(this.levelData2)) {
+        for (const cell of row) {
+          if (
+            cell.charAt(0) === 'y' ||
+            cell.charAt(0) ===  'z'
+          ) {
+
+            let obstaclePosition = {
+              x: Number(cell.charAt(1)),
+              y: row.indexOf(cell),
+            }
+            // console.log('found obstacle during map scan 2 @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
+            if (
+              player.moving.origin.number.x-1 === obstaclePosition.x && player.moving.origin.number.y === obstaclePosition.y
+            ) {
+              found = found + 1;
+              // console.log('found 1a',found);
+            }
+            if (
+              (player.moving.origin.number.x === obstaclePosition.x && player.moving.origin.number.y-1 === obstaclePosition.y)
+            ) {
+              found = found + 1;
+              // console.log('found 1b',found);
+            }
+          }
+        }
+      }
+      for (const plyr2 of this.players) {
+        if (plyr2.number !== player.number) {
+          if (
+            player.moving.origin.number.x-1 === plyr2.currentPosition.cell.number.x && player.moving.origin.number.y === plyr2.currentPosition.cell.number.y
+          ) {
+            found = found + 1;
+            // console.log('found 1c',found);
+          }
+          if (
+            player.moving.origin.number.x === plyr2.currentPosition.cell.number.x && player.moving.origin.number.y-1 === plyr2.currentPosition.cell.number.y
+          ) {
+            found = found + 1;
+            // console.log('found 1d',found);
+          }
+        }
+      }
+      if (found === 2) {
+        // console.log('found 2');
+        target.free = false;
+        obstacleObstructFound = true;
+        found = 0;
+      }
+      break;
+      case 'southWest' :
+      for (const [key, row] of Object.entries(this.levelData2)) {
+        for (const cell of row) {
+          if (
+            cell.charAt(0) === 'y' ||
+            cell.charAt(0) ===  'z'
+          ) {
+
+            let obstaclePosition = {
+              x: Number(cell.charAt(1)),
+              y: row.indexOf(cell),
+            }
+            // console.log('found obstacle during map scan 2 @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
+            if (
+              player.moving.origin.number.x === obstaclePosition.x && player.moving.origin.number.y+1 === obstaclePosition.y
+            ) {
+              found = found + 1;
+              // console.log('found 1',found);
+            }
+            if (
+              player.moving.origin.number.x-1 === obstaclePosition.x && player.moving.origin.number.y === obstaclePosition.y
+            ) {
+              found = found + 1;
+              // console.log('found 1',found);
+            }
+          }
+        }
+      }
+      for (const plyr2 of this.players) {
+        if (plyr2.number !== player.number) {
+          if (
+            player.moving.origin.number.x === plyr2.currentPosition.cell.number.x && player.moving.origin.number.y+1=== plyr2.currentPosition.cell.number.y
+          ) {
+            found = found + 1;
+            // console.log('found 1',found);
+          }
+          if (
+            player.moving.origin.number.x-1 === plyr2.currentPosition.cell.number.x && player.moving.origin.number.y === plyr2.currentPosition.cell.number.y
+          ) {
+            found = found + 1;
+            // console.log('found 1',found);
+          }
+        }
+      }
+      if (found === 2) {
+        // console.log('found 2');
+        target.free = false;
+        obstacleObstructFound = true;
+        found = 0;
+      }
+      break;
+      case 'southEast' :
+      for (const [key, row] of Object.entries(this.levelData2)) {
+        for (const cell of row) {
+          if (
+            cell.charAt(0) === 'y' ||
+            cell.charAt(0) ===  'z'
+          ) {
+
+            let obstaclePosition = {
+              x: Number(cell.charAt(1)),
+              y: row.indexOf(cell),
+            }
+            // console.log('found obstacle during map scan 2 @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
+            if (
+              player.moving.origin.number.x+1 === obstaclePosition.x && player.moving.origin.number.y === obstaclePosition.y
+            ) {
+              found = found + 1;
+              // console.log('found 1',found);
+            }
+            if (
+              player.moving.origin.number.x === obstaclePosition.x && player.moving.origin.number.y+1 === obstaclePosition.y
+            ) {
+              found = found + 1;
+              // console.log('found 1',found);
+            }
+          }
+        }
+      }
+      for (const plyr2 of this.players) {
+        if (plyr2.number !== player.number) {
+          if (
+            player.moving.origin.number.x+1 === plyr2.currentPosition.cell.number.x && player.moving.origin.number.y === plyr2.currentPosition.cell.number.y
+          ) {
+            found = found + 1;
+            // console.log('found 1',found);
+          }
+          if (
+            player.moving.origin.number.x === plyr2.currentPosition.cell.number.x && player.moving.origin.number.y+1 === plyr2.currentPosition.cell.number.y
+          ) {
+            found = found + 1;
+            // console.log('found 1',found);
+          }
+        }
+      }
+      if (found === 2) {
+        // console.log('found 2');
+        target.free = false;
+        obstacleObstructFound = true;
+        found = 0;
+      }
+      break;
+    }
+
 
     if (obstacleObstructFound !== true ) {
       target.free = true;
