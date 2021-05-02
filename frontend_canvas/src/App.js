@@ -1103,7 +1103,7 @@ class App extends Component {
                   limit: this.players[player.target.occupant.player-1].success.defendSuccess.limit
                 }
 
-                let shouldPushBack = this.rnJesus(1,4);
+                let shouldPushBack = this.rnJesus(1,3);
                 console.log('pushBack',shouldPushBack===1);
                 if (shouldPushBack === 1) {
                   let canPushback = this.pushBack(this.players[player.target.occupant.player-1],player.direction);
