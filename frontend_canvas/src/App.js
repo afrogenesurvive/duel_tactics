@@ -111,6 +111,7 @@ class App extends Component {
         state: false,
         direction: '',
       },
+      strafeReleaseHook: false,
       attacking: {
         state: false,
         count: 0,
@@ -232,6 +233,7 @@ class App extends Component {
         state: false,
         direction: '',
       },
+      strafeReleaseHook: false,
       attacking: {
         state: false,
         count: 0,
@@ -411,6 +413,7 @@ class App extends Component {
           state: false,
           direction: '',
         },
+        strafeReleaseHook: false,
         attacking: {
           state: false,
           count: 0,
@@ -532,6 +535,7 @@ class App extends Component {
           state: false,
           direction: '',
         },
+        strafeReleaseHook: false,
         attacking: {
           state: false,
           count: 0,
@@ -782,9 +786,18 @@ class App extends Component {
        this.currentPlayer = 1;
       break;
       case ' ' :
-        this.keyPressed[0].strafe = state;
-        this.players[0].strafing.state = state;
-        this.currentPlayer = 1;
+        if (
+          state == false &&
+          this.players[0].moving.state === true &&
+          this.players[0].strafing.state === true
+        ) {
+          this.players[0].strafeReleaseHook = true
+        }
+        else {
+          this.keyPressed[0].strafe = state;
+          this.players[0].strafing.state = state;
+          this.currentPlayer = 1;
+        }
       break;
       case '1' :
         if (this.players[0].dead.state === true) {
@@ -844,9 +857,18 @@ class App extends Component {
        this.currentPlayer = 2;
       break;
       case '/' :
-        this.keyPressed[1].strafe = state;
-        this.players[1].strafing.state = state;
-        this.currentPlayer = 2;
+        if (
+          state === false &&
+          this.players[1].moving.state === true &&
+          this.players[1].strafing.state === true
+        ) {
+          this.players[1].strafeReleaseHook = true
+        }
+        else {
+          this.keyPressed[1].strafe = state;
+          this.players[1].strafing.state = state;
+          this.currentPlayer = 1;
+        }
       break;
       case '0' :
         if (this.players[1].dead.state === true) {
@@ -1036,6 +1058,11 @@ class App extends Component {
             limit: player.defending.limit
           }
           player.action = 'idle';
+        }
+
+        if (player.strafeReleaseHook === true ) {
+          player.strafing.state = false;
+          player.strafeReleaseHook = false;
         }
 
         // CHECK & UPDATE ACTIONS IN PROGRESS!!
@@ -2773,7 +2800,7 @@ class App extends Component {
       }
     }
 
-
+    // DIAGONALLY ALIGNED PLAYERS/OBSTACLES CAN'T MOVE!!
     let found = 0;
     switch(direction) {
       case 'northEast' :
