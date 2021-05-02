@@ -24,6 +24,15 @@ import player2ImgIdleSouth from './assets/player/idle/player2ImgSouth.png'
 import player2ImgIdleSouthWest from './assets/player/idle/player2ImgSouthWest.png'
 import player2ImgIdleSouthEast from './assets/player/idle/player2ImgSouthEast.png'
 
+import attackInidcate from './assets/indicators/attack.png'
+import attackSuccessInidcate from './assets/indicators/attackSuccess.png'
+import defendInidcate from './assets/indicators/defend.png'
+import deflectInidcate from './assets/indicators/deflect.png'
+import pushbackInidcate from './assets/indicators/pushback.png'
+import ghostInidcate from './assets/indicators/ghost.png'
+import deathInidcate from './assets/indicators/death.png'
+import preAttackInidcate from './assets/indicators/preAttack.png'
+
 import './App.css';
 
 import DebugBox from './debugBox'
@@ -150,6 +159,23 @@ class App extends Component {
       },
       dead: {
         state: false,
+        count: 0,
+        limit: 10
+      },
+      ghost: {
+        state: false,
+        position: {
+          cell: {
+            number: {
+              x: 0,
+              y: 0,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            }
+          }
+        }
       },
       respawn: false,
       points: 0,
@@ -275,6 +301,23 @@ class App extends Component {
       },
       dead: {
         state: false,
+        count: 0,
+        limit: 10
+      },
+      ghost: {
+        state: false,
+        position: {
+          cell: {
+            number: {
+              x: 0,
+              y: 0,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            }
+          }
+        }
       },
       respawn: false,
       points: 0,
@@ -458,6 +501,23 @@ class App extends Component {
         },
         dead: {
           state: false,
+          count: 0,
+          limit: 10
+        },
+        ghost: {
+          state: false,
+          position: {
+            cell: {
+              number: {
+                x: 0,
+                y: 0,
+              },
+              center: {
+                x: 0,
+                y: 0,
+              }
+            }
+          }
         },
         respawn: false,
         points: 0,
@@ -587,6 +647,23 @@ class App extends Component {
         },
         dead: {
           state: false,
+          count: 0,
+          limit: 10
+        },
+        ghost: {
+          state: false,
+          position: {
+            cell: {
+              number: {
+                x: 0,
+                y: 0,
+              },
+              center: {
+                x: 0,
+                y: 0,
+              }
+            }
+          }
         },
         respawn: false,
         points: 0,
@@ -1079,6 +1156,17 @@ class App extends Component {
 
         // CHECK & UPDATE ACTIONS IN PROGRESS!!
         if (player.dead.state === true) {
+
+          if (player.dead.count > 0 && player.dead.count < player.dead.limit+1) {
+            player.dead.count++
+            // console.log('player dying',player.dead.count);
+          }
+          else if (player.dead.count >= player.dead.limit) {
+            player.dead.count = 0;
+          }
+        }
+        if (player.dead.state === true && player.dead.count === 0) {
+          // console.log('done dying remove from board');
           player.nextPosition = {
             x: -30,
             y: -30,
@@ -1110,7 +1198,7 @@ class App extends Component {
               else {
                 // console.log('attackdefended');
 
-                this.moveSpeed = .2;
+                this.moveSpeed = .1;
 
                 this.players[player.target.occupant.player-1].success.defendSuccess = {
                   state: true,
@@ -1119,7 +1207,7 @@ class App extends Component {
                 }
 
                 let shouldPushBack = this.rnJesus(1,3);
-                console.log('pushBack',shouldPushBack===1);
+                // console.log('pushBack',shouldPushBack===1);
                 if (shouldPushBack === 1) {
                   let canPushback = this.pushBack(this.players[player.target.occupant.player-1],player.direction);
                 }
@@ -1243,7 +1331,7 @@ class App extends Component {
 
                 this.moveSpeed = player.speed.move;
 
-                if (player.dead.state === true) {
+                if (player.dead.state === true && player.dead.count === 0) {
 
                   player.nextPosition = {
                     x: -30,
@@ -1356,7 +1444,7 @@ class App extends Component {
                 // console.log('already defending');
               }
             }
-
+            // START ATTACK/DEFEND!!
             if (player.attacking.state === false && player.defending.state === false) {
 
               // if (this.keyPressed[player.number-1].attack === true ) {
@@ -1464,6 +1552,16 @@ class App extends Component {
 
     let player = this.players[playerNumber-1]
 
+    let indicatorImgs = {
+      preAttack: this.refs.preAttackIndicate,
+      attack: this.refs.attackIndicate,
+      attackSuccess: this.refs.attackSuccessIndicate,
+      defend: this.refs.defendIndicate,
+      deflect: this.refs.deflectIndicate,
+      pushback: this.refs.pushbackIndicate,
+      ghost: this.refs.ghostIndicate,
+      death: this.refs.deathIndicate,
+    }
     let playerImgs = [
       {
         idle: {
@@ -1964,6 +2062,13 @@ class App extends Component {
                 } else {
                   context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
+                if (plyr.pushBack.state === true) {
+                  // context.fillStyle = "purple";
+                  // context.beginPath();
+                  // context.arc(point.x-20, point.y-20, 10, 0, 2 * Math.PI);
+                  // context.fill();
+                  context.drawImage(indicatorImgs.pushback, point.x-20, point.y-20, 40,40);
+                }
                 // playerDrawLog(x,y,plyr)
               }
             }
@@ -1982,6 +2087,13 @@ class App extends Component {
                   context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 } else {
                   context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                }
+                if (plyr.pushBack.state === true) {
+                  // context.fillStyle = "purple";
+                  // context.beginPath();
+                  // context.arc(point.x-20, point.y-20, 10, 0, 2 * Math.PI);
+                  // context.fill();
+                  context.drawImage(indicatorImgs.pushback, point.x-20, point.y-20, 40,40);
                 }
                 // playerDrawLog(x,y,plyr)
               }
@@ -2004,6 +2116,13 @@ class App extends Component {
                   } else {
                     context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                   }
+                  if (plyr.pushBack.state === true) {
+                    // context.fillStyle = "purple";
+                    // context.beginPath();
+                    // context.arc(point.x-20, point.y-20, 10, 0, 2 * Math.PI);
+                    // context.fill();
+                    context.drawImage(indicatorImgs.pushback, point.x-20, point.y-20, 40,40);
+                  }
                   // playerDrawLog(x,y,plyr)
                 }
               } else {
@@ -2021,6 +2140,13 @@ class App extends Component {
                     context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                   } else {
                     context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  }
+                  if (plyr.pushBack.state === true) {
+                    // context.fillStyle = "purple";
+                    // context.beginPath();
+                    // context.arc(point.x-20, point.y-20, 10, 0, 2 * Math.PI);
+                    // context.fill();
+                    context.drawImage(indicatorImgs.pushback, point.x-20, point.y-20, 40,40);
                   }
                   // playerDrawLog(x,y)
                 }
@@ -2043,9 +2169,17 @@ class App extends Component {
                 } else {
                   context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
+                if (plyr.pushBack.state === true) {
+                  // context.fillStyle = "purple";
+                  // context.beginPath();
+                  // context.arc(point.x-20, point.y-20, 10, 0, 2 * Math.PI);
+                  // context.fill();
+                  context.drawImage(indicatorImgs.pushback, point.x-20, point.y-20, 40,40);
+                }
                 // playerDrawLog(x,y,plyr)
               }
             }
+
           }
           else if (plyr.moving.state === false) {
             if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y && plyr.success.deflected.state === false) {
@@ -2069,26 +2203,36 @@ class App extends Component {
 
                 if (plyr.attacking.count > 0 && plyr.attacking.count < 3) {
                   // pre attack indicator
-                  context.fillStyle = "green";
-                  context.beginPath();
-                  context.arc(point.x-20, point.y-20, 5, 0, 2 * Math.PI);
-                  context.fill();
+                  // context.fillStyle = "green";
+                  // context.beginPath();
+                  // context.arc(point.x-20, point.y-20, 5, 0, 2 * Math.PI);
+                  // context.fill();
+                  context.drawImage(indicatorImgs.preAttack, point.x-25, point.y-25, 25,25);
                 }
 
                 if (plyr.attacking.count > plyr.attacking.limit-4 && plyr.attacking.count < plyr.attacking.limit+1) {
                   // attack indicator
-                  context.fillStyle = "brown";
-                  context.beginPath();
-                  context.arc(point.x-18, point.y-18, 15, 0, 2 * Math.PI);
-                  context.fill();
+                  // context.fillStyle = "brown";
+                  // context.beginPath();
+                  // context.arc(point.x-18, point.y-18, 15, 0, 2 * Math.PI);
+                  // context.fill();
+                  context.drawImage(indicatorImgs.attack, point.x-20, point.y-20, 25,25);
                 }
 
               }
               if (plyr.defending.state === true) {
-                context.fillStyle = "blue";
-                context.beginPath();
-                context.arc(point.x-18, point.y-18, 15, 0, 2 * Math.PI);
-                context.fill();
+                // context.fillStyle = "blue";
+                // context.beginPath();
+                // context.arc(point.x-18, point.y-18, 15, 0, 2 * Math.PI);
+                // context.fill();
+                context.drawImage(indicatorImgs.defend, point.x-20, point.y-20, 25,25);
+              }
+              if (plyr.success.attackSuccess === true) {
+                // context.fillStyle = "red";
+                // context.beginPath();
+                // context.arc(point.x-18, point.y-18, 40, 0, 2 * Math.PI);
+                // context.fill();
+                context.drawImage(indicatorImgs.attackSuccess, point.x-20, point.y-20, 25,25);
               }
 
               // playerDrawLog(x,y,plyr)
@@ -2464,7 +2608,7 @@ class App extends Component {
               }
 
             }
-          if ( plyr.success.deflected.state === true) {
+          if (plyr.success.deflected.state === true) {
 
             if (plyr.direction === 'north') {
               if (
@@ -2472,6 +2616,7 @@ class App extends Component {
                 y === plyr.moving.origin.number.y+1
               ) {
                 context.drawImage(updatedPlayerImg, point.x-35, point.y-20, 55,55);
+                context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
               }
             }
             if (plyr.direction === 'northEast') {
@@ -2480,6 +2625,7 @@ class App extends Component {
                 y === plyr.currentPosition.cell.number.y
               ) {
                 context.drawImage(updatedPlayerImg, point.x-30, point.y-20, 40,40);
+                context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
               }
             }
             if (plyr.direction === 'northWest') {
@@ -2488,6 +2634,7 @@ class App extends Component {
                 y === plyr.currentPosition.cell.number.y+1
               ) {
                 context.drawImage(updatedPlayerImg, point.x-20, point.y-10, 40,40);
+                context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
               }
             }
             if (plyr.direction === 'east') {
@@ -2496,6 +2643,7 @@ class App extends Component {
                 y === plyr.currentPosition.cell.number.y
               ) {
                 context.drawImage(updatedPlayerImg, point.x-35, point.y-30, 55,55);
+                context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
               }
             }
             if (plyr.direction === 'west') {
@@ -2504,6 +2652,7 @@ class App extends Component {
                 y === plyr.currentPosition.cell.number.y
               ) {
                 context.drawImage(updatedPlayerImg, point.x-15, point.y-20, 55,55);
+                context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
               }
             }
             if (plyr.direction === 'south') {
@@ -2512,6 +2661,7 @@ class App extends Component {
                 y === plyr.currentPosition.cell.number.y
               ) {
                 context.drawImage(updatedPlayerImg, point.x-15, point.y-30, 55,55);
+                context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
               }
             }
             if (plyr.direction === 'southEast') {
@@ -2520,6 +2670,7 @@ class App extends Component {
                 y === plyr.currentPosition.cell.number.y
               ) {
                 context.drawImage(updatedPlayerImg, point.x-20, point.y-30, 40,40);
+                context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
               }
             }
             if (plyr.direction === 'southWest') {
@@ -2528,12 +2679,37 @@ class App extends Component {
                 y === plyr.currentPosition.cell.number.y
               ) {
                 context.drawImage(updatedPlayerImg, point.x-10, point.y-20, 40,40);
+                context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
               }
             }
 
+            // context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+            // context.fillStyle = "#f3722c";
+            // context.fillRect(point.x-20, point.y-20,15,15);
+          }
+          if (plyr.dead.state === true && player.dead.count > 0 && plyr.dead.count < plyr.dead.limit) {
+            if (
+              x === plyr.ghost.position.cell.number.x &&
+              y === plyr.ghost.position.cell.number.y
+            ) {
+              // console.log('moments of death');
+              // context.fillStyle = "pink";
+              // context.fillRect(plyr.ghost.position.cell.center.x-15, plyr.ghost.position.cell.center.y-15,30,30);
 
-            context.fillStyle = "#f3722c";
-            context.fillRect(point.x-20, point.y-20,15,15);
+              context.drawImage(indicatorImgs.death, plyr.ghost.position.cell.center.x-15, plyr.ghost.position.cell.center.y-15, 25,25);
+
+            }
+          }
+          if (plyr.ghost.state === true && player.dead.count === 0) {
+            if (
+              x === plyr.ghost.position.cell.number.x &&
+              y === plyr.ghost.position.cell.number.y
+            ) {
+              // console.log('your ghost lingers till your return');
+              // context.fillStyle = "black";
+              // context.fillRect(plyr.ghost.position.cell.center.x-20, plyr.ghost.position.cell.center.y-20,30,30);
+              context.drawImage(indicatorImgs.ghost, plyr.ghost.position.cell.center.x-20, plyr.ghost.position.cell.center.y-20, 25,25);
+            }
           }
 
           this.players[plyr.number-1] = plyr;
@@ -3243,9 +3419,14 @@ class App extends Component {
   respawn = (player) => {
     // console.log('respawning',player.number);
     this.players[player.number-1].respawn = true;
+    this.players[player.number-1].ghost.state = false;
+
   }
   killPlayer = (player) => {
     // console.log('killing player',player.number);
+
+    player.ghost.state = true;
+    player.ghost.position.cell = player.currentPosition.cell;
 
     player.action = 'idle';
     player.direction = 'north';
@@ -3303,7 +3484,11 @@ class App extends Component {
         }
       }
     };
-    player.dead.state = true;
+    player.dead = {
+      state: true,
+      count: 1,
+      limit: 5
+    }
     player.points--;
 
     // this.getTarget(player)
@@ -3540,6 +3725,7 @@ class App extends Component {
             }
 
             player.dead.state = false;
+            player.dead.count = 0;
 
             let point = {
               x: 0,
@@ -3726,6 +3912,15 @@ class App extends Component {
           <img src={playerImgIdleSouthEast} className='hidden playerImgs' ref="playerImgIdleSouthEast" alt="logo" />
           <img src={playerImgIdleEast} className='hidden playerImgs' ref="playerImgIdleEast" alt="logo" />
           <img src={playerImgIdleWest} className='hidden playerImgs' ref="playerImgIdleWest" alt="logo" />
+
+          <img src={attackInidcate} className='hidden playerImgs' ref="attackIndicate" alt="logo" />
+          <img src={attackSuccessInidcate} className='hidden playerImgs' ref="attackSuccessIndicate" alt="logo" />
+          <img src={defendInidcate} className='hidden playerImgs' ref="defendIndicate" alt="logo" />
+          <img src={deflectInidcate} className='hidden playerImgs' ref="deflectIndicate" alt="logo" />
+          <img src={pushbackInidcate} className='hidden playerImgs' ref="pushbackIndicate" alt="logo" />
+          <img src={ghostInidcate} className='hidden playerImgs' ref="ghostIndicate" alt="logo" />
+          <img src={deathInidcate} className='hidden playerImgs' ref="deathIndicate" alt="logo" />
+          <img src={preAttackInidcate} className='hidden playerImgs' ref="preAttackIndicate" alt="logo" />
 
           <img src={player2ImgIdleNorth} className='hidden playerImgs' ref="player2ImgIdleNorth" alt="logo" />
           <img src={player2ImgIdleNorthWest} className='hidden playerImgs' ref="player2ImgIdleNorthWest" alt="logo" />
