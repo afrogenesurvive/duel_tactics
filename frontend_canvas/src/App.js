@@ -430,7 +430,7 @@ class App extends Component {
           deflected: {
             state: false,
             count: 0,
-            limit: 15,
+            limit: 10,
             predeflect: false,
           }
         },
@@ -551,7 +551,7 @@ class App extends Component {
           deflected: {
             state: false,
             count: 0,
-            limit: 15,
+            limit: 10,
             predeflect: false,
           }
         },
@@ -1968,7 +1968,7 @@ class App extends Component {
             }
           }
           else if (plyr.moving.state === false) {
-            if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+            if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y && plyr.success.deflected.state === false) {
 
               if (
                 plyr.direction === 'east' ||
@@ -1980,69 +1980,9 @@ class App extends Component {
                 plyr.direction === 'south'
                 // newDirection === 'south'
               ) {
-                if (plyr.success.deflected.state === true) {
-
-                  if (plyr.direction === 'north') {
-                    context.drawImage(updatedPlayerImg, point.x-35, point.y-20, 55,55);
-                  }
-                  if (plyr.direction === 'northEast') {
-                    context.drawImage(updatedPlayerImg, point.x-35, point.y-25, 55,55);
-                  }
-                  if (plyr.direction === 'northWest') {
-                    context.drawImage(updatedPlayerImg, point.x-25, point.y-15, 55,55);
-                  }
-                  if (plyr.direction === 'east') {
-                    context.drawImage(updatedPlayerImg, point.x-35, point.y-30, 55,55);
-                  }
-                  if (plyr.direction === 'west') {
-                    context.drawImage(updatedPlayerImg, point.x-15, point.y-20, 55,55);
-                  }
-                  if (plyr.direction === 'south') {
-                    context.drawImage(updatedPlayerImg, point.x-15, point.y-30, 55,55);
-                  }
-                  if (plyr.direction === 'southEast') {
-                    context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
-                  }
-                  if (plyr.direction === 'southWest') {
-                    context.drawImage(updatedPlayerImg, point.x-15, point.y-25, 55,55);
-                  }
-
-                } else {
-                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                }
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
               } else {
-                if (plyr.success.deflected.state === true) {
-
-                  if (plyr.direction === 'north') {
-                    context.drawImage(updatedPlayerImg, point.x-30, point.y-15, 40,40);
-                  }
-                  if (plyr.direction === 'northEast') {
-                    context.drawImage(updatedPlayerImg, point.x-30, point.y-20, 40,40);
-                  }
-                  if (plyr.direction === 'northWest') {
-                    context.drawImage(updatedPlayerImg, point.x-20, point.y-10, 40,40);
-                  }
-                  if (plyr.direction === 'east') {
-                    context.drawImage(updatedPlayerImg, point.x-30, point.y-25, 40,40);
-                  }
-                  if (plyr.direction === 'west') {
-                    context.drawImage(updatedPlayerImg, point.x-10, point.y-15, 40,40);
-                  }
-                  if (plyr.direction === 'south') {
-                    context.drawImage(updatedPlayerImg, point.x-10, point.y-25, 40,40);
-                  }
-                  if (plyr.direction === 'southEast') {
-                    context.drawImage(updatedPlayerImg, point.x-20, point.y-30, 40,40);
-                  }
-                  if (plyr.direction === 'southWest') {
-                    context.drawImage(updatedPlayerImg, point.x-10, point.y-20, 40,40);
-                  }
-
-                } else {
-                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
-                }
-                // context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
               }
 
               if (plyr.attacking.state === true) {
@@ -2070,45 +2010,7 @@ class App extends Component {
                 context.arc(point.x-18, point.y-18, 15, 0, 2 * Math.PI);
                 context.fill();
               }
-              if (plyr.success.deflected.state === true) {
 
-                if (plyr.direction === 'north') {
-                  // check the cell behind based on facing
-                  // if it's a void cell d
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-
-                  }
-                  context.drawImage(updatedPlayerImg, point.x-35, point.y-20, 55,55);
-                }
-                if (plyr.direction === 'northEast') {
-                  context.drawImage(updatedPlayerImg, point.x-35, point.y-25, 55,55);
-                }
-                if (plyr.direction === 'northWest') {
-                  context.drawImage(updatedPlayerImg, point.x-25, point.y-15, 55,55);
-                }
-                if (plyr.direction === 'east') {
-                  context.drawImage(updatedPlayerImg, point.x-35, point.y-30, 55,55);
-                }
-                if (plyr.direction === 'west') {
-                  context.drawImage(updatedPlayerImg, point.x-15, point.y-20, 55,55);
-                }
-                if (plyr.direction === 'south') {
-                  context.drawImage(updatedPlayerImg, point.x-15, point.y-30, 55,55);
-                }
-                if (plyr.direction === 'southEast') {
-                  context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
-                }
-                if (plyr.direction === 'southWest') {
-                  context.drawImage(updatedPlayerImg, point.x-15, point.y-25, 55,55);
-                }
-
-
-                context.fillStyle = "#f3722c";
-                context.fillRect(point.x-20, point.y-20,15,15);
-              }
               // playerDrawLog(x,y,plyr)
             }
           }
@@ -2482,6 +2384,77 @@ class App extends Component {
               }
 
             }
+          if ( plyr.success.deflected.state === true) {
+
+            if (plyr.direction === 'north') {
+              if (
+                x === plyr.moving.origin.number.x &&
+                y === plyr.moving.origin.number.y+1
+              ) {
+                context.drawImage(updatedPlayerImg, point.x-35, point.y-20, 55,55);
+              }
+            }
+            if (plyr.direction === 'northEast') {
+              if (
+                x === plyr.currentPosition.cell.number.x+1 &&
+                y === plyr.currentPosition.cell.number.y
+              ) {
+                context.drawImage(updatedPlayerImg, point.x-30, point.y-20, 40,40);
+              }
+            }
+            if (plyr.direction === 'northWest') {
+              if (
+                x === plyr.currentPosition.cell.number.x+1 &&
+                y === plyr.currentPosition.cell.number.y+1
+              ) {
+                context.drawImage(updatedPlayerImg, point.x-20, point.y-10, 40,40);
+              }
+            }
+            if (plyr.direction === 'east') {
+              if (
+                x === plyr.currentPosition.cell.number.x &&
+                y === plyr.currentPosition.cell.number.y
+              ) {
+                context.drawImage(updatedPlayerImg, point.x-35, point.y-30, 55,55);
+              }
+            }
+            if (plyr.direction === 'west') {
+              if (
+                x === plyr.currentPosition.cell.number.x+1 &&
+                y === plyr.currentPosition.cell.number.y
+              ) {
+                context.drawImage(updatedPlayerImg, point.x-15, point.y-20, 55,55);
+              }
+            }
+            if (plyr.direction === 'south') {
+              if (
+                x === plyr.currentPosition.cell.number.x+1 &&
+                y === plyr.currentPosition.cell.number.y
+              ) {
+                context.drawImage(updatedPlayerImg, point.x-15, point.y-30, 55,55);
+              }
+            }
+            if (plyr.direction === 'southEast') {
+              if (
+                x === plyr.currentPosition.cell.number.x &&
+                y === plyr.currentPosition.cell.number.y
+              ) {
+                context.drawImage(updatedPlayerImg, point.x-20, point.y-30, 40,40);
+              }
+            }
+            if (plyr.direction === 'southWest') {
+              if (
+                x === plyr.currentPosition.cell.number.x+1 &&
+                y === plyr.currentPosition.cell.number.y
+              ) {
+                context.drawImage(updatedPlayerImg, point.x-10, point.y-20, 40,40);
+              }
+            }
+
+
+            context.fillStyle = "#f3722c";
+            context.fillRect(point.x-20, point.y-20,15,15);
+          }
 
 
           this.players[plyr.number-1] = plyr;
