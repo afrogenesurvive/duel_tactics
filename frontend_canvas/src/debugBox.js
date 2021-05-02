@@ -14,6 +14,14 @@ const DebugBox = props => {
             Action: {props.player.action}
           </p>
         </li>
+        {props.player.strafing.state == true && (
+          <li className="debugBoxListItem">
+            <p className="debugBoxText">
+              Strafe Direction: {props.player.strafing.direction}
+            </p>
+          </li>
+        )}
+
         <li className="debugBoxListItem">
           <p className="debugBoxText">
             Current Position: {props.player.currentPosition.cell.number.x}, {props.player.currentPosition.cell.number.y}
