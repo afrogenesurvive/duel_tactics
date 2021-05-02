@@ -2477,7 +2477,6 @@ class App extends Component {
             context.fillRect(point.x-20, point.y-20,15,15);
           }
 
-
           this.players[plyr.number-1] = plyr;
 
         }
@@ -3597,12 +3596,29 @@ class App extends Component {
 
   aiAct = () => {
 
-    // set this.keyPressed and set current player to ai player
-      // maybe w/ own version of key release for turning, defending and strafe
 
     // step1: turn and move in all directions
 
     // step2: move w/pathfinding to a tile surrounding player1 and target them
+
+  // if ai setting is attack player,
+  //   make an action checklist
+  //     locate player, move to closest location, target and attack, defend when detect pre attacks
+  //     on each game step when one ation is complete the currently acting is false
+  //       if not running an ai action check action list
+  //         run the next one in the action list and set currentl acting true
+  //           if running an ai action check sub action list
+  //             run the last incomplete subaction
+  //               subaction is composed of keypresses and release/sub action completion conditions
+  //               if running a sub action, check conditions for each game step
+  //             when all subactions incomplete, action incomplete
+  //               set currently acting false
+  //
+  //
+  //             example sub action
+  //               ai strafe:
+  //                 set keypress of strafe and disired move direction
+  //                   release consdition is moving false. when moving is false changed strafe keypress false
 
   }
 
