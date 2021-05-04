@@ -328,7 +328,7 @@ class App extends Component {
       }
     ],
     gridSettings: {
-
+      gridWidth: 0
     },
   }
 
@@ -357,7 +357,7 @@ class App extends Component {
     this.sceneX = 1100/2;
     this.sceneY = 120;
     this.tileWidth = 50;
-    this.gridWidth = 6;
+    this.gridWidth = 9;
 
     this.gridInfo = [];
     this.gridInfo2D = [];
@@ -747,7 +747,7 @@ class App extends Component {
         }
       }
     }
-
+    this.turnCheckerDirection = '';
   }
 
   // implement a prePlayer update function
@@ -767,6 +767,7 @@ class App extends Component {
 
     this.refs.player2ImgIdleWest.onload = () => {
       this.addListeners();
+      // this.loadSettings();
 
       this.drawGridInit(canvas, context);
 
@@ -850,42 +851,50 @@ class App extends Component {
     switch(keyInput) {
       case 'q' :
        this.keyPressed[0].northWest = state;
-       direction = 'northWest';
+       // direction = 'northWest';
+       this.turnCheckerDirection = 'northWest';
        this.currentPlayer = 1;
       break;
       case 'w' :
        this.keyPressed[0].north = state;
-       direction = 'north';
+       // direction = 'north';
+       this.turnCheckerDirection = 'north';
        this.currentPlayer = 1;
       break;
       case 'e' :
        this.keyPressed[0].northEast = state;
-       direction = 'northEast';
+       // direction = 'northEast';
+       this.turnCheckerDirection = 'northEast';
        this.currentPlayer = 1;
       break;
       case 'a' :
        this.keyPressed[0].west = state;
-       direction = 'west';
+       // direction = 'west';
+       this.turnCheckerDirection = 'west';
        this.currentPlayer = 1;
       break;
       case 'd' :
        this.keyPressed[0].east = state;
-       direction = 'east';
+       // direction = 'east';
+       this.turnCheckerDirection = 'east';
        this.currentPlayer = 1;
       break;
       case 's' :
        this.keyPressed[0].south = state;
-       direction = 'south';
+       // direction = 'south';
+       this.turnCheckerDirection = 'south';
        this.currentPlayer = 1;
       break;
       case 'z' :
        this.keyPressed[0].southWest = state;
-       direction = 'southWest';
+       // direction = 'southWest';
+       this.turnCheckerDirection = 'southWest';
        this.currentPlayer = 1;
       break;
       case 'c' :
        this.keyPressed[0].southEast = state;
-       direction = 'southEast';
+       // direction = 'southEast';
+       this.turnCheckerDirection = 'southEast';
        this.currentPlayer = 1;
       break;
       case 'v' :
@@ -921,42 +930,50 @@ class App extends Component {
 
       case 'u' :
        this.keyPressed[1].northWest = state;
-       direction = 'northWest';
+       // direction = 'northWest';
+       this.turnCheckerDirection = 'northWest';
        this.currentPlayer = 2;
       break;
       case 'i' :
        this.keyPressed[1].north = state;
-       direction = 'north';
+       // direction = 'north';
+       this.turnCheckerDirection = 'north';
        this.currentPlayer = 2;
       break;
       case 'o' :
        this.keyPressed[1].northEast = state;
-       direction = 'northEast';
+       // direction = 'northEast';
+       this.turnCheckerDirection = 'northEast';
        this.currentPlayer = 2;
       break;
       case 'j' :
        this.keyPressed[1].west = state;
-       direction = 'west';
+       // direction = 'west';
+       this.turnCheckerDirection = 'west';
        this.currentPlayer = 2;
       break;
       case 'k' :
        this.keyPressed[1].south = state;
-       direction = 'south';
+       // direction = 'south';
+       this.turnCheckerDirection = 'south';
        this.currentPlayer = 2;
       break;
       case 'l' :
        this.keyPressed[1].east = state;
-       direction = 'east';
+       // direction = 'east';
+       this.turnCheckerDirection = 'east';
        this.currentPlayer = 2;
       break;
       case 'm' :
        this.keyPressed[1].southWest = state;
-       direction = 'southWest';
+       // direction = 'southWest';
+       this.turnCheckerDirection = 'southWest';
        this.currentPlayer = 2;
       break;
       case '.' :
        this.keyPressed[1].southEast = state;
-       direction = 'southEast';
+       // direction = 'southEast';
+       this.turnCheckerDirection = 'southEast';
        this.currentPlayer = 2;
       break;
       case 'n' :
@@ -989,14 +1006,14 @@ class App extends Component {
     }
 
     let player = this.players[this.currentPlayer-1];
-
-    if (player.turning.state === true && player.turning.toDirection === direction) {
-      // console.log('player',player.number,' turn-ing');
-      if (this.keyPressed[this.currentPlayer-1][direction] == false) {
-        // console.log('player',player.number,' turn-stop');
-        player.turning.state = false;
-      }
-    }
+    //
+    // if (player.turning.state === true && player.turning.toDirection === this.turnCheckerDirection) {
+    //   // console.log('player',player.number,' turn-ing');
+    //   if (this.keyPressed[this.currentPlayer-1][this.turnCheckerDirection] == false) {
+    //     // console.log('player',player.number,' turn-stop');
+    //     player.turning.state = false;
+    //   }
+    // }
 
     if (player.defending.state === true && player.defending.count === 0) {
       if (this.keyPressed[this.currentPlayer-1].defend === false) {
@@ -1010,6 +1027,13 @@ class App extends Component {
     // for (const player of this.players) {
     //   this.playerUpdate(player, canvas, context);
     // }
+
+  }
+
+  loadSettings = () => {
+
+    // take settings gridWidth and set this.gridwidth and this.sceneY
+    // 3 = 250, 6 = 200, 9 = 120
 
   }
 
@@ -1040,18 +1064,37 @@ class App extends Component {
     let keyPressedDirection;
     for (const [key, value] of Object.entries(this.keyPressed[player.number-1])) {
       // console.log(`${key}: ${value} ....`);
+
+      // if (this.keyPressed[player.number-1].north === true && this.keyPressed[player.number-1].west === true) {
+      //   // console.log('beep');
+      //   this.keyPressed[player.number-1].northWest = true;
+      //   this.turnCheckerDirection = 'northWest';
+      // } else {
+      //   this.keyPressed[player.number-1].northWest = false;
+      // }
+
+
       if (
         key !== 'strafe' &&
         key !== 'attack' &&
         key !== 'defend' &&
         value === true
       ) {
-        // console.log('pressed',key);
+        console.log('pressed',key);
         keyPressedDirection = key;
       }
     }
-    let nextPosition;
 
+    // TURNER!!
+    if (player.turning.state === true && player.turning.toDirection === this.turnCheckerDirection) {
+      // console.log('player',player.number,' turn-ing');
+      if (this.keyPressed[this.currentPlayer-1][this.turnCheckerDirection] == false) {
+        // console.log('player',player.number,' turn-stop');
+        player.turning.state = false;
+      }
+    }
+
+    let nextPosition;
 
     if (player.success.deflected.state === true && player.success.deflected.count < player.success.deflected.limit) {
       player.success.deflected.count++
@@ -1346,6 +1389,7 @@ class App extends Component {
           ) {
             // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
             if (keyPressedDirection === player.direction && player.strafing.state === false) {
+
               let target = this.getTarget(player)
 
               if (target.free === true && player.target.void === false) {
