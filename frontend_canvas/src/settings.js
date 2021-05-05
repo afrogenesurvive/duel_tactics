@@ -29,12 +29,15 @@ const Settings = props => {
   // console.log(props.player1);
 
   return (
-    <div class="settingsOverlay">
+    <div className="settingsOverlay">
       <div className="settingsContainer">
+      <h2 className="settingsHeading">
+        Settings :
+      </h2>
       <Form onSubmit={props.onConfirm}>
         <Form.Row>
             <Form.Group as={Col} controlId="gridSize" className="formGroup">
-              <Form.Label className="formLabel">Grid Size </Form.Label>
+              <Form.Label className="formLabel">Grid Size: {props.gridWidth+1} x {props.gridWidth+1}</Form.Label>
               <Form.Control as="select">
                 <option>4 x 4</option>
                 <option>7 x 7</option>

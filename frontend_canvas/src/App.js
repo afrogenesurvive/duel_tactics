@@ -1,4 +1,9 @@
 import React, { Component } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCogs
+} from '@fortawesome/free-solid-svg-icons';
+
 import logo from './logo.svg';
 import tile from './assets/floor0.png'
 import floor2 from './assets/floor2.png'
@@ -356,7 +361,7 @@ class App extends Component {
     this.sceneX = 1100/2;
     this.sceneY = 120;
     this.tileWidth = 50;
-    this.gridWidth = 3;
+    this.gridWidth = 9;
 
     this.gridInfo = [];
     this.gridInfo2D = [];
@@ -1030,8 +1035,7 @@ class App extends Component {
   }
 
   loadSettings = (event) => {
-    console.log('event',event.target.gridSize.value);
-    let gridSize;
+    let gridSize = event.target.gridSize.value;
     switch(gridSize) {
       case '4 x 4' :
         this.gridWidth = 3;
@@ -1057,6 +1061,11 @@ class App extends Component {
   cancelSettings = () => {
     this.setState({
       showSettings: false
+    })
+  }
+  openSettings = () => {
+    this.setState({
+      showSettings: true
     })
   }
 
@@ -3813,14 +3822,22 @@ class App extends Component {
                 player={this.state.players[1]}
               />
             </div>
+
+            <div className="settingsSwitch">
+              <a href="javascript:" className="setSwitchLink" onClick={this.openSettings}>
+                <FontAwesomeIcon icon={faCogs} size="sm" className="setSwitchIcon"/>
+              </a>
+            </div>
           </div>
 
           {this.state.showSettings === true && (
             <Settings
+              gridWidth={this.gridWidth}
               onConfirm={this.loadSettings}
               onCancel={this.cancelSettings}
             />
           )}
+
 
 
 

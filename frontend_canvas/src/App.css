@@ -127,3 +127,16 @@
 
   /* display: none; */
 }
+.settingsSwitch {
+  border: 1px solid green;
+  border-radius: 5px;
+  padding: .5rem;
+  background-color: #ffffff;
+  position: absolute;
+  bottom: 0;
+  left: .1rem;
+  z-index: 3;
+}
+.setSwitchIcon {
+  color: #000000;
+}
