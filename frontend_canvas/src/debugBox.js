@@ -54,6 +54,14 @@ const DebugBox = props => {
             </p>
           </li>
         )}
+        {props.player.strafing.state === true &&(
+          <li className="debugBoxListItem">
+          <FontAwesomeIcon icon={faCompass} size="sm" className="debugBoxIcon"/>
+            <p className="debugBoxText">
+              {props.player.strafing.direction}
+            </p>
+          </li>
+        )}
         {
         //   props.player.strafing.state === true && (
         //   <li className="debugBoxListItem">
@@ -62,7 +70,7 @@ const DebugBox = props => {
         //     </p>
         //   </li>
         // )
-      }
+        }
         <li className="debugBoxListItem">
           <FontAwesomeIcon icon={faSkullCrossbones} size="sm" className="debugBoxIcon"/>
           <p className="debugBoxText">

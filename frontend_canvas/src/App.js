@@ -36,6 +36,7 @@ import preAttackInidcate from './assets/indicators/preAttack.png'
 import './App.css';
 
 import DebugBox from './debugBox'
+import Settings from './settings'
 
 import pointInPolygon from 'point-in-polygon';
 
@@ -327,9 +328,7 @@ class App extends Component {
         },
       }
     ],
-    gridSettings: {
-      gridWidth: 0
-    },
+    showSettings: true,
   }
 
   constructor(props) {
@@ -357,7 +356,7 @@ class App extends Component {
     this.sceneX = 1100/2;
     this.sceneY = 120;
     this.tileWidth = 50;
-    this.gridWidth = 9;
+    this.gridWidth = 3;
 
     this.gridInfo = [];
     this.gridInfo2D = [];
@@ -897,11 +896,11 @@ class App extends Component {
        this.turnCheckerDirection = 'southEast';
        this.currentPlayer = 1;
       break;
-      case 'v' :
+      case 'f' :
        this.keyPressed[0].attack = state;
        this.currentPlayer = 1;
       break;
-      case 'b' :
+      case 'v' :
        this.keyPressed[0].defend = state;
        this.currentPlayer = 1;
       break;
@@ -976,11 +975,11 @@ class App extends Component {
        this.turnCheckerDirection = 'southEast';
        this.currentPlayer = 2;
       break;
-      case 'n' :
+      case 'b' :
        this.keyPressed[1].attack = state;
        this.currentPlayer = 2;
       break;
-      case 'h' :
+      case 'n' :
        this.keyPressed[1].defend = state;
        this.currentPlayer = 2;
       break;
@@ -995,7 +994,7 @@ class App extends Component {
         else {
           this.keyPressed[1].strafe = state;
           this.players[1].strafing.state = state;
-          this.currentPlayer = 1;
+          this.currentPlayer = 2;
         }
       break;
       case '0' :
@@ -1030,11 +1029,35 @@ class App extends Component {
 
   }
 
-  loadSettings = () => {
+  loadSettings = (event) => {
+    console.log('event',event.target.gridSize.value);
+    let gridSize;
+    switch(gridSize) {
+      case '4 x 4' :
+        this.gridWidth = 3;
+        this.sceneY = 300;
+      break;
+      case '7 x 7' :
+        this.gridWidth = 6;
+        this.sceneY = 200;
+      break;
+      case '10 x 10' :
+        this.gridWidth = 9;
+        this.sceneY = 120;
+      break;
+    }
 
-    // take settings gridWidth and set this.gridwidth and this.sceneY
-    // 3 = 250, 6 = 200, 9 = 120
+    this.restartGame();
 
+    this.setState({
+      showSettings: false
+    })
+
+  }
+  cancelSettings = () => {
+    this.setState({
+      showSettings: false
+    })
   }
 
   gameLoop = () => {
@@ -1053,6 +1076,9 @@ class App extends Component {
       for (const player of this.players) {
         this.playerUpdate(player, canvas, context);
       }
+      // this.playerUpdate(this.players[0], canvas, context);
+      // this.playerUpdate(this.players[1], canvas, context);
+
       this.stepper.lastTime = this.stepper.currentTime - (this.stepper.deltaTime % this.stepper.interval);
     }
     requestAnimationFrame(this.gameLoop);
@@ -1081,40 +1107,13 @@ class App extends Component {
         value === true
       ) {
         // console.log('pressed',key);
+        // console.log('plyr no',player.number,'plyr1 strf',this.keyPressed[0].strafe,'plyr2 strf',this.keyPressed[1].strafe);
+        // console.log('plyr1 def',this.keyPressed[0].defend,'plyr2 def',this.keyPressed[1].defend);
         keyPressedDirection = key;
       }
 
-      // if (player.number === 2 && this.keyPressed[player.number-1].defend === true) {
-      //   // console.log('hoiw bout now');
-      //   if (this.keyPressed[0].strafe === true) {
-      //     if (this.currentPlayer === 1) {
-      //       console.log('keyPressedDirection',keyPressedDirection, key, value);
-      //     }
-      //   }
-      // }
-      // if (player.number === 1 && this.keyPressed[player.number-1].defend === true) {
-      //   // console.log('hoiw bout now');
-      //   if (this.keyPressed[1].strafe === true) {
-      //     // if (player.number === 2) {
-      //       console.log('keyPressedDirection',keyPressedDirection, key, value);
-      //     // }
-      //   }
-      // }
-
     }
 
-    // if (
-    //   player.number === 1 &&
-    //   this.keyPressed[player.number-1].strafe === true
-    // ) {
-    //   console.log('rasshole now',player.direction, keyPressedDirection);
-    // }
-    // if (
-    //   player.number === 2 &&
-    //   this.keyPressed[player.number-1].strafe === true
-    // ) {
-    //   console.log('rasshole now also',player.direction, keyPressedDirection);
-    // }
 
     // TURNER!!
     if (player.turning.state === true && player.turning.toDirection === this.turnCheckerDirection) {
@@ -1409,24 +1408,15 @@ class App extends Component {
         if (player.attacking.state === false && player.defending.state === false) {
           // CONFIRM MOVE KEYPRESS!!
           if (
-            keyPressedDirection === 'north' ||
-            keyPressedDirection === 'south' ||
-            keyPressedDirection === 'east' ||
-            keyPressedDirection === 'west' ||
-            keyPressedDirection === 'northEast' ||
-            keyPressedDirection === 'northWest' ||
-            keyPressedDirection === 'southEast' ||
-            keyPressedDirection === 'southWest'
-            // this.keyPressed[player.number-1].north === true ||
-            // this.keyPressed[player.number-1].south === true ||
-            // this.keyPressed[player.number-1].east === true ||
-            // this.keyPressed[player.number-1].west === true ||
-            // this.keyPressed[player.number-1].northEast === true ||
-            // this.keyPressed[player.number-1].northWest === true ||
-            // this.keyPressed[player.number-1].southEast === true ||
-            // this.keyPressed[player.number-1].southWest === true
+            this.keyPressed[player.number-1].north === true ||
+            this.keyPressed[player.number-1].south === true ||
+            this.keyPressed[player.number-1].east === true ||
+            this.keyPressed[player.number-1].west === true ||
+            this.keyPressed[player.number-1].northEast === true ||
+            this.keyPressed[player.number-1].northWest === true ||
+            this.keyPressed[player.number-1].southEast === true ||
+            this.keyPressed[player.number-1].southWest === true
           ) {
-            console.log('lolol',player.number);
             // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
             if (keyPressedDirection === player.direction && player.strafing.state === false) {
 
@@ -1546,7 +1536,7 @@ class App extends Component {
                 // console.log('already attacking');
               }
               if (this.keyPressed[player.number-1].defend === true) {
-                // console.log('already defending');
+                // console.log('already defending',player.number);
               }
             }
             // START ATTACK/DEFEND!!
@@ -1563,7 +1553,7 @@ class App extends Component {
                 }
               }
               if (this.keyPressed[player.number-1].defend === true) {
-                // console.log('start defending');
+                // console.log('start defending',player.number);
 
                 if (player.defending.count === 0) {
                   player.defending = {
@@ -3454,7 +3444,7 @@ class App extends Component {
 
   }
   restartGame = () => {
-    // console.log('resetting');
+    console.log('resetting');
 
     let canvas = this.canvasRef.current;
     let context = canvas.getContext('2d');
@@ -3825,18 +3815,13 @@ class App extends Component {
             </div>
           </div>
 
-          {
-            // <div className="debugDisplay">
-            //   <DebugBox
-            //     player={this.state.players[0]}
-            //   />
-            // </div>
-            // <div className="debugDisplay2">
-            //   <DebugBox
-            //     player={this.state.players[1]}
-            //   />
-            // </div>
-          }
+          {this.state.showSettings === true && (
+            <Settings
+              onConfirm={this.loadSettings}
+              onCancel={this.cancelSettings}
+            />
+          )}
+
 
 
           <img src={tile} className='hidden' ref="tile" alt="logo" />
