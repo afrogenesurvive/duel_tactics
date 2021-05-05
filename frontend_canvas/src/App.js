@@ -1006,7 +1006,7 @@ class App extends Component {
     }
 
     let player = this.players[this.currentPlayer-1];
-    //
+
     // if (player.turning.state === true && player.turning.toDirection === this.turnCheckerDirection) {
     //   // console.log('player',player.number,' turn-ing');
     //   if (this.keyPressed[this.currentPlayer-1][this.turnCheckerDirection] == false) {
@@ -1063,7 +1063,7 @@ class App extends Component {
 
     let keyPressedDirection;
     for (const [key, value] of Object.entries(this.keyPressed[player.number-1])) {
-      // console.log(`${key}: ${value} ....`);
+      // console.log(`${key}: ${value} ....${player.number}`);
 
       // if (this.keyPressed[player.number-1].north === true && this.keyPressed[player.number-1].west === true) {
       //   // console.log('beep');
@@ -1080,10 +1080,41 @@ class App extends Component {
         key !== 'defend' &&
         value === true
       ) {
-        console.log('pressed',key);
+        // console.log('pressed',key);
         keyPressedDirection = key;
       }
+
+      // if (player.number === 2 && this.keyPressed[player.number-1].defend === true) {
+      //   // console.log('hoiw bout now');
+      //   if (this.keyPressed[0].strafe === true) {
+      //     if (this.currentPlayer === 1) {
+      //       console.log('keyPressedDirection',keyPressedDirection, key, value);
+      //     }
+      //   }
+      // }
+      // if (player.number === 1 && this.keyPressed[player.number-1].defend === true) {
+      //   // console.log('hoiw bout now');
+      //   if (this.keyPressed[1].strafe === true) {
+      //     // if (player.number === 2) {
+      //       console.log('keyPressedDirection',keyPressedDirection, key, value);
+      //     // }
+      //   }
+      // }
+
     }
+
+    // if (
+    //   player.number === 1 &&
+    //   this.keyPressed[player.number-1].strafe === true
+    // ) {
+    //   console.log('rasshole now',player.direction, keyPressedDirection);
+    // }
+    // if (
+    //   player.number === 2 &&
+    //   this.keyPressed[player.number-1].strafe === true
+    // ) {
+    //   console.log('rasshole now also',player.direction, keyPressedDirection);
+    // }
 
     // TURNER!!
     if (player.turning.state === true && player.turning.toDirection === this.turnCheckerDirection) {
@@ -1378,15 +1409,24 @@ class App extends Component {
         if (player.attacking.state === false && player.defending.state === false) {
           // CONFIRM MOVE KEYPRESS!!
           if (
-            this.keyPressed[player.number-1].north === true ||
-            this.keyPressed[player.number-1].south === true ||
-            this.keyPressed[player.number-1].east === true ||
-            this.keyPressed[player.number-1].west === true ||
-            this.keyPressed[player.number-1].northEast === true ||
-            this.keyPressed[player.number-1].northWest === true ||
-            this.keyPressed[player.number-1].southEast === true ||
-            this.keyPressed[player.number-1].southWest === true
+            keyPressedDirection === 'north' ||
+            keyPressedDirection === 'south' ||
+            keyPressedDirection === 'east' ||
+            keyPressedDirection === 'west' ||
+            keyPressedDirection === 'northEast' ||
+            keyPressedDirection === 'northWest' ||
+            keyPressedDirection === 'southEast' ||
+            keyPressedDirection === 'southWest'
+            // this.keyPressed[player.number-1].north === true ||
+            // this.keyPressed[player.number-1].south === true ||
+            // this.keyPressed[player.number-1].east === true ||
+            // this.keyPressed[player.number-1].west === true ||
+            // this.keyPressed[player.number-1].northEast === true ||
+            // this.keyPressed[player.number-1].northWest === true ||
+            // this.keyPressed[player.number-1].southEast === true ||
+            // this.keyPressed[player.number-1].southWest === true
           ) {
+            console.log('lolol',player.number);
             // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
             if (keyPressedDirection === player.direction && player.strafing.state === false) {
 
@@ -3422,6 +3462,10 @@ class App extends Component {
     let canvas2 = this.canvasRef2.current;
     let context2 = canvas2.getContext('2d');
 
+    for (const player of this.players) {
+      player.ghost.state = false;
+    }
+
     this.drawGridInit(canvas, context, canvas2, context2);
 
   }
@@ -3768,18 +3812,32 @@ class App extends Component {
               ref={this.canvasRef3}
               className="canvas3"
             />
+
+            <div className="debugDisplay">
+              <DebugBox
+                player={this.state.players[0]}
+              />
+            </div>
+            <div className="debugDisplay2">
+              <DebugBox
+                player={this.state.players[1]}
+              />
+            </div>
           </div>
 
-          <div className="debugDisplay">
-            <DebugBox
-              player={this.state.players[0]}
-            />
-          </div>
-          <div className="debugDisplay2">
-            <DebugBox
-              player={this.state.players[1]}
-            />
-          </div>
+          {
+            // <div className="debugDisplay">
+            //   <DebugBox
+            //     player={this.state.players[0]}
+            //   />
+            // </div>
+            // <div className="debugDisplay2">
+            //   <DebugBox
+            //     player={this.state.players[1]}
+            //   />
+            // </div>
+          }
+
 
           <img src={tile} className='hidden' ref="tile" alt="logo" />
           <img src={floor2} className='hidden' ref="floor2" alt="logo" />

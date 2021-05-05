@@ -1,4 +1,23 @@
 import React, {useState} from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCompass,
+  faLocationArrow,
+  faSkullCrossbones,
+  faCrosshairs,
+  faFistRaised,
+  faMapMarked,
+
+} from '@fortawesome/free-solid-svg-icons';
+import attackInidcate from './assets/indicators/attack.png'
+import attackSuccessInidcate from './assets/indicators/attackSuccess.png'
+import defendInidcate from './assets/indicators/defend.png'
+import deflectInidcate from './assets/indicators/deflect.png'
+import pushbackInidcate from './assets/indicators/pushback.png'
+import ghostInidcate from './assets/indicators/ghost.png'
+import deathInidcate from './assets/indicators/death.png'
+import preAttackInidcate from './assets/indicators/preAttack.png'
+
 
 import './debugBox.css';
 
@@ -10,64 +29,75 @@ const DebugBox = props => {
     <div className="debugBoxContainer">
       <ul className="debugBoxList">
         <li className="debugBoxListItem">
+          <FontAwesomeIcon icon={faFistRaised} size="sm" className="debugBoxIcon"/>
           <p className="debugBoxText">
-            Action: {props.player.action}
+           {props.player.action}
           </p>
         </li>
-        {props.player.strafing.state == true && (
+        <li className="debugBoxListItem">
+          <FontAwesomeIcon icon={faMapMarked} size="sm" className="debugBoxIcon"/>
+          <p className="debugBoxText">
+            {props.player.currentPosition.cell.number.x}, {props.player.currentPosition.cell.number.y}
+          </p>
+        </li>
+        <li className="debugBoxListItem">
+          <FontAwesomeIcon icon={faCrosshairs} size="sm" className="debugBoxIcon"/>
+          <p className="debugBoxText">
+            {props.player.target.cell.number.x}, {props.player.target.cell.number.y}
+          </p>
+        </li>
+        {props.player.strafing.state !== true &&(
           <li className="debugBoxListItem">
+          <FontAwesomeIcon icon={faCompass} size="sm" className="debugBoxIcon"/>
             <p className="debugBoxText">
-              Strafe Direction: {props.player.strafing.direction}
+              {props.player.direction}
             </p>
           </li>
         )}
-
+        {
+        //   props.player.strafing.state === true && (
+        //   <li className="debugBoxListItem">
+        //     <p className="debugBoxText">
+        //       <span className="bold">Dir:</span> {props.player.strafing.direction}
+        //     </p>
+        //   </li>
+        // )
+      }
         <li className="debugBoxListItem">
+          <FontAwesomeIcon icon={faSkullCrossbones} size="sm" className="debugBoxIcon"/>
           <p className="debugBoxText">
-            Current Position: {props.player.currentPosition.cell.number.x}, {props.player.currentPosition.cell.number.y}
+            {props.player.points}
           </p>
         </li>
-        <li className="debugBoxListItem">
-          <p className="debugBoxText">
-            Target: {props.player.target.cell.number.x}, {props.player.target.cell.number.y}
-          </p>
-        </li>
-        <li className="debugBoxListItem">
-          <p className="debugBoxText">
-            Direction: {props.player.direction}
-          </p>
-        </li>
-        <li className="debugBoxListItem">
-          <p className="debugBoxText">
-            Points: {props.player.points}
-          </p>
-        </li>
+      </ul>
+      <ul className="debugBoxList">
+        {
+        //   props.player.strafing.state === true && (
+        //   <li className="debugBoxListItem">
+        //     <p className="debugBoxText">
+        //       Strafing!
+        //     </p>
+        //   </li>
+        // )
+      }
         {props.player.success.attackSuccess.state === true && (
           <li className="debugBoxListItem">
-            <p className="debugBoxText">
-              Attack Success!
-            </p>
+            <img src={attackInidcate} className="debugBoxImg"></img>
           </li>
         )}
         {props.player.success.defendSuccess.state === true && (
           <li className="debugBoxListItem">
-            <p className="debugBoxText">
-              Defend Success!
-            </p>
+            <img src={defendInidcate} className="debugBoxImg"></img>
           </li>
         )}
         {props.player.success.deflected.state === true && (
           <li className="debugBoxListItem">
-            <p className="debugBoxText">
-              Attack Deflected!!!
-            </p>
+            <img src={deflectInidcate} className="debugBoxImg"></img>
           </li>
         )}
         {props.player.pushBack.state === true && (
           <li className="debugBoxListItem">
-            <p className="debugBoxText">
-              Pushed Back!!!
-            </p>
+            <img src={pushbackInidcate} className="debugBoxImg"></img>
           </li>
         )}
       </ul>

@@ -1,21 +1,40 @@
 .debugBoxContainer {
-  padding: 1rem;
+  padding: .5rem 1rem;
 }
 
 .debugBoxList {
   padding: 0;
   list-style-type: none;
-  columns: 2;
+  /* columns: 2;
   -webkit-columns: 2;
-  -moz-columns: 2;
+  -moz-columns: 2; */
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin: .2rem 0;
 }
 
-.debugBoxListItem {
-
+.debugBoxListItem > * {
+  display: inline-block;
 }
 
 .debugBoxText {
   color: #000000;
   font-size: 1rem;
   margin-bottom: .5rem;
+}
+
+.bold {
+  font-weight: bolder;
+}
+
+.debugBoxIcon {
+  color: #000000;
+  margin: 0 .5rem 0 0;
+}
+.debugBoxImg {
+  height: 1.5rem;
+  width: 1.5rem;
 }
