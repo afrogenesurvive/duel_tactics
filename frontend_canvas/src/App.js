@@ -29,14 +29,33 @@ import player2ImgIdleSouth from './assets/player/idle/player2ImgSouth.png'
 import player2ImgIdleSouthWest from './assets/player/idle/player2ImgSouthWest.png'
 import player2ImgIdleSouthEast from './assets/player/idle/player2ImgSouthEast.png'
 
-import attackInidcate from './assets/indicators/attack.png'
-import attackSuccessInidcate from './assets/indicators/attackSuccess.png'
-import defendInidcate from './assets/indicators/defend.png'
-import deflectInidcate from './assets/indicators/deflect.png'
-import pushbackInidcate from './assets/indicators/pushback.png'
-import ghostInidcate from './assets/indicators/ghost.png'
-import deathInidcate from './assets/indicators/death.png'
-import preAttackInidcate from './assets/indicators/preAttack.png'
+import attackInidcate from './assets/indicators/attack.png';
+import attackSuccessInidcate from './assets/indicators/attackSuccess.png';
+import defendInidcate from './assets/indicators/defend.png';
+import deflectInidcate from './assets/indicators/deflect.png';
+import deflectInjuredInidcate from './assets/indicators/deflectInjured2.png';
+import pushbackInidcate from './assets/indicators/pushback.png';
+import ghostInidcate from './assets/indicators/ghost.png';
+import deathInidcate from './assets/indicators/death.png';
+import preAttackInidcate from './assets/indicators/preAttack.png';
+
+import plyr1IdleNorth from './assets/player/idle2/idleNorth1.png';
+import plyr1IdleSouth from './assets/player/idle2/idleSouth1.png';
+import plyr1IdleEast from './assets/player/idle2/idleEast1.png';
+import plyr1IdleWest from './assets/player/idle2/idleWest1.png';
+import plyr1IdleNorthEast from './assets/player/idle2/idleNorthEast1.png';
+import plyr1IdleNorthWest from './assets/player/idle2/idleNorthWest1.png';
+import plyr1IdleSouthWest from './assets/player/idle2/idleSouthWest1.png';
+import plyr1IdleSouthEast from './assets/player/idle2/idleSouthEast1.png';
+
+import plyr1AttackNorth from './assets/player/attack/attackNorth1.png';
+import plyr1AttackSouth from './assets/player/attack/attackSouth1.png';
+import plyr1AttackEast from './assets/player/attack/attackEast1.png';
+import plyr1AttackWest from './assets/player/attack/attackWest1.png';
+import plyr1AttackNorthEast from './assets/player/attack/attackNorthEast1.png';
+import plyr1AttackNorthWest from './assets/player/attack/attackNorthWest1.png';
+import plyr1AttackSouthWest from './assets/player/attack/attackSouthWest1.png';
+import plyr1AttackSouthEast from './assets/player/attack/attackSouthEast1.png';
 
 import './App.css';
 
@@ -149,6 +168,7 @@ class App extends Component {
             count: 0,
             limit: 15,
             predeflect: false,
+            type: '',
           }
         },
         pushBack: {
@@ -293,6 +313,7 @@ class App extends Component {
             count: 0,
             limit: 15,
             predeflect: false,
+            type: '',
           }
         },
         pushBack: {
@@ -520,6 +541,7 @@ class App extends Component {
             count: 0,
             limit: 15,
             predeflect: false,
+            type: '',
           }
         },
         pushBack: {
@@ -558,7 +580,7 @@ class App extends Component {
         respawn: false,
         points: 0,
         speed: {
-          move: .2,
+          move: .125,
           range: [.05,.1,.125,.2]
         },
         hp: 2,
@@ -664,6 +686,7 @@ class App extends Component {
             count: 0,
             limit: 15,
             predeflect: false,
+            type: '',
           }
         },
         pushBack: {
@@ -783,7 +806,7 @@ class App extends Component {
     let canvas2 = this.canvasRef2.current;
     let context2 = canvas2.getContext('2d');
 
-    this.refs.player2ImgIdleWest.onload = () => {
+    this.refs.plyr1IdleNorthEast.onload = () => {
       this.addListeners();
       // this.loadSettings();
 
@@ -1113,6 +1136,7 @@ class App extends Component {
     for (const [key, value] of Object.entries(this.keyPressed[player.number-1])) {
       // console.log(`${key}: ${value} ....${player.number}`);
 
+
       // if (this.keyPressed[player.number-1].north === true && this.keyPressed[player.number-1].west === true) {
       //   console.log('double diagonal press');
       //   this.keyPressed[player.number-1].northWest = true;
@@ -1159,6 +1183,7 @@ class App extends Component {
         count: 0,
         limit: player.success.deflected.limit,
         predeflect: player.success.deflected.predeflect,
+        type: '',
       }
     }
 
@@ -1225,7 +1250,6 @@ class App extends Component {
             }
           }
         }
-
         else {
           // console.log('normal move speed');
           if (
@@ -1281,6 +1305,14 @@ class App extends Component {
 
       // CAN READ INPUTS
       else if (player.moving.state === false) {
+
+
+        // DEBUFF CHECK!!
+        if (player.hp === 1 && player.speed.move > .05) {
+
+          player.speed.move = .05;
+        }
+
 
         // KEY PRESS RELEASE CHECKS!!
         if (player.turning.state === false) {
@@ -1369,8 +1401,27 @@ class App extends Component {
                   limit: player.success.attackSuccess.limit
                 }
 
+                let doubleHit = this.rnJesus(1,4);
+                if (doubleHit === 1) {
+                  this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 2;
+                } else {
+                  this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
+                }
+
+                if (this.players[player.target.occupant.player-1].hp <= 0) {
+                  this.killPlayer(this.players[player.target.occupant.player-1]);
+                } else {
+                  this.players[player.target.occupant.player-1].success.deflected = {
+                    state: true,
+                    count: 1,
+                    limit: this.players[player.target.occupant.player-1].success.deflected.limit,
+                    predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
+                    type: 'attacked',
+                  };
+                }
+
                 player.points++;
-                this.killPlayer(this.players[player.target.occupant.player-1]);
+
               }
               // ATTACK DEFENDED!!
               else {
@@ -1433,6 +1484,7 @@ class App extends Component {
                       count: 1,
                       limit: player.success.deflected.limit,
                       predeflect: player.success.deflected.predeflect,
+                      type: 'attack'
                     }
                   }
                 }
@@ -1443,6 +1495,7 @@ class App extends Component {
                     count: 1,
                     limit: player.success.deflected.limit,
                     predeflect: player.success.deflected.predeflect,
+                    type: 'attack'
                   }
                 }
 
@@ -1485,6 +1538,7 @@ class App extends Component {
             count: 1,
             limit: player.success.deflected.limit,
             predeflect: false,
+            type: player.success.deflected.type,
           }
         }
 
@@ -1730,12 +1784,23 @@ class App extends Component {
       attackSuccess: this.refs.attackSuccessIndicate,
       defend: this.refs.defendIndicate,
       deflect: this.refs.deflectIndicate,
+      deflectInjured: this.refs.deflectInjuredIndicate,
       pushback: this.refs.pushbackIndicate,
       ghost: this.refs.ghostIndicate,
       death: this.refs.deathIndicate,
     }
     let playerImgs = [
       {
+        // idle: {
+        //   north: this.refs.plyr1IdleNorth,
+        //   northWest: this.refs.plyr1IdleNorthWest,
+        //   northEast: this.refs.plyr1IdleNorthEast,
+        //   south: this.refs.plyr1IdleSouth,
+        //   southWest: this.refs.plyr1IdleSouthWest,
+        //   southEast: this.refs.plyr1IdleSouthEast,
+        //   east: this.refs.plyr1IdleEast,
+        //   west: this.refs.plyr1IdleWest,
+        // },
         idle: {
           north: this.refs.playerImgIdleNorth,
           northWest: this.refs.playerImgIdleNorthWest,
@@ -1746,6 +1811,16 @@ class App extends Component {
           east: this.refs.playerImgIdleEast,
           west: this.refs.playerImgIdleWest,
         },
+        // walking: {
+        //   north: this.refs.plyr1IdleNorth,
+        //   northWest: this.refs.plyr1IdleNorthWest,
+        //   northEast: this.refs.plyr1IdleNorthEast,
+        //   south: this.refs.plyr1IdleSouth,
+        //   southWest: this.refs.plyr1IdleSouthWest,
+        //   southEast: this.refs.plyr1IdleSouthEast,
+        //   east: this.refs.plyr1IdleEast,
+        //   west: this.refs.plyr1IdleWest,
+        // },
         walking: {
           north: this.refs.playerImgIdleNorth,
           northWest: this.refs.playerImgIdleNorthWest,
@@ -1766,6 +1841,16 @@ class App extends Component {
           east: this.refs.playerImgIdleEast,
           west: this.refs.playerImgIdleWest,
         },
+        // attacking: {
+        //   north: this.refs.plyr1AttackNorth,
+        //   northWest: this.refs.plyr1AttackNorthWest,
+        //   northEast: this.refs.plyr1AttackNorthEast,
+        //   south: this.refs.plyr1AttackSouth,
+        //   southWest: this.refs.plyr1AttackSouthWest,
+        //   southEast: this.refs.plyr1AttackSouthEast,
+        //   east: this.refs.plyr1AttackEast,
+        //   west: this.refs.plyr1AttackWest,
+        // },
         attacking: {
           north: this.refs.playerImgIdleNorth,
           northWest: this.refs.playerImgIdleNorthWest,
@@ -2230,8 +2315,10 @@ class App extends Component {
                   plyr.direction === 'south'
                   // newDirection === 'south'
                 ) {
+                  // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
                   context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 } else {
+                  // context.drawImage(updatedPlayerImg, point.x-20, point.y-30, 55,55);
                   context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
               }
@@ -2248,8 +2335,10 @@ class App extends Component {
                   plyr.direction === 'south'
                   // newDirection === 'south'
                 ) {
+                  // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
                   context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 } else {
+                  // context.drawImage(updatedPlayerImg, point.x-20, point.y-30, 55,55);
                   context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
                 // playerDrawLog(x,y,plyr)
@@ -2269,8 +2358,10 @@ class App extends Component {
                     plyr.direction === 'south'
                     // newDirection === 'south'
                   ) {
+                    // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
                     context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                   } else {
+                    // context.drawImage(updatedPlayerImg, point.x-20, point.y-30, 55,55);
                     context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                   }
                   // playerDrawLog(x,y,plyr)
@@ -2287,8 +2378,10 @@ class App extends Component {
                     plyr.direction === 'south'
                     // newDirection === 'south'
                   ) {
+                    // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
                     context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                   } else {
+                    // context.drawImage(updatedPlayerImg, point.x-20, point.y-30, 55,55);
                     context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                   }
                   // playerDrawLog(x,y)
@@ -2308,8 +2401,10 @@ class App extends Component {
                   plyr.direction === 'south'
                   // newDirection === 'south'
                 ) {
+                  // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
                   context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 } else {
+                  // context.drawImage(updatedPlayerImg, point.x-20, point.y-30, 55,55);
                   context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
                 // playerDrawLog(x,y,plyr)
@@ -2334,8 +2429,10 @@ class App extends Component {
                 plyr.direction === 'north' ||
                 plyr.direction === 'south'
               ) {
+                // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
                 context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
               } else {
+                // context.drawImage(updatedPlayerImg, point.x-20, point.y-30, 55,55);
                 context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
               }
 
@@ -2673,7 +2770,12 @@ class App extends Component {
                 y === plyr.moving.origin.number.y+1
               ) {
                 context.drawImage(updatedPlayerImg, point.x-35, point.y-20, 55,55);
-                context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                if (plyr.success.deflected.type === 'attack') {
+                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                }
+                else if (plyr.success.deflected.type === 'attacked') {
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                }
               }
             }
             if (plyr.direction === 'northEast') {
@@ -2682,7 +2784,12 @@ class App extends Component {
                 y === plyr.currentPosition.cell.number.y
               ) {
                 context.drawImage(updatedPlayerImg, point.x-30, point.y-20, 40,40);
-                context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                if (plyr.success.deflected.type === 'attack') {
+                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                }
+                else if (plyr.success.deflected.type === 'attacked') {
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                }
               }
             }
             if (plyr.direction === 'northWest') {
@@ -2691,7 +2798,12 @@ class App extends Component {
                 y === plyr.currentPosition.cell.number.y+1
               ) {
                 context.drawImage(updatedPlayerImg, point.x-20, point.y-10, 40,40);
-                context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                if (plyr.success.deflected.type === 'attack') {
+                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                }
+                else if (plyr.success.deflected.type === 'attacked') {
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                }
               }
             }
             if (plyr.direction === 'east') {
@@ -2700,7 +2812,12 @@ class App extends Component {
                 y === plyr.currentPosition.cell.number.y
               ) {
                 context.drawImage(updatedPlayerImg, point.x-35, point.y-30, 55,55);
-                context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                if (plyr.success.deflected.type === 'attack') {
+                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                }
+                else if (plyr.success.deflected.type === 'attacked') {
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                }
               }
             }
             if (plyr.direction === 'west') {
@@ -2709,7 +2826,12 @@ class App extends Component {
                 y === plyr.currentPosition.cell.number.y
               ) {
                 context.drawImage(updatedPlayerImg, point.x-15, point.y-20, 55,55);
-                context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                if (plyr.success.deflected.type === 'attack') {
+                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                }
+                else if (plyr.success.deflected.type === 'attacked') {
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                }
               }
             }
             if (plyr.direction === 'south') {
@@ -2718,7 +2840,12 @@ class App extends Component {
                 y === plyr.currentPosition.cell.number.y
               ) {
                 context.drawImage(updatedPlayerImg, point.x-15, point.y-30, 55,55);
-                context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                if (plyr.success.deflected.type === 'attack') {
+                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                }
+                else if (plyr.success.deflected.type === 'attacked') {
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                }
               }
             }
             if (plyr.direction === 'southEast') {
@@ -2727,7 +2854,12 @@ class App extends Component {
                 y === plyr.currentPosition.cell.number.y
               ) {
                 context.drawImage(updatedPlayerImg, point.x-20, point.y-30, 40,40);
-                context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                if (plyr.success.deflected.type === 'attack') {
+                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                }
+                else if (plyr.success.deflected.type === 'attacked') {
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                }
               }
             }
             if (plyr.direction === 'southWest') {
@@ -2736,7 +2868,12 @@ class App extends Component {
                 y === plyr.currentPosition.cell.number.y
               ) {
                 context.drawImage(updatedPlayerImg, point.x-10, point.y-20, 40,40);
-                context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                if (plyr.success.deflected.type === 'attack') {
+                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                }
+                else if (plyr.success.deflected.type === 'attacked') {
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                }
               }
             }
 
@@ -3292,6 +3429,7 @@ class App extends Component {
       break;
     }
 
+
     if (obstacleObstructFound !== true ) {
       target.free = true;
       target.occupant = {
@@ -3460,6 +3598,8 @@ class App extends Component {
   respawn = (player) => {
     // console.log('respawning',player.number);
     this.players[player.number-1].respawn = true;
+    this.players[player.number-1].hp = 2;
+    player.speed.move = .1;
     this.players[player.number-1].ghost.state = false;
 
   }
@@ -3530,6 +3670,7 @@ class App extends Component {
       count: 1,
       limit: 5
     }
+    // player.hp = 2;
     player.points--;
 
     // this.getTarget(player)
@@ -3554,6 +3695,18 @@ class App extends Component {
 
   }
 
+  placeItems = (args) => {
+
+    if (args.init === true) {
+      console.log('placing items init');
+
+
+    } else {
+      console.log('placing items mid-game');
+
+
+    }
+  }
   startProcessLevelData = (canvas) => {
 
     let gridInfo = [];
@@ -3609,7 +3762,20 @@ class App extends Component {
           edge: {
             state: false,
             side: ''
-          }
+          },
+          terrain: {
+            name: '',
+            type: '',
+            effect: ''
+          },
+          item: {
+            name: '',
+            type: '',
+            effect: ''
+          },
+          void: {
+            state: false
+          },
         })
       }
     }
@@ -3622,9 +3788,40 @@ class App extends Component {
 
     // compare & combine w/ levelData2
     for(const elem of allCells) {
+
+      // SET LEVEL DTAT!
       let levelData2Row = 'row'+elem.number.x;
       let elemLevelData = this.['levelData'+this.gridWidth][levelData2Row][elem.number.y];
       elem.levelData = elemLevelData;
+
+      // SET EDGES!
+      if (elem.number.x === 0) {
+        elem.edge = {
+          state: true,
+          side: 'west'
+        }
+      }
+      if (elem.number.x === this.gridWidth) {
+        elem.edge = {
+          state: true,
+          side: 'east'
+        }
+      }
+      if (elem.number.y === this.gridWidth) {
+        elem.edge = {
+          state: true,
+          side: 'south'
+        }
+      }
+      if (elem.number.y === 0) {
+        elem.edge = {
+          state: true,
+          side: 'north'
+        }
+      }
+
+
+
     }
 
     // gridInfo to 2D array
@@ -3643,7 +3840,7 @@ class App extends Component {
     this.gridInfo2D = gridInfo2d;
     // console.log('gridInfo2d',this.gridInfo2D);
     this.gridInfo = allCells;
-    // console.log('post parse gridInfo',this.gridInfo);
+    console.log('post parse gridInfo',this.gridInfo);
 
   }
 
@@ -3680,6 +3877,7 @@ class App extends Component {
 
     this.processLevelData(gridInfo)
 
+    this.placeItems({init: true, items: []});
 
     for (var x = 0; x < this.gridWidth+1; x++) {
       for (var y = 0; y < this.gridWidth+1; y++) {
@@ -3729,7 +3927,8 @@ class App extends Component {
         }
 
         let playerImgs = [
-          this.refs.playerImgIdleNorth,
+          this.refs.plyr1IdleNorth,
+          // this.refs.playerImgIdleNorth,
           this.refs.player2ImgIdleNorth
         ]
 
@@ -3840,6 +4039,9 @@ class App extends Component {
           context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
 
         }
+
+
+
       }
     }
   }
@@ -3945,6 +4147,7 @@ class App extends Component {
           <img src={attackSuccessInidcate} className='hidden playerImgs' ref="attackSuccessIndicate" alt="logo" />
           <img src={defendInidcate} className='hidden playerImgs' ref="defendIndicate" alt="logo" />
           <img src={deflectInidcate} className='hidden playerImgs' ref="deflectIndicate" alt="logo" />
+          <img src={deflectInjuredInidcate} className='hidden playerImgs' ref="deflectInjuredIndicate" alt="logo" />
           <img src={pushbackInidcate} className='hidden playerImgs' ref="pushbackIndicate" alt="logo" />
           <img src={ghostInidcate} className='hidden playerImgs' ref="ghostIndicate" alt="logo" />
           <img src={deathInidcate} className='hidden playerImgs' ref="deathIndicate" alt="logo" />
@@ -3958,6 +4161,25 @@ class App extends Component {
           <img src={player2ImgIdleSouthEast} className='hidden playerImgs' ref="player2ImgIdleSouthEast" alt="logo" />
           <img src={player2ImgIdleEast} className='hidden playerImgs' ref="player2ImgIdleEast" alt="logo" />
           <img src={player2ImgIdleWest} className='hidden playerImgs' ref="player2ImgIdleWest" alt="logo" />
+
+          <img src={plyr1AttackWest} className='hidden playerImgs' ref="plyr1AttackWest" alt="logo" />
+          <img src={plyr1AttackEast} className='hidden playerImgs' ref="plyr1AttackEast" alt="logo" />
+          <img src={plyr1AttackNorth} className='hidden playerImgs' ref="plyr1AttackNorth" alt="logo" />
+          <img src={plyr1AttackSouth} className='hidden playerImgs' ref="plyr1AttackSouth" alt="logo" />
+          <img src={plyr1AttackSouthEast} className='hidden playerImgs' ref="plyr1AttackSouthEast" alt="logo" />
+          <img src={plyr1AttackSouthWest} className='hidden playerImgs' ref="plyr1AttackSouthWest" alt="logo" />
+          <img src={plyr1AttackNorthWest} className='hidden playerImgs' ref="plyr1AttackNorthWest" alt="logo" />
+          <img src={plyr1AttackNorthEast} className='hidden playerImgs' ref="plyr1AttackNorthEast" alt="logo" />
+
+          <img src={plyr1IdleWest} className='hidden playerImgs' ref="plyr1IdleWest" alt="logo" />
+          <img src={plyr1IdleEast} className='hidden playerImgs' ref="plyr1IdleEast" alt="logo" />
+          <img src={plyr1IdleNorth} className='hidden playerImgs' ref="plyr1IdleNorth" alt="logo" />
+          <img src={plyr1IdleSouth} className='hidden playerImgs' ref="plyr1IdleSouth" alt="logo" />
+          <img src={plyr1IdleSouthEast} className='hidden playerImgs' ref="plyr1IdleSouthEast" alt="logo" />
+          <img src={plyr1IdleSouthWest} className='hidden playerImgs' ref="plyr1IdleSouthWest" alt="logo" />
+          <img src={plyr1IdleNorthWest} className='hidden playerImgs' ref="plyr1IdleNorthWest" alt="logo" />
+          <img src={plyr1IdleNorthEast} className='hidden playerImgs' ref="plyr1IdleNorthEast" alt="logo" />
+
 
         </div>
       </React.Fragment>

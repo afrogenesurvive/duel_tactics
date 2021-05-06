@@ -7,12 +7,13 @@ import {
   faCrosshairs,
   faFistRaised,
   faMapMarked,
-
+  faHeartbeat,
 } from '@fortawesome/free-solid-svg-icons';
 import attackInidcate from './assets/indicators/attack.png'
 import attackSuccessInidcate from './assets/indicators/attackSuccess.png'
 import defendInidcate from './assets/indicators/defend.png'
 import deflectInidcate from './assets/indicators/deflect.png'
+import deflectInjuredInidcate from './assets/indicators/deflectInjured.png';
 import pushbackInidcate from './assets/indicators/pushback.png'
 import ghostInidcate from './assets/indicators/ghost.png'
 import deathInidcate from './assets/indicators/death.png'
@@ -29,26 +30,26 @@ const DebugBox = props => {
     <div className="debugBoxContainer">
       <ul className="debugBoxList">
         <li className="debugBoxListItem">
-          <FontAwesomeIcon icon={faFistRaised} size="sm" className="debugBoxIcon"/>
+          <FontAwesomeIcon icon={faFistRaised} size="sm" className="debugBoxIcon"/> :
           <p className="debugBoxText">
            {props.player.action}
           </p>
         </li>
         <li className="debugBoxListItem">
-          <FontAwesomeIcon icon={faMapMarked} size="sm" className="debugBoxIcon"/>
+          <FontAwesomeIcon icon={faMapMarked} size="sm" className="debugBoxIcon"/> :
           <p className="debugBoxText">
             {props.player.currentPosition.cell.number.x}, {props.player.currentPosition.cell.number.y}
           </p>
         </li>
         <li className="debugBoxListItem">
-          <FontAwesomeIcon icon={faCrosshairs} size="sm" className="debugBoxIcon"/>
+          <FontAwesomeIcon icon={faCrosshairs} size="sm" className="debugBoxIcon"/> :
           <p className="debugBoxText">
             {props.player.target.cell.number.x}, {props.player.target.cell.number.y}
           </p>
         </li>
         {props.player.strafing.state !== true &&(
           <li className="debugBoxListItem">
-          <FontAwesomeIcon icon={faCompass} size="sm" className="debugBoxIcon"/>
+          <FontAwesomeIcon icon={faCompass} size="sm" className="debugBoxIcon"/> :
             <p className="debugBoxText">
               {props.player.direction}
             </p>
@@ -56,7 +57,7 @@ const DebugBox = props => {
         )}
         {props.player.strafing.state === true &&(
           <li className="debugBoxListItem">
-          <FontAwesomeIcon icon={faCompass} size="sm" className="debugBoxIcon"/>
+          <FontAwesomeIcon icon={faCompass} size="sm" className="debugBoxIcon"/> :
             <p className="debugBoxText">
               {props.player.strafing.direction}
             </p>
@@ -72,7 +73,7 @@ const DebugBox = props => {
         // )
         }
         <li className="debugBoxListItem">
-          <FontAwesomeIcon icon={faSkullCrossbones} size="sm" className="debugBoxIcon"/>
+          <FontAwesomeIcon icon={faSkullCrossbones} size="sm" className="debugBoxIcon"/> :
           <p className="debugBoxText">
             {props.player.points}
           </p>
@@ -88,6 +89,17 @@ const DebugBox = props => {
         //   </li>
         // )
       }
+      <li className="debugBoxListItem">
+        <FontAwesomeIcon icon={faHeartbeat} size="sm" className="debugBoxIcon"/> :
+        <p className="debugBoxText">
+          {props.player.hp}
+        </p>
+      </li>
+        {props.player.hp === 1 && (
+          <li className="debugBoxListItem">
+            <img src={deflectInjuredInidcate} className="debugBoxImg"></img>
+          </li>
+        )}
         {props.player.success.attackSuccess.state === true && (
           <li className="debugBoxListItem">
             <img src={attackInidcate} className="debugBoxImg"></img>

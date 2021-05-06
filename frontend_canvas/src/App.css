@@ -102,7 +102,7 @@
 
 .debugDisplay {
   height: 120px;
-  width: 400px;
+  width: 450px;
   position: absolute;
   top: 0;
   /* bottom: 15px; */
@@ -116,7 +116,7 @@
 }
 .debugDisplay2 {
   height: 120px;
-  width: 400px;
+  width: 450px;
   position: absolute;
   top: 0;
   left: 0;
