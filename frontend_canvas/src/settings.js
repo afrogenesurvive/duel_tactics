@@ -26,8 +26,6 @@ import './settings.css';
 
 const Settings = props => {
 
-  // console.log(props.player1);
-
   return (
     <div className="settingsOverlay">
       <div className="settingsContainer">

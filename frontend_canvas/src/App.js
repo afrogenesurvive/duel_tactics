@@ -187,8 +187,10 @@ class App extends Component {
         respawn: false,
         points: 0,
         speed: {
-          move: .1
+          move: .1,
+          range: [.05,.1,.125,.2]
         },
+        hp: 2,
       },
       {
         number: 2,
@@ -239,224 +241,6 @@ class App extends Component {
           void: false
         },
         direction: 'east',
-        turning: {
-          state: undefined,
-          toDirection: '',
-          delayCount: 0,
-          limit: 2.1,
-        },
-        action: 'idle',
-        moving: {
-          state: false,
-          step: 0,
-          course: '',
-          origin: {
-            number: {
-              x: 0,
-              y: 0,
-            },
-            center: {
-              x: 0,
-              y: 0,
-            },
-          },
-          destination: {
-            x: 0,
-            y: 0,
-          }
-        },
-        strafing: {
-          state: false,
-          direction: '',
-        },
-        strafeReleaseHook: false,
-        attacking: {
-          state: false,
-          count: 0,
-          limit: 10,
-        },
-        success: {
-          attackSuccess: {
-            state: false,
-            count: 0,
-            limit: 10,
-          },
-          defendSuccess: {
-            state: false,
-            count: 0,
-            limit: 10,
-          },
-          deflected: {
-            state: false,
-            count: 0,
-            limit: 15,
-            predeflect: false,
-          }
-        },
-        pushBack: {
-          state: false
-        },
-        defending: {
-          state: false,
-          count: 0,
-          limit: 5,
-        },
-        falling: {
-          state: false,
-          count: 0,
-          limit: 5,
-        },
-        dead: {
-          state: false,
-          count: 0,
-          limit: 10
-        },
-        ghost: {
-          state: false,
-          position: {
-            cell: {
-              number: {
-                x: 0,
-                y: 0,
-              },
-              center: {
-                x: 0,
-                y: 0,
-              }
-            }
-          }
-        },
-        respawn: false,
-        points: 0,
-        speed: {
-          move: .1
-        },
-      }
-    ],
-    showSettings: true,
-  }
-
-  constructor(props) {
-    super(props);
-    this.canvasRef = React.createRef();
-    this.canvasRef2 = React.createRef();
-    this.canvasRef3 = React.createRef();
-
-    this.tileColumnOffset = 100; // pixels
-    this.tileRowOffset = 50; // pixels
-    this.originX = 0; // offset from left
-    this.originY = 0; // offset from top
-    this.Xtiles = 10;
-    this.Ytiles = 10;
-    this.showCoordinates = true;
-    this.selectedTileX = -1;
-    this.selectedTileY = -1;
-
-    this.canvasWidth = 1100;
-    this.canvasHeight = 600;
-    this.floorImageWidth = 103;
-    this.floorImageHeight = 53;
-    this.wallImageWidth = 103;
-    this.wallImageHeight = 98;
-    this.sceneX = 1100/2;
-    this.sceneY = 120;
-    this.tileWidth = 50;
-    this.gridWidth = 9;
-
-    this.gridInfo = [];
-    this.gridInfo2D = [];
-    this.gridInfo2 = [];
-    this.gridInfo2D2 = [];
-    this.levelData =
-    [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
-    this.levelData9 = {
-      row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
-      row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
-      row2: ['x20x','x21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x'],
-      row3: ['x30x','x31x','x32x','y33x','x34x','x35x','x36x','x37x','x38x','x39x'],
-      row4: ['x40x','x41x','x42x','x43x','y44x','x45x','x46x','x47x','x48x','z49x'],
-      row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58x','x59x'],
-      row6: ['x60x','y61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
-      row7: ['x70x','y71x','x72x','x73x','x74x','x75x','x76x','y77x','x78x','x79x'],
-      row8: ['x80x','x81x','x82x','x83x','y84x','x85x','y86x','x87x','x88x','x89x'],
-      row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
-    };
-    this.levelData6 = {
-      row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
-      row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
-      row2: ['x20x','x21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x'],
-      row3: ['x30x','x31x','x32x','y33x','x34x','x35x','x36x','x37x','x38x','x39x'],
-      row4: ['x40x','x41x','x42x','x43x','y44x','x45x','x46x','x47x','x48x','z49x'],
-      row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58x','x59x'],
-      row6: ['x60x','y61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
-    };
-    this.levelData3 = {
-      row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
-      row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
-      row2: ['x20x','x21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x'],
-      row3: ['x30x','x31x','x32x','x33x','x34x','x35x','x36x','x37x','x38x','x39x'],
-    };
-    this.currentPlayer = 1;
-    this.players = [
-      {
-        number: 1,
-        startPosition: {
-          cell: {
-            number: {
-              x: 1,
-              y: 1,
-            },
-            center: {
-              x: 0,
-              y: 0,
-            }
-          }
-        },
-        currentPosition: {
-          cell: {
-            number: {
-              x: 0,
-              y: 0,
-            },
-            center: {
-              x: 0,
-              y: 0,
-            }
-          }
-        },
-        nextPosition: {
-          x: 0,
-          y: 0,
-        },
-        target: {
-          cell: {
-            number: {
-              x: 0,
-              y: 0,
-            },
-            center: {
-              x: 0,
-              y: 0,
-            },
-          },
-          free: true,
-          occupant: {
-            type: '',
-            player: '',
-          },
-          void: false
-        },
-        direction: 'west',
         turning: {
           state: undefined,
           toDirection: '',
@@ -550,6 +334,234 @@ class App extends Component {
           move: .1,
           range: [.05,.1,.125,.2]
         },
+        hp: 2,
+      }
+    ],
+    showSettings: true,
+  }
+
+  constructor(props) {
+    super(props);
+    this.canvasRef = React.createRef();
+    this.canvasRef2 = React.createRef();
+    this.canvasRef3 = React.createRef();
+
+    this.tileColumnOffset = 100; // pixels
+    this.tileRowOffset = 50; // pixels
+    this.originX = 0; // offset from left
+    this.originY = 0; // offset from top
+    this.Xtiles = 10;
+    this.Ytiles = 10;
+    this.showCoordinates = true;
+    this.selectedTileX = -1;
+    this.selectedTileY = -1;
+
+    this.canvasWidth = 1100;
+    this.canvasHeight = 600;
+    this.floorImageWidth = 103;
+    this.floorImageHeight = 53;
+    this.wallImageWidth = 103;
+    this.wallImageHeight = 98;
+    this.sceneX = 1100/2;
+    this.sceneY = 120;
+    this.tileWidth = 50;
+    this.gridWidth = 9;
+
+    this.gridInfo = [];
+    this.gridInfo2D = [];
+    this.gridInfo2 = [];
+    this.gridInfo2D2 = [];
+    this.levelData =
+    [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
+    this.levelData9 = {
+      row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
+      row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
+      row2: ['x20x','x21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x'],
+      row3: ['x30x','x31x','x32x','y33x','x34x','x35x','x36x','x37x','x38x','x39x'],
+      row4: ['x40x','x41x','x42x','x43x','y44x','x45x','x46x','x47x','x48x','z49x'],
+      row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58x','x59x'],
+      row6: ['x60x','y61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
+      row7: ['x70x','y71x','x72x','x73x','x74x','x75x','x76x','y77x','x78x','x79x'],
+      row8: ['x80x','x81x','x82x','x83x','y84x','x85x','y86x','x87x','x88x','x89x'],
+      row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
+    };
+    this.levelData6 = {
+      row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
+      row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
+      row2: ['x20x','x21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x'],
+      row3: ['x30x','x31x','x32x','y33x','x34x','x35x','x36x','x37x','x38x','x39x'],
+      row4: ['x40x','x41x','x42x','x43x','y44x','x45x','x46x','x47x','x48x','z49x'],
+      row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58x','x59x'],
+      row6: ['x60x','y61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
+    };
+    this.levelData3 = {
+      row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
+      row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
+      row2: ['x20x','x21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x'],
+      row3: ['x30x','x31x','x32x','x33x','x34x','x35x','x36x','x37x','x38x','x39x'],
+    };
+    this.itemList = [
+      {
+        name: 'speedUp',
+        amount: 5,
+        positions: []
+      }
+    ];
+    this.currentPlayer = 1;
+    this.players = [
+      {
+        number: 1,
+        startPosition: {
+          cell: {
+            number: {
+              x: 1,
+              y: 1,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            }
+          }
+        },
+        currentPosition: {
+          cell: {
+            number: {
+              x: 0,
+              y: 0,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            }
+          }
+        },
+        nextPosition: {
+          x: 0,
+          y: 0,
+        },
+        target: {
+          cell: {
+            number: {
+              x: 0,
+              y: 0,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            },
+          },
+          free: true,
+          occupant: {
+            type: '',
+            player: '',
+          },
+          void: false
+        },
+        direction: 'north',
+        turning: {
+          state: undefined,
+          toDirection: '',
+          delayCount: 0,
+          limit: 2.1,
+        },
+        action: 'idle',
+        moving: {
+          state: false,
+          step: 0,
+          course: '',
+          origin: {
+            number: {
+              x: 0,
+              y: 0,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            },
+          },
+          destination: {
+            x: 0,
+            y: 0,
+          }
+        },
+        strafing: {
+          state: false,
+          direction: '',
+        },
+        strafeReleaseHook: false,
+        attacking: {
+          state: false,
+          count: 0,
+          limit: 10,
+        },
+        success: {
+          attackSuccess: {
+            state: false,
+            count: 0,
+            limit: 10,
+          },
+          defendSuccess: {
+            state: false,
+            count: 0,
+            limit: 10,
+          },
+          deflected: {
+            state: false,
+            count: 0,
+            limit: 15,
+            predeflect: false,
+          }
+        },
+        pushBack: {
+          state: false
+        },
+        defending: {
+          state: false,
+          count: 0,
+          limit: 5,
+        },
+        falling: {
+          state: false,
+          count: 0,
+          limit: 5,
+        },
+        dead: {
+          state: false,
+          count: 0,
+          limit: 10
+        },
+        ghost: {
+          state: false,
+          position: {
+            cell: {
+              number: {
+                x: 0,
+                y: 0,
+              },
+              center: {
+                x: 0,
+                y: 0,
+              }
+            }
+          }
+        },
+        respawn: false,
+        points: 0,
+        speed: {
+          move: .2,
+          range: [.05,.1,.125,.2]
+        },
+        hp: 2,
       },
       {
         number: 2,
@@ -599,7 +611,7 @@ class App extends Component {
           },
           void: false
         },
-        direction: 'east',
+        direction: 'north',
         turning: {
           state: undefined,
           toDirection: '',
@@ -693,8 +705,10 @@ class App extends Component {
         respawn: false,
         points: 0,
         speed: {
-          move: .1
+          move: .1,
+          range: [.05,.1,.125,.2]
         },
+        hp: 2,
       }
     ]
     this.stepper = {
@@ -1035,6 +1049,7 @@ class App extends Component {
   }
 
   loadSettings = (event) => {
+
     let gridSize = event.target.gridSize.value;
     switch(gridSize) {
       case '4 x 4' :
@@ -1085,8 +1100,6 @@ class App extends Component {
       for (const player of this.players) {
         this.playerUpdate(player, canvas, context);
       }
-      // this.playerUpdate(this.players[0], canvas, context);
-      // this.playerUpdate(this.players[1], canvas, context);
 
       this.stepper.lastTime = this.stepper.currentTime - (this.stepper.deltaTime % this.stepper.interval);
     }
@@ -1101,11 +1114,16 @@ class App extends Component {
       // console.log(`${key}: ${value} ....${player.number}`);
 
       // if (this.keyPressed[player.number-1].north === true && this.keyPressed[player.number-1].west === true) {
-      //   // console.log('beep');
+      //   console.log('double diagonal press');
       //   this.keyPressed[player.number-1].northWest = true;
       //   this.turnCheckerDirection = 'northWest';
-      // } else {
-      //   this.keyPressed[player.number-1].northWest = false;
+      // }
+      // else if (player.turning.state === true && player.turning.toDirection === 'northWest') {
+      //   if (this.keyPressed[player.number-1].north === false || this.keyPressed[player.number-1].west === false) {
+      //     console.log('double diagonal release');
+      //     this.keyPressed[player.number-1].northWest = false;
+      //     // this.turnCheckerDirection = 'northWest';
+      //   }
       // }
 
 
@@ -1116,8 +1134,6 @@ class App extends Component {
         value === true
       ) {
         // console.log('pressed',key);
-        // console.log('plyr no',player.number,'plyr1 strf',this.keyPressed[0].strafe,'plyr2 strf',this.keyPressed[1].strafe);
-        // console.log('plyr1 def',this.keyPressed[0].defend,'plyr2 def',this.keyPressed[1].defend);
         keyPressedDirection = key;
       }
 
@@ -1157,47 +1173,106 @@ class App extends Component {
         // player.currentPosition.cell = player.target.cell;
         player.nextPosition = nextPosition;
 
-        if (
-          nextPosition.x === player.target.cell.center.x &&
-          nextPosition.y === player.target.cell.center.y
-        ) {
-          // console.log('next position is destination');
-          if (player.target.void === false) {
-            player.currentPosition.cell = player.target.cell;
-            player.action = 'idle';
-            player.moving = {
-              state: false,
-              step: 0,
-              course: '',
-              origin: {
-                number: {
-                  x: player.target.cell.number.x,
-                  y: player.target.cell.number.y
+        if (player.speed.move !== .1) {
+          // console.log('abnormal move speed');
+          if (
+            nextPosition.x === player.target.cell.center.x &&
+            nextPosition.y === player.target.cell.center.y ||
+            nextPosition.x === player.target.cell.center.x+5 &&
+            nextPosition.y === player.target.cell.center.y+5
+          ) {
+            // console.log('next position is destination');
+            if (player.target.void === false) {
+              player.currentPosition.cell = player.target.cell;
+              player.action = 'idle';
+              player.moving = {
+                state: false,
+                step: 0,
+                course: '',
+                origin: {
+                  number: {
+                    x: player.target.cell.number.x,
+                    y: player.target.cell.number.y
+                  },
+                  center: {
+                    x: player.target.cell.center.x,
+                    y: player.target.cell.center.y
+                  },
                 },
-                center: {
-                  x: player.target.cell.center.x,
-                  y: player.target.cell.center.y
-                },
-              },
-              destination: {
-                x: 0,
-                y: 0,
+                destination: {
+                  x: 0,
+                  y: 0,
+                }
+              }
+
+              this.checkDestination(player);
+
+            } else if (
+              nextPosition.x === player.target.cell.center.x &&
+              nextPosition.y === player.target.cell.center.y &&
+              player.target.void === true
+            ) {
+              player.falling.state = true;
+              player.action = 'falling';
+            }
+
+            if (player.pushBack.state === true) {
+              player.pushBack.state = false;
+              player.strafing = {
+                state: false,
+                direction: ''
               }
             }
-          } else if (
-            nextPosition.x === player.target.cell.center.x &&
-            nextPosition.y === player.target.cell.center.y &&
-            player.target.void === true
-          ) {
-            player.falling.state = true;
-            player.action = 'falling';
           }
+        }
 
-          if (player.pushBack.state === true) {
-            player.pushBack.state = false;
-            player.strafing = {
-              state: false,
-              direction: ''
+        else {
+          // console.log('normal move speed');
+          if (
+            nextPosition.x === player.target.cell.center.x &&
+            nextPosition.y === player.target.cell.center.y
+          ) {
+            // console.log('next position is destination');
+            if (player.target.void === false) {
+              player.currentPosition.cell = player.target.cell;
+              player.action = 'idle';
+              player.moving = {
+                state: false,
+                step: 0,
+                course: '',
+                origin: {
+                  number: {
+                    x: player.target.cell.number.x,
+                    y: player.target.cell.number.y
+                  },
+                  center: {
+                    x: player.target.cell.center.x,
+                    y: player.target.cell.center.y
+                  },
+                },
+                destination: {
+                  x: 0,
+                  y: 0,
+                }
+              }
+
+              this.checkDestination(player);
+
+            } else if (
+              nextPosition.x === player.target.cell.center.x &&
+              nextPosition.y === player.target.cell.center.y &&
+              player.target.void === true
+            ) {
+              player.falling.state = true;
+              player.action = 'falling';
+            }
+
+            if (player.pushBack.state === true) {
+              player.pushBack.state = false;
+              player.strafing = {
+                state: false,
+                direction: ''
+              }
             }
           }
         }
@@ -1494,7 +1569,7 @@ class App extends Component {
             // CHANGE DIRECTION IF NOT STRAFING!!
             else if (keyPressedDirection !== player.direction && player.strafing.state === false) {
               // console.log('change player direction to',keyPressedDirection);
-              // console.log('player',player.number,' turn-start');
+              // console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
               player.turning.state = true;
               player.turning.toDirection = keyPressedDirection;
 
@@ -3236,12 +3311,22 @@ class App extends Component {
     return target;
 
   }
+  checkDestination = (player) => {
+    // console.log('checking for item or enviro effect');
+
+
+    // check player current position cell number
+    // check against gridInfo for item, cell type
+    //   if item add it to player items and remove item from that cell
+      // update player or not based on cell type
+
+  }
   lineCrementer = (player) => {
     // console.log('line crementer',player.number);
 
     let currentPosition = player.currentPosition.cell.center;
     let target = player.target;
-    let moveSpeed = this.moveSpeed;
+    let moveSpeed = player.speed.move;
 
     player.moving.step = player.moving.step + moveSpeed;
     // console.log('mover stepper',player.moving.step);
