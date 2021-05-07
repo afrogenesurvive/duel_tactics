@@ -211,6 +211,16 @@ class App extends Component {
           range: [.05,.1,.125,.2]
         },
         hp: 2,
+        currentWeapon: {},
+        currentArmor: {},
+        items: {
+          weapons: [],
+          armor: [],
+        },
+        crits: {
+          doubleHit: 6,
+          pushBack: 3,
+        },
       },
       {
         number: 2,
@@ -356,6 +366,16 @@ class App extends Component {
           range: [.05,.1,.125,.2]
         },
         hp: 2,
+        currentWeapon: {},
+        currentArmor: {},
+        items: {
+          weapons: [],
+          armor: [],
+        },
+        crits: {
+          doubleHit: 6,
+          pushBack: 3,
+        },
       }
     ],
     showSettings: true,
@@ -433,10 +453,40 @@ class App extends Component {
     };
     this.itemList = [
       {
-        name: 'speedUp',
+        name: 'moveSpeedUp',
         amount: 5,
-        positions: []
-      }
+        type: 'item'
+      },
+      {
+        name: 'moveSpeedDown',
+        amount: 5,
+        type: 'item'
+      },
+      {
+        name: 'hp+1',
+        amount: 4,
+        type: 'item'
+      },
+      {
+        name: 'hp-1',
+        amount: 4,
+        type: 'item'
+      },
+      // {
+      //   name: 'spear',
+      //   amount: 3,
+      //   type: 'weapon'
+      // },
+      // {
+      //   name: 'sword',
+      //   amount: 2,
+      //   type: 'weapon'
+      // },
+      // {
+      //   name: 'crossbow',
+      //   amount: 2,
+      //   type: 'weapon'
+      // },
     ];
     this.currentPlayer = 1;
     this.players = [
@@ -584,6 +634,16 @@ class App extends Component {
           range: [.05,.1,.125,.2]
         },
         hp: 2,
+        currentWeapon: {},
+        currentArmor: {},
+        items: {
+          weapons: [],
+          armor: [],
+        },
+        crits: {
+          doubleHit: 6,
+          pushBack: 3,
+        },
       },
       {
         number: 2,
@@ -732,6 +792,16 @@ class App extends Component {
           range: [.05,.1,.125,.2]
         },
         hp: 2,
+        currentWeapon: {},
+        currentArmor: {},
+        items: {
+          weapons: [],
+          armor: [],
+        },
+        crits: {
+          doubleHit: 6,
+          pushBack: 3,
+        },
       }
     ]
     this.stepper = {
@@ -1163,6 +1233,9 @@ class App extends Component {
 
     }
 
+    let nextPosition;
+
+
 
     // TURNER!!
     if (player.turning.state === true && player.turning.toDirection === this.turnCheckerDirection) {
@@ -1173,8 +1246,7 @@ class App extends Component {
       }
     }
 
-    let nextPosition;
-
+    // CHECK AND SET DEFLECTION!!
     if (player.success.deflected.state === true && player.success.deflected.count < player.success.deflected.limit) {
       player.success.deflected.count++
     } else if (player.success.deflected.state === true && player.success.deflected.count >= player.success.deflected.limit) {
@@ -1185,6 +1257,8 @@ class App extends Component {
         predeflect: player.success.deflected.predeflect,
         type: '',
       }
+
+      this.deflectDrop(player)
     }
 
     // DEFLECTED PLAYER CAN'T DO ANYTHING!!
@@ -1306,13 +1380,11 @@ class App extends Component {
       // CAN READ INPUTS
       else if (player.moving.state === false) {
 
-
-        // DEBUFF CHECK!!
+        // DEBUFF CHECKS!!
         if (player.hp === 1 && player.speed.move > .05) {
 
           player.speed.move = .05;
         }
-
 
         // KEY PRESS RELEASE CHECKS!!
         if (player.turning.state === false) {
@@ -1401,7 +1473,7 @@ class App extends Component {
                   limit: player.success.attackSuccess.limit
                 }
 
-                let doubleHit = this.rnJesus(1,4);
+                let doubleHit = this.rnJesus(1,player.crits.doubleHit);
                 if (doubleHit === 1) {
                   this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 2;
                 } else {
@@ -1435,14 +1507,14 @@ class App extends Component {
                   limit: this.players[player.target.occupant.player-1].success.defendSuccess.limit
                 }
 
-                let shouldPushBack = this.rnJesus(1,3);
+                let shouldPushBack = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.pushBack);
                 // console.log('pushBack',shouldPushBack===1);
                 if (shouldPushBack === 1) {
                   let canPushback = this.pushBack(this.players[player.target.occupant.player-1],player.direction);
                 }
 
                 // PUSHBACK DEFLECT!!
-                let shouldDeflectPushBack = this.rnJesus(1,4);
+                let shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack);
                 if (shouldDeflectPushBack === 1) {
                   let pushBackDirection;
                   switch(player.direction) {
@@ -1965,6 +2037,8 @@ class App extends Component {
         },
       }
     ]
+    let itemImgs = [];
+    let terrainImgs = [];
 
     let updatedPlayerImg;
     let newDirection;
@@ -2021,6 +2095,9 @@ class App extends Component {
           context.fillStyle = "yellow";
           context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
         }
+
+        // IN GAME ITEM PLACEMENT!!
+        // check gridinfo cell matched w/ current xy for item and draw if item not blank
 
         function playerDrawLog (x,y,plyr) {
           console.log('** playerDrawLog **');
@@ -3453,10 +3530,25 @@ class App extends Component {
     // console.log('checking for item or enviro effect');
 
 
-    // check player current position cell number
-    // check against gridInfo for item, cell type
-    //   if item add it to player items and remove item from that cell
-      // update player or not based on cell type
+    // check for items
+    //
+    //   check gridinfo for player current pos
+    //     if cell item not blank
+    //       if item type not weapon or gear
+    //         update player stats based on buff/debuff
+    //         reset cell item data
+    //       if weapon or armor push item name and type to player item subarray
+    //
+    //
+    // check for terrain
+    //   based on terrain effect/buff/debuff update player props
+
+
+      // crit buff/debuffs
+      //   pushBack buff = crit +
+      //   pushBack debuff = crit -
+      //   doubleHit buff = crit -
+      //   doubleHit debuff = crit +
 
   }
   lineCrementer = (player) => {
@@ -3695,17 +3787,66 @@ class App extends Component {
 
   }
 
+  checkCell = () => {
+
+    let cellFree;
+
+    // for grid of gridinfo
+    //   if grid.levelData.charAt(0) !==  'z' || charAt(0) !==  'y'
+    //   and for player in this.players
+    //     grid.x and grid.y !== player.current
+
+    return cellFree
+  }
   placeItems = (args) => {
 
     if (args.init === true) {
       console.log('placing items init');
 
+      // for each item of this.items
+      //   if item.count > item count-1
+      //     let cell = {
+      //       x: 0,
+      //       y: 0
+      //     }
+      //     checkCell(cell)
+      //     while checkCell == false
+      //     cell.x = this.rnJesus(0,this.gridWidth)
+      //     cell.y = this.rnJesus(0,this.gridWidth)
+      //     else
+      //       loop grid info for cell and set that cells item
+      //       this.item item count - 1
 
-    } else {
+    } else if (args.init !== true) {
       console.log('placing items mid-game');
 
+      // item = args.item
+      // search this.items for name match and check that count > 0
+      //
+      // let cell = {
+      //   x: 0,
+      //   y: 0
+      // }
+      // checkCell(cell)
+      // while checkCell == false
+      // cell.x = this.rnJesus(0,this.gridWidth)
+      // cell.y = this.rnJesus(0,this.gridWidth)
+      // else
+      //   loop grid info for cell and set that cells item
+      //   this.item item count - 1
 
     }
+  }
+  deflectDrop = () => {
+    console.log('deflected! drop grea?');
+
+    // run rnjesus to determine drop
+    // if drop true
+    //   drop 1 gear or weapon that's not a sword
+    //
+    //   if dropped weapon switch current weapon to sword
+    //   if dropped gear remove buff/effect
+
   }
   startProcessLevelData = (canvas) => {
 
@@ -3771,7 +3912,7 @@ class App extends Component {
           item: {
             name: '',
             type: '',
-            effect: ''
+            initDrawn: false
           },
           void: {
             state: false
@@ -3820,7 +3961,26 @@ class App extends Component {
         }
       }
 
-
+      // for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
+      //   for (const cell of row) {
+      //     if (
+      //       cell.charAt(0) === 'y' ||
+      //       cell.charAt(0) ===  'z'
+      //     ) {
+      //
+      //       let obstaclePosition = {
+      //         x: Number(cell.charAt(1)),
+      //         y: row.indexOf(cell),
+      //       }
+      //       if (
+      //         targetCellNumber.x === elem.number.x &&
+      //         targetCellNumber.y === elem.number.y
+      //       ) {
+      //         elem.
+      //       }
+      //     }
+      //   }
+      // }
 
     }
 
@@ -3840,7 +4000,7 @@ class App extends Component {
     this.gridInfo2D = gridInfo2d;
     // console.log('gridInfo2d',this.gridInfo2D);
     this.gridInfo = allCells;
-    console.log('post parse gridInfo',this.gridInfo);
+    // console.log('post parse gridInfo',this.gridInfo);
 
   }
 
@@ -3877,7 +4037,7 @@ class App extends Component {
 
     this.processLevelData(gridInfo)
 
-    this.placeItems({init: true, items: []});
+    this.placeItems({init: true, items: ''});
 
     for (var x = 0; x < this.gridWidth+1; x++) {
       for (var y = 0; y < this.gridWidth+1; y++) {
@@ -3903,6 +4063,7 @@ class App extends Component {
           if (elem.number.x === x && elem.number.y === y) {
             // console.log('level data for this cell',elem.levelData);
             cellLevelData = elem.levelData;
+
           }
         }
 
@@ -3913,6 +4074,11 @@ class App extends Component {
 
         context.fillStyle = "green";
         context.fillRect(center.x, center.y,5,5);
+
+
+        // INITIAL ITEM DISTRIBUTION!!
+        // if gridInfo cell number == x,y and item initDrawn not true
+        //   draw item img and set cell item drawn to true
 
         let vertices = [
           {x:center.x, y:center.y+tileWidth/2},
