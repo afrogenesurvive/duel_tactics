@@ -467,13 +467,13 @@ class App extends Component {
       {
         name: 'hpUp',
         amount: 4,
-        total: 5,
+        total: 4,
         type: 'item'
       },
       {
         name: 'hpDown',
         amount: 4,
-        total: 5,
+        total: 4,
         type: 'item'
       },
       // {
@@ -885,9 +885,9 @@ class App extends Component {
       this.addListeners();
       // this.loadSettings();
 
-      this.drawGridInit(canvas, context);
+      // this.drawGridInit(canvas, context);
 
-      window.requestAnimationFrame(this.gameLoop);
+      // window.requestAnimationFrame(this.gameLoop);
 
     }
 
@@ -1165,6 +1165,8 @@ class App extends Component {
     }
 
     this.restartGame();
+
+    window.requestAnimationFrame(this.gameLoop);
 
     this.setState({
       showSettings: false
@@ -1478,6 +1480,8 @@ class App extends Component {
                   limit: player.success.attackSuccess.limit
                 }
 
+
+                // CALCULATE ATTACKER DOUBLE HIT!
                 let doubleHit = this.rnJesus(1,player.crits.doubleHit);
                 if (doubleHit === 1) {
                   this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 2;
@@ -1486,8 +1490,12 @@ class App extends Component {
                   this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
                 }
 
+
+                // KILL OR DEFLECT OPPONENT!
                 if (this.players[player.target.occupant.player-1].hp <= 0) {
                   this.killPlayer(this.players[player.target.occupant.player-1]);
+
+                  this.placeItems({init: false, item: 'moveSpeedUp'})
                 } else {
                   this.players[player.target.occupant.player-1].success.deflected = {
                     state: true,
@@ -3629,6 +3637,7 @@ class App extends Component {
         cell.number.y === player.currentPosition.cell.number.y
       ) {
         if (cell.item.name !== '') {
+          console.log('picked up an item');
           if (
             cell.item.type === 'weapeon' ||
             cell.item.type === 'armor'
@@ -3641,21 +3650,34 @@ class App extends Component {
 
             switch(cell.item.name) {
               case 'moveSpeedUp' :
+                console.log('moveSpeedUp');
                 let currentSpd1 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
+                // console.log('dd',currentSpd1,this.players[player.number-1].speed.range[currentSpd1]);
+                // console.log('dd2',currentSpd1,this.players[player.number-1].speed.range[currentSpd1+1]);
                 if (this.players[player.number-1].speed.move < .2) {
+                  console.log('added buff');
                   this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd1+1]
                 }
               break;
               case 'moveSpeedDown' :
+                console.log('moveSpeedDown');
                 let currentSpd2 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
+                // console.log('ff',currentSpd2,this.players[player.number-1].speed.range[currentSpd2]);
+                // console.log('ff2',currentSpd2,this.players[player.number-1].speed.range[currentSpd2-1]);
                 if (this.players[player.number-1].speed.move > .05) {
+                  console.log('added debuff');
                   this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd2-1]
                 }
               break;
               case 'hpUp' :
+                console.log('hpUp');
+                if (this.players[player.number-1].hp === 1) {
+                  this.players[player.number-1].speed.move = .1;
+                }
                 this.players[player.number-1].hp ++;
               break;
               case 'hpDown' :
+                console.log('hpDown');
                 if (player.hp > 0) {
                   this.players[player.number-1].hp --;
                 }
@@ -3875,6 +3897,7 @@ class App extends Component {
   }
 
   checkCell = (cell) => {
+    // console.log('check cell');
 
     let cellFree = true;
 
@@ -3884,9 +3907,12 @@ class App extends Component {
         cell2.number.y === cell.y
       ) {
         if (
-          cell2.levelData.charAt(0) !==  'z' &&
-          cell2.levelData.charAt(0) !==  'y'
+          cell2.levelData.charAt(0) ===  'z' &&
+          cell2.levelData.charAt(0) ===  'y'
         ) {
+          cellFree = false;
+        }
+        if (cell2.item.name !== '') {
           cellFree = false;
         }
       }
@@ -3908,7 +3934,9 @@ class App extends Component {
       console.log('placing items init');
 
       for ( const item of this.itemList) {
-        if (item.count > item.total-1) {
+        // console.log('pre item', item);
+        if (item.amount > item.total-1) {
+          // console.log('enough items for distribution');
           let cell = {
             x: 0,
             y: 0
@@ -3919,19 +3947,27 @@ class App extends Component {
             cell.x = this.rnJesus(0,this.gridWidth)
             cell.y = this.rnJesus(0,this.gridWidth)
             checkCell = this.checkCell(cell);
+            // console.log(checkCell);
           }
           if (checkCell === true) {
+            // console.log('cell free');
             for (const cell2 of this.gridInfo) {
               if (
                 cell2.number.x === cell.x &&
                 cell2.number.y === cell.y
               ) {
+                // console.log('found cell to draw at',cell2,'item',item);
                 cell2.item.name = item.name;
                 cell2.item.type = item.type;
+
+                item.amount--
+                // console.log('post item', item, cell2.item,cell2.number);
               }
+
             }
           }
-          item.count--
+        } else {
+          console.log('item stock empty');
         }
       }
 
@@ -3943,7 +3979,7 @@ class App extends Component {
 
       for (const item2 of this.itemList) {
         if (item2.name === item) {
-          if (item.count > 0) {
+          if (item2.amount > 0) {
 
             let cell = {
               x: 0,
@@ -3964,10 +4000,15 @@ class App extends Component {
                 ) {
                   cell2.item.name = item2.name;
                   cell2.item.type = item2.type;
+
+                  item2.amount--
+                  // console.log('placed ingame item',item2.amount,this.itemList);
                 }
               }
             }
-            item2.count--
+            // item2.amount--
+          } else {
+            console.log('item stock empty');
           }
         }
       }
@@ -4176,10 +4217,10 @@ class App extends Component {
     this.processLevelData(gridInfo)
 
     let itemImgs = {
-      moveSpeedUp: '',
-      moveSpeedDown: '',
-      hpUp: '',
-      hpDown: '',
+      moveSpeedUp: this.refs.preAttackIndicate,
+      moveSpeedDown: this.refs.preAttackIndicate,
+      hpUp: this.refs.preAttackIndicate,
+      hpDown: this.refs.preAttackIndicate,
     };
 
     this.placeItems({init: true, items: ''});
@@ -4227,34 +4268,38 @@ class App extends Component {
             cell.number.x === x &&
             cell.number.y === y
           ) {
-            if (cell.item.initDrawn === false) {
+            if (cell.item.name !== '') {
+              // console.log('found cell with item');
+              if (cell.item.initDrawn === false) {
+                // console.log('found cell with item undrawn');
+                let itemImg;
+                let fillClr;
+                switch(cell.item.name) {
+                  case 'moveSpeedUp' :
+                    fillClr = "purple";
+                    itemImg = itemImgs[cell.item.name];
+                  break;
+                  case 'moveSpeedDown' :
+                    fillClr = "blue";
+                    itemImg = itemImgs[cell.item.name];
+                  break;
+                  case 'hpUp' :
+                    fillClr = "yellow";
+                    itemImg = itemImgs[cell.item.name];
+                  break;
+                  case 'hpDown' :
+                    fillClr = "brown";
+                    itemImg = itemImgs[cell.item.name];
+                  break;
+                }
 
-              let itemImg;
+                context.fillStyle = fillClr;
+                context.beginPath();
+                context.arc(center.x, center.y, 15, 0, 2 * Math.PI);
+                context.fill();
 
-              switch(cell.item.name) {
-                case 'moveSpeedUp' :
-                  context.fillStyle = "purple";
-                  // itemImg = itemImgs[cell.item.name];
-                break;
-                case 'moveSpeedDown' :
-                  context.fillStyle = "blue";
-                  // itemImg = itemImgs[cell.item.name];
-                break;
-                case 'hpUp' :
-                  context.fillStyle = "yellow";
-                  // itemImg = itemImgs[cell.item.name];
-                break;
-                case 'hpDown' :
-                  context.fillStyle = "green";
-                  // itemImg = itemImgs[cell.item.name];
-                break;
+                // context.drawImage(itemImg ,center.x-10, center.y-15, 30,30);
               }
-
-              context.beginPath();
-              context.arc(center.x, center.y, 10, 0, 2 * Math.PI);
-              context.fill();
-
-              // context.drawImage(itemImg ,center.x, center.y, 30,30);
             }
           }
 
@@ -4273,8 +4318,7 @@ class App extends Component {
         }
 
         let playerImgs = [
-          this.refs.plyr1IdleNorth,
-          // this.refs.playerImgIdleNorth,
+          this.refs.playerImgIdleNorth,
           this.refs.player2ImgIdleNorth
         ]
 
