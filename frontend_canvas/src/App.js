@@ -455,21 +455,25 @@ class App extends Component {
       {
         name: 'moveSpeedUp',
         amount: 5,
+        total: 5,
         type: 'item'
       },
       {
         name: 'moveSpeedDown',
         amount: 5,
+        total: 5,
         type: 'item'
       },
       {
-        name: 'hp+1',
+        name: 'hpUp',
         amount: 4,
+        total: 5,
         type: 'item'
       },
       {
-        name: 'hp-1',
+        name: 'hpDown',
         amount: 4,
+        total: 5,
         type: 'item'
       },
       // {
@@ -859,6 +863,7 @@ class App extends Component {
       }
     }
     this.turnCheckerDirection = '';
+    this.projectiles = [];
   }
 
   // implement a prePlayer update function
@@ -2036,7 +2041,12 @@ class App extends Component {
         },
       }
     ]
-    let itemImgs = [];
+    let itemImgs = {
+      moveSpeedUp: '',
+      moveSpeedDown: '',
+      hpUp: '',
+      hpDown: '',
+    };
     let terrainImgs = [];
 
     let updatedPlayerImg;
@@ -2097,6 +2107,42 @@ class App extends Component {
 
         // IN GAME ITEM PLACEMENT!!
         // check gridinfo cell matched w/ current xy for item and draw if item not blank
+        for (const cell of allCells) {
+          if (
+            cell.number.x === x &&
+            cell.number.y === y
+          ) {
+            if (cell.item.name !== '') {
+
+              let itemImg;
+
+              switch(cell.item.name) {
+                case 'moveSpeedUp' :
+                  context.fillStyle = "purple";
+                  // itemImg = itemImgs[cell.item.name];
+                break;
+                case 'moveSpeedDown' :
+                  context.fillStyle = "blue";
+                  // itemImg = itemImgs[cell.item.name];
+                break;
+                case 'hpUp' :
+                  context.fillStyle = "yellow";
+                  // itemImg = itemImgs[cell.item.name];
+                break;
+                case 'hpDown' :
+                  context.fillStyle = "green";
+                  // itemImg = itemImgs[cell.item.name];
+                break;
+              }
+
+              context.beginPath();
+              context.arc(center.x, center.y, 10, 0, 2 * Math.PI);
+              context.fill();
+
+              // context.drawImage(itemImg ,center.x, center.y, 30,30);
+            }
+          }
+        }
 
         function playerDrawLog (x,y,plyr) {
           console.log('** playerDrawLog **');
@@ -3525,38 +3571,12 @@ class App extends Component {
     return target;
 
   }
-  checkDestination = (player) => {
-    // console.log('checking for item or enviro effect');
-
-
-    // check for items
-    //
-    //   check gridinfo for player current pos
-    //     if cell item not blank
-    //       if item type not weapon or gear
-    //         update player stats based on buff/debuff
-    //         reset cell item data
-    //       if weapon or armor push item name and type to player item subarray
-    //
-    //
-    // check for terrain
-    //   based on terrain effect/buff/debuff update player props
-
-
-      // crit buff/debuffs
-      //   pushBack buff = crit +
-      //   pushBack debuff = crit -
-      //   doubleHit buff = crit -
-      //   doubleHit debuff = crit +
-
-  }
   lineCrementer = (player) => {
     // console.log('line crementer',player.number);
 
     let currentPosition = player.currentPosition.cell.center;
     let target = player.target;
     let moveSpeed = player.speed.move;
-    console.log('moveSpeed',moveSpeed);
 
     player.moving.step = player.moving.step + moveSpeed;
     // console.log('mover stepper',player.moving.step);
@@ -3599,6 +3619,71 @@ class App extends Component {
     return newPosition;
 
   }
+  checkDestination = (player) => {
+    // console.log('checking for item or enviro effect');
+
+
+    for (const cell of this.gridInfo) {
+      if (
+        cell.number.x === player.currentPosition.cell.number.x &&
+        cell.number.y === player.currentPosition.cell.number.y
+      ) {
+        if (cell.item.name !== '') {
+          if (
+            cell.item.type === 'weapeon' ||
+            cell.item.type === 'armor'
+          ) {
+            this.players[player.number-1].items[cell.item.type].push(cell.item.name)
+
+            // when weapons defined apply buff
+          }
+          else {
+
+            switch(cell.item.name) {
+              case 'moveSpeedUp' :
+                let currentSpd1 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
+                if (this.players[player.number-1].speed.move < .2) {
+                  this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd1+1]
+                }
+              break;
+              case 'moveSpeedDown' :
+                let currentSpd2 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
+                if (this.players[player.number-1].speed.move > .05) {
+                  this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd2-1]
+                }
+              break;
+              case 'hpUp' :
+                this.players[player.number-1].hp ++;
+              break;
+              case 'hpDown' :
+                if (player.hp > 0) {
+                  this.players[player.number-1].hp --;
+                }
+              break;
+            }
+
+          }
+          cell.item = {
+            name: '',
+            type: '',
+            initDrawn: false
+          }
+        }
+      }
+    }
+
+    // check for terrain
+    //   based on terrain effect/buff/debuff update player props
+
+
+      // crit buff/debuffs
+      //   pushBack buff = crit +
+      //   pushBack debuff = crit -
+      //   doubleHit buff = crit -
+      //   doubleHit debuff = crit +
+
+  }
+
   cartesianToIsometric = (cartPt) => {
 
     class Point {
@@ -3784,59 +3869,108 @@ class App extends Component {
       player.speed.move = .1;
       player.hp = 2;
     }
-    console.log(this.players);
 
     this.drawGridInit(canvas, context, canvas2, context2);
 
   }
 
-  checkCell = () => {
+  checkCell = (cell) => {
 
-    let cellFree;
+    let cellFree = true;
 
-    // for grid of gridinfo
-    //   if grid.levelData.charAt(0) !==  'z' || charAt(0) !==  'y'
-    //   and for player in this.players
-    //     grid.x and grid.y !== player.current
+    for (const cell2 of this.gridInfo) {
+      if (
+        cell2.number.x === cell.x &&
+        cell2.number.y === cell.y
+      ) {
+        if (
+          cell2.levelData.charAt(0) !==  'z' &&
+          cell2.levelData.charAt(0) !==  'y'
+        ) {
+          cellFree = false;
+        }
+      }
+    }
+    for (const player of this.players) {
+      if (
+        player.currentPosition.cell.number.x === cell.x &&
+        player.currentPosition.cell.number.y === cell.y
+      ) {
+        cellFree = false;
+      }
+    }
 
-    return cellFree
+    return cellFree;
   }
   placeItems = (args) => {
 
     if (args.init === true) {
       console.log('placing items init');
 
-      // for each item of this.items
-      //   if item.count > item count-1
-      //     let cell = {
-      //       x: 0,
-      //       y: 0
-      //     }
-      //     checkCell(cell)
-      //     while checkCell == false
-      //     cell.x = this.rnJesus(0,this.gridWidth)
-      //     cell.y = this.rnJesus(0,this.gridWidth)
-      //     else
-      //       loop grid info for cell and set that cells item
-      //       this.item item count - 1
+      for ( const item of this.itemList) {
+        if (item.count > item.total-1) {
+          let cell = {
+            x: 0,
+            y: 0
+          }
+          let checkCell = false;
+          while (checkCell === false) {
+
+            cell.x = this.rnJesus(0,this.gridWidth)
+            cell.y = this.rnJesus(0,this.gridWidth)
+            checkCell = this.checkCell(cell);
+          }
+          if (checkCell === true) {
+            for (const cell2 of this.gridInfo) {
+              if (
+                cell2.number.x === cell.x &&
+                cell2.number.y === cell.y
+              ) {
+                cell2.item.name = item.name;
+                cell2.item.type = item.type;
+              }
+            }
+          }
+          item.count--
+        }
+      }
 
     } else if (args.init !== true) {
       console.log('placing items mid-game');
 
-      // item = args.item
-      // search this.items for name match and check that count > 0
-      //
-      // let cell = {
-      //   x: 0,
-      //   y: 0
-      // }
-      // checkCell(cell)
-      // while checkCell == false
-      // cell.x = this.rnJesus(0,this.gridWidth)
-      // cell.y = this.rnJesus(0,this.gridWidth)
-      // else
-      //   loop grid info for cell and set that cells item
-      //   this.item item count - 1
+
+      let item = args.item;
+
+      for (const item2 of this.itemList) {
+        if (item2.name === item) {
+          if (item.count > 0) {
+
+            let cell = {
+              x: 0,
+              y: 0
+            }
+            let checkCell = false;
+            while (checkCell === false) {
+
+              cell.x = this.rnJesus(0,this.gridWidth)
+              cell.y = this.rnJesus(0,this.gridWidth)
+              checkCell = this.checkCell(cell);
+            }
+            if (checkCell === true) {
+              for (const cell2 of this.gridInfo) {
+                if (
+                  cell2.number.x === cell.x &&
+                  cell2.number.y === cell.y
+                ) {
+                  cell2.item.name = item2.name;
+                  cell2.item.type = item2.type;
+                }
+              }
+            }
+            item2.count--
+          }
+        }
+      }
 
     }
   }
@@ -3851,6 +3985,7 @@ class App extends Component {
     //   if dropped gear remove buff/effect
 
   }
+
   startProcessLevelData = (canvas) => {
 
     let gridInfo = [];
@@ -4040,6 +4175,13 @@ class App extends Component {
 
     this.processLevelData(gridInfo)
 
+    let itemImgs = {
+      moveSpeedUp: '',
+      moveSpeedDown: '',
+      hpUp: '',
+      hpDown: '',
+    };
+
     this.placeItems({init: true, items: ''});
 
     for (var x = 0; x < this.gridWidth+1; x++) {
@@ -4080,8 +4222,43 @@ class App extends Component {
 
 
         // INITIAL ITEM DISTRIBUTION!!
-        // if gridInfo cell number == x,y and item initDrawn not true
-        //   draw item img and set cell item drawn to true
+        for (const cell of allCells) {
+          if (
+            cell.number.x === x &&
+            cell.number.y === y
+          ) {
+            if (cell.item.initDrawn === false) {
+
+              let itemImg;
+
+              switch(cell.item.name) {
+                case 'moveSpeedUp' :
+                  context.fillStyle = "purple";
+                  // itemImg = itemImgs[cell.item.name];
+                break;
+                case 'moveSpeedDown' :
+                  context.fillStyle = "blue";
+                  // itemImg = itemImgs[cell.item.name];
+                break;
+                case 'hpUp' :
+                  context.fillStyle = "yellow";
+                  // itemImg = itemImgs[cell.item.name];
+                break;
+                case 'hpDown' :
+                  context.fillStyle = "green";
+                  // itemImg = itemImgs[cell.item.name];
+                break;
+              }
+
+              context.beginPath();
+              context.arc(center.x, center.y, 10, 0, 2 * Math.PI);
+              context.fill();
+
+              // context.drawImage(itemImg ,center.x, center.y, 30,30);
+            }
+          }
+
+        }
 
         let vertices = [
           {x:center.x, y:center.y+tileWidth/2},
