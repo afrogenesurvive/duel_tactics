@@ -1495,7 +1495,10 @@ class App extends Component {
                 if (this.players[player.target.occupant.player-1].hp <= 0) {
                   this.killPlayer(this.players[player.target.occupant.player-1]);
 
-                  this.placeItems({init: false, item: 'moveSpeedUp'})
+                  let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+                  this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+
                 } else {
                   this.players[player.target.occupant.player-1].success.deflected = {
                     state: true,
@@ -3674,7 +3677,9 @@ class App extends Component {
                 if (this.players[player.number-1].hp === 1) {
                   this.players[player.number-1].speed.move = .1;
                 }
-                this.players[player.number-1].hp ++;
+                if (this.players[player.number-1].hp < 3) {
+                    this.players[player.number-1].hp ++;
+                }
               break;
               case 'hpDown' :
                 console.log('hpDown');
@@ -3972,7 +3977,7 @@ class App extends Component {
       }
 
     } else if (args.init !== true) {
-      console.log('placing items mid-game');
+      console.log('placing items mid-game: ',args.item);
 
 
       let item = args.item;
