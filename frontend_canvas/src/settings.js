@@ -37,9 +37,9 @@ const Settings = props => {
             <Form.Group as={Col} controlId="gridSize" className="formGroup">
               <Form.Label className="formLabel">Grid Size: {props.gridWidth+1} x {props.gridWidth+1}</Form.Label>
               <Form.Control as="select">
-                <option>4 x 4</option>
-                <option>7 x 7</option>
                 <option>10 x 10</option>
+                <option>7 x 7</option>
+                <option>4 x 4</option>
               </Form.Control>
             </Form.Group>
           </Form.Row>

@@ -1476,7 +1476,8 @@ class App extends Component {
                 let doubleHit = this.rnJesus(1,player.crits.doubleHit);
                 if (doubleHit === 1) {
                   this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 2;
-                } else {
+                }
+                else if (doubleHit !== 1) {
                   this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
                 }
 
@@ -1633,8 +1634,6 @@ class App extends Component {
               let target = this.getTarget(player)
 
               if (target.free === true && player.target.void === false) {
-
-                this.moveSpeed = player.speed.move;
 
                 if (player.dead.state === true && player.dead.count === 0) {
 
@@ -3557,6 +3556,7 @@ class App extends Component {
     let currentPosition = player.currentPosition.cell.center;
     let target = player.target;
     let moveSpeed = player.speed.move;
+    console.log('moveSpeed',moveSpeed);
 
     player.moving.step = player.moving.step + moveSpeed;
     // console.log('mover stepper',player.moving.step);
@@ -3691,7 +3691,7 @@ class App extends Component {
     // console.log('respawning',player.number);
     this.players[player.number-1].respawn = true;
     this.players[player.number-1].hp = 2;
-    player.speed.move = .1;
+    this.players[player.number-1].speed.move = .1;
     this.players[player.number-1].ghost.state = false;
 
   }
@@ -3782,7 +3782,9 @@ class App extends Component {
     for (const player of this.players) {
       player.ghost.state = false;
       player.speed.move = .1;
+      player.hp = 2;
     }
+    console.log(this.players);
 
     this.drawGridInit(canvas, context, canvas2, context2);
 
@@ -4108,6 +4110,7 @@ class App extends Component {
 
             let playerImg = playerImgs[player.number-1];
 
+            player.speed.move = .1;
             player.dead.state = false;
             player.dead.count = 0;
 
