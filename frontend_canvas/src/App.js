@@ -492,6 +492,26 @@ class App extends Component {
       //   type: 'weapon'
       // },
     ];
+    this.initItemList = [
+      {
+        name: 'moveSpeedUp',
+        type: 'item'
+      },
+      {
+        name: 'moveSpeedDown',
+        type: 'item'
+      },
+      {
+        name: 'hpUp',
+        type: 'item'
+      },
+      // {
+      //   name: 'hpDown',
+      //   amount: 4,
+      //   total: 4,
+      //   type: 'item'
+      // },
+    ];
     this.currentPlayer = 1;
     this.players = [
       {
@@ -3938,9 +3958,11 @@ class App extends Component {
     if (args.init === true) {
       console.log('placing items init');
 
-      for ( const item of this.itemList) {
-        // console.log('pre item', item);
-        if (item.amount > item.total-1) {
+
+
+      for ( const item of this.initItemList) {
+
+        // if (item.amount > item.total-1) {
           // console.log('enough items for distribution');
           let cell = {
             x: 0,
@@ -3965,15 +3987,16 @@ class App extends Component {
                 cell2.item.name = item.name;
                 cell2.item.type = item.type;
 
-                item.amount--
-                // console.log('post item', item, cell2.item,cell2.number);
+                // item.amount--
+                console.log('post item', item, cell2.item,cell2.number);
               }
 
             }
           }
-        } else {
-          console.log('item stock empty');
-        }
+        // }
+        // else {
+        //   console.log('item stock empty');
+        // }
       }
 
     } else if (args.init !== true) {
@@ -4007,7 +4030,7 @@ class App extends Component {
                   cell2.item.type = item2.type;
 
                   item2.amount--
-                  // console.log('placed ingame item',item2.amount,this.itemList);
+                  console.log('placed ingame item',cell2.number.x,cell2.number.y,item2.amount,this.itemList);
                 }
               }
             }
