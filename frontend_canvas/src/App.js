@@ -3781,6 +3781,7 @@ class App extends Component {
 
     for (const player of this.players) {
       player.ghost.state = false;
+      player.speed.move = .1;
     }
 
     this.drawGridInit(canvas, context, canvas2, context2);
