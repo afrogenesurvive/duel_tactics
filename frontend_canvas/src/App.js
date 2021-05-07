@@ -3644,7 +3644,7 @@ class App extends Component {
           ) {
             this.players[player.number-1].items[cell.item.type].push(cell.item.name)
 
-            // when weapons defined apply buff
+            // if armor and no current armor apply buff
           }
           else {
 
