@@ -517,17 +517,17 @@ class App extends Component {
       // {
       //   name: 'spear',
       //   amount: 3,
-      //   type: 'weapon'
+      //   type: 'weapon',
       // },
       // {
       //   name: 'sword',
       //   amount: 2,
-      //   type: 'weapon'
+      //   type: 'weapon',
       // },
       // {
       //   name: 'crossbow',
       //   amount: 2,
-      //   type: 'weapon'
+      //   type: 'weapon',
       // },
     ];
     this.initItemList = [
@@ -3793,7 +3793,7 @@ class App extends Component {
               break;
               case 'hpUp' :
                 // console.log('hpUp');
-                if (this.players[player.number-1].hp === 1) {
+                if (this.players[player.number-1].hp === 1 && this.players[player.number-1].speed.move < .1) {
                   this.players[player.number-1].speed.move = .1;
                 }
                 if (this.players[player.number-1].hp < 3) {
