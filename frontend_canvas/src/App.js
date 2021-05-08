@@ -221,6 +221,12 @@ class App extends Component {
           doubleHit: 6,
           pushBack: 3,
         },
+        statusDisplay: {
+          state: false,
+          status: '',
+          count: 0,
+          limit: 15,
+        },
       },
       {
         number: 2,
@@ -376,6 +382,12 @@ class App extends Component {
           doubleHit: 6,
           pushBack: 3,
         },
+        statusDisplay: {
+          state: false,
+          status: '',
+          count: 0,
+          limit: 15,
+        },
       }
     ],
     showSettings: true,
@@ -407,6 +419,8 @@ class App extends Component {
     this.sceneY = 120;
     this.tileWidth = 50;
     this.gridWidth = 9;
+
+    this.init = false;
 
     this.gridInfo = [];
     this.gridInfo2D = [];
@@ -476,6 +490,30 @@ class App extends Component {
         total: 4,
         type: 'item'
       },
+      {
+        name: 'focusUp',
+        amount: 4,
+        total: 4,
+        type: 'item'
+      },
+      {
+        name: 'focusDown',
+        amount: 4,
+        total: 4,
+        type: 'item'
+      },
+      {
+        name: 'strengthUp',
+        amount: 4,
+        total: 4,
+        type: 'item'
+      },
+      {
+        name: 'strengthDown',
+        amount: 4,
+        total: 4,
+        type: 'item'
+      },
       // {
       //   name: 'spear',
       //   amount: 3,
@@ -507,8 +545,6 @@ class App extends Component {
       },
       // {
       //   name: 'hpDown',
-      //   amount: 4,
-      //   total: 4,
       //   type: 'item'
       // },
     ];
@@ -668,6 +704,12 @@ class App extends Component {
           doubleHit: 6,
           pushBack: 3,
         },
+        statusDisplay: {
+          state: false,
+          status: '',
+          count: 0,
+          limit: 15,
+        },
       },
       {
         number: 2,
@@ -825,6 +867,12 @@ class App extends Component {
         crits: {
           doubleHit: 6,
           pushBack: 3,
+        },
+        statusDisplay: {
+          state: false,
+          status: '',
+          count: 0,
+          limit: 15,
         },
       }
     ]
@@ -1263,15 +1311,22 @@ class App extends Component {
     let nextPosition;
 
 
-
-    // TURNER!!
-    if (player.turning.state === true && player.turning.toDirection === this.turnCheckerDirection) {
-      // console.log('player',player.number,' turn-ing');
-      if (this.keyPressed[this.currentPlayer-1][this.turnCheckerDirection] == false) {
-        // console.log('player',player.number,' turn-stop');
-        player.turning.state = false;
+    // STATUS DISPLAY STEPPER!!
+    if (player.statusDisplay.state === true && player.statusDisplay.count < player.statusDisplay.limit) {
+      // console.log('stepping status display');
+      player.statusDisplay.count++
+    }
+    else if (player.statusDisplay.state === true && player.statusDisplay.count >= player.statusDisplay.limit) {
+      // console.log('hide status display');
+      player.statusDisplay = {
+        state: false,
+        status: '',
+        count: 0,
+        limit: player.statusDisplay.limit,
       }
     }
+
+
 
     // CHECK AND SET DEFLECTION!!
     if (player.success.deflected.state === true && player.success.deflected.count < player.success.deflected.limit) {
@@ -1407,6 +1462,15 @@ class App extends Component {
       // CAN READ INPUTS
       else if (player.moving.state === false) {
 
+        // TURNER!!
+        if (player.turning.state === true && player.turning.toDirection === this.turnCheckerDirection) {
+          // console.log('player',player.number,' turn-ing');
+          if (this.keyPressed[this.currentPlayer-1][this.turnCheckerDirection] == false) {
+            // console.log('player',player.number,' turn-stop');
+            player.turning.state = false;
+          }
+        }
+
         // DEBUFF CHECKS!!
         if (player.hp === 1 && player.speed.move > .05) {
 
@@ -1508,6 +1572,7 @@ class App extends Component {
                 }
                 else if (doubleHit !== 1) {
                   this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
+
                 }
 
 
@@ -2073,10 +2138,13 @@ class App extends Component {
       }
     ]
     let itemImgs = {
-      moveSpeedUp: '',
-      moveSpeedDown: '',
-      hpUp: '',
-      hpDown: '',
+      moveSpeedUp: this.refs.preAttackIndicate,
+      moveSpeedDown: this.refs.preAttackIndicate,
+      hpUp: this.refs.preAttackIndicate,
+      hpDown: this.refs.preAttackIndicate,
+      focusUp: this.refs.preAttackIndicate,
+      focusDown: this.refs.preAttackIndicate,
+      strengthDown: this.refs.preAttackIndicate,
     };
     let terrainImgs = [];
 
@@ -2137,7 +2205,6 @@ class App extends Component {
         }
 
         // IN GAME ITEM PLACEMENT!!
-        // check gridinfo cell matched w/ current xy for item and draw if item not blank
         for (const cell of allCells) {
           if (
             cell.number.x === x &&
@@ -2145,27 +2212,45 @@ class App extends Component {
           ) {
             if (cell.item.name !== '') {
 
-              let itemImg;
 
+              let itemImg;
+              let fillClr;
               switch(cell.item.name) {
                 case 'moveSpeedUp' :
-                  context.fillStyle = "purple";
-                  // itemImg = itemImgs[cell.item.name];
+                  fillClr = "purple";
+                  itemImg = itemImgs[cell.item.name];
                 break;
                 case 'moveSpeedDown' :
-                  context.fillStyle = "blue";
-                  // itemImg = itemImgs[cell.item.name];
+                  fillClr = "blue";
+                  itemImg = itemImgs[cell.item.name];
                 break;
                 case 'hpUp' :
-                  context.fillStyle = "yellow";
-                  // itemImg = itemImgs[cell.item.name];
+                  fillClr = "yellow";
+                  itemImg = itemImgs[cell.item.name];
                 break;
                 case 'hpDown' :
-                  context.fillStyle = "green";
-                  // itemImg = itemImgs[cell.item.name];
+                  fillClr = "brown";
+                  itemImg = itemImgs[cell.item.name];
+                break;
+                case 'focusUp' :
+                  fillClr = "white";
+                  itemImg = itemImgs[cell.item.name];
+                break;
+                case 'focusDown' :
+                  fillClr = "black";
+                  itemImg = itemImgs[cell.item.name];
+                break;
+                case 'strengthUp' :
+                  fillClr = "green";
+                  itemImg = itemImgs[cell.item.name];
+                break;
+                case 'strengthDown' :
+                  fillClr = "red";
+                  itemImg = itemImgs[cell.item.name];
                 break;
               }
 
+              context.fillStyle = fillClr;
               context.beginPath();
               context.arc(center.x, center.y, 10, 0, 2 * Math.PI);
               context.fill();
@@ -3660,7 +3745,7 @@ class App extends Component {
         cell.number.y === player.currentPosition.cell.number.y
       ) {
         if (cell.item.name !== '') {
-          console.log('picked up an item');
+          // console.log('picked up an item');
           if (
             cell.item.type === 'weapeon' ||
             cell.item.type === 'armor'
@@ -3673,38 +3758,114 @@ class App extends Component {
 
             switch(cell.item.name) {
               case 'moveSpeedUp' :
-                console.log('moveSpeedUp');
+                // console.log('moveSpeedUp');
                 let currentSpd1 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
                 // console.log('dd',currentSpd1,this.players[player.number-1].speed.range[currentSpd1]);
                 // console.log('dd2',currentSpd1,this.players[player.number-1].speed.range[currentSpd1+1]);
                 if (this.players[player.number-1].speed.move < .2) {
-                  console.log('added buff');
+                  // console.log('added buff');
                   this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd1+1]
+
+                  this.players[player.number-1].statusDisplay = {
+                    state: true,
+                    status: cell.item.name,
+                    count: 1,
+                    limit: this.players[player.number-1].statusDisplay.limit,
+                  }
                 }
               break;
               case 'moveSpeedDown' :
-                console.log('moveSpeedDown');
+                // console.log('moveSpeedDown');
                 let currentSpd2 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
                 // console.log('ff',currentSpd2,this.players[player.number-1].speed.range[currentSpd2]);
                 // console.log('ff2',currentSpd2,this.players[player.number-1].speed.range[currentSpd2-1]);
                 if (this.players[player.number-1].speed.move > .05) {
-                  console.log('added debuff');
+                  // console.log('added debuff');
                   this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd2-1]
+
+                  this.players[player.number-1].statusDisplay = {
+                    state: true,
+                    status: cell.item.name,
+                    count: 1,
+                    limit: this.players[player.number-1].statusDisplay.limit,
+                  }
                 }
               break;
               case 'hpUp' :
-                console.log('hpUp');
+                // console.log('hpUp');
                 if (this.players[player.number-1].hp === 1) {
                   this.players[player.number-1].speed.move = .1;
                 }
                 if (this.players[player.number-1].hp < 3) {
                     this.players[player.number-1].hp ++;
+
+                    this.players[player.number-1].statusDisplay = {
+                      state: true,
+                      status: cell.item.name,
+                      count: 1,
+                      limit: this.players[player.number-1].statusDisplay.limit,
+                    }
                 }
               break;
               case 'hpDown' :
-                console.log('hpDown');
-                if (player.hp > 0) {
+                // console.log('hpDown');
+                if (player.hp > 1) {
                   this.players[player.number-1].hp --;
+
+                  this.players[player.number-1].statusDisplay = {
+                    state: true,
+                    status: cell.item.name,
+                    count: 1,
+                    limit: this.players[player.number-1].statusDisplay.limit,
+                  }
+                }
+              break;
+              case 'focusUp' :
+                if (
+                  this.players[player.number-1].crits.doubleHit - 1 !== 0
+                ) {
+                  this.players[player.number-1].crits.doubleHit = this.players[player.number-1].crits.doubleHit - 1;
+
+                  this.players[player.number-1].statusDisplay = {
+                    state: true,
+                    status: cell.item.name,
+                    count: 1,
+                    limit: this.players[player.number-1].statusDisplay.limit,
+                  }
+                }
+              break;
+              case 'focusDown' :
+                this.players[player.number-1].crits.doubleHit = this.players[player.number-1].crits.doubleHit + 1;
+
+                this.players[player.number-1].statusDisplay = {
+                  state: true,
+                  status: cell.item.name,
+                  count: 1,
+                  limit: this.players[player.number-1].statusDisplay.limit,
+                }
+              break;
+              case 'strengthUp' :
+                this.players[player.number-1].crits.pushBack = this.players[player.number-1].crits.pushBack + 1;
+
+                this.players[player.number-1].statusDisplay = {
+                  state: true,
+                  status: cell.item.name,
+                  count: 1,
+                  limit: this.players[player.number-1].statusDisplay.limit,
+                }
+              break;
+              case 'strengthDown' :
+                if (
+                  this.players[player.number-1].crits.pushBack - 1 !== 0
+                ) {
+                  this.players[player.number-1].crits.pushBack = this.players[player.number-1].crits.pushBack - 1;
+
+                  this.players[player.number-1].statusDisplay = {
+                    state: true,
+                    status: cell.item.name,
+                    count: 1,
+                    limit: this.players[player.number-1].statusDisplay.limit,
+                  }
                 }
               break;
             }
@@ -3722,12 +3883,6 @@ class App extends Component {
     // check for terrain
     //   based on terrain effect/buff/debuff update player props
 
-
-      // crit buff/debuffs
-      //   pushBack buff = crit +
-      //   pushBack debuff = crit -
-      //   doubleHit buff = crit -
-      //   doubleHit debuff = crit +
 
   }
 
@@ -3825,6 +3980,10 @@ class App extends Component {
     this.players[player.number-1].hp = 2;
     this.players[player.number-1].speed.move = .1;
     this.players[player.number-1].ghost.state = false;
+    this.players[player.number-1].crits = {
+      doubleHit: 6,
+      pushBack: 3,
+    };
 
   }
   killPlayer = (player) => {
@@ -3915,6 +4074,10 @@ class App extends Component {
       player.ghost.state = false;
       player.speed.move = .1;
       player.hp = 2;
+      player.crits = {
+        doubleHit: 6,
+        pushBack: 3,
+      };
     }
 
     this.drawGridInit(canvas, context, canvas2, context2);
@@ -3943,11 +4106,20 @@ class App extends Component {
       }
     }
     for (const player of this.players) {
-      if (
-        player.currentPosition.cell.number.x === cell.x &&
-        player.currentPosition.cell.number.y === cell.y
-      ) {
-        cellFree = false;
+      if (this.init === true) {
+        if (
+          player.startPosition.cell.number.x === cell.x &&
+          player.startPosition.cell.number.y === cell.y
+        ) {
+          cellFree = false;
+        }
+      } else {
+        if (
+          player.currentPosition.cell.number.x === cell.x &&
+          player.currentPosition.cell.number.y === cell.y
+        ) {
+          cellFree = false;
+        }
       }
     }
 
@@ -4249,6 +4421,9 @@ class App extends Component {
       moveSpeedDown: this.refs.preAttackIndicate,
       hpUp: this.refs.preAttackIndicate,
       hpDown: this.refs.preAttackIndicate,
+      focusUp: this.refs.preAttackIndicate,
+      focusDown: this.refs.preAttackIndicate,
+      strengthDown: this.refs.preAttackIndicate,
     };
 
     this.placeItems({init: true, items: ''});
@@ -4317,6 +4492,22 @@ class App extends Component {
                   break;
                   case 'hpDown' :
                     fillClr = "brown";
+                    itemImg = itemImgs[cell.item.name];
+                  break;
+                  case 'focusUp' :
+                    fillClr = "white";
+                    itemImg = itemImgs[cell.item.name];
+                  break;
+                  case 'focusDown' :
+                    fillClr = "black";
+                    itemImg = itemImgs[cell.item.name];
+                  break;
+                  case 'strengthUp' :
+                    fillClr = "green";
+                    itemImg = itemImgs[cell.item.name];
+                  break;
+                  case 'strengthDown' :
+                    fillClr = "red";
                     itemImg = itemImgs[cell.item.name];
                   break;
                 }
@@ -4459,7 +4650,7 @@ class App extends Component {
 
         }
 
-
+        this.init = false;
 
       }
     }

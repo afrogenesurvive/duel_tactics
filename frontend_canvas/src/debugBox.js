@@ -120,6 +120,13 @@ const DebugBox = props => {
             <img src={pushbackInidcate} className="debugBoxImg"></img>
           </li>
         )}
+        {props.player.statusDisplay.state === true && (
+          <li className="debugBoxListItem">
+            <p className="debugBoxText">
+              {props.player.statusDisplay.status}
+            </p>
+          </li>
+        )}
       </ul>
     </div>
   )
