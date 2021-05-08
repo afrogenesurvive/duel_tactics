@@ -3,7 +3,7 @@
 
 ## What is it??
 
-- Isometric grid based tactics game about melee dueling.
+- Isometric grid based tactics game about dueling.
 - Timing, direction and board position are of the utmost importance in securing a win.
 
 
@@ -12,6 +12,9 @@
 - 8 way gird based movement
 - Attacking, defending, strafed movement
 - Falling off the board edge
+- Deflection & pushback
+- Hp
+- Items: weapons, armor, buff/debuffs
 
 
 ## Why was it made??
