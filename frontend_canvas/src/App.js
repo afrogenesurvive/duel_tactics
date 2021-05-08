@@ -3822,9 +3822,9 @@ class App extends Component {
               break;
               case 'focusUp' :
                 if (
-                  this.players[player.number-1].crits.doubleHit - 1 !== 0
+                  this.players[player.number-1].crits.doubleHit - 2 !== 0
                 ) {
-                  this.players[player.number-1].crits.doubleHit = this.players[player.number-1].crits.doubleHit - 1;
+                  this.players[player.number-1].crits.doubleHit = this.players[player.number-1].crits.doubleHit - 2;
 
                   this.players[player.number-1].statusDisplay = {
                     state: true,
@@ -3835,7 +3835,7 @@ class App extends Component {
                 }
               break;
               case 'focusDown' :
-                this.players[player.number-1].crits.doubleHit = this.players[player.number-1].crits.doubleHit + 1;
+                this.players[player.number-1].crits.doubleHit = this.players[player.number-1].crits.doubleHit + 2;
 
                 this.players[player.number-1].statusDisplay = {
                   state: true,
