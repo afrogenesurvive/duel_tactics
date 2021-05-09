@@ -423,6 +423,7 @@ class App extends Component {
 
     this.init = false;
     this.gamepad = false;
+    this.openVoid = true;
 
     this.gridInfo = [];
     this.gridInfo2D = [];
@@ -1634,6 +1635,11 @@ class App extends Component {
 
     let nextPosition;
 
+    // OPEN VOID!!???
+    if (this.openVoid === true) {
+      this.voidSummon();
+    }
+
 
     // STATUS DISPLAY STEPPER!!
     if (player.statusDisplay.state === true && player.statusDisplay.count < player.statusDisplay.limit) {
@@ -1649,7 +1655,6 @@ class App extends Component {
         limit: player.statusDisplay.limit,
       }
     }
-
 
 
     // CHECK AND SET DEFLECTION!!
@@ -2500,15 +2505,22 @@ class App extends Component {
           y: iso.y - offset.y/2-2,
         }
 
+        let drawFloor = true;
         let cellLevelData;
         let allCells = gridInfo;
         for (const elem of allCells) {
           if (elem.number.x === x && elem.number.y === y) {
             cellLevelData = elem.levelData;
+            if (elem.void.state === true) {
+              drawFloor = false;
+            }
           }
         }
 
-        context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
+        if (drawFloor === true) {
+          context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
+        }
+
 
         context.fillStyle = 'black';
         context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
@@ -2534,8 +2546,7 @@ class App extends Component {
             cell.number.x === x &&
             cell.number.y === y
           ) {
-            if (cell.item.name !== '') {
-
+            if (cell.item.name !== '' && cell.void.state !== true) {
 
               let itemImg;
               let fillClr;
@@ -3672,6 +3683,10 @@ class App extends Component {
         xMatch === true && yMatch === true
       ) {
         targetCellCenter = cell.center;
+        if (cell.void.state === true ) {
+          target.void = true
+          voidDirection = player.direction;
+        }
       }
     }
 
@@ -4385,6 +4400,7 @@ class App extends Component {
     this.players[player.number-1] = player;
 
   }
+
   restartGame = () => {
     console.log('resetting');
 
@@ -4549,6 +4565,101 @@ class App extends Component {
     //   if dropped weapon switch current weapon to sword
     //   if dropped gear remove buff/effect
 
+  }
+  voidSummon = () => {
+    // console.log('opening void');
+    let voidChance = Math.round(1000/this.gridWidth)
+    let openVoid = this.rnJesus(1,voidChance);
+    // let openVoid;
+    if (openVoid === 1) {
+      let cell = {
+        x: 0,
+        y: 0
+      }
+      cell.x = this.rnJesus(0,this.gridWidth)
+      cell.y = this.rnJesus(0,this.gridWidth)
+
+      let foundPlayer;
+      let player;
+
+      for (const cell2 of this.gridInfo) {
+        if (
+          cell2.number.x === cell.x &&
+          cell2.number.y === cell.y
+        ) {
+          cell2.item = {
+            name: '',
+            type: '',
+            initDrawn: false
+          };
+          cell2.void.state = true;
+          if (
+            cell2.levelData.charAt(0) === 'y'
+          ) {
+            let x = cell2.levelData.slice(1,3)
+            cell2.levelData = "x"+x+"";
+          }
+          if (
+            cell2.levelData.charAt(0) === 'z'
+          ) {
+            let x = cell2.levelData.slice(1,3)
+            cell2.levelData = "x"+x+"";
+          }
+
+        }
+      }
+
+      for (const plyr of this.players) {
+        if (
+          plyr.currentPosition.cell.number.x === cell.x &&
+          plyr.currentPosition.cell.number.y === cell.y
+        ) {
+          foundPlayer = true;
+          this.players[plyr.number-1].falling.state = true;
+          this.players[plyr.number-1].action = 'falling';
+
+          this.moveSpeed = plyr.speed.move;
+          this.players[plyr.number-1].target = {
+            cell: {
+              number: {
+                x: plyr.currentPosition.cell.number.x,
+                y: plyr.currentPosition.cell.number.y,
+              },
+              center: {
+                x: plyr.currentPosition.cell.center.x,
+                y: plyr.currentPosition.cell.center.y,
+              },
+            },
+            free: true,
+            occupant: {
+              type: '',
+              player: '',
+            },
+            void: true
+          }
+          //
+          this.players[plyr.number-1].moving = {
+            state: true,
+            step: 0,
+            course: '',
+            origin: {
+              number: plyr.currentPosition.cell.number,
+              center: plyr.currentPosition.cell.center,
+            },
+            destination: {
+              x: plyr.currentPosition.cell.center.x,
+              y: plyr.currentPosition.cell.center.y,
+            }
+          }
+
+          let nextPosition = this.lineCrementer(plyr);
+          this.players[plyr.number-1].nextPosition = nextPosition;
+
+
+        }
+      }
+
+    }
   }
 
   startProcessLevelData = (canvas) => {
