@@ -398,7 +398,6 @@ class App extends Component {
     super(props);
     this.canvasRef = React.createRef();
     this.canvasRef2 = React.createRef();
-    this.canvasRef3 = React.createRef();
 
     this.tileColumnOffset = 100; // pixels
     this.tileRowOffset = 50; // pixels
@@ -410,14 +409,16 @@ class App extends Component {
     this.selectedTileX = -1;
     this.selectedTileY = -1;
 
-    this.canvasWidth = 1100;
-    this.canvasHeight = 600;
+    // this.canvasWidth = 1100;
+    // this.canvasHeight = 600;
+    this.canvasWidth = 1300;
+    this.canvasHeight = 800;
     this.floorImageWidth = 103;
     this.floorImageHeight = 53;
     this.wallImageWidth = 103;
     this.wallImageHeight = 98;
     this.sceneX = 1100/2;
-    this.sceneY = 120;
+    this.sceneY = 220;
     this.tileWidth = 50;
     this.gridWidth = 9;
 
@@ -441,6 +442,20 @@ class App extends Component {
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
+    this.levelData12 = {
+      row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
+      row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
+      row2: ['x20x','x21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x'],
+      row3: ['x30x','x31x','x32x','y33x','x34x','x35x','x36x','x37x','x38x','x39x'],
+      row4: ['x40x','x41x','x42x','x43x','y44x','x45x','x46x','x47x','x48x','z49x'],
+      row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58x','x59x'],
+      row6: ['x60x','y61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
+      row7: ['x70x','y71x','x72x','x73x','x74x','x75x','x76x','y77x','x78x','x79x'],
+      row8: ['x80x','x81x','x82x','x83x','y84x','x85x','y86x','x87x','x88x','x89x'],
+      row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
+      row10: ['x100x','x101x','x102x','x103x','x104x','x105x','x106x','x107x','x108x','x109x'],
+      row11: ['x110x','x111x','x112x','x113x','x114x','x115x','x116x','x117x','x118x','x119x'],
+    };
     this.levelData9 = {
       row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
       row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
@@ -1285,7 +1300,6 @@ class App extends Component {
 
     const canvas = this.canvasRef.current;
     const canvas2 = this.canvasRef2.current;
-    const canvas3 = this.canvasRef3.current;
 
     // canvas.addEventListener("click", e => {
     //   console.log('canvas click',e);
@@ -1293,7 +1307,7 @@ class App extends Component {
     // });
 
     canvas2.addEventListener("click", e => {
-      this.getCanvasClick(canvas3, e)
+      this.getCanvasClick(canvas2, e)
     });
 
     document.addEventListener("keydown", e => {
@@ -1533,15 +1547,19 @@ class App extends Component {
     switch(gridSize) {
       case '4 x 4' :
         this.gridWidth = 3;
-        this.sceneY = 300;
+        this.sceneY = 400;
       break;
       case '7 x 7' :
         this.gridWidth = 6;
-        this.sceneY = 200;
+        this.sceneY = 300;
       break;
       case '10 x 10' :
         this.gridWidth = 9;
-        this.sceneY = 120;
+        this.sceneY = 220;
+      break;
+      case '12 x 12' :
+        this.gridWidth = 11;
+        this.sceneY = 220;
       break;
     }
 
@@ -4598,7 +4616,7 @@ class App extends Component {
   }
   voidSummon = () => {
     // console.log('opening void');
-    let voidChance = Math.round(100/this.gridWidth)
+    let voidChance = Math.round(1000/this.gridWidth)
     let openVoid = this.rnJesus(1,voidChance);
     // let openVoid;
     if (openVoid === 1) {
@@ -5169,22 +5187,16 @@ class App extends Component {
         <div className="containerTop">
           <div className="containerInner">
             <canvas
-              width="1100"
-              height="600"
+              width="1300"
+              height="800"
               ref={this.canvasRef}
               className="canvas"
             />
             <canvas
-              width="1100"
-              height="600"
+              width="1300"
+              height="800"
               ref={this.canvasRef2}
               className="canvas2"
-            />
-            <canvas
-              width="1100"
-              height="600"
-              ref={this.canvasRef3}
-              className="canvas3"
             />
 
             <div className="debugDisplay">

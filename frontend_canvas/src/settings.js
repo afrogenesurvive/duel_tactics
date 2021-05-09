@@ -40,6 +40,7 @@ const Settings = props => {
               <option>10 x 10</option>
               <option>7 x 7</option>
               <option>4 x 4</option>
+              <option>12 x 12</option>
             </Form.Control>
           </Form.Group>
         </Form.Row>
