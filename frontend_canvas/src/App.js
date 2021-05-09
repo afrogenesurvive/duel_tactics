@@ -3224,6 +3224,16 @@ class App extends Component {
                   y: 0,
                 }
               }
+              let altRespawnPoint2 = {
+                number: {
+                  x: 0,
+                  y: 0,
+                },
+                center: {
+                  x: 0,
+                  y: 0,
+                }
+              }
 
               let respawnCellOccupied = false;
 
@@ -3237,6 +3247,15 @@ class App extends Component {
                   altRespawnPoint.number.y = elem.number.y;
                   altRespawnPoint.center.x = elem.center.x;
                   altRespawnPoint.center.y = elem.center.y;
+                }
+                if (
+                  elem.number.x === this.gridWidth &&
+                  elem.number.y === 0
+                ){
+                  altRespawnPoint2.number.x = elem.number.x;
+                  altRespawnPoint2.number.y = elem.number.y;
+                  altRespawnPoint2.center.x = elem.center.x;
+                  altRespawnPoint2.center.y = elem.center.y;
                 }
 
                 if (
@@ -3268,6 +3287,10 @@ class App extends Component {
                     }
                   }
 
+                  if (elem.void.state === true ) {
+                    respawnCellOccupied = true;
+                  }
+
                   // console.log('checking for other player');
                   for (const plyr2 of this.players) {
                     if (plyr2.number !== plyr.number) {
@@ -3289,8 +3312,15 @@ class App extends Component {
                     respawnPoint.center.x = elem.center.x;
                     respawnPoint.center.y = elem.center.y;
                   } else if (respawnCellOccupied === true) {
+
                     // console.log('original spawn point occupied! spawning at cell 9,9');
-                    respawnPoint = altRespawnPoint;
+                    if (plyr.number === 1) {
+                      respawnPoint = altRespawnPoint;
+                    }
+                    if (plyr.number === 2) {
+                      respawnPoint = altRespawnPoint2;
+                    }
+
                   }
 
                 }
@@ -4568,7 +4598,7 @@ class App extends Component {
   }
   voidSummon = () => {
     // console.log('opening void');
-    let voidChance = Math.round(1000/this.gridWidth)
+    let voidChance = Math.round(100/this.gridWidth)
     let openVoid = this.rnJesus(1,voidChance);
     // let openVoid;
     if (openVoid === 1) {
@@ -4584,28 +4614,41 @@ class App extends Component {
 
       for (const cell2 of this.gridInfo) {
         if (
-          cell2.number.x === cell.x &&
-          cell2.number.y === cell.y
+          cell2.number.x !== this.gridWidth &&
+          cell2.number.y !== 0
         ) {
-          cell2.item = {
-            name: '',
-            type: '',
-            initDrawn: false
-          };
-          cell2.void.state = true;
           if (
-            cell2.levelData.charAt(0) === 'y'
+            cell2.number.x !== this.gridWidth &&
+            cell2.number.y !== this.gridWidth
           ) {
-            let x = cell2.levelData.slice(1,3)
-            cell2.levelData = "x"+x+"";
-          }
-          if (
-            cell2.levelData.charAt(0) === 'z'
-          ) {
-            let x = cell2.levelData.slice(1,3)
-            cell2.levelData = "x"+x+"";
-          }
 
+            if (
+              cell2.number.x === cell.x &&
+              cell2.number.y === cell.y
+            ) {
+              cell2.item = {
+                name: '',
+                type: '',
+                initDrawn: false
+              };
+              cell2.void.state = true;
+              // console.log('voiding',cell2.number.x,cell2.number.y);
+              if (
+                cell2.levelData.charAt(0) === 'y'
+              ) {
+                let x = cell2.levelData.slice(1,3)
+                cell2.levelData = "x"+x+"";
+              }
+              if (
+                cell2.levelData.charAt(0) === 'z'
+              ) {
+                let x = cell2.levelData.slice(1,3)
+                cell2.levelData = "x"+x+"";
+              }
+
+            }
+
+          }
         }
       }
 
