@@ -422,6 +422,7 @@ class App extends Component {
     this.gridWidth = 9;
 
     this.init = false;
+    this.gamepad = false;
 
     this.gridInfo = [];
     this.gridInfo2D = [];
@@ -895,7 +896,6 @@ class App extends Component {
       currentTime: (new Date()).getTime(),
       deltaTime: 0,
 
-      gamepadInterval: 4,
     };
     this.keyPressed = [
       {
@@ -985,11 +985,42 @@ class App extends Component {
     }
   }
 
+  let keyPressed = [
+    {
+      north: false,
+      south: false,
+      east: false,
+      west: false,
+      northEast: false,
+      northWest: false,
+      southEast: false,
+      southWest: false,
+      attack: false,
+      defend: false,
+      strafe: false,
+    },
+    {
+      north: false,
+      south: false,
+      east: false,
+      west: false,
+      northEast: false,
+      northWest: false,
+      southEast: false,
+      southWest: false,
+      attack: false,
+      defend: false,
+      strafe: false,
+    },
+  ]
+
+
   for(let g = 0; g < gamepads.length; g++) {
     const gp = gamepads[g];
 
     if (!!gp) {
 
+      // CHECK BUTTONS!!
       for (const btn of gp.buttons) {
         if (btn.pressed === true ) {
 
@@ -1010,41 +1041,75 @@ class App extends Component {
             //   console.log('1 player btn',gp.buttons.indexOf(btn));
             // }
 
-            if (
-              gp.buttons.indexOf(btn) === 0
-            ) {
-              console.log('1 player attack held',gp.buttons.indexOf(btn));
-              this.keyPressed[0].attack = true;
+            // DOWN BTN
+            if (gp.buttons.indexOf(btn) === 0) {
+              // console.log('1 player attack held',gp.buttons.indexOf(btn));
+              keyPressed[0].attack = true;
               this.currentPlayer = 1;
             }
-            if (
-              gp.buttons.indexOf(btn) === 1
-            ) {
-              console.log('1 player defend held',gp.buttons.indexOf(btn));
-              this.keyPressed[0].defend = true;
+            // RIGHT BTN
+            if (gp.buttons.indexOf(btn) === 1) {
+              // console.log('1 player defend held',gp.buttons.indexOf(btn));
+              keyPressed[0].defend = true;
               this.currentPlayer = 1;
             }
-            else {
-              this.keyPressed[0].attack = false;
-              this.keyPressed[0].defend = false;
+            // UP BTN
+            if (gp.buttons.indexOf(btn) === 3) {
+              // console.log('1 player defend held',gp.buttons.indexOf(btn));
+              keyPressed[0].strafe = true;
+              this.players[0].strafing.state = true;
+              this.currentPlayer = 1;
+            }
+            // RIGHT SHLDR BTN
+            if (gp.buttons.indexOf(btn) === 5) {
+              // console.log('1 player defend held',gp.buttons.indexOf(btn));
+              if (this.players[0].dead.state === true) {
+                this.respawn(this.players[0])
+              }
             }
 
           }
 
           if (connectedGamepads === 2) {
-            if (
-              gp.buttons.indexOf(btn) === 4 ||
-              gp.buttons.indexOf(btn) === 6 ||
-              gp.buttons.indexOf(btn) === 8 ||
-              gp.buttons.indexOf(btn) === 12 ||
-              gp.buttons.indexOf(btn) === 13 ||
-              gp.buttons.indexOf(btn) === 14 ||
-              gp.buttons.indexOf(btn) === 15 ||
-              gp.buttons.indexOf(btn) === 18 ||
-              gp.buttons.indexOf(btn) === 19
-            ) {
-              console.log('2 players btn player 1',gp.buttons.indexOf(btn));
+            // if (
+            //   gp.buttons.indexOf(btn) === 4 ||
+            //   gp.buttons.indexOf(btn) === 6 ||
+            //   gp.buttons.indexOf(btn) === 8 ||
+            //   gp.buttons.indexOf(btn) === 12 ||
+            //   gp.buttons.indexOf(btn) === 13 ||
+            //   gp.buttons.indexOf(btn) === 14 ||
+            //   gp.buttons.indexOf(btn) === 15 ||
+            //   gp.buttons.indexOf(btn) === 18 ||
+            //   gp.buttons.indexOf(btn) === 19
+            // ) {
+            //   console.log('2 players btn player 1',gp.buttons.indexOf(btn));
+            // }
+
+            // DOWN BTN
+            if (gp.buttons.indexOf(btn) === 14) {
+              // console.log('1 player attack held',gp.buttons.indexOf(btn));
+              keyPressed[0].attack = true;
+              this.currentPlayer = 1;
             }
+            // RIGHT BTN
+            if (gp.buttons.indexOf(btn) === 13) {
+              // console.log('1 player defend held',gp.buttons.indexOf(btn));
+              keyPressed[0].defend = true;
+              this.currentPlayer = 1;
+            }
+            // UP BTN
+            if (gp.buttons.indexOf(btn) === 15) {
+              keyPressed[0].strafe = true;
+              this.players[0].strafing.state = true;
+              this.currentPlayer = 1;
+            }
+            // RIGHT SHLDR BTN
+            if (gp.buttons.indexOf(btn) === 19) {
+              if (this.players[0].dead.state === true) {
+                this.respawn(this.players[0])
+              }
+            }
+
             if (
               gp.buttons.indexOf(btn) === 0 ||
               gp.buttons.indexOf(btn) === 1 ||
@@ -1058,58 +1123,59 @@ class App extends Component {
             ) {
               console.log('2 players btn player 2',gp.buttons.indexOf(btn));
             }
+
+            // RIGHT SHLDR BTN
+            if (gp.buttons.indexOf(btn) === 21) {
+              if (this.players[1].dead.state === true) {
+                this.respawn(this.players[1])
+              }
+            }
+
+
           }
         }
       }
 
+      // CHECK AXES!!
       if (connectedGamepads === 1) {
 
         if (gp.axes[0]!== 0 && gp.axes[1] !== 0) {
+
           if (gp.axes[0] < 0 && gp.axes[1] < 0) {
-            console.log('1',gp.axes[0],gp.axes[1]);
-            this.keyPressed[0].west = true;
+            // console.log('1',gp.axes[0],gp.axes[1]);
+            // this.keyPressed[0].west = true;
+            keyPressed[0].west = true;
             this.turnCheckerDirection = 'west';
             this.currentPlayer = 1;
 
-            this.keyPressed[0].north = false;
-            this.keyPressed[0].east = false;
-            this.keyPressed[0].south = false;
+
           }
           if (gp.axes[0] > 0 && gp.axes[1] > 0) {
-            console.log('2',gp.axes[0],gp.axes[1]);
-            this.keyPressed[0].east = true;
+            // console.log('2',gp.axes[0],gp.axes[1]);
+            // this.keyPressed[0].east = true;
+            keyPressed[0].east = true;
             this.turnCheckerDirection = 'east';
             this.currentPlayer = 1;
 
-            this.keyPressed[0].north = false;
-            this.keyPressed[0].west = false;
-            this.keyPressed[0].south = false;
+
           }
           if (gp.axes[0] < 0 && gp.axes[1] > 0) {
-            console.log('3',gp.axes[0],gp.axes[1]);
-            this.keyPressed[0].south = true;
+            // console.log('3',gp.axes[0],gp.axes[1]);
+            // this.keyPressed[0].south = true;
+            keyPressed[0].south = true;
             this.turnCheckerDirection = 'south';
             this.currentPlayer = 1;
 
-            this.keyPressed[0].east = false;
-            this.keyPressed[0].west = false;
-            this.keyPressed[0].south = false;
+
           }
           if (gp.axes[0] > 0 && gp.axes[1] < 0) {
-            console.log('4',gp.axes[0],gp.axes[1]);
-            this.keyPressed[0].north = true;
+            // console.log('4',gp.axes[0],gp.axes[1]);
+            // this.keyPressed[0].north = true;
+            keyPressed[0].north = true;
             this.turnCheckerDirection = 'north';
             this.currentPlayer = 1;
 
-            this.keyPressed[0].south = false;
-            this.keyPressed[0].east = false;
-            this.keyPressed[0].west = false;
-          }
-          else {
-            this.keyPressed[0].north = false;
-            this.keyPressed[0].east = false;
-            this.keyPressed[0].west = false;
-            this.keyPressed[0].south = false;
+
           }
 
         }
@@ -1122,74 +1188,77 @@ class App extends Component {
           // console.log('player 1 stick')
           if (gp.axes[0] < 0 && gp.axes[1] < 0) {
             // console.log('player 1 stick: 1',gp.axes[0],gp.axes[1]);
-            this.keyPressed[0].west = true;
-            this.turnCheckerDirection = 'west';
+            keyPressed[0].south = true;
+            this.turnCheckerDirection = 'south';
             this.currentPlayer = 1;
           }
           if (gp.axes[0] > 0 && gp.axes[1] > 0) {
             // console.log('player 1 stick: 2',gp.axes[0],gp.axes[1]);
-            this.keyPressed[0].east = true;
-            this.turnCheckerDirection = 'east';
+            keyPressed[0].north = true;
+            this.turnCheckerDirection = 'north';
             this.currentPlayer = 1;
           }
           if (gp.axes[0] < 0 && gp.axes[1] > 0) {
             // console.log('player 1 stick: 3',gp.axes[0],gp.axes[1]);
-            this.keyPressed[0].south = true;
-            this.turnCheckerDirection = 'south';
+            keyPressed[0].east = true;
+            this.turnCheckerDirection = 'east';
             this.currentPlayer = 1;
           }
           if (gp.axes[0] > 0 && gp.axes[1] < 0) {
             // console.log('player 1 stick: 4',gp.axes[0],gp.axes[1]);
-            this.keyPressed[0].north = true;
-            this.turnCheckerDirection = 'north';
+            keyPressed[0].west = true;
+            this.turnCheckerDirection = 'west';
             this.currentPlayer = 1;
           }
-          // else {
-          //   this.keyPressed[0].north = false;
-          //   this.keyPressed[0].east = false;
-          //   this.keyPressed[0].west = false;
-          //   this.keyPressed[0].south = false;
-          // }
         }
 
         if (gp.axes[2]!== 0 && gp.axes[3] !== 0) {
           // console.log('right stick')
           if (gp.axes[2] < 0 && gp.axes[3] < 0) {
             // console.log('player 2 stick: 1',gp.axes[2],gp.axes[3]);
-            this.keyPressed[1].west = true;
-            this.turnCheckerDirection = 'west';
+            keyPressed[1].north = true;
+            this.turnCheckerDirection = 'north';
             this.currentPlayer = 2;
           }
           if (gp.axes[2] > 0 && gp.axes[3] > 0) {
             // console.log('player 2 stick: 2',gp.axes[2],gp.axes[3]);
-            this.keyPressed[1].east = true;
-            this.turnCheckerDirection = 'east';
+            keyPressed[1].south = true;
+            this.turnCheckerDirection = 'south';
             this.currentPlayer = 2;
           }
           if (gp.axes[2] < 0 && gp.axes[3] > 0) {
             // console.log('player 2 stick: 3',gp.axes[2],gp.axes[3]);
-            this.keyPressed[1].south = true;
-            this.turnCheckerDirection = 'south';
+            keyPressed[1].west = true;
+            this.turnCheckerDirection = 'west';
             this.currentPlayer = 2;
           }
           if (gp.axes[2] > 0 && gp.axes[3] < 0) {
             // console.log('player 2 stick: 4',gp.axes[2],gp.axes[3]);
-            this.keyPressed[1].north = true;
-            this.turnCheckerDirection = 'north';
+            keyPressed[1].east = true;
+            this.turnCheckerDirection = 'east';
             this.currentPlayer = 2;
-          }
-          else {
-            this.keyPressed[1].north = false;
-            this.keyPressed[1].east = false;
-            this.keyPressed[1].west = false;
-            this.keyPressed[1].south = false;
           }
         }
       }
     }
   }
 
+  if (
+    keyPressed[0].strafe === false &&
+    this.players[0].moving.state === true &&
+    this.players[0].strafing.state === true
+  ) {
+    this.players[0].strafeReleaseHook = true
+  }
+  if (
+    keyPressed[1].strafe === false &&
+    this.players[1].moving.state === true &&
+    this.players[1].strafing.state === true
+  ) {
+    this.players[1].strafeReleaseHook = true
+  }
 
+  this.keyPressed = keyPressed;
 
 
   let player = this.players[this.currentPlayer-1];
@@ -1475,6 +1544,12 @@ class App extends Component {
       break;
     }
 
+    let gamepad = false;
+    if (event.target.input.value === 'Gamepad') {
+      gamepad = true;
+    }
+    this.gamepad = gamepad;
+
     this.restartGame();
 
     window.requestAnimationFrame(this.gameLoop);
@@ -1508,6 +1583,9 @@ class App extends Component {
       // console.log('update loop step...dt',this.stepper.deltaTime,'interval',this.stepper.interval);
 
       // this.aiAct();
+      if (this.gamepad === true) {
+        this.pollGamepads();
+      }
       for (const player of this.players) {
 
         // this.pollGamepads()
@@ -1710,9 +1788,9 @@ class App extends Component {
 
         // TURNER!!
         if (player.turning.state === true && player.turning.toDirection === this.turnCheckerDirection) {
-          console.log('player',player.number,' turn-ing');
-          if (this.keyPressed[this.currentPlayer-1][this.turnCheckerDirection] == false) {
-            console.log('player',player.number,' turn-stop');
+          // console.log('player',player.number,' turn-ing');
+          if (this.keyPressed[this.currentPlayer-1][this.turnCheckerDirection] === false) {
+            // console.log('player',player.number,' turn-stop');
             player.turning.state = false;
           }
         }
@@ -2041,7 +2119,7 @@ class App extends Component {
             // CHANGE DIRECTION IF NOT STRAFING!!
             else if (keyPressedDirection !== player.direction && player.strafing.state === false) {
               // console.log('change player direction to',keyPressedDirection);
-              console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
+              // console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
               player.turning.state = true;
               player.turning.toDirection = keyPressedDirection;
 
@@ -2100,7 +2178,7 @@ class App extends Component {
 
               // if (this.keyPressed[player.number-1].attack === true ) {
               if (this.keyPressed[player.number-1].attack === true && player.success.deflected.state !== true) {
-                console.log('start attacking');
+                // console.log('start attacking');
                 player.action = 'attacking';
                 player.attacking = {
                   state: true,
