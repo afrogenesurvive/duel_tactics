@@ -984,7 +984,7 @@ class App extends Component {
 
 
   componentWillUnmount() {
-    // window.cancelAnimationFrame();
+    window.cancelAnimationFrame(this.stepper.currentTime);
   }
 
 
