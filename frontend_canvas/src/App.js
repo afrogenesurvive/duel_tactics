@@ -394,6 +394,8 @@ class App extends Component {
       }
     ],
     showSettings: true,
+    canvas: undefined,
+    context: undefined,
   }
 
   constructor(props) {
@@ -970,6 +972,11 @@ class App extends Component {
 
     let canvas = this.canvasRef.current;
     let context = canvas.getContext('2d');
+    this.setState({
+      canvas: canvas,
+      context: context
+    })
+
 
     let canvas2 = this.canvasRef2.current;
     let context2 = canvas2.getContext('2d');
@@ -978,7 +985,7 @@ class App extends Component {
       this.addListeners(canvas, canvas2);
       // this.loadSettings();
 
-      this.drawGridInit(canvas, context);
+      this.drawGridInit(this.state.canvas, this.state.context);
 
       window.requestAnimationFrame(this.gameLoop);
 
@@ -1597,9 +1604,6 @@ class App extends Component {
   gameLoop = () => {
 
 
-    let canvas = this.canvasRef.current;
-    let context = canvas.getContext('2d');
-
     let ts = window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
     this.stepper.currentTime = (new Date()).getTime();
     this.stepper.deltaTime = (this.stepper.currentTime-this.stepper.lastTime);
@@ -1614,7 +1618,7 @@ class App extends Component {
       for (const player of this.players) {
 
         // this.pollGamepads()
-        this.playerUpdate(player, canvas, context);
+        this.playerUpdate(player, this.canvas, this.state.context);
 
       }
 
@@ -1870,7 +1874,7 @@ class App extends Component {
 
         // CHECK & UPDATE ACTIONS IN PROGRESS!!
         if (player.pushBack.state !== true && player.pushBack.prePushBackMoveSpeed !== 0) {
-          
+
           player.speed.move = player.player.pushBack.prePushBackMoveSpeed;
           player.player.pushBack.prePushBackMoveSpeed = 0;
         }
@@ -2283,8 +2287,11 @@ class App extends Component {
 
   }
 
-  drawPlayerStep = (playerNumber, canvas, context) => {
+  drawPlayerStep = (playerNumber) => {
     // console.log('drawing player step',playerNumber);
+    
+    let canvas = this.state.canvas;
+    let context = this.state.context;
 
     let gridInfo = [];
     class Point {
