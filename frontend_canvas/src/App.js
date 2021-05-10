@@ -424,7 +424,7 @@ class App extends Component {
 
     this.init = false;
     this.gamepad = false;
-    this.openVoid = true;
+    this.openVoid = false;
 
     this.gridInfo = [];
     this.gridInfo2D = [];
@@ -443,18 +443,19 @@ class App extends Component {
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
     this.levelData12 = {
-      row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
-      row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
-      row2: ['x20x','x21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x'],
-      row3: ['x30x','x31x','x32x','y33x','x34x','x35x','x36x','x37x','x38x','x39x'],
-      row4: ['x40x','x41x','x42x','x43x','y44x','x45x','x46x','x47x','x48x','z49x'],
-      row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58x','x59x'],
-      row6: ['x60x','y61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
-      row7: ['x70x','y71x','x72x','x73x','x74x','x75x','x76x','y77x','x78x','x79x'],
-      row8: ['x80x','x81x','x82x','x83x','y84x','x85x','y86x','x87x','x88x','x89x'],
-      row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
-      row10: ['x100x','x101x','x102x','x103x','x104x','x105x','x106x','x107x','x108x','x109x'],
-      row11: ['x110x','x111x','x112x','x113x','x114x','x115x','x116x','x117x','x118x','x119x'],
+      row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x','x010x','x011x','x012x'],
+      row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x','x110x','x111x','x112x'],
+      row2: ['x20x','x21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x','x210x','x211x','x212x'],
+      row3: ['x30x','x31x','x32x','y33x','x34x','x35x','x36x','x37x','x38x','x39x','x310x','x311x','x312x'],
+      row4: ['x40x','x41x','x42x','x43x','y44x','x45x','x46x','x47x','x48x','z49x','x410x','x411x','x412x'],
+      row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58x','x59x','x510x','x511x','x512x'],
+      row6: ['x60x','y61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x','x610x','x611x','x612x'],
+      row7: ['x70x','y71x','x72x','x73x','x74x','x75x','x76x','y77x','x78x','x79x','x710x','x711x','x712x'],
+      row8: ['x80x','x81x','x82x','x83x','y84x','x85x','y86x','x87x','x88x','x89x','x810x','x811x','x812x'],
+      row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','x97x','x98x','x99x','x910x','x911x','x912x'],
+      row10: ['x100x','x101x','x102x','x103x','x104x','x105x','x106x','x107x','x108x','x109x','x1010x','x1011x','x1012x'],
+      row11: ['x110x','x111x','x112x','x113x','x114x','x115x','x116x','x117x','x118x','x119x','x1110x','x1111x','x1112x'],
+      row12: ['x120x','x121x','x122x','x123x','x124x','x125x','x126x','x127x','x128x','x129x','x1210x','x1211x','x1212x'],
     };
     this.levelData9 = {
       row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
@@ -970,7 +971,7 @@ class App extends Component {
     let context2 = canvas2.getContext('2d');
 
     this.refs.plyr1IdleNorthEast.onload = () => {
-      this.addListeners();
+      this.addListeners(canvas, canvas2);
       // this.loadSettings();
 
       this.drawGridInit(canvas, context);
@@ -983,7 +984,7 @@ class App extends Component {
 
 
   componentWillUnmount() {
-
+    // window.cancelAnimationFrame();
   }
 
 
@@ -1295,11 +1296,11 @@ class App extends Component {
 
 }
 
-  addListeners = () => {
+  addListeners = (canvas,canvas2) => {
     // console.log('adding listeners');
 
-    const canvas = this.canvasRef.current;
-    const canvas2 = this.canvasRef2.current;
+    // const canvas = this.canvasRef.current;
+    // const canvas2 = this.canvasRef2.current;
 
     // canvas.addEventListener("click", e => {
     //   console.log('canvas click',e);
@@ -1557,9 +1558,9 @@ class App extends Component {
         this.gridWidth = 9;
         this.sceneY = 220;
       break;
-      case '12 x 12' :
-        this.gridWidth = 11;
-        this.sceneY = 220;
+      case '13 x 13' :
+        this.gridWidth = 12;
+        this.sceneY = 150;
       break;
     }
 
@@ -1571,7 +1572,7 @@ class App extends Component {
 
     this.restartGame();
 
-    window.requestAnimationFrame(this.gameLoop);
+    // window.requestAnimationFrame(this.gameLoop);
 
     this.setState({
       showSettings: false
@@ -1590,6 +1591,7 @@ class App extends Component {
   }
 
   gameLoop = () => {
+
 
     let canvas = this.canvasRef.current;
     let context = canvas.getContext('2d');
@@ -1701,7 +1703,59 @@ class App extends Component {
         // player.currentPosition.cell = player.target.cell;
         player.nextPosition = nextPosition;
 
-        if (player.speed.move !== .1) {
+        // if (player.speed.move !== .1 && player.pushBack.state === true) {
+        //   console.log('abnormal move speed & pushBack');
+        //   if (
+        //     nextPosition.x === player.target.cell.center.x &&
+        //     nextPosition.y === player.target.cell.center.y ||
+        //     nextPosition.x === player.target.cell.center.x+1 &&
+        //     nextPosition.y === player.target.cell.center.y+1
+        //   ) {
+        //     console.log('next position is destination c',player.number);
+        //     if (player.target.void === false) {
+        //       player.currentPosition.cell = player.target.cell;
+        //       player.action = 'idle';
+        //       player.moving = {
+        //         state: false,
+        //         step: 0,
+        //         course: '',
+        //         origin: {
+        //           number: {
+        //             x: player.target.cell.number.x,
+        //             y: player.target.cell.number.y
+        //           },
+        //           center: {
+        //             x: player.target.cell.center.x,
+        //             y: player.target.cell.center.y
+        //           },
+        //         },
+        //         destination: {
+        //           x: 0,
+        //           y: 0,
+        //         }
+        //       }
+        //
+        //       this.checkDestination(player);
+        //
+        //     } else if (
+        //       nextPosition.x === player.target.cell.center.x &&
+        //       nextPosition.y === player.target.cell.center.y &&
+        //       player.target.void === true
+        //     ) {
+        //       player.falling.state = true;
+        //       player.action = 'falling';
+        //     }
+        //
+        //     if (player.pushBack.state === true) {
+        //       player.pushBack.state = false;
+        //       player.strafing = {
+        //         state: false,
+        //         direction: ''
+        //       }
+        //     }
+        //   }
+        // }
+        // if (player.speed.move !== .1 && player.pushBack.state !== true) {
           // console.log('abnormal move speed');
           if (
             nextPosition.x === player.target.cell.center.x &&
@@ -1709,7 +1763,7 @@ class App extends Component {
             nextPosition.x === player.target.cell.center.x+5 &&
             nextPosition.y === player.target.cell.center.y+5
           ) {
-            // console.log('next position is destination');
+            // console.log('next position is destination a',player.number);
             if (player.target.void === false) {
               player.currentPosition.cell = player.target.cell;
               player.action = 'idle';
@@ -1750,59 +1804,61 @@ class App extends Component {
                 state: false,
                 direction: ''
               }
+              player.moving.state = false;
             }
           }
-        }
-        else {
-          // console.log('normal move speed');
-          if (
-            nextPosition.x === player.target.cell.center.x &&
-            nextPosition.y === player.target.cell.center.y
-          ) {
-            // console.log('next position is destination');
-            if (player.target.void === false) {
-              player.currentPosition.cell = player.target.cell;
-              player.action = 'idle';
-              player.moving = {
-                state: false,
-                step: 0,
-                course: '',
-                origin: {
-                  number: {
-                    x: player.target.cell.number.x,
-                    y: player.target.cell.number.y
-                  },
-                  center: {
-                    x: player.target.cell.center.x,
-                    y: player.target.cell.center.y
-                  },
-                },
-                destination: {
-                  x: 0,
-                  y: 0,
-                }
-              }
+        // }
+        // else if (player.speed.move === .1) {
+        //   console.log('normal move speed');
+        //   if (
+        //     nextPosition.x === player.target.cell.center.x &&
+        //     nextPosition.y === player.target.cell.center.y
+        //   ) {
+        //     console.log('next position is destination b',player.number);
+        //     if (player.target.void === false) {
+        //       player.currentPosition.cell = player.target.cell;
+        //       player.action = 'idle';
+        //       player.moving = {
+        //         state: false,
+        //         step: 0,
+        //         course: '',
+        //         origin: {
+        //           number: {
+        //             x: player.target.cell.number.x,
+        //             y: player.target.cell.number.y
+        //           },
+        //           center: {
+        //             x: player.target.cell.center.x,
+        //             y: player.target.cell.center.y
+        //           },
+        //         },
+        //         destination: {
+        //           x: 0,
+        //           y: 0,
+        //         }
+        //       }
+        //
+        //       this.checkDestination(player);
+        //
+        //     } else if (
+        //       nextPosition.x === player.target.cell.center.x &&
+        //       nextPosition.y === player.target.cell.center.y &&
+        //       player.target.void === true
+        //     ) {
+        //       player.falling.state = true;
+        //       player.action = 'falling';
+        //     }
+        //
+        //     if (player.pushBack.state === true) {
+        //       player.pushBack.state = false;
+        //       player.strafing = {
+        //         state: false,
+        //         direction: ''
+        //       }
+        //     }
+        //   }
+        // }
 
-              this.checkDestination(player);
-
-            } else if (
-              nextPosition.x === player.target.cell.center.x &&
-              nextPosition.y === player.target.cell.center.y &&
-              player.target.void === true
-            ) {
-              player.falling.state = true;
-              player.action = 'falling';
-            }
-
-            if (player.pushBack.state === true) {
-              player.pushBack.state = false;
-              player.strafing = {
-                state: false,
-                direction: ''
-              }
-            }
-          }
-        }
 
       }
 
@@ -4080,6 +4136,9 @@ class App extends Component {
     let currentPosition = player.currentPosition.cell.center;
     let target = player.target;
     let moveSpeed = player.speed.move;
+    // if (player.pushBack.state === true) {
+    //   moveSpeed = .1;
+    // }
 
     player.moving.step = player.moving.step + moveSpeed;
     // console.log('mover stepper',player.moving.step);
