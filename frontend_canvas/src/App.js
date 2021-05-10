@@ -151,7 +151,7 @@ class App extends Component {
         attacking: {
           state: false,
           count: 0,
-          limit: 10,
+          limit: 15,
         },
         success: {
           attackSuccess: {
@@ -313,7 +313,7 @@ class App extends Component {
         attacking: {
           state: false,
           count: 0,
-          limit: 10,
+          limit: 15,
         },
         success: {
           attackSuccess: {
@@ -656,7 +656,7 @@ class App extends Component {
         attacking: {
           state: false,
           count: 0,
-          limit: 10,
+          limit: 15,
         },
         success: {
           attackSuccess: {
@@ -818,7 +818,7 @@ class App extends Component {
         attacking: {
           state: false,
           count: 0,
-          limit: 10,
+          limit: 15,
         },
         success: {
           attackSuccess: {
@@ -1899,10 +1899,11 @@ class App extends Component {
         // ATTACK/DEFEND/DEFLECT CHECK!!
         if (player.attacking.state === true) {
           if (player.attacking.count < player.attacking.limit) {
+            // console.log('attack wind up');
             player.attacking.count++;
           }
-          if (player.attacking.count >= player.attacking.limit) {
-
+          if (player.attacking.count === 8) {
+            // console.log('attack peak & cooldown');
             this.getTarget(player)
             if (player.target.occupant.type === 'player') {
 
@@ -2034,6 +2035,9 @@ class App extends Component {
               }
             }
 
+          }
+          if (player.attacking.count >= player.attacking.limit) {
+            // console.log('attack end');
             player.attacking = {
               state: false,
               count: 0,
@@ -2206,6 +2210,7 @@ class App extends Component {
               // if (this.keyPressed[player.number-1].attack === true ) {
               if (this.keyPressed[player.number-1].attack === true && player.success.deflected.state !== true) {
                 // console.log('start attacking');
+                // console.log('pre attack');
                 player.action = 'attacking';
                 player.attacking = {
                   state: true,
@@ -2289,7 +2294,7 @@ class App extends Component {
 
   drawPlayerStep = (playerNumber) => {
     // console.log('drawing player step',playerNumber);
-    
+
     let canvas = this.state.canvas;
     let context = this.state.context;
 
@@ -3056,7 +3061,8 @@ class App extends Component {
                   context.drawImage(indicatorImgs.preAttack, point.x-25, point.y-25, 25,25);
                 }
 
-                if (plyr.attacking.count > plyr.attacking.limit-4 && plyr.attacking.count < plyr.attacking.limit+1) {
+                if (plyr.attacking.count > 8 && plyr.attacking.count < plyr.attacking.limit+1) {
+                // if (plyr.attacking.count > plyr.attacking.limit-4 && plyr.attacking.count < plyr.attacking.limit+1) {
                   context.drawImage(indicatorImgs.attack, point.x-20, point.y-20, 25,25);
                 }
 
