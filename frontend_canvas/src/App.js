@@ -173,7 +173,8 @@ class App extends Component {
           }
         },
         pushBack: {
-          state: false
+          state: false,
+          prePushBackMoveSpeed: 0,
         },
         defending: {
           state: false,
@@ -334,7 +335,8 @@ class App extends Component {
           }
         },
         pushBack: {
-          state: false
+          state: false,
+          prePushBackMoveSpeed: 0,
         },
         defending: {
           state: false,
@@ -674,7 +676,8 @@ class App extends Component {
           }
         },
         pushBack: {
-          state: false
+          state: false,
+          prePushBackMoveSpeed: 0,
         },
         defending: {
           state: false,
@@ -835,7 +838,8 @@ class App extends Component {
           }
         },
         pushBack: {
-          state: false
+          state: false,
+          prePushBackMoveSpeed: 0,
         },
         defending: {
           state: false,
@@ -894,7 +898,7 @@ class App extends Component {
           limit: 15,
         },
       }
-    ]
+    ];
     this.stepper = {
       now: 0,
       dt: 0,
@@ -1661,21 +1665,6 @@ class App extends Component {
     }
 
 
-    // STATUS DISPLAY STEPPER!!
-    if (player.statusDisplay.state === true && player.statusDisplay.count < player.statusDisplay.limit) {
-      // console.log('stepping status display');
-      player.statusDisplay.count++
-    }
-    else if (player.statusDisplay.state === true && player.statusDisplay.count >= player.statusDisplay.limit) {
-      // console.log('hide status display');
-      player.statusDisplay = {
-        state: false,
-        status: '',
-        count: 0,
-        limit: player.statusDisplay.limit,
-      }
-    }
-
 
     // CHECK AND SET DEFLECTION!!
     if (player.success.deflected.state === true && player.success.deflected.count < player.success.deflected.limit) {
@@ -1703,58 +1692,6 @@ class App extends Component {
         // player.currentPosition.cell = player.target.cell;
         player.nextPosition = nextPosition;
 
-        // if (player.speed.move !== .1 && player.pushBack.state === true) {
-        //   console.log('abnormal move speed & pushBack');
-        //   if (
-        //     nextPosition.x === player.target.cell.center.x &&
-        //     nextPosition.y === player.target.cell.center.y ||
-        //     nextPosition.x === player.target.cell.center.x+1 &&
-        //     nextPosition.y === player.target.cell.center.y+1
-        //   ) {
-        //     console.log('next position is destination c',player.number);
-        //     if (player.target.void === false) {
-        //       player.currentPosition.cell = player.target.cell;
-        //       player.action = 'idle';
-        //       player.moving = {
-        //         state: false,
-        //         step: 0,
-        //         course: '',
-        //         origin: {
-        //           number: {
-        //             x: player.target.cell.number.x,
-        //             y: player.target.cell.number.y
-        //           },
-        //           center: {
-        //             x: player.target.cell.center.x,
-        //             y: player.target.cell.center.y
-        //           },
-        //         },
-        //         destination: {
-        //           x: 0,
-        //           y: 0,
-        //         }
-        //       }
-        //
-        //       this.checkDestination(player);
-        //
-        //     } else if (
-        //       nextPosition.x === player.target.cell.center.x &&
-        //       nextPosition.y === player.target.cell.center.y &&
-        //       player.target.void === true
-        //     ) {
-        //       player.falling.state = true;
-        //       player.action = 'falling';
-        //     }
-        //
-        //     if (player.pushBack.state === true) {
-        //       player.pushBack.state = false;
-        //       player.strafing = {
-        //         state: false,
-        //         direction: ''
-        //       }
-        //     }
-        //   }
-        // }
         // if (player.speed.move !== .1 && player.pushBack.state !== true) {
           // console.log('abnormal move speed');
           if (
@@ -1809,6 +1746,7 @@ class App extends Component {
           }
         // }
         // else if (player.speed.move === .1) {
+
         //   console.log('normal move speed');
         //   if (
         //     nextPosition.x === player.target.cell.center.x &&
@@ -1931,6 +1869,12 @@ class App extends Component {
         }
 
         // CHECK & UPDATE ACTIONS IN PROGRESS!!
+        if (player.pushBack.state !== true && player.pushBack.prePushBackMoveSpeed !== 0) {
+          
+          player.speed.move = player.player.pushBack.prePushBackMoveSpeed;
+          player.player.pushBack.prePushBackMoveSpeed = 0;
+        }
+
         if (player.dead.state === true) {
 
           if (player.dead.count > 0 && player.dead.count < player.dead.limit+1) {
@@ -2283,6 +2227,7 @@ class App extends Component {
         }
       }
 
+
       // DISPLAY ATTACK AND DEFENSE SUCCESS!
       if (player.success.attackSuccess.state === true) {
         if (player.success.attackSuccess.count < player.success.attackSuccess.limit) {
@@ -2309,6 +2254,21 @@ class App extends Component {
         }
       }
 
+    }
+
+    // STATUS DISPLAY STEPPER!!
+    if (player.statusDisplay.state === true && player.statusDisplay.count < player.statusDisplay.limit) {
+      // console.log('stepping status display');
+      player.statusDisplay.count++
+    }
+    else if (player.statusDisplay.state === true && player.statusDisplay.count >= player.statusDisplay.limit) {
+      // console.log('hide status display');
+      player.statusDisplay = {
+        state: false,
+        status: '',
+        count: 0,
+        limit: player.statusDisplay.limit,
+      }
     }
 
     // SYNC W/ GLOBAL PLAYER DATA
@@ -4356,6 +4316,9 @@ class App extends Component {
   pushBack = (player,hitByPlayerDirection) => {
     // console.log('pushing back');
 
+    player.pushBack.prePushMoveSpeed = player.speed.move;
+    player.speed.move = .1;
+
     let pushBackDirection = hitByPlayerDirection;
     player.strafing = {
       state: true,
@@ -4408,7 +4371,7 @@ class App extends Component {
       player.nextPosition = nextPosition;
     }
 
-    // this.players[player.number-1] = player;
+    this.players[player.number-1] = player;
 
     if (target.free === true) {
       player.pushBack.state = true;
