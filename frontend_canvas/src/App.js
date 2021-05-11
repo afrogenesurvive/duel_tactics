@@ -213,8 +213,16 @@ class App extends Component {
           range: [.05,.1,.125,.2]
         },
         hp: 2,
-        currentWeapon: {},
-        currentArmor: {},
+        currentWeapon: {
+          name: 'sword1',
+          type: 'sword',
+          effect: '',
+        },
+        currentArmor: {
+          name: '',
+          type: '',
+          effect: '',
+        },
         items: {
           weapons: [],
           armor: [],
@@ -375,8 +383,16 @@ class App extends Component {
           range: [.05,.1,.125,.2]
         },
         hp: 2,
-        currentWeapon: {},
-        currentArmor: {},
+        currentWeapon: {
+          name: 'sword1',
+          type: 'sword',
+          effect: '',
+        },
+        currentArmor: {
+          name: '',
+          type: '',
+          effect: '',
+        },
         items: {
           weapons: [],
           armor: [],
@@ -493,83 +509,113 @@ class App extends Component {
         name: 'moveSpeedUp',
         amount: 5,
         total: 5,
-        type: 'item'
+        type: 'item',
+        effect: '',
       },
       {
         name: 'moveSpeedDown',
         amount: 5,
         total: 5,
-        type: 'item'
+        type: 'item',
+        effect: '',
       },
       {
         name: 'hpUp',
         amount: 4,
         total: 4,
-        type: 'item'
+        type: 'item',
+        effect: '',
       },
       {
         name: 'hpDown',
         amount: 4,
         total: 4,
-        type: 'item'
+        type: 'item',
+        effect: '',
       },
       {
         name: 'focusUp',
         amount: 4,
         total: 4,
-        type: 'item'
+        type: 'item',
+        effect: '',
       },
       {
         name: 'focusDown',
         amount: 4,
         total: 4,
-        type: 'item'
+        type: 'item',
+        effect: '',
       },
       {
         name: 'strengthUp',
         amount: 4,
         total: 4,
-        type: 'item'
+        type: 'item',
+        effect: '',
       },
       {
         name: 'strengthDown',
         amount: 4,
         total: 4,
-        type: 'item'
+        type: 'item',
+        effect: '',
       },
       {
-        name: 'spear',
+        name: 'spear1',
         amount: 3,
+        total: 3,
         type: 'weapon',
+        subType: 'spear',
+        effect: '',
       },
       {
-        name: 'sword',
+        name: 'sword1',
         amount: 2,
+        total: 2,
         type: 'weapon',
+        subType: 'sword',
+        effect: '',
       },
       {
-        name: 'crossbow',
+        name: 'crossbow1',
         amount: 2,
+        total: 2,
         type: 'weapon',
+        subType: 'crossbow',
+        effect: '',
       },
     ];
     this.initItemList = [
       {
         name: 'moveSpeedUp',
-        type: 'item'
+        type: 'item',
+        effect: '',
       },
       {
         name: 'moveSpeedDown',
-        type: 'item'
+        type: 'item',
+        effect: '',
       },
       {
         name: 'hpUp',
-        type: 'item'
+        type: 'item',
+        effect: '',
       },
       // {
       //   name: 'hpDown',
       //   type: 'item'
       // },
+      {
+        name: 'spear1',
+        type: 'weapon',
+        subType: 'spear',
+      },
+      {
+        name: 'sword1',
+        type: 'weapon',
+        subType: 'sword',
+      },
     ];
     this.currentPlayer = 1;
     this.players = [
@@ -718,8 +764,16 @@ class App extends Component {
           range: [.05,.1,.125,.2]
         },
         hp: 2,
-        currentWeapon: {},
-        currentArmor: {},
+        currentWeapon: {
+          name: 'sword1',
+          type: 'sword',
+          effect: '',
+        },
+        currentArmor: {
+          name: '',
+          type: '',
+          effect: '',
+        },
         items: {
           weapons: [],
           armor: [],
@@ -883,8 +937,16 @@ class App extends Component {
           range: [.05,.1,.125,.2]
         },
         hp: 2,
-        currentWeapon: {},
-        currentArmor: {},
+        currentWeapon: {
+          name: 'sword1',
+          type: 'sword',
+          effect: '',
+        },
+        currentArmor: {
+          name: '',
+          type: '',
+          effect: '',
+        },
         items: {
           weapons: [],
           armor: [],
@@ -1916,6 +1978,7 @@ class App extends Component {
             y: -30,
           }
         }
+
         // ATTACK/DEFEND/DEFLECT CHECK!!
         if (player.attacking.state === true) {
           if (player.attacking.count < player.attacking.limit) {
@@ -1924,106 +1987,165 @@ class App extends Component {
           }
           if (player.attacking.count === 8) {
             // console.log('attack peak & cooldown');
-            this.getTarget(player)
-            if (player.target.occupant.type === 'player') {
 
-              // ATTACK SUCCESS!!
-              if (this.players.[player.target.occupant.player-1].defending.state === false) {
-                // console.log('attack success');
-                player.success.attackSuccess = {
+            if (player.currentWeapon.name === 'crossbow') {
+              let projectileId = this.projectiles.length + 1;
+              this.projectiles.push({
+                id: '000'+projectileId+'',
+                owner: player.number,
+                origin: player.currentPosition.cell,
+                direction: player.direction,
+                moving: {
                   state: true,
-                  count: 1,
-                  limit: player.success.attackSuccess.limit
-                }
+                  step: 0,
+                  course: '',
+                  origin: {
+                    number: player.currentPosition.cell.number,
+                    center: player.currentPosition.cell.center,
+                  },
+                  destination: {
+                    x: 0,
+                    y: 0,
+                  }
+                },
+                currentPosition: player.currentPosition.cell,
+                nextPosition: {
+                  x: 0,
+                  y: 0,
+                },
+                target: {
+                  cell: {
+                    number: {
+                      x: 0,
+                      y: 0,
+                    },
+                    center: {
+                      x: 0,
+                      y: 0,
+                    },
+                  },
+                  free: true,
+                  occupant: {
+                    type: '',
+                    player: '',
+                  },
+                  void: false
+                },
+                speed: .2,
+              })
 
+              this.getTarget(player)
+            } else if (player.currentWeapon.name !== 'crossbow') {
 
-                // CALCULATE ATTACKER DOUBLE HIT!
-                let doubleHit = this.rnJesus(1,player.crits.doubleHit);
-                if (doubleHit === 1) {
-                  this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 2;
-                }
-                else if (doubleHit !== 1) {
-                  this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
+              this.getTarget(player)
+              if (player.target.occupant.type === 'player') {
 
-                }
-
-
-                // KILL OR DEFLECT OPPONENT!
-                if (this.players[player.target.occupant.player-1].hp <= 0) {
-                  this.killPlayer(this.players[player.target.occupant.player-1]);
-
-                  let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                  this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
-
-
-                } else {
-                  this.players[player.target.occupant.player-1].success.deflected = {
+                // ATTACK SUCCESS!!
+                if (this.players.[player.target.occupant.player-1].defending.state === false) {
+                  // console.log('attack success');
+                  player.success.attackSuccess = {
                     state: true,
                     count: 1,
-                    limit: this.players[player.target.occupant.player-1].success.deflected.limit,
-                    predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
-                    type: 'attacked',
-                  };
-                }
-
-                player.points++;
-
-              }
-              // ATTACK DEFENDED!!
-              else {
-                // console.log('attackdefended');
-
-                this.moveSpeed = .1;
-
-                this.players[player.target.occupant.player-1].success.defendSuccess = {
-                  state: true,
-                  count: 1,
-                  limit: this.players[player.target.occupant.player-1].success.defendSuccess.limit
-                }
-
-                let shouldPushBack = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.pushBack);
-                // console.log('pushBack',shouldPushBack===1);
-                if (shouldPushBack === 1) {
-                  let canPushback = this.pushBack(this.players[player.target.occupant.player-1],player.direction);
-                }
-
-                // PUSHBACK DEFLECT!!
-                let shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack);
-                if (shouldDeflectPushBack === 1) {
-                  let pushBackDirection;
-                  switch(player.direction) {
-                    case 'north' :
-                      pushBackDirection = 'south';
-                    break;
-                    case 'south' :
-                      pushBackDirection = 'north';
-                    break;
-                    case 'east' :
-                      pushBackDirection = 'west';
-                    break;
-                    case 'west' :
-                      pushBackDirection = 'east';
-                    break;
-                    case 'northEast' :
-                      pushBackDirection = 'southWest';
-                    break;
-                    case 'northWest' :
-                      pushBackDirection = 'southEast';
-                    break;
-                    case 'southWest' :
-                      pushBackDirection = 'northEast';
-                    break;
-                    case 'southEast' :
-                      pushBackDirection = 'northWest';
-                    break;
+                    limit: player.success.attackSuccess.limit
                   }
 
-                  let canPushback = this.pushBack(player,pushBackDirection);
-                  if (canPushback === true) {
-                    // console.log('predeflect --> pushback');
-                    player.success.deflected.predeflect = true;
+
+                  // CALCULATE ATTACKER DOUBLE HIT!
+                  let doubleHit = this.rnJesus(1,player.crits.doubleHit);
+                  if (doubleHit === 1) {
+                    this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 2;
                   }
-                  else if (canPushback === false) {
+                  else if (doubleHit !== 1) {
+                    this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
+                  }
+
+                  // KILL OR DEFLECT OPPONENT!
+                  if (this.players[player.target.occupant.player-1].hp <= 0) {
+                    this.killPlayer(this.players[player.target.occupant.player-1]);
+
+                    let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+                    this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+
+                  } else {
+                    this.players[player.target.occupant.player-1].success.deflected = {
+                      state: true,
+                      count: 1,
+                      limit: this.players[player.target.occupant.player-1].success.deflected.limit,
+                      predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
+                      type: 'attacked',
+                    };
+                  }
+
+                  player.points++;
+
+                }
+                // ATTACK DEFENDED!!
+                else {
+                  // console.log('attackdefended');
+
+                  this.moveSpeed = .1;
+
+                  this.players[player.target.occupant.player-1].success.defendSuccess = {
+                    state: true,
+                    count: 1,
+                    limit: this.players[player.target.occupant.player-1].success.defendSuccess.limit
+                  }
+
+                  let shouldPushBack = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.pushBack);
+                  // console.log('pushBack',shouldPushBack===1);
+                  if (shouldPushBack === 1) {
+                    let canPushback = this.pushBack(this.players[player.target.occupant.player-1],player.direction);
+                  }
+
+                  // PUSHBACK DEFLECT!!
+                  let shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack);
+                  if (shouldDeflectPushBack === 1) {
+                    let pushBackDirection;
+                    switch(player.direction) {
+                      case 'north' :
+                        pushBackDirection = 'south';
+                      break;
+                      case 'south' :
+                        pushBackDirection = 'north';
+                      break;
+                      case 'east' :
+                        pushBackDirection = 'west';
+                      break;
+                      case 'west' :
+                        pushBackDirection = 'east';
+                      break;
+                      case 'northEast' :
+                        pushBackDirection = 'southWest';
+                      break;
+                      case 'northWest' :
+                        pushBackDirection = 'southEast';
+                      break;
+                      case 'southWest' :
+                        pushBackDirection = 'northEast';
+                      break;
+                      case 'southEast' :
+                        pushBackDirection = 'northWest';
+                      break;
+                    }
+
+                    let canPushback = this.pushBack(player,pushBackDirection);
+                    if (canPushback === true) {
+                      // console.log('predeflect --> pushback');
+                      player.success.deflected.predeflect = true;
+                    }
+                    else if (canPushback === false) {
+                      // console.log('no pushback ---> just deflect');
+                      player.success.deflected = {
+                        state: true,
+                        count: 1,
+                        limit: player.success.deflected.limit,
+                        predeflect: player.success.deflected.predeflect,
+                        type: 'attack'
+                      }
+                    }
+                  }
+                  else if (shouldDeflectPushBack !== 1) {
                     // console.log('no pushback ---> just deflect');
                     player.success.deflected = {
                       state: true,
@@ -2033,26 +2155,17 @@ class App extends Component {
                       type: 'attack'
                     }
                   }
-                }
-                else if (shouldDeflectPushBack !== 1) {
-                  // console.log('no pushback ---> just deflect');
-                  player.success.deflected = {
-                    state: true,
-                    count: 1,
-                    limit: player.success.deflected.limit,
-                    predeflect: player.success.deflected.predeflect,
-                    type: 'attack'
-                  }
-                }
 
-                // player.success.deflected = {
-                //   state: true,
-                //   count: 1,
-                //   limit: player.success.deflected.limit,
-                //   predeflect: player.success.deflected.predeflect,
-                // }
+                  // player.success.deflected = {
+                  //   state: true,
+                  //   count: 1,
+                  //   limit: player.success.deflected.limit,
+                  //   predeflect: player.success.deflected.predeflect,
+                  // }
 
+                }
               }
+
             }
 
           }
@@ -2066,6 +2179,7 @@ class App extends Component {
             player.action = 'idle';
           }
         }
+
         // DEFENSE DELAY!!
         if (player.defending.count > 0 && player.defending.count < player.defending.limit+1) {
           player.defending.count++;
@@ -2079,6 +2193,7 @@ class App extends Component {
             limit: player.defending.limit,
           }
         }
+
         // COMPLETE PUSHBACK DEFLECT FLOW!
         if (player.pushBack.state === false && player.success.deflected.predeflect === true && player.moving.state === false) {
           // console.log('predefelct --> pushback ---> deflect');
@@ -2090,6 +2205,32 @@ class App extends Component {
             type: player.success.deflected.type,
           }
         }
+
+
+        // WEAPON/ARMOR CYCLE CHECK!!
+        if (
+          this.keyPressed[player.number-1].cycleWeapon === true
+        ) {
+          console.log('cycling weapon');
+          let currentIndex = player.items.weapons.indexOf(player.currentWeapon);
+          let newIndex;
+          if (currentIndex + 1 > player.items.weapons.length - 1) {
+            newIndex = 0
+          }
+          player.currentWeapon = player.items.weapons[newIndex]
+        }
+        if (
+          this.keyPressed[player.number-1].cycleArmor === true
+        ) {
+          console.log('cycling armor');
+          let currentIndex = player.items.armor.indexOf(player.currentArmor);
+          let newIndex;
+          if (currentIndex + 1 > player.items.armor.length - 1) {
+            newIndex = 0
+          }
+          player.currentArmor = player.items.armor[newIndex]
+        }
+
 
         // CAN READ MOVE INPUTS!!
         if (player.attacking.state === false && player.defending.state === false) {
@@ -2231,25 +2372,49 @@ class App extends Component {
               if (this.keyPressed[player.number-1].attack === true && player.success.deflected.state !== true) {
                 // console.log('start attacking');
                 // console.log('pre attack');
-                player.action = 'attacking';
-                player.attacking = {
-                  state: true,
-                  count: 1,
-                  limit: player.attacking.limit,
+
+                if (player.currentWeapon.name === '') {
+                  player.statusDisplay = {
+                    state: true,
+                    status: "No weapon. Can't attack",
+                    count: 1,
+                    limit: player.statusDisplay.limit,
+                  }
+                } else {
+                  player.action = 'attacking';
+                  player.attacking = {
+                    state: true,
+                    count: 1,
+                    limit: player.attacking.limit,
+                  }
                 }
+
               }
               if (this.keyPressed[player.number-1].defend === true) {
                 // console.log('start defending',player.number);
 
-                if (player.defending.count === 0) {
-                  player.defending = {
-                    state: false,
+                if (
+                  player.currentWeapon.name === '' &&
+                  player.currentArmor.name === ''
+                ) {
+                  player.statusDisplay = {
+                    state: true,
+                    status: "No weapon or armor. Can't defend",
                     count: 1,
-                    limit: player.defending.limit,
+                    limit: player.statusDisplay.limit,
                   }
                 } else {
-                  // console.log('cant start defend. might already be in progress');
+                  if (player.defending.count === 0) {
+                    player.defending = {
+                      state: false,
+                      count: 1,
+                      limit: player.defending.limit,
+                    }
+                  } else {
+                    // console.log('cant start defend. might already be in progress');
+                  }
                 }
+
               }
             }
           }
@@ -2299,6 +2464,10 @@ class App extends Component {
         limit: player.statusDisplay.limit,
       }
     }
+
+
+    // CHECK PROJECTILES!!
+
 
     // SYNC W/ GLOBAL PLAYER DATA
     this.players[player.number-1] = player;
@@ -2540,6 +2709,9 @@ class App extends Component {
       focusUp: this.refs.preAttackIndicate,
       focusDown: this.refs.preAttackIndicate,
       strengthDown: this.refs.preAttackIndicate,
+      sword: this.refs.preAttackIndicate,
+      spear: this.refs.preAttackIndicate,
+      crossbow: this.refs.preAttackIndicate,
     };
     let terrainImgs = [];
 
@@ -2616,39 +2788,57 @@ class App extends Component {
 
               let itemImg;
               let fillClr;
-              switch(cell.item.name) {
-                case 'moveSpeedUp' :
-                  fillClr = "purple";
-                  itemImg = itemImgs[cell.item.name];
-                break;
-                case 'moveSpeedDown' :
-                  fillClr = "blue";
-                  itemImg = itemImgs[cell.item.name];
-                break;
-                case 'hpUp' :
-                  fillClr = "yellow";
-                  itemImg = itemImgs[cell.item.name];
-                break;
-                case 'hpDown' :
-                  fillClr = "brown";
-                  itemImg = itemImgs[cell.item.name];
-                break;
-                case 'focusUp' :
-                  fillClr = "white";
-                  itemImg = itemImgs[cell.item.name];
-                break;
-                case 'focusDown' :
-                  fillClr = "black";
-                  itemImg = itemImgs[cell.item.name];
-                break;
-                case 'strengthUp' :
-                  fillClr = "green";
-                  itemImg = itemImgs[cell.item.name];
-                break;
-                case 'strengthDown' :
-                  fillClr = "red";
-                  itemImg = itemImgs[cell.item.name];
-                break;
+              if (cell.item.type === 'item') {
+                switch(cell.item.name) {
+                  case 'moveSpeedUp' :
+                    fillClr = "purple";
+                    itemImg = itemImgs[cell.item.name];
+                  break;
+                  case 'moveSpeedDown' :
+                    fillClr = "blue";
+                    itemImg = itemImgs[cell.item.name];
+                  break;
+                  case 'hpUp' :
+                    fillClr = "yellow";
+                    itemImg = itemImgs[cell.item.name];
+                  break;
+                  case 'hpDown' :
+                    fillClr = "brown";
+                    itemImg = itemImgs[cell.item.name];
+                  break;
+                  case 'focusUp' :
+                    fillClr = "white";
+                    itemImg = itemImgs[cell.item.name];
+                  break;
+                  case 'focusDown' :
+                    fillClr = "black";
+                    itemImg = itemImgs[cell.item.name];
+                  break;
+                  case 'strengthUp' :
+                    fillClr = "green";
+                    itemImg = itemImgs[cell.item.name];
+                  break;
+                  case 'strengthDown' :
+                    fillClr = "red";
+                    itemImg = itemImgs[cell.item.name];
+                  break;
+                }
+              }
+              else if (cell.item.type === 'weapon') {
+                switch(cell.item.subType) {
+                  case 'sword' :
+                    fillClr = "orange";
+                    itemImg = itemImgs[cell.item.subType];
+                  break;
+                  case 'spear' :
+                    fillClr = "maroon";
+                    itemImg = itemImgs[cell.item.subType];
+                  break;
+                  case 'crossbow' :
+                    fillClr = "olive";
+                    itemImg = itemImgs[cell.item.subType];
+                  break;
+                }
               }
 
               context.fillStyle = fillClr;
@@ -4186,7 +4376,7 @@ class App extends Component {
         if (cell.item.name !== '') {
           // console.log('picked up an item');
           if (
-            cell.item.type === 'weapeon' ||
+            cell.item.type === 'weapon' ||
             cell.item.type === 'armor'
           ) {
 
@@ -4314,6 +4504,7 @@ class App extends Component {
           cell.item = {
             name: '',
             type: '',
+            subType: '',
             initDrawn: false
           }
         }
@@ -4602,6 +4793,8 @@ class App extends Component {
                 // console.log('found cell to draw at',cell2,'item',item);
                 cell2.item.name = item.name;
                 cell2.item.type = item.type;
+                cell2.item.subType = item.subType;
+                cell2.item.effect = item.effect;
 
                 // item.amount--
                 console.log('post item', item, cell2.item,cell2.number);
@@ -4644,6 +4837,8 @@ class App extends Component {
                 ) {
                   cell2.item.name = item2.name;
                   cell2.item.type = item2.type;
+                  cell2.item.subType = item2.subType;
+                  cell2.item.effect = item2.effect;
 
                   item2.amount--
                   console.log('placed ingame item',cell2.number.x,cell2.number.y,item2.amount,this.itemList);
@@ -4843,6 +5038,8 @@ class App extends Component {
           item: {
             name: '',
             type: '',
+            subType: '',
+            effect: '',
             initDrawn: false
           },
           void: {
@@ -4976,6 +5173,9 @@ class App extends Component {
       focusUp: this.refs.preAttackIndicate,
       focusDown: this.refs.preAttackIndicate,
       strengthDown: this.refs.preAttackIndicate,
+      sword: this.refs.preAttackIndicate,
+      spear: this.refs.preAttackIndicate,
+      crossbow: this.refs.preAttackIndicate,
     };
 
     this.placeItems({init: true, items: ''});
@@ -5029,40 +5229,59 @@ class App extends Component {
                 // console.log('found cell with item undrawn');
                 let itemImg;
                 let fillClr;
-                switch(cell.item.name) {
-                  case 'moveSpeedUp' :
-                    fillClr = "purple";
-                    itemImg = itemImgs[cell.item.name];
-                  break;
-                  case 'moveSpeedDown' :
-                    fillClr = "blue";
-                    itemImg = itemImgs[cell.item.name];
-                  break;
-                  case 'hpUp' :
-                    fillClr = "yellow";
-                    itemImg = itemImgs[cell.item.name];
-                  break;
-                  case 'hpDown' :
-                    fillClr = "brown";
-                    itemImg = itemImgs[cell.item.name];
-                  break;
-                  case 'focusUp' :
-                    fillClr = "white";
-                    itemImg = itemImgs[cell.item.name];
-                  break;
-                  case 'focusDown' :
-                    fillClr = "black";
-                    itemImg = itemImgs[cell.item.name];
-                  break;
-                  case 'strengthUp' :
-                    fillClr = "green";
-                    itemImg = itemImgs[cell.item.name];
-                  break;
-                  case 'strengthDown' :
-                    fillClr = "red";
-                    itemImg = itemImgs[cell.item.name];
-                  break;
+                if (cell.item.type === 'item') {
+                  switch(cell.item.name) {
+                    case 'moveSpeedUp' :
+                      fillClr = "purple";
+                      itemImg = itemImgs[cell.item.name];
+                    break;
+                    case 'moveSpeedDown' :
+                      fillClr = "blue";
+                      itemImg = itemImgs[cell.item.name];
+                    break;
+                    case 'hpUp' :
+                      fillClr = "yellow";
+                      itemImg = itemImgs[cell.item.name];
+                    break;
+                    case 'hpDown' :
+                      fillClr = "brown";
+                      itemImg = itemImgs[cell.item.name];
+                    break;
+                    case 'focusUp' :
+                      fillClr = "white";
+                      itemImg = itemImgs[cell.item.name];
+                    break;
+                    case 'focusDown' :
+                      fillClr = "black";
+                      itemImg = itemImgs[cell.item.name];
+                    break;
+                    case 'strengthUp' :
+                      fillClr = "green";
+                      itemImg = itemImgs[cell.item.name];
+                    break;
+                    case 'strengthDown' :
+                      fillClr = "red";
+                      itemImg = itemImgs[cell.item.name];
+                    break;
+                  }
                 }
+                else if (cell.item.type === 'weapon') {
+                  switch(cell.item.subType) {
+                    case 'sword' :
+                      fillClr = "orange";
+                      itemImg = itemImgs[cell.item.subType];
+                    break;
+                    case 'spear' :
+                      fillClr = "maroon";
+                      itemImg = itemImgs[cell.item.subType];
+                    break;
+                    case 'crossbow' :
+                      fillClr = "olive";
+                      itemImg = itemImgs[cell.item.subType];
+                    break;
+                  }
+                }
+
 
                 context.fillStyle = fillClr;
                 context.beginPath();
