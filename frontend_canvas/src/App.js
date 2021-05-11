@@ -537,21 +537,21 @@ class App extends Component {
         total: 4,
         type: 'item'
       },
-      // {
-      //   name: 'spear',
-      //   amount: 3,
-      //   type: 'weapon',
-      // },
-      // {
-      //   name: 'sword',
-      //   amount: 2,
-      //   type: 'weapon',
-      // },
-      // {
-      //   name: 'crossbow',
-      //   amount: 2,
-      //   type: 'weapon',
-      // },
+      {
+        name: 'spear',
+        amount: 3,
+        type: 'weapon',
+      },
+      {
+        name: 'sword',
+        amount: 2,
+        type: 'weapon',
+      },
+      {
+        name: 'crossbow',
+        amount: 2,
+        type: 'weapon',
+      },
     ];
     this.initItemList = [
       {
@@ -933,6 +933,8 @@ class App extends Component {
         attack: false,
         defend: false,
         strafe: false,
+        cycleWeapon: false,
+        cycleArmor: false,
       },
       {
         north: false,
@@ -946,6 +948,8 @@ class App extends Component {
         attack: false,
         defend: false,
         strafe: false,
+        cycleWeapon: false,
+        cycleArmor: false,
       },
     ]
     this.clicked = {
@@ -1450,6 +1454,14 @@ class App extends Component {
       case 'r' :
         this.restartGame();
       break;
+      case '2' :
+       this.keyPressed[0].cycleWeapon = state;
+       this.currentPlayer = 1;
+      break;
+      case '3' :
+       this.keyPressed[0].cycleArmor = state;
+       this.currentPlayer = 1;
+      break;
 
       case 'u' :
        this.keyPressed[1].northWest = state;
@@ -1525,6 +1537,14 @@ class App extends Component {
         if (this.players[1].dead.state === true) {
           this.respawn(this.players[1])
         }
+      break;
+      case '9' :
+       this.keyPressed[1].cycleWeapon = state;
+       this.currentPlayer = 2;
+      break;
+      case '8' :
+       this.keyPressed[1].cycleArmor = state;
+       this.currentPlayer = 2;
       break;
     }
 
@@ -2049,9 +2069,9 @@ class App extends Component {
         // DEFENSE DELAY!!
         if (player.defending.count > 0 && player.defending.count < player.defending.limit+1) {
           player.defending.count++;
-          console.log('defend winding up',player.defending.count++, 'player',player.number);
+          // console.log('defend winding up',player.defending.count++, 'player',player.number);
         } else if (player.defending.count >= player.defending.limit && player.defending.state === false) {
-          console.log('defend wind up limit cap','player',player.number);
+          // console.log('defend wind up limit cap','player',player.number);
           player.action = 'defending';
           player.defending = {
             state: true,
@@ -4169,9 +4189,10 @@ class App extends Component {
             cell.item.type === 'weapeon' ||
             cell.item.type === 'armor'
           ) {
-            this.players[player.number-1].items[cell.item.type].push(cell.item.name)
 
-            // if armor and no current armor apply buff
+            // if no current set current else push to array and apply buff
+            // this.players[player.number-1].items[cell.item.type].push(cell.item.name)
+
           }
           else {
 
