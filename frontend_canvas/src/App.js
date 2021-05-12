@@ -444,7 +444,8 @@ class App extends Component {
 
     this.init = false;
     this.gamepad = false;
-    this.openVoid = true;
+    // this.openVoid = true;
+    this.openVoid = false;
     this.cellToVoid = {
       state: false,
       x: 0,
@@ -1812,7 +1813,6 @@ class App extends Component {
       }
 
     }
-
 
 
     // CHECK AND SET DEFLECTION!!
@@ -3372,7 +3372,7 @@ class App extends Component {
             }
           }
           else if (plyr.target.void === true && plyr.moving.state === true) {
-
+            // console.log('heading for thevoid @ draw step');
             if (plyr.moving.origin.number.x === this.gridWidth && plyr.moving.origin.number.y !== 0 && plyr.moving.origin.number.y !== this.gridWidth) {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y + 1) {
                 if (
@@ -4044,6 +4044,7 @@ class App extends Component {
       break;
     }
 
+    let midGridVoid = false;
     // FIND CENTER!!
     let cellSideLength;
     for (const cell of gridInfo) {
@@ -4054,9 +4055,12 @@ class App extends Component {
         xMatch === true && yMatch === true
       ) {
         targetCellCenter = cell.center;
+
+        // MID GRID VOID CHECK!!
         if (cell.void.state === true ) {
           target.void = true
           voidDirection = player.direction;
+          midGridVoid = true
         }
       }
     }
@@ -4111,6 +4115,9 @@ class App extends Component {
             y: player.currentPosition.cell.center.y+30,
           }
         break;
+      }
+      if (midGridVoid === true) {
+        voidCenter = targetCellCenter;
       }
       targetCellCenter = voidCenter;
 
