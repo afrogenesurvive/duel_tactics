@@ -444,7 +444,14 @@ class App extends Component {
 
     this.init = false;
     this.gamepad = false;
-    this.openVoid = false;
+    this.openVoid = true;
+    this.cellToVoid = {
+      state: false,
+      x: 0,
+      y: 0,
+      count: 0,
+      limit: 35,
+    }
 
     this.gridInfo = [];
     this.gridInfo2D = [];
@@ -1024,6 +1031,7 @@ class App extends Component {
     }
     this.turnCheckerDirection = '';
     this.projectiles = [];
+
   }
 
   // implement a prePlayer update function
@@ -1525,6 +1533,12 @@ class App extends Component {
        this.currentPlayer = 1;
       break;
 
+
+      // case 'p' :
+      //  this.openVoid = !this.openVoid;
+      // break;
+
+
       case 'u' :
        this.keyPressed[1].northWest = state;
        // direction = 'northWest';
@@ -1747,7 +1761,56 @@ class App extends Component {
 
     // OPEN VOID!!???
     if (this.openVoid === true) {
-      this.voidSummon();
+
+      if (this.cellToVoid.state !== true) {
+        // console.log('set a new cell to void');
+
+        let cell = {
+          x: 0,
+          y: 0
+        }
+
+        let voidChance = Math.round(1000/this.gridWidth)
+        let openVoid = this.rnJesus(1,voidChance);
+
+        cell.x = this.rnJesus(0,this.gridWidth)
+        cell.y = this.rnJesus(0,this.gridWidth)
+
+        this.cellToVoid.state = true;
+        this.cellToVoid.x = cell.x;
+        this.cellToVoid.y = cell.y;
+        this.cellToVoid.count = 1;
+
+
+      }
+      else if (this.cellToVoid.state === true) {
+        // console.log('already voiding a cell');
+        if (this.cellToVoid.count < this.cellToVoid.limit) {
+          this.cellToVoid.count++
+          // console.log('cv',this.cellToVoid.count);
+        }
+        else if (this.cellToVoid.count >= this.cellToVoid.limit) {
+          // console.log('summon void now');
+
+          let cell = {
+            x: this.cellToVoid.x,
+            y: this.cellToVoid.y,
+          }
+
+          this.voidSummon(cell);
+
+          this.cellToVoid = {
+            state: false,
+            x: 0,
+            y: 0,
+            count: 0,
+            limit: this.cellToVoid.limit,
+          }
+
+        }
+
+      }
+
     }
 
 
@@ -1767,8 +1830,10 @@ class App extends Component {
       this.deflectDrop(player)
     }
 
+
     // DEFLECTED PLAYER CAN'T DO ANYTHING!!
     if (player.success.deflected.state === false) {
+
 
       // DON'T READ INPUTS. JUST MOVE!!
       if (player.moving.state === true) {
@@ -1886,6 +1951,7 @@ class App extends Component {
 
       }
 
+
       // CAN READ INPUTS
       else if (player.moving.state === false) {
 
@@ -1954,6 +2020,7 @@ class App extends Component {
           player.strafeReleaseHook = false;
         }
 
+
         // CHECK & UPDATE ACTIONS IN PROGRESS!!
         if (player.pushBack.state !== true && player.pushBack.prePushBackMoveSpeed !== 0) {
 
@@ -1978,6 +2045,7 @@ class App extends Component {
             y: -30,
           }
         }
+
 
         // ATTACK/DEFEND/DEFLECT CHECK!!
         if (player.attacking.state === true) {
@@ -2209,7 +2277,8 @@ class App extends Component {
 
         // WEAPON/ARMOR CYCLE CHECK!!
         if (
-          this.keyPressed[player.number-1].cycleWeapon === true
+          this.keyPressed[player.number-1].cycleWeapon === true &&
+          player.items.weapons.length > 0
         ) {
           console.log('cycling weapon');
           let currentIndex = player.items.weapons.indexOf(player.currentWeapon);
@@ -2220,7 +2289,8 @@ class App extends Component {
           player.currentWeapon = player.items.weapons[newIndex]
         }
         if (
-          this.keyPressed[player.number-1].cycleArmor === true
+          this.keyPressed[player.number-1].cycleArmor === true &&
+          player.items.armor.length > 0
         ) {
           console.log('cycling armor');
           let currentIndex = player.items.armor.indexOf(player.currentArmor);
@@ -2744,6 +2814,20 @@ class App extends Component {
         }
 
         let drawFloor = true;
+
+        if (
+          this.cellToVoid.state === true &&
+          this.cellToVoid.x === x &&
+          this.cellToVoid.y === y
+        ) {
+          if(this.cellToVoid.count % 5 === 0) {
+            drawFloor = false;
+          } else {
+            drawFloor = true;
+          }
+        }
+
+
         let cellLevelData;
         let allCells = gridInfo;
         for (const elem of allCells) {
@@ -2758,7 +2842,6 @@ class App extends Component {
         if (drawFloor === true) {
           context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
         }
-
 
         context.fillStyle = 'black';
         context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
@@ -2840,6 +2923,7 @@ class App extends Component {
                   break;
                 }
               }
+
 
               context.fillStyle = fillClr;
               context.beginPath();
@@ -4699,11 +4783,11 @@ class App extends Component {
   restartGame = () => {
     console.log('resetting');
 
-    let canvas = this.canvasRef.current;
-    let context = canvas.getContext('2d');
-
-    let canvas2 = this.canvasRef2.current;
-    let context2 = canvas2.getContext('2d');
+    // let canvas = this.canvasRef.current;
+    // let context = canvas.getContext('2d');
+    //
+    // let canvas2 = this.canvasRef2.current;
+    // let context2 = canvas2.getContext('2d');
 
     for (const player of this.players) {
       player.ghost.state = false;
@@ -4715,7 +4799,7 @@ class App extends Component {
       };
     }
 
-    this.drawGridInit(canvas, context, canvas2, context2);
+    this.drawGridInit(this.state.canvas, this.state.context);
 
   }
 
@@ -4865,18 +4949,18 @@ class App extends Component {
     //   if dropped gear remove buff/effect
 
   }
-  voidSummon = () => {
+  voidSummon = (cell) => {
     // console.log('opening void');
-    let voidChance = Math.round(1000/this.gridWidth)
-    let openVoid = this.rnJesus(1,voidChance);
+    // let voidChance = Math.round(1000/this.gridWidth)
+    // let openVoid = this.rnJesus(1,voidChance);
     // let openVoid;
-    if (openVoid === 1) {
-      let cell = {
-        x: 0,
-        y: 0
-      }
-      cell.x = this.rnJesus(0,this.gridWidth)
-      cell.y = this.rnJesus(0,this.gridWidth)
+    // if (openVoid === 1) {
+      // let cell = {
+      //   x: 0,
+      //   y: 0
+      // }
+      // cell.x = this.rnJesus(0,this.gridWidth)
+      // cell.y = this.rnJesus(0,this.gridWidth)
 
       let foundPlayer;
       let player;
@@ -4890,7 +4974,6 @@ class App extends Component {
             cell2.number.x !== this.gridWidth &&
             cell2.number.y !== this.gridWidth
           ) {
-
             if (
               cell2.number.x === cell.x &&
               cell2.number.y === cell.y
@@ -4898,6 +4981,8 @@ class App extends Component {
               cell2.item = {
                 name: '',
                 type: '',
+                subType: '',
+                effect: '',
                 initDrawn: false
               };
               cell2.void.state = true;
@@ -4967,11 +5052,11 @@ class App extends Component {
           let nextPosition = this.lineCrementer(plyr);
           this.players[plyr.number-1].nextPosition = nextPosition;
 
-
         }
       }
 
-    }
+    // }
+    // this.openVoid = false;
   }
 
   startProcessLevelData = (canvas) => {
@@ -5276,7 +5361,7 @@ class App extends Component {
                       itemImg = itemImgs[cell.item.subType];
                     break;
                     case 'crossbow' :
-                      fillClr = "olive";
+                      fillClr = "navy";
                       itemImg = itemImgs[cell.item.subType];
                     break;
                   }
