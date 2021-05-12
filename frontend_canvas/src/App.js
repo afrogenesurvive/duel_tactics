@@ -235,6 +235,16 @@ class App extends Component {
           ],
           armour: [],
         },
+        cycleWeapon: {
+          state: false,
+          count: 0,
+          limit: 3,
+        },
+        cycleArmour: {
+          state: false,
+          count: 0,
+          limit: 3,
+        },
         crits: {
           doubleHit: 6,
           pushBack: 3,
@@ -412,6 +422,16 @@ class App extends Component {
             }
           ],
           armour: [],
+        },
+        cycleWeapon: {
+          state: false,
+          count: 0,
+          limit: 3,
+        },
+        cycleArmour: {
+          state: false,
+          count: 0,
+          limit: 3,
         },
         crits: {
           doubleHit: 6,
@@ -594,7 +614,7 @@ class App extends Component {
         effect: '',
       },
       {
-        name: 'sword1',
+        name: 'sword2',
         amount: 2,
         total: 2,
         type: 'weapon',
@@ -638,7 +658,7 @@ class App extends Component {
         effect: '',
       },
       {
-        name: 'sword1',
+        name: 'sword2',
         type: 'weapon',
         subType: 'sword',
         effect: '',
@@ -813,6 +833,16 @@ class App extends Component {
           ],
           armour: [],
         },
+        cycleWeapon: {
+          state: false,
+          count: 0,
+          limit: 3,
+        },
+        cycleArmour: {
+          state: false,
+          count: 0,
+          limit: 3,
+        },
         crits: {
           doubleHit: 6,
           pushBack: 3,
@@ -972,7 +1002,6 @@ class App extends Component {
           range: [.05,.1,.125,.2]
         },
         hp: 2,
-
         currentWeapon: {
           name: 'sword1',
           type: 'sword',
@@ -992,6 +1021,16 @@ class App extends Component {
             effect: '',
           }],
           armour: [],
+        },
+        cycleWeapon: {
+          state: false,
+          count: 0,
+          limit: 3,
+        },
+        cycleArmour: {
+          state: false,
+          count: 0,
+          limit: 3,
         },
         crits: {
           doubleHit: 6,
@@ -2092,7 +2131,7 @@ class App extends Component {
 
             if (player.currentWeapon.name === 'crossbow') {
               let projectileId = this.projectiles.length + 1;
-              this.projectiles.push({
+              let bolt = {
                 id: '000'+projectileId+'',
                 owner: player.number,
                 origin: player.currentPosition.cell,
@@ -2144,10 +2183,12 @@ class App extends Component {
                   }
                 },
                 speed: .2,
-              })
+              }
+              this.projectiles.push(bolt)
 
-              this.getTarget(player)
-            } else if (player.currentWeapon.name !== 'crossbow') {
+              this.getBoltTarget(bolt)
+            }
+            else if (player.currentWeapon.name !== 'crossbow') {
 
               this.getTarget(player)
               if (player.target.occupant.type === 'player') {
@@ -2320,42 +2361,97 @@ class App extends Component {
 
 
         // WEAPON/ARMOR CYCLE CHECK!!
-        if (
-          this.keyPressed[player.number-1].cycleWeapon === true &&
-          player.items.weapons.length > 0
-        ) {
-          console.log('cycling weapon');
 
-          // let currentIndex = player.items.weapons.indexOf(player.currentWeapon);
-          let currentIndex = player.items.weaponIndex;
-          let newIndex;
-          // console.log(player.items.weapons,player.currentWeapon,currentIndex,player.items.weapons[currentIndex]);
-          if (currentIndex + 1 > player.items.weapons.length - 1) {
-            newIndex = 0
-          } else {
-            newIndex = currentIndex+1;
+        if (this.keyPressed[player.number-1].cycleWeapon === true && player.cycleWeapon.state === false) {
+          if (player.cycleWeapon.count < player.cycleWeapon.limit) {
+            player.cycleWeapon.count++
+            // console.log('player.cycleWeapon.count',player.cycleWeapon.count);
           }
-          player.items.weaponIndex = newIndex;
-          player.currentWeapon = player.items.weapons[newIndex]
-          // console.log(player.items.weapons,player.currentWeapon,newIndex,player.items.weapons[newIndex]);
-        }
-        if (
-          this.keyPressed[player.number-1].cycleArmour === true &&
-          player.items.armour.length > 0
-        ) {
-          console.log('cycling armour');
+          if (player.cycleWeapon.count >= player.cycleWeapon.limit) {
 
-          // let currentIndex = player.items.armour.indexOf(player.currentArmour);
-          let currentIndex = player.items.armourIndex;
-          let newIndex;
-          if (currentIndex + 1 > player.items.armour.length - 1) {
-            newIndex = 0
-          } else {
-            newIndex = currentIndex+1;
+            if (
+              this.keyPressed[player.number-1].cycleWeapon === true &&
+              player.items.weapons.length > 1
+            ) {
+              console.log('cycling weapon');
+
+              // let currentIndex = player.items.weapons.indexOf(player.currentWeapon);
+              let currentIndex = player.items.weaponIndex;
+              let newIndex;
+              // console.log(player.items.weapons,player.currentWeapon,currentIndex,player.items.weapons[currentIndex]);
+              if (currentIndex + 1 > player.items.weapons.length - 1) {
+                newIndex = 0
+              } else {
+                newIndex = currentIndex+1;
+              }
+              player.items.weaponIndex = newIndex;
+              player.currentWeapon = player.items.weapons[newIndex]
+              // console.log(player.items.weapons,player.currentWeapon,newIndex,player.items.weapons[newIndex]);
+
+            }
+            if (
+              this.keyPressed[player.number-1].cycleWeapon === true &&
+              player.items.weapons.length === 1
+            ) {
+              console.log('nothing to cycle through');
+            }
+
+            player.cycleWeapon = {
+              state: false,
+              count: 0,
+              limit: player.cycleWeapon.limit,
+            }
           }
-          player.items.armourIndex = newIndex;
-          player.currentArmour = player.items.armour[newIndex]
+
         }
+        else if (this.keyPressed[player.number-1].cycleWeapon === true && player.cycleWeapon.state === true) {
+          console.log('already cycling weapon');
+        }
+
+        if (this.keyPressed[player.number-1].cycleArmour === true && player.cycleArmour.state === false) {
+          if (player.cycleArmour.count < player.cycleArmour.limit) {
+            player.cycleArmour.count++
+            // console.log('player.cycleArmour.count',player.cycleArmour.count);
+          }
+          if (player.cycleArmour.count >= player.cycleArmour.limit) {
+
+            if (
+              this.keyPressed[player.number-1].cycleArmour === true &&
+              player.items.armour.length > 0
+            ) {
+              console.log('cycling armour');
+
+              // let currentIndex = player.items.armour.indexOf(player.currentArmour);
+              let currentIndex = player.items.armourIndex;
+              let newIndex;
+              if (currentIndex + 1 > player.items.armour.length - 1) {
+                newIndex = 0
+              } else {
+                newIndex = currentIndex+1;
+              }
+              player.items.armourIndex = newIndex;
+              player.currentArmour = player.items.armour[newIndex]
+
+            }
+            if (
+              this.keyPressed[player.number-1].cycleArmour === true &&
+              player.items.armour.length === 0
+            ) {
+              console.log('nothing to cycle through');
+            }
+
+            player.cycleArmour = {
+              state: false,
+              count: 0,
+              limit: player.cycleArmour.limit,
+            }
+
+          }
+        }
+        else if (this.keyPressed[player.number-1].cycleArmour === true && player.cycleArmour.state === true) {
+          console.log('already cycling armour');
+        }
+
 
 
         // CAN READ MOVE INPUTS!!
@@ -2593,6 +2689,20 @@ class App extends Component {
 
 
     // CHECK PROJECTILES!!
+    // for (const bolt of this.projectiles) {
+    //   if bolt is moving
+    //     run projectileLinecrementer
+    //     check it's current cell based of current position
+    //     check if current cell is occupied
+    //       if obstacle kill projectile
+    //       check occupant defense
+    //       if not defending attack and kill projectile
+    //
+    //     if next position is outside canvas bounds remove it
+    //
+
+
+    // }
 
 
     // SYNC W/ GLOBAL PLAYER DATA
@@ -4181,6 +4291,19 @@ class App extends Component {
       context.fillRect(voidCenter.x, voidCenter.y,5,5);
     }
 
+    if (player.currentWeapon.type === 'spear') {
+      switch(direction) {
+        case 'north' :
+          targetCellNumber = {
+            x: currentPosition.x,
+            y: currentPosition.y-1
+          }
+        break;
+      }
+
+      // check for void and set void center
+    }
+
     target.cell = {
       number: targetCellNumber,
       center: targetCellCenter
@@ -4509,6 +4632,72 @@ class App extends Component {
     })
 
     return newPosition;
+
+  }
+
+  getBoltTarget = (bolt) => {
+
+    // get array of cell for path instead of singular target
+
+    // {
+    //   id: '000'+projectileId+'',
+    //   owner: player.number,
+    //   origin: player.currentPosition.cell,
+    //   direction: player.direction,
+    //   moving: {
+    //     state: true,
+    //     step: 0,
+    //     course: '',
+    //     origin: {
+    //       number: player.currentPosition.cell.number,
+    //       center: player.currentPosition.cell.center,
+    //     },
+    //     destination: {
+    //       x: 0,
+    //       y: 0,
+    //     }
+    //   },
+    //   currentPosition: player.currentPosition.cell,
+    //   nextPosition: {
+    //     x: 0,
+    //     y: 0,
+    //   },
+    //   target: {
+    //     path: [{
+    //       number: {
+    //         x: 0,
+    //         y: 0,
+    //       },
+    //       center: {
+    //         x: 0,
+    //         y: 0,
+    //       },
+    //     }],
+    //     current: {
+    //       number: {
+    //         x: 0,
+    //         y: 0,
+    //       },
+    //       center: {
+    //         x: 0,
+    //         y: 0,
+    //       },
+    //       free: true,
+    //       occupant: {
+    //         type: '',
+    //         player: '',
+    //       },
+    //       void: false,
+    //     }
+    //   },
+    //   speed: .2,
+    // }
+
+  }
+  boltCrementer = (bolt) => {
+    console.log('boltCrementer');
+
+
 
   }
   checkDestination = (player) => {

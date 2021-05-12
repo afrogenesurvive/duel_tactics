@@ -132,12 +132,12 @@ const DebugBox = props => {
       <ul className="debugBoxList">
         <li className="debugBoxListItem">
           <p className="debugBoxText">
-           Weapon: {props.player.currentWeapon.type}
+           Weapon: {props.player.currentWeapon.name}
           </p>
         </li>
         <li className="debugBoxListItem">
           <p className="debugBoxText">
-           Armour: {props.player.currentArmour.type}
+           Armour: {props.player.currentArmour.name}
           </p>
         </li>
       </ul>
