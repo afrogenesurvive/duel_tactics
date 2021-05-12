@@ -2082,7 +2082,7 @@ class App extends Component {
                   y: 0,
                 },
                 target: {
-                  cell: {
+                  path: [{
                     number: {
                       x: 0,
                       y: 0,
@@ -2091,13 +2091,23 @@ class App extends Component {
                       x: 0,
                       y: 0,
                     },
-                  },
-                  free: true,
-                  occupant: {
-                    type: '',
-                    player: '',
-                  },
-                  void: false
+                  }],
+                  current: {
+                    number: {
+                      x: 0,
+                      y: 0,
+                    },
+                    center: {
+                      x: 0,
+                      y: 0,
+                    },
+                    free: true,
+                    occupant: {
+                      type: '',
+                      player: '',
+                    },
+                    void: false,
+                  }
                 },
                 speed: .2,
               })
