@@ -972,7 +972,7 @@ class App extends Component {
           range: [.05,.1,.125,.2]
         },
         hp: 2,
-        
+
         currentWeapon: {
           name: 'sword1',
           type: 'sword',
@@ -2329,7 +2329,7 @@ class App extends Component {
           // let currentIndex = player.items.weapons.indexOf(player.currentWeapon);
           let currentIndex = player.items.weaponIndex;
           let newIndex;
-          console.log(player.items.weapons,player.currentWeapon,currentIndex,player.items.weapons[currentIndex]);
+          // console.log(player.items.weapons,player.currentWeapon,currentIndex,player.items.weapons[currentIndex]);
           if (currentIndex + 1 > player.items.weapons.length - 1) {
             newIndex = 0
           } else {
@@ -2337,7 +2337,7 @@ class App extends Component {
           }
           player.items.weaponIndex = newIndex;
           player.currentWeapon = player.items.weapons[newIndex]
-          console.log(player.items.weapons,player.currentWeapon,newIndex,player.items.weapons[newIndex]);
+          // console.log(player.items.weapons,player.currentWeapon,newIndex,player.items.weapons[newIndex]);
         }
         if (
           this.keyPressed[player.number-1].cycleArmour === true &&
