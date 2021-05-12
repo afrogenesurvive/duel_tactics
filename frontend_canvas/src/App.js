@@ -218,14 +218,22 @@ class App extends Component {
           type: 'sword',
           effect: '',
         },
-        currentArmor: {
+        currentArmour: {
           name: '',
           type: '',
           effect: '',
         },
         items: {
-          weapons: [],
-          armor: [],
+          weaponIndex: 0,
+          armourIndex: 0,
+          weapons: [
+            {
+              name: 'sword1',
+              type: 'sword',
+              effect: '',
+            }
+          ],
+          armour: [],
         },
         crits: {
           doubleHit: 6,
@@ -388,14 +396,22 @@ class App extends Component {
           type: 'sword',
           effect: '',
         },
-        currentArmor: {
+        currentArmour: {
           name: '',
           type: '',
           effect: '',
         },
         items: {
-          weapons: [],
-          armor: [],
+          weaponIndex: 0,
+          armourIndex: 0,
+          weapons: [
+            {
+              name: 'sword1',
+              type: 'sword',
+              effect: '',
+            }
+          ],
+          armour: [],
         },
         crits: {
           doubleHit: 6,
@@ -612,17 +628,20 @@ class App extends Component {
       },
       // {
       //   name: 'hpDown',
-      //   type: 'item'
+      //   type: 'item',
+      //   effect: '',
       // },
       {
         name: 'spear1',
         type: 'weapon',
         subType: 'spear',
+        effect: '',
       },
       {
         name: 'sword1',
         type: 'weapon',
         subType: 'sword',
+        effect: '',
       },
     ];
     this.currentPlayer = 1;
@@ -777,14 +796,22 @@ class App extends Component {
           type: 'sword',
           effect: '',
         },
-        currentArmor: {
+        currentArmour: {
           name: '',
           type: '',
           effect: '',
         },
         items: {
-          weapons: [],
-          armor: [],
+          weaponIndex: 0,
+          armourIndex: 0,
+          weapons: [
+            {
+              name: 'sword1',
+              type: 'sword',
+              effect: '',
+            }
+          ],
+          armour: [],
         },
         crits: {
           doubleHit: 6,
@@ -945,19 +972,26 @@ class App extends Component {
           range: [.05,.1,.125,.2]
         },
         hp: 2,
+        
         currentWeapon: {
           name: 'sword1',
           type: 'sword',
           effect: '',
         },
-        currentArmor: {
+        currentArmour: {
           name: '',
           type: '',
           effect: '',
         },
         items: {
-          weapons: [],
-          armor: [],
+          weaponIndex: 0,
+          armourIndex: 0,
+          weapons: [{
+            name: 'sword1',
+            type: 'sword',
+            effect: '',
+          }],
+          armour: [],
         },
         crits: {
           doubleHit: 6,
@@ -1004,7 +1038,7 @@ class App extends Component {
         defend: false,
         strafe: false,
         cycleWeapon: false,
-        cycleArmor: false,
+        cycleArmour: false,
       },
       {
         north: false,
@@ -1019,7 +1053,7 @@ class App extends Component {
         defend: false,
         strafe: false,
         cycleWeapon: false,
-        cycleArmor: false,
+        cycleArmour: false,
       },
     ]
     this.clicked = {
@@ -1530,7 +1564,7 @@ class App extends Component {
        this.currentPlayer = 1;
       break;
       case '3' :
-       this.keyPressed[0].cycleArmor = state;
+       this.keyPressed[0].cycleArmour = state;
        this.currentPlayer = 1;
       break;
 
@@ -1620,7 +1654,7 @@ class App extends Component {
        this.currentPlayer = 2;
       break;
       case '8' :
-       this.keyPressed[1].cycleArmor = state;
+       this.keyPressed[1].cycleArmour = state;
        this.currentPlayer = 2;
       break;
     }
@@ -2291,24 +2325,36 @@ class App extends Component {
           player.items.weapons.length > 0
         ) {
           console.log('cycling weapon');
-          let currentIndex = player.items.weapons.indexOf(player.currentWeapon);
+
+          // let currentIndex = player.items.weapons.indexOf(player.currentWeapon);
+          let currentIndex = player.items.weaponIndex;
           let newIndex;
+          console.log(player.items.weapons,player.currentWeapon,currentIndex,player.items.weapons[currentIndex]);
           if (currentIndex + 1 > player.items.weapons.length - 1) {
             newIndex = 0
+          } else {
+            newIndex = currentIndex+1;
           }
+          player.items.weaponIndex = newIndex;
           player.currentWeapon = player.items.weapons[newIndex]
+          console.log(player.items.weapons,player.currentWeapon,newIndex,player.items.weapons[newIndex]);
         }
         if (
-          this.keyPressed[player.number-1].cycleArmor === true &&
-          player.items.armor.length > 0
+          this.keyPressed[player.number-1].cycleArmour === true &&
+          player.items.armour.length > 0
         ) {
-          console.log('cycling armor');
-          let currentIndex = player.items.armor.indexOf(player.currentArmor);
+          console.log('cycling armour');
+
+          // let currentIndex = player.items.armour.indexOf(player.currentArmour);
+          let currentIndex = player.items.armourIndex;
           let newIndex;
-          if (currentIndex + 1 > player.items.armor.length - 1) {
+          if (currentIndex + 1 > player.items.armour.length - 1) {
             newIndex = 0
+          } else {
+            newIndex = currentIndex+1;
           }
-          player.currentArmor = player.items.armor[newIndex]
+          player.items.armourIndex = newIndex;
+          player.currentArmour = player.items.armour[newIndex]
         }
 
 
@@ -2475,11 +2521,11 @@ class App extends Component {
 
                 if (
                   player.currentWeapon.name === '' &&
-                  player.currentArmor.name === ''
+                  player.currentArmour.name === ''
                 ) {
                   player.statusDisplay = {
                     state: true,
-                    status: "No weapon or armor. Can't defend",
+                    status: "No weapon or armour. Can't defend",
                     count: 1,
                     limit: player.statusDisplay.limit,
                   }
@@ -4476,16 +4522,67 @@ class App extends Component {
       ) {
         if (cell.item.name !== '') {
           // console.log('picked up an item');
-          if (
-            cell.item.type === 'weapon' ||
-            cell.item.type === 'armor'
-          ) {
+          if (cell.item.type === 'weapon') {
+            // console.log('weapon',cell.item);
 
-            // if no current set current else push to array and apply buff
-            // this.players[player.number-1].items[cell.item.type].push(cell.item.name)
+            if (player.currentWeapon.name === '' || player.currentWeapon === {}) {
+              this.players[player.number-1].currentWeapon = {
+                name: cell.item.name,
+                type: cell.item.subType,
+                effect: cell.item.effect,
+              }
+              this.players[player.number-1].items.weapons.push({
+                name: cell.item.name,
+                type: cell.item.subType,
+                effect: cell.item.effect,
+              })
+            }
+            else {
+              this.players[player.number-1].items.weapons.push({
+                name: cell.item.name,
+                type: cell.item.subType,
+                effect: cell.item.effect,
+              })
+            }
+            this.players[player.number-1].statusDisplay = {
+              state: true,
+              status: 'weapon accquired',
+              count: 1,
+              limit: this.players[player.number-1].statusDisplay.limit,
+            }
+
+          }
+          if (cell.item.type === 'armour') {
+
+            if (player.currentArmour.name === '' || player.currentArmour === {}) {
+              this.players[player.number-1].currentArmour = {
+                name: cell.item.name,
+                type: cell.item.subType,
+                effect: cell.item.effect,
+              }
+              this.players[player.number-1].items.armour.push({
+                name: cell.item.name,
+                type: cell.item.subType,
+                effect: cell.item.effect,
+              })
+            }
+            else {
+              this.players[player.number-1].items.armour.push({
+                name: cell.item.name,
+                type: cell.item.subType,
+                effect: cell.item.effect,
+              })
+            }
+            this.players[player.number-1].statusDisplay = {
+              state: true,
+              status: 'armour accquired',
+              count: 1,
+              limit: this.players[player.number-1].statusDisplay.limit,
+            }
 
           }
           else {
+            // console.log('item',cell.item);
 
             switch(cell.item.name) {
               case 'moveSpeedUp' :
