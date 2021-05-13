@@ -109,6 +109,16 @@ class App extends Component {
               y: 0,
             },
           },
+          cell2: {
+            number: {
+              x: 0,
+              y: 0,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            },
+          },
           free: true,
           occupant: {
             type: '',
@@ -288,6 +298,16 @@ class App extends Component {
         },
         target: {
           cell: {
+            number: {
+              x: 0,
+              y: 0,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            },
+          },
+          cell2: {
             number: {
               x: 0,
               y: 0,
@@ -525,11 +545,11 @@ class App extends Component {
       row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
       row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
       row2: ['x20x','x21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x'],
-      row3: ['x30x','x31x','x32x','y33x','x34x','x35x','x36x','x37x','x38x','x39x'],
-      row4: ['x40x','x41x','x42x','x43x','y44x','x45x','x46x','x47x','x48x','z49x'],
+      row3: ['x30x','x31x','x32x','x33x','x34x','x35x','x36x','x37x','x38x','x39x'],
+      row4: ['x40x','x41x','x42x','x43x','x44x','x45x','x46x','x47x','x48x','z49x'],
       row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58x','x59x'],
-      row6: ['x60x','y61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
-      row7: ['x70x','y71x','x72x','x73x','x74x','x75x','x76x','y77x','x78x','x79x'],
+      row6: ['x60x','x61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
+      row7: ['x70x','x71x','x72x','x73x','x74x','x75x','x76x','y77x','x78x','x79x'],
       row8: ['x80x','x81x','x82x','x83x','y84x','x85x','y86x','x87x','x88x','x89x'],
       row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
     };
@@ -641,11 +661,11 @@ class App extends Component {
         type: 'item',
         effect: '',
       },
-      {
-        name: 'hpUp',
-        type: 'item',
-        effect: '',
-      },
+      // {
+      //   name: 'hpUp',
+      //   type: 'item',
+      //   effect: '',
+      // },
       // {
       //   name: 'hpDown',
       //   type: 'item',
@@ -657,10 +677,16 @@ class App extends Component {
         subType: 'spear',
         effect: '',
       },
+      // {
+      //   name: 'sword2',
+      //   type: 'weapon',
+      //   subType: 'sword',
+      //   effect: '',
+      // },
       {
-        name: 'sword2',
+        name: 'crossbow1',
         type: 'weapon',
-        subType: 'sword',
+        subType: 'crossbow',
         effect: '',
       },
     ];
@@ -698,6 +724,16 @@ class App extends Component {
         },
         target: {
           cell: {
+            number: {
+              x: 0,
+              y: 0,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            },
+          },
+          cell2: {
             number: {
               x: 0,
               y: 0,
@@ -895,12 +931,23 @@ class App extends Component {
               y: 0,
             },
           },
+          cell2: {
+            number: {
+              x: 0,
+              y: 0,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            },
+          },
           free: true,
           occupant: {
             type: '',
             player: '',
           },
-          void: false
+          void: false,
+
         },
         direction: 'north',
         turning: {
@@ -1105,6 +1152,7 @@ class App extends Component {
     }
     this.turnCheckerDirection = '';
     this.projectiles = [];
+    this.cellsUnderAttack = [];
 
   }
 
@@ -1140,7 +1188,6 @@ class App extends Component {
     }
 
   }
-
 
   componentWillUnmount() {
     window.cancelAnimationFrame(this.stepper.currentTime);
@@ -1970,7 +2017,7 @@ class App extends Component {
           }
         // }
         // else if (player.speed.move === .1) {
-
+        //
         //   console.log('normal move speed');
         //   if (
         //     nextPosition.x === player.target.cell.center.x &&
@@ -2042,6 +2089,7 @@ class App extends Component {
 
           player.speed.move = .05;
         }
+
 
         // KEY PRESS RELEASE CHECKS!!
         if (player.turning.state === false) {
@@ -2129,7 +2177,9 @@ class App extends Component {
           if (player.attacking.count === 8) {
             // console.log('attack peak & cooldown');
 
-            if (player.currentWeapon.name === 'crossbow') {
+            if (player.currentWeapon.type === 'crossbow') {
+              console.log('firing crossbow');
+
               let projectileId = this.projectiles.length + 1;
               let bolt = {
                 id: '000'+projectileId+'',
@@ -2187,10 +2237,17 @@ class App extends Component {
               this.projectiles.push(bolt)
 
               this.getBoltTarget(bolt)
+              this.boltCrementer(bolt)
             }
-            else if (player.currentWeapon.name !== 'crossbow') {
+            else if (player.currentWeapon.type !== 'crossbow') {
 
               this.getTarget(player)
+
+              if (player.currentWeapon.type === 'spear') {
+                console.log('spear target',player.target);
+              }
+
+
               if (player.target.occupant.type === 'player') {
 
                 // ATTACK SUCCESS!!
@@ -2689,20 +2746,20 @@ class App extends Component {
 
 
     // CHECK PROJECTILES!!
-    // for (const bolt of this.projectiles) {
-    //   if bolt is moving
-    //     run projectileLinecrementer
-    //     check it's current cell based of current position
-    //     check if current cell is occupied
-    //       if obstacle kill projectile
-    //       check occupant defense
-    //       if not defending attack and kill projectile
-    //
-    //     if next position is outside canvas bounds remove it
-    //
+    for (const bolt of this.projectiles) {
+      if (bolt.moving.state === true) {
+        console.log('traking projectile',bolt.id);
+        this.boltCrementer(bolt);
 
-
-    // }
+        // check it's current cell based of current position
+        //     check if current cell is occupied
+        //       if obstacle kill projectile
+        //       check occupant defense
+        //       if not defending attack and kill projectile
+        //
+        //     if next position is outside canvas bounds remove it
+      }
+    }
 
 
     // SYNC W/ GLOBAL PLAYER DATA
@@ -3005,6 +3062,7 @@ class App extends Component {
           }
         }
 
+
         if (drawFloor === true) {
           context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
         }
@@ -3084,7 +3142,7 @@ class App extends Component {
                     itemImg = itemImgs[cell.item.subType];
                   break;
                   case 'crossbow' :
-                    fillClr = "olive";
+                    fillClr = "navy";
                     itemImg = itemImgs[cell.item.subType];
                   break;
                 }
@@ -4067,6 +4125,16 @@ class App extends Component {
           y: 0,
         },
       },
+      cell2: {
+        number: {
+          x: 0,
+          y: 0,
+        },
+        center: {
+          x: 0,
+          y: 0,
+        },
+      },
       free: false,
       occupant: {
         type: '',
@@ -4210,6 +4278,118 @@ class App extends Component {
       break;
     }
 
+    if (player.currentWeapon.type === 'spear' && player.attacking.state === true) {
+      switch(direction) {
+        case 'north' :
+          targetCellNumber = {
+            x: currentPosition.x,
+            y: currentPosition.y-2
+          }
+        break;
+        case 'northWest' :
+          targetCellNumber = {
+            x: currentPosition.x-1,
+            y: currentPosition.y-2
+          }
+        break;
+        case 'northEast' :
+          targetCellNumber = {
+            x: currentPosition.x+1,
+            y: currentPosition.y-2
+          }
+        break;
+        case 'south' :
+          targetCellNumber = {
+            x: currentPosition.x,
+            y: currentPosition.y+2
+          }
+        break;
+        case 'southWest' :
+          targetCellNumber = {
+            x: currentPosition.x-1,
+            y: currentPosition.y+2
+          }
+        break;
+        case 'southEast' :
+          targetCellNumber = {
+            x: currentPosition.x+1,
+            y: currentPosition.y+2
+          }
+        break;
+        case 'east' :
+          targetCellNumber = {
+            x: currentPosition.x+2,
+            y: currentPosition.y
+          }
+        break;
+        case 'west' :
+          targetCellNumber = {
+            x: currentPosition.x-2,
+            y: currentPosition.y
+          }
+        break;
+      }
+
+      switch(direction) {
+        case 'north' :
+          target.cell2.number = {
+            x: currentPosition.x,
+            y: currentPosition.y-1,
+          }
+        break;
+        case 'northWest' :
+          target.cell2.number = {
+            x: currentPosition.x-1,
+            y: currentPosition.y-1,
+          }
+        break;
+        case 'northEast' :
+          target.cell2.number = {
+            x: currentPosition.x+1,
+            y: currentPosition.y-1,
+          }
+        break;
+        case 'south' :
+          target.cell2.number = {
+            x: currentPosition.x,
+            y: currentPosition.y+1,
+          }
+        break;
+        case 'southWest' :
+          target.cell2.number = {
+            x: currentPosition.x-1,
+            y: currentPosition.y+1,
+          }
+        break;
+        case 'southEast' :
+          target.cell2.number = {
+            x: currentPosition.x+1,
+            y: currentPosition.y+1,
+          }
+        break;
+        case 'east' :
+          target.cell2.number = {
+            x: currentPosition.x+1,
+            y: currentPosition.y,
+          }
+        break;
+        case 'west' :
+          target.cell2.number = {
+            x: currentPosition.x-1,
+            y: currentPosition.y,
+          }
+        break;
+      }
+
+      if (targetCellNumber.x < 0 || targetCellNumber.x > this.gridWidth) {
+        target.void = true;
+      }
+      if (targetCellNumber.y < 0 || targetCellNumber.y > this.gridWidth) {
+        target.void = true;
+      }
+    }
+
+
     let midGridVoid = false;
     // FIND CENTER!!
     let cellSideLength;
@@ -4229,6 +4409,16 @@ class App extends Component {
           midGridVoid = true
         }
       }
+
+      if (player.currentWeapon.type === 'spear' && player.attacking.state === true) {
+        if (
+          cell.number.x === target.cell2.number.x &&
+          cell.number.y === target.cell2.number.y
+        ) {
+          target.cell2.center = cell.center;
+        }
+      }
+
     }
 
     if (target.void === true) {
@@ -4291,18 +4481,6 @@ class App extends Component {
       context.fillRect(voidCenter.x, voidCenter.y,5,5);
     }
 
-    if (player.currentWeapon.type === 'spear') {
-      switch(direction) {
-        case 'north' :
-          targetCellNumber = {
-            x: currentPosition.x,
-            y: currentPosition.y-1
-          }
-        break;
-      }
-
-      // check for void and set void center
-    }
 
     target.cell = {
       number: targetCellNumber,
@@ -4310,6 +4488,7 @@ class App extends Component {
     };
 
     let obstacleObstructFound = false;
+    let spearCell2Obstacle = false;
     for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
       for (const cell of row) {
         if (
@@ -4331,14 +4510,33 @@ class App extends Component {
             target.occupant.type = 'obstacle';
             obstacleObstructFound = true;
           }
+          if (
+            target.cell2.number.x === obstaclePosition.x &&
+            target.cell2.number.y === obstaclePosition.y
+          ) {
+            spearCell2Obstacle = true;
+          }
         }
       }
     }
+
     for (const plyr2 of this.players) {
       if (plyr2.number !== player.number) {
         if (
           targetCellNumber.x === plyr2.currentPosition.cell.number.x &&
           targetCellNumber.y === plyr2.currentPosition.cell.number.y
+        ) {
+          // console.log('opposing player is in your way');
+          target.free = false;
+          obstacleObstructFound = true;
+          target.occupant = {
+            type: 'player',
+            player: plyr2.number
+          };
+        }
+        if (
+          target.cell2.number.x === plyr2.currentPosition.cell.number.x &&
+          target.cell2.number.y === plyr2.currentPosition.cell.number.y
         ) {
           // console.log('opposing player is in your way');
           target.free = false;
@@ -4564,7 +4762,7 @@ class App extends Component {
     }
 
 
-    if (obstacleObstructFound !== true ) {
+    if (obstacleObstructFound !== true && spearCell2Obstacle !== true) {
       target.free = true;
       target.occupant = {
         type: '',
@@ -5031,6 +5229,16 @@ class App extends Component {
           y: 0,
         },
       },
+      cell2: {
+        number: {
+          x: 0,
+          y: 0,
+        },
+        center: {
+          x: 0,
+          y: 0,
+        },
+      },
       free: true,
       occupant: {
         type: '',
@@ -5085,12 +5293,6 @@ class App extends Component {
 
   restartGame = () => {
     console.log('resetting');
-
-    // let canvas = this.canvasRef.current;
-    // let context = canvas.getContext('2d');
-    //
-    // let canvas2 = this.canvasRef2.current;
-    // let context2 = canvas2.getContext('2d');
 
     for (const player of this.players) {
       player.ghost.state = false;
