@@ -1174,11 +1174,6 @@ class App extends Component {
 
   }
 
-  // implement a prePlayer update function
-  //   check which player is inputting or both
-  //     if one
-  //       pass which player to playerupdate and drawplayerstep
-  //     if both call 2 functions, one player 1, and one 2 player 2, choose which gets called 1st at random
 
 
   componentDidMount() {
@@ -1197,7 +1192,6 @@ class App extends Component {
 
     this.refs.plyr1IdleNorthEast.onload = () => {
       this.addListeners(canvas, canvas2);
-      // this.loadSettings();
 
       this.drawGridInit(this.state.canvas, this.state.context);
 
@@ -1896,6 +1890,7 @@ class App extends Component {
 
     let nextPosition;
 
+
     // OPEN VOID!!???
     if (this.openVoid === true) {
 
@@ -2221,14 +2216,14 @@ class App extends Component {
             if (player.currentWeapon.type === 'crossbow') {
               console.log('firing crossbow');
 
-              let projectileId = this.projectiles.length + 1;
+              let projectileId = this.projectiles.length;
               let bolt = {
                 id: '000'+projectileId+'',
                 owner: player.number,
                 origin: player.currentPosition.cell,
                 direction: player.direction,
                 moving: {
-                  state: true,
+                  state: false,
                   step: 0,
                   course: '',
                   origin: {
@@ -2256,29 +2251,20 @@ class App extends Component {
                       y: 0,
                     },
                   }],
-                  current: {
-                    number: {
-                      x: 0,
-                      y: 0,
-                    },
-                    center: {
-                      x: 0,
-                      y: 0,
-                    },
-                    free: true,
-                    occupant: {
-                      type: '',
-                      player: '',
-                    },
-                    void: false,
-                  }
+                  free: true,
+                  occupant: {
+                    type: '',
+                    player: '',
+                  },
+                  void: false,
                 },
                 speed: .2,
               }
               this.projectiles.push(bolt)
 
               this.getBoltTarget(bolt)
-              this.boltCrementer(bolt)
+
+              // this.boltCrementer(bolt)
             }
             else if (player.currentWeapon.type !== 'crossbow') {
 
@@ -2304,7 +2290,8 @@ class App extends Component {
                     limit: 8,
                   },
                 )
-              } else {
+              }
+              else if (player.currentWeapon.type === 'sword') {
                 // console.log('sword target',player.target);
                 this.cellsUnderAttack.push({
                   number: {
@@ -2819,9 +2806,11 @@ class App extends Component {
     for (const bolt of this.projectiles) {
       if (bolt.moving.state === true) {
         console.log('traking projectile',bolt.id);
-        this.boltCrementer(bolt);
 
-        // check it's current cell based of current position
+        // current pos = next pos
+        // loop target patth array and match to current pos
+
+          // check for void
         // highlight cell it's passing through w/ cellsUnderAttack
         //     check if current cell is occupied
         //       if obstacle kill projectile
@@ -2829,6 +2818,8 @@ class App extends Component {
         //       if not defending attack and kill projectile
         //
         //     if next position is outside canvas bounds remove it
+
+        this.boltCrementer(bolt);
       }
     }
 
@@ -4171,6 +4162,16 @@ class App extends Component {
 
         }
 
+        for (const bolt of this.projectiles) {
+          if (
+            bolt.currentPosition.number.x === x &&
+            bolt.currentPosition.number.y === y
+          ) {
+            console.log('bolt in this cell', x, y);
+             // draw bolt at nextpos center
+          }
+        }
+
         let walledTiles = []
         if (walledTiles.includes(''+x+','+y+'')) {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
@@ -4932,68 +4933,57 @@ class App extends Component {
   }
 
   getBoltTarget = (bolt) => {
+    console.log('get bolt target',bolt);
 
-    // get array of cell for path instead of singular target
+    let index = this.projectiles.findIndex(blt => blt.id === bolt.id);
 
-    // {
-    //   id: '000'+projectileId+'',
-    //   owner: player.number,
-    //   origin: player.currentPosition.cell,
-    //   direction: player.direction,
-    //   moving: {
-    //     state: true,
-    //     step: 0,
-    //     course: '',
-    //     origin: {
-    //       number: player.currentPosition.cell.number,
-    //       center: player.currentPosition.cell.center,
-    //     },
-    //     destination: {
-    //       x: 0,
-    //       y: 0,
-    //     }
-    //   },
-    //   currentPosition: player.currentPosition.cell,
-    //   nextPosition: {
-    //     x: 0,
-    //     y: 0,
-    //   },
-    //   target: {
-    //     path: [{
-    //       number: {
-    //         x: 0,
-    //         y: 0,
-    //       },
-    //       center: {
-    //         x: 0,
-    //         y: 0,
-    //       },
-    //     }],
-    //     current: {
-    //       number: {
-    //         x: 0,
-    //         y: 0,
-    //       },
-    //       center: {
-    //         x: 0,
-    //         y: 0,
-    //       },
-    //       free: true,
-    //       occupant: {
-    //         type: '',
-    //         player: '',
-    //       },
-    //       void: false,
-    //     }
-    //   },
-    //   speed: .2,
-    // }
+    // // get array of cell for path instead of singular target
+
+    for (const cell of this.gridInfo) {
+
+      for (const cell2 of bolt.target.path) {
+        if (
+          cell.number.x === cell2.number.x &&
+          cell.number.y === cell2.number.y
+        ) {
+          cell2.center.x = cell.center.x;
+          cell2.center.y = cell.center.y;
+        }
+      }
+
+    }
+    bolt.moving.state = true;
+
+    this.projectiles[index] = bolt;
 
   }
   boltCrementer = (bolt) => {
-    console.log('boltCrementer');
+    // console.log('boltCrementer');
 
 
+    let index = this.projectiles.findIndex(blt => blt.id === bolt.id);
+
+    let moveSpeed = bolt.speed;
+
+    bolt.moving.step = bolt.moving.step + moveSpeed;
+    let newPosition;
+
+    // line: percent is 0-1
+    let startPt = bolt.moving.origin.center;
+    let endPt = bolt.target.path[bolt.target.path.length-1].center;
+    let percent = bolt.moving.step;
+    //
+    function getLineXYatPercent(startPt,endPt,percent) {
+      let dx = endPt.x-startPt.x;
+      let dy = endPt.y-startPt.y;
+      let X = startPt.x + dx*percent;
+      let Y = startPt.y + dy*percent;
+      newPosition = {x:X,y:Y}
+    }
+    getLineXYatPercent(startPt,endPt,percent);
+
+    bolt.nextPosition = newPosition;
+    this.projectiles[index] = bolt;
 
   }
   checkDestination = (player) => {
