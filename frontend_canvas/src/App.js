@@ -8,6 +8,7 @@ import logo from './logo.svg';
 import floor1 from './assets/floor1.png'
 import floor2 from './assets/floor2.png'
 import floor3 from './assets/floor3.png'
+import floorVoid from './assets/floorVoid.png'
 import wall from './assets/wall.png'
 import wall2 from './assets/wall2.png'
 import wall3 from './assets/wall3.png'
@@ -509,6 +510,10 @@ class App extends Component {
       y: 0,
       count: 0,
       limit: 35,
+    };
+    this.voidTimer = {
+      count: 0,
+      limit: 10000,
     }
 
     this.gridInfo = [];
@@ -690,18 +695,18 @@ class App extends Component {
         subType: 'crossbow',
         effect: '',
       },
-      {
-        name: 'helmet1',
-        type: 'armour',
-        subType: 'helmet',
-        effect: '',
-      },
-      {
-        name: 'helmet2',
-        type: 'armour',
-        subType: 'helmet',
-        effect: '',
-      },
+      // {
+      //   name: 'helmet1',
+      //   type: 'armour',
+      //   subType: 'helmet',
+      //   effect: '',
+      // },
+      // {
+      //   name: 'helmet2',
+      //   type: 'armour',
+      //   subType: 'helmet',
+      //   effect: '',
+      // },
     ];
     this.currentPlayer = 1;
     this.players = [
@@ -1905,14 +1910,16 @@ class App extends Component {
         let voidChance = Math.round(1000/this.gridWidth)
         let openVoid = this.rnJesus(1,voidChance);
 
-        cell.x = this.rnJesus(0,this.gridWidth)
-        cell.y = this.rnJesus(0,this.gridWidth)
+        if (openVoid === 1) {
+          // console.log('boom');
+          cell.x = this.rnJesus(0,this.gridWidth)
+          cell.y = this.rnJesus(0,this.gridWidth)
 
-        this.cellToVoid.state = true;
-        this.cellToVoid.x = cell.x;
-        this.cellToVoid.y = cell.y;
-        this.cellToVoid.count = 1;
-
+          this.cellToVoid.state = true;
+          this.cellToVoid.x = cell.x;
+          this.cellToVoid.y = cell.y;
+          this.cellToVoid.count = 1;
+        }
 
       }
       else if (this.cellToVoid.state === true) {
@@ -1943,6 +1950,14 @@ class App extends Component {
 
       }
 
+    }
+    if (this.voidTimer.count < this.voidTimer.limit) {
+      this.voidTimer.count++
+      // console.log('void count',this.voidTimer.count);
+    }
+    if (this.voidTimer.count >= this.voidTimer.limit) {
+      this.openVoid = false;
+      // console.log('void off');
     }
 
 
@@ -3097,6 +3112,7 @@ class App extends Component {
 
         let drawFloor = true;
 
+        // VOID BLINKER!!
         if (
           this.cellToVoid.state === true &&
           this.cellToVoid.x === x &&
@@ -3105,6 +3121,7 @@ class App extends Component {
           if(this.cellToVoid.count % 5 === 0) {
             drawFloor = false;
           } else {
+            floor = this.refs.floorVoid;
             drawFloor = true;
           }
         }
@@ -3128,14 +3145,13 @@ class App extends Component {
               cll.number.x === x &&
               cll.number.y === y
             ) {
-              floor = this.refs.floor1;
+              floor = this.refs.floorAttack;
             }
           }
         }
 
 
         if (drawFloor === true) {
-          // context.drawImage(floor, iso.x - offset.x, iso.y - offset.y, 100,50);
           context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
         }
 
@@ -6186,7 +6202,8 @@ class App extends Component {
 
           <img src={floor1} className='hidden' ref="floor1" alt="logo" id="floor1"/>
           <img src={floor2} className='hidden' ref="floor2" alt="logo" id="floor2"/>
-          <img src={floor3} className='hidden' ref="floor3" alt="logo" id="floor3"/>
+          <img src={floor3} className='hidden' ref="floorAttack" alt="logo" id="floor3"/>
+          <img src={floorVoid} className='hidden' ref="floorVoid" alt="logo" id="floor4"/>
           <img src={wall} className='hidden' ref="wall" alt="logo" />
           <img src={wall2} className='hidden' ref="wall2" alt="logo" />
           <img src={wall3} className='hidden' ref="wall3" alt="logo" />
