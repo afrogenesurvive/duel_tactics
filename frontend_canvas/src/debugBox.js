@@ -130,16 +130,36 @@ const DebugBox = props => {
       </ul>
 
       <ul className="debugBoxList">
-        <li className="debugBoxListItem">
-          <p className="debugBoxText">
-           Weapon: {props.player.currentWeapon.name}
-          </p>
-        </li>
-        <li className="debugBoxListItem">
-          <p className="debugBoxText">
-           Armour: {props.player.currentArmour.name}
-          </p>
-        </li>
+        {props.player.items.weapons.map((weapon) => (
+          <li className="debugBoxListItem">
+            {props.player.currentWeapon.name !== weapon.name &&(
+              <p className="debugBoxText">
+               {weapon.name}
+              </p>
+            )}
+            {props.player.currentWeapon.name === weapon.name &&(
+              <p className="debugBoxText">
+               {weapon.name}xx
+              </p>
+            )}
+
+          </li>
+        ))}
+        {props.player.items.armour.map((armour) => (
+          <li className="debugBoxListItem">
+            {props.player.currentArmour.name !== armour.name &&(
+              <p className="debugBoxText">
+               {armour.name}
+              </p>
+            )}
+            {props.player.currentArmour.name === armour.name &&(
+              <p className="debugBoxText">
+               {armour.name}xx
+              </p>
+            )}
+          </li>
+        ))}
+
       </ul>
     </div>
   )

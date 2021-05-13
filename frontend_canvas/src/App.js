@@ -5,8 +5,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import logo from './logo.svg';
-import tile from './assets/floor0.png'
+import floor1 from './assets/floor1.png'
 import floor2 from './assets/floor2.png'
+import floor3 from './assets/floor3.png'
 import wall from './assets/wall.png'
 import wall2 from './assets/wall2.png'
 import wall3 from './assets/wall3.png'
@@ -687,6 +688,18 @@ class App extends Component {
         name: 'crossbow1',
         type: 'weapon',
         subType: 'crossbow',
+        effect: '',
+      },
+      {
+        name: 'helmet1',
+        type: 'armour',
+        subType: 'helmet',
+        effect: '',
+      },
+      {
+        name: 'helmet2',
+        type: 'armour',
+        subType: 'helmet',
         effect: '',
       },
     ];
@@ -1762,10 +1775,8 @@ class App extends Component {
       }
     }
 
-    // let canvas = this.canvasRef.current;
-    // let context = canvas.getContext('2d');
     // for (const player of this.players) {
-    //   this.playerUpdate(player, canvas, context);
+    //   this.playerUpdate(player, this.state.canvas, this.state.context);
     // }
 
   }
@@ -2075,6 +2086,7 @@ class App extends Component {
       // CAN READ INPUTS
       else if (player.moving.state === false) {
 
+
         // TURNER!!
         if (player.turning.state === true && player.turning.toDirection === this.turnCheckerDirection) {
           // console.log('player',player.number,' turn-ing');
@@ -2084,10 +2096,24 @@ class App extends Component {
           }
         }
 
+
         // DEBUFF CHECKS!!
         if (player.hp === 1 && player.speed.move > .05) {
 
           player.speed.move = .05;
+        }
+
+
+        // CHECK CELL UNDER ATTACK!!
+        for (const cell of this.cellsUnderAttack) {
+          if (cell.count < cell.limit) {
+            cell.count++
+          }
+          else if (cell.count >= cell.limit) {
+            let index = this.cellsUnderAttack.indexOf(cell)
+            this.cellsUnderAttack.splice(index,1)
+          }
+
         }
 
 
@@ -2244,8 +2270,37 @@ class App extends Component {
               this.getTarget(player)
 
               if (player.currentWeapon.type === 'spear') {
-                console.log('spear target',player.target);
+                // console.log('spear target',player.target);
+                this.cellsUnderAttack.push(
+                  {
+                    number: {
+                      x: player.target.cell.number.x,
+                      y: player.target.cell.number.y,
+                    },
+                    count: 1,
+                    limit: 8,
+                  },
+                  {
+                    number: {
+                      x: player.target.cell2.number.x,
+                      y: player.target.cell2.number.y,
+                    },
+                    count: 1,
+                    limit: 8,
+                  },
+                )
+              } else {
+                // console.log('sword target',player.target);
+                this.cellsUnderAttack.push({
+                  number: {
+                    x: player.target.cell.number.x,
+                    y: player.target.cell.number.y,
+                  },
+                  count: 1,
+                  limit: 8,
+                })
               }
+
 
 
               if (player.target.occupant.type === 'player') {
@@ -2752,6 +2807,7 @@ class App extends Component {
         this.boltCrementer(bolt);
 
         // check it's current cell based of current position
+        // highlight cell it's passing through w/ cellsUnderAttack
         //     check if current cell is occupied
         //       if obstacle kill projectile
         //       check occupant defense
@@ -2787,7 +2843,7 @@ class App extends Component {
             this.y = y;
         }
     }
-    let floor = this.refs.floor2;
+    // let floor = this.refs.floor2;
     let wall = this.refs.wall;
     let wall2 = this.refs.wall2;
     let wall3 = this.refs.wall3;
@@ -3005,6 +3061,7 @@ class App extends Component {
       sword: this.refs.preAttackIndicate,
       spear: this.refs.preAttackIndicate,
       crossbow: this.refs.preAttackIndicate,
+      helmet: this.refs.preAttackIndicate,
     };
     let terrainImgs = [];
 
@@ -3020,6 +3077,8 @@ class App extends Component {
 
     for (var x = 0; x < this.gridWidth+1; x++) {
       for (var y = 0; y < this.gridWidth+1; y++) {
+
+        let floor = this.refs.floor2;
 
         let p = new Point();
         p.x = x * tileWidth;
@@ -3062,10 +3121,24 @@ class App extends Component {
           }
         }
 
+        // CELLS UNDER ATTACK!
+        if (this.cellsUnderAttack.length > 0) {
+          for (const cll of this.cellsUnderAttack) {
+            if (
+              cll.number.x === x &&
+              cll.number.y === y
+            ) {
+              floor = this.refs.floor1;
+            }
+          }
+        }
+
 
         if (drawFloor === true) {
+          // context.drawImage(floor, iso.x - offset.x, iso.y - offset.y, 100,50);
           context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
         }
+
 
         context.fillStyle = 'black';
         context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
@@ -3143,6 +3216,14 @@ class App extends Component {
                   break;
                   case 'crossbow' :
                     fillClr = "navy";
+                    itemImg = itemImgs[cell.item.subType];
+                  break;
+                }
+              }
+              else if (cell.item.type === 'armour') {
+                switch(cell.item.subType) {
+                  case 'helmet' :
+                    fillClr = "grey";
                     itemImg = itemImgs[cell.item.subType];
                   break;
                 }
@@ -4277,6 +4358,7 @@ class App extends Component {
         }
       break;
     }
+
 
     if (player.currentWeapon.type === 'spear' && player.attacking.state === true) {
       switch(direction) {
@@ -5766,6 +5848,7 @@ class App extends Component {
       sword: this.refs.preAttackIndicate,
       spear: this.refs.preAttackIndicate,
       crossbow: this.refs.preAttackIndicate,
+      helmet: this.refs.preAttackIndicate,
     };
 
     this.placeItems({init: true, items: ''});
@@ -5867,6 +5950,14 @@ class App extends Component {
                     break;
                     case 'crossbow' :
                       fillClr = "navy";
+                      itemImg = itemImgs[cell.item.subType];
+                    break;
+                  }
+                }
+                else if (cell.item.type === 'armour') {
+                  switch(cell.item.subType) {
+                    case 'helmet' :
+                      fillClr = "grey";
                       itemImg = itemImgs[cell.item.subType];
                     break;
                   }
@@ -6093,8 +6184,9 @@ class App extends Component {
 
 
 
-          <img src={tile} className='hidden' ref="tile" alt="logo" />
-          <img src={floor2} className='hidden' ref="floor2" alt="logo" />
+          <img src={floor1} className='hidden' ref="floor1" alt="logo" id="floor1"/>
+          <img src={floor2} className='hidden' ref="floor2" alt="logo" id="floor2"/>
+          <img src={floor3} className='hidden' ref="floor3" alt="logo" id="floor3"/>
           <img src={wall} className='hidden' ref="wall" alt="logo" />
           <img src={wall2} className='hidden' ref="wall2" alt="logo" />
           <img src={wall3} className='hidden' ref="wall3" alt="logo" />
