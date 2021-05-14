@@ -470,6 +470,13 @@ class App extends Component {
     showSettings: true,
     canvas: undefined,
     context: undefined,
+    containerInnerClass: 'containerInner',
+    sceneY: {
+      three: 400,
+      six: 300,
+      nine: 220,
+      twelve: 150,
+    }
   }
 
   constructor(props) {
@@ -1178,6 +1185,20 @@ class App extends Component {
 
   componentDidMount() {
 
+    console.log('window width',window.innerWidth);
+    if (window.innerWidth < 1100) {
+      this.setState({
+        containerInnerClass: "containerInnerSmall",
+        sceneY: {
+          three: 300,
+          six: 200,
+          nine: 120,
+          twelve: 50,
+        }
+      })
+      this.canvasWidth = 1000;
+      this.canvasHeight = 600;
+    }
 
     let canvas = this.canvasRef.current;
     let context = canvas.getContext('2d');
@@ -1556,7 +1577,8 @@ class App extends Component {
       let point = [x,y];
       let polygon = [];
       for (const vertex of cell.vertices) {
-        let vertexPoint = [vertex.x,vertex.y];
+        let vertexPoint = [vertex.x-10,vertex.y-5];
+        // let vertexPoint = [vertex.x,vertex.y];
         polygon.push(vertexPoint)
       }
       let pip = pointInPolygon(point, polygon)
@@ -1786,19 +1808,19 @@ class App extends Component {
     switch(gridSize) {
       case '4 x 4' :
         this.gridWidth = 3;
-        this.sceneY = 400;
+        this.sceneY = this.state.sceneY.three;
       break;
       case '7 x 7' :
         this.gridWidth = 6;
-        this.sceneY = 300;
+        this.sceneY = this.state.sceneY.six;
       break;
       case '10 x 10' :
         this.gridWidth = 9;
-        this.sceneY = 220;
+        this.sceneY = this.state.sceneY.nine;
       break;
       case '13 x 13' :
         this.gridWidth = 12;
-        this.sceneY = 150;
+        this.sceneY = this.state.sceneY.twelve;
       break;
     }
 
@@ -5663,15 +5685,15 @@ class App extends Component {
         weaponIndex: 0,
         armorIndex: 0,
         weapons: [{
-          name: 'sword1',
-          type: 'sword',
+          name: 'crossbow1',
+          type: 'crossbow',
           effect: '',
         }],
         armor: []
       };
       player.currentWeapon = {
-        name: 'sword1',
-        type: 'sword',
+        name: 'crossbow1',
+        type: 'crossbow',
         effect: '',
       };
       // player.currentArmor = {};
@@ -6433,16 +6455,16 @@ class App extends Component {
     return (
       <React.Fragment>
         <div className="containerTop">
-          <div className="containerInner">
+          <div className={this.state.containerInnerClass}>
             <canvas
-              width="1300"
-              height="800"
+              width={this.canvasWidth}
+              height={this.canvasHeight}
               ref={this.canvasRef}
               className="canvas"
             />
             <canvas
-              width="1300"
-              height="800"
+              width={this.canvasWidth}
+              height={this.canvasHeight}
               ref={this.canvasRef2}
               className="canvas2"
             />

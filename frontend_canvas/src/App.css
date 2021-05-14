@@ -40,6 +40,20 @@
 
   position: relative;
 }
+.containerInnerSmall {
+  height: 600px;
+  width: 1010px;
+  margin: 1px solid yellow;
+  border-radius: 10px;
+  background-color: #ffffff;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
+}
 
 .App-link {
   color: #61dafb;
