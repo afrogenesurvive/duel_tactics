@@ -2216,11 +2216,13 @@ class App extends Component {
             if (player.currentWeapon.type === 'crossbow') {
               console.log('firing crossbow');
 
+              let origin = player.currentPosition.cell;
+
               let projectileId = this.projectiles.length;
               let bolt = {
                 id: '000'+projectileId+'',
                 owner: player.number,
-                origin: player.currentPosition.cell,
+                origin: origin,
                 direction: player.direction,
                 moving: {
                   state: false,
@@ -2476,7 +2478,7 @@ class App extends Component {
               this.keyPressed[player.number-1].cycleWeapon === true &&
               player.items.weapons.length > 1
             ) {
-              console.log('cycling weapon');
+              console.log('cycling weapon',player.items);
 
               // let currentIndex = player.items.weapons.indexOf(player.currentWeapon);
               let currentIndex = player.items.weaponIndex;
@@ -2796,7 +2798,7 @@ class App extends Component {
       if (bolt.kill === true) {
         let index = this.projectiles.findIndex(blt => blt.id === bolt.id);
         this.projectiles.splice(index, 1);
-        console.log('kill bolt',player);
+        console.log('kill bolt',bolt.currentPosition.number, this.players[bolt.owner-1].currentPosition.cell.number);
       }
       if (bolt.moving.state === true && bolt.kill !== true) {
         // console.log('traking projectile');
@@ -2824,16 +2826,16 @@ class App extends Component {
             // console.log('gotcha',cell.number);
             bolt.currentPosition.number = cell.number;
             passingThrough = cell.number;
-            this.cellsUnderAttack.push(
-              {
-                number: {
-                  x: cell.number.x,
-                  y: cell.number.y,
-                },
-                count: 1,
-                limit: 8,
-              },
-            )
+            // this.cellsUnderAttack.push(
+            //   {
+            //     number: {
+            //       x: cell.number.x,
+            //       y: cell.number.y,
+            //     },
+            //     count: 1,
+            //     limit: 8,
+            //   },
+            // )
 
             for (const cell2 of this.gridInfo) {
               if (
@@ -2856,6 +2858,17 @@ class App extends Component {
                 plyr.number !== bolt.owner
               ) {
                 console.log('bolt hit a player',plyr);
+
+                this.cellsUnderAttack.push(
+                  {
+                    number: {
+                      x: cell.number.x,
+                      y: cell.number.y,
+                    },
+                    count: 1,
+                    limit: 8,
+                  },
+                )
 
                 if (this.players.[plyr.number-1].defending.state === false) {
                   // console.log('attack success');
@@ -2882,18 +2895,27 @@ class App extends Component {
                     this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
 
                   }
+                  else {
+                    this.players.[plyr.number-1].success.deflected = {
+                      state: true,
+                      count: 1,
+                      limit: this.players.[plyr.number-1].success.deflected.limit,
+                      predeflect: this.players.[plyr.number-1].success.deflected.predeflect,
+                      type: 'attacked',
+                    };
+                  }
 
                   this.players[bolt.owner-1].points++;
 
                 }
                 // ATTACK DEFENDED!!
                 else {
-                  // console.log('attackdefended');
+                  // console.log('bullet doged');
 
-                  this.players[player.target.occupant.player-1].success.defendSuccess = {
+                  this.players.[plyr.number-1].success.defendSuccess = {
                     state: true,
                     count: 1,
-                    limit: this.players[player.target.occupant.player-1].success.defendSuccess.limit
+                    limit: this.players.[plyr.number-1].success.defendSuccess.limit
                   }
                 }
                 bolt.kill = true;
@@ -5132,7 +5154,7 @@ class App extends Component {
       bolt.target.path.push(cell);
     }
     bolt.target.path.splice(bolt.target.path.length-1,1)
-    console.log('bolt path',bolt.target.path);
+    // console.log('bolt path',bolt.target.path);
 
     for (const cell of this.gridInfo) {
 
@@ -5197,6 +5219,7 @@ class App extends Component {
   checkDestination = (player) => {
     // console.log('checking for item or enviro effect');
 
+    let pickUp = false;
 
     for (const cell of this.gridInfo) {
       if (
@@ -5219,21 +5242,28 @@ class App extends Component {
                 type: cell.item.subType,
                 effect: cell.item.effect,
               })
+              pickUp = true;
             }
             else {
-              this.players[player.number-1].items.weapons.push({
-                name: cell.item.name,
-                type: cell.item.subType,
-                effect: cell.item.effect,
-              })
-            }
-            this.players[player.number-1].statusDisplay = {
-              state: true,
-              status: 'weapon accquired',
-              count: 1,
-              limit: this.players[player.number-1].statusDisplay.limit,
-            }
+              if (player.items.weapons.map(weapon => weapon.name).includes(cell.item.name) !== true ) {
+                this.players[player.number-1].items.weapons.push({
+                  name: cell.item.name,
+                  type: cell.item.subType,
+                  effect: cell.item.effect,
+                })
+                pickUp = true;
 
+                this.players[player.number-1].statusDisplay = {
+                  state: true,
+                  status: 'weapon accquired',
+                  count: 1,
+                  limit: this.players[player.number-1].statusDisplay.limit,
+                }
+              }
+              else {
+                console.log('you already have this weapon');
+              }
+            }
           }
           if (cell.item.type === 'armor') {
 
@@ -5248,21 +5278,28 @@ class App extends Component {
                 type: cell.item.subType,
                 effect: cell.item.effect,
               })
+              pickUp = true;
             }
             else {
-              this.players[player.number-1].items.armor.push({
-                name: cell.item.name,
-                type: cell.item.subType,
-                effect: cell.item.effect,
-              })
-            }
-            this.players[player.number-1].statusDisplay = {
-              state: true,
-              status: 'armor accquired',
-              count: 1,
-              limit: this.players[player.number-1].statusDisplay.limit,
-            }
+              if (player.items.armor.map(armor => armor.name).includes(cell.item.name) !== true ) {
+                this.players[player.number-1].items.armor.push({
+                  name: cell.item.name,
+                  type: cell.item.subType,
+                  effect: cell.item.effect,
+                })
+                pickUp = true;
 
+                this.players[player.number-1].statusDisplay = {
+                  state: true,
+                  status: 'armor accquired',
+                  count: 1,
+                  limit: this.players[player.number-1].statusDisplay.limit,
+                }
+              }
+              else {
+                console.log('you already have this armor');
+              }
+            }
           }
           else {
             // console.log('item',cell.item);
@@ -5283,6 +5320,7 @@ class App extends Component {
                     count: 1,
                     limit: this.players[player.number-1].statusDisplay.limit,
                   }
+                  pickUp = true;
                 }
               break;
               case 'moveSpeedDown' :
@@ -5300,6 +5338,7 @@ class App extends Component {
                     count: 1,
                     limit: this.players[player.number-1].statusDisplay.limit,
                   }
+                  pickUp = true;
                 }
               break;
               case 'hpUp' :
@@ -5316,6 +5355,7 @@ class App extends Component {
                       count: 1,
                       limit: this.players[player.number-1].statusDisplay.limit,
                     }
+                    pickUp = true;
                 }
               break;
               case 'hpDown' :
@@ -5329,6 +5369,7 @@ class App extends Component {
                     count: 1,
                     limit: this.players[player.number-1].statusDisplay.limit,
                   }
+                  pickUp = true;
                 }
               break;
               case 'focusUp' :
@@ -5382,12 +5423,15 @@ class App extends Component {
             }
 
           }
-          cell.item = {
-            name: '',
-            type: '',
-            subType: '',
-            initDrawn: false
+          if (pickUp === true) {
+            cell.item = {
+              name: '',
+              type: '',
+              subType: '',
+              initDrawn: false
+            }
           }
+
         }
       }
     }
@@ -5499,6 +5543,22 @@ class App extends Component {
       doubleHit: 6,
       pushBack: 3,
     };
+    this.players[player.number-1].items = {
+      weaponIndex: 0,
+      armorIndex: 0,
+      weapons: [{
+        name: 'sword1',
+        type: 'sword',
+        effect: '',
+      }],
+      armor: []
+    };
+    this.players[player.number-1].currentWeapon = {
+      name: 'sword1',
+      type: 'sword',
+      effect: '',
+    };
+    this.players[player.number-1].currentArmor = {};
 
   }
   killPlayer = (player) => {
@@ -5599,6 +5659,23 @@ class App extends Component {
         doubleHit: 6,
         pushBack: 3,
       };
+      player.items = {
+        weaponIndex: 0,
+        armorIndex: 0,
+        weapons: [{
+          name: 'sword1',
+          type: 'sword',
+          effect: '',
+        }],
+        armor: []
+      };
+      player.currentWeapon = {
+        name: 'sword1',
+        type: 'sword',
+        effect: '',
+      };
+      // player.currentArmor = {};
+
     }
 
     this.drawGridInit(this.state.canvas, this.state.context);
