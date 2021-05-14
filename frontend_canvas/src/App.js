@@ -230,14 +230,14 @@ class App extends Component {
           type: 'sword',
           effect: '',
         },
-        currentArmour: {
+        currentArmor: {
           name: '',
           type: '',
           effect: '',
         },
         items: {
           weaponIndex: 0,
-          armourIndex: 0,
+          armorIndex: 0,
           weapons: [
             {
               name: 'sword1',
@@ -245,14 +245,14 @@ class App extends Component {
               effect: '',
             }
           ],
-          armour: [],
+          armor: [],
         },
         cycleWeapon: {
           state: false,
           count: 0,
           limit: 3,
         },
-        cycleArmour: {
+        cycleArmor: {
           state: false,
           count: 0,
           limit: 3,
@@ -428,14 +428,14 @@ class App extends Component {
           type: 'sword',
           effect: '',
         },
-        currentArmour: {
+        currentArmor: {
           name: '',
           type: '',
           effect: '',
         },
         items: {
           weaponIndex: 0,
-          armourIndex: 0,
+          armorIndex: 0,
           weapons: [
             {
               name: 'sword1',
@@ -443,14 +443,14 @@ class App extends Component {
               effect: '',
             }
           ],
-          armour: [],
+          armor: [],
         },
         cycleWeapon: {
           state: false,
           count: 0,
           limit: 3,
         },
-        cycleArmour: {
+        cycleArmor: {
           state: false,
           count: 0,
           limit: 3,
@@ -697,13 +697,13 @@ class App extends Component {
       },
       // {
       //   name: 'helmet1',
-      //   type: 'armour',
+      //   type: 'armor',
       //   subType: 'helmet',
       //   effect: '',
       // },
       // {
       //   name: 'helmet2',
-      //   type: 'armour',
+      //   type: 'armor',
       //   subType: 'helmet',
       //   effect: '',
       // },
@@ -870,14 +870,14 @@ class App extends Component {
           type: 'crossbow',
           effect: '',
         },
-        currentArmour: {
+        currentArmor: {
           name: '',
           type: '',
           effect: '',
         },
         items: {
           weaponIndex: 0,
-          armourIndex: 0,
+          armorIndex: 0,
           weapons: [
             {
               name: 'crossbow1',
@@ -885,14 +885,14 @@ class App extends Component {
               effect: '',
             }
           ],
-          armour: [],
+          armor: [],
         },
         cycleWeapon: {
           state: false,
           count: 0,
           limit: 3,
         },
-        cycleArmour: {
+        cycleArmor: {
           state: false,
           count: 0,
           limit: 3,
@@ -1072,27 +1072,27 @@ class App extends Component {
           type: 'sword',
           effect: '',
         },
-        currentArmour: {
+        currentArmor: {
           name: '',
           type: '',
           effect: '',
         },
         items: {
           weaponIndex: 0,
-          armourIndex: 0,
+          armorIndex: 0,
           weapons: [{
             name: 'sword1',
             type: 'sword',
             effect: '',
           }],
-          armour: [],
+          armor: [],
         },
         cycleWeapon: {
           state: false,
           count: 0,
           limit: 3,
         },
-        cycleArmour: {
+        cycleArmor: {
           state: false,
           count: 0,
           limit: 3,
@@ -1142,7 +1142,7 @@ class App extends Component {
         defend: false,
         strafe: false,
         cycleWeapon: false,
-        cycleArmour: false,
+        cycleArmor: false,
       },
       {
         north: false,
@@ -1157,7 +1157,7 @@ class App extends Component {
         defend: false,
         strafe: false,
         cycleWeapon: false,
-        cycleArmour: false,
+        cycleArmor: false,
       },
     ]
     this.clicked = {
@@ -1662,7 +1662,7 @@ class App extends Component {
        this.currentPlayer = 1;
       break;
       case '3' :
-       this.keyPressed[0].cycleArmour = state;
+       this.keyPressed[0].cycleArmor = state;
        this.currentPlayer = 1;
       break;
 
@@ -1752,7 +1752,7 @@ class App extends Component {
        this.currentPlayer = 2;
       break;
       case '8' :
-       this.keyPressed[1].cycleArmour = state;
+       this.keyPressed[1].cycleArmor = state;
        this.currentPlayer = 2;
       break;
     }
@@ -2511,48 +2511,48 @@ class App extends Component {
           console.log('already cycling weapon');
         }
 
-        if (this.keyPressed[player.number-1].cycleArmour === true && player.cycleArmour.state === false) {
-          if (player.cycleArmour.count < player.cycleArmour.limit) {
-            player.cycleArmour.count++
-            // console.log('player.cycleArmour.count',player.cycleArmour.count);
+        if (this.keyPressed[player.number-1].cycleArmor === true && player.cycleArmor.state === false) {
+          if (player.cycleArmor.count < player.cycleArmor.limit) {
+            player.cycleArmor.count++
+            // console.log('player.cycleArmor.count',player.cycleArmor.count);
           }
-          if (player.cycleArmour.count >= player.cycleArmour.limit) {
+          if (player.cycleArmor.count >= player.cycleArmor.limit) {
 
             if (
-              this.keyPressed[player.number-1].cycleArmour === true &&
-              player.items.armour.length > 0
+              this.keyPressed[player.number-1].cycleArmor === true &&
+              player.items.armor.length > 0
             ) {
-              console.log('cycling armour');
+              console.log('cycling armor');
 
-              // let currentIndex = player.items.armour.indexOf(player.currentArmour);
-              let currentIndex = player.items.armourIndex;
+              // let currentIndex = player.items.armor.indexOf(player.currentArmor);
+              let currentIndex = player.items.armorIndex;
               let newIndex;
-              if (currentIndex + 1 > player.items.armour.length - 1) {
+              if (currentIndex + 1 > player.items.armor.length - 1) {
                 newIndex = 0
               } else {
                 newIndex = currentIndex+1;
               }
-              player.items.armourIndex = newIndex;
-              player.currentArmour = player.items.armour[newIndex]
+              player.items.armorIndex = newIndex;
+              player.currentArmor = player.items.armor[newIndex]
 
             }
             if (
-              this.keyPressed[player.number-1].cycleArmour === true &&
-              player.items.armour.length === 0
+              this.keyPressed[player.number-1].cycleArmor === true &&
+              player.items.armor.length === 0
             ) {
               console.log('nothing to cycle through');
             }
 
-            player.cycleArmour = {
+            player.cycleArmor = {
               state: false,
               count: 0,
-              limit: player.cycleArmour.limit,
+              limit: player.cycleArmor.limit,
             }
 
           }
         }
-        else if (this.keyPressed[player.number-1].cycleArmour === true && player.cycleArmour.state === true) {
-          console.log('already cycling armour');
+        else if (this.keyPressed[player.number-1].cycleArmor === true && player.cycleArmor.state === true) {
+          console.log('already cycling armor');
         }
 
 
@@ -2720,11 +2720,11 @@ class App extends Component {
 
                 if (
                   player.currentWeapon.name === '' &&
-                  player.currentArmour.name === ''
+                  player.currentArmor.name === ''
                 ) {
                   player.statusDisplay = {
                     state: true,
-                    status: "No weapon or armour. Can't defend",
+                    status: "No weapon or armor. Can't defend",
                     count: 1,
                     limit: player.statusDisplay.limit,
                   }
@@ -3325,7 +3325,7 @@ class App extends Component {
                   break;
                 }
               }
-              else if (cell.item.type === 'armour') {
+              else if (cell.item.type === 'armor') {
                 switch(cell.item.subType) {
                   case 'helmet' :
                     fillClr = "grey";
@@ -5235,22 +5235,22 @@ class App extends Component {
             }
 
           }
-          if (cell.item.type === 'armour') {
+          if (cell.item.type === 'armor') {
 
-            if (player.currentArmour.name === '' || player.currentArmour === {}) {
-              this.players[player.number-1].currentArmour = {
+            if (player.currentArmor.name === '' || player.currentArmor === {}) {
+              this.players[player.number-1].currentArmor = {
                 name: cell.item.name,
                 type: cell.item.subType,
                 effect: cell.item.effect,
               }
-              this.players[player.number-1].items.armour.push({
+              this.players[player.number-1].items.armor.push({
                 name: cell.item.name,
                 type: cell.item.subType,
                 effect: cell.item.effect,
               })
             }
             else {
-              this.players[player.number-1].items.armour.push({
+              this.players[player.number-1].items.armor.push({
                 name: cell.item.name,
                 type: cell.item.subType,
                 effect: cell.item.effect,
@@ -5258,7 +5258,7 @@ class App extends Component {
             }
             this.players[player.number-1].statusDisplay = {
               state: true,
-              status: 'armour accquired',
+              status: 'armor accquired',
               count: 1,
               limit: this.players[player.number-1].statusDisplay.limit,
             }
@@ -6169,7 +6169,7 @@ class App extends Component {
                     break;
                   }
                 }
-                else if (cell.item.type === 'armour') {
+                else if (cell.item.type === 'armor') {
                   switch(cell.item.subType) {
                     case 'helmet' :
                       fillClr = "grey";

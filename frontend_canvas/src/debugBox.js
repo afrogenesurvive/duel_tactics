@@ -145,16 +145,16 @@ const DebugBox = props => {
 
           </li>
         ))}
-        {props.player.items.armour.map((armour) => (
+        {props.player.items.armor.map((armor) => (
           <li className="debugBoxListItem">
-            {props.player.currentArmour.name !== armour.name &&(
+            {props.player.currentArmor.name !== armor.name &&(
               <p className="debugBoxText">
-               {armour.name}
+               {armor.name}
               </p>
             )}
-            {props.player.currentArmour.name === armour.name &&(
+            {props.player.currentArmor.name === armor.name &&(
               <p className="debugBoxText">
-               {armour.name}xx
+               {armor.name}xx
               </p>
             )}
           </li>
