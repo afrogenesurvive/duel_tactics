@@ -2040,13 +2040,6 @@ class App extends Component {
 
               this.checkDestination(player);
 
-            } else if (
-              nextPosition.x === player.target.cell.center.x &&
-              nextPosition.y === player.target.cell.center.y &&
-              player.target.void === true
-            ) {
-              player.falling.state = true;
-              player.action = 'falling';
             }
 
             if (player.pushBack.state === true) {
@@ -2057,60 +2050,18 @@ class App extends Component {
               }
               player.moving.state = false;
             }
-          }
-        // }
-        // else if (player.speed.move === .1) {
-        //
-        //   console.log('normal move speed');
-        //   if (
-        //     nextPosition.x === player.target.cell.center.x &&
-        //     nextPosition.y === player.target.cell.center.y
-        //   ) {
-        //     console.log('next position is destination b',player.number);
-        //     if (player.target.void === false) {
-        //       player.currentPosition.cell = player.target.cell;
-        //       player.action = 'idle';
-        //       player.moving = {
-        //         state: false,
-        //         step: 0,
-        //         course: '',
-        //         origin: {
-        //           number: {
-        //             x: player.target.cell.number.x,
-        //             y: player.target.cell.number.y
-        //           },
-        //           center: {
-        //             x: player.target.cell.center.x,
-        //             y: player.target.cell.center.y
-        //           },
-        //         },
-        //         destination: {
-        //           x: 0,
-        //           y: 0,
-        //         }
-        //       }
-        //
-        //       this.checkDestination(player);
-        //
-        //     } else if (
-        //       nextPosition.x === player.target.cell.center.x &&
-        //       nextPosition.y === player.target.cell.center.y &&
-        //       player.target.void === true
-        //     ) {
-        //       player.falling.state = true;
-        //       player.action = 'falling';
-        //     }
-        //
-        //     if (player.pushBack.state === true) {
-        //       player.pushBack.state = false;
-        //       player.strafing = {
-        //         state: false,
-        //         direction: ''
-        //       }
-        //     }
-        //   }
-        // }
 
+            if (
+              nextPosition.x === player.target.cell.center.x &&
+              nextPosition.y === player.target.cell.center.y &&
+              player.target.void === true
+            ) {
+              console.log('hht');
+              player.falling.state = true;
+              player.action = 'falling';
+            }
+
+          }
 
       }
 
@@ -2286,6 +2237,7 @@ class App extends Component {
 
               this.getTarget(player)
 
+              // CELLS UNDER ATTACK!
               if (player.currentWeapon.type === 'spear') {
                 // console.log('spear target',player.target);
                 this.cellsUnderAttack.push(
@@ -2318,7 +2270,6 @@ class App extends Component {
                   limit: 8,
                 })
               }
-
 
 
               if (player.target.occupant.type === 'player') {
@@ -2438,13 +2389,6 @@ class App extends Component {
                       type: 'attack'
                     }
                   }
-
-                  // player.success.deflected = {
-                  //   state: true,
-                  //   count: 1,
-                  //   limit: player.success.deflected.limit,
-                  //   predeflect: player.success.deflected.predeflect,
-                  // }
 
                 }
               }
@@ -3981,7 +3925,7 @@ class App extends Component {
             }
           }
           if (plyr.falling.state === true) {
-
+            console.log('hht');
             if (x === 0 && y === 0) {
               if (
                 plyr.direction === 'east' ||
@@ -4531,9 +4475,8 @@ class App extends Component {
     }
 
 
+    if (player.currentWeapon.type === 'spear' && player.attacking.state === true && player.strafing.state !== true) {
 
-    if (player.currentWeapon.type === 'spear' && player.attacking.state === true ) {
-      console.log('gg',player.success.deflected);
       switch(direction) {
         case 'north' :
           targetCellNumber = {
@@ -4667,6 +4610,7 @@ class App extends Component {
       }
 
       if (player.currentWeapon.type === 'spear' && player.attacking.state === true) {
+
         if (
           cell.number.x === target.cell2.number.x &&
           cell.number.y === target.cell2.number.y
@@ -5537,7 +5481,7 @@ class App extends Component {
           // console.log('target is NOT free');
     }
     if (player.target.void === true) {
-      // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
+      console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
       player.action = 'strafe moving';
       player.moving = {
         state: true,
@@ -5595,7 +5539,7 @@ class App extends Component {
 
   }
   killPlayer = (player) => {
-    // console.log('killing player',player.number);
+    console.log('killing player',player.number);
 
     player.ghost.state = true;
     player.ghost.position.cell = player.currentPosition.cell;
@@ -5696,15 +5640,15 @@ class App extends Component {
         weaponIndex: 0,
         armorIndex: 0,
         weapons: [{
-          name: 'spear1',
-          type: 'spear',
+          name: 'sword1',
+          type: 'sword',
           effect: '',
         }],
         armor: []
       };
       player.currentWeapon = {
-        name: 'spear1',
-        type: 'spear',
+        name: 'sword1',
+        type: 'sword',
         effect: '',
       };
       // player.currentArmor = {};
@@ -5851,9 +5795,16 @@ class App extends Component {
     }
   }
   deflectDrop = (player) => {
-    console.log('deflected! drop grea?');
-    console.log('preDropItems', player.items);
+    // console.log('deflected! drop gear?');
+    // console.log('preDropItems', player.items);
 
+    let item = {
+      name: '',
+      type: '',
+      subType: '',
+      effect: '',
+      initDrawn: false
+    };
     let dropWhat = this.rnJesus(1,2);
     let shouldDrop = false;
     let dropChance = this.rnJesus(1,10*player.crits.pushBack);
@@ -5861,8 +5812,13 @@ class App extends Component {
       shouldDrop = true;
 
       if (dropWhat === 1) {
+        console.log("dropping weapon");
         let index = player.items.weapons.findIndex(weapon => weapon.name === player.currentWeapon.name);
         // player.items.weapons.indexOf(player.items.weapons.find(weapon=> {weapon.name === player.currentWeapon.name}))
+
+        item.name = this.players[player.number-1].items.weapons[index].name;
+        item.subType = this.players[player.number-1].items.weapons[index].type;
+        item.type = "weapon";
         this.players[player.number-1].items.weapons.splice(index,1);
         this.players[player.number-1].items.weaponIndex = 0;
         this.players[player.number-1].currentWeapon = {
@@ -5870,11 +5826,22 @@ class App extends Component {
           type: '',
           effect: '',
         }
+
+        this.players[player.number-1].statusDisplay = {
+          state: true,
+          status: item.name+'dropped',
+          count: 1,
+          limit: this.players[player.number-1].statusDisplay.limit,
+        }
       }
       else {
+        console.log("dropping armor");
         if (player.items.armor.length > 0) {
           let index = player.items.armor.findIndex(armor => armor.name === player.currentArmor.name);
           // let index = player.items.armor.indexOf(player.items.armors.find(armor=> {armor.name === player.currentArmor.name}))
+          item.name = this.players[player.number-1].items.armor[index].name;
+          item.subType = this.players[player.number-1].items.armor[index].type;
+          item.type = "armor";
           this.players[player.number-1].items.armor.splice(index,1);
           this.players[player.number-1].items.armorIndex = 0;
           this.players[player.number-1].currentArmor = {
@@ -5882,21 +5849,27 @@ class App extends Component {
             type: '',
             effect: '',
           }
+
+          this.players[player.number-1].statusDisplay = {
+            state: true,
+            status: item.name+'dropped',
+            count: 1,
+            limit: this.players[player.number-1].statusDisplay.limit,
+          }
+
         }
       }
 
-      console.log('postDropItems', player.items, player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
+      // console.log('postDropItems', player.items, player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
+
+      let dropCellIndex = this.gridInfo.findIndex(cell => cell.number.x === player.currentPosition.cell.number.x && cell.number.y === player.currentPosition.cell.number.y);
+      this.gridInfo[dropCellIndex].item = item;
+
     }
     else {
       console.log('no gear drop',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
     }
 
-    // check gear index and set appropriately to cycle-select next weapon
-    // run rnjesus to determine drop
-    // if drop true
-    //   drop 1 gear or weapon that's not a sword
-    //
-    //   if dropped weapon switch current weapon to sword
     //   if dropped gear remove buff/effect
 
   }
