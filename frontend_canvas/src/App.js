@@ -1185,7 +1185,7 @@ class App extends Component {
 
   componentDidMount() {
 
-    console.log('window width',window.innerWidth);
+
     if (window.innerWidth < 1100) {
       this.setState({
         containerInnerClass: "containerInnerSmall",
@@ -2238,7 +2238,9 @@ class App extends Component {
             if (player.currentWeapon.type === 'crossbow') {
               console.log('firing crossbow');
 
-              let origin = player.currentPosition.cell;
+              let origin = this.players[player.number-1].currentPosition.cell;
+              let currentPosition = this.players[player.number-1].currentPosition.cell;
+              let nextPosition = this.players[player.number-1].currentPosition.cell.center;
 
               let projectileId = this.projectiles.length;
               let bolt = {
@@ -2251,16 +2253,16 @@ class App extends Component {
                   step: 0,
                   course: '',
                   origin: {
-                    number: player.currentPosition.cell.number,
-                    center: player.currentPosition.cell.center,
+                    number: currentPosition.number,
+                    center: currentPosition.center,
                   },
                   destination: {
                     x: 0,
                     y: 0,
                   }
                 },
-                currentPosition: player.currentPosition.cell,
-                nextPosition: player.currentPosition.cell.center,
+                currentPosition: currentPosition,
+                nextPosition: nextPosition,
                 target: {
                   path: [],
                   free: true,
@@ -2276,6 +2278,7 @@ class App extends Component {
               this.projectiles.push(bolt)
 
               this.getBoltTarget(bolt)
+              console.log('start projectile',bolt.currentPosition.number, this.players[bolt.owner-1].currentPosition.cell.number);
 
               // this.boltCrementer(bolt)
             }
@@ -2451,6 +2454,7 @@ class App extends Component {
           }
           if (player.attacking.count >= player.attacking.limit) {
             // console.log('attack end');
+
             player.attacking = {
               state: false,
               count: 0,
@@ -2824,15 +2828,17 @@ class App extends Component {
       }
       if (bolt.moving.state === true && bolt.kill !== true) {
         // console.log('traking projectile');
+        console.log('traking projectile',bolt.currentPosition.number, this.players[bolt.owner-1].currentPosition.cell.number,this.players[bolt.owner-1].moving.state);
+
 
         let index = this.projectiles.findIndex(blt => blt.id === bolt.id);
 
         bolt.currentPosition.center = bolt.nextPosition;
 
-        let nextPosition = this.boltCrementer(bolt);
+        let boltNextPosition = this.boltCrementer(bolt);
         // console.log('nextPosition',nextPosition);
 
-        bolt.nextPosition = nextPosition;
+        bolt.nextPosition = boltNextPosition;
         let passingThrough;
 
         for (const cell of bolt.target.path) {
@@ -2880,7 +2886,6 @@ class App extends Component {
                 plyr.number !== bolt.owner
               ) {
                 console.log('bolt hit a player',plyr);
-
                 this.cellsUnderAttack.push(
                   {
                     number: {
@@ -4526,7 +4531,9 @@ class App extends Component {
     }
 
 
-    if (player.currentWeapon.type === 'spear' && player.attacking.state === true) {
+
+    if (player.currentWeapon.type === 'spear' && player.attacking.state === true ) {
+      console.log('gg',player.success.deflected);
       switch(direction) {
         case 'north' :
           targetCellNumber = {
@@ -4635,6 +4642,7 @@ class App extends Component {
       if (targetCellNumber.y < 0 || targetCellNumber.y > this.gridWidth) {
         target.void = true;
       }
+
     }
 
 
@@ -5086,12 +5094,15 @@ class App extends Component {
 
     let index = this.projectiles.findIndex(blt => blt.id === bolt.id);
 
-    // // get array of cell for path instead of singular target
     let path = [];
     let originCell = {
-      x: this.players[bolt.owner-1].currentPosition.cell.number.x,
-      y: this.players[bolt.owner-1].currentPosition.cell.number.y,
+      x: bolt.moving.origin.number.x,
+      y: bolt.moving.origin.number.y,
     }
+    // let originCell = {
+    //   x: this.players[bolt.owner-1].currentPosition.cell.number.x,
+    //   y: this.players[bolt.owner-1].currentPosition.cell.number.y,
+    // }
     let nextCell = {
       number: {
         x: 0,
@@ -5201,8 +5212,8 @@ class App extends Component {
     // console.log('boltCrementer');
 
 
-    let index = this.projectiles.findIndex(blt => blt.id === bolt.id);
-    let distanceFactor = bolt.target.path.length;
+    // let index = this.projectiles.findIndex(blt => blt.id === bolt.id);
+    // let distanceFactor = bolt.target.path.length;
 
     let moveSpeed = bolt.speed;
     // let moveSpeed = bolt.speed/distanceFactor;
@@ -5685,15 +5696,15 @@ class App extends Component {
         weaponIndex: 0,
         armorIndex: 0,
         weapons: [{
-          name: 'crossbow1',
-          type: 'crossbow',
+          name: 'spear1',
+          type: 'spear',
           effect: '',
         }],
         armor: []
       };
       player.currentWeapon = {
-        name: 'crossbow1',
-        type: 'crossbow',
+        name: 'spear1',
+        type: 'spear',
         effect: '',
       };
       // player.currentArmor = {};
@@ -5839,9 +5850,48 @@ class App extends Component {
 
     }
   }
-  deflectDrop = () => {
+  deflectDrop = (player) => {
     console.log('deflected! drop grea?');
+    console.log('preDropItems', player.items);
 
+    let dropWhat = this.rnJesus(1,2);
+    let shouldDrop = false;
+    let dropChance = this.rnJesus(1,10*player.crits.pushBack);
+    if (dropChance === 1) {
+      shouldDrop = true;
+
+      if (dropWhat === 1) {
+        let index = player.items.weapons.findIndex(weapon => weapon.name === player.currentWeapon.name);
+        // player.items.weapons.indexOf(player.items.weapons.find(weapon=> {weapon.name === player.currentWeapon.name}))
+        this.players[player.number-1].items.weapons.splice(index,1);
+        this.players[player.number-1].items.weaponIndex = 0;
+        this.players[player.number-1].currentWeapon = {
+          name: '',
+          type: '',
+          effect: '',
+        }
+      }
+      else {
+        if (player.items.armor.length > 0) {
+          let index = player.items.armor.findIndex(armor => armor.name === player.currentArmor.name);
+          // let index = player.items.armor.indexOf(player.items.armors.find(armor=> {armor.name === player.currentArmor.name}))
+          this.players[player.number-1].items.armor.splice(index,1);
+          this.players[player.number-1].items.armorIndex = 0;
+          this.players[player.number-1].currentArmor = {
+            name: '',
+            type: '',
+            effect: '',
+          }
+        }
+      }
+
+      console.log('postDropItems', player.items, player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
+    }
+    else {
+      console.log('no gear drop',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
+    }
+
+    // check gear index and set appropriately to cycle-select next weapon
     // run rnjesus to determine drop
     // if drop true
     //   drop 1 gear or weapon that's not a sword
