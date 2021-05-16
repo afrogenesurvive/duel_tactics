@@ -920,8 +920,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 1,
-              y: 2,
+              x: 8,
+              y: 1,
             },
             center: {
               x: 0,
@@ -1910,6 +1910,8 @@ class App extends Component {
 
     }
 
+
+
     let nextPosition;
 
 
@@ -2186,18 +2188,19 @@ class App extends Component {
             // console.log('attack peak & cooldown');
 
             if (player.currentWeapon.type === 'crossbow') {
-              console.log('firing crossbow');
+              // console.log('firing crossbow');
 
-              let origin = this.players[player.number-1].currentPosition.cell;
-              let currentPosition = this.players[player.number-1].currentPosition.cell;
-              let nextPosition = this.players[player.number-1].currentPosition.cell.center;
+              let plyrX = player;
+              let origin = plyrX.currentPosition.cell;
+              let currentPosition = plyrX.currentPosition.cell;
+              let nextPosition = plyrX.currentPosition.cell.center;
 
               let projectileId = this.projectiles.length;
-              let bolt = {
+              let boltx = {
                 id: '000'+projectileId+'',
-                owner: player.number,
+                owner: plyrX.number,
                 origin: origin,
-                direction: player.direction,
+                direction: plyrX.direction,
                 moving: {
                   state: false,
                   step: 0,
@@ -2211,8 +2214,14 @@ class App extends Component {
                     y: 0,
                   }
                 },
-                currentPosition: currentPosition,
-                nextPosition: nextPosition,
+                currentPosition: {
+                  number: currentPosition.number,
+                  center: currentPosition.center
+                },
+                nextPosition: {
+                  x: nextPosition.x,
+                  y: nextPosition.y,
+                },
                 target: {
                   path: [],
                   free: true,
@@ -2222,13 +2231,13 @@ class App extends Component {
                   },
                   void: false,
                 },
-                speed: .125,
+                speed: .15,
                 kill: false,
               }
-              this.projectiles.push(bolt)
+              this.projectiles.push(boltx)
 
-              this.getBoltTarget(bolt)
-              console.log('start projectile',bolt.currentPosition.number, this.players[bolt.owner-1].currentPosition.cell.number);
+              this.getBoltTarget(boltx)
+              // console.log('start projectile',boltx.currentPosition.number, this.players[boltx.owner-1].currentPosition.cell.number,this.projectiles);
 
               // this.boltCrementer(bolt)
             }
@@ -2300,7 +2309,8 @@ class App extends Component {
                     this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
 
 
-                  } else {
+                  }
+                  else {
                     this.players[player.target.occupant.player-1].success.deflected = {
                       state: true,
                       count: 1,
@@ -2329,6 +2339,19 @@ class App extends Component {
                   // console.log('pushBack',shouldPushBack===1);
                   if (shouldPushBack === 1) {
                     let canPushback = this.pushBack(this.players[player.target.occupant.player-1],player.direction);
+                  }
+                  else {
+                    // let deflectOpponent = this.rnJesus(1,1);
+                    let deflectOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.pushBack);
+                    if (deflectOpponent === 1) {
+                      this.players[player.target.occupant.player-1].success.deflected = {
+                        state: true,
+                        count: 1,
+                        limit: this.players[player.target.occupant.player-1].success.deflected.limit,
+                        predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
+                        type: 'defended',
+                      };
+                    }
                   }
 
                   // PUSHBACK DEFLECT!!
@@ -2746,6 +2769,7 @@ class App extends Component {
 
     }
 
+
     // STATUS DISPLAY STEPPER!!
     if (player.statusDisplay.state === true && player.statusDisplay.count < player.statusDisplay.limit) {
       // console.log('stepping status display');
@@ -2762,16 +2786,15 @@ class App extends Component {
     }
 
 
-    // CHECK PROJECTILES!!
+    // // CHECK PROJECTILES!!
     for (const bolt of this.projectiles) {
       if (bolt.kill === true) {
         let index = this.projectiles.findIndex(blt => blt.id === bolt.id);
         this.projectiles.splice(index, 1);
-        console.log('kill bolt',bolt.currentPosition.number, this.players[bolt.owner-1].currentPosition.cell.number);
+        // console.log('kill bolt',bolt.currentPosition.number, this.players[bolt.owner-1].currentPosition.cell.number,this.projectiles);
       }
       if (bolt.moving.state === true && bolt.kill !== true) {
         // console.log('traking projectile');
-        console.log('traking projectile',bolt.currentPosition.number, this.players[bolt.owner-1].currentPosition.cell.number,this.players[bolt.owner-1].moving.state);
 
 
         let index = this.projectiles.findIndex(blt => blt.id === bolt.id);
@@ -2782,7 +2805,7 @@ class App extends Component {
         // console.log('nextPosition',nextPosition);
 
         bolt.nextPosition = boltNextPosition;
-        let passingThrough;
+        // let passingThrough;
 
         for (const cell of bolt.target.path) {
           let point = [bolt.currentPosition.center.x,bolt.currentPosition.center.y];
@@ -2796,7 +2819,6 @@ class App extends Component {
           if (pip === true) {
             // console.log('gotcha',cell.number);
             bolt.currentPosition.number = cell.number;
-            passingThrough = cell.number;
             // this.cellsUnderAttack.push(
             //   {
             //     number: {
@@ -2808,27 +2830,14 @@ class App extends Component {
             //   },
             // )
 
-            for (const cell2 of this.gridInfo) {
-              if (
-                cell2.number.x === cell.number.x &&
-                cell2.number.y === cell.number.y
-              ) {
-                if (
-                  cell2.levelData.charAt(0) ===  'z' ||
-                  cell2.levelData.charAt(0) ===  'y'
-                ) {
-                  console.log('bolt hit an obstacle');
-                  bolt.kill = true;
-                }
-              }
-            }
+
             for (const plyr of this.players) {
               if (
                 plyr.currentPosition.cell.number.x === cell.number.x &&
                 plyr.currentPosition.cell.number.y === cell.number.y &&
                 plyr.number !== bolt.owner
               ) {
-                console.log('bolt hit a player',plyr);
+                // console.log('bolt hit a player',plyr);
                 this.cellsUnderAttack.push(
                   {
                     number: {
@@ -2887,29 +2896,51 @@ class App extends Component {
                     count: 1,
                     limit: this.players.[plyr.number-1].success.defendSuccess.limit
                   }
+
+                  // let deflectOpponent = this.rnJesus(1,3);
+                  let deflectOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.pushBack);
+                  if (deflectOpponent === 1) {
+                    this.players[plyr.number-1].success.deflected = {
+                      state: true,
+                      count: 1,
+                      limit: this.players[plyr.number-1].success.deflected.limit,
+                      predeflect: this.players[plyr.number-1].success.deflected.predeflect,
+                      type: 'defended',
+                    };
+                  }
                 }
                 bolt.kill = true;
               }
             }
+
+            for (const cell2 of this.gridInfo) {
+              if (
+                cell2.number.x === cell.number.x &&
+                cell2.number.y === cell.number.y
+              ) {
+                if (
+                  cell2.levelData.charAt(0) ===  'z' ||
+                  cell2.levelData.charAt(0) ===  'y'
+                ) {
+                  // console.log('bolt hit an obstacle');
+                  bolt.kill = true;
+                }
+              }
+            }
+
           }
         }
 
+        if (
+          bolt.currentPosition.center.x < 0 ||
+          bolt.currentPosition.center.y < 0 ||
+          bolt.currentPosition.center.x > 1300 ||
+          bolt.currentPosition.center.y > 800
+        ) {
 
-          if (
-            bolt.currentPosition.center.x < 0 ||
-            bolt.currentPosition.center.y < 0 ||
-            bolt.currentPosition.center.x > 1300 ||
-            bolt.currentPosition.center.y > 800
-          ) {
-
-            bolt.kill = true;
-            // console.log('outof bounds',index,this.projectiles);
-          }
-
-            this.projectiles[index] = bolt;
-
-
-
+          bolt.kill = true;
+          // console.log('outof bounds',index,this.projectiles);
+        }
       }
     }
 
@@ -5639,15 +5670,15 @@ class App extends Component {
         weaponIndex: 0,
         armorIndex: 0,
         weapons: [{
-          name: 'spear1',
-          type: 'spear',
+          name: 'sword1',
+          type: 'sword',
           effect: '',
         }],
         armor: []
       };
       player.currentWeapon = {
-        name: 'spear1',
-        type: 'spear',
+        name: 'sword1',
+        type: 'sword',
         effect: '',
       };
       // player.currentArmor = {};
@@ -5806,8 +5837,11 @@ class App extends Component {
     };
     let dropWhat = this.rnJesus(1,2);
     let shouldDrop = false;
-    let dropChance = this.rnJesus(1,10*player.crits.pushBack);
-    if (dropChance === 1) {
+    let dropChance = this.rnJesus(1,1*player.crits.pushBack);
+    if (
+      dropChance === 1 &&
+      player.falling.state !== true
+    ) {
       shouldDrop = true;
 
       if (dropWhat === 1) {
