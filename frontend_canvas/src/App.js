@@ -2042,7 +2042,7 @@ class App extends Component {
 
             }
 
-            if (player.pushBack.state === true) {
+            if (player.pushBack.state === true && player.target.void !== true) {
               player.pushBack.state = false;
               player.strafing = {
                 state: false,
@@ -2056,7 +2056,6 @@ class App extends Component {
               nextPosition.y === player.target.cell.center.y &&
               player.target.void === true
             ) {
-              console.log('hht');
               player.falling.state = true;
               player.action = 'falling';
             }
@@ -2448,7 +2447,7 @@ class App extends Component {
               this.keyPressed[player.number-1].cycleWeapon === true &&
               player.items.weapons.length > 1
             ) {
-              console.log('cycling weapon',player.items);
+              // console.log('cycling weapon',player.items);
 
               // let currentIndex = player.items.weapons.indexOf(player.currentWeapon);
               let currentIndex = player.items.weaponIndex;
@@ -2494,7 +2493,7 @@ class App extends Component {
               this.keyPressed[player.number-1].cycleArmor === true &&
               player.items.armor.length > 0
             ) {
-              console.log('cycling armor');
+              // console.log('cycling armor');
 
               // let currentIndex = player.items.armor.indexOf(player.currentArmor);
               let currentIndex = player.items.armorIndex;
@@ -3925,7 +3924,6 @@ class App extends Component {
             }
           }
           if (plyr.falling.state === true) {
-            console.log('hht');
             if (x === 0 && y === 0) {
               if (
                 plyr.direction === 'east' ||
@@ -5010,6 +5008,7 @@ class App extends Component {
     getLineXYatPercent(startPt,endPt,percent);
 
     if (player.falling.state === true) {
+      // console.log('increment fall');
       player.falling.count++;
 
       newPosition = {
@@ -5481,7 +5480,7 @@ class App extends Component {
           // console.log('target is NOT free');
     }
     if (player.target.void === true) {
-      console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
+      // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
       player.action = 'strafe moving';
       player.moving = {
         state: true,
@@ -5640,15 +5639,15 @@ class App extends Component {
         weaponIndex: 0,
         armorIndex: 0,
         weapons: [{
-          name: 'sword1',
-          type: 'sword',
+          name: 'spear1',
+          type: 'spear',
           effect: '',
         }],
         armor: []
       };
       player.currentWeapon = {
-        name: 'sword1',
-        type: 'sword',
+        name: 'spear1',
+        type: 'spear',
         effect: '',
       };
       // player.currentArmor = {};
