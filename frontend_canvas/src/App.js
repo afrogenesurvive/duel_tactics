@@ -1227,7 +1227,7 @@ class App extends Component {
     this.refs.plyr1IdleNorthEast.onload = () => {
       this.addListeners(canvas, canvas2);
 
-      this.drawGridInit(this.state.canvas, this.state.context);
+      this.drawGridInit(this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
 
       window.requestAnimationFrame(this.gameLoop);
 
@@ -1595,7 +1595,6 @@ class App extends Component {
         polygon.push(vertexPoint)
       }
       let pip = pointInPolygon(point, polygon)
-      // console.log('point',point,'cell',cell.number,'polygon',polygon,'pip',pip);
       if (pip === true) {
         insideGrid = true;
         console.log("clicked a cell",cell.number,"x: " + x + " y: " + y);
@@ -2821,16 +2820,10 @@ class App extends Component {
       if (bolt.moving.state === true && bolt.kill !== true) {
         // console.log('traking projectile');
 
-
         let index = this.projectiles.findIndex(blt => blt.id === bolt.id);
-
         bolt.currentPosition.center = bolt.nextPosition;
-
         let boltNextPosition = this.boltCrementer(bolt);
-        // console.log('nextPosition',nextPosition);
-
         bolt.nextPosition = boltNextPosition;
-        // let passingThrough;
 
         for (const cell of bolt.target.path) {
           let point = [bolt.currentPosition.center.x,bolt.currentPosition.center.y];
@@ -2844,17 +2837,6 @@ class App extends Component {
           if (pip === true) {
             // console.log('gotcha',cell.number);
             bolt.currentPosition.number = cell.number;
-            // this.cellsUnderAttack.push(
-            //   {
-            //     number: {
-            //       x: cell.number.x,
-            //       y: cell.number.y,
-            //     },
-            //     count: 1,
-            //     limit: 8,
-            //   },
-            // )
-
 
             for (const plyr of this.players) {
               if (
@@ -2965,7 +2947,6 @@ class App extends Component {
                 }
               }
             }
-
           }
         }
 
@@ -2975,9 +2956,7 @@ class App extends Component {
           bolt.currentPosition.center.x > 1300 ||
           bolt.currentPosition.center.y > 800
         ) {
-
           bolt.kill = true;
-          // console.log('outof bounds',index,this.projectiles);
         }
       }
     }
@@ -3287,15 +3266,6 @@ class App extends Component {
           drawFloor = false;
         }
 
-        // let allCells = gridInfo;
-        // for (const elem of allCells) {
-        //   if (elem.number.x === x && elem.number.y === y) {
-        //     cellLevelData = elem.levelData;
-        //     if (elem.void.state === true) {
-        //       drawFloor = false;
-        //     }
-        //   }
-        // }
 
         // CELLS UNDER ATTACK!
         if (this.cellsUnderAttack.length > 0) {
@@ -3334,86 +3304,78 @@ class App extends Component {
         }
 
         // IN GAME ITEM PLACEMENT!!
-        for (const cell of this.gridInfo) {
-          if (
-            cell.number.x === x &&
-            cell.number.y === y
-          ) {
-            if (cell.item.name !== '' && cell.void.state !== true) {
+        if (gridInfoCell.item.name !== '' && gridInfoCell.void.state !== true) {
 
-              let itemImg;
-              let fillClr;
-              if (cell.item.type === 'item') {
-                switch(cell.item.name) {
-                  case 'moveSpeedUp' :
-                    fillClr = "purple";
-                    itemImg = itemImgs[cell.item.name];
-                  break;
-                  case 'moveSpeedDown' :
-                    fillClr = "blue";
-                    itemImg = itemImgs[cell.item.name];
-                  break;
-                  case 'hpUp' :
-                    fillClr = "yellow";
-                    itemImg = itemImgs[cell.item.name];
-                  break;
-                  case 'hpDown' :
-                    fillClr = "brown";
-                    itemImg = itemImgs[cell.item.name];
-                  break;
-                  case 'focusUp' :
-                    fillClr = "white";
-                    itemImg = itemImgs[cell.item.name];
-                  break;
-                  case 'focusDown' :
-                    fillClr = "black";
-                    itemImg = itemImgs[cell.item.name];
-                  break;
-                  case 'strengthUp' :
-                    fillClr = "green";
-                    itemImg = itemImgs[cell.item.name];
-                  break;
-                  case 'strengthDown' :
-                    fillClr = "red";
-                    itemImg = itemImgs[cell.item.name];
-                  break;
-                }
-              }
-              else if (cell.item.type === 'weapon') {
-                switch(cell.item.subType) {
-                  case 'sword' :
-                    fillClr = "orange";
-                    itemImg = itemImgs[cell.item.subType];
-                  break;
-                  case 'spear' :
-                    fillClr = "maroon";
-                    itemImg = itemImgs[cell.item.subType];
-                  break;
-                  case 'crossbow' :
-                    fillClr = "navy";
-                    itemImg = itemImgs[cell.item.subType];
-                  break;
-                }
-              }
-              else if (cell.item.type === 'armor') {
-                switch(cell.item.subType) {
-                  case 'helmet' :
-                    fillClr = "grey";
-                    itemImg = itemImgs[cell.item.subType];
-                  break;
-                }
-              }
-
-
-              context.fillStyle = fillClr;
-              context.beginPath();
-              context.arc(center.x, center.y, 10, 0, 2 * Math.PI);
-              context.fill();
-
-              // context.drawImage(itemImg ,center.x, center.y, 30,30);
+          let itemImg;
+          let fillClr;
+          if (gridInfoCell.item.type === 'item') {
+            switch(gridInfoCell.item.name) {
+              case 'moveSpeedUp' :
+                fillClr = "purple";
+                itemImg = itemImgs[gridInfoCell.item.name];
+              break;
+              case 'moveSpeedDown' :
+                fillClr = "blue";
+                itemImg = itemImgs[gridInfoCell.item.name];
+              break;
+              case 'hpUp' :
+                fillClr = "yellow";
+                itemImg = itemImgs[gridInfoCell.item.name];
+              break;
+              case 'hpDown' :
+                fillClr = "brown";
+                itemImg = itemImgs[gridInfoCell.item.name];
+              break;
+              case 'focusUp' :
+                fillClr = "white";
+                itemImg = itemImgs[gridInfoCell.item.name];
+              break;
+              case 'focusDown' :
+                fillClr = "black";
+                itemImg = itemImgs[gridInfoCell.item.name];
+              break;
+              case 'strengthUp' :
+                fillClr = "green";
+                itemImg = itemImgs[gridInfoCell.item.name];
+              break;
+              case 'strengthDown' :
+                fillClr = "red";
+                itemImg = itemImgs[gridInfoCell.item.name];
+              break;
             }
           }
+          else if (gridInfoCell.item.type === 'weapon') {
+            switch(gridInfoCell.item.subType) {
+              case 'sword' :
+                fillClr = "orange";
+                itemImg = itemImgs[gridInfoCell.item.subType];
+              break;
+              case 'spear' :
+                fillClr = "maroon";
+                itemImg = itemImgs[gridInfoCell.item.subType];
+              break;
+              case 'crossbow' :
+                fillClr = "navy";
+                itemImg = itemImgs[gridInfoCell.item.subType];
+              break;
+            }
+          }
+          else if (gridInfoCell.item.type === 'armor') {
+            switch(gridInfoCell.item.subType) {
+              case 'helmet' :
+                fillClr = "grey";
+                itemImg = itemImgs[gridInfoCell.item.subType];
+              break;
+            }
+          }
+
+          context.fillStyle = fillClr;
+          context.beginPath();
+          context.arc(center.x, center.y, 10, 0, 2 * Math.PI);
+          context.fill();
+
         }
+
 
         function playerDrawLog (x,y,plyr) {
           console.log('** playerDrawLog **');
@@ -3700,13 +3662,9 @@ class App extends Component {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 if (
                   plyr.direction === 'east' ||
-                  // newDirection === 'east' ||
                   plyr.direction === 'west' ||
-                  // newDirection === 'west' ||
                   plyr.direction === 'north' ||
-                  // newDirection === 'north' ||
                   plyr.direction === 'south'
-                  // newDirection === 'south'
                 ) {
                   // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
                   context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
@@ -3720,13 +3678,9 @@ class App extends Component {
               if (x === plyr.target.cell.number.x && y === plyr.target.cell.number.y) {
                 if (
                   plyr.direction === 'east' ||
-                  // newDirection === 'east' ||
                   plyr.direction === 'west' ||
-                  // newDirection === 'west' ||
                   plyr.direction === 'north' ||
-                  // newDirection === 'north' ||
                   plyr.direction === 'south'
-                  // newDirection === 'south'
                 ) {
                   // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
                   context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
@@ -3743,13 +3697,9 @@ class App extends Component {
                 if (x === this.gridWidth && y === plyr.target.cell.number.y+1) {
                   if (
                     plyr.direction === 'east' ||
-                    // newDirection === 'east' ||
                     plyr.direction === 'west' ||
-                    // newDirection === 'west' ||
                     plyr.direction === 'north' ||
-                    // newDirection === 'north' ||
                     plyr.direction === 'south'
-                    // newDirection === 'south'
                   ) {
                     // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
                     context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
@@ -3763,13 +3713,9 @@ class App extends Component {
                 if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
                   if (
                     plyr.direction === 'east' ||
-                    // newDirection === 'east' ||
                     plyr.direction === 'west' ||
-                    // newDirection === 'west' ||
                     plyr.direction === 'north' ||
-                    // newDirection === 'north' ||
                     plyr.direction === 'south'
-                    // newDirection === 'south'
                   ) {
                     // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
                     context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
@@ -3786,13 +3732,9 @@ class App extends Component {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
                 if (
                   plyr.direction === 'east' ||
-                  // newDirection === 'east' ||
                   plyr.direction === 'west' ||
-                  // newDirection === 'west' ||
                   plyr.direction === 'north' ||
-                  // newDirection === 'north' ||
                   plyr.direction === 'south'
-                  // newDirection === 'south'
                 ) {
                   // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
                   context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
@@ -3805,10 +3747,7 @@ class App extends Component {
             }
 
             if (plyr.pushBack.state === true) {
-              // context.fillStyle = "purple";
-              // context.beginPath();
-              // context.arc(point.x-20, point.y-20, 10, 0, 2 * Math.PI);
-              // context.fill();
+
               context2.drawImage(indicatorImgs.pushback, point.x-20, point.y-20, 35,35);
             }
 
@@ -4024,128 +3963,107 @@ class App extends Component {
             ) {
               // console.log('respawning... confirm dead player',plyr.dead.state,x,y);
 
-              let respawnPoint = {
-                number: {
-                  x: 0,
-                  y: 0,
-                },
-                center: {
-                  x: 0,
-                  y: 0,
+                let respawnPoint = {
+                  number: {
+                    x: 0,
+                    y: 0,
+                  },
+                  center: {
+                    x: 0,
+                    y: 0,
+                  }
                 }
-              }
-              let altRespawnPoint = {
-                number: {
-                  x: 0,
-                  y: 0,
-                },
-                center: {
-                  x: 0,
-                  y: 0,
+                let altRespawnPoint = {
+                  number: {
+                    x: 0,
+                    y: 0,
+                  },
+                  center: {
+                    x: 0,
+                    y: 0,
+                  }
                 }
-              }
-              let altRespawnPoint2 = {
-                number: {
-                  x: 0,
-                  y: 0,
-                },
-                center: {
-                  x: 0,
-                  y: 0,
+                let altRespawnPoint2 = {
+                  number: {
+                    x: 0,
+                    y: 0,
+                  },
+                  center: {
+                    x: 0,
+                    y: 0,
+                  }
                 }
-              }
+                let respawnCellOccupied = false;
 
-              let respawnCellOccupied = false;
+                // console.log('matching grid info with start position');
+                let elem1 = this.gridInfo.find(gridCell => gridCell.number.x === this.gridWidth && gridCell.number.y === this.gridWidth);
+                altRespawnPoint.number.x = elem1.number.x;
+                altRespawnPoint.number.y = elem1.number.y;
+                altRespawnPoint.center.x = elem1.center.x;
+                altRespawnPoint.center.y = elem1.center.y;
 
-              // console.log('matching grid info with start position');
-              for (const elem of this.gridInfo) {
-                if (
-                  elem.number.x === this.gridWidth &&
-                  elem.number.y === this.gridWidth
-                ){
-                  altRespawnPoint.number.x = elem.number.x;
-                  altRespawnPoint.number.y = elem.number.y;
-                  altRespawnPoint.center.x = elem.center.x;
-                  altRespawnPoint.center.y = elem.center.y;
-                }
-                if (
-                  elem.number.x === this.gridWidth &&
-                  elem.number.y === 0
-                ){
-                  altRespawnPoint2.number.x = elem.number.x;
-                  altRespawnPoint2.number.y = elem.number.y;
-                  altRespawnPoint2.center.x = elem.center.x;
-                  altRespawnPoint2.center.y = elem.center.y;
-                }
+                let elem2 = this.gridInfo.find(gridCell => gridCell.number.x === this.gridWidth && gridCell.number.y === 0);
+                altRespawnPoint2.number.x = elem2.number.x;
+                altRespawnPoint2.number.y = elem2.number.y;
+                altRespawnPoint2.center.x = elem2.center.x;
+                altRespawnPoint2.center.y = elem2.center.y;
 
-                if (
-                  elem.number.x === plyr.startPosition.cell.number.x &&
-                  elem.number.y === plyr.startPosition.cell.number.y
-                )
-                {
-                  // console.log('found your start position');
-                  // console.log('checking for obstacles');
-                  for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
-                    for (const cell of row) {
-                      if (
-                        cell.charAt(0) === 'y' ||
-                        cell.charAt(0) ===  'z'
-                      ) {
-                        let obstaclePosition = {
-                          x: Number(cell.charAt(1)),
-                          y: row.indexOf(cell),
-                        }
-                        // console.log('found obstacle during map scan @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
-                        if (
-                          elem.number.x === obstaclePosition.x &&
-                          elem.number.y === obstaclePosition.y
-                        ) {
-                          // console.log('an obstacle is in your way');
-                          respawnCellOccupied = true;
-                        }
+                let elem3 = this.gridInfo.find(gridCell => gridCell.number.x === plyr.startPosition.cell.number.x && gridCell.number.y === plyr.startPosition.cell.number.y);
+                for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
+                  for (const cell of row) {
+                    if (
+                      cell.charAt(0) === 'y' ||
+                      cell.charAt(0) ===  'z'
+                    ) {
+                      let obstaclePosition = {
+                        x: Number(cell.charAt(1)),
+                        y: row.indexOf(cell),
                       }
-                    }
-                  }
-
-                  if (elem.void.state === true ) {
-                    respawnCellOccupied = true;
-                  }
-
-                  // console.log('checking for other player');
-                  for (const plyr2 of this.players) {
-                    if (plyr2.number !== plyr.number) {
+                      // console.log('found obstacle during map scan @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
                       if (
-                        elem.number.x === plyr2.currentPosition.cell.number.x &&
-                        elem.number.y === plyr2.currentPosition.cell.number.y
+                        elem3.number.x === obstaclePosition.x &&
+                        elem3.number.y === obstaclePosition.y
                       ) {
+                        // console.log('an obstacle is in your way');
                         respawnCellOccupied = true;
                       }
                     }
                   }
-
-                  if (
-                    respawnCellOccupied === false
-                  ) {
-                    // console.log('starting point cell is free. You may respawn there');
-                    respawnPoint.number.x = elem.number.x;
-                    respawnPoint.number.y = elem.number.y;
-                    respawnPoint.center.x = elem.center.x;
-                    respawnPoint.center.y = elem.center.y;
-                  } else if (respawnCellOccupied === true) {
-
-                    // console.log('original spawn point occupied! spawning at cell 9,9');
-                    if (plyr.number === 1) {
-                      respawnPoint = altRespawnPoint;
+                }
+                if (elem3.void.state === true ) {
+                  respawnCellOccupied = true;
+                }
+                for (const plyr2 of this.players) {
+                  if (plyr2.number !== plyr.number) {
+                    if (
+                      elem3.number.x === plyr2.currentPosition.cell.number.x &&
+                      elem3.number.y === plyr2.currentPosition.cell.number.y
+                    ) {
+                      respawnCellOccupied = true;
                     }
-                    if (plyr.number === 2) {
-                      respawnPoint = altRespawnPoint2;
-                    }
+                  }
+                }
 
+                if (
+                  respawnCellOccupied === false
+                ) {
+
+                  respawnPoint.number.x = elem3.number.x;
+                  respawnPoint.number.y = elem3.number.y;
+                  respawnPoint.center.x = elem3.center.x;
+                  respawnPoint.center.y = elem3.center.y;
+                }
+                else if (respawnCellOccupied === true) {
+
+                  if (plyr.number === 1) {
+                    respawnPoint = altRespawnPoint;
+                  }
+                  if (plyr.number === 2) {
+                    respawnPoint = altRespawnPoint2;
                   }
 
                 }
 
-              }
 
                 let plyrImgs = [
                   this.refs.playerImgIdleNorth,
@@ -4299,10 +4217,6 @@ class App extends Component {
                 }
               }
             }
-
-            // context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
-            // context.fillStyle = "#f3722c";
-            // context.fillRect(point.x-20, point.y-20,15,15);
           }
           if (plyr.dead.state === true && player.dead.count > 0 && plyr.dead.count < plyr.dead.limit) {
 
@@ -4310,9 +4224,7 @@ class App extends Component {
               x === plyr.ghost.position.cell.number.x &&
               y === plyr.ghost.position.cell.number.y
             ) {
-              // console.log('moments of death');
               context2.drawImage(indicatorImgs.death, plyr.ghost.position.cell.center.x-15, plyr.ghost.position.cell.center.y-15, 25,25);
-
             }
           }
           if (plyr.ghost.state === true && player.dead.count === 0) {
@@ -4320,7 +4232,6 @@ class App extends Component {
               x === plyr.ghost.position.cell.number.x &&
               y === plyr.ghost.position.cell.number.y
             ) {
-              // console.log('your ghost lingers till your return');
               context.drawImage(indicatorImgs.ghost, plyr.ghost.position.cell.center.x-20, plyr.ghost.position.cell.center.y-20, 25,25);
             }
           }
@@ -4348,15 +4259,15 @@ class App extends Component {
         }
         if(gridInfoCell.levelData.charAt(0) === 'y') {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
-          context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
+          context2.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
         }
         if(gridInfoCell.levelData.charAt(0) === 'z') {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
-          context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+          context2.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
 
           let isoHeight = wallImageHeight - floorImageHeight
           offset.y += isoHeight
-          context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+          context2.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
         }
       }
     }
@@ -5058,9 +4969,6 @@ class App extends Component {
     let currentPosition = player.currentPosition.cell.center;
     let target = player.target;
     let moveSpeed = player.speed.move;
-    // if (player.pushBack.state === true) {
-    //   moveSpeed = .1;
-    // }
 
     player.moving.step = player.moving.step + moveSpeed;
     // console.log('mover stepper',player.moving.step);
@@ -5206,20 +5114,15 @@ class App extends Component {
 
     // console.log('bolt path',bolt.target.path);
 
-    for (const cell of this.gridInfo) {
+    for (const cell2 of bolt.target.path) {
 
-      for (const cell2 of bolt.target.path) {
-        if (
-          cell.number.x === cell2.number.x &&
-          cell.number.y === cell2.number.y
-        ) {
-          cell2.center.x = cell.center.x;
-          cell2.center.y = cell.center.y;
-          cell2.vertices = cell.vertices;
-        }
-      }
+      let cell = this.gridInfo.find(elem => elem.number.x === cell2.number.x && elem.number.y === cell2.number.y)
 
+      cell2.center.x = cell.center.x;
+      cell2.center.y = cell.center.y;
+      cell2.vertices = cell.vertices;
     }
+
     bolt.moving.state = true;
 
     this.projectiles[index] = bolt;
@@ -5272,227 +5175,221 @@ class App extends Component {
 
     let pickUp = false;
 
-    for (const cell of this.gridInfo) {
-      if (
-        cell.number.x === player.currentPosition.cell.number.x &&
-        cell.number.y === player.currentPosition.cell.number.y
-      ) {
-        if (cell.item.name !== '') {
-          // console.log('picked up an item');
-          if (cell.item.type === 'weapon') {
-            // console.log('weapon',cell.item);
+    let cell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y)
+    if (cell.item.name !== '') {
+      // console.log('picked up an item');
+      if (cell.item.type === 'weapon') {
+        // console.log('weapon',cell.item);
 
-            if (player.currentWeapon.name === '' || player.currentWeapon === {}) {
-              this.players[player.number-1].currentWeapon = {
-                name: cell.item.name,
-                type: cell.item.subType,
-                effect: cell.item.effect,
-              }
-              this.players[player.number-1].items.weapons.push({
-                name: cell.item.name,
-                type: cell.item.subType,
-                effect: cell.item.effect,
-              })
-              pickUp = true;
-            }
-            else {
-              if (player.items.weapons.map(weapon => weapon.name).includes(cell.item.name) !== true ) {
-                this.players[player.number-1].items.weapons.push({
-                  name: cell.item.name,
-                  type: cell.item.subType,
-                  effect: cell.item.effect,
-                })
-                pickUp = true;
-
-                this.players[player.number-1].statusDisplay = {
-                  state: true,
-                  status: 'weapon accquired',
-                  count: 1,
-                  limit: this.players[player.number-1].statusDisplay.limit,
-                }
-              }
-              else {
-                console.log('you already have this weapon');
-              }
-            }
+        if (player.currentWeapon.name === '' || player.currentWeapon === {}) {
+          this.players[player.number-1].currentWeapon = {
+            name: cell.item.name,
+            type: cell.item.subType,
+            effect: cell.item.effect,
           }
-          if (cell.item.type === 'armor') {
+          this.players[player.number-1].items.weapons.push({
+            name: cell.item.name,
+            type: cell.item.subType,
+            effect: cell.item.effect,
+          })
+          pickUp = true;
+        }
+        else {
+          if (player.items.weapons.map(weapon => weapon.name).includes(cell.item.name) !== true ) {
+            this.players[player.number-1].items.weapons.push({
+              name: cell.item.name,
+              type: cell.item.subType,
+              effect: cell.item.effect,
+            })
+            pickUp = true;
 
-            if (player.currentArmor.name === '' || player.currentArmor === {}) {
-              this.players[player.number-1].currentArmor = {
-                name: cell.item.name,
-                type: cell.item.subType,
-                effect: cell.item.effect,
-              }
-              this.players[player.number-1].items.armor.push({
-                name: cell.item.name,
-                type: cell.item.subType,
-                effect: cell.item.effect,
-              })
-              pickUp = true;
-            }
-            else {
-              if (player.items.armor.map(armor => armor.name).includes(cell.item.name) !== true ) {
-                this.players[player.number-1].items.armor.push({
-                  name: cell.item.name,
-                  type: cell.item.subType,
-                  effect: cell.item.effect,
-                })
-                pickUp = true;
-
-                this.players[player.number-1].statusDisplay = {
-                  state: true,
-                  status: 'armor accquired',
-                  count: 1,
-                  limit: this.players[player.number-1].statusDisplay.limit,
-                }
-              }
-              else {
-                console.log('you already have this armor');
-              }
+            this.players[player.number-1].statusDisplay = {
+              state: true,
+              status: 'weapon accquired',
+              count: 1,
+              limit: this.players[player.number-1].statusDisplay.limit,
             }
           }
           else {
-            // console.log('item',cell.item);
-
-            switch(cell.item.name) {
-              case 'moveSpeedUp' :
-                // console.log('moveSpeedUp');
-                let currentSpd1 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
-                // console.log('dd',currentSpd1,this.players[player.number-1].speed.range[currentSpd1]);
-                // console.log('dd2',currentSpd1,this.players[player.number-1].speed.range[currentSpd1+1]);
-                if (this.players[player.number-1].speed.move < .2) {
-                  // console.log('added buff');
-                  this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd1+1]
-
-                  this.players[player.number-1].statusDisplay = {
-                    state: true,
-                    status: cell.item.name,
-                    count: 1,
-                    limit: this.players[player.number-1].statusDisplay.limit,
-                  }
-                  pickUp = true;
-                }
-              break;
-              case 'moveSpeedDown' :
-                // console.log('moveSpeedDown');
-                let currentSpd2 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
-                // console.log('ff',currentSpd2,this.players[player.number-1].speed.range[currentSpd2]);
-                // console.log('ff2',currentSpd2,this.players[player.number-1].speed.range[currentSpd2-1]);
-                if (this.players[player.number-1].speed.move > .05) {
-                  // console.log('added debuff');
-                  this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd2-1]
-
-                  this.players[player.number-1].statusDisplay = {
-                    state: true,
-                    status: cell.item.name,
-                    count: 1,
-                    limit: this.players[player.number-1].statusDisplay.limit,
-                  }
-                  pickUp = true;
-                }
-              break;
-              case 'hpUp' :
-                // console.log('hpUp');
-                if (this.players[player.number-1].hp === 1 && this.players[player.number-1].speed.move < .1) {
-                  this.players[player.number-1].speed.move = .1;
-                }
-                if (this.players[player.number-1].hp < 3) {
-                    this.players[player.number-1].hp ++;
-
-                    this.players[player.number-1].statusDisplay = {
-                      state: true,
-                      status: cell.item.name,
-                      count: 1,
-                      limit: this.players[player.number-1].statusDisplay.limit,
-                    }
-                    pickUp = true;
-                }
-              break;
-              case 'hpDown' :
-                // console.log('hpDown');
-                if (player.hp > 1) {
-                  this.players[player.number-1].hp --;
-
-                  this.players[player.number-1].statusDisplay = {
-                    state: true,
-                    status: cell.item.name,
-                    count: 1,
-                    limit: this.players[player.number-1].statusDisplay.limit,
-                  }
-                  pickUp = true;
-                }
-              break;
-              case 'focusUp' :
-                if (
-                  this.players[player.number-1].crits.doubleHit - 2 !== 0
-                ) {
-                  this.players[player.number-1].crits.doubleHit = this.players[player.number-1].crits.doubleHit - 2;
-
-                  this.players[player.number-1].statusDisplay = {
-                    state: true,
-                    status: cell.item.name,
-                    count: 1,
-                    limit: this.players[player.number-1].statusDisplay.limit,
-                  }
-
-                  pickUp = true;
-                }
-              break;
-              case 'focusDown' :
-                this.players[player.number-1].crits.doubleHit = this.players[player.number-1].crits.doubleHit + 2;
-
-                this.players[player.number-1].statusDisplay = {
-                  state: true,
-                  status: cell.item.name,
-                  count: 1,
-                  limit: this.players[player.number-1].statusDisplay.limit,
-                }
-
-                pickUp = true;
-              break;
-              case 'strengthUp' :
-                this.players[player.number-1].crits.pushBack = this.players[player.number-1].crits.pushBack + 1;
-
-                this.players[player.number-1].statusDisplay = {
-                  state: true,
-                  status: cell.item.name,
-                  count: 1,
-                  limit: this.players[player.number-1].statusDisplay.limit,
-                }
-
-                pickUp = true;
-              break;
-              case 'strengthDown' :
-                if (
-                  this.players[player.number-1].crits.pushBack - 1 !== 0
-                ) {
-                  this.players[player.number-1].crits.pushBack = this.players[player.number-1].crits.pushBack - 1;
-
-                  this.players[player.number-1].statusDisplay = {
-                    state: true,
-                    status: cell.item.name,
-                    count: 1,
-                    limit: this.players[player.number-1].statusDisplay.limit,
-                  }
-
-                  pickUp = true;
-                }
-              break;
-            }
-
+            console.log('you already have this weapon');
           }
-          if (pickUp === true) {
-            cell.item = {
-              name: '',
-              type: '',
-              subType: '',
-              initDrawn: false
-            }
-          }
-
         }
       }
+      if (cell.item.type === 'armor') {
+
+        if (player.currentArmor.name === '' || player.currentArmor === {}) {
+          this.players[player.number-1].currentArmor = {
+            name: cell.item.name,
+            type: cell.item.subType,
+            effect: cell.item.effect,
+          }
+          this.players[player.number-1].items.armor.push({
+            name: cell.item.name,
+            type: cell.item.subType,
+            effect: cell.item.effect,
+          })
+          pickUp = true;
+        }
+        else {
+          if (player.items.armor.map(armor => armor.name).includes(cell.item.name) !== true ) {
+            this.players[player.number-1].items.armor.push({
+              name: cell.item.name,
+              type: cell.item.subType,
+              effect: cell.item.effect,
+            })
+            pickUp = true;
+
+            this.players[player.number-1].statusDisplay = {
+              state: true,
+              status: 'armor accquired',
+              count: 1,
+              limit: this.players[player.number-1].statusDisplay.limit,
+            }
+          }
+          else {
+            console.log('you already have this armor');
+          }
+        }
+      }
+      else {
+        // console.log('item',cell.item);
+
+        switch(cell.item.name) {
+          case 'moveSpeedUp' :
+            // console.log('moveSpeedUp');
+            let currentSpd1 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
+            // console.log('dd',currentSpd1,this.players[player.number-1].speed.range[currentSpd1]);
+            // console.log('dd2',currentSpd1,this.players[player.number-1].speed.range[currentSpd1+1]);
+            if (this.players[player.number-1].speed.move < .2) {
+              // console.log('added buff');
+              this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd1+1]
+
+              this.players[player.number-1].statusDisplay = {
+                state: true,
+                status: cell.item.name,
+                count: 1,
+                limit: this.players[player.number-1].statusDisplay.limit,
+              }
+              pickUp = true;
+            }
+          break;
+          case 'moveSpeedDown' :
+            // console.log('moveSpeedDown');
+            let currentSpd2 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
+            // console.log('ff',currentSpd2,this.players[player.number-1].speed.range[currentSpd2]);
+            // console.log('ff2',currentSpd2,this.players[player.number-1].speed.range[currentSpd2-1]);
+            if (this.players[player.number-1].speed.move > .05) {
+              // console.log('added debuff');
+              this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd2-1]
+
+              this.players[player.number-1].statusDisplay = {
+                state: true,
+                status: cell.item.name,
+                count: 1,
+                limit: this.players[player.number-1].statusDisplay.limit,
+              }
+              pickUp = true;
+            }
+          break;
+          case 'hpUp' :
+            // console.log('hpUp');
+            if (this.players[player.number-1].hp === 1 && this.players[player.number-1].speed.move < .1) {
+              this.players[player.number-1].speed.move = .1;
+            }
+            if (this.players[player.number-1].hp < 3) {
+                this.players[player.number-1].hp ++;
+
+                this.players[player.number-1].statusDisplay = {
+                  state: true,
+                  status: cell.item.name,
+                  count: 1,
+                  limit: this.players[player.number-1].statusDisplay.limit,
+                }
+                pickUp = true;
+            }
+          break;
+          case 'hpDown' :
+            // console.log('hpDown');
+            if (player.hp > 1) {
+              this.players[player.number-1].hp --;
+
+              this.players[player.number-1].statusDisplay = {
+                state: true,
+                status: cell.item.name,
+                count: 1,
+                limit: this.players[player.number-1].statusDisplay.limit,
+              }
+              pickUp = true;
+            }
+          break;
+          case 'focusUp' :
+            if (
+              this.players[player.number-1].crits.doubleHit - 2 !== 0
+            ) {
+              this.players[player.number-1].crits.doubleHit = this.players[player.number-1].crits.doubleHit - 2;
+
+              this.players[player.number-1].statusDisplay = {
+                state: true,
+                status: cell.item.name,
+                count: 1,
+                limit: this.players[player.number-1].statusDisplay.limit,
+              }
+
+              pickUp = true;
+            }
+          break;
+          case 'focusDown' :
+            this.players[player.number-1].crits.doubleHit = this.players[player.number-1].crits.doubleHit + 2;
+
+            this.players[player.number-1].statusDisplay = {
+              state: true,
+              status: cell.item.name,
+              count: 1,
+              limit: this.players[player.number-1].statusDisplay.limit,
+            }
+
+            pickUp = true;
+          break;
+          case 'strengthUp' :
+            this.players[player.number-1].crits.pushBack = this.players[player.number-1].crits.pushBack + 1;
+
+            this.players[player.number-1].statusDisplay = {
+              state: true,
+              status: cell.item.name,
+              count: 1,
+              limit: this.players[player.number-1].statusDisplay.limit,
+            }
+
+            pickUp = true;
+          break;
+          case 'strengthDown' :
+            if (
+              this.players[player.number-1].crits.pushBack - 1 !== 0
+            ) {
+              this.players[player.number-1].crits.pushBack = this.players[player.number-1].crits.pushBack - 1;
+
+              this.players[player.number-1].statusDisplay = {
+                state: true,
+                status: cell.item.name,
+                count: 1,
+                limit: this.players[player.number-1].statusDisplay.limit,
+              }
+
+              pickUp = true;
+            }
+          break;
+        }
+
+      }
+      if (pickUp === true) {
+        cell.item = {
+          name: '',
+          type: '',
+          subType: '',
+          initDrawn: false
+        }
+      }
+
     }
 
     // check for terrain
@@ -5737,7 +5634,7 @@ class App extends Component {
 
     }
 
-    this.drawGridInit(this.state.canvas, this.state.context);
+    this.drawGridInit(this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
 
   }
 
@@ -5745,23 +5642,18 @@ class App extends Component {
     // console.log('check cell');
 
     let cellFree = true;
-
-    for (const cell2 of this.gridInfo) {
-      if (
-        cell2.number.x === cell.x &&
-        cell2.number.y === cell.y
-      ) {
-        if (
-          cell2.levelData.charAt(0) ===  'z' &&
-          cell2.levelData.charAt(0) ===  'y'
-        ) {
-          cellFree = false;
-        }
-        if (cell2.item.name !== '') {
-          cellFree = false;
-        }
-      }
+    let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y);
+    if (
+      cell2.levelData.charAt(0) ===  'z' &&
+      cell2.levelData.charAt(0) ===  'y'
+    ) {
+      cellFree = false;
     }
+    if (cell2.item.name !== '') {
+      cellFree = false;
+    }
+
+
     for (const player of this.players) {
       if (this.init === true) {
         if (
@@ -5788,7 +5680,6 @@ class App extends Component {
       console.log('placing items init');
 
 
-
       for ( const item of this.initItemList) {
 
         // if (item.amount > item.total-1) {
@@ -5807,22 +5698,15 @@ class App extends Component {
           }
           if (checkCell === true) {
             // console.log('cell free');
-            for (const cell2 of this.gridInfo) {
-              if (
-                cell2.number.x === cell.x &&
-                cell2.number.y === cell.y
-              ) {
-                // console.log('found cell to draw at',cell2,'item',item);
-                cell2.item.name = item.name;
-                cell2.item.type = item.type;
-                cell2.item.subType = item.subType;
-                cell2.item.effect = item.effect;
+            let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y);
+            cell2.item.name = item.name;
+            cell2.item.type = item.type;
+            cell2.item.subType = item.subType;
+            cell2.item.effect = item.effect;
 
-                // item.amount--
-                console.log('post item', item, cell2.item,cell2.number);
-              }
+            // item.amount--
+            console.log('post item', item, cell2.item,cell2.number);
 
-            }
           }
         // }
         // else {
@@ -5852,20 +5736,29 @@ class App extends Component {
               checkCell = this.checkCell(cell);
             }
             if (checkCell === true) {
-              for (const cell2 of this.gridInfo) {
-                if (
-                  cell2.number.x === cell.x &&
-                  cell2.number.y === cell.y
-                ) {
-                  cell2.item.name = item2.name;
-                  cell2.item.type = item2.type;
-                  cell2.item.subType = item2.subType;
-                  cell2.item.effect = item2.effect;
+              let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y);
+              cell2.item.name = item2.name;
+              cell2.item.type = item2.type;
+              cell2.item.subType = item2.subType;
+              cell2.item.effect = item2.effect;
 
-                  item2.amount--
-                  console.log('placed ingame item',cell2.number.x,cell2.number.y,item2.amount,this.itemList);
-                }
-              }
+              item2.amount--
+              console.log('placed ingame item',cell2.number.x,cell2.number.y,item2.amount,this.itemList);
+
+              // for (const cell2 of this.gridInfo) {
+              //   if (
+              //     cell2.number.x === cell.x &&
+              //     cell2.number.y === cell.y
+              //   ) {
+              //     cell2.item.name = item2.name;
+              //     cell2.item.type = item2.type;
+              //     cell2.item.subType = item2.subType;
+              //     cell2.item.effect = item2.effect;
+              //
+              //     item2.amount--
+              //     console.log('placed ingame item',cell2.number.x,cell2.number.y,item2.amount,this.itemList);
+              //   }
+              // }
             }
             // item2.amount--
           } else {
@@ -6138,6 +6031,7 @@ class App extends Component {
     // console.log('processing level data');
 
     // compare & combine w/ levelData2
+
     for(const elem of allCells) {
 
       // SET LEVEL DTAT!
@@ -6192,7 +6086,7 @@ class App extends Component {
 
   }
 
-  drawGridInit = (canvas, context) => {
+  drawGridInit = (canvas, context, canvas2, context2) => {
     console.log('drawing initial');
 
     let gridInfo = [];
@@ -6259,15 +6153,7 @@ class App extends Component {
           y: iso.y - offset.y/2-2,
         }
 
-        let cellLevelData;
-        let allCells = gridInfo;
-        for (const elem of allCells) {
-          if (elem.number.x === x && elem.number.y === y) {
-            // console.log('level data for this cell',elem.levelData);
-            cellLevelData = elem.levelData;
-
-          }
-        }
+        let cellLevelData = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y).levelData;
 
         context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
 
@@ -6279,90 +6165,84 @@ class App extends Component {
 
 
         // INITIAL ITEM DISTRIBUTION!!
-        for (const cell of allCells) {
-          if (
-            cell.number.x === x &&
-            cell.number.y === y
-          ) {
-            if (cell.item.name !== '') {
-              // console.log('found cell with item');
-              if (cell.item.initDrawn === false) {
-                // console.log('found cell with item undrawn');
-                let itemImg;
-                let fillClr;
-                if (cell.item.type === 'item') {
-                  switch(cell.item.name) {
-                    case 'moveSpeedUp' :
-                      fillClr = "purple";
-                      itemImg = itemImgs[cell.item.name];
-                    break;
-                    case 'moveSpeedDown' :
-                      fillClr = "blue";
-                      itemImg = itemImgs[cell.item.name];
-                    break;
-                    case 'hpUp' :
-                      fillClr = "yellow";
-                      itemImg = itemImgs[cell.item.name];
-                    break;
-                    case 'hpDown' :
-                      fillClr = "brown";
-                      itemImg = itemImgs[cell.item.name];
-                    break;
-                    case 'focusUp' :
-                      fillClr = "white";
-                      itemImg = itemImgs[cell.item.name];
-                    break;
-                    case 'focusDown' :
-                      fillClr = "black";
-                      itemImg = itemImgs[cell.item.name];
-                    break;
-                    case 'strengthUp' :
-                      fillClr = "green";
-                      itemImg = itemImgs[cell.item.name];
-                    break;
-                    case 'strengthDown' :
-                      fillClr = "red";
-                      itemImg = itemImgs[cell.item.name];
-                    break;
-                  }
-                }
-                else if (cell.item.type === 'weapon') {
-                  switch(cell.item.subType) {
-                    case 'sword' :
-                      fillClr = "orange";
-                      itemImg = itemImgs[cell.item.subType];
-                    break;
-                    case 'spear' :
-                      fillClr = "maroon";
-                      itemImg = itemImgs[cell.item.subType];
-                    break;
-                    case 'crossbow' :
-                      fillClr = "navy";
-                      itemImg = itemImgs[cell.item.subType];
-                    break;
-                  }
-                }
-                else if (cell.item.type === 'armor') {
-                  switch(cell.item.subType) {
-                    case 'helmet' :
-                      fillClr = "grey";
-                      itemImg = itemImgs[cell.item.subType];
-                    break;
-                  }
-                }
-
-
-                context.fillStyle = fillClr;
-                context.beginPath();
-                context.arc(center.x, center.y, 15, 0, 2 * Math.PI);
-                context.fill();
-
-                // context.drawImage(itemImg ,center.x-10, center.y-15, 30,30);
+        let cell2 = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
+        if (cell2.item.name !== '') {
+          // console.log('found cell with item');
+          if (cell2.item.initDrawn === false) {
+            // console.log('found cell with item undrawn');
+            let itemImg;
+            let fillClr;
+            if (cell2.item.type === 'item') {
+              switch(cell2.item.name) {
+                case 'moveSpeedUp' :
+                  fillClr = "purple";
+                  itemImg = itemImgs[cell2.item.name];
+                break;
+                case 'moveSpeedDown' :
+                  fillClr = "blue";
+                  itemImg = itemImgs[cell2.item.name];
+                break;
+                case 'hpUp' :
+                  fillClr = "yellow";
+                  itemImg = itemImgs[cell2.item.name];
+                break;
+                case 'hpDown' :
+                  fillClr = "brown";
+                  itemImg = itemImgs[cell2.item.name];
+                break;
+                case 'focusUp' :
+                  fillClr = "white";
+                  itemImg = itemImgs[cell2.item.name];
+                break;
+                case 'focusDown' :
+                  fillClr = "black";
+                  itemImg = itemImgs[cell2.item.name];
+                break;
+                case 'strengthUp' :
+                  fillClr = "green";
+                  itemImg = itemImgs[cell2.item.name];
+                break;
+                case 'strengthDown' :
+                  fillClr = "red";
+                  itemImg = itemImgs[cell2.item.name];
+                break;
               }
             }
-          }
+            else if (cell2.item.type === 'weapon') {
+              switch(cell2.item.subType) {
+                case 'sword' :
+                  fillClr = "orange";
+                  itemImg = itemImgs[cell2.item.subType];
+                break;
+                case 'spear' :
+                  fillClr = "maroon";
+                  itemImg = itemImgs[cell2.item.subType];
+                break;
+                case 'crossbow' :
+                  fillClr = "navy";
+                  itemImg = itemImgs[cell2.item.subType];
+                break;
+              }
+            }
+            else if (cell2.item.type === 'armor') {
+              switch(cell2.item.subType) {
+                case 'helmet' :
+                  fillClr = "grey";
+                  itemImg = itemImgs[cell2.item.subType];
+                break;
+              }
+            }
 
+
+            context.fillStyle = fillClr;
+            context.beginPath();
+            context.arc(center.x, center.y, 15, 0, 2 * Math.PI);
+            context.fill();
+
+            // context.drawImage(itemImg ,center.x-10, center.y-15, 30,30);
+          }
         }
+
 
         let vertices = [
           {x:center.x, y:center.y+tileWidth/2},
@@ -6399,73 +6279,55 @@ class App extends Component {
               y: 0,
             };
 
-            for (const cell of gridInfo) {
-              if (
-                cell.number.x === player.startPosition.cell.number.x &&
-                cell.number.y === player.startPosition.cell.number.y
-              ) {
-                point.x = cell.center.x;
-                point.y = cell.center.y;
 
-                player.currentPosition.cell = {
-                  number: {
-                    x: player.startPosition.cell.number.x,
-                    y: player.startPosition.cell.number.y
-                  },
-                  center : {
-                    x: point.x,
-                    y: point.y
-                  }
-                }
-                player.moving = {
-                  state: false,
-                  step: 0,
-                  course: '',
-                  origin: {
-                    number: {
-                      x: player.startPosition.cell.number.x,
-                      y: player.startPosition.cell.number.y,
-                    },
-                    center: {
-                      x: point.x,
-                      y: point.y,
-                    },
-                  },
-                  destination: {
-                    x: 0,
-                    y: 0,
-                  }
-                }
-                player.nextPosition = {
-                  x: point.x,
-                  y: point.y
-                }
+            let cell = this.gridInfo.find(elem => elem.number.x === player.startPosition.cell.number.x && elem.number.y === player.startPosition.cell.number.y)
+            point.x = cell.center.x;
+            point.y = cell.center.y;
 
-                this.players[player.number-1] = player;
-                let players = this.state.players;
-                players[player.number-1] = player;
-                this.setState({
-                  players: players
-                })
-
-                this.getTarget(player);
-
-                // console.log('** playerDrawLog Init **');
-                // console.log('-- player --',player.number);
-                // console.log('-- strafing --',player.strafing.state);
-                // console.log('-- turning --',player.turning.state);
-                // console.log('-- currently drawing --',x,y);
-                // console.log('-- current position --',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
-                // console.log('-- moving state --',player.moving.state);
-                // console.log('-- moving step --',player.moving.step);
-                // console.log('-- target --',player.target.cell.number.x,player.target.cell.number.y);
-                // console.log('-- direction --',player.direction);
-                // console.log('-- origin --',player.moving.origin.number.x,player.moving.origin.number.y);
-
-                context.drawImage(playerImg, point.x-30, point.y-30, 60,60);
-
+            player.currentPosition.cell = {
+              number: {
+                x: player.startPosition.cell.number.x,
+                y: player.startPosition.cell.number.y
+              },
+              center : {
+                x: point.x,
+                y: point.y
               }
             }
+            player.moving = {
+              state: false,
+              step: 0,
+              course: '',
+              origin: {
+                number: {
+                  x: player.startPosition.cell.number.x,
+                  y: player.startPosition.cell.number.y,
+                },
+                center: {
+                  x: point.x,
+                  y: point.y,
+                },
+              },
+              destination: {
+                x: 0,
+                y: 0,
+              }
+            }
+            player.nextPosition = {
+              x: point.x,
+              y: point.y
+            }
+
+            this.players[player.number-1] = player;
+            let players = this.state.players;
+            players[player.number-1] = player;
+            this.setState({
+              players: players
+            })
+
+            this.getTarget(player);
+            context2.drawImage(playerImg, point.x-30, point.y-30, 60,60);
+
           }
 
         }
@@ -6473,20 +6335,20 @@ class App extends Component {
         let walledTiles = []
         if (walledTiles.includes(''+x+','+y+'')) {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
-          context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
+          context2.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
         }
         if(cellLevelData.charAt(0) === 'y') {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
-          context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
+          context2.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
 
         }
         if(cellLevelData.charAt(0) === 'z') {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
-          context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+          context2.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
 
           let isoHeight = wallImageHeight - floorImageHeight
           offset.y += isoHeight
-          context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+          context2.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
 
         }
 
