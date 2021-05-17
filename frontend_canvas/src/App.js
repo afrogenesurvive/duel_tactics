@@ -2116,10 +2116,10 @@ class App extends Component {
 
 
         // DEBUFF CHECKS!!
-        if (player.hp === 1 && player.speed.move > .05) {
-
-          player.speed.move = .05;
-        }
+        // if (player.hp === 1 && player.speed.move > .05) {
+        //
+        //   player.speed.move = .05;
+        // }
 
 
         // CHECK CELL UNDER ATTACK!!
@@ -2360,6 +2360,10 @@ class App extends Component {
                     this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
                   }
 
+                  if (this.players[player.target.occupant.player-1].hp === 1) {
+                    this.players[player.target.occupant.player-1].speed.move = .05;
+                  }
+
                   // KILL OR DEFLECT OPPONENT!
                   if (this.players[player.target.occupant.player-1].hp <= 0) {
                     this.killPlayer(this.players[player.target.occupant.player-1]);
@@ -2549,6 +2553,7 @@ class App extends Component {
               this.keyPressed[player.number-1].cycleWeapon === true &&
               player.items.weapons.length === 1
             ) {
+              player.currentWepon = player.items.weapons[0];
               console.log('nothing to cycle through');
             }
 
@@ -5884,7 +5889,7 @@ class App extends Component {
       shouldDrop = true;
 
       if (dropWhat === 1) {
-        console.log("dropping weapon");
+        console.log("dropping weapon player ",player.number);
         let index = player.items.weapons.findIndex(weapon => weapon.name === player.currentWeapon.name);
         // player.items.weapons.indexOf(player.items.weapons.find(weapon=> {weapon.name === player.currentWeapon.name}))
 
@@ -5908,7 +5913,7 @@ class App extends Component {
         }
       }
       else {
-        console.log("dropping armor");
+        console.log("dropping armor player ",player.number);
         if (player.items.armor.length > 0) {
           let index = player.items.armor.findIndex(armor => armor.name === player.currentArmor.name);
           // let index = player.items.armor.indexOf(player.items.armors.find(armor=> {armor.name === player.currentArmor.name}))
