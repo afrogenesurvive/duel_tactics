@@ -662,6 +662,14 @@ class App extends Component {
         subType: 'crossbow',
         effect: '',
       },
+      {
+        name: 'helmet1',
+        amount: 3,
+        total: 3,
+        type: 'armor',
+        subType: 'helmet',
+        effect: '+10',
+      },
     ];
     this.initItemList = [
       {
@@ -702,12 +710,12 @@ class App extends Component {
         subType: 'crossbow',
         effect: '',
       },
-      // {
-      //   name: 'helmet1',
-      //   type: 'armor',
-      //   subType: 'helmet',
-      //   effect: '',
-      // },
+      {
+        name: 'helmet1',
+        type: 'armor',
+        subType: 'helmet',
+        effect: '+10',
+      },
       // {
       //   name: 'helmet2',
       //   type: 'armor',
@@ -1948,7 +1956,7 @@ class App extends Component {
           // console.log('cv',this.cellToVoid.count);
         }
         else if (this.cellToVoid.count >= this.cellToVoid.limit) {
-          // console.log('summon void now');
+          // console.log('summon void now',this.cellToVoid.x,this.cellToVoid.y);
 
           let cell = {
             x: this.cellToVoid.x,
@@ -2231,7 +2239,7 @@ class App extends Component {
                   },
                   void: false,
                 },
-                speed: .15,
+                speed: .1,
                 kill: false,
               }
               this.projectiles.push(boltx)
@@ -2293,7 +2301,19 @@ class App extends Component {
 
 
                   // CALCULATE ATTACKER DOUBLE HIT!
-                  let doubleHit = this.rnJesus(1,player.crits.doubleHit);
+                  let doubleHitChance = player.crits.doubleHit;
+                  if (this.players.[player.target.occupant.player-1].currentArmor.name !== '') {
+                    // console.log('opponent armour found');
+                    switch(this.players.[player.target.occupant.player-1].currentArmor.effect) {
+                      case '+10' :
+                        doubleHitChance = player.crits.doubleHit+10;
+                      break;
+                      case '+20' :
+                        doubleHitChance = player.crits.doubleHit+20;
+                      break;
+                    }
+                  }
+                  let doubleHit = this.rnJesus(1,doubleHitChance);
                   if (doubleHit === 1) {
                     this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 2;
                   }
@@ -2817,7 +2837,7 @@ class App extends Component {
           }
           let pip = pointInPolygon(point, polygon)
           if (pip === true) {
-            // console.log('gotcha',cell.number);
+            console.log('gotcha',cell.number);
             bolt.currentPosition.number = cell.number;
             // this.cellsUnderAttack.push(
             //   {
@@ -2859,7 +2879,20 @@ class App extends Component {
 
 
                   // CALCULATE ATTACKER DOUBLE HIT!
-                  let doubleHit = this.rnJesus(1,this.players[bolt.owner-1].crits.doubleHit);
+                  let doubleHitChance = this.players[bolt.owner-1].crits.doubleHit;
+                  if (this.players[bolt.owner-1].currentArmor.name !== '') {
+                    // console.log('opponent armour found');
+                    switch(plyr.currentArmor.effect) {
+                      case '+10' :
+                        doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+10;
+                      break;
+                      case '+20' :
+                        doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+20;
+                      break;
+                    }
+                  }
+                  let doubleHit = this.rnJesus(1,doubleHitChance);
+
                   if (doubleHit === 1) {
                     this.players.[plyr.number-1].hp = this.players.[plyr.number-1].hp - 2;
                   }
@@ -3239,16 +3272,20 @@ class App extends Component {
         }
 
 
-        let cellLevelData;
-        let allCells = gridInfo;
-        for (const elem of allCells) {
-          if (elem.number.x === x && elem.number.y === y) {
-            cellLevelData = elem.levelData;
-            if (elem.void.state === true) {
-              drawFloor = false;
-            }
-          }
+        let gridInfoCell = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
+        if (gridInfoCell.void.state === true) {
+          drawFloor = false;
         }
+
+        // let allCells = gridInfo;
+        // for (const elem of allCells) {
+        //   if (elem.number.x === x && elem.number.y === y) {
+        //     cellLevelData = elem.levelData;
+        //     if (elem.void.state === true) {
+        //       drawFloor = false;
+        //     }
+        //   }
+        // }
 
         // CELLS UNDER ATTACK!
         if (this.cellsUnderAttack.length > 0) {
@@ -3287,7 +3324,7 @@ class App extends Component {
         }
 
         // IN GAME ITEM PLACEMENT!!
-        for (const cell of allCells) {
+        for (const cell of this.gridInfo) {
           if (
             cell.number.x === x &&
             cell.number.y === y
@@ -4011,7 +4048,7 @@ class App extends Component {
               let respawnCellOccupied = false;
 
               // console.log('matching grid info with start position');
-              for (const elem of allCells) {
+              for (const elem of this.gridInfo) {
                 if (
                   elem.number.x === this.gridWidth &&
                   elem.number.y === this.gridWidth
@@ -4304,11 +4341,11 @@ class App extends Component {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
           context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
         }
-        if(cellLevelData.charAt(0) === 'y') {
+        if(gridInfoCell.levelData.charAt(0) === 'y') {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
           context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
         }
-        if(cellLevelData.charAt(0) === 'z') {
+        if(gridInfoCell.levelData.charAt(0) === 'z') {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
           context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
 
@@ -5160,7 +5197,10 @@ class App extends Component {
       originCell = nextCell.number;
       bolt.target.path.push(cell);
     }
-    bolt.target.path.splice(bolt.target.path.length-1,1)
+    if (bolt.target.path.length > 1) {
+      bolt.target.path.splice(bolt.target.path.length-1,1)
+    }
+
     // console.log('bolt path',bolt.target.path);
 
     for (const cell of this.gridInfo) {
@@ -5187,10 +5227,11 @@ class App extends Component {
 
 
     // let index = this.projectiles.findIndex(blt => blt.id === bolt.id);
-    // let distanceFactor = bolt.target.path.length;
+    let distanceFactor = bolt.target.path.length;
 
     let moveSpeed = bolt.speed;
-    // let moveSpeed = bolt.speed/distanceFactor;
+    // moveSpeed = bolt.speed/distanceFactor;
+    moveSpeed = bolt.speed/(distanceFactor/10);
 
     bolt.moving.step = bolt.moving.step + moveSpeed;
     let newPosition;
@@ -5670,15 +5711,15 @@ class App extends Component {
         weaponIndex: 0,
         armorIndex: 0,
         weapons: [{
-          name: 'sword1',
-          type: 'sword',
+          name: 'crossbow1',
+          type: 'crossbow',
           effect: '',
         }],
         armor: []
       };
       player.currentWeapon = {
-        name: 'sword1',
-        type: 'sword',
+        name: 'crossbow1',
+        type: 'crossbow',
         effect: '',
       };
       // player.currentArmor = {};
@@ -5908,60 +5949,48 @@ class App extends Component {
   }
   voidSummon = (cell) => {
     // console.log('opening void');
-    // let voidChance = Math.round(1000/this.gridWidth)
-    // let openVoid = this.rnJesus(1,voidChance);
-    // let openVoid;
-    // if (openVoid === 1) {
-      // let cell = {
-      //   x: 0,
-      //   y: 0
-      // }
-      // cell.x = this.rnJesus(0,this.gridWidth)
-      // cell.y = this.rnJesus(0,this.gridWidth)
 
       let foundPlayer;
       let player;
+      let cl = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y)
 
-      for (const cell2 of this.gridInfo) {
+      if (
+        cl.number.x === this.gridWidth &&
+        cl.number.y === 0
+      ) {
+        // console.log('dont void this');
+      }
+      if (
+        cl.number.x === this.gridWidth &&
+        cl.number.y === this.gridWidth
+      ) {
+        // console.log('dont void this');
+      } else {
+        cl.item = {
+          name: '',
+          type: '',
+          subType: '',
+          effect: '',
+          initDrawn: false
+        };
+        cl.void.state = true;
+        // console.log('voiding',cl.number.x,cl.number.y);
+
         if (
-          cell2.number.x !== this.gridWidth &&
-          cell2.number.y !== 0
+          cl.levelData.charAt(0) === 'y'
         ) {
-          if (
-            cell2.number.x !== this.gridWidth &&
-            cell2.number.y !== this.gridWidth
-          ) {
-            if (
-              cell2.number.x === cell.x &&
-              cell2.number.y === cell.y
-            ) {
-              cell2.item = {
-                name: '',
-                type: '',
-                subType: '',
-                effect: '',
-                initDrawn: false
-              };
-              cell2.void.state = true;
-              // console.log('voiding',cell2.number.x,cell2.number.y);
-              if (
-                cell2.levelData.charAt(0) === 'y'
-              ) {
-                let x = cell2.levelData.slice(1,3)
-                cell2.levelData = "x"+x+"";
-              }
-              if (
-                cell2.levelData.charAt(0) === 'z'
-              ) {
-                let x = cell2.levelData.slice(1,3)
-                cell2.levelData = "x"+x+"";
-              }
-
-            }
-
-          }
+          let x = cl.levelData.slice(1,3)
+          cl.levelData = "x"+x+"";
+        }
+        if (
+          cl.levelData.charAt(0) === 'z'
+        ) {
+          let x = cl.levelData.slice(1,3)
+          cl.levelData = "x"+x+"";
         }
       }
+
+
 
       for (const plyr of this.players) {
         if (
