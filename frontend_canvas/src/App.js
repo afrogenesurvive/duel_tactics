@@ -246,6 +246,7 @@ class App extends Component {
             }
           ],
           armor: [],
+          ammo: 0,
         },
         cycleWeapon: {
           state: false,
@@ -444,6 +445,7 @@ class App extends Component {
             }
           ],
           armor: [],
+          ammo: 0,
         },
         cycleWeapon: {
           state: false,
@@ -662,7 +664,15 @@ class App extends Component {
         total: 2,
         type: 'weapon',
         subType: 'crossbow',
-        effect: '',
+        effect: 'ammo+5',
+      },
+      {
+        name: 'crossbow2',
+        amount: 2,
+        total: 2,
+        type: 'weapon',
+        subType: 'crossbow',
+        effect: 'ammo+0',
       },
       {
         name: 'helmet1',
@@ -679,8 +689,18 @@ class App extends Component {
         type: 'item',
         effect: '',
       },
+      // {
+      //   name: 'moveSpeedDown',
+      //   type: 'item',
+      //   effect: '',
+      // },
       {
-        name: 'moveSpeedDown',
+        name: 'ammo5',
+        type: 'item',
+        effect: '',
+      },
+      {
+        name: 'ammo10',
         type: 'item',
         effect: '',
       },
@@ -710,7 +730,7 @@ class App extends Component {
         name: 'crossbow1',
         type: 'weapon',
         subType: 'crossbow',
-        effect: '',
+        effect: 'ammo+10',
       },
       {
         name: 'helmet1',
@@ -903,6 +923,7 @@ class App extends Component {
             }
           ],
           armor: [],
+          ammo: 0,
         },
         cycleWeapon: {
           state: false,
@@ -1103,6 +1124,7 @@ class App extends Component {
             effect: '',
           }],
           armor: [],
+          ammo: 0,
         },
         cycleWeapon: {
           state: false,
@@ -2199,7 +2221,7 @@ class App extends Component {
           if (player.attacking.count === 8) {
             // console.log('attack peak & cooldown');
 
-            if (player.currentWeapon.type === 'crossbow') {
+            if (player.currentWeapon.type === 'crossbow' && player.items.ammo > 0) {
               // console.log('firing crossbow');
 
               let plyrX = player;
@@ -2247,11 +2269,24 @@ class App extends Component {
                 kill: false,
               }
               this.projectiles.push(boltx)
+              player.items.ammo--
+              player.currentWeapon.effect = 'ammo+0';
 
               this.getBoltTarget(boltx)
               // console.log('start projectile',boltx.currentPosition.number, this.players[boltx.owner-1].currentPosition.cell.number,this.projectiles);
 
               // this.boltCrementer(bolt)
+            }
+            if (player.currentWeapon.type === 'crossbow' && player.items.ammo <= 0) {
+              console.log('no ammo!');
+              this.players[player.number-1].statusDisplay = {
+                state: true,
+                status: 'out of ammo',
+                count: 1,
+                limit: this.players[player.number-1].statusDisplay.limit,
+              }
+              player.currentWeapon.effect = 'ammo+0'
+
             }
             else if (player.currentWeapon.type !== 'crossbow') {
 
@@ -3208,6 +3243,8 @@ class App extends Component {
       spear: this.refs.preAttackIndicate,
       crossbow: this.refs.preAttackIndicate,
       helmet: this.refs.preAttackIndicate,
+      ammo5: this.refs.preAttackIndicate,
+      ammo10: this.refs.preAttackIndicate,
     };
     let terrainImgs = [];
 
@@ -3340,6 +3377,14 @@ class App extends Component {
               break;
               case 'strengthDown' :
                 fillClr = "red";
+                itemImg = itemImgs[gridInfoCell.item.name];
+              break;
+              case 'ammo5' :
+                fillClr = "#283618";
+                itemImg = itemImgs[gridInfoCell.item.name];
+              break;
+              case 'ammo10' :
+                fillClr = "#283618";
                 itemImg = itemImgs[gridInfoCell.item.name];
               break;
             }
@@ -5136,8 +5181,8 @@ class App extends Component {
     let distanceFactor = bolt.target.path.length;
 
     let moveSpeed = bolt.speed;
-    // moveSpeed = bolt.speed/distanceFactor;
-    moveSpeed = bolt.speed/(distanceFactor/10);
+    moveSpeed = bolt.speed/distanceFactor;
+    // moveSpeed = bolt.speed/(distanceFactor/10);
 
     bolt.moving.step = bolt.moving.step + moveSpeed;
     let newPosition;
@@ -5192,6 +5237,12 @@ class App extends Component {
             type: cell.item.subType,
             effect: cell.item.effect,
           })
+          if (cell.item.subType === 'crossbow') {
+            let ammo = parseInt(cell.item.effect.split('+')[1])
+            // console.log('picked up a crossbow checking ammo',ammo);
+            this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
+            // console.log('new ammo amt',this.players[player.number-1].items.ammo);
+          }
           pickUp = true;
         }
         else {
@@ -5201,6 +5252,12 @@ class App extends Component {
               type: cell.item.subType,
               effect: cell.item.effect,
             })
+            if (cell.item.subType === 'crossbow') {
+              let ammo = parseInt(cell.item.effect.split('+')[1])
+              // console.log('picked up a crossbow checking ammo',ammo);
+              this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
+              // console.log('new ammo amt',this.players[player.number-1].items.ammo);
+            }
             pickUp = true;
 
             this.players[player.number-1].statusDisplay = {
@@ -5211,7 +5268,16 @@ class App extends Component {
             }
           }
           else {
-            console.log('you already have this weapon');
+
+            if (cell.item.subType === 'crossbow') {
+              let ammo = parseInt(cell.item.effect.split('+')[1]);
+              this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
+              console.log('you already have a crossbow but take the ammo',ammo);
+              cell.item.effect = 'ammo+0';
+            }
+            else {
+              console.log('you already have this weapon');
+            }
           }
         }
       }
@@ -5253,7 +5319,7 @@ class App extends Component {
       }
       else {
         // console.log('item',cell.item);
-
+        let ammo;
         switch(cell.item.name) {
           case 'moveSpeedUp' :
             // console.log('moveSpeedUp');
@@ -5377,6 +5443,32 @@ class App extends Component {
 
               pickUp = true;
             }
+          break;
+          case 'ammo5' :
+            ammo = parseInt(cell.item.name.split('o')[1])
+            this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
+
+            this.players[player.number-1].statusDisplay = {
+              state: true,
+              status: cell.item.name,
+              count: 1,
+              limit: this.players[player.number-1].statusDisplay.limit,
+            }
+
+            pickUp = true;
+          break;
+          case 'ammo10' :
+            ammo = parseInt(cell.item.name.split('o')[1])
+            this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
+
+            this.players[player.number-1].statusDisplay = {
+              state: true,
+              status: cell.item.name,
+              count: 1,
+              limit: this.players[player.number-1].statusDisplay.limit,
+            }
+
+            pickUp = true;
           break;
         }
 
@@ -5507,7 +5599,8 @@ class App extends Component {
         type: 'sword',
         effect: '',
       }],
-      armor: []
+      armor: [],
+      ammo: 0,
     };
     this.players[player.number-1].currentWeapon = {
       name: 'sword1',
@@ -5619,15 +5712,16 @@ class App extends Component {
         weaponIndex: 0,
         armorIndex: 0,
         weapons: [{
-          name: 'crossbow1',
-          type: 'crossbow',
+          name: 'sword1',
+          type: 'sword',
           effect: '',
         }],
-        armor: []
+        armor: [],
+        ammo: 0,
       };
       player.currentWeapon = {
-        name: 'crossbow1',
-        type: 'crossbow',
+        name: 'sword1',
+        type: 'sword',
         effect: '',
       };
       // player.currentArmor = {};
@@ -5797,6 +5891,7 @@ class App extends Component {
         item.name = this.players[player.number-1].items.weapons[index].name;
         item.subType = this.players[player.number-1].items.weapons[index].type;
         item.type = "weapon";
+        item.effect = this.players[player.number-1].items.weapons[index].effect;
         this.players[player.number-1].items.weapons.splice(index,1);
         this.players[player.number-1].items.weaponIndex = 0;
         this.players[player.number-1].currentWeapon = {
@@ -5819,6 +5914,7 @@ class App extends Component {
           // let index = player.items.armor.indexOf(player.items.armors.find(armor=> {armor.name === player.currentArmor.name}))
           item.name = this.players[player.number-1].items.armor[index].name;
           item.subType = this.players[player.number-1].items.armor[index].type;
+          item.effect = this.players[player.number-1].items.armor[index].effect;
           item.type = "armor";
           this.players[player.number-1].items.armor.splice(index,1);
           this.players[player.number-1].items.armorIndex = 0;
@@ -5845,7 +5941,7 @@ class App extends Component {
 
     }
     else {
-      console.log('no gear drop',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
+      // console.log('no gear drop',player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
     }
 
     //   if dropped gear remove buff/effect
@@ -6097,6 +6193,13 @@ class App extends Component {
         }
     }
 
+    for (const plyr of this.players) {
+      if (plyr.currentWeapon.type === 'crossbow') {
+        let ammo = parseInt(plyr.currentWeapon.effect.split('+')[1])
+        plyr.items.ammo = plyr.items.ammo + ammo;
+      }
+    }
+
     let floor = this.refs.floor2;
     let wall = this.refs.wall;
     let wall2 = this.refs.wall2;
@@ -6131,6 +6234,8 @@ class App extends Component {
       spear: this.refs.preAttackIndicate,
       crossbow: this.refs.preAttackIndicate,
       helmet: this.refs.preAttackIndicate,
+      ammo5: this.refs.preAttackIndicate,
+      ammo10: this.refs.preAttackIndicate,
     };
 
     this.placeItems({init: true, items: ''});
@@ -6204,6 +6309,14 @@ class App extends Component {
                 break;
                 case 'strengthDown' :
                   fillClr = "red";
+                  itemImg = itemImgs[cell2.item.name];
+                break;
+                case 'ammo5' :
+                  fillClr = '#283618';
+                  itemImg = itemImgs[cell2.item.name];
+                break;
+                case 'ammo10' :
+                  fillClr = '#283618';
                   itemImg = itemImgs[cell2.item.name];
                 break;
               }

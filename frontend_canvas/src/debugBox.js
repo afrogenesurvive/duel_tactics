@@ -142,7 +142,12 @@ const DebugBox = props => {
                {weapon.name}xx
               </p>
             )}
-
+            {props.player.currentWeapon.type === 'crossbow' &&
+              weapon.type === 'crossbow' && (
+              <p className="debugBoxText">
+                - {props.player.items.ammo}
+              </p>
+            )}
           </li>
         ))}
         {props.player.items.armor.map((armor) => (
