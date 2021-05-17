@@ -1185,6 +1185,7 @@ class App extends Component {
     }
     this.turnCheckerDirection = '';
     this.projectiles = [];
+    this.projectileSpeed = .1;
     this.cellsUnderAttack = [];
 
   }
@@ -2239,7 +2240,7 @@ class App extends Component {
                   },
                   void: false,
                 },
-                speed: .1,
+                speed: this.projectileSpeed,
                 kill: false,
               }
               this.projectiles.push(boltx)
@@ -2837,7 +2838,7 @@ class App extends Component {
           }
           let pip = pointInPolygon(point, polygon)
           if (pip === true) {
-            console.log('gotcha',cell.number);
+            // console.log('gotcha',cell.number);
             bolt.currentPosition.number = cell.number;
             // this.cellsUnderAttack.push(
             //   {
@@ -2931,7 +2932,7 @@ class App extends Component {
                   }
 
                   // let deflectOpponent = this.rnJesus(1,3);
-                  let deflectOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.pushBack);
+                  let deflectOpponent = this.rnJesus(1,this.players[plyr.number-1].crits.pushBack);
                   if (deflectOpponent === 1) {
                     this.players[plyr.number-1].success.deflected = {
                       state: true,
