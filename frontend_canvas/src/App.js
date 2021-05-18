@@ -485,6 +485,8 @@ class App extends Component {
 
   constructor(props) {
     super(props);
+    this.time = 0;
+
     this.canvasRef = React.createRef();
     this.canvasRef2 = React.createRef();
 
@@ -512,7 +514,6 @@ class App extends Component {
     this.gridWidth = 9;
 
     this.init = false;
-    this.gamepad = false;
     // this.openVoid = true;
     this.openVoid = false;
     this.cellToVoid = {
@@ -526,6 +527,9 @@ class App extends Component {
       count: 0,
       limit: 10000,
     }
+
+
+    this.gamepad = false;
 
     this.gridInfo = [];
     this.gridInfo2D = [];
@@ -1246,6 +1250,7 @@ class App extends Component {
       context2: context2
     })
 
+
     this.refs.plyr1IdleNorthEast.onload = () => {
       this.addListeners(canvas, canvas2);
 
@@ -1267,6 +1272,7 @@ class App extends Component {
 
 
   const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+
   // let joyPadCount = gamepads.length;
   let connectedGamepads = 0;
   if (gamepads[0] !== null) {
@@ -1289,6 +1295,8 @@ class App extends Component {
       attack: false,
       defend: false,
       strafe: false,
+      cycleWeapon: false,
+      cycleArmor: false,
     },
     {
       north: false,
@@ -1302,6 +1310,8 @@ class App extends Component {
       attack: false,
       defend: false,
       strafe: false,
+      cycleWeapon: false,
+      cycleArmor: false,
     },
   ]
 
@@ -1317,20 +1327,21 @@ class App extends Component {
 
           if (connectedGamepads === 1) {
 
-            // if (
-            //   gp.buttons.indexOf(btn) === 0 ||
-            //   gp.buttons.indexOf(btn) === 1 ||
-            //   gp.buttons.indexOf(btn) === 2 ||
-            //   gp.buttons.indexOf(btn) === 3 ||
-            //   gp.buttons.indexOf(btn) === 4 ||
-            //   gp.buttons.indexOf(btn) === 5 ||
-            //   gp.buttons.indexOf(btn) === 6 ||
-            //   gp.buttons.indexOf(btn) === 7 ||
-            //   gp.buttons.indexOf(btn) === 8 ||
-            //   gp.buttons.indexOf(btn) === 9
-            // ) {
-            //   console.log('1 player btn',gp.buttons.indexOf(btn));
-            // }
+            if (
+              gp.buttons.indexOf(btn) === 0 ||
+              gp.buttons.indexOf(btn) === 1 ||
+              gp.buttons.indexOf(btn) === 2 ||
+              gp.buttons.indexOf(btn) === 3 ||
+              gp.buttons.indexOf(btn) === 4 ||
+              gp.buttons.indexOf(btn) === 5 ||
+              gp.buttons.indexOf(btn) === 6 ||
+              gp.buttons.indexOf(btn) === 7 ||
+              gp.buttons.indexOf(btn) === 8 ||
+              gp.buttons.indexOf(btn) === 9
+            ) {
+              console.log('1 player btn',gp.buttons.indexOf(btn));
+              console.log('gamepads', gp.id.substr(0,7));
+            }
 
             // DOWN BTN
             if (gp.buttons.indexOf(btn) === 0) {
@@ -1344,6 +1355,12 @@ class App extends Component {
               keyPressed[0].defend = true;
               this.currentPlayer = 1;
             }
+            // LEFT BTN
+            if (gp.buttons.indexOf(btn) === 2) {
+              // console.log('1 player defend held',gp.buttons.indexOf(btn));
+
+              this.currentPlayer = 1;
+            }
             // UP BTN
             if (gp.buttons.indexOf(btn) === 3) {
               // console.log('1 player defend held',gp.buttons.indexOf(btn));
@@ -1351,8 +1368,21 @@ class App extends Component {
               this.players[0].strafing.state = true;
               this.currentPlayer = 1;
             }
+
+            // LEFT SHLDR BTN
+            if (gp.buttons.indexOf(btn) === 4) {
+              // console.log('1 player defend held',gp.buttons.indexOf(btn));
+
+              this.currentPlayer = 1;
+            }
             // RIGHT SHLDR BTN
             if (gp.buttons.indexOf(btn) === 5) {
+              // console.log('1 player defend held',gp.buttons.indexOf(btn));
+
+              this.currentPlayer = 1;
+            }
+            // MINUS BTN
+            if (gp.buttons.indexOf(btn) === 9) {
               // console.log('1 player defend held',gp.buttons.indexOf(btn));
               if (this.players[0].dead.state === true) {
                 this.respawn(this.players[0])
@@ -1362,6 +1392,7 @@ class App extends Component {
           }
 
           if (connectedGamepads === 2) {
+
             // if (
             //   gp.buttons.indexOf(btn) === 4 ||
             //   gp.buttons.indexOf(btn) === 6 ||
@@ -1534,6 +1565,8 @@ class App extends Component {
     }
   }
 
+
+
   if (
     keyPressed[0].strafe === false &&
     this.players[0].moving.state === true &&
@@ -1541,13 +1574,24 @@ class App extends Component {
   ) {
     this.players[0].strafeReleaseHook = true
   }
-  if (
-    keyPressed[1].strafe === false &&
-    this.players[1].moving.state === true &&
-    this.players[1].strafing.state === true
-  ) {
-    this.players[1].strafeReleaseHook = true
+  else {
+    this.keyPressed[0].strafe = true;
+    this.players[0].strafing.state = true;
+    this.currentPlayer = 1;
   }
+
+  // if (
+  //   state === false &&
+  //   this.players[1].moving.state === true &&
+  //   this.players[1].strafing.state === true
+  // ) {
+  //   this.players[1].strafeReleaseHook = true
+  // }
+  // else {
+  //   this.keyPressed[1].strafe = state;
+  //   this.players[1].strafing.state = state;
+  //   this.currentPlayer = 2;
+  // }
 
   this.keyPressed = keyPressed;
 
@@ -1893,6 +1937,7 @@ class App extends Component {
 
     if(this.stepper.deltaTime > this.stepper.interval) {
       // console.log('update loop step...dt',this.stepper.deltaTime,'interval',this.stepper.interval);
+      this.time++
 
       // this.aiAct();
       if (this.gamepad === true) {
@@ -3260,10 +3305,9 @@ class App extends Component {
       if (player.falling.count === player.falling.limit) {
         this.killPlayer(player)
       }
-
     }
 
-    // context.clearRect()
+    context.clearRect(0,0,this.canvasWidth,this.canvasHeight)
     context2.clearRect(0,0,this.canvasWidth,this.canvasHeight)
 
     for (var x = 0; x < this.gridWidth+1; x++) {
@@ -6508,7 +6552,15 @@ class App extends Component {
   render() {
     return (
       <React.Fragment>
+
+
         <div className="containerTop">
+        <div className="timer">
+          <p className="timerText">
+          {this.time}
+          </p>
+        </div>
+
           <div className={this.state.containerInnerClass}>
             <canvas
               width={this.canvasWidth}
