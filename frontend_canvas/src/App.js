@@ -259,6 +259,7 @@ class App extends Component {
           limit: 3,
         },
         crits: {
+          singleHit: 1,
           doubleHit: 6,
           pushBack: 3,
         },
@@ -458,6 +459,7 @@ class App extends Component {
           limit: 3,
         },
         crits: {
+          singleHit: 1,
           doubleHit: 6,
           pushBack: 3,
         },
@@ -684,7 +686,31 @@ class App extends Component {
         total: 3,
         type: 'armor',
         subType: 'helmet',
-        effect: '+10',
+        effect: 'hit-10',
+      },
+      {
+        name: 'chainMail1',
+        amount: 3,
+        total: 3,
+        type: 'armor',
+        subType: 'mail',
+        effect: 'hpUp',
+      },
+      {
+        name: 'ghostMail',
+        amount: 2,
+        total: 2,
+        type: 'armor',
+        subType: 'mail',
+        effect: 'snghit-10',
+      },
+      {
+        name: 'greaves1',
+        amount: 3,
+        total: 3,
+        type: 'armor',
+        subType: 'greaves',
+        effect: 'speedUp',
       },
     ];
     this.initItemList = [
@@ -737,11 +763,17 @@ class App extends Component {
         effect: 'ammo+10',
       },
       {
-        name: 'helmet1',
+        name: 'ghostMail',
         type: 'armor',
-        subType: 'helmet',
-        effect: '+10',
+        subType: 'mail',
+        effect: 'snghit-10',
       },
+      // {
+      //   name: 'helmet1',
+      //   type: 'armor',
+      //   subType: 'helmet',
+      //   effect: '+10',
+      // },
       // {
       //   name: 'helmet2',
       //   type: 'armor',
@@ -940,6 +972,7 @@ class App extends Component {
           limit: 3,
         },
         crits: {
+          singleHit: 1,
           doubleHit: 6,
           pushBack: 3,
         },
@@ -1141,6 +1174,7 @@ class App extends Component {
           limit: 3,
         },
         crits: {
+          singleHit: 1,
           doubleHit: 6,
           pushBack: 3,
         },
@@ -2386,23 +2420,48 @@ class App extends Component {
 
                   // CALCULATE ATTACKER DOUBLE HIT!
                   let doubleHitChance = player.crits.doubleHit;
+                  let singleHitChance = player.crits.singleHit;
+
                   if (this.players.[player.target.occupant.player-1].currentArmor.name !== '') {
                     // console.log('opponent armour found');
                     switch(this.players.[player.target.occupant.player-1].currentArmor.effect) {
-                      case '+10' :
+                      case 'dblhit-10' :
                         doubleHitChance = player.crits.doubleHit+10;
                       break;
-                      case '+20' :
+                      case 'dblhit-20' :
                         doubleHitChance = player.crits.doubleHit+20;
+                      break;
+                      case 'dblhit-30' :
+                        doubleHitChance = player.crits.doubleHit+30;
+                      break;
+                      case 'snghit-5' :
+                        singleHitChance = player.crits.singleHit+5;
+                      break;
+                      case 'snghit-10' :
+                        singleHitChance = player.crits.singleHit+10;
                       break;
                     }
                   }
+
                   let doubleHit = this.rnJesus(1,doubleHitChance);
+                  let singleHit = this.rnJesus(1,singleHitChance);
                   if (doubleHit === 1) {
+                    console.log('double hit attack');
                     this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 2;
                   }
-                  else if (doubleHit !== 1) {
+                  else if (singleHit === 1) {
+                    console.log('single hit attack');
                     this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
+                  }
+                  else if (doubleHit !== 1 && singleHit !== 1) {
+                    console.log('attacked but no damage');
+
+                    this.players[player.number-1].statusDisplay = {
+                      state: true,
+                      status: 'attack missed!',
+                      count: 1,
+                      limit: this.players[player.number-1].statusDisplay.limit,
+                    }
                   }
 
                   if (this.players[player.target.occupant.player-1].hp === 1) {
@@ -2635,6 +2694,27 @@ class App extends Component {
               } else {
                 newIndex = currentIndex+1;
               }
+
+              //FOR NON CRIT MOD BUFFS!
+              // switch(player.currentArmor.effect) {
+              //   case 'hpUp' :
+              //     doubleHitChance = player.crits.doubleHit+10;
+              //   break;
+              //   case 'speedUp' :
+              //     doubleHitChance = player.crits.doubleHit+10;
+              //   break;
+              // }
+              //
+              // switch(player.items.armor[newIndex].effect) {
+              //   case 'hpUp' :
+              //     doubleHitChance = player.crits.doubleHit+10;
+              //   break;
+              //   case 'speedUp' :
+              //     doubleHitChance = player.crits.doubleHit+10;
+              //   break;
+              // }
+              // remove old armor buff and add new one here
+
               player.items.armorIndex = newIndex;
               player.currentArmor = player.items.armor[newIndex]
 
@@ -2952,24 +3032,48 @@ class App extends Component {
 
                   // CALCULATE ATTACKER DOUBLE HIT!
                   let doubleHitChance = this.players[bolt.owner-1].crits.doubleHit;
-                  if (this.players[bolt.owner-1].currentArmor.name !== '') {
+                  let singleHitChance = this.players[bolt.owner-1].crits.singleHit;
+
+                  if (this.players.[plyr.number-1].currentArmor.name !== '') {
                     // console.log('opponent armour found');
-                    switch(plyr.currentArmor.effect) {
-                      case '+10' :
+                    switch(this.players.[plyr.number-1].currentArmor.effect) {
+                      case 'dblhit-10' :
                         doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+10;
                       break;
-                      case '+20' :
+                      case 'dblhit-20' :
                         doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+20;
+                      break;
+                      case 'dblhit-30' :
+                        doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+30;
+                      break;
+                      case 'snghit-5' :
+                        singleHitChance = this.players[bolt.owner-1].crits.singleHit+5;
+                      break;
+                      case 'snghit-10' :
+                        singleHitChance = this.players[bolt.owner-1].crits.singleHit+10;
                       break;
                     }
                   }
-                  let doubleHit = this.rnJesus(1,doubleHitChance);
 
+                  let doubleHit = this.rnJesus(1,doubleHitChance);
+                  let singleHit = this.rnJesus(1,singleHitChance);
                   if (doubleHit === 1) {
-                    this.players.[plyr.number-1].hp = this.players.[plyr.number-1].hp - 2;
+                    console.log('double hit attack');
+                    this.players[plyr.number-1].hp = this.players[plyr.number-1].hp - 2;
                   }
-                  else if (doubleHit !== 1) {
-                    this.players.[plyr.number-1].hp = this.players.[plyr.number-1].hp - 1;
+                  else if (singleHit === 1) {
+                    console.log('single hit attack');
+                    this.players[plyr.number-1].hp = this.players[plyr.number-1].hp - 1;
+                  }
+                  else if (doubleHit !== 1 && singleHit !== 1) {
+                    console.log('attacked but no damage');
+
+                    this.players[bolt.owner-1].statusDisplay = {
+                      state: true,
+                      status: 'attack missed!',
+                      count: 1,
+                      limit: this.players[bolt.owner-1].statusDisplay.limit,
+                    }
                   }
 
                   if (this.players.[plyr.number-1].hp <= 0) {
@@ -3295,6 +3399,7 @@ class App extends Component {
       helmet: this.refs.preAttackIndicate,
       ammo5: this.refs.preAttackIndicate,
       ammo10: this.refs.preAttackIndicate,
+      mail: this.refs.preAttackIndicate,
     };
     let terrainImgs = [];
 
@@ -3458,6 +3563,10 @@ class App extends Component {
             switch(gridInfoCell.item.subType) {
               case 'helmet' :
                 fillClr = "grey";
+                itemImg = itemImgs[gridInfoCell.item.subType];
+              break;
+              case 'mail' :
+                fillClr = "olive";
                 itemImg = itemImgs[gridInfoCell.item.subType];
               break;
             }
@@ -5657,6 +5766,11 @@ class App extends Component {
       effect: '',
     };
     this.players[player.number-1].currentArmor = {};
+    this.players[player.number-1].crits = {
+      singleHit: 1,
+      doubleHit: 6,
+      pushBack: 3,
+    };
 
   }
   killPlayer = (player) => {
@@ -5773,6 +5887,11 @@ class App extends Component {
         type: 'sword',
         effect: '',
       };
+      player.crits = {
+        singleHit: 1,
+        doubleHit: 6,
+        pushBack: 3,
+      }
       // player.currentArmor = {};
 
     }
@@ -5965,6 +6084,17 @@ class App extends Component {
           item.subType = this.players[player.number-1].items.armor[index].type;
           item.effect = this.players[player.number-1].items.armor[index].effect;
           item.type = "armor";
+
+          // remove buff here
+          // switch(item.effect) {
+          //   case 'hpUp' :
+          //     doubleHitChance = player.crits.doubleHit+10;
+          //   break;
+          //   case 'speedUp' :
+          //     doubleHitChance = player.crits.doubleHit+10;
+          //   break;
+          // }
+
           this.players[player.number-1].items.armor.splice(index,1);
           this.players[player.number-1].items.armorIndex = 0;
           this.players[player.number-1].currentArmor = {
@@ -6285,6 +6415,7 @@ class App extends Component {
       helmet: this.refs.preAttackIndicate,
       ammo5: this.refs.preAttackIndicate,
       ammo10: this.refs.preAttackIndicate,
+      mail: this.refs.preAttackIndicate,
     };
 
     this.placeItems({init: true, items: ''});
@@ -6390,6 +6521,10 @@ class App extends Component {
               switch(cell2.item.subType) {
                 case 'helmet' :
                   fillClr = "grey";
+                  itemImg = itemImgs[cell2.item.subType];
+                break;
+                case 'mail' :
+                  fillClr = "olive";
                   itemImg = itemImgs[cell2.item.subType];
                 break;
               }
