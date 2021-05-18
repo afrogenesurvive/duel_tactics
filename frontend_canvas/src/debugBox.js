@@ -95,6 +95,11 @@ const DebugBox = props => {
           {props.player.hp}
         </p>
       </li>
+      <li className="debugBoxListItem">
+        <p className="debugBoxText">
+          Spd: {props.player.speed.move}
+        </p>
+      </li>
         {props.player.hp === 1 && (
           <li className="debugBoxListItem">
             <img src={deflectInjuredInidcate} className="debugBoxImg"></img>

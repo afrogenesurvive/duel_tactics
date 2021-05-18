@@ -689,7 +689,7 @@ class App extends Component {
         effect: 'hit-10',
       },
       {
-        name: 'chainMail1',
+        name: 'chainMail',
         amount: 3,
         total: 3,
         type: 'armor',
@@ -697,20 +697,36 @@ class App extends Component {
         effect: 'hpUp',
       },
       {
-        name: 'ghostMail',
+        name: 'ninjaMail',
         amount: 2,
         total: 2,
+        type: 'armor',
+        subType: 'mail',
+        effect: 'snghit-5',
+      },
+      {
+        name: 'ghostMail',
+        amount: 1,
+        total: 1,
         type: 'armor',
         subType: 'mail',
         effect: 'snghit-10',
       },
       {
-        name: 'greaves1',
-        amount: 3,
-        total: 3,
+        name: 'speedGreaves',
+        amount: 2,
+        total: 2,
         type: 'armor',
         subType: 'greaves',
         effect: 'speedUp',
+      },
+      {
+        name: 'ironPlate',
+        amount: 2,
+        total: 2,
+        type: 'armor',
+        subType: 'mail',
+        effect: 'hpUp',
       },
     ];
     this.initItemList = [
@@ -724,16 +740,16 @@ class App extends Component {
       //   type: 'item',
       //   effect: '',
       // },
-      {
-        name: 'ammo5',
-        type: 'item',
-        effect: '',
-      },
-      {
-        name: 'ammo10',
-        type: 'item',
-        effect: '',
-      },
+      // {
+      //   name: 'ammo5',
+      //   type: 'item',
+      //   effect: '',
+      // },
+      // {
+      //   name: 'ammo10',
+      //   type: 'item',
+      //   effect: '',
+      // },
       // {
       //   name: 'hpUp',
       //   type: 'item',
@@ -744,12 +760,12 @@ class App extends Component {
       //   type: 'item',
       //   effect: '',
       // },
-      {
-        name: 'spear1',
-        type: 'weapon',
-        subType: 'spear',
-        effect: '',
-      },
+      // {
+      //   name: 'spear1',
+      //   type: 'weapon',
+      //   subType: 'spear',
+      //   effect: '',
+      // },
       // {
       //   name: 'sword2',
       //   type: 'weapon',
@@ -762,11 +778,23 @@ class App extends Component {
         subType: 'crossbow',
         effect: 'ammo+10',
       },
+      // {
+      //   name: 'ghostMail',
+      //   type: 'armor',
+      //   subType: 'mail',
+      //   effect: 'snghit-5',
+      // },
       {
-        name: 'ghostMail',
+        name: 'speedGreaves',
+        type: 'armor',
+        subType: 'greaves',
+        effect: 'speedUp',
+      },
+      {
+        name: 'ironPlate',
         type: 'armor',
         subType: 'mail',
-        effect: 'snghit-10',
+        effect: 'hpUp',
       },
       // {
       //   name: 'helmet1',
@@ -934,13 +962,13 @@ class App extends Component {
         respawn: false,
         points: 0,
         speed: {
-          move: .125,
+          move: .1,
           range: [.05,.1,.125,.2]
         },
         hp: 2,
         currentWeapon: {
-          name: 'crossbow1',
-          type: 'crossbow',
+          name: 'sword1',
+          type: 'sword',
           effect: '',
         },
         currentArmor: {
@@ -953,8 +981,8 @@ class App extends Component {
           armorIndex: 0,
           weapons: [
             {
-              name: 'crossbow1',
-              type: 'crossbow',
+              name: 'sword1',
+              type: 'sword',
               effect: '',
             }
           ],
@@ -2695,25 +2723,59 @@ class App extends Component {
                 newIndex = currentIndex+1;
               }
 
-              //FOR NON CRIT MOD BUFFS!
-              // switch(player.currentArmor.effect) {
-              //   case 'hpUp' :
-              //     doubleHitChance = player.crits.doubleHit+10;
-              //   break;
-              //   case 'speedUp' :
-              //     doubleHitChance = player.crits.doubleHit+10;
-              //   break;
-              // }
-              //
-              // switch(player.items.armor[newIndex].effect) {
-              //   case 'hpUp' :
-              //     doubleHitChance = player.crits.doubleHit+10;
-              //   break;
-              //   case 'speedUp' :
-              //     doubleHitChance = player.crits.doubleHit+10;
-              //   break;
-              // }
-              // remove old armor buff and add new one here
+
+              switch(player.currentArmor.effect) {
+                case 'hpUp' :
+                  if (player.hp > 1) {
+                    // console.log('armor cycle debuff hp',player.hp);
+                    player.hp = player.hp - 1;
+                    // console.log('armor cycle debuff hp',player.hp);
+                  }
+                break;
+                case 'speedUp' :
+                  let currentSpd1 = player.speed.range.indexOf(player.speed.move);
+                  if (player.speed.move > .05) {
+                    console.log('kk',player.speed.move,'kk',currentSpd1,currentSpd1-1);
+                    // console.log('armor cycle debuff speed',player.speed.move);
+                    player.speed.move = player.speed.range[currentSpd1-1];
+                    // console.log('armor cycle debuff speed',player.speed.move);
+                  }
+                break;
+              }
+
+              switch(player.items.armor[newIndex].effect) {
+                case 'hpUp' :
+                  if (player.hp < 3) {
+                    // console.log('armor cycle buff hp',player.hp);
+                    player.hp = player.hp + 1
+                    // console.log('armor cycle buff hp',player.hp);
+
+                    player.statusDisplay = {
+                      state: true,
+                      status: 'hpUp',
+                      count: 1,
+                      limit: player.statusDisplay.limit,
+                    }
+                  }
+                break;
+                case 'speedUp' :
+                  let currentSpd2 = player.speed.range.indexOf(player.speed.move)
+                  if (player.speed.move < .2) {
+                    console.log('kk',player.speed.move,'kk',currentSpd2,currentSpd2+1);
+
+                    // console.log('armor cycle buff speed',player.speed.move);
+                    player.speed.move = player.speed.range[currentSpd2+1]
+                    // console.log('armor cycle buff speed',player.speed.move);
+
+                    player.statusDisplay = {
+                      state: true,
+                      status: 'speedUp',
+                      count: 1,
+                      limit: player.statusDisplay.limit,
+                    }
+                  }
+                break;
+              }
 
               player.items.armorIndex = newIndex;
               player.currentArmor = player.items.armor[newIndex]
@@ -3400,6 +3462,7 @@ class App extends Component {
       ammo5: this.refs.preAttackIndicate,
       ammo10: this.refs.preAttackIndicate,
       mail: this.refs.preAttackIndicate,
+      greaves: this.refs.preAttackIndicate,
     };
     let terrainImgs = [];
 
@@ -3567,6 +3630,10 @@ class App extends Component {
               break;
               case 'mail' :
                 fillClr = "olive";
+                itemImg = itemImgs[gridInfoCell.item.subType];
+              break;
+              case 'greaves' :
+                fillClr = "#b5179e";
                 itemImg = itemImgs[gridInfoCell.item.subType];
               break;
             }
@@ -5384,7 +5451,7 @@ class App extends Component {
       if (cell.item.type === 'weapon') {
         // console.log('weapon',cell.item);
 
-        if (player.currentWeapon.name === '' || player.currentWeapon === {}) {
+        if (player.currentWeapon.name === '' || !player.currentWeapon.name) {
           this.players[player.number-1].currentWeapon = {
             name: cell.item.name,
             type: cell.item.subType,
@@ -5440,8 +5507,9 @@ class App extends Component {
         }
       }
       if (cell.item.type === 'armor') {
-
-        if (player.currentArmor.name === '' || player.currentArmor === {}) {
+        // console.log('picked up armor',player.currentArmor);
+        if (player.currentArmor.name === '' || !player.currentArmor.name) {
+          // console.log('gg',cell.item.effect);
           this.players[player.number-1].currentArmor = {
             name: cell.item.name,
             type: cell.item.subType,
@@ -5452,6 +5520,43 @@ class App extends Component {
             type: cell.item.subType,
             effect: cell.item.effect,
           })
+
+          switch(cell.item.effect) {
+            case 'hpUp' :
+            // console.log('armor pickup buff');
+              if (this.players[player.number-1].hp < 3) {
+                // console.log('armor pickup buff hp',this.players[player.number-1].hp);
+                this.players[player.number-1].hp = player.hp + 1
+                // console.log('armor pickup buff hp',this.players[player.number-1].hp);
+
+                this.players[player.number-1].statusDisplay = {
+                  state: true,
+                  status: 'hpUp',
+                  count: 1,
+                  limit: this.players[player.number-1].statusDisplay.limit,
+                }
+              }
+            break;
+            case 'speedUp' :
+            // console.log('armor pickup buff');
+              let currentSpd1 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
+              if (this.players[player.number-1].speed.move < .2) {
+                console.log('kk',this.players[player.number-1].speed.move,'kk',currentSpd1,currentSpd1+1);
+
+                // console.log('armor pickup buff speed',this.players[player.number-1].speed.move);
+                this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd1+1]
+                // console.log('armor pickup buff speed',this.players[player.number-1].speed.move);
+
+                this.players[player.number-1].statusDisplay = {
+                  state: true,
+                  status: 'speedUp',
+                  count: 1,
+                  limit: this.players[player.number-1].statusDisplay.limit,
+                }
+              }
+            break;
+          }
+
           pickUp = true;
         }
         else {
@@ -5887,6 +5992,7 @@ class App extends Component {
         type: 'sword',
         effect: '',
       };
+      player.currentArmor = {};
       player.crits = {
         singleHit: 1,
         doubleHit: 6,
@@ -6085,15 +6191,33 @@ class App extends Component {
           item.effect = this.players[player.number-1].items.armor[index].effect;
           item.type = "armor";
 
-          // remove buff here
-          // switch(item.effect) {
-          //   case 'hpUp' :
-          //     doubleHitChance = player.crits.doubleHit+10;
-          //   break;
-          //   case 'speedUp' :
-          //     doubleHitChance = player.crits.doubleHit+10;
-          //   break;
-          // }
+          switch(item.effect) {
+            case 'hpUp' :
+              if (this.players[player.number-1].hp > 1) {
+                console.log('armor drop debuff hp',this.players[player.number-1].hp);
+                this.players[player.number-1].hp = this.players[player.number-1].hp - 1;
+                console.log('armor drop debuff hp',this.players[player.number-1].hp);
+              }
+            break;
+            case 'speedUp' :
+              let currentSpd1 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move);
+              if (this.players[player.number-1].speed.move > .05) {
+                console.log('kk',this.players[player.number-1].speed.move,'kk',currentSpd1,currentSpd1-1);
+                console.log('armor drop debuff speed',this.players[player.number-1].speed.move);
+                this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd1-1];
+                console.log('armor drop debuff speed',this.players[player.number-1].speed.move);
+              }
+
+              // let currentSpd1 = player.speed.range.indexOf(player.speed.move);
+              // if (player.speed.move > .05) {
+              //   console.log('kk',player.speed.move,'kk',currentSpd1,currentSpd1-1);
+              //   console.log('armor cycle debuff speed',player.speed.move);
+              //   player.speed.move = player.speed.range[currentSpd1-1];
+              //   console.log('armor cycle debuff speed',player.speed.move);
+              // }
+            break;
+          }
+
 
           this.players[player.number-1].items.armor.splice(index,1);
           this.players[player.number-1].items.armorIndex = 0;
@@ -6416,6 +6540,7 @@ class App extends Component {
       ammo5: this.refs.preAttackIndicate,
       ammo10: this.refs.preAttackIndicate,
       mail: this.refs.preAttackIndicate,
+      greaves: this.refs.preAttackIndicate,
     };
 
     this.placeItems({init: true, items: ''});
@@ -6525,6 +6650,10 @@ class App extends Component {
                 break;
                 case 'mail' :
                   fillClr = "olive";
+                  itemImg = itemImgs[cell2.item.subType];
+                break;
+                case 'greaves' :
+                  fillClr = "#b5179e";
                   itemImg = itemImgs[cell2.item.subType];
                 break;
               }
