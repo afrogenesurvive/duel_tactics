@@ -54,7 +54,7 @@ const CellInfo = props => {
         </li>
         <li class="cellInfoListItem">
           <p className="cellInfoText">
-            Void: {props.cell.void.state}
+            Void: {props.cell.void.state.toString()}
           </p>
         </li>
       </ul>

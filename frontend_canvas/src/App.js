@@ -41,23 +41,6 @@ import ghostInidcate from './assets/indicators/ghost.png';
 import deathInidcate from './assets/indicators/death.png';
 import preAttackInidcate from './assets/indicators/preAttack.png';
 
-import plyr1IdleNorth from './assets/player/idle2/idleNorth1.png';
-import plyr1IdleSouth from './assets/player/idle2/idleSouth1.png';
-import plyr1IdleEast from './assets/player/idle2/idleEast1.png';
-import plyr1IdleWest from './assets/player/idle2/idleWest1.png';
-import plyr1IdleNorthEast from './assets/player/idle2/idleNorthEast1.png';
-import plyr1IdleNorthWest from './assets/player/idle2/idleNorthWest1.png';
-import plyr1IdleSouthWest from './assets/player/idle2/idleSouthWest1.png';
-import plyr1IdleSouthEast from './assets/player/idle2/idleSouthEast1.png';
-
-import plyr1AttackNorth from './assets/player/attack/attackNorth1.png';
-import plyr1AttackSouth from './assets/player/attack/attackSouth1.png';
-import plyr1AttackEast from './assets/player/attack/attackEast1.png';
-import plyr1AttackWest from './assets/player/attack/attackWest1.png';
-import plyr1AttackNorthEast from './assets/player/attack/attackNorthEast1.png';
-import plyr1AttackNorthWest from './assets/player/attack/attackNorthWest1.png';
-import plyr1AttackSouthWest from './assets/player/attack/attackSouthWest1.png';
-import plyr1AttackSouthEast from './assets/player/attack/attackSouthEast1.png';
 
 
 import './App.css';
@@ -530,7 +513,7 @@ class App extends Component {
       count: 0,
       limit: 10000,
     }
-
+    this.voidCustomCell = false;
 
     this.gamepad = false;
 
@@ -1359,7 +1342,7 @@ class App extends Component {
     })
 
 
-    this.refs.plyr1IdleNorthEast.onload = () => {
+    this.refs.player2ImgIdleCrossbowWest.onload = () => {
       this.addListeners(canvas, canvas2);
 
       this.drawGridInit(this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
@@ -1783,6 +1766,60 @@ class App extends Component {
     }
     if ( insideGrid === false ) {
       console.log("clicked the canvas", 'x: ',x,'y: ',y);
+
+      this.clicked = {
+        number:{
+          x:0,
+          y:0
+        },
+        center:{
+          x:0,
+          y:0
+        },
+        drawCenter:{
+          x:0,
+          y:0
+        },
+        vertices: [
+          {
+            x:0,
+            y:0
+          },
+          {
+            x:0,
+            y:0
+          },
+          {
+            x:0,
+            y:0
+          },
+          {
+            x:0,
+            y:0
+          },
+        ],
+        side: 0,
+        levelData: '',
+        edge: {
+          state: false,
+          side: ''
+        },
+        terrain: {
+          name: '',
+          type: '',
+          effect: ''
+        },
+        item: {
+          name: '',
+          type: '',
+          subType: '',
+          effect: '',
+          initDrawn: false
+        },
+        void: {
+          state: false
+        },
+      }
     }
 
   }
@@ -2159,11 +2196,18 @@ class App extends Component {
             limit: this.cellToVoid.limit,
           }
 
+          if (this.voidCustomCell === true) {
+            // console.log('void custom cell switch off');
+            this.openVoid = false
+            this.voidCustomCell = false;
+          }
+
         }
 
       }
 
     }
+    // LIMIT CELL VOID EVENT!!
     if (this.voidTimer.count < this.voidTimer.limit) {
       this.voidTimer.count++
       // console.log('void count',this.voidTimer.count);
@@ -3335,179 +3379,537 @@ class App extends Component {
     }
     let playerImgs = [
       {
-        // idle: {
-        //   north: this.refs.plyr1IdleNorth,
-        //   northWest: this.refs.plyr1IdleNorthWest,
-        //   northEast: this.refs.plyr1IdleNorthEast,
-        //   south: this.refs.plyr1IdleSouth,
-        //   southWest: this.refs.plyr1IdleSouthWest,
-        //   southEast: this.refs.plyr1IdleSouthEast,
-        //   east: this.refs.plyr1IdleEast,
-        //   west: this.refs.plyr1IdleWest,
-        // },
         idle: {
-          north: this.refs.playerImgIdleNorth,
-          northWest: this.refs.playerImgIdleNorthWest,
-          northEast: this.refs.playerImgIdleNorthEast,
-          south: this.refs.playerImgIdleSouth,
-          southWest: this.refs.playerImgIdleSouthWest,
-          southEast: this.refs.playerImgIdleSouthEast,
-          east: this.refs.playerImgIdleEast,
-          west: this.refs.playerImgIdleWest,
+          unarmed: {
+            north: this.refs.playerImgIdleNorth,
+            northWest: this.refs.playerImgIdleNorthWest,
+            northEast: this.refs.playerImgIdleNorthEast,
+            south: this.refs.playerImgIdleSouth,
+            southWest: this.refs.playerImgIdleSouthWest,
+            southEast: this.refs.playerImgIdleSouthEast,
+            east: this.refs.playerImgIdleEast,
+            west: this.refs.playerImgIdleWest,
+          },
+          sword: {
+            north: this.refs.playerImgIdleSwordNorth,
+            northWest: this.refs.playerImgIdleSwordNorthWest,
+            northEast: this.refs.playerImgIdleSwordNorthEast,
+            south: this.refs.playerImgIdleSwordSouth,
+            southWest: this.refs.playerImgIdleSwordSouthWest,
+            southEast: this.refs.playerImgIdleSwordSouthEast,
+            east: this.refs.playerImgIdleSwordEast,
+            west: this.refs.playerImgIdleSwordWest,
+          },
+          spear: {
+            north: this.refs.playerImgIdleSpearNorth,
+            northWest: this.refs.playerImgIdleSpearNorthWest,
+            northEast: this.refs.playerImgIdleSpearNorthEast,
+            south: this.refs.playerImgIdleSpearSouth,
+            southWest: this.refs.playerImgIdleSpearSouthWest,
+            southEast: this.refs.playerImgIdleSpearSouthEast,
+            east: this.refs.playerImgIdleSpearEast,
+            west: this.refs.playerImgIdleSpearWest,
+          },
+          crossbow: {
+            north: this.refs.playerImgIdleCrossbowNorth,
+            northWest: this.refs.playerImgIdleCrossbowNorthWest,
+            northEast: this.refs.playerImgIdleCrossbowNorthEast,
+            south: this.refs.playerImgIdleCrossbowSouth,
+            southWest: this.refs.playerImgIdleCrossbowSouthWest,
+            southEast: this.refs.playerImgIdleCrossbowSouthEast,
+            east: this.refs.playerImgIdleCrossbowEast,
+            west: this.refs.playerImgIdleCrossbowWest,
+          },
         },
-        // walking: {
-        //   north: this.refs.plyr1IdleNorth,
-        //   northWest: this.refs.plyr1IdleNorthWest,
-        //   northEast: this.refs.plyr1IdleNorthEast,
-        //   south: this.refs.plyr1IdleSouth,
-        //   southWest: this.refs.plyr1IdleSouthWest,
-        //   southEast: this.refs.plyr1IdleSouthEast,
-        //   east: this.refs.plyr1IdleEast,
-        //   west: this.refs.plyr1IdleWest,
-        // },
         walking: {
-          north: this.refs.playerImgIdleNorth,
-          northWest: this.refs.playerImgIdleNorthWest,
-          northEast: this.refs.playerImgIdleNorthEast,
-          south: this.refs.playerImgIdleSouth,
-          southWest: this.refs.playerImgIdleSouthWest,
-          southEast: this.refs.playerImgIdleSouthEast,
-          east: this.refs.playerImgIdleEast,
-          west: this.refs.playerImgIdleWest,
+          unarmed: {
+            north: this.refs.playerImgIdleNorth,
+            northWest: this.refs.playerImgIdleNorthWest,
+            northEast: this.refs.playerImgIdleNorthEast,
+            south: this.refs.playerImgIdleSouth,
+            southWest: this.refs.playerImgIdleSouthWest,
+            southEast: this.refs.playerImgIdleSouthEast,
+            east: this.refs.playerImgIdleEast,
+            west: this.refs.playerImgIdleWest,
+          },
+          sword: {
+            north: this.refs.playerImgIdleSwordNorth,
+            northWest: this.refs.playerImgIdleSwordNorthWest,
+            northEast: this.refs.playerImgIdleSwordNorthEast,
+            south: this.refs.playerImgIdleSwordSouth,
+            southWest: this.refs.playerImgIdleSwordSouthWest,
+            southEast: this.refs.playerImgIdleSwordSouthEast,
+            east: this.refs.playerImgIdleSwordEast,
+            west: this.refs.playerImgIdleSwordWest,
+          },
+          spear: {
+            north: this.refs.playerImgIdleSpearNorth,
+            northWest: this.refs.playerImgIdleSpearNorthWest,
+            northEast: this.refs.playerImgIdleSpearNorthEast,
+            south: this.refs.playerImgIdleSpearSouth,
+            southWest: this.refs.playerImgIdleSpearSouthWest,
+            southEast: this.refs.playerImgIdleSpearSouthEast,
+            east: this.refs.playerImgIdleSpearEast,
+            west: this.refs.playerImgIdleSpearWest,
+          },
+          crossbow: {
+            north: this.refs.playerImgIdleCrossbowNorth,
+            northWest: this.refs.playerImgIdleCrossbowNorthWest,
+            northEast: this.refs.playerImgIdleCrossbowNorthEast,
+            south: this.refs.playerImgIdleCrossbowSouth,
+            southWest: this.refs.playerImgIdleCrossbowSouthWest,
+            southEast: this.refs.playerImgIdleCrossbowSouthEast,
+            east: this.refs.playerImgIdleCrossbowEast,
+            west: this.refs.playerImgIdleCrossbowWest,
+          },
         },
         strafing: {
-          north: this.refs.playerImgIdleNorth,
-          northWest: this.refs.playerImgIdleNorthWest,
-          northEast: this.refs.playerImgIdleNorthEast,
-          south: this.refs.playerImgIdleSouth,
-          southWest: this.refs.playerImgIdleSouthWest,
-          southEast: this.refs.playerImgIdleSouthEast,
-          east: this.refs.playerImgIdleEast,
-          west: this.refs.playerImgIdleWest,
+          unarmed: {
+            north: this.refs.playerImgIdleNorth,
+            northWest: this.refs.playerImgIdleNorthWest,
+            northEast: this.refs.playerImgIdleNorthEast,
+            south: this.refs.playerImgIdleSouth,
+            southWest: this.refs.playerImgIdleSouthWest,
+            southEast: this.refs.playerImgIdleSouthEast,
+            east: this.refs.playerImgIdleEast,
+            west: this.refs.playerImgIdleWest,
+          },
+          sword: {
+            north: this.refs.playerImgIdleSwordNorth,
+            northWest: this.refs.playerImgIdleSwordNorthWest,
+            northEast: this.refs.playerImgIdleSwordNorthEast,
+            south: this.refs.playerImgIdleSwordSouth,
+            southWest: this.refs.playerImgIdleSwordSouthWest,
+            southEast: this.refs.playerImgIdleSwordSouthEast,
+            east: this.refs.playerImgIdleSwordEast,
+            west: this.refs.playerImgIdleSwordWest,
+          },
+          spear: {
+            north: this.refs.playerImgIdleSpearNorth,
+            northWest: this.refs.playerImgIdleSpearNorthWest,
+            northEast: this.refs.playerImgIdleSpearNorthEast,
+            south: this.refs.playerImgIdleSpearSouth,
+            southWest: this.refs.playerImgIdleSpearSouthWest,
+            southEast: this.refs.playerImgIdleSpearSouthEast,
+            east: this.refs.playerImgIdleSpearEast,
+            west: this.refs.playerImgIdleSpearWest,
+          },
+          crossbow: {
+            north: this.refs.playerImgIdleCrossbowNorth,
+            northWest: this.refs.playerImgIdleCrossbowNorthWest,
+            northEast: this.refs.playerImgIdleCrossbowNorthEast,
+            south: this.refs.playerImgIdleCrossbowSouth,
+            southWest: this.refs.playerImgIdleCrossbowSouthWest,
+            southEast: this.refs.playerImgIdleCrossbowSouthEast,
+            east: this.refs.playerImgIdleCrossbowEast,
+            west: this.refs.playerImgIdleCrossbowWest,
+          },
         },
-        // attacking: {
-        //   north: this.refs.plyr1AttackNorth,
-        //   northWest: this.refs.plyr1AttackNorthWest,
-        //   northEast: this.refs.plyr1AttackNorthEast,
-        //   south: this.refs.plyr1AttackSouth,
-        //   southWest: this.refs.plyr1AttackSouthWest,
-        //   southEast: this.refs.plyr1AttackSouthEast,
-        //   east: this.refs.plyr1AttackEast,
-        //   west: this.refs.plyr1AttackWest,
-        // },
         attacking: {
-          north: this.refs.playerImgIdleNorth,
-          northWest: this.refs.playerImgIdleNorthWest,
-          northEast: this.refs.playerImgIdleNorthEast,
-          south: this.refs.playerImgIdleSouth,
-          southWest: this.refs.playerImgIdleSouthWest,
-          southEast: this.refs.playerImgIdleSouthEast,
-          east: this.refs.playerImgIdleEast,
-          west: this.refs.playerImgIdleWest,
+          sword: {
+            north: this.refs.playerImgIdleSwordNorth,
+            northWest: this.refs.playerImgIdleSwordNorthWest,
+            northEast: this.refs.playerImgIdleSwordNorthEast,
+            south: this.refs.playerImgIdleSwordSouth,
+            southWest: this.refs.playerImgIdleSwordSouthWest,
+            southEast: this.refs.playerImgIdleSwordSouthEast,
+            east: this.refs.playerImgIdleSwordEast,
+            west: this.refs.playerImgIdleSwordWest,
+          },
+          spear: {
+            north: this.refs.playerImgIdleSpearNorth,
+            northWest: this.refs.playerImgIdleSpearNorthWest,
+            northEast: this.refs.playerImgIdleSpearNorthEast,
+            south: this.refs.playerImgIdleSpearSouth,
+            southWest: this.refs.playerImgIdleSpearSouthWest,
+            southEast: this.refs.playerImgIdleSpearSouthEast,
+            east: this.refs.playerImgIdleSpearEast,
+            west: this.refs.playerImgIdleSpearWest,
+          },
+          crossbow: {
+            north: this.refs.playerImgIdleCrossbowNorth,
+            northWest: this.refs.playerImgIdleCrossbowNorthWest,
+            northEast: this.refs.playerImgIdleCrossbowNorthEast,
+            south: this.refs.playerImgIdleCrossbowSouth,
+            southWest: this.refs.playerImgIdleCrossbowSouthWest,
+            southEast: this.refs.playerImgIdleCrossbowSouthEast,
+            east: this.refs.playerImgIdleCrossbowEast,
+            west: this.refs.playerImgIdleCrossbowWest,
+          },
         },
         defending: {
-          north: this.refs.playerImgIdleNorth,
-          northWest: this.refs.playerImgIdleNorthWest,
-          northEast: this.refs.playerImgIdleNorthEast,
-          south: this.refs.playerImgIdleSouth,
-          southWest: this.refs.playerImgIdleSouthWest,
-          southEast: this.refs.playerImgIdleSouthEast,
-          east: this.refs.playerImgIdleEast,
-          west: this.refs.playerImgIdleWest,
+          sword: {
+            north: this.refs.playerImgIdleSwordNorth,
+            northWest: this.refs.playerImgIdleSwordNorthWest,
+            northEast: this.refs.playerImgIdleSwordNorthEast,
+            south: this.refs.playerImgIdleSwordSouth,
+            southWest: this.refs.playerImgIdleSwordSouthWest,
+            southEast: this.refs.playerImgIdleSwordSouthEast,
+            east: this.refs.playerImgIdleSwordEast,
+            west: this.refs.playerImgIdleSwordWest,
+          },
+          spear: {
+            north: this.refs.playerImgIdleSpearNorth,
+            northWest: this.refs.playerImgIdleSpearNorthWest,
+            northEast: this.refs.playerImgIdleSpearNorthEast,
+            south: this.refs.playerImgIdleSpearSouth,
+            southWest: this.refs.playerImgIdleSpearSouthWest,
+            southEast: this.refs.playerImgIdleSpearSouthEast,
+            east: this.refs.playerImgIdleSpearEast,
+            west: this.refs.playerImgIdleSpearWest,
+          },
+          crossbow: {
+            north: this.refs.playerImgIdleCrossbowNorth,
+            northWest: this.refs.playerImgIdleCrossbowNorthWest,
+            northEast: this.refs.playerImgIdleCrossbowNorthEast,
+            south: this.refs.playerImgIdleCrossbowSouth,
+            southWest: this.refs.playerImgIdleCrossbowSouthWest,
+            southEast: this.refs.playerImgIdleCrossbowSouthEast,
+            east: this.refs.playerImgIdleCrossbowEast,
+            west: this.refs.playerImgIdleCrossbowWest,
+          },
         },
         deflected: {
-          north: this.refs.playerImgIdleNorth,
-          northWest: this.refs.playerImgIdleNorthWest,
-          northEast: this.refs.playerImgIdleNorthEast,
-          south: this.refs.playerImgIdleSouth,
-          southWest: this.refs.playerImgIdleSouthWest,
-          southEast: this.refs.playerImgIdleSouthEast,
-          east: this.refs.playerImgIdleEast,
-          west: this.refs.playerImgIdleWest,
+          sword: {
+            north: this.refs.playerImgIdleSwordNorth,
+            northWest: this.refs.playerImgIdleSwordNorthWest,
+            northEast: this.refs.playerImgIdleSwordNorthEast,
+            south: this.refs.playerImgIdleSwordSouth,
+            southWest: this.refs.playerImgIdleSwordSouthWest,
+            southEast: this.refs.playerImgIdleSwordSouthEast,
+            east: this.refs.playerImgIdleSwordEast,
+            west: this.refs.playerImgIdleSwordWest,
+          },
+          spear: {
+            north: this.refs.playerImgIdleSpearNorth,
+            northWest: this.refs.playerImgIdleSpearNorthWest,
+            northEast: this.refs.playerImgIdleSpearNorthEast,
+            south: this.refs.playerImgIdleSpearSouth,
+            southWest: this.refs.playerImgIdleSpearSouthWest,
+            southEast: this.refs.playerImgIdleSpearSouthEast,
+            east: this.refs.playerImgIdleSpearEast,
+            west: this.refs.playerImgIdleSpearWest,
+          },
+          crossbow: {
+            north: this.refs.playerImgIdleCrossbowNorth,
+            northWest: this.refs.playerImgIdleCrossbowNorthWest,
+            northEast: this.refs.playerImgIdleCrossbowNorthEast,
+            south: this.refs.playerImgIdleCrossbowSouth,
+            southWest: this.refs.playerImgIdleCrossbowSouthWest,
+            southEast: this.refs.playerImgIdleCrossbowSouthEast,
+            east: this.refs.playerImgIdleCrossbowEast,
+            west: this.refs.playerImgIdleCrossbowWest,
+          },
         },
         falling: {
-          north: this.refs.playerImgIdleNorth,
-          northWest: this.refs.playerImgIdleNorthWest,
-          northEast: this.refs.playerImgIdleNorthEast,
-          south: this.refs.playerImgIdleSouth,
-          southWest: this.refs.playerImgIdleSouthWest,
-          southEast: this.refs.playerImgIdleSouthEast,
-          east: this.refs.playerImgIdleEast,
-          west: this.refs.playerImgIdleWest,
+          unarmed: {
+            north: this.refs.playerImgIdleNorth,
+            northWest: this.refs.playerImgIdleNorthWest,
+            northEast: this.refs.playerImgIdleNorthEast,
+            south: this.refs.playerImgIdleSouth,
+            southWest: this.refs.playerImgIdleSouthWest,
+            southEast: this.refs.playerImgIdleSouthEast,
+            east: this.refs.playerImgIdleEast,
+            west: this.refs.playerImgIdleWest,
+          },
+          sword: {
+            north: this.refs.playerImgIdleSwordNorth,
+            northWest: this.refs.playerImgIdleSwordNorthWest,
+            northEast: this.refs.playerImgIdleSwordNorthEast,
+            south: this.refs.playerImgIdleSwordSouth,
+            southWest: this.refs.playerImgIdleSwordSouthWest,
+            southEast: this.refs.playerImgIdleSwordSouthEast,
+            east: this.refs.playerImgIdleSwordEast,
+            west: this.refs.playerImgIdleSwordWest,
+          },
+          spear: {
+            north: this.refs.playerImgIdleSpearNorth,
+            northWest: this.refs.playerImgIdleSpearNorthWest,
+            northEast: this.refs.playerImgIdleSpearNorthEast,
+            south: this.refs.playerImgIdleSpearSouth,
+            southWest: this.refs.playerImgIdleSpearSouthWest,
+            southEast: this.refs.playerImgIdleSpearSouthEast,
+            east: this.refs.playerImgIdleSpearEast,
+            west: this.refs.playerImgIdleSpearWest,
+          },
+          crossbow: {
+            north: this.refs.playerImgIdleCrossbowNorth,
+            northWest: this.refs.playerImgIdleCrossbowNorthWest,
+            northEast: this.refs.playerImgIdleCrossbowNorthEast,
+            south: this.refs.playerImgIdleCrossbowSouth,
+            southWest: this.refs.playerImgIdleCrossbowSouthWest,
+            southEast: this.refs.playerImgIdleCrossbowSouthEast,
+            east: this.refs.playerImgIdleCrossbowEast,
+            west: this.refs.playerImgIdleCrossbowWest,
+          },
         },
       },
       {
         idle: {
-          north: this.refs.player2ImgIdleNorth,
-          northWest: this.refs.player2ImgIdleNorthWest,
-          northEast: this.refs.player2ImgIdleNorthEast,
-          south: this.refs.player2ImgIdleSouth,
-          southWest: this.refs.player2ImgIdleSouthWest,
-          southEast: this.refs.player2ImgIdleSouthEast,
-          east: this.refs.player2ImgIdleEast,
-          west: this.refs.player2ImgIdleWest,
+          unarmed: {
+            north: this.refs.player2ImgIdleNorth,
+            northWest: this.refs.player2ImgIdleNorthWest,
+            northEast: this.refs.player2ImgIdleNorthEast,
+            south: this.refs.player2ImgIdleSouth,
+            southWest: this.refs.player2ImgIdleSouthWest,
+            southEast: this.refs.player2ImgIdleSouthEast,
+            east: this.refs.player2ImgIdleEast,
+            west: this.refs.player2ImgIdleWest,
+          },
+          sword: {
+            north: this.refs.player2ImgIdleSwordNorth,
+            northWest: this.refs.player2ImgIdleSwordNorthWest,
+            northEast: this.refs.player2ImgIdleSwordNorthEast,
+            south: this.refs.player2ImgIdleSwordSouth,
+            southWest: this.refs.player2ImgIdleSwordSouthWest,
+            southEast: this.refs.player2ImgIdleSwordSouthEast,
+            east: this.refs.player2ImgIdleSwordEast,
+            west: this.refs.player2ImgIdleSwordWest,
+          },
+          spear: {
+            north: this.refs.player2ImgIdleSpearNorth,
+            northWest: this.refs.player2ImgIdleSpearNorthWest,
+            northEast: this.refs.player2ImgIdleSpearNorthEast,
+            south: this.refs.player2ImgIdleSpearSouth,
+            southWest: this.refs.player2ImgIdleSpearSouthWest,
+            southEast: this.refs.player2ImgIdleSpearSouthEast,
+            east: this.refs.player2ImgIdleSpearEast,
+            west: this.refs.player2ImgIdleSpearWest,
+          },
+          crossbow: {
+            north: this.refs.player2ImgIdleCrossbowNorth,
+            northWest: this.refs.player2ImgIdleCrossbowNorthWest,
+            northEast: this.refs.player2ImgIdleCrossbowNorthEast,
+            south: this.refs.player2ImgIdleCrossbowSouth,
+            southWest: this.refs.player2ImgIdleCrossbowSouthWest,
+            southEast: this.refs.player2ImgIdleCrossbowSouthEast,
+            east: this.refs.player2ImgIdleCrossbowEast,
+            west: this.refs.player2ImgIdleCrossbowWest,
+          },
         },
         walking: {
-          north: this.refs.player2ImgIdleNorth,
-          northWest: this.refs.player2ImgIdleNorthWest,
-          northEast: this.refs.player2ImgIdleNorthEast,
-          south: this.refs.player2ImgIdleSouth,
-          southWest: this.refs.player2ImgIdleSouthWest,
-          southEast: this.refs.player2ImgIdleSouthEast,
-          east: this.refs.player2ImgIdleEast,
-          west: this.refs.player2ImgIdleWest,
+          unarmed: {
+            north: this.refs.player2ImgIdleNorth,
+            northWest: this.refs.player2ImgIdleNorthWest,
+            northEast: this.refs.player2ImgIdleNorthEast,
+            south: this.refs.player2ImgIdleSouth,
+            southWest: this.refs.player2ImgIdleSouthWest,
+            southEast: this.refs.player2ImgIdleSouthEast,
+            east: this.refs.player2ImgIdleEast,
+            west: this.refs.player2ImgIdleWest,
+          },
+          sword: {
+            north: this.refs.player2ImgIdleSwordNorth,
+            northWest: this.refs.player2ImgIdleSwordNorthWest,
+            northEast: this.refs.player2ImgIdleSwordNorthEast,
+            south: this.refs.player2ImgIdleSwordSouth,
+            southWest: this.refs.player2ImgIdleSwordSouthWest,
+            southEast: this.refs.player2ImgIdleSwordSouthEast,
+            east: this.refs.player2ImgIdleSwordEast,
+            west: this.refs.player2ImgIdleSwordWest,
+          },
+          spear: {
+            north: this.refs.player2ImgIdleSpearNorth,
+            northWest: this.refs.player2ImgIdleSpearNorthWest,
+            northEast: this.refs.player2ImgIdleSpearNorthEast,
+            south: this.refs.player2ImgIdleSpearSouth,
+            southWest: this.refs.player2ImgIdleSpearSouthWest,
+            southEast: this.refs.player2ImgIdleSpearSouthEast,
+            east: this.refs.player2ImgIdleSpearEast,
+            west: this.refs.player2ImgIdleSpearWest,
+          },
+          crossbow: {
+            north: this.refs.player2ImgIdleCrossbowNorth,
+            northWest: this.refs.player2ImgIdleCrossbowNorthWest,
+            northEast: this.refs.player2ImgIdleCrossbowNorthEast,
+            south: this.refs.player2ImgIdleCrossbowSouth,
+            southWest: this.refs.player2ImgIdleCrossbowSouthWest,
+            southEast: this.refs.player2ImgIdleCrossbowSouthEast,
+            east: this.refs.player2ImgIdleCrossbowEast,
+            west: this.refs.player2ImgIdleCrossbowWest,
+          },
         },
         strafing: {
-          north: this.refs.player2ImgIdleNorth,
-          northWest: this.refs.player2ImgIdleNorthWest,
-          northEast: this.refs.player2ImgIdleNorthEast,
-          south: this.refs.player2ImgIdleSouth,
-          southWest: this.refs.player2ImgIdleSouthWest,
-          southEast: this.refs.player2ImgIdleSouthEast,
-          east: this.refs.player2ImgIdleEast,
-          west: this.refs.player2ImgIdleWest,
+          unarmed: {
+            north: this.refs.player2ImgIdleNorth,
+            northWest: this.refs.player2ImgIdleNorthWest,
+            northEast: this.refs.player2ImgIdleNorthEast,
+            south: this.refs.player2ImgIdleSouth,
+            southWest: this.refs.player2ImgIdleSouthWest,
+            southEast: this.refs.player2ImgIdleSouthEast,
+            east: this.refs.player2ImgIdleEast,
+            west: this.refs.player2ImgIdleWest,
+          },
+          sword: {
+            north: this.refs.player2ImgIdleSwordNorth,
+            northWest: this.refs.player2ImgIdleSwordNorthWest,
+            northEast: this.refs.player2ImgIdleSwordNorthEast,
+            south: this.refs.player2ImgIdleSwordSouth,
+            southWest: this.refs.player2ImgIdleSwordSouthWest,
+            southEast: this.refs.player2ImgIdleSwordSouthEast,
+            east: this.refs.player2ImgIdleSwordEast,
+            west: this.refs.player2ImgIdleSwordWest,
+          },
+          spear: {
+            north: this.refs.player2ImgIdleSpearNorth,
+            northWest: this.refs.player2ImgIdleSpearNorthWest,
+            northEast: this.refs.player2ImgIdleSpearNorthEast,
+            south: this.refs.player2ImgIdleSpearSouth,
+            southWest: this.refs.player2ImgIdleSpearSouthWest,
+            southEast: this.refs.player2ImgIdleSpearSouthEast,
+            east: this.refs.player2ImgIdleSpearEast,
+            west: this.refs.player2ImgIdleSpearWest,
+          },
+          crossbow: {
+            north: this.refs.player2ImgIdleCrossbowNorth,
+            northWest: this.refs.player2ImgIdleCrossbowNorthWest,
+            northEast: this.refs.player2ImgIdleCrossbowNorthEast,
+            south: this.refs.player2ImgIdleCrossbowSouth,
+            southWest: this.refs.player2ImgIdleCrossbowSouthWest,
+            southEast: this.refs.player2ImgIdleCrossbowSouthEast,
+            east: this.refs.player2ImgIdleCrossbowEast,
+            west: this.refs.player2ImgIdleCrossbowWest,
+          },
         },
         attacking: {
-          north: this.refs.player2ImgIdleNorth,
-          northWest: this.refs.player2ImgIdleNorthWest,
-          northEast: this.refs.player2ImgIdleNorthEast,
-          south: this.refs.player2ImgIdleSouth,
-          southWest: this.refs.player2ImgIdleSouthWest,
-          southEast: this.refs.player2ImgIdleSouthEast,
-          east: this.refs.player2ImgIdleEast,
-          west: this.refs.player2ImgIdleWest,
+          sword: {
+            north: this.refs.player2ImgIdleSwordNorth,
+            northWest: this.refs.player2ImgIdleSwordNorthWest,
+            northEast: this.refs.player2ImgIdleSwordNorthEast,
+            south: this.refs.player2ImgIdleSwordSouth,
+            southWest: this.refs.player2ImgIdleSwordSouthWest,
+            southEast: this.refs.player2ImgIdleSwordSouthEast,
+            east: this.refs.player2ImgIdleSwordEast,
+            west: this.refs.player2ImgIdleSwordWest,
+          },
+          spear: {
+            north: this.refs.player2ImgIdleSpearNorth,
+            northWest: this.refs.player2ImgIdleSpearNorthWest,
+            northEast: this.refs.player2ImgIdleSpearNorthEast,
+            south: this.refs.player2ImgIdleSpearSouth,
+            southWest: this.refs.player2ImgIdleSpearSouthWest,
+            southEast: this.refs.player2ImgIdleSpearSouthEast,
+            east: this.refs.player2ImgIdleSpearEast,
+            west: this.refs.player2ImgIdleSpearWest,
+          },
+          crossbow: {
+            north: this.refs.player2ImgIdleCrossbowNorth,
+            northWest: this.refs.player2ImgIdleCrossbowNorthWest,
+            northEast: this.refs.player2ImgIdleCrossbowNorthEast,
+            south: this.refs.player2ImgIdleCrossbowSouth,
+            southWest: this.refs.player2ImgIdleCrossbowSouthWest,
+            southEast: this.refs.player2ImgIdleCrossbowSouthEast,
+            east: this.refs.player2ImgIdleCrossbowEast,
+            west: this.refs.player2ImgIdleCrossbowWest,
+          },
         },
         defending: {
-          north: this.refs.player2ImgIdleNorth,
-          northWest: this.refs.player2ImgIdleNorthWest,
-          northEast: this.refs.player2ImgIdleNorthEast,
-          south: this.refs.player2ImgIdleSouth,
-          southWest: this.refs.player2ImgIdleSouthWest,
-          southEast: this.refs.player2ImgIdleSouthEast,
-          east: this.refs.player2ImgIdleEast,
-          west: this.refs.player2ImgIdleWest,
+          sword: {
+            north: this.refs.player2ImgIdleSwordNorth,
+            northWest: this.refs.player2ImgIdleSwordNorthWest,
+            northEast: this.refs.player2ImgIdleSwordNorthEast,
+            south: this.refs.player2ImgIdleSwordSouth,
+            southWest: this.refs.player2ImgIdleSwordSouthWest,
+            southEast: this.refs.player2ImgIdleSwordSouthEast,
+            east: this.refs.player2ImgIdleSwordEast,
+            west: this.refs.player2ImgIdleSwordWest,
+          },
+          spear: {
+            north: this.refs.player2ImgIdleSpearNorth,
+            northWest: this.refs.player2ImgIdleSpearNorthWest,
+            northEast: this.refs.player2ImgIdleSpearNorthEast,
+            south: this.refs.player2ImgIdleSpearSouth,
+            southWest: this.refs.player2ImgIdleSpearSouthWest,
+            southEast: this.refs.player2ImgIdleSpearSouthEast,
+            east: this.refs.player2ImgIdleSpearEast,
+            west: this.refs.player2ImgIdleSpearWest,
+          },
+          crossbow: {
+            north: this.refs.player2ImgIdleCrossbowNorth,
+            northWest: this.refs.player2ImgIdleCrossbowNorthWest,
+            northEast: this.refs.player2ImgIdleCrossbowNorthEast,
+            south: this.refs.player2ImgIdleCrossbowSouth,
+            southWest: this.refs.player2ImgIdleCrossbowSouthWest,
+            southEast: this.refs.player2ImgIdleCrossbowSouthEast,
+            east: this.refs.player2ImgIdleCrossbowEast,
+            west: this.refs.player2ImgIdleCrossbowWest,
+          },
         },
         deflected: {
-          north: this.refs.player2ImgIdleNorth,
-          northWest: this.refs.player2ImgIdleNorthWest,
-          northEast: this.refs.player2ImgIdleNorthEast,
-          south: this.refs.player2ImgIdleSouth,
-          southWest: this.refs.player2ImgIdleSouthWest,
-          southEast: this.refs.player2ImgIdleSouthEast,
-          east: this.refs.player2ImgIdleEast,
-          west: this.refs.player2ImgIdleWest,
+          sword: {
+            north: this.refs.player2ImgIdleSwordNorth,
+            northWest: this.refs.player2ImgIdleSwordNorthWest,
+            northEast: this.refs.player2ImgIdleSwordNorthEast,
+            south: this.refs.player2ImgIdleSwordSouth,
+            southWest: this.refs.player2ImgIdleSwordSouthWest,
+            southEast: this.refs.player2ImgIdleSwordSouthEast,
+            east: this.refs.player2ImgIdleSwordEast,
+            west: this.refs.player2ImgIdleSwordWest,
+          },
+          spear: {
+            north: this.refs.player2ImgIdleSpearNorth,
+            northWest: this.refs.player2ImgIdleSpearNorthWest,
+            northEast: this.refs.player2ImgIdleSpearNorthEast,
+            south: this.refs.player2ImgIdleSpearSouth,
+            southWest: this.refs.player2ImgIdleSpearSouthWest,
+            southEast: this.refs.player2ImgIdleSpearSouthEast,
+            east: this.refs.player2ImgIdleSpearEast,
+            west: this.refs.player2ImgIdleSpearWest,
+          },
+          crossbow: {
+            north: this.refs.player2ImgIdleCrossbowNorth,
+            northWest: this.refs.player2ImgIdleCrossbowNorthWest,
+            northEast: this.refs.player2ImgIdleCrossbowNorthEast,
+            south: this.refs.player2ImgIdleCrossbowSouth,
+            southWest: this.refs.player2ImgIdleCrossbowSouthWest,
+            southEast: this.refs.player2ImgIdleCrossbowSouthEast,
+            east: this.refs.player2ImgIdleCrossbowEast,
+            west: this.refs.player2ImgIdleCrossbowWest,
+          },
         },
         falling: {
-          north: this.refs.player2ImgIdleNorth,
-          northWest: this.refs.player2ImgIdleNorthWest,
-          northEast: this.refs.player2ImgIdleNorthEast,
-          south: this.refs.player2ImgIdleSouth,
-          southWest: this.refs.player2ImgIdleSouthWest,
-          southEast: this.refs.player2ImgIdleSouthEast,
-          east: this.refs.player2ImgIdleEast,
-          west: this.refs.player2ImgIdleWest,
+          unarmed: {
+            north: this.refs.player2ImgIdleNorth,
+            northWest: this.refs.player2ImgIdleNorthWest,
+            northEast: this.refs.player2ImgIdleNorthEast,
+            south: this.refs.player2ImgIdleSouth,
+            southWest: this.refs.player2ImgIdleSouthWest,
+            southEast: this.refs.player2ImgIdleSouthEast,
+            east: this.refs.player2ImgIdleEast,
+            west: this.refs.player2ImgIdleWest,
+          },
+          sword: {
+            north: this.refs.player2ImgIdleSwordNorth,
+            northWest: this.refs.player2ImgIdleSwordNorthWest,
+            northEast: this.refs.player2ImgIdleSwordNorthEast,
+            south: this.refs.player2ImgIdleSwordSouth,
+            southWest: this.refs.player2ImgIdleSwordSouthWest,
+            southEast: this.refs.player2ImgIdleSwordSouthEast,
+            east: this.refs.player2ImgIdleSwordEast,
+            west: this.refs.player2ImgIdleSwordWest,
+          },
+          spear: {
+            north: this.refs.player2ImgIdleSpearNorth,
+            northWest: this.refs.player2ImgIdleSpearNorthWest,
+            northEast: this.refs.player2ImgIdleSpearNorthEast,
+            south: this.refs.player2ImgIdleSpearSouth,
+            southWest: this.refs.player2ImgIdleSpearSouthWest,
+            southEast: this.refs.player2ImgIdleSpearSouthEast,
+            east: this.refs.player2ImgIdleSpearEast,
+            west: this.refs.player2ImgIdleSpearWest,
+          },
+          crossbow: {
+            north: this.refs.player2ImgIdleCrossbowNorth,
+            northWest: this.refs.player2ImgIdleCrossbowNorthWest,
+            northEast: this.refs.player2ImgIdleCrossbowNorthEast,
+            south: this.refs.player2ImgIdleCrossbowSouth,
+            southWest: this.refs.player2ImgIdleCrossbowSouthWest,
+            southEast: this.refs.player2ImgIdleCrossbowSouthEast,
+            east: this.refs.player2ImgIdleCrossbowEast,
+            west: this.refs.player2ImgIdleCrossbowWest,
+          },
         },
-      }
+      },
     ]
     let itemImgs = {
       moveSpeedUp: this.refs.preAttackIndicate,
@@ -3730,40 +4132,45 @@ class App extends Component {
             x: plyr.nextPosition.x,
             y: plyr.nextPosition.y,
           };
+
+          let weapon = plyr.currentWeapon.type;
+          if (plyr.currentWeapon.type === '' || !plyr.currentWeapon.type) {
+            weapon = 'unarmed'
+          }
           switch(plyr.action) {
 
             case 'idle':
               switch(plyr.direction) {
                 case 'north' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].idle.north;
+                  updatedPlayerImg = playerImgs[plyr.number-1].idle[weapon].north;
                   newDirection = 'north';
                 break;
                 case 'northWest' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].idle.northWest;
+                  updatedPlayerImg = playerImgs[plyr.number-1].idle[weapon].northWest;
                   newDirection = 'northWest';
                 break;
                 case 'northEast' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].idle.northEast;
+                  updatedPlayerImg = playerImgs[plyr.number-1].idle[weapon].northEast;
                   newDirection = 'northEast';
                 break;
                 case 'east' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].idle.east;
+                  updatedPlayerImg = playerImgs[plyr.number-1].idle[weapon].east;
                   newDirection = 'east';
                 break;
                 case 'west' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].idle.west;
+                  updatedPlayerImg = playerImgs[plyr.number-1].idle[weapon].west;
                   newDirection = 'west';
                 break;
                 case 'south' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].idle.south;
+                  updatedPlayerImg = playerImgs[plyr.number-1].idle[weapon].south;
                   newDirection = 'south';
                 break;
                 case 'southWest' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].idle.southWest;
+                  updatedPlayerImg = playerImgs[plyr.number-1].idle[weapon].southWest;
                   newDirection = 'southWest';
                 break;
                 case 'southEast' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].idle.southEast;
+                  updatedPlayerImg = playerImgs[plyr.number-1].idle[weapon].southEast;
                   newDirection = 'southEast';
                 break;
               }
@@ -3771,35 +4178,35 @@ class App extends Component {
             case 'moving':
               switch(plyr.direction) {
                 case 'north' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].walking.north;
+                  updatedPlayerImg = playerImgs[plyr.number-1].walking[weapon].north;
                   newDirection = 'north';
                 break;
                 case 'northWest' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].walking.northWest;
+                  updatedPlayerImg = playerImgs[plyr.number-1].walking[weapon].northWest;
                   newDirection = 'northWest';
                 break;
                 case 'northEast' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].walking.northEast;
+                  updatedPlayerImg = playerImgs[plyr.number-1].walking[weapon].northEast;
                   newDirection = 'northEast';
                 break;
                 case 'east' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].walking.east;
+                  updatedPlayerImg = playerImgs[plyr.number-1].walking[weapon].east;
                   newDirection = 'east';
                 break;
                 case 'west' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].walking.west;
+                  updatedPlayerImg = playerImgs[plyr.number-1].walking[weapon].west;
                   newDirection = 'west';
                 break;
                 case 'south' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].walking.south;
+                  updatedPlayerImg = playerImgs[plyr.number-1].walking[weapon].south;
                   newDirection = 'south';
                 break;
                 case 'southWest' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].walking.southWest;
+                  updatedPlayerImg = playerImgs[plyr.number-1].walking[weapon].southWest;
                   newDirection = 'southWest';
                 break;
                 case 'southEast' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].walking.southEast;
+                  updatedPlayerImg = playerImgs[plyr.number-1].walking[weapon].southEast;
                   newDirection = 'southEast';
                 break;
               }
@@ -3807,35 +4214,35 @@ class App extends Component {
             case 'strafe moving':
               switch(plyr.direction) {
                 case 'north' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].strafing.north;
+                  updatedPlayerImg = playerImgs[plyr.number-1].strafing[weapon].north;
                   newDirection = 'north';
                 break;
                 case 'northWest' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].strafing.northWest;
+                  updatedPlayerImg = playerImgs[plyr.number-1].strafing[weapon].northWest;
                   newDirection = 'northWest';
                 break;
                 case 'northEast' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].strafing.northEast;
+                  updatedPlayerImg = playerImgs[plyr.number-1].strafing[weapon].northEast;
                   newDirection = 'northEast';
                 break;
                 case 'east' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].strafing.east;
+                  updatedPlayerImg = playerImgs[plyr.number-1].strafing[weapon].east;
                   newDirection = 'east';
                 break;
                 case 'west' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].strafing.west;
+                  updatedPlayerImg = playerImgs[plyr.number-1].strafing[weapon].west;
                   newDirection = 'west';
                 break;
                 case 'south' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].strafing.south;
+                  updatedPlayerImg = playerImgs[plyr.number-1].strafing[weapon].south;
                   newDirection = 'south';
                 break;
                 case 'southWest' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].strafing.southWest;
+                  updatedPlayerImg = playerImgs[plyr.number-1].strafing[weapon].southWest;
                   newDirection = 'southWest';
                 break;
                 case 'southEast' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].strafing.southEast;
+                  updatedPlayerImg = playerImgs[plyr.number-1].strafing[weapon].southEast;
                   newDirection = 'southEast';
                 break;
               }
@@ -3843,35 +4250,35 @@ class App extends Component {
             case 'falling':
               switch(plyr.direction) {
                 case 'north' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].falling.north;
+                  updatedPlayerImg = playerImgs[plyr.number-1].falling[weapon].north;
                   newDirection = 'north';
                 break;
                 case 'northWest' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].falling.northWest;
+                  updatedPlayerImg = playerImgs[plyr.number-1].falling[weapon].northWest;
                   newDirection = 'northWest';
                 break;
                 case 'northEast' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].falling.northEast;
+                  updatedPlayerImg = playerImgs[plyr.number-1].falling[weapon].northEast;
                   newDirection = 'northEast';
                 break;
                 case 'east' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].falling.east;
+                  updatedPlayerImg = playerImgs[plyr.number-1].falling[weapon].east;
                   newDirection = 'east';
                 break;
                 case 'west' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].falling.west;
+                  updatedPlayerImg = playerImgs[plyr.number-1].falling[weapon].west;
                   newDirection = 'west';
                 break;
                 case 'south' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].falling.south;
+                  updatedPlayerImg = playerImgs[plyr.number-1].falling[weapon].south;
                   newDirection = 'south';
                 break;
                 case 'southWest' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].falling.southWest;
+                  updatedPlayerImg = playerImgs[plyr.number-1].falling[weapon].southWest;
                   newDirection = 'southWest';
                 break;
                 case 'southEast' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].falling.southEast;
+                  updatedPlayerImg = playerImgs[plyr.number-1].falling[weapon].southEast;
                   newDirection = 'southEast';
                 break;
               }
@@ -3879,35 +4286,35 @@ class App extends Component {
             case 'attacking':
               switch(plyr.direction) {
                 case 'north' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].attacking.north;
+                  updatedPlayerImg = playerImgs[plyr.number-1].attacking[weapon].north;
                   newDirection = 'north';
                 break;
                 case 'northWest' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].attacking.northWest;
+                  updatedPlayerImg = playerImgs[plyr.number-1].attacking[weapon].northWest;
                   newDirection = 'northWest';
                 break;
                 case 'northEast' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].attacking.northEast;
+                  updatedPlayerImg = playerImgs[plyr.number-1].attacking[weapon].northEast;
                   newDirection = 'northEast';
                 break;
                 case 'east' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].attacking.east;
+                  updatedPlayerImg = playerImgs[plyr.number-1].attacking[weapon].east;
                   newDirection = 'east';
                 break;
                 case 'west' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].attacking.west;
+                  updatedPlayerImg = playerImgs[plyr.number-1].attacking[weapon].west;
                   newDirection = 'west';
                 break;
                 case 'south' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].attacking.south;
+                  updatedPlayerImg = playerImgs[plyr.number-1].attacking[weapon].south;
                   newDirection = 'south';
                 break;
                 case 'southWest' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].attacking.southWest;
+                  updatedPlayerImg = playerImgs[plyr.number-1].attacking[weapon].southWest;
                   newDirection = 'southWest';
                 break;
                 case 'southEast' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].attacking.southEast;
+                  updatedPlayerImg = playerImgs[plyr.number-1].attacking[weapon].southEast;
                   newDirection = 'southEast';
                 break;
               }
@@ -3915,35 +4322,35 @@ class App extends Component {
             case 'defending':
               switch(plyr.direction) {
                 case 'north' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].defending.north;
+                  updatedPlayerImg = playerImgs[plyr.number-1].defending[weapon].north;
                   newDirection = 'north';
                 break;
                 case 'northWest' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].defending.northWest;
+                  updatedPlayerImg = playerImgs[plyr.number-1].defending[weapon].northWest;
                   newDirection = 'northWest';
                 break;
                 case 'northEast' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].defending.northEast;
+                  updatedPlayerImg = playerImgs[plyr.number-1].defending[weapon].northEast;
                   newDirection = 'northEast';
                 break;
                 case 'east' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].defending.east;
+                  updatedPlayerImg = playerImgs[plyr.number-1].defending[weapon].east;
                   newDirection = 'east';
                 break;
                 case 'west' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].defending.west;
+                  updatedPlayerImg = playerImgs[plyr.number-1].defending[weapon].west;
                   newDirection = 'west';
                 break;
                 case 'south' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].defending.south;
+                  updatedPlayerImg = playerImgs[plyr.number-1].defending[weapon].south;
                   newDirection = 'south';
                 break;
                 case 'southWest' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].defending.southWest;
+                  updatedPlayerImg = playerImgs[plyr.number-1].defending[weapon].southWest;
                   newDirection = 'southWest';
                 break;
                 case 'southEast' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].defending.southEast;
+                  updatedPlayerImg = playerImgs[plyr.number-1].defending[weapon].southEast;
                   newDirection = 'southEast';
                 break;
               }
@@ -3951,43 +4358,44 @@ class App extends Component {
             case 'deflected' :
               switch(plyr.direction) {
                 case 'north' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].deflected.north;
+                  updatedPlayerImg = playerImgs[plyr.number-1].deflected[weapon].north;
                   newDirection = 'north';
                 break;
                 case 'northWest' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].deflected.northWest;
+                  updatedPlayerImg = playerImgs[plyr.number-1].deflected[weapon].northWest;
                   newDirection = 'northWest';
                 break;
                 case 'northEast' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].deflected.northEast;
+                  updatedPlayerImg = playerImgs[plyr.number-1].deflected[weapon].northEast;
                   newDirection = 'northEast';
                 break;
                 case 'east' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].deflected.east;
+                  updatedPlayerImg = playerImgs[plyr.number-1].deflected[weapon].east;
                   newDirection = 'east';
                 break;
                 case 'west' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].deflected.west;
+                  updatedPlayerImg = playerImgs[plyr.number-1].deflected[weapon].west;
                   newDirection = 'west';
                 break;
                 case 'south' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].deflected.south;
+                  updatedPlayerImg = playerImgs[plyr.number-1].deflected[weapon].south;
                   newDirection = 'south';
                 break;
                 case 'southWest' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].deflected.southWest;
+                  updatedPlayerImg = playerImgs[plyr.number-1].deflected[weapon].southWest;
                   newDirection = 'southWest';
                 break;
                 case 'southEast' :
-                  updatedPlayerImg = playerImgs[plyr.number-1].deflected.southEast;
+                  updatedPlayerImg = playerImgs[plyr.number-1].deflected[weapon].southEast;
                   newDirection = 'southEast';
                 break;
               }
             break;
             case 'dead':
-              updatedPlayerImg = playerImgs[plyr.number-1].idle.north;
+              updatedPlayerImg = playerImgs[plyr.number-1].idle[weapon].north;
             break;
           }
+
 
           if (plyr.target.void === false && plyr.moving.state === true) {
             if (plyr.direction === 'north' || plyr.direction === 'northWest' || plyr.direction === 'west') {
@@ -6310,6 +6718,19 @@ class App extends Component {
     //   if dropped gear remove buff/effect
 
   }
+
+  customCellToVoid = (cell) => {
+    console.log('void specific cell');
+
+    this.cellToVoid.state = true;
+    this.cellToVoid.x = cell.x;
+    this.cellToVoid.y = cell.y;
+    this.cellToVoid.count = 1;
+
+    this.openVoid = true;
+    this.voidCustomCell = true;
+
+  }
   voidSummon = (cell) => {
     // console.log('opening void');
 
@@ -6940,15 +7361,6 @@ class App extends Component {
           <img src={wall2} className='hidden' ref="wall2" alt="logo" />
           <img src={wall3} className='hidden' ref="wall3" alt="logo" />
 
-          <img src={playerImgIdleNorth} className='hidden playerImgs' ref="playerImgIdleNorth" alt="logo" />
-          <img src={playerImgIdleNorthWest} className='hidden playerImgs' ref="playerImgIdleNorthWest" alt="logo" />
-          <img src={playerImgIdleNorthEast} className='hidden playerImgs' ref="playerImgIdleNorthEast" alt="logo" />
-          <img src={playerImgIdleSouth} className='hidden playerImgs' ref="playerImgIdleSouth" alt="logo" />
-          <img src={playerImgIdleSouthWest} className='hidden playerImgs' ref="playerImgIdleSouthWest" alt="logo" />
-          <img src={playerImgIdleSouthEast} className='hidden playerImgs' ref="playerImgIdleSouthEast" alt="logo" />
-          <img src={playerImgIdleEast} className='hidden playerImgs' ref="playerImgIdleEast" alt="logo" />
-          <img src={playerImgIdleWest} className='hidden playerImgs' ref="playerImgIdleWest" alt="logo" />
-
           <img src={attackInidcate} className='hidden playerImgs' ref="attackIndicate" alt="logo" />
           <img src={attackSuccessInidcate} className='hidden playerImgs' ref="attackSuccessIndicate" alt="logo" />
           <img src={defendInidcate} className='hidden playerImgs' ref="defendIndicate" alt="logo" />
@@ -6959,6 +7371,42 @@ class App extends Component {
           <img src={deathInidcate} className='hidden playerImgs' ref="deathIndicate" alt="logo" />
           <img src={preAttackInidcate} className='hidden playerImgs' ref="preAttackIndicate" alt="logo" />
 
+          <img src={playerImgIdleNorth} className='hidden playerImgs' ref="playerImgIdleNorth" alt="logo" />
+          <img src={playerImgIdleNorthWest} className='hidden playerImgs' ref="playerImgIdleNorthWest" alt="logo" />
+          <img src={playerImgIdleNorthEast} className='hidden playerImgs' ref="playerImgIdleNorthEast" alt="logo" />
+          <img src={playerImgIdleSouth} className='hidden playerImgs' ref="playerImgIdleSouth" alt="logo" />
+          <img src={playerImgIdleSouthWest} className='hidden playerImgs' ref="playerImgIdleSouthWest" alt="logo" />
+          <img src={playerImgIdleSouthEast} className='hidden playerImgs' ref="playerImgIdleSouthEast" alt="logo" />
+          <img src={playerImgIdleEast} className='hidden playerImgs' ref="playerImgIdleEast" alt="logo" />
+          <img src={playerImgIdleWest} className='hidden playerImgs' ref="playerImgIdleWest" alt="logo" />
+
+          <img src={playerImgIdleNorth} className='hidden playerImgs' ref="playerImgIdleSwordNorth" alt="logo" />
+          <img src={playerImgIdleNorthWest} className='hidden playerImgs' ref="playerImgIdleSwordNorthWest" alt="logo" />
+          <img src={playerImgIdleNorthEast} className='hidden playerImgs' ref="playerImgIdleSwordNorthEast" alt="logo" />
+          <img src={playerImgIdleSouth} className='hidden playerImgs' ref="playerImgIdleSwordSouth" alt="logo" />
+          <img src={playerImgIdleSouthWest} className='hidden playerImgs' ref="playerImgIdleSwordSouthWest" alt="logo" />
+          <img src={playerImgIdleSouthEast} className='hidden playerImgs' ref="playerImgIdleSwordSouthEast" alt="logo" />
+          <img src={playerImgIdleEast} className='hidden playerImgs' ref="playerImgIdleSwordEast" alt="logo" />
+          <img src={playerImgIdleWest} className='hidden playerImgs' ref="playerImgIdleSwordWest" alt="logo" />
+
+          <img src={playerImgIdleNorth} className='hidden playerImgs' ref="playerImgIdleSpearNorth" alt="logo" />
+          <img src={playerImgIdleNorthWest} className='hidden playerImgs' ref="playerImgIdleSpearNorthWest" alt="logo" />
+          <img src={playerImgIdleNorthEast} className='hidden playerImgs' ref="playerImgIdleSpearNorthEast" alt="logo" />
+          <img src={playerImgIdleSouth} className='hidden playerImgs' ref="playerImgIdleSpearSouth" alt="logo" />
+          <img src={playerImgIdleSouthWest} className='hidden playerImgs' ref="playerImgIdleSpearSouthWest" alt="logo" />
+          <img src={playerImgIdleSouthEast} className='hidden playerImgs' ref="playerImgIdleSpearSouthEast" alt="logo" />
+          <img src={playerImgIdleEast} className='hidden playerImgs' ref="playerImgIdleSpearEast" alt="logo" />
+          <img src={playerImgIdleWest} className='hidden playerImgs' ref="playerImgIdleSpearWest" alt="logo" />
+
+          <img src={playerImgIdleNorth} className='hidden playerImgs' ref="playerImgIdleCrossbowNorth" alt="logo" />
+          <img src={playerImgIdleNorthWest} className='hidden playerImgs' ref="playerImgIdleCrossbowNorthWest" alt="logo" />
+          <img src={playerImgIdleNorthEast} className='hidden playerImgs' ref="playerImgIdleCrossbowNorthEast" alt="logo" />
+          <img src={playerImgIdleSouth} className='hidden playerImgs' ref="playerImgIdleCrossbowSouth" alt="logo" />
+          <img src={playerImgIdleSouthWest} className='hidden playerImgs' ref="playerImgIdleCrossbowSouthWest" alt="logo" />
+          <img src={playerImgIdleSouthEast} className='hidden playerImgs' ref="playerImgIdleCrossbowSouthEast" alt="logo" />
+          <img src={playerImgIdleEast} className='hidden playerImgs' ref="playerImgIdleCrossbowEast" alt="logo" />
+          <img src={playerImgIdleWest} className='hidden playerImgs' ref="playerImgIdleCrossbowWest" alt="logo" />
+
           <img src={player2ImgIdleNorth} className='hidden playerImgs' ref="player2ImgIdleNorth" alt="logo" />
           <img src={player2ImgIdleNorthWest} className='hidden playerImgs' ref="player2ImgIdleNorthWest" alt="logo" />
           <img src={player2ImgIdleNorthEast} className='hidden playerImgs' ref="player2ImgIdleNorthEast" alt="logo" />
@@ -6968,23 +7416,32 @@ class App extends Component {
           <img src={player2ImgIdleEast} className='hidden playerImgs' ref="player2ImgIdleEast" alt="logo" />
           <img src={player2ImgIdleWest} className='hidden playerImgs' ref="player2ImgIdleWest" alt="logo" />
 
-          <img src={plyr1AttackWest} className='hidden playerImgs' ref="plyr1AttackWest" alt="logo" />
-          <img src={plyr1AttackEast} className='hidden playerImgs' ref="plyr1AttackEast" alt="logo" />
-          <img src={plyr1AttackNorth} className='hidden playerImgs' ref="plyr1AttackNorth" alt="logo" />
-          <img src={plyr1AttackSouth} className='hidden playerImgs' ref="plyr1AttackSouth" alt="logo" />
-          <img src={plyr1AttackSouthEast} className='hidden playerImgs' ref="plyr1AttackSouthEast" alt="logo" />
-          <img src={plyr1AttackSouthWest} className='hidden playerImgs' ref="plyr1AttackSouthWest" alt="logo" />
-          <img src={plyr1AttackNorthWest} className='hidden playerImgs' ref="plyr1AttackNorthWest" alt="logo" />
-          <img src={plyr1AttackNorthEast} className='hidden playerImgs' ref="plyr1AttackNorthEast" alt="logo" />
+          <img src={player2ImgIdleNorth} className='hidden playerImgs' ref="player2ImgIdleSwordNorth" alt="logo" />
+          <img src={player2ImgIdleNorthWest} className='hidden playerImgs' ref="player2ImgIdleSwordNorthWest" alt="logo" />
+          <img src={player2ImgIdleNorthEast} className='hidden playerImgs' ref="player2ImgIdleSwordNorthEast" alt="logo" />
+          <img src={player2ImgIdleSouth} className='hidden playerImgs' ref="player2ImgIdleSwordSouth" alt="logo" />
+          <img src={player2ImgIdleSouthWest} className='hidden playerImgs' ref="player2ImgIdleSwordSouthWest" alt="logo" />
+          <img src={player2ImgIdleSouthEast} className='hidden playerImgs' ref="player2ImgIdleSwordSouthEast" alt="logo" />
+          <img src={player2ImgIdleEast} className='hidden playerImgs' ref="player2ImgIdleSwordEast" alt="logo" />
+          <img src={player2ImgIdleWest} className='hidden playerImgs' ref="player2ImgIdleSwordWest" alt="logo" />
 
-          <img src={plyr1IdleWest} className='hidden playerImgs' ref="plyr1IdleWest" alt="logo" />
-          <img src={plyr1IdleEast} className='hidden playerImgs' ref="plyr1IdleEast" alt="logo" />
-          <img src={plyr1IdleNorth} className='hidden playerImgs' ref="plyr1IdleNorth" alt="logo" />
-          <img src={plyr1IdleSouth} className='hidden playerImgs' ref="plyr1IdleSouth" alt="logo" />
-          <img src={plyr1IdleSouthEast} className='hidden playerImgs' ref="plyr1IdleSouthEast" alt="logo" />
-          <img src={plyr1IdleSouthWest} className='hidden playerImgs' ref="plyr1IdleSouthWest" alt="logo" />
-          <img src={plyr1IdleNorthWest} className='hidden playerImgs' ref="plyr1IdleNorthWest" alt="logo" />
-          <img src={plyr1IdleNorthEast} className='hidden playerImgs' ref="plyr1IdleNorthEast" alt="logo" />
+          <img src={player2ImgIdleNorth} className='hidden playerImgs' ref="player2ImgIdleSpearNorth" alt="logo" />
+          <img src={player2ImgIdleNorthWest} className='hidden playerImgs' ref="player2ImgIdleSpearNorthWest" alt="logo" />
+          <img src={player2ImgIdleNorthEast} className='hidden playerImgs' ref="player2ImgIdleSpearNorthEast" alt="logo" />
+          <img src={player2ImgIdleSouth} className='hidden playerImgs' ref="player2ImgIdleSpearSouth" alt="logo" />
+          <img src={player2ImgIdleSouthWest} className='hidden playerImgs' ref="player2ImgIdleSpearSouthWest" alt="logo" />
+          <img src={player2ImgIdleSouthEast} className='hidden playerImgs' ref="player2ImgIdleSpearSouthEast" alt="logo" />
+          <img src={player2ImgIdleEast} className='hidden playerImgs' ref="player2ImgIdleSpearEast" alt="logo" />
+          <img src={player2ImgIdleWest} className='hidden playerImgs' ref="player2ImgIdleSpearWest" alt="logo" />
+
+          <img src={player2ImgIdleNorth} className='hidden playerImgs' ref="player2ImgIdleCrossbowNorth" alt="logo" />
+          <img src={player2ImgIdleNorthWest} className='hidden playerImgs' ref="player2ImgIdleCrossbowNorthWest" alt="logo" />
+          <img src={player2ImgIdleNorthEast} className='hidden playerImgs' ref="player2ImgIdleCrossbowNorthEast" alt="logo" />
+          <img src={player2ImgIdleSouth} className='hidden playerImgs' ref="player2ImgIdleCrossbowSouth" alt="logo" />
+          <img src={player2ImgIdleSouthWest} className='hidden playerImgs' ref="player2ImgIdleCrossbowSouthWest" alt="logo" />
+          <img src={player2ImgIdleSouthEast} className='hidden playerImgs' ref="player2ImgIdleCrossbowSouthEast" alt="logo" />
+          <img src={player2ImgIdleEast} className='hidden playerImgs' ref="player2ImgIdleCrossbowEast" alt="logo" />
+          <img src={player2ImgIdleWest} className='hidden playerImgs' ref="player2ImgIdleCrossbowWest" alt="logo" />
 
 
         </div>
