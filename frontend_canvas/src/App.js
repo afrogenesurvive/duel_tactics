@@ -3538,6 +3538,16 @@ class App extends Component {
           },
         },
         defending: {
+          unarmed: {
+            north: this.refs.playerImgIdleNorth,
+            northWest: this.refs.playerImgIdleNorthWest,
+            northEast: this.refs.playerImgIdleNorthEast,
+            south: this.refs.playerImgIdleSouth,
+            southWest: this.refs.playerImgIdleSouthWest,
+            southEast: this.refs.playerImgIdleSouthEast,
+            east: this.refs.playerImgIdleEast,
+            west: this.refs.playerImgIdleWest,
+          },
           sword: {
             north: this.refs.playerImgIdleSwordNorth,
             northWest: this.refs.playerImgIdleSwordNorthWest,
@@ -5876,7 +5886,8 @@ class App extends Component {
     let distanceFactor = bolt.target.path.length;
 
     let moveSpeed = bolt.speed;
-    moveSpeed = bolt.speed/distanceFactor;
+    // moveSpeed = bolt.speed/distanceFactor;
+    moveSpeed = bolt.speed/(distanceFactor/5);
     // moveSpeed = bolt.speed/(distanceFactor/10);
 
     bolt.moving.step = bolt.moving.step + moveSpeed;
@@ -6320,6 +6331,7 @@ class App extends Component {
     this.players[player.number-1].speed.move = .1;
     this.players[player.number-1].ghost.state = false;
     this.players[player.number-1].crits = {
+      singleHit: 1,
       doubleHit: 6,
       pushBack: 3,
     };
@@ -6340,11 +6352,7 @@ class App extends Component {
       effect: '',
     };
     this.players[player.number-1].currentArmor = {};
-    this.players[player.number-1].crits = {
-      singleHit: 1,
-      doubleHit: 6,
-      pushBack: 3,
-    };
+
 
   }
   killPlayer = (player) => {
@@ -6442,6 +6450,7 @@ class App extends Component {
       player.speed.move = .1;
       player.hp = 2;
       player.crits = {
+        singleHit: 1,
         doubleHit: 6,
         pushBack: 3,
       };
