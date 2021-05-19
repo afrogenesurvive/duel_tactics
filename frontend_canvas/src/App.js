@@ -48,6 +48,7 @@ import './App.css';
 import DebugBox from './debugBox'
 import Settings from './settings'
 import CellInfo from './cellInfo'
+import Loading from './loading'
 
 import pointInPolygon from 'point-in-polygon';
 
@@ -466,7 +467,8 @@ class App extends Component {
       six: 300,
       nine: 220,
       twelve: 150,
-    }
+    },
+    loading: true,
   }
 
   constructor(props) {
@@ -1753,8 +1755,9 @@ class App extends Component {
       let point = [x,y];
       let polygon = [];
       for (const vertex of cell.vertices) {
+        let vertexPoint = [vertex.x+10,vertex.y+5];
         // let vertexPoint = [vertex.x-10,vertex.y-5];
-        let vertexPoint = [vertex.x,vertex.y];
+        // let vertexPoint = [vertex.x,vertex.y];
         polygon.push(vertexPoint)
       }
       let pip = pointInPolygon(point, polygon)
@@ -2076,7 +2079,7 @@ class App extends Component {
   }
   openSettings = () => {
     this.setState({
-      showSettings: true
+      showSettings: true,
     })
   }
 
@@ -6444,6 +6447,10 @@ class App extends Component {
   restartGame = () => {
     console.log('resetting');
 
+    this.setState({
+      loading: true
+    })
+
     this.projectiles = [];
     for (const player of this.players) {
       player.ghost.state = false;
@@ -6490,7 +6497,7 @@ class App extends Component {
     let cellFree = true;
     let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y);
     if (
-      cell2.levelData.charAt(0) ===  'z' &&
+      cell2.levelData.charAt(0) ===  'z' ||
       cell2.levelData.charAt(0) ===  'y'
     ) {
       cellFree = false;
@@ -7269,6 +7276,9 @@ class App extends Component {
         }
 
         this.init = false;
+        this.setState({
+          loading: false,
+        })
 
       }
     }
@@ -7307,6 +7317,9 @@ class App extends Component {
     return (
       <React.Fragment>
 
+      {this.state.loading === true && (
+        <Loading />
+      )}
 
         <div className="containerTop">
         <div className="timer">
