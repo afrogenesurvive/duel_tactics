@@ -64,6 +64,7 @@ import './App.css';
 
 import DebugBox from './debugBox'
 import Settings from './settings'
+import CellInfo from './cellInfo'
 
 import pointInPolygon from 'point-in-polygon';
 
@@ -962,7 +963,7 @@ class App extends Component {
         respawn: false,
         points: 0,
         speed: {
-          move: .1,
+          move: .075,
           range: [.05,.1,.125,.2]
         },
         hp: 2,
@@ -1266,13 +1267,58 @@ class App extends Component {
       },
     ]
     this.clicked = {
-      cell: {
-        number: {
-          x: 0,
-          y: 0,
-        }
-      }
-    }
+      number:{
+        x:0,
+        y:0
+      },
+      center:{
+        x:0,
+        y:0
+      },
+      drawCenter:{
+        x:0,
+        y:0
+      },
+      vertices: [
+        {
+          x:0,
+          y:0
+        },
+        {
+          x:0,
+          y:0
+        },
+        {
+          x:0,
+          y:0
+        },
+        {
+          x:0,
+          y:0
+        },
+      ],
+      side: 0,
+      levelData: '',
+      edge: {
+        state: false,
+        side: ''
+      },
+      terrain: {
+        name: '',
+        type: '',
+        effect: ''
+      },
+      item: {
+        name: '',
+        type: '',
+        subType: '',
+        effect: '',
+        initDrawn: false
+      },
+      void: {
+        state: false
+      },
+    };
     this.turnCheckerDirection = '';
     this.projectiles = [];
     this.projectileSpeed = .1;
@@ -1707,10 +1753,16 @@ class App extends Component {
   }
   getCanvasClick = (canvas, event) => {
     const rect = canvas.getBoundingClientRect()
-    // 222 is distance from canvas edge to left or right window border
 
-    const x = (event.clientX - rect.left) - 222;
-    const y = (event.clientY - rect.top) - 158;
+    // let xGap = window.pageXOffset + this.canvasRef2.current.getBoundingClientRect().left
+    // let yGap = window.pageYOffset + this.canvasRef2.current.getBoundingClientRect().top
+
+    const x = (event.clientX - rect.left);
+    const y = (event.clientY - rect.top);
+    // const x = (event.clientX - rect.left) - xGap;
+    // const y = (event.clientY - rect.top) - yGap;
+    // const x = (event.clientX - rect.left) - 222;
+    // const y = (event.clientY - rect.top) - 158;
     let insideGrid = false;
     // console.log('clicked',x,y,);
 
@@ -1718,14 +1770,15 @@ class App extends Component {
       let point = [x,y];
       let polygon = [];
       for (const vertex of cell.vertices) {
-        let vertexPoint = [vertex.x-10,vertex.y-5];
-        // let vertexPoint = [vertex.x,vertex.y];
+        // let vertexPoint = [vertex.x-10,vertex.y-5];
+        let vertexPoint = [vertex.x,vertex.y];
         polygon.push(vertexPoint)
       }
       let pip = pointInPolygon(point, polygon)
       if (pip === true) {
         insideGrid = true;
-        console.log("clicked a cell",cell.number,"x: " + x + " y: " + y);
+        // console.log("clicked a cell",cell.number,"x: " + x + " y: " + y);
+        this.clicked = cell;
       }
     }
     if ( insideGrid === false ) {
@@ -2694,6 +2747,12 @@ class App extends Component {
               count: 0,
               limit: player.cycleWeapon.limit,
             }
+
+            let myCell = this.gridInfo.find(cell => cell.number.x === player.currentPosition.cell.number.x && cell.number.y === player.currentPosition.cell.number.y)
+            if (myCell.item.name !== '') {
+              console.log('found an item. picking it up');
+              this.checkDestination(player)
+            }
           }
 
         }
@@ -2735,7 +2794,6 @@ class App extends Component {
                 case 'speedUp' :
                   let currentSpd1 = player.speed.range.indexOf(player.speed.move);
                   if (player.speed.move > .05) {
-                    console.log('kk',player.speed.move,'kk',currentSpd1,currentSpd1-1);
                     // console.log('armor cycle debuff speed',player.speed.move);
                     player.speed.move = player.speed.range[currentSpd1-1];
                     // console.log('armor cycle debuff speed',player.speed.move);
@@ -2761,7 +2819,6 @@ class App extends Component {
                 case 'speedUp' :
                   let currentSpd2 = player.speed.range.indexOf(player.speed.move)
                   if (player.speed.move < .2) {
-                    console.log('kk',player.speed.move,'kk',currentSpd2,currentSpd2+1);
 
                     // console.log('armor cycle buff speed',player.speed.move);
                     player.speed.move = player.speed.range[currentSpd2+1]
@@ -2794,6 +2851,11 @@ class App extends Component {
               limit: player.cycleArmor.limit,
             }
 
+            let myCell = this.gridInfo.find(cell => cell.number.x === player.currentPosition.cell.number.x && cell.number.y === player.currentPosition.cell.number.y)
+            if (myCell.item.name !== '') {
+              console.log('found an item. picking it up');
+              this.checkDestination(player)
+            }
           }
         }
         else if (this.keyPressed[player.number-1].cycleArmor === true && player.cycleArmor.state === true) {
@@ -2943,7 +3005,7 @@ class App extends Component {
                 // console.log('start attacking');
                 // console.log('pre attack');
 
-                if (player.currentWeapon.name === '') {
+                if (player.currentWeapon.name === '' || !player.currentWeapon.name) {
                   player.statusDisplay = {
                     state: true,
                     status: "No weapon. Can't attack",
@@ -2964,8 +3026,8 @@ class App extends Component {
                 // console.log('start defending',player.number);
 
                 if (
-                  player.currentWeapon.name === '' &&
-                  player.currentArmor.name === ''
+                  !player.currentWeapon.name &&
+                  !player.currentArmor.name
                 ) {
                   player.statusDisplay = {
                     state: true,
@@ -5541,7 +5603,6 @@ class App extends Component {
             // console.log('armor pickup buff');
               let currentSpd1 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
               if (this.players[player.number-1].speed.move < .2) {
-                console.log('kk',this.players[player.number-1].speed.move,'kk',currentSpd1,currentSpd1+1);
 
                 // console.log('armor pickup buff speed',this.players[player.number-1].speed.move);
                 this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd1+1]
@@ -6148,9 +6209,12 @@ class App extends Component {
       effect: '',
       initDrawn: false
     };
+
+    // let dropWhat = 2
     let dropWhat = this.rnJesus(1,2);
     let shouldDrop = false;
-    let dropChance = this.rnJesus(1,1*player.crits.pushBack);
+    let dropChance = this.rnJesus(1,1);
+    // let dropChance = this.rnJesus(1,1*player.crits.pushBack);
     if (
       dropChance === 1 &&
       player.falling.state !== true
@@ -6158,38 +6222,43 @@ class App extends Component {
       shouldDrop = true;
 
       if (dropWhat === 1) {
-        console.log("dropping weapon player ",player.number);
-        let index = player.items.weapons.findIndex(weapon => weapon.name === player.currentWeapon.name);
-        // player.items.weapons.indexOf(player.items.weapons.find(weapon=> {weapon.name === player.currentWeapon.name}))
 
-        item.name = this.players[player.number-1].items.weapons[index].name;
-        item.subType = this.players[player.number-1].items.weapons[index].type;
-        item.type = "weapon";
-        item.effect = this.players[player.number-1].items.weapons[index].effect;
-        this.players[player.number-1].items.weapons.splice(index,1);
-        this.players[player.number-1].items.weaponIndex = 0;
-        this.players[player.number-1].currentWeapon = {
-          name: '',
-          type: '',
-          effect: '',
+        if (player.items.weapons.length > 0) {
+          let index = player.items.weapons.findIndex(weapon => weapon.name === player.currentWeapon.name);
+          console.log("dropping weapon player ",player.number,this.players[player.number-1].items.weapons[index].name);
+
+          item.name = this.players[player.number-1].items.weapons[index].name;
+          item.subType = this.players[player.number-1].items.weapons[index].type;
+          item.type = "weapon";
+          item.effect = this.players[player.number-1].items.weapons[index].effect;
+          this.players[player.number-1].items.weapons.splice(index,1);
+          this.players[player.number-1].items.weaponIndex = 0;
+          this.players[player.number-1].currentWeapon = {
+            name: '',
+            type: '',
+            effect: '',
+          }
+
+          this.players[player.number-1].statusDisplay = {
+            state: true,
+            status: item.name+'dropped',
+            count: 1,
+            limit: this.players[player.number-1].statusDisplay.limit,
+          }
         }
 
-        this.players[player.number-1].statusDisplay = {
-          state: true,
-          status: item.name+'dropped',
-          count: 1,
-          limit: this.players[player.number-1].statusDisplay.limit,
-        }
       }
       else {
-        console.log("dropping armor player ",player.number);
+
         if (player.items.armor.length > 0) {
+          console.log('cc',player.items.armor.length,player.items.armor);
           let index = player.items.armor.findIndex(armor => armor.name === player.currentArmor.name);
-          // let index = player.items.armor.indexOf(player.items.armors.find(armor=> {armor.name === player.currentArmor.name}))
+          console.log("dropping armor player ",player.number,this.players[player.number-1].items.armor[index].name);
           item.name = this.players[player.number-1].items.armor[index].name;
           item.subType = this.players[player.number-1].items.armor[index].type;
           item.effect = this.players[player.number-1].items.armor[index].effect;
           item.type = "armor";
+
 
           switch(item.effect) {
             case 'hpUp' :
@@ -6202,19 +6271,10 @@ class App extends Component {
             case 'speedUp' :
               let currentSpd1 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move);
               if (this.players[player.number-1].speed.move > .05) {
-                console.log('kk',this.players[player.number-1].speed.move,'kk',currentSpd1,currentSpd1-1);
                 console.log('armor drop debuff speed',this.players[player.number-1].speed.move);
                 this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd1-1];
                 console.log('armor drop debuff speed',this.players[player.number-1].speed.move);
               }
-
-              // let currentSpd1 = player.speed.range.indexOf(player.speed.move);
-              // if (player.speed.move > .05) {
-              //   console.log('kk',player.speed.move,'kk',currentSpd1,currentSpd1-1);
-              //   console.log('armor cycle debuff speed',player.speed.move);
-              //   player.speed.move = player.speed.range[currentSpd1-1];
-              //   console.log('armor cycle debuff speed',player.speed.move);
-              // }
             break;
           }
 
@@ -6855,6 +6915,10 @@ class App extends Component {
                 <FontAwesomeIcon icon={faCogs} size="sm" className="setSwitchIcon"/>
               </a>
             </div>
+
+            <CellInfo
+              cell={this.clicked}
+            />
           </div>
 
           {this.state.showSettings === true && (

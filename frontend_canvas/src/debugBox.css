@@ -38,3 +38,31 @@
   height: 1.5rem;
   width: 1.5rem;
 }
+
+
+.cellInfoBox {
+  border: 1px solid blue;
+  border-radius: 5px;
+  padding: .5rem;
+  background-color: #ffffff;
+  position: absolute;
+  bottom: 0;
+  right: .1rem;
+  z-index: 3;
+  max-height: 15rem;
+  max-width: 18rem;
+}
+
+.cellInfoList {
+  list-style-type: none;
+  padding: 0;
+}
+
+.cellInfoListItem {
+
+}
+
+.cellInfoText {
+  color: black;
+  font-size: medium;
+}
