@@ -254,6 +254,28 @@ class App extends Component {
           count: 0,
           limit: 15,
         },
+        itemDrop: {
+          state: false,
+          count: 0,
+          limit: 10,
+          item: {
+            name: '',
+          },
+          gear: {
+            type: '',
+          }
+        },
+        itemPickup: {
+          state: false,
+          count: 0,
+          limit: 10,
+          item: {
+            name: '',
+          },
+          gear: {
+            type: '',
+          }
+        }
       },
       {
         number: 2,
@@ -454,6 +476,28 @@ class App extends Component {
           count: 0,
           limit: 15,
         },
+        itemDrop: {
+          state: false,
+          count: 0,
+          limit: 10,
+          item: {
+            name: '',
+          },
+          gear: {
+            type: '',
+          }
+        },
+        itemPickup: {
+          state: false,
+          count: 0,
+          limit: 10,
+          item: {
+            name: '',
+          },
+          gear: {
+            type: '',
+          }
+        }
       }
     ],
     showSettings: true,
@@ -1009,6 +1053,28 @@ class App extends Component {
           count: 0,
           limit: 15,
         },
+        itemDrop: {
+          state: false,
+          count: 0,
+          limit: 10,
+          item: {
+            name: '',
+          },
+          gear: {
+            type: '',
+          }
+        },
+        itemPickup: {
+          state: false,
+          count: 0,
+          limit: 10,
+          item: {
+            name: '',
+          },
+          gear: {
+            type: '',
+          }
+        }
       },
       {
         number: 2,
@@ -1211,6 +1277,28 @@ class App extends Component {
           count: 0,
           limit: 15,
         },
+        itemDrop: {
+          state: false,
+          count: 0,
+          limit: 10,
+          item: {
+            name: '',
+          },
+          gear: {
+            type: '',
+          }
+        },
+        itemPickup: {
+          state: false,
+          count: 0,
+          limit: 10,
+          item: {
+            name: '',
+          },
+          gear: {
+            type: '',
+          }
+        }
       }
     ];
     this.stepper = {
@@ -2431,6 +2519,46 @@ class App extends Component {
           player.nextPosition = {
             x: -30,
             y: -30,
+          }
+        }
+
+
+        if (player.itemDrop.state === true) {
+          if (player.itemDrop.count < player.itemDrop.limit) {
+            player.itemDrop.count++
+            console.log('dropping item anim');
+          }
+          else if (player.itemDrop.count >= player.itemDrop.limit) {
+            player.itemDrop = {
+              state: false,
+              count: 0,
+              limit: 10,
+              item: {
+                name: '',
+              },
+              gear: {
+                type: '',
+              }
+            }
+          }
+        }
+        if (player.itemPickup.state === true) {
+          if (player.itemPickup.count < player.itemPickup.limit) {
+            player.itemPickup.count++
+            console.log('picking item anim');
+          }
+          else if (player.itemPickup.count >= player.itemPickup.limit) {
+            player.itemPickup = {
+              state: false,
+              count: 0,
+              limit: 10,
+              item: {
+                name: '',
+              },
+              gear: {
+                type: '',
+              }
+            };
           }
         }
 
@@ -5008,6 +5136,201 @@ class App extends Component {
               context.drawImage(indicatorImgs.ghost, plyr.ghost.position.cell.center.x-20, plyr.ghost.position.cell.center.y-20, 25,25);
             }
           }
+          if (plyr.itemDrop.state === true) {
+            let itemImg2;
+            let fillClr2;
+            if (plyr.itemDrop.item.name === '') {
+              // console.log('drop a weapon or armor');
+              switch(plyr.itemDrop.gear.type) {
+                case 'sword' :
+                  fillClr2 = "orange";
+                  itemImg2 = itemImgs[gridInfoCell.item.subType];
+                break;
+                case 'spear' :
+                  fillClr2 = "maroon";
+                  itemImg2 = itemImgs[gridInfoCell.item.subType];
+                break;
+                case 'crossbow' :
+                  fillClr2 = "navy";
+                  itemImg2 = itemImgs[gridInfoCell.item.subType];
+                break;
+                case 'helmet' :
+                  fillClr2 = "grey";
+                  itemImg2 = itemImgs[gridInfoCell.item.subType];
+                break;
+                case 'mail' :
+                  fillClr2 = "olive";
+                  itemImg2 = itemImgs[gridInfoCell.item.subType];
+                break;
+                case 'greaves' :
+                  fillClr2 = "#b5179e";
+                  itemImg2 = itemImgs[gridInfoCell.item.subType];
+                break;
+              }
+            }
+            else if (plyr.itemDrop.gear.type === '') {
+              // console.log('drop an item');
+              switch(plyr.itemDrop.item.name) {
+                case 'moveSpeedUp' :
+                  fillClr2 = "purple";
+                  itemImg2 = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'moveSpeedDown' :
+                  fillClr2 = "blue";
+                  itemImg2 = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'hpUp' :
+                  fillClr2 = "yellow";
+                  itemImg2 = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'hpDown' :
+                  fillClr2 = "brown";
+                  itemImg2 = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'focusUp' :
+                  fillClr2 = "white";
+                  itemImg2 = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'focusDown' :
+                  fillClr2 = "black";
+                  itemImg2 = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'strengthUp' :
+                  fillClr2 = "green";
+                  itemImg2 = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'strengthDown' :
+                  fillClr2 = "red";
+                  itemImg2 = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'ammo5' :
+                  fillClr2 = "#283618";
+                  itemImg2 = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'ammo10' :
+                  fillClr2 = "#283618";
+                  itemImg2 = itemImgs[gridInfoCell.item.name];
+                break;
+              }
+            }
+            if (plyr.itemDrop.count < 4) {
+
+
+              // draw at player pos w/ offset to the side of and mid cell
+              console.log('drawing item drop');
+              // context.fillStyle = fillClr;
+              // context.beginPath();
+              // context.arc(center.x, center.y, 10, 0, 2 * Math.PI);
+              // context.fill();
+            }
+            if (plyr.itemDrop.count > 3) {
+
+              // draw at playr pos w/ offset but y + count or count *2
+              console.log('drawing item drop');
+              // context.fillStyle = fillClr;
+              // context.beginPath();
+              // context.arc(center.x, center.y, 10, 0, 2 * Math.PI);
+              // context.fill();
+            }
+          }
+          if (plyr.itemPickup.state === true) {
+            let itemImg3;
+            let fillClr3;
+            if (plyr.itemPickup.item.name === '') {
+              // console.log('Pickup a weapon or armor');
+              switch(plyr.itemPickup.gear.type) {
+                case 'sword' :
+                  fillClr3 = "orange";
+                  itemImg3 = itemImgs[gridInfoCell.item.subType];
+                break;
+                case 'spear' :
+                  fillClr3 = "maroon";
+                  itemImg3 = itemImgs[gridInfoCell.item.subType];
+                break;
+                case 'crossbow' :
+                  fillClr3 = "navy";
+                  itemImg3 = itemImgs[gridInfoCell.item.subType];
+                break;
+                case 'helmet' :
+                  fillClr3 = "grey";
+                  itemImg3 = itemImgs[gridInfoCell.item.subType];
+                break;
+                case 'mail' :
+                  fillClr3 = "olive";
+                  itemImg3 = itemImgs[gridInfoCell.item.subType];
+                break;
+                case 'greaves' :
+                  fillClr3 = "#b5179e";
+                  itemImg3 = itemImgs[gridInfoCell.item.subType];
+                break;
+              }
+            }
+            else if (plyr.itemPickup.gear.type === '') {
+              // console.log('Pickup an item');
+              switch(plyr.itemPickup.item.name) {
+                case 'moveSpeedUp' :
+                  fillClr3 = "purple";
+                  itemImg3 = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'moveSpeedDown' :
+                  fillClr3 = "blue";
+                  itemImg3 = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'hpUp' :
+                  fillClr3 = "yellow";
+                  itemImg3 = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'hpDown' :
+                  fillClr3 = "brown";
+                  itemImg3 = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'focusUp' :
+                  fillClr3 = "white";
+                  itemImg3 = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'focusDown' :
+                  fillClr3 = "black";
+                  itemImg3 = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'strengthUp' :
+                  fillClr3 = "green";
+                  itemImg3 = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'strengthDown' :
+                  fillClr3 = "red";
+                  itemImg3 = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'ammo5' :
+                  fillClr3 = "#283618";
+                  itemImg3 = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'ammo10' :
+                  fillClr3 = "#283618";
+                  itemImg3 = itemImgs[gridInfoCell.item.name];
+                break;
+              }
+            }
+            if (plyr.itemPickup.count < 4) {
+
+
+              // draw at player pos w/ offset to the side of and bottom cell
+              console.log('drawing item pickup');
+              // context.fillStyle = fillClr;
+              // context.beginPath();
+              // context.arc(center.x, center.y, 10, 0, 2 * Math.PI);
+              // context.fill();
+            }
+            if (plyr.itemPickup.count > 3) {
+
+              // draw at playr pos w/ offset but y - count or count *2
+              console.log('drawing item pickup');
+              // context.fillStyle = fillClr;
+              // context.beginPath();
+              // context.arc(center.x, center.y, 10, 0, 2 * Math.PI);
+              // context.fill();
+            }
+          }
+
 
           this.players[plyr.number-1] = plyr;
 
@@ -6240,6 +6563,34 @@ class App extends Component {
 
       }
       if (pickUp === true) {
+        // PICKUP ANIM!!
+        if (cell.item.type === 'item') {
+          this.players[player.number-1].itemPickup = {
+            state: true,
+            count: 0,
+            limit: 10,
+            item: {
+              name: cell.item.name,
+            },
+            gear: {
+              type: '',
+            }
+          }
+        }
+        else if (cell.item.type === 'weapon' || cell.item.type === 'armor') {
+          this.players[player.number-1].itemPickup = {
+            state: true,
+            count: 0,
+            limit: 10,
+            item: {
+              name: '',
+            },
+            gear: {
+              type: cell.item.subType,
+            }
+          }
+        }
+
         cell.item = {
           name: '',
           type: '',
@@ -6710,6 +7061,20 @@ class App extends Component {
           item.subType = this.players[player.number-1].items.weapons[index].type;
           item.type = "weapon";
           item.effect = this.players[player.number-1].items.weapons[index].effect;
+
+
+          this.players[player.number-1].itemDrop = {
+            state: true,
+            count: 0,
+            limit: 10,
+            item: {
+              name: '',
+            },
+            gear: {
+              type: this.players[player.number-1].items.weapons[index].type,
+            }
+          }
+
           this.players[player.number-1].items.weapons.splice(index,1);
           this.players[player.number-1].items.weaponIndex = 0;
           this.players[player.number-1].currentWeapon = {
@@ -6737,6 +7102,19 @@ class App extends Component {
           item.subType = this.players[player.number-1].items.armor[index].type;
           item.effect = this.players[player.number-1].items.armor[index].effect;
           item.type = "armor";
+
+
+          this.players[player.number-1].itemDrop = {
+            state: true,
+            count: 0,
+            limit: 10,
+            item: {
+              name: '',
+            },
+            gear: {
+              type: this.players[player.number-1].items.armor[index].type,
+            }
+          }
 
 
           switch(item.effect) {
