@@ -727,7 +727,7 @@ class App extends Component {
         effect: 'hpUp',
       },
       {
-        name: 'ninjaMail',
+        name: 'ninjaGi',
         amount: 2,
         total: 2,
         type: 'armor',
@@ -2205,7 +2205,7 @@ class App extends Component {
       for (const player of this.players) {
 
         // this.pollGamepads()
-        this.playerUpdate(player, this.canvas, this.state.context);
+        this.playerUpdate(player, this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
 
       }
 
@@ -2214,7 +2214,7 @@ class App extends Component {
     requestAnimationFrame(this.gameLoop);
   }
 
-  playerUpdate = (player, canvas, context) => {
+  playerUpdate = (player, canvas, context, canvas2, context2) => {
     // console.log('updating player',player.number);
 
     let keyPressedDirection;
@@ -2522,11 +2522,10 @@ class App extends Component {
           }
         }
 
-
         if (player.itemDrop.state === true) {
           if (player.itemDrop.count < player.itemDrop.limit) {
             player.itemDrop.count++
-            console.log('dropping item anim');
+            // console.log('dropping item anim');
           }
           else if (player.itemDrop.count >= player.itemDrop.limit) {
             player.itemDrop = {
@@ -2545,7 +2544,7 @@ class App extends Component {
         if (player.itemPickup.state === true) {
           if (player.itemPickup.count < player.itemPickup.limit) {
             player.itemPickup.count++
-            console.log('picking item anim');
+            // console.log('picking item anim');
           }
           else if (player.itemPickup.count >= player.itemPickup.limit) {
             player.itemPickup = {
@@ -2941,7 +2940,7 @@ class App extends Component {
 
             let myCell = this.gridInfo.find(cell => cell.number.x === player.currentPosition.cell.number.x && cell.number.y === player.currentPosition.cell.number.y)
             if (myCell.item.name !== '') {
-              console.log('found an item. picking it up');
+              // console.log('found an item. picking it up');
               this.checkDestination(player)
             }
           }
@@ -3044,7 +3043,7 @@ class App extends Component {
 
             let myCell = this.gridInfo.find(cell => cell.number.x === player.currentPosition.cell.number.x && cell.number.y === player.currentPosition.cell.number.y)
             if (myCell.item.name !== '') {
-              console.log('found an item. picking it up');
+              // console.log('found an item. picking it up');
               this.checkDestination(player)
             }
           }
@@ -3478,17 +3477,17 @@ class App extends Component {
       players: players
     })
 
-    this.drawPlayerStep(player.number, canvas, context);
+    this.drawPlayerStep(player.number, canvas, context, canvas2, context2);
 
   }
 
-  drawPlayerStep = (playerNumber) => {
+  drawPlayerStep = (playerNumber, canvas, context, canvas2, context2) => {
     // console.log('drawing player step',playerNumber);
 
-    let canvas = this.state.canvas;
-    let context = this.state.context;
-    let canvas2 = this.state.canvas2;
-    let context2 = this.state.context2;
+    // let canvas = this.state.canvas;
+    // let context = this.state.context;
+    // let canvas2 = this.state.canvas2;
+    // let context2 = this.state.context2;
 
     let gridInfo = [];
     class Point {
@@ -5217,20 +5216,22 @@ class App extends Component {
 
 
               // draw at player pos w/ offset to the side of and mid cell
-              console.log('drawing item drop');
-              // context.fillStyle = fillClr;
-              // context.beginPath();
-              // context.arc(center.x, center.y, 10, 0, 2 * Math.PI);
-              // context.fill();
+              let pos = plyr.currentPosition.cell.center;
+              // console.log('drawing item drop');
+              context.fillStyle = fillClr2;
+              context.beginPath();
+              context.arc(pos.x-10, pos.y, 10, 0, 2 * Math.PI);
+              context.fill();
             }
             if (plyr.itemDrop.count > 3) {
 
               // draw at playr pos w/ offset but y + count or count *2
-              console.log('drawing item drop');
-              // context.fillStyle = fillClr;
-              // context.beginPath();
-              // context.arc(center.x, center.y, 10, 0, 2 * Math.PI);
-              // context.fill();
+              let pos = plyr.currentPosition.cell.center;
+              // console.log('drawing item drop');
+              context.fillStyle = fillClr2;
+              context.beginPath();
+              context.arc(pos.x-10, pos.y+(plyr.itemDrop.count*2), 10, 0, 2 * Math.PI);
+              context.fill();
             }
           }
           if (plyr.itemPickup.state === true) {
@@ -5312,22 +5313,23 @@ class App extends Component {
             }
             if (plyr.itemPickup.count < 4) {
 
-
               // draw at player pos w/ offset to the side of and bottom cell
-              console.log('drawing item pickup');
-              // context.fillStyle = fillClr;
-              // context.beginPath();
-              // context.arc(center.x, center.y, 10, 0, 2 * Math.PI);
-              // context.fill();
+              let pos = plyr.currentPosition.cell.center;
+              // console.log('drawing item pickup');
+              context.fillStyle = fillClr3;
+              context.beginPath();
+              context.arc(pos.x-10, pos.y, 10, 0, 2 * Math.PI);
+              context.fill();
             }
             if (plyr.itemPickup.count > 3) {
 
               // draw at playr pos w/ offset but y - count or count *2
-              console.log('drawing item pickup');
-              // context.fillStyle = fillClr;
-              // context.beginPath();
-              // context.arc(center.x, center.y, 10, 0, 2 * Math.PI);
-              // context.fill();
+              let pos = plyr.currentPosition.cell.center;
+              // console.log('drawing item pickup');
+              context.fillStyle = fillClr3;
+              context.beginPath();
+              context.arc(pos.x-10, pos.y-(plyr.itemPickup.count*2), 10, 0, 2 * Math.PI);
+              context.fill();
             }
           }
 
