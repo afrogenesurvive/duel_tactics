@@ -536,11 +536,11 @@ class App extends Component {
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
     this.levelData12 = {
-      row0: ['x00x','y01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x','x010x','x011x','x012x'],
+      row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x','x010x','x011x','x012x'],
       row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x','x110x','x111x','x112x'],
       row2: ['x20x','x21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x','x210x','x211x','x212x'],
-      row3: ['x30x','x31x','x32x','y33x','x34x','x35x','x36x','x37x','x38x','x39x','x310x','x311x','x312x'],
-      row4: ['x40x','x41x','x42x','x43x','y44x','x45x','x46x','x47x','x48x','z49x','x410x','x411x','x412x'],
+      row3: ['x30x','x31x','x32x','x33x','x34x','x35x','x36x','x37x','x38x','x39x','x310x','x311x','x312x'],
+      row4: ['x40x','x41x','x42x','x43x','x44x','x45x','x46x','x47x','x48x','z49x','x410x','x411x','x412x'],
       row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58x','x59x','x510x','x511x','x512x'],
       row6: ['x60x','y61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x','x610x','x611x','x612x'],
       row7: ['x70x','y71x','x72x','x73x','x74x','x75x','x76x','y77x','x78x','x79x','x710x','x711x','x712x'],
@@ -551,7 +551,7 @@ class App extends Component {
       row12: ['x120x','x121x','x122x','x123x','x124x','x125x','x126x','x127x','x128x','x129x','x1210x','x1211x','x1212x'],
     };
     this.levelData9 = {
-      row0: ['x00x','y01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
+      row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
       row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
       row2: ['x20x','x21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x'],
       row3: ['x30x','x31x','x32x','x33x','x34x','x35x','x36x','x37x','x38x','x39x'],
@@ -566,8 +566,8 @@ class App extends Component {
       row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
       row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
       row2: ['x20x','x21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x'],
-      row3: ['x30x','x31x','x32x','y33x','x34x','x35x','x36x','x37x','x38x','x39x'],
-      row4: ['x40x','x41x','x42x','x43x','y44x','x45x','x46x','x47x','x48x','z49x'],
+      row3: ['x30x','x31x','x32x','x33x','x34x','x35x','x36x','x37x','x38x','x39x'],
+      row4: ['x40x','x41x','x42x','x43x','x44x','x45x','x46x','x47x','x48x','z49x'],
       row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58x','x59x'],
       row6: ['x60x','y61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
     };
@@ -726,32 +726,32 @@ class App extends Component {
       //   type: 'item',
       //   effect: '',
       // },
-      // {
-      //   name: 'ammo5',
-      //   type: 'item',
-      //   effect: '',
-      // },
+      {
+        name: 'ammo5',
+        type: 'item',
+        effect: '',
+      },
       // {
       //   name: 'ammo10',
       //   type: 'item',
       //   effect: '',
       // },
-      // {
-      //   name: 'hpUp',
-      //   type: 'item',
-      //   effect: '',
-      // },
+      {
+        name: 'hpUp',
+        type: 'item',
+        effect: '',
+      },
       // {
       //   name: 'hpDown',
       //   type: 'item',
       //   effect: '',
       // },
-      // {
-      //   name: 'spear1',
-      //   type: 'weapon',
-      //   subType: 'spear',
-      //   effect: '',
-      // },
+      {
+        name: 'spear1',
+        type: 'weapon',
+        subType: 'spear',
+        effect: '',
+      },
       // {
       //   name: 'sword2',
       //   type: 'weapon',
@@ -795,6 +795,19 @@ class App extends Component {
       //   effect: '',
       // },
     ];
+    this.customItemPlacement = {
+      state: false,
+      cells: [
+        {x:0 ,y:0 },
+        {x:1 ,y:0 },
+        {x:2 ,y:0 },
+        {x:3 ,y:0 },
+        {x:0 ,y:3 },
+        {x:1 ,y:3 },
+        {x:2 ,y:3 },
+        {x:3 ,y:3 },
+      ]
+    }
     this.currentPlayer = 1;
     this.players = [
       {
@@ -1002,7 +1015,7 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 8,
+              x: 2,
               y: 1,
             },
             center: {
@@ -2093,6 +2106,9 @@ class App extends Component {
     if(this.stepper.deltaTime > this.stepper.interval) {
       // console.log('update loop step...dt',this.stepper.deltaTime,'interval',this.stepper.interval);
       this.time++
+      // if (this.time === 1000) {
+      //   this.openVoid = true;
+      // }
 
       // this.aiAct();
       if (this.gamepad === true) {
@@ -3245,6 +3261,10 @@ class App extends Component {
                       count: 1,
                       limit: this.players[bolt.owner-1].statusDisplay.limit,
                     }
+                  }
+
+                  if (this.players.[plyr.number-1].hp === 1) {
+                    this.players.[plyr.number-1].speed.move = .05;
                   }
 
                   if (this.players.[plyr.number-1].hp <= 0) {
@@ -4420,10 +4440,10 @@ class App extends Component {
                   plyr.direction === 'south'
                 ) {
                   // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
-                  context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 } else {
                   // context.drawImage(updatedPlayerImg, point.x-20, point.y-30, 55,55);
-                  context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
               }
             }
@@ -4436,10 +4456,10 @@ class App extends Component {
                   plyr.direction === 'south'
                 ) {
                   // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
-                  context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 } else {
                   // context.drawImage(updatedPlayerImg, point.x-20, point.y-30, 55,55);
-                  context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
                 // playerDrawLog(x,y,plyr)
               }
@@ -4455,10 +4475,10 @@ class App extends Component {
                     plyr.direction === 'south'
                   ) {
                     // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
-                    context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                    context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                   } else {
                     // context.drawImage(updatedPlayerImg, point.x-20, point.y-30, 55,55);
-                    context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                    context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                   }
                   // playerDrawLog(x,y,plyr)
                 }
@@ -4471,10 +4491,10 @@ class App extends Component {
                     plyr.direction === 'south'
                   ) {
                     // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
-                    context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                    context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                   } else {
                     // context.drawImage(updatedPlayerImg, point.x-20, point.y-30, 55,55);
-                    context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                    context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                   }
                   // playerDrawLog(x,y)
                 }
@@ -4490,10 +4510,10 @@ class App extends Component {
                   plyr.direction === 'south'
                 ) {
                   // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
-                  context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 } else {
                   // context.drawImage(updatedPlayerImg, point.x-20, point.y-30, 55,55);
-                  context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
                 // playerDrawLog(x,y,plyr)
               }
@@ -4501,7 +4521,7 @@ class App extends Component {
 
             if (plyr.pushBack.state === true) {
 
-              context2.drawImage(indicatorImgs.pushback, point.x-20, point.y-20, 35,35);
+              context.drawImage(indicatorImgs.pushback, point.x-20, point.y-20, 35,35);
             }
 
           }
@@ -4515,29 +4535,29 @@ class App extends Component {
                 plyr.direction === 'south'
               ) {
                 // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
-                context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
               } else {
                 // context.drawImage(updatedPlayerImg, point.x-20, point.y-30, 55,55);
-                context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
               }
 
               if (plyr.attacking.state === true) {
 
                 if (plyr.attacking.count > 0 && plyr.attacking.count < 3) {
-                  context2.drawImage(indicatorImgs.preAttack, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.preAttack, point.x-25, point.y-25, 25,25);
                 }
 
                 if (plyr.attacking.count > 8 && plyr.attacking.count < plyr.attacking.limit+1) {
                 // if (plyr.attacking.count > plyr.attacking.limit-4 && plyr.attacking.count < plyr.attacking.limit+1) {
-                  context2.drawImage(indicatorImgs.attack, point.x-20, point.y-20, 25,25);
+                  context.drawImage(indicatorImgs.attack, point.x-20, point.y-20, 25,25);
                 }
 
               }
               if (plyr.defending.state === true) {
-                context2.drawImage(indicatorImgs.defend, point.x-20, point.y-20, 25,25);
+                context.drawImage(indicatorImgs.defend, point.x-20, point.y-20, 25,25);
               }
               if (plyr.success.attackSuccess === true) {
-                context2.drawImage(indicatorImgs.attackSuccess, point.x-20, point.y-20, 25,25);
+                context.drawImage(indicatorImgs.attackSuccess, point.x-20, point.y-20, 25,25);
               }
 
               // playerDrawLog(x,y,plyr)
@@ -4553,9 +4573,9 @@ class App extends Component {
                   plyr.direction === 'north' ||
                   plyr.direction === 'south'
                 ) {
-                  context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 } else {
-                  context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
               }
             }
@@ -4567,9 +4587,9 @@ class App extends Component {
                   plyr.direction === 'north' ||
                   plyr.direction === 'south'
                 ) {
-                  context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 } else {
-                  context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
               }
             }
@@ -4581,9 +4601,9 @@ class App extends Component {
                   plyr.direction === 'north' ||
                   plyr.direction === 'south'
                 ) {
-                  context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 } else {
-                  context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
               }
             }
@@ -4595,9 +4615,9 @@ class App extends Component {
                   plyr.direction === 'north' ||
                   plyr.direction === 'south'
                 ) {
-                  context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 } else {
-                  context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
               }
             }
@@ -4609,9 +4629,9 @@ class App extends Component {
                   plyr.direction === 'north' ||
                   plyr.direction === 'south'
                 ) {
-                  context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 } else {
-                  context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
               }
             }
@@ -4623,9 +4643,9 @@ class App extends Component {
                   plyr.direction === 'north' ||
                   plyr.direction === 'south'
                 ) {
-                  context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 } else {
-                  context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
               }
             }
@@ -4640,9 +4660,9 @@ class App extends Component {
                   plyr.direction === 'north' ||
                   plyr.direction === 'south'
                 ) {
-                  context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 } else {
-                  context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
                 // playerDrawLog(x,y,plyr)
               }
@@ -4655,9 +4675,9 @@ class App extends Component {
                   plyr.direction === 'north' ||
                   plyr.direction === 'south'
                 ) {
-                  context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 } else {
-                  context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
                 // playerDrawLog(x,y)
               }
@@ -4670,9 +4690,9 @@ class App extends Component {
                   plyr.direction === 'north' ||
                   plyr.direction === 'south'
                 ) {
-                  context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 } else {
-                  context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
                 // playerDrawLog(x,y)
               }
@@ -4685,9 +4705,9 @@ class App extends Component {
                   plyr.direction === 'north' ||
                   plyr.direction === 'south'
                 ) {
-                  context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 } else {
-                  context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
                 }
                 // playerDrawLog(x,y)
               }
@@ -4701,9 +4721,9 @@ class App extends Component {
                 plyr.direction === 'north' ||
                 plyr.direction === 'south'
               ) {
-                context2.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
               } else {
-                context2.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
               }
               // playerDrawLog(x,y,plyr)
             }
@@ -4852,7 +4872,7 @@ class App extends Component {
                 plyr.respawn = false;
                 this.players[plyr.number-1] = plyr;
 
-                context2.drawImage(updatedPlayerImg, respawnPoint.center.x-25, respawnPoint.center.y-50, 50,50);
+                context.drawImage(updatedPlayerImg, respawnPoint.center.x-25, respawnPoint.center.y-50, 50,50);
               }
 
             }
@@ -4863,12 +4883,12 @@ class App extends Component {
                 x === plyr.moving.origin.number.x &&
                 y === plyr.moving.origin.number.y+1
               ) {
-                context2.drawImage(updatedPlayerImg, point.x-35, point.y-20, 55,55);
+                context.drawImage(updatedPlayerImg, point.x-35, point.y-20, 55,55);
                 if (plyr.success.deflected.type === 'attack') {
-                  context2.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
                 }
                 else if (plyr.success.deflected.type === 'attacked') {
-                  context2.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
                 }
               }
             }
@@ -4877,12 +4897,12 @@ class App extends Component {
                 x === plyr.currentPosition.cell.number.x+1 &&
                 y === plyr.currentPosition.cell.number.y
               ) {
-                context2.drawImage(updatedPlayerImg, point.x-30, point.y-20, 40,40);
+                context.drawImage(updatedPlayerImg, point.x-30, point.y-20, 40,40);
                 if (plyr.success.deflected.type === 'attack') {
-                  context2.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
                 }
                 else if (plyr.success.deflected.type === 'attacked') {
-                  context2.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
                 }
               }
             }
@@ -4891,12 +4911,12 @@ class App extends Component {
                 x === plyr.currentPosition.cell.number.x+1 &&
                 y === plyr.currentPosition.cell.number.y+1
               ) {
-                context2.drawImage(updatedPlayerImg, point.x-20, point.y-10, 40,40);
+                context.drawImage(updatedPlayerImg, point.x-20, point.y-10, 40,40);
                 if (plyr.success.deflected.type === 'attack') {
-                  context2.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
                 }
                 else if (plyr.success.deflected.type === 'attacked') {
-                  context2.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
                 }
               }
             }
@@ -4905,12 +4925,12 @@ class App extends Component {
                 x === plyr.currentPosition.cell.number.x &&
                 y === plyr.currentPosition.cell.number.y
               ) {
-                context2.drawImage(updatedPlayerImg, point.x-35, point.y-30, 55,55);
+                context.drawImage(updatedPlayerImg, point.x-35, point.y-30, 55,55);
                 if (plyr.success.deflected.type === 'attack') {
-                  context2.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
                 }
                 else if (plyr.success.deflected.type === 'attacked') {
-                  context2.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
                 }
               }
             }
@@ -4919,12 +4939,12 @@ class App extends Component {
                 x === plyr.currentPosition.cell.number.x+1 &&
                 y === plyr.currentPosition.cell.number.y
               ) {
-                context2.drawImage(updatedPlayerImg, point.x-15, point.y-20, 55,55);
+                context.drawImage(updatedPlayerImg, point.x-15, point.y-20, 55,55);
                 if (plyr.success.deflected.type === 'attack') {
-                  context2.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
                 }
                 else if (plyr.success.deflected.type === 'attacked') {
-                  context2.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
                 }
               }
             }
@@ -4933,12 +4953,12 @@ class App extends Component {
                 x === plyr.currentPosition.cell.number.x+1 &&
                 y === plyr.currentPosition.cell.number.y
               ) {
-                context2.drawImage(updatedPlayerImg, point.x-15, point.y-30, 55,55);
+                context.drawImage(updatedPlayerImg, point.x-15, point.y-30, 55,55);
                 if (plyr.success.deflected.type === 'attack') {
-                  context2.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
                 }
                 else if (plyr.success.deflected.type === 'attacked') {
-                  context2.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
                 }
               }
             }
@@ -4947,12 +4967,12 @@ class App extends Component {
                 x === plyr.currentPosition.cell.number.x &&
                 y === plyr.currentPosition.cell.number.y
               ) {
-                context2.drawImage(updatedPlayerImg, point.x-20, point.y-30, 40,40);
+                context.drawImage(updatedPlayerImg, point.x-20, point.y-30, 40,40);
                 if (plyr.success.deflected.type === 'attack') {
-                  context2.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
                 }
                 else if (plyr.success.deflected.type === 'attacked') {
-                  context2.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
                 }
               }
             }
@@ -4961,12 +4981,12 @@ class App extends Component {
                 x === plyr.currentPosition.cell.number.x+1 &&
                 y === plyr.currentPosition.cell.number.y
               ) {
-                context2.drawImage(updatedPlayerImg, point.x-10, point.y-20, 40,40);
+                context.drawImage(updatedPlayerImg, point.x-10, point.y-20, 40,40);
                 if (plyr.success.deflected.type === 'attack') {
-                  context2.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
                 }
                 else if (plyr.success.deflected.type === 'attacked') {
-                  context2.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
                 }
               }
             }
@@ -4977,7 +4997,7 @@ class App extends Component {
               x === plyr.ghost.position.cell.number.x &&
               y === plyr.ghost.position.cell.number.y
             ) {
-              context2.drawImage(indicatorImgs.death, plyr.ghost.position.cell.center.x-15, plyr.ghost.position.cell.center.y-15, 25,25);
+              context.drawImage(indicatorImgs.death, plyr.ghost.position.cell.center.x-15, plyr.ghost.position.cell.center.y-15, 25,25);
             }
           }
           if (plyr.ghost.state === true && player.dead.count === 0) {
@@ -6355,6 +6375,14 @@ class App extends Component {
       effect: '',
     };
     this.players[player.number-1].currentArmor = {};
+    this.players[player.number-1].strafing = {
+      state: false,
+      direction: '',
+    };
+    this.players[player.number-1].pushBack = {
+      state: false,
+      prePushBackMoveSpeed: 0,
+    };
 
 
   }
@@ -6451,6 +6479,7 @@ class App extends Component {
       loading: true
     })
 
+    this.time = 0;
     this.projectiles = [];
     for (const player of this.players) {
       player.ghost.state = false;
@@ -6483,6 +6512,14 @@ class App extends Component {
         doubleHit: 6,
         pushBack: 3,
       }
+      player.strafing = {
+        state: false,
+        direction: '',
+      };
+      player.pushBack = {
+        state: false,
+        prePushBackMoveSpeed: 0,
+      };
       // player.currentArmor = {};
 
     }
@@ -6532,39 +6569,57 @@ class App extends Component {
     if (args.init === true) {
       console.log('placing items init');
 
-
-      for ( const item of this.initItemList) {
-
-        // if (item.amount > item.total-1) {
-          // console.log('enough items for distribution');
-          let cell = {
-            x: 0,
-            y: 0
+      if (this.customItemPlacement.state === true) {
+        if (this.initItemList.length > this.customItemPlacement.cells.length) {
+          console.log('not enough cells assigned for custom placement please add more');
+        } else  {
+          for ( const item2 of this.initItemList) {
+            let index = this.initItemList.indexOf(item2)
+            let cell3 = this.customItemPlacement.cells[index];
+            let cell4 = this.gridInfo.find(elem => elem.number.x === cell3.x && elem.number.y === cell3.y);
+            cell4.item.name = item2.name;
+            cell4.item.type = item2.type;
+            cell4.item.subType = item2.subType;
+            cell4.item.effect = item2.effect;
           }
-          let checkCell = false;
-          while (checkCell === false) {
+          // this.customItemPlacement.state = false;
+        }
+      }
 
-            cell.x = this.rnJesus(0,this.gridWidth)
-            cell.y = this.rnJesus(0,this.gridWidth)
-            checkCell = this.checkCell(cell);
-            // console.log(checkCell);
-          }
-          if (checkCell === true) {
-            // console.log('cell free');
-            let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y);
-            cell2.item.name = item.name;
-            cell2.item.type = item.type;
-            cell2.item.subType = item.subType;
-            cell2.item.effect = item.effect;
+      else {
+        for ( const item of this.initItemList) {
 
-            // item.amount--
-            console.log('post item', item, cell2.item,cell2.number);
+          // if (item.amount > item.total-1) {
+            // console.log('enough items for distribution');
+            let cell = {
+              x: 0,
+              y: 0
+            }
+            let checkCell = false;
+            while (checkCell === false) {
 
-          }
-        // }
-        // else {
-        //   console.log('item stock empty');
-        // }
+              cell.x = this.rnJesus(0,this.gridWidth)
+              cell.y = this.rnJesus(0,this.gridWidth)
+              checkCell = this.checkCell(cell);
+              // console.log(checkCell);
+            }
+            if (checkCell === true) {
+              // console.log('cell free');
+              let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y);
+              cell2.item.name = item.name;
+              cell2.item.type = item.type;
+              cell2.item.subType = item.subType;
+              cell2.item.effect = item.effect;
+
+              // item.amount--
+              console.log('post item', item, cell2.item,cell2.number);
+
+            }
+          // }
+          // else {
+          //   console.log('item stock empty');
+          // }
+        }
       }
 
     } else if (args.init !== true) {

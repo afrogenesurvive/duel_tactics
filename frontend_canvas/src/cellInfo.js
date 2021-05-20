@@ -31,28 +31,28 @@ const CellInfo = props => {
           Cell Info:
         </strong>
       </p>
-      <ul class="cellInfoList">
-        <li class="cellInfoListItem">
+      <ul className="cellInfoList">
+        <li className="cellInfoListItem">
           <p className="cellInfoText">
             No: {props.cell.number.x}, {props.cell.number.y}
           </p>
         </li>
-        <li class="cellInfoListItem">
+        <li className="cellInfoListItem">
           <p className="cellInfoText">
             Item: {props.cell.item.name}, {props.cell.item.effect}
           </p>
         </li>
-        <li class="cellInfoListItem">
+        <li className="cellInfoListItem">
           <p className="cellInfoText">
             Item type: {props.cell.item.type}, {props.cell.item.subType}
           </p>
         </li>
-        <li class="cellInfoListItem">
+        <li className="cellInfoListItem">
           <p className="cellInfoText">
             Level Data: {lvlData}
           </p>
         </li>
-        <li class="cellInfoListItem">
+        <li className="cellInfoListItem">
           <p className="cellInfoText">
             Void: {props.cell.void.state.toString()}
           </p>
