@@ -3964,6 +3964,16 @@ class App extends Component {
           },
         },
         defending: {
+          unarmed: {
+            north: this.refs.player2ImgIdleNorth,
+            northWest: this.refs.player2ImgIdleNorthWest,
+            northEast: this.refs.player2ImgIdleNorthEast,
+            south: this.refs.player2ImgIdleSouth,
+            southWest: this.refs.player2ImgIdleSouthWest,
+            southEast: this.refs.player2ImgIdleSouthEast,
+            east: this.refs.player2ImgIdleEast,
+            west: this.refs.player2ImgIdleWest,
+          },
           sword: {
             north: this.refs.player2ImgIdleSwordNorth,
             northWest: this.refs.player2ImgIdleSwordNorthWest,
@@ -4502,6 +4512,7 @@ class App extends Component {
                   newDirection = 'west';
                 break;
                 case 'south' :
+                // console.log('ff',weapon);
                   updatedPlayerImg = playerImgs[plyr.number-1].defending[weapon].south;
                   newDirection = 'south';
                 break;
@@ -7045,8 +7056,8 @@ class App extends Component {
     // let dropWhat = 2
     let dropWhat = this.rnJesus(1,2);
     let shouldDrop = false;
-    let dropChance = this.rnJesus(1,1);
-    // let dropChance = this.rnJesus(1,1*player.crits.pushBack);
+    // let dropChance = this.rnJesus(1,1);
+    let dropChance = this.rnJesus(1,1*player.crits.pushBack);
     if (
       dropChance === 1 &&
       player.falling.state !== true
@@ -7097,7 +7108,6 @@ class App extends Component {
       else {
 
         if (player.items.armor.length > 0) {
-          console.log('cc',player.items.armor.length,player.items.armor);
           let index = player.items.armor.findIndex(armor => armor.name === player.currentArmor.name);
           console.log("dropping armor player ",player.number,this.players[player.number-1].items.armor[index].name);
           item.name = this.players[player.number-1].items.armor[index].name;
