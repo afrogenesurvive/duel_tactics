@@ -275,6 +275,11 @@ class App extends Component {
           gear: {
             type: '',
           }
+        },
+        idleAnim: {
+          state: false,
+          count: 0,
+          limit: 5,
         }
       },
       {
@@ -497,6 +502,11 @@ class App extends Component {
           gear: {
             type: '',
           }
+        },
+        idleAnim: {
+          state: false,
+          count: 0,
+          limit: 5,
         }
       }
     ],
@@ -1074,7 +1084,12 @@ class App extends Component {
           gear: {
             type: '',
           }
-        }
+        },
+        idleAnim: {
+          state: false,
+          count: 0,
+          limit: 5,
+        },
       },
       {
         number: 2,
@@ -1135,7 +1150,7 @@ class App extends Component {
           void: false,
 
         },
-        direction: 'north',
+        direction: 'west',
         turning: {
           state: undefined,
           toDirection: '',
@@ -1298,7 +1313,12 @@ class App extends Component {
           gear: {
             type: '',
           }
-        }
+        },
+        idleAnim: {
+          state: false,
+          count: 0,
+          limit: 5,
+        },
       }
     ];
     this.stepper = {
@@ -1320,6 +1340,12 @@ class App extends Component {
       deltaTime: 0,
 
     };
+    this.moveStepRef = [
+      [.05,.1,.15,.2,.25,.3,.35,.4,.45,.5,.55,.6,.65,.7,.75,.8,.85,.9,.95,1],
+      [.1,.2,.3,.4,.5,.6,.7,.8,.9,1],
+      [.125,.25,.375,.5,.625,.75,.875,1],
+      [.2,.4,.6,.8,1],
+    ]
     this.keyPressed = [
       {
         north: false,
@@ -2194,8 +2220,9 @@ class App extends Component {
     if(this.stepper.deltaTime > this.stepper.interval) {
       // console.log('update loop step...dt',this.stepper.deltaTime,'interval',this.stepper.interval);
       this.time++
-      // if (this.time === 1000) {
-      //   this.openVoid = true;
+      // if (this.time === 300) {
+      //   // this.openVoid = true;
+      //   // this.customCellToVoid({x:0,y:9})
       // }
 
       // this.aiAct();
@@ -2327,8 +2354,10 @@ class App extends Component {
 
     // CHECK AND SET DEFLECTION!!
     if (player.success.deflected.state === true && player.success.deflected.count < player.success.deflected.limit) {
+      player.action = 'deflected';
       player.success.deflected.count++
     } else if (player.success.deflected.state === true && player.success.deflected.count >= player.success.deflected.limit) {
+      player.action = 'idle';
       player.success.deflected = {
         state: false,
         count: 0,
@@ -2443,6 +2472,25 @@ class App extends Component {
             this.cellsUnderAttack.splice(index,1)
           }
 
+        }
+
+
+        // IDLE ANIM STEPPER!
+        if (player.action === 'idle') {
+          // player.idleAnim.state = true
+          if (player.idleAnim.count < player.idleAnim.limit+1) {
+            // console.log('player.idleAnim.count',player.idleAnim.count);
+            player.idleAnim.count++
+
+          }
+          if (player.idleAnim.count >= player.idleAnim.limit+1) {
+            player.idleAnim.count = 0;
+            player.idleAnim.state = false;
+          }
+        }
+        else if (player.action !== 'idle') {
+          // player.idleAnim.state = false;
+          player.idleAnim.count = 0;
         }
 
 
@@ -2565,7 +2613,8 @@ class App extends Component {
         // ATTACK/DEFEND/DEFLECT CHECK!!
         if (player.attacking.state === true) {
           if (player.attacking.count < player.attacking.limit) {
-            // console.log('attack wind up');
+            // console.log('attack wind up',player.attacking.count,'player',player.number);
+            player.action = 'attacking';
             player.attacking.count++;
           }
           if (player.attacking.count === 8) {
@@ -2749,6 +2798,7 @@ class App extends Component {
 
                   }
                   else {
+                    this.players[player.target.occupant.player-1].action = 'deflected';
                     this.players[player.target.occupant.player-1].success.deflected = {
                       state: true,
                       count: 1,
@@ -2871,10 +2921,11 @@ class App extends Component {
         // DEFENSE DELAY!!
         if (player.defending.count > 0 && player.defending.count < player.defending.limit+1) {
           player.defending.count++;
-          // console.log('defend winding up',player.defending.count++, 'player',player.number);
-        } else if (player.defending.count >= player.defending.limit && player.defending.state === false) {
-          // console.log('defend wind up limit cap','player',player.number);
           player.action = 'defending';
+          // console.log('defend winding up',player.defending.count++, 'player',player.number);
+        } else if (player.defending.count >= player.defending.limit+1 && player.defending.state === false) {
+          // console.log('defend wind up limit cap','player',player.number);
+
           player.defending = {
             state: true,
             count: 0,
@@ -3402,6 +3453,7 @@ class App extends Component {
 
                   }
                   else {
+                    this.players.[plyr.number-1].action = 'deflected';
                     this.players.[plyr.number-1].success.deflected = {
                       state: true,
                       count: 1,
@@ -3412,7 +3464,6 @@ class App extends Component {
                   }
 
                   this.players[bolt.owner-1].points++;
-
                 }
                 // ATTACK DEFENDED!!
                 else {
@@ -3483,11 +3534,6 @@ class App extends Component {
 
   drawPlayerStep = (playerNumber, canvas, context, canvas2, context2) => {
     // console.log('drawing player step',playerNumber);
-
-    // let canvas = this.state.canvas;
-    // let context = this.state.context;
-    // let canvas2 = this.state.canvas2;
-    // let context2 = this.state.context2;
 
     let gridInfo = [];
     class Point {
@@ -3656,6 +3702,16 @@ class App extends Component {
           },
         },
         attacking: {
+          unarmed: {
+            north: this.refs.playerImgIdleNorth,
+            northWest: this.refs.playerImgIdleNorthWest,
+            northEast: this.refs.playerImgIdleNorthEast,
+            south: this.refs.playerImgIdleSouth,
+            southWest: this.refs.playerImgIdleSouthWest,
+            southEast: this.refs.playerImgIdleSouthEast,
+            east: this.refs.playerImgIdleEast,
+            west: this.refs.playerImgIdleWest,
+          },
           sword: {
             north: this.refs.playerImgIdleSwordNorth,
             northWest: this.refs.playerImgIdleSwordNorthWest,
@@ -4081,6 +4137,97 @@ class App extends Component {
         },
       },
     ]
+
+    // SPRITE SHEET ARRAY!!
+    // let playerImgs = [
+    //   {
+    //     idle: {
+    //       unarmed: this.refs.playerImgIdleSwordNorth,
+    //       sword: this.refs.playerImgIdleSwordNorth,
+    //       spear: this.refs.playerImgIdleSwordNorth,
+    //       crossbow: this.refs.playerImgIdleSwordNorth,
+    //     },
+    //     walking: {
+    //       unarmed: this.refs.playerImgIdleSwordNorth,
+    //       sword: this.refs.playerImgIdleSwordNorth,
+    //       spear: this.refs.playerImgIdleSwordNorth,
+    //       crossbow: this.refs.playerImgIdleSwordNorth,
+    //     },
+    //     strafing: {
+    //       unarmed: this.refs.playerImgIdleSwordNorth,
+    //       sword: this.refs.playerImgIdleSwordNorth,
+    //       spear: this.refs.playerImgIdleSwordNorth,
+    //       crossbow: this.refs.playerImgIdleSwordNorth,
+    //     },
+    //     attacking: {
+    //       unarmed: this.refs.playerImgIdleSwordNorth,
+    //       sword: this.refs.playerImgIdleSwordNorth,
+    //       spear: this.refs.playerImgIdleSwordNorth,
+    //       crossbow: this.refs.playerImgIdleSwordNorth,
+    //     },
+    //     defending: {
+    //       unarmed: this.refs.playerImgIdleSwordNorth,
+    //       sword: this.refs.playerImgIdleSwordNorth,
+    //       spear: this.refs.playerImgIdleSwordNorth,
+    //       crossbow: this.refs.playerImgIdleSwordNorth,
+    //     },
+    //     deflected: {
+    //       sword: this.refs.playerImgIdleSwordNorth,
+    //       spear: this.refs.playerImgIdleSwordNorth,
+    //       crossbow: this.refs.playerImgIdleSwordNorth,
+    //     },
+    //     falling: {
+    //       unarmed: this.refs.playerImgIdleSwordNorth,
+    //       sword: this.refs.playerImgIdleSwordNorth,
+    //       spear: this.refs.playerImgIdleSwordNorth,
+    //       crossbow: this.refs.playerImgIdleSwordNorth,
+    //     },
+    //   },
+    //   {
+    //     idle: {
+    //       unarmed: this.refs.player2ImgIdleSwordNorth,
+    //       sword: this.refs.player2ImgIdleSwordNorth,
+    //       spear: this.refs.player2ImgIdleSwordNorth,
+    //       crossbow: this.refs.player2ImgIdleSwordNorth,
+    //     },
+    //     walking: {
+    //       unarmed: this.refs.player2ImgIdleSwordNorth,
+    //       sword: this.refs.player2ImgIdleSwordNorth,
+    //       spear: this.refs.player2ImgIdleSwordNorth,
+    //       crossbow: this.refs.player2ImgIdleSwordNorth,
+    //     },
+    //     strafing: {
+    //       unarmed: this.refs.player2ImgIdleSwordNorth,
+    //       sword: this.refs.player2ImgIdleSwordNorth,
+    //       spear: this.refs.player2ImgIdleSwordNorth,
+    //       crossbow: this.refs.player2ImgIdleSwordNorth,
+    //     },
+    //     attacking: {
+    //       unarmed: this.refs.player2ImgIdleSwordNorth,
+    //       sword: this.refs.player2ImgIdleSwordNorth,
+    //       spear: this.refs.player2ImgIdleSwordNorth,
+    //       crossbow: this.refs.player2ImgIdleSwordNorth,
+    //     },
+    //     defending: {
+    //       unarmed: this.refs.player2ImgIdleSwordNorth,
+    //       sword: this.refs.player2ImgIdleSwordNorth,
+    //       spear: this.refs.player2ImgIdleSwordNorth,
+    //       crossbow: this.refs.player2ImgIdleSwordNorth,
+    //     },
+    //     deflected: {
+    //       sword: this.refs.player2ImgIdleSwordNorth,
+    //       spear: this.refs.player2ImgIdleSwordNorth,
+    //       crossbow: this.refs.player2ImgIdleSwordNorth,
+    //     },
+    //     falling: {
+    //       unarmed: this.refs.player2ImgIdleSwordNorth,
+    //       sword: this.refs.player2ImgIdleSwordNorth,
+    //       spear: this.refs.player2ImgIdleSwordNorth,
+    //       crossbow: this.refs.player2ImgIdleSwordNorth,
+    //     },
+    //   },
+    // ]
+
     let itemImgs = {
       moveSpeedUp: this.refs.preAttackIndicate,
       moveSpeedDown: this.refs.preAttackIndicate,
@@ -4307,8 +4454,79 @@ class App extends Component {
           if (plyr.currentWeapon.type === '' || !plyr.currentWeapon.type) {
             weapon = 'unarmed'
           }
-          switch(plyr.action) {
 
+
+          if (
+            plyr.currentPosition.cell.number.x === x &&
+            plyr.currentPosition.cell.number.y === y
+          ) {
+            switch(plyr.action) {
+              case 'moving':
+                // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step);
+                let rangeIndex = plyr.speed.range.indexOf(plyr.speed.move)
+                let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
+              break;
+              case 'attacking':
+                // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
+                let animIndex = plyr.attacking.count -1;
+              break;
+              case 'defending':
+                if (plyr.defending.count > 0) {
+                  // console.log('anim testing def',plyr.defending.count,'plyr',plyr.number);
+                  let animIndex2 = plyr.defending.count -1;
+                }
+              break;
+              case 'idle':
+                // console.log('anim testing def',plyr.idleAnim.count,'plyr',plyr.number);
+                let animIndex3 = plyr.idleAnim.count -1;
+              break;
+              case 'falling':
+                // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
+                let animIndex4 = plyr.falling.count -1;
+              break;
+              case 'deflected':
+              // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
+              let animIndex5 = plyr.falling.count -1;
+              break;
+            }
+          }
+          let finalAnimIndex;
+
+          // SELECT IMG BASED ON ACTION+WEAPON & SET SHEEP CLIPPING PARAMS FOR Draw image method
+          // apply the following once sprite sheet complete
+          // let sx & sy = where to clip
+          // swidth & sheight = clip dimensions
+          // context.drawImage(img, sx, sy, swidth, sheight, x, y, width, height)
+
+          // SPRITE SHEET SWITCH!
+          // switch(plyr.action) {
+          //   case 'idle':
+          //     updatedPlayerImg = playerImgs[plyr.number-1].idle[weapon];
+          //   break;
+          //   case 'moving':
+          //     updatedPlayerImg = playerImgs[plyr.number-1].walking[weapon];
+          //   break;
+          //   case 'strafe moving':
+          //     updatedPlayerImg = playerImgs[plyr.number-1].strafing[weapon];
+          //   break;
+          //   case 'falling':
+          //     updatedPlayerImg = playerImgs[plyr.number-1].falling[weapon];
+          //   break;
+          //   case 'attacking':
+          //     updatedPlayerImg = playerImgs[plyr.number-1].attacking[weapon];
+          //   break;
+          //   case 'defending':
+          //     updatedPlayerImg = playerImgs[plyr.number-1].defending[weapon];
+          //   break;
+          //   case 'deflected' :
+          //     updatedPlayerImg = playerImgs[plyr.number-1].deflected[weapon];
+          //   break;
+          //   case 'dead':
+          //     updatedPlayerImg = playerImgs[plyr.number-1].idle[weapon];
+          //   break;
+          // }
+
+          switch(plyr.action) {
             case 'idle':
               switch(plyr.direction) {
                 case 'north' :
@@ -4566,7 +4784,6 @@ class App extends Component {
               updatedPlayerImg = playerImgs[plyr.number-1].idle[weapon].north;
             break;
           }
-
 
           if (plyr.target.void === false && plyr.moving.state === true) {
             if (plyr.direction === 'north' || plyr.direction === 'northWest' || plyr.direction === 'west') {
@@ -5344,7 +5561,6 @@ class App extends Component {
             }
           }
 
-
           this.players[plyr.number-1] = plyr;
 
         }
@@ -6079,7 +6295,8 @@ class App extends Component {
     let target = player.target;
     let moveSpeed = player.speed.move;
 
-    player.moving.step = player.moving.step + moveSpeed;
+    player.moving.step = +(Math.round((player.moving.step + moveSpeed) + "e+" + 3)  + "e-" + 3);
+    // player.moving.step = player.moving.step + moveSpeed;
     // console.log('mover stepper',player.moving.step);
     let newPosition;
 
@@ -6440,6 +6657,9 @@ class App extends Component {
               }
               pickUp = true;
             }
+            else {
+              console.log('player '+player.number+' you already have max movement speed');
+            }
           break;
           case 'moveSpeedDown' :
             // console.log('moveSpeedDown');
@@ -6474,6 +6694,9 @@ class App extends Component {
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
                 pickUp = true;
+            }
+            else {
+              console.log('player '+player.number+' you already have max hp');
             }
           break;
           case 'hpDown' :
@@ -6714,6 +6937,7 @@ class App extends Component {
   respawn = (player) => {
     // console.log('respawning',player.number);
     this.players[player.number-1].respawn = true;
+    this.players[player.number-1].action = 'idle';
     this.players[player.number-1].hp = 2;
     this.players[player.number-1].speed.move = .1;
     this.players[player.number-1].ghost.state = false;
@@ -6849,6 +7073,7 @@ class App extends Component {
       player.ghost.state = false;
       player.speed.move = .1;
       player.hp = 2;
+      player.action = 'idle';
       player.crits = {
         singleHit: 1,
         doubleHit: 6,
