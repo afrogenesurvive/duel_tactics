@@ -1684,44 +1684,42 @@ class App extends Component {
         if (gp.axes[0]!== 0 && gp.axes[1] !== 0) {
 
           if (gp.axes[0] < 0 && gp.axes[1] < 0) {
-            // console.log('1',gp.axes[0],gp.axes[1]);
-            // this.keyPressed[0].west = true;
-            keyPressed[0].west = true;
-            this.turnCheckerDirection = 'west';
-            this.currentPlayer = 1;
+            console.log('1',gp.axes[0],gp.axes[1]);
+
+            // keyPressed[0].west = true;
+            // this.turnCheckerDirection = 'west';
+            // this.currentPlayer = 1;
 
 
           }
           if (gp.axes[0] > 0 && gp.axes[1] > 0) {
-            // console.log('2',gp.axes[0],gp.axes[1]);
-            // this.keyPressed[0].east = true;
-            keyPressed[0].east = true;
-            this.turnCheckerDirection = 'east';
-            this.currentPlayer = 1;
+            console.log('2',gp.axes[0],gp.axes[1]);
+
+            // keyPressed[0].east = true; 
+            // this.turnCheckerDirection = 'east';
+            // this.currentPlayer = 1;
 
 
           }
           if (gp.axes[0] < 0 && gp.axes[1] > 0) {
-            // console.log('3',gp.axes[0],gp.axes[1]);
-            // this.keyPressed[0].south = true;
-            keyPressed[0].south = true;
-            this.turnCheckerDirection = 'south';
-            this.currentPlayer = 1;
+            console.log('3',gp.axes[0],gp.axes[1]);
+
+            // keyPressed[0].south = true;
+            // this.turnCheckerDirection = 'south';
+            // this.currentPlayer = 1;
 
 
           }
           if (gp.axes[0] > 0 && gp.axes[1] < 0) {
-            // console.log('4',gp.axes[0],gp.axes[1]);
-            // this.keyPressed[0].north = true;
-            keyPressed[0].north = true;
-            this.turnCheckerDirection = 'north';
-            this.currentPlayer = 1;
+            console.log('4',gp.axes[0],gp.axes[1]);
+
+            // keyPressed[0].north = true;
+            // this.turnCheckerDirection = 'north';
+            // this.currentPlayer = 1;
 
 
           }
-
         }
-
       }
 
       if (connectedGamepads === 2) {
@@ -2274,7 +2272,6 @@ class App extends Component {
       }
 
     }
-
 
 
     let nextPosition;
