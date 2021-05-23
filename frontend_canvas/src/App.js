@@ -5,9 +5,16 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import logo from './logo.svg';
-import floor1 from './assets/floor1.png'
-import floor2 from './assets/floor2.png'
-import floor3 from './assets/floor3.png'
+import floorDirt from './assets/floorDirt.png'
+import floorGrass from './assets/floorGrass.png'
+import floorIce from './assets/floorIce.png'
+import floorMud from './assets/floorMud.png'
+import floorPond from './assets/floorPond.png'
+import floorSand from './assets/floorSand.png'
+import floorStone from './assets/floorStone.png'
+import floorBramble from './assets/floorBramble.png'
+import floorLava from './assets/floorLava.png'
+import floorAttack from './assets/floor3.png'
 import floorVoid from './assets/floorVoid.png'
 import wall from './assets/wall.png'
 import wall2 from './assets/wall2.png'
@@ -233,6 +240,10 @@ class App extends Component {
         speed: {
           move: .1,
           range: [.05,.1,.125,.2]
+        },
+        terrainMoveSpeed: {
+          state: false,
+          speed: 0,
         },
         hp: 2,
         currentWeapon: {
@@ -461,6 +472,10 @@ class App extends Component {
           move: .1,
           range: [.05,.1,.125,.2]
         },
+        terrainMoveSpeed: {
+          state: false,
+          speed: 0,
+        },
         hp: 2,
         currentWeapon: {
           name: 'sword1',
@@ -630,13 +645,13 @@ class App extends Component {
       row12: ['x120x','x121x','x122x','x123x','x124x','x125x','x126x','x127x','x128x','x129x','x1210x','x1211x','x1212x'],
     };
     this.levelData9 = {
-      row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
-      row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
-      row2: ['x20x','x21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x'],
-      row3: ['x30x','x31x','x32x','x33x','x34x','x35x','x36x','x37x','x38x','x39x'],
-      row4: ['x40x','x41x','x42x','x43x','x44x','x45x','x46x','x47x','x48x','z49x'],
-      row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58x','x59x'],
-      row6: ['x60x','x61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
+      row0: ['x00x','x01x','x02x','x03x','x04x','x05g','x06g','x07x','x08f','x09d'],
+      row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18f','x19d'],
+      row2: ['x20x','x21x','x22x','x23a','x24x','x25x','x26x','x27x','x28d','x29d'],
+      row3: ['x30x','x31a','x32a','x33a','x34x','x35x','x36x','x37x','x38d','x39d'],
+      row4: ['x40x','x41a','x42a','x43a','x44x','x45x','x46x','x47x','x48f','x49d'],
+      row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58f','x59d'],
+      row6: ['x60x','x61x','x62x','x63i','x64i','x65x','x66x','x67x','x68x','x69x'],
       row7: ['x70x','x71x','x72x','x73x','x74x','x75x','x76x','y77x','x78x','x79x'],
       row8: ['x80x','x81x','x82x','x83x','y84x','x85x','y86x','x87x','x88x','x89x'],
       row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
@@ -835,24 +850,24 @@ class App extends Component {
         subType: 'crossbow',
         effect: 'ammo+10',
       },
-      // {
-      //   name: 'ghostMail',
-      //   type: 'armor',
-      //   subType: 'mail',
-      //   effect: 'snghit-5',
-      // },
+      {
+        name: 'ghostMail',
+        type: 'armor',
+        subType: 'mail',
+        effect: 'snghit-5',
+      },
       {
         name: 'speedGreaves',
         type: 'armor',
         subType: 'greaves',
         effect: 'speedUp',
       },
-      {
-        name: 'ironPlate',
-        type: 'armor',
-        subType: 'mail',
-        effect: 'hpUp',
-      },
+      // {
+      //   name: 'ironPlate',
+      //   type: 'armor',
+      //   subType: 'mail',
+      //   effect: 'hpUp',
+      // },
       // {
       //   name: 'helmet1',
       //   type: 'armor',
@@ -1034,6 +1049,10 @@ class App extends Component {
         speed: {
           move: .075,
           range: [.05,.1,.125,.2]
+        },
+        terrainMoveSpeed: {
+          state: false,
+          speed: 0,
         },
         hp: 2,
         currentWeapon: {
@@ -1265,6 +1284,10 @@ class App extends Component {
         speed: {
           move: .1,
           range: [.05,.1,.125,.2]
+        },
+        terrainMoveSpeed: {
+          state: false,
+          speed: 0,
         },
         hp: 2,
         currentWeapon: {
@@ -1786,6 +1809,7 @@ class App extends Component {
       // CHECK AXES!!
       if (connectedGamepads === 1) {
 
+
         if (gp.axes[0]!== 0 && gp.axes[1] !== 0) {
 
           if (gp.axes[0] < 0 && gp.axes[1] < 0) {
@@ -2101,22 +2125,35 @@ class App extends Component {
     let keyInput = event.key
 
     switch(keyInput) {
-      case 'q' :
-       this.keyPressed[0].northWest = state;
-       // direction = 'northWest';
-       this.turnCheckerDirection = 'northWest';
-       this.currentPlayer = 1;
-      break;
+      // case 'q' :
+      //  this.keyPressed[0].northWest = state;
+      //  // direction = 'northWest';
+      //  this.turnCheckerDirection = 'northWest';
+      //  this.currentPlayer = 1;
+      // break;
+      // case 'e' :
+      //  this.keyPressed[0].northEast = state;
+      //  // direction = 'northEast';
+      //  this.turnCheckerDirection = 'northEast';
+      //  this.currentPlayer = 1;
+      // break;
+      // case 'z' :
+      //  this.keyPressed[0].southWest = state;
+      //  // direction = 'southWest';
+      //  this.turnCheckerDirection = 'southWest';
+      //  this.currentPlayer = 1;
+      // break;
+      // case 'c' :
+      //  this.keyPressed[0].southEast = state;
+      //  // direction = 'southEast';
+      //  this.turnCheckerDirection = 'southEast';
+      //  this.currentPlayer = 1;
+      // break;
+
       case 'w' :
        this.keyPressed[0].north = state;
        // direction = 'north';
        this.turnCheckerDirection = 'north';
-       this.currentPlayer = 1;
-      break;
-      case 'e' :
-       this.keyPressed[0].northEast = state;
-       // direction = 'northEast';
-       this.turnCheckerDirection = 'northEast';
        this.currentPlayer = 1;
       break;
       case 'a' :
@@ -2135,18 +2172,6 @@ class App extends Component {
        this.keyPressed[0].south = state;
        // direction = 'south';
        this.turnCheckerDirection = 'south';
-       this.currentPlayer = 1;
-      break;
-      case 'z' :
-       this.keyPressed[0].southWest = state;
-       // direction = 'southWest';
-       this.turnCheckerDirection = 'southWest';
-       this.currentPlayer = 1;
-      break;
-      case 'c' :
-       this.keyPressed[0].southEast = state;
-       // direction = 'southEast';
-       this.turnCheckerDirection = 'southEast';
        this.currentPlayer = 1;
       break;
       case 'f' :
@@ -2194,24 +2219,38 @@ class App extends Component {
       // break;
 
 
-      case 'u' :
-       this.keyPressed[1].northWest = state;
-       // direction = 'northWest';
-       this.turnCheckerDirection = 'northWest';
-       this.currentPlayer = 2;
-      break;
+      // case 'u' :
+      //  this.keyPressed[1].northWest = state;
+      //  // direction = 'northWest';
+      //  this.turnCheckerDirection = 'northWest';
+      //  this.currentPlayer = 2;
+      // break;
+      // case 'o' :
+      //  this.keyPressed[1].northEast = state;
+      //  // direction = 'northEast';
+      //  this.turnCheckerDirection = 'northEast';
+      //  this.currentPlayer = 2;
+      // break;
+      // case 'm' :
+      //  this.keyPressed[1].southWest = state;
+      //  // direction = 'southWest';
+      //  this.turnCheckerDirection = 'southWest';
+      //  this.currentPlayer = 2;
+      // break;
+      // case '.' :
+      //  this.keyPressed[1].southEast = state;
+      //  // direction = 'southEast';
+      //  this.turnCheckerDirection = 'southEast';
+      //  this.currentPlayer = 2;
+      // break;
+
       case 'i' :
        this.keyPressed[1].north = state;
        // direction = 'north';
        this.turnCheckerDirection = 'north';
        this.currentPlayer = 2;
       break;
-      case 'o' :
-       this.keyPressed[1].northEast = state;
-       // direction = 'northEast';
-       this.turnCheckerDirection = 'northEast';
-       this.currentPlayer = 2;
-      break;
+
       case 'j' :
        this.keyPressed[1].west = state;
        // direction = 'west';
@@ -2228,18 +2267,6 @@ class App extends Component {
        this.keyPressed[1].east = state;
        // direction = 'east';
        this.turnCheckerDirection = 'east';
-       this.currentPlayer = 2;
-      break;
-      case 'm' :
-       this.keyPressed[1].southWest = state;
-       // direction = 'southWest';
-       this.turnCheckerDirection = 'southWest';
-       this.currentPlayer = 2;
-      break;
-      case '.' :
-       this.keyPressed[1].southEast = state;
-       // direction = 'southEast';
-       this.turnCheckerDirection = 'southEast';
        this.currentPlayer = 2;
       break;
       case 'b' :
@@ -2912,9 +2939,10 @@ class App extends Component {
                     console.log('single hit attack');
                     this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
                   }
-                  else if (doubleHit !== 1 && singleHit !== 1) {
+                  let missed = false;
+                  if (doubleHit !== 1 && singleHit !== 1) {
                     console.log('attacked but no damage');
-
+                    missed = true;
                     this.players[player.number-1].statusDisplay = {
                       state: true,
                       status: 'attack missed!',
@@ -2936,7 +2964,7 @@ class App extends Component {
 
 
                   }
-                  else {
+                  else if (missed !== true) {
                     this.players[player.target.occupant.player-1].action = 'deflected';
                     this.players[player.target.occupant.player-1].success.deflected = {
                       state: true,
@@ -3561,6 +3589,7 @@ class App extends Component {
 
                   let doubleHit = this.rnJesus(1,doubleHitChance);
                   let singleHit = this.rnJesus(1,singleHitChance);
+                  let miss;
                   if (doubleHit === 1) {
                     console.log('double hit attack');
                     this.players[plyr.number-1].hp = this.players[plyr.number-1].hp - 2;
@@ -3571,7 +3600,7 @@ class App extends Component {
                   }
                   else if (doubleHit !== 1 && singleHit !== 1) {
                     console.log('attacked but no damage');
-
+                    miss = true;
                     this.players[bolt.owner-1].statusDisplay = {
                       state: true,
                       status: 'attack missed!',
@@ -3591,7 +3620,7 @@ class App extends Component {
                     this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
 
                   }
-                  else {
+                  else if (miss !== true) {
                     this.players.[plyr.number-1].action = 'deflected';
                     this.players.[plyr.number-1].success.deflected = {
                       state: true,
@@ -4393,7 +4422,17 @@ class App extends Component {
       east: this.refs.itemBoltEast,
       west: this.refs.itemBoltWest,
     }
-    let terrainImgs = [];
+    let floorImgs = {
+      grass: this.refs.floorGrass,
+      stone: this.refs.floorStone,
+      dirt: this.refs.floorDirt,
+      pond: this.refs.floorPond,
+      mud: this.refs.floorMud,
+      sand: this.refs.floorSand,
+      ice: this.refs.floorIce,
+      lava: this.refs.floorLava,
+      bramble: this.refs.floorBramble,
+    }
 
     let updatedPlayerImg;
     let newDirection;
@@ -4410,7 +4449,7 @@ class App extends Component {
     for (var x = 0; x < this.gridWidth+1; x++) {
       for (var y = 0; y < this.gridWidth+1; y++) {
 
-        let floor = this.refs.floor2;
+        let floor;
 
         let p = new Point();
         p.x = x * tileWidth;
@@ -4449,6 +4488,7 @@ class App extends Component {
           drawFloor = false;
         }
 
+        floor = floorImgs[gridInfoCell.terrain.name]
 
         // CELLS UNDER ATTACK!
         if (this.cellsUnderAttack.length > 0) {
@@ -6482,6 +6522,10 @@ class App extends Component {
     let currentPosition = player.currentPosition.cell.center;
     let target = player.target;
     let moveSpeed = player.speed.move;
+    if (player.terrainMoveSpeed.state === true) {
+      // console.log('terrain speed mod',player.terrainMoveSpeed.speed);
+      moveSpeed = player.terrainMoveSpeed.speed;
+    }
 
     player.moving.step = +(Math.round((player.moving.step + moveSpeed) + "e+" + 3)  + "e-" + 3);
     // player.moving.step = player.moving.step + moveSpeed;
@@ -6691,6 +6735,7 @@ class App extends Component {
   checkDestination = (player) => {
     // console.log('checking for item or enviro effect');
 
+    this.players[player.number-1].terrainMoveSpeed.state = false;
     let pickUp = false;
 
     let cell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y)
@@ -7031,6 +7076,61 @@ class App extends Component {
     // check for terrain
     //   based on terrain effect/buff/debuff update player props
 
+
+    switch(cell.terrain.type) {
+      case 'grass' :
+        // console.log('player',player.number,' stepped in',cell.terrain.name,'type',cell.terrain.type);
+      break;
+      case 'road' :
+        // console.log('player',player.number,' stepped in',cell.terrain.name,'type',cell.terrain.type);
+      break;
+      case 'shallow' :
+        // console.log('player',player.number,' stepped in',cell.terrain.name,'type',cell.terrain.type);
+        this.players[player.number-1].terrainMoveSpeed.state = true;
+        this.players[player.number-1].terrainMoveSpeed.speed = .1;
+      break;
+      case 'sticky' :
+        // console.log('player',player.number,' stepped in',cell.terrain.name,'type',cell.terrain.type);
+        this.players[player.number-1].terrainMoveSpeed.state = true;
+        this.players[player.number-1].terrainMoveSpeed.speed = .05;
+      break;
+      case 'slippery' :
+        // console.log('player',player.number,' stepped in',cell.terrain.name,'type',cell.terrain.type);
+        this.players[player.number-1].terrainMoveSpeed.state = true;
+        this.players[player.number-1].terrainMoveSpeed.speed = .2;
+      break;
+      case 'hazard' :
+        // console.log('player',player.number,' stepped in',cell.terrain.name,'type',cell.terrain.type);
+        let applyHazard;
+        if (cell.terrain.name === 'lava') {
+          applyHazard = this.rnJesus(1,2)
+        }
+        else {
+          applyHazard = this.rnJesus(1,4)
+        }
+        if (applyHazard === 1) {
+          this.players[player.number-1].hp = this.players[player.number-1].hp -1;
+
+          if (this.players[player.number-1].hp <= 0) {
+            this.killPlayer(this.players[player.number-1]);
+
+            let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+            this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+          }
+          else {
+            this.players[player.number-1].action = 'deflected';
+            this.players[player.number-1].success.deflected = {
+              state: true,
+              count: 1,
+              limit: this.players[player.number-1].success.deflected.limit,
+              predeflect: this.players[player.number-1].success.deflected.predeflect,
+              type: 'attacked',
+            };
+          }
+        }
+      break;
+    }
 
   }
 
@@ -7796,6 +7896,72 @@ class App extends Component {
       let elemLevelData = this.['levelData'+this.gridWidth][levelData2Row][elem.number.y];
       elem.levelData = elemLevelData;
 
+      switch(elem.levelData.charAt(3)) {
+        case 'a' :
+          elem.terrain = {
+            name: 'grass',
+            type: 'grass',
+            effect: '',
+          }
+        break;
+        case 'b' :
+          elem.terrain = {
+            name: 'stone',
+            type: 'road',
+            effect: '',
+          }
+        break;
+        case 'x' :
+          elem.terrain = {
+            name: 'dirt',
+            type: 'road',
+            effect: '',
+          }
+        break;
+        case 'd' :
+          elem.terrain = {
+            name: 'pond',
+            type: 'shallow',
+            effect: '',
+          }
+        break;
+        case 'e' :
+          elem.terrain = {
+            name: 'mud',
+            type: 'sticky',
+            effect: '',
+          }
+        break;
+        case 'f' :
+          elem.terrain = {
+            name: 'sand',
+            type: 'sticky',
+            effect: '',
+          }
+        break;
+        case 'g' :
+          elem.terrain = {
+            name: 'ice',
+            type: 'slippery',
+            effect: '',
+          }
+        break;
+        case 'h' :
+          elem.terrain = {
+            name: 'lava',
+            type: 'hazard',
+            effect: '',
+          }
+        case 'i' :
+          elem.terrain = {
+            name: 'bramble',
+            type: 'hazard',
+            effect: '',
+          }
+        break;
+      }
+      // console.log(elem.terrain);
+
       // SET EDGES!
       if (elem.number.x === 0) {
         elem.edge = {
@@ -7861,7 +8027,7 @@ class App extends Component {
       }
     }
 
-    let floor = this.refs.floor2;
+    let floor;
     let wall = this.refs.wall;
     let wall2 = this.refs.wall2;
     let wall3 = this.refs.wall3;
@@ -7901,6 +8067,17 @@ class App extends Component {
       mail: this.refs.itemMail1,
       greaves: this.refs.itemGreaves1,
     };
+    let floorImgs = {
+      grass: this.refs.floorGrass,
+      stone: this.refs.floorStone,
+      dirt: this.refs.floorDirt,
+      pond: this.refs.floorPond,
+      mud: this.refs.floorMud,
+      sand: this.refs.floorSand,
+      ice: this.refs.floorIce,
+      lava: this.refs.floorLava,
+      bramble: this.refs.floorBramble,
+    }
 
     this.placeItems({init: true, items: ''});
 
@@ -7922,7 +8099,11 @@ class App extends Component {
           y: iso.y - offset.y/2-2,
         }
 
+        let cell = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
         let cellLevelData = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y).levelData;
+
+        floor = floorImgs[cell.terrain.name]
+
 
         context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
 
@@ -8254,9 +8435,16 @@ class App extends Component {
 
 
 
-          <img src={floor1} className='hidden' ref="floor1" alt="logo" id="floor1"/>
-          <img src={floor2} className='hidden' ref="floor2" alt="logo" id="floor2"/>
-          <img src={floor3} className='hidden' ref="floorAttack" alt="logo" id="floor3"/>
+          <img src={floorGrass} className='hidden' ref="floorGrass" alt="logo" id="floor1"/>
+          <img src={floorDirt} className='hidden' ref="floorDirt" alt="logo" id="floor2"/>
+          <img src={floorIce} className='hidden' ref="floorIce" alt="logo" id="floor2"/>
+          <img src={floorStone} className='hidden' ref="floorStone" alt="logo" id="floor2"/>
+          <img src={floorSand} className='hidden' ref="floorSand" alt="logo" id="floor2"/>
+          <img src={floorMud} className='hidden' ref="floorMud" alt="logo" id="floor2"/>
+          <img src={floorPond} className='hidden' ref="floorPond" alt="logo" id="floor2"/>
+          <img src={floorBramble} className='hidden' ref="floorBramble" alt="logo" id="floor2"/>
+          <img src={floorLava} className='hidden' ref="floorLava" alt="logo" id="floor2"/>
+          <img src={floorAttack} className='hidden' ref="floorAttack" alt="logo" id="floor3"/>
           <img src={floorVoid} className='hidden' ref="floorVoid" alt="logo" id="floor4"/>
           <img src={wall} className='hidden' ref="wall" alt="logo" />
           <img src={wall2} className='hidden' ref="wall2" alt="logo" />

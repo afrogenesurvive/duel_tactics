@@ -54,6 +54,11 @@ const CellInfo = props => {
         </li>
         <li className="cellInfoListItem">
           <p className="cellInfoText">
+            Terrain: {props.cell.terrain.name}
+          </p>
+        </li>
+        <li className="cellInfoListItem">
+          <p className="cellInfoText">
             Void: {props.cell.void.state.toString()}
           </p>
         </li>
