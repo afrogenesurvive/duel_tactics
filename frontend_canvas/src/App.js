@@ -41,6 +41,30 @@ import ghostInidcate from './assets/indicators/ghost.png';
 import deathInidcate from './assets/indicators/death.png';
 import preAttackInidcate from './assets/indicators/preAttack.png';
 
+import mail1 from './assets/items/mail1.png';
+import mail2 from './assets/items/mail2.png';
+import mail3 from './assets/items/mail3.png';
+import greaves1 from './assets/items/greaves1.png';
+import greaves2 from './assets/items/greaves2.png';
+import greaves3 from './assets/items/greaves3.png';
+import helmet1 from './assets/items/helmet1.png';
+import hpUp from './assets/items/hpUp.png';
+import hpDown from './assets/items/hpDown.png';
+import spdUp from './assets/items/spdUp.png';
+import spdDown from './assets/items/spdDown.png';
+import strUp from './assets/items/strUp.png';
+import strDown from './assets/items/strDown.png';
+import focusUp from './assets/items/focusUp.png';
+import focusDown from './assets/items/focusDown.png';
+import ammo from './assets/items/ammo.png';
+import bow from './assets/items/bow.png';
+import boltNorth from './assets/items/boltNorth.png';
+import boltSouth from './assets/items/boltSouth.png';
+import boltEast from './assets/items/boltEast.png';
+import boltWest from './assets/items/boltWest.png';
+import spear from './assets/items/spear.png';
+import sword from './assets/items/sword.png';
+
 import playerImgIdleSheet from './assets/sheet1.png';
 
 
@@ -730,14 +754,6 @@ class App extends Component {
         effect: 'hit-10',
       },
       {
-        name: 'chainMail',
-        amount: 3,
-        total: 3,
-        type: 'armor',
-        subType: 'mail',
-        effect: 'hpUp',
-      },
-      {
         name: 'ninjaGi',
         amount: 2,
         total: 2,
@@ -851,7 +867,7 @@ class App extends Component {
       // },
     ];
     this.customItemPlacement = {
-      state: false,
+      state: true,
       cells: [
         {x:0 ,y:0 },
         {x:1 ,y:0 },
@@ -4353,22 +4369,30 @@ class App extends Component {
 
 
     let itemImgs = {
-      moveSpeedUp: this.refs.preAttackIndicate,
-      moveSpeedDown: this.refs.preAttackIndicate,
-      hpUp: this.refs.preAttackIndicate,
-      hpDown: this.refs.preAttackIndicate,
-      focusUp: this.refs.preAttackIndicate,
-      focusDown: this.refs.preAttackIndicate,
-      strengthDown: this.refs.preAttackIndicate,
-      sword: this.refs.preAttackIndicate,
-      spear: this.refs.preAttackIndicate,
-      crossbow: this.refs.preAttackIndicate,
-      helmet: this.refs.preAttackIndicate,
-      ammo5: this.refs.preAttackIndicate,
-      ammo10: this.refs.preAttackIndicate,
-      mail: this.refs.preAttackIndicate,
-      greaves: this.refs.preAttackIndicate,
+      moveSpeedUp: this.refs.itemSpdUp,
+      moveSpeedDown: this.refs.itemSpdDown,
+      hpUp: this.refs.itemHpUp,
+      hpDown: this.refs.itemHpDown,
+      focusUp: this.refs.itemFocusUp,
+      focusDown: this.refs.itemFocusDown,
+      strengthUp: this.refs.itemStrUp,
+      strengthDown: this.refs.itemStrDown,
+      sword: this.refs.itemSword,
+      spear: this.refs.itemSpear,
+      crossbow: this.refs.itemBow,
+      helmet: this.refs.itemHelmet1,
+      ammo5: this.refs.itemAmmo,
+      ammo10: this.refs.itemAmmo,
+      mail: this.refs.itemMail1,
+      greaves: this.refs.itemGreaves1,
     };
+
+    let boltImgs = {
+      north: this.refs.itemBoltNorth,
+      south: this.refs.itemBoltSouth,
+      east: this.refs.itemBoltEast,
+      west: this.refs.itemBoltWest,
+    }
     let terrainImgs = [];
 
     let updatedPlayerImg;
@@ -4544,10 +4568,12 @@ class App extends Component {
             }
           }
 
-          context.fillStyle = fillClr;
-          context.beginPath();
-          context.arc(center.x, center.y, 10, 0, 2 * Math.PI);
-          context.fill();
+          context.drawImage(itemImg, center.x-15, center.y-15);
+
+          // context.fillStyle = fillClr;
+          // context.beginPath();
+          // context.arc(center.x, center.y, 10, 0, 2 * Math.PI);
+          // context.fill();
 
         }
 
@@ -5513,27 +5539,27 @@ class App extends Component {
               switch(plyr.itemDrop.gear.type) {
                 case 'sword' :
                   fillClr2 = "orange";
-                  itemImg2 = itemImgs[gridInfoCell.item.subType];
+                  itemImg2 = itemImgs[plyr.itemDrop.gear.type];
                 break;
                 case 'spear' :
                   fillClr2 = "maroon";
-                  itemImg2 = itemImgs[gridInfoCell.item.subType];
+                  itemImg2 = itemImgs[plyr.itemDrop.gear.type];
                 break;
                 case 'crossbow' :
                   fillClr2 = "navy";
-                  itemImg2 = itemImgs[gridInfoCell.item.subType];
+                  itemImg2 = itemImgs[plyr.itemDrop.gear.type];
                 break;
                 case 'helmet' :
                   fillClr2 = "grey";
-                  itemImg2 = itemImgs[gridInfoCell.item.subType];
+                  itemImg2 = itemImgs[plyr.itemDrop.gear.type];
                 break;
                 case 'mail' :
                   fillClr2 = "olive";
-                  itemImg2 = itemImgs[gridInfoCell.item.subType];
+                  itemImg2 = itemImgs[plyr.itemDrop.gear.type];
                 break;
                 case 'greaves' :
                   fillClr2 = "#b5179e";
-                  itemImg2 = itemImgs[gridInfoCell.item.subType];
+                  itemImg2 = itemImgs[plyr.itemDrop.gear.type];
                 break;
               }
             }
@@ -5542,97 +5568,98 @@ class App extends Component {
               switch(plyr.itemDrop.item.name) {
                 case 'moveSpeedUp' :
                   fillClr2 = "purple";
-                  itemImg2 = itemImgs[gridInfoCell.item.name];
+                  itemImg2 = itemImgs[plyr.itemDrop.item.name];
                 break;
                 case 'moveSpeedDown' :
                   fillClr2 = "blue";
-                  itemImg2 = itemImgs[gridInfoCell.item.name];
+                  itemImg2 = itemImgs[plyr.itemDrop.item.name];
                 break;
                 case 'hpUp' :
                   fillClr2 = "yellow";
-                  itemImg2 = itemImgs[gridInfoCell.item.name];
+                  itemImg2 = itemImgs[plyr.itemDrop.item.name];
                 break;
                 case 'hpDown' :
                   fillClr2 = "brown";
-                  itemImg2 = itemImgs[gridInfoCell.item.name];
+                  itemImg2 = itemImgs[plyr.itemDrop.item.name];
                 break;
                 case 'focusUp' :
                   fillClr2 = "white";
-                  itemImg2 = itemImgs[gridInfoCell.item.name];
+                  itemImg2 = itemImgs[plyr.itemDrop.item.name];
                 break;
                 case 'focusDown' :
                   fillClr2 = "black";
-                  itemImg2 = itemImgs[gridInfoCell.item.name];
+                  itemImg2 = itemImgs[plyr.itemDrop.item.name];
                 break;
                 case 'strengthUp' :
                   fillClr2 = "green";
-                  itemImg2 = itemImgs[gridInfoCell.item.name];
+                  itemImg2 = itemImgs[plyr.itemDrop.item.name];
                 break;
                 case 'strengthDown' :
                   fillClr2 = "red";
-                  itemImg2 = itemImgs[gridInfoCell.item.name];
+                  itemImg2 = itemImgs[plyr.itemDrop.item.name];
                 break;
                 case 'ammo5' :
                   fillClr2 = "#283618";
-                  itemImg2 = itemImgs[gridInfoCell.item.name];
+                  itemImg2 = itemImgs[plyr.itemDrop.item.name];
                 break;
                 case 'ammo10' :
                   fillClr2 = "#283618";
-                  itemImg2 = itemImgs[gridInfoCell.item.name];
+                  itemImg2 = itemImgs[plyr.itemDrop.item.name];
                 break;
               }
             }
             if (plyr.itemDrop.count < 4) {
 
-
-              // draw at player pos w/ offset to the side of and mid cell
               let pos = plyr.currentPosition.cell.center;
-              // console.log('drawing item drop');
-              context.fillStyle = fillClr2;
-              context.beginPath();
-              context.arc(pos.x-10, pos.y, 10, 0, 2 * Math.PI);
-              context.fill();
+              // console.log('drawing item drop',itemImg2);
+              // context.fillStyle = fillClr2;
+              // context.beginPath();
+              // context.arc(pos.x-10, pos.y, 10, 0, 2 * Math.PI);
+              // context.fill();
+
+              // context.drawImage(itemImg2, pos.x-10, pos.y);
             }
             if (plyr.itemDrop.count > 3) {
 
-              // draw at playr pos w/ offset but y + count or count *2
               let pos = plyr.currentPosition.cell.center;
-              // console.log('drawing item drop');
-              context.fillStyle = fillClr2;
-              context.beginPath();
-              context.arc(pos.x-10, pos.y+(plyr.itemDrop.count*2), 10, 0, 2 * Math.PI);
-              context.fill();
+              // console.log('drawing item drop',itemImg2);
+              // context.fillStyle = fillClr2;
+              // context.beginPath();
+              // context.arc(pos.x-10, pos.y+(plyr.itemDrop.count*2), 10, 0, 2 * Math.PI);
+              // context.fill();
+
+              context.drawImage(itemImg2, pos.x-10, pos.y+(plyr.itemDrop.count*2));
             }
           }
           if (plyr.itemPickup.state === true) {
             let itemImg3;
             let fillClr3;
             if (plyr.itemPickup.item.name === '') {
-              // console.log('Pickup a weapon or armor');
+              // console.log('Pickup a weapon or armor',plyr.itemPickup.gear.type);
               switch(plyr.itemPickup.gear.type) {
                 case 'sword' :
                   fillClr3 = "orange";
-                  itemImg3 = itemImgs[gridInfoCell.item.subType];
+                  itemImg3 = itemImgs[plyr.itemPickup.gear.type];
                 break;
                 case 'spear' :
                   fillClr3 = "maroon";
-                  itemImg3 = itemImgs[gridInfoCell.item.subType];
+                  itemImg3 = itemImgs[plyr.itemPickup.gear.type];
                 break;
                 case 'crossbow' :
                   fillClr3 = "navy";
-                  itemImg3 = itemImgs[gridInfoCell.item.subType];
+                  itemImg3 = itemImgs[plyr.itemPickup.gear.type];
                 break;
                 case 'helmet' :
                   fillClr3 = "grey";
-                  itemImg3 = itemImgs[gridInfoCell.item.subType];
+                  itemImg3 = itemImgs[plyr.itemPickup.gear.type];
                 break;
                 case 'mail' :
                   fillClr3 = "olive";
-                  itemImg3 = itemImgs[gridInfoCell.item.subType];
+                  itemImg3 = itemImgs[plyr.itemPickup.gear.type];
                 break;
                 case 'greaves' :
                   fillClr3 = "#b5179e";
-                  itemImg3 = itemImgs[gridInfoCell.item.subType];
+                  itemImg3 = itemImgs[plyr.itemPickup.gear.type];
                 break;
               }
             }
@@ -5641,65 +5668,67 @@ class App extends Component {
               switch(plyr.itemPickup.item.name) {
                 case 'moveSpeedUp' :
                   fillClr3 = "purple";
-                  itemImg3 = itemImgs[gridInfoCell.item.name];
+                  itemImg3 = itemImgs[plyr.itemPickup.item.name];
                 break;
                 case 'moveSpeedDown' :
                   fillClr3 = "blue";
-                  itemImg3 = itemImgs[gridInfoCell.item.name];
+                  itemImg3 = itemImgs[plyr.itemPickup.item.name];
                 break;
                 case 'hpUp' :
                   fillClr3 = "yellow";
-                  itemImg3 = itemImgs[gridInfoCell.item.name];
+                  itemImg3 = itemImgs[plyr.itemPickup.item.name];
                 break;
                 case 'hpDown' :
                   fillClr3 = "brown";
-                  itemImg3 = itemImgs[gridInfoCell.item.name];
+                  itemImg3 = itemImgs[plyr.itemPickup.item.name];
                 break;
                 case 'focusUp' :
                   fillClr3 = "white";
-                  itemImg3 = itemImgs[gridInfoCell.item.name];
+                  itemImg3 = itemImgs[plyr.itemPickup.item.name];
                 break;
                 case 'focusDown' :
                   fillClr3 = "black";
-                  itemImg3 = itemImgs[gridInfoCell.item.name];
+                  itemImg3 = itemImgs[plyr.itemPickup.item.name];
                 break;
                 case 'strengthUp' :
                   fillClr3 = "green";
-                  itemImg3 = itemImgs[gridInfoCell.item.name];
+                  itemImg3 = itemImgs[plyr.itemPickup.item.name];
                 break;
                 case 'strengthDown' :
                   fillClr3 = "red";
-                  itemImg3 = itemImgs[gridInfoCell.item.name];
+                  itemImg3 = itemImgs[plyr.itemPickup.item.name];
                 break;
                 case 'ammo5' :
                   fillClr3 = "#283618";
-                  itemImg3 = itemImgs[gridInfoCell.item.name];
+                  itemImg3 = itemImgs[plyr.itemPickup.item.name];
                 break;
                 case 'ammo10' :
                   fillClr3 = "#283618";
-                  itemImg3 = itemImgs[gridInfoCell.item.name];
+                  itemImg3 = itemImgs[plyr.itemPickup.item.name];
                 break;
               }
             }
             if (plyr.itemPickup.count < 4) {
 
-              // draw at player pos w/ offset to the side of and bottom cell
               let pos = plyr.currentPosition.cell.center;
-              // console.log('drawing item pickup');
-              context.fillStyle = fillClr3;
-              context.beginPath();
-              context.arc(pos.x-10, pos.y, 10, 0, 2 * Math.PI);
-              context.fill();
+              // console.log('drawing item pickup',itemImg3,gridInfoCell.item.subType,gridInfoCell.item.name);
+              // context.fillStyle = fillClr3;
+              // context.beginPath();
+              // context.arc(pos.x-10, pos.y, 10, 0, 2 * Math.PI);
+              // context.fill();
+
+              context.drawImage(itemImg3, pos.x-10, pos.y);
             }
             if (plyr.itemPickup.count > 3) {
 
-              // draw at playr pos w/ offset but y - count or count *2
               let pos = plyr.currentPosition.cell.center;
-              // console.log('drawing item pickup');
-              context.fillStyle = fillClr3;
-              context.beginPath();
-              context.arc(pos.x-10, pos.y-(plyr.itemPickup.count*2), 10, 0, 2 * Math.PI);
-              context.fill();
+              // console.log('drawing item pickup',itemImg3,gridInfoCell.item.subType,gridInfoCell.item.name);
+              // context.fillStyle = fillClr3;
+              // context.beginPath();
+              // context.arc(pos.x-10, pos.y-(plyr.itemPickup.count*2), 10, 0, 2 * Math.PI);
+              // context.fill();
+
+              context.drawImage(itemImg3, pos.x-10, pos.y-(plyr.itemPickup.count*2));
             }
           }
 
@@ -5712,10 +5741,27 @@ class App extends Component {
             bolt.currentPosition.number.x === x &&
             bolt.currentPosition.number.y === y
           ) {
+            let boltImg;
+            switch(bolt.direction) {
+              case 'north':
+                boltImg = boltImgs[bolt.direction]
+              break;
+              case 'south':
+                boltImg = boltImgs[bolt.direction]
+              break;
+              case 'east':
+                boltImg = boltImgs[bolt.direction]
+              break;
+              case 'west':
+                boltImg = boltImgs[bolt.direction]
+              break;
+            }
+            // console.log('dd',boltImg,bolt.direction);
 
-             context2.fillStyle = "black";
-             context2.fillRect(bolt.currentPosition.center.x, bolt.currentPosition.center.y,10,5);
+             // context2.fillStyle = "black";
+             // context2.fillRect(bolt.currentPosition.center.x, bolt.currentPosition.center.y,10,5);
 
+             context.drawImage(boltImg, bolt.currentPosition.center.x, bolt.currentPosition.center.y-15, 35,35);
           }
         }
 
@@ -6586,9 +6632,12 @@ class App extends Component {
 
       let cell = this.gridInfo.find(elem => elem.number.x === cell2.number.x && elem.number.y === cell2.number.y)
 
-      cell2.center.x = cell.center.x;
-      cell2.center.y = cell.center.y;
-      cell2.vertices = cell.vertices;
+      if (cell) {
+        cell2.center.x = cell.center.x;
+        cell2.center.y = cell.center.y;
+        cell2.vertices = cell.vertices;
+      }
+
     }
 
     bolt.moving.state = true;
@@ -7835,21 +7884,22 @@ class App extends Component {
     this.processLevelData(gridInfo)
 
     let itemImgs = {
-      moveSpeedUp: this.refs.preAttackIndicate,
-      moveSpeedDown: this.refs.preAttackIndicate,
-      hpUp: this.refs.preAttackIndicate,
-      hpDown: this.refs.preAttackIndicate,
-      focusUp: this.refs.preAttackIndicate,
-      focusDown: this.refs.preAttackIndicate,
-      strengthDown: this.refs.preAttackIndicate,
-      sword: this.refs.preAttackIndicate,
-      spear: this.refs.preAttackIndicate,
-      crossbow: this.refs.preAttackIndicate,
-      helmet: this.refs.preAttackIndicate,
-      ammo5: this.refs.preAttackIndicate,
-      ammo10: this.refs.preAttackIndicate,
-      mail: this.refs.preAttackIndicate,
-      greaves: this.refs.preAttackIndicate,
+      moveSpeedUp: this.refs.itemSpdUp,
+      moveSpeedDown: this.refs.itemSpdDown,
+      hpUp: this.refs.itemHpUp,
+      hpDown: this.refs.itemHpDown,
+      focusUp: this.refs.itemFocusUp,
+      focusDown: this.refs.itemFocusDown,
+      strengthUp: this.refs.itemStrUp,
+      strengthDown: this.refs.itemStrDown,
+      sword: this.refs.itemSword,
+      spear: this.refs.itemSpear,
+      crossbow: this.refs.itemBow,
+      helmet: this.refs.itemHelmet1,
+      ammo5: this.refs.itemAmmo,
+      ammo10: this.refs.itemAmmo,
+      mail: this.refs.itemMail1,
+      greaves: this.refs.itemGreaves1,
     };
 
     this.placeItems({init: true, items: ''});
@@ -7969,12 +8019,12 @@ class App extends Component {
             }
 
 
-            context.fillStyle = fillClr;
-            context.beginPath();
-            context.arc(center.x, center.y, 15, 0, 2 * Math.PI);
-            context.fill();
+            // context.fillStyle = fillClr;
+            // context.beginPath();
+            // context.arc(center.x, center.y, 15, 0, 2 * Math.PI);
+            // context.fill();
 
-            // context.drawImage(itemImg ,center.x-10, center.y-15, 30,30);
+            context.drawImage(itemImg ,center.x-15, center.y-15, 30,30);
           }
         }
 
@@ -8221,6 +8271,32 @@ class App extends Component {
           <img src={ghostInidcate} className='hidden playerImgs' ref="ghostIndicate" alt="logo" />
           <img src={deathInidcate} className='hidden playerImgs' ref="deathIndicate" alt="logo" />
           <img src={preAttackInidcate} className='hidden playerImgs' ref="preAttackIndicate" alt="logo" />
+
+
+          <img src={sword} className='hidden playerImgs' ref="itemSword" alt="logo" />
+          <img src={spear} className='hidden playerImgs' ref="itemSpear" alt="logo" />
+          <img src={bow} className='hidden playerImgs' ref="itemBow" alt="logo" />
+          <img src={boltNorth} className='hidden playerImgs' ref="itemBoltNorth" alt="logo" />
+          <img src={boltSouth} className='hidden playerImgs' ref="itemBoltSouth" alt="logo" />
+          <img src={boltEast} className='hidden playerImgs' ref="itemBoltEast" alt="logo" />
+          <img src={boltWest} className='hidden playerImgs' ref="itemBoltWest" alt="logo" />
+          <img src={ammo} className='hidden playerImgs' ref="itemAmmo" alt="logo" />
+          <img src={mail1} className='hidden playerImgs' ref="itemMail1" alt="logo" />
+          <img src={mail2} className='hidden playerImgs' ref="itemMail2" alt="logo" />
+          <img src={mail3} className='hidden playerImgs' ref="itemMail3" alt="logo" />
+          <img src={greaves1} className='hidden playerImgs' ref="itemGreaves1" alt="logo" />
+          <img src={greaves2} className='hidden playerImgs' ref="itemGreaves2" alt="logo" />
+          <img src={greaves3} className='hidden playerImgs' ref="itemGreaves3" alt="logo" />
+          <img src={helmet1} className='hidden playerImgs' ref="itemHelmet1" alt="logo" />
+          <img src={hpUp} className='hidden playerImgs' ref="itemHpUp" alt="logo" />
+          <img src={hpDown} className='hidden playerImgs' ref="itemHpDown" alt="logo" />
+          <img src={spdUp} className='hidden playerImgs' ref="itemSpdUp" alt="logo" />
+          <img src={spdDown} className='hidden playerImgs' ref="itemSpdDown" alt="logo" />
+          <img src={strUp} className='hidden playerImgs' ref="itemStrUp" alt="logo" />
+          <img src={strDown} className='hidden playerImgs' ref="itemStrDown" alt="logo" />
+          <img src={focusUp} className='hidden playerImgs' ref="itemFocusUp" alt="logo" />
+          <img src={focusDown} className='hidden playerImgs' ref="itemFocusDown" alt="logo" />
+
 
           <img src={playerImgIdleNorth} className='hidden playerImgs' ref="playerImgIdleNorth" alt="logo" />
           <img src={playerImgIdleNorthWest} className='hidden playerImgs' ref="playerImgIdleNorthWest" alt="logo" />
