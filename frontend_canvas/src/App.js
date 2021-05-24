@@ -3055,10 +3055,12 @@ class App extends Component {
                   if (doubleHit === 1) {
                     console.log('double hit attack');
                     this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 2;
+                    this.attackedCancel(this.players[player.target.occupant.player-1])
                   }
                   else if (singleHit === 1) {
                     console.log('single hit attack');
                     this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
+                    this.attackedCancel(this.players[player.target.occupant.player-1])
                   }
                   let missed = false;
                   if (doubleHit !== 1 && singleHit !== 1) {
@@ -3083,6 +3085,7 @@ class App extends Component {
                     let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
                     this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
 
+                    player.points++;
 
                   }
                   else if (missed !== true) {
@@ -3095,8 +3098,6 @@ class App extends Component {
                       type: 'attacked',
                     };
                   }
-
-                  player.points++;
 
                 }
                 // ATTACK DEFENDED!!
@@ -3678,8 +3679,16 @@ class App extends Component {
                   },
                 )
 
-                if (this.players.[plyr.number-1].defending.state === false) {
+                if (
+                  this.players.[plyr.number-1].defending.state === false ||
+                  this.players.[plyr.number-1].direction === bolt.direction
+                ) {
                   // console.log('attack success');
+
+                  if (this.players.[plyr.number-1].direction === bolt.direction) {
+                    console.log('back attack');
+                  }
+
                   this.players[bolt.owner-1].success.attackSuccess = {
                     state: true,
                     count: 1,
@@ -3718,10 +3727,12 @@ class App extends Component {
                   if (doubleHit === 1) {
                     console.log('double hit attack');
                     this.players[plyr.number-1].hp = this.players[plyr.number-1].hp - 2;
+                    this.attackedCancel(this.players[plyr.number-1]);
                   }
                   else if (singleHit === 1) {
                     console.log('single hit attack');
                     this.players[plyr.number-1].hp = this.players[plyr.number-1].hp - 1;
+                    this.attackedCancel(this.players[plyr.number-1]);
                   }
                   else if (doubleHit !== 1 && singleHit !== 1) {
                     console.log('attacked but no damage');
@@ -3744,6 +3755,8 @@ class App extends Component {
                     let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
                     this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
 
+                    this.players[bolt.owner-1].points++;
+
                   }
                   else if (miss !== true) {
                     this.players.[plyr.number-1].action = 'deflected';
@@ -3756,7 +3769,7 @@ class App extends Component {
                     };
                   }
 
-                  this.players[bolt.owner-1].points++;
+
                 }
                 // ATTACK DEFENDED!!
                 else {
@@ -7285,6 +7298,39 @@ class App extends Component {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
+  attackedCancel = (player) => {
+    // console.log('player', player.number,' attacked. Cancel action!',player.action);
+
+    switch(player.action) {
+      case 'attacking':
+        player.action = 'idle';
+        player.attacking = {
+          state: false,
+          count: 0,
+          limit: 15,
+        }
+        player.idleAnim = {
+          state: false,
+          count: 0,
+          limit: 5,
+        }
+        break;
+      case 'defending':
+        player.action = 'idle';
+        player.defending = {
+          state: false,
+          count: 0,
+          limit: 5,
+        }
+        player.idleAnim = {
+          state: false,
+          count: 0,
+          limit: 5,
+        }
+        break;
+    }
+
+  }
   pushBack = (player,hitByPlayerDirection) => {
     // console.log('pushing back');
 
@@ -7634,7 +7680,7 @@ class App extends Component {
       }
 
     } else if (args.init !== true) {
-      console.log('placing items mid-game: ',args.item);
+      // console.log('placing items mid-game: ',args.item);
 
 
       let item = args.item;
