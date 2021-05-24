@@ -1,0 +1,39 @@
+{
+  "name": "duel_tactics_server",
+  "version": "0.0.1",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "author": "Professor Black",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.856.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "dataloader": "^2.0.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-graphql": "^0.9.0",
+    "graphql": "^15.3.0",
+    "gulp": "^4.0.2",
+    "jsonwebtoken": "^8.5.1",
+    "mime": "^2.4.6",
+    "moment": "^2.26.0",
+    "moment-timezone": "^0.5.32",
+    "mongoback": "^2.1.0",
+    "mongodb": "^3.5.8",
+    "mongoose": "^5.12.0",
+    "node-cron": "^2.0.3",
+    "path": "^0.12.7",
+    "sib-api-v3-sdk": "^7.2.3",
+    "simple-encryptor": "^4.0.0",
+    "socket.io": "^2.4.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "nodemon": "^2.0.4"
+  }
+}

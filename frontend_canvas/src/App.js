@@ -1761,11 +1761,11 @@ class App extends Component {
               }
               if (this.gamepadPollCounter.store1.length >= 2) {
                 // console.log('dbl capture',this.gamepadPollCounter.store1);
-                if (this.gamepadPollCounter.store1 === [1,0]) {
-                  // LEFT BTN!
+                if (this.gamepadPollCounter.store1[0] === 1 && this.gamepadPollCounter.store1[1] === 0) {
+                  // console.log('LEFT BTN!');
                 }
-                if (this.gamepadPollCounter.store1 === [0,1]) {
-                  // DWN BTN!
+                if (this.gamepadPollCounter.store1[0] === 0 && this.gamepadPollCounter.store1[1] === 1) {
+                  // console.log('DWN BTN!');
                   keyPressed[1].attack = true;
                   this.currentPlayer = 2;
                 }
@@ -1779,13 +1779,13 @@ class App extends Component {
               }
               if (this.gamepadPollCounter.store2.length >= 2) {
                 // console.log('dbl capture2',this.gamepadPollCounter.store2);
-                if (this.gamepadPollCounter.store1 === [2,3]) {
-                  // RIGHT BTN!
+                if (this.gamepadPollCounter.store2[0] === 2 && this.gamepadPollCounter.store2[1] === 3) {
+                  // console.log('RIGHT BTN!');
                   keyPressed[1].defend = true;
                   this.currentPlayer = 2;
                 }
-                if (this.gamepadPollCounter.store1 === [3,2]) {
-                  // UP BTN!
+                if (this.gamepadPollCounter.store2[0] === 3 && this.gamepadPollCounter.store2[1] === 2) {
+                  // console.log('UP BTN!');
                   keyPressed[1].strafe = true;
                   this.players[1].strafing.state = true;
                   this.currentPlayer = 2;
@@ -1814,22 +1814,22 @@ class App extends Component {
 
           if (gp.axes[0] < 0 && gp.axes[1] < 0) {
             // console.log('1',gp.axes[0],gp.axes[1]);
-            keyPressed[0].west = true;
-            this.turnCheckerDirection = 'west';
-            this.currentPlayer = 1;
+            // keyPressed[0].west = true;
+            // this.turnCheckerDirection = 'west';
+            // this.currentPlayer = 1;
 
-            // if (gp.axes[0] > -0.5 && gp.axes[1] < -0.5) {
-            //   // console.log('up',gp.axes[0],gp.axes[1]);
-            //   keyPressed[0].north = true;
-            //   this.turnCheckerDirection = 'north';
-            //   this.currentPlayer = 1;
-            // }
-            // if (gp.axes[1] > -0.5 && gp.axes[0] < -0.5) {
-            //   // console.log('left',gp.axes[0],gp.axes[1]);
-            //   keyPressed[0].west = true;
-            //   this.turnCheckerDirection = 'west';
-            //   this.currentPlayer = 1;
-            // }
+            if (gp.axes[0] > -0.5 && gp.axes[1] < -0.5) {
+              // console.log('up',gp.axes[0],gp.axes[1]);
+              keyPressed[0].north = true;
+              this.turnCheckerDirection = 'north';
+              this.currentPlayer = 1;
+            }
+            if (gp.axes[1] > -0.5 && gp.axes[0] < -0.5) {
+              // console.log('left',gp.axes[0],gp.axes[1]);
+              keyPressed[0].west = true;
+              this.turnCheckerDirection = 'west';
+              this.currentPlayer = 1;
+            }
             // else {
             //   // console.log('up left',gp.axes[0],gp.axes[1]);
             //   keyPressed[0].northWest = true;
@@ -1839,22 +1839,22 @@ class App extends Component {
           }
           if (gp.axes[0] > 0 && gp.axes[1] > 0) {
             // console.log('2',gp.axes[0],gp.axes[1]);
-            keyPressed[0].east = true;
-            this.turnCheckerDirection = 'east';
-            this.currentPlayer = 1;
+            // keyPressed[0].east = true;
+            // this.turnCheckerDirection = 'east';
+            // this.currentPlayer = 1;
 
-            // if (gp.axes[1] < 0.5 && gp.axes[0] > 0.5) {
-            //   // console.log('right',gp.axes[0],gp.axes[1]);
-            //   keyPressed[0].east = true;
-            //   this.turnCheckerDirection = 'east';
-            //   this.currentPlayer = 1;
-            // }
-            // if (gp.axes[0] < 0.5 && gp.axes[1] > 0.5) {
-            //   // console.log('down',gp.axes[0],gp.axes[1]);
-            //   keyPressed[0].south = true;
-            //   this.turnCheckerDirection = 'south';
-            //   this.currentPlayer = 1;
-            // }
+            if (gp.axes[1] < 0.5 && gp.axes[0] > 0.5) {
+              // console.log('right',gp.axes[0],gp.axes[1]);
+              keyPressed[0].east = true;
+              this.turnCheckerDirection = 'east';
+              this.currentPlayer = 1;
+            }
+            if (gp.axes[0] < 0.5 && gp.axes[1] > 0.5) {
+              // console.log('down',gp.axes[0],gp.axes[1]);
+              keyPressed[0].south = true;
+              this.turnCheckerDirection = 'south';
+              this.currentPlayer = 1;
+            }
             // else {
             //   // console.log('down right',gp.axes[0],gp.axes[1]);
             //   keyPressed[0].southEast = true;
@@ -1864,22 +1864,22 @@ class App extends Component {
           }
           if (gp.axes[0] < 0 && gp.axes[1] > 0) {
             // console.log('3',gp.axes[0],gp.axes[1]);
-            keyPressed[0].south = true;
-            this.turnCheckerDirection = 'south';
-            this.currentPlayer = 1;
+            // keyPressed[0].south = true;
+            // this.turnCheckerDirection = 'south';
+            // this.currentPlayer = 1;
 
-            // if (gp.axes[0] > -0.5 && gp.axes[1] > 0.5) {
-            //   // console.log('down',gp.axes[0],gp.axes[1]);
-            //   keyPressed[0].south = true;
-            //   this.turnCheckerDirection = 'south';
-            //   this.currentPlayer = 1;
-            // }
-            // if (gp.axes[1] < 0.5 && gp.axes[0] < -0.5) {
-            //   // console.log('left',gp.axes[0],gp.axes[1]);
-            //   keyPressed[0].west = true;
-            //   this.turnCheckerDirection = 'west';
-            //   this.currentPlayer = 1;
-            // }
+            if (gp.axes[0] > -0.5 && gp.axes[1] > 0.5) {
+              // console.log('down',gp.axes[0],gp.axes[1]);
+              keyPressed[0].south = true;
+              this.turnCheckerDirection = 'south';
+              this.currentPlayer = 1;
+            }
+            if (gp.axes[1] < 0.5 && gp.axes[0] < -0.5) {
+              // console.log('left',gp.axes[0],gp.axes[1]);
+              keyPressed[0].west = true;
+              this.turnCheckerDirection = 'west';
+              this.currentPlayer = 1;
+            }
             // else {
             //   // console.log('down left',gp.axes[0],gp.axes[1]);
             //   keyPressed[0].southWest = true;
@@ -1889,22 +1889,22 @@ class App extends Component {
           }
           if (gp.axes[0] > 0 && gp.axes[1] < 0) {
             // console.log('4',gp.axes[0],gp.axes[1]);
-            keyPressed[0].north = true;
-            this.turnCheckerDirection = 'north';
-            this.currentPlayer = 1;
+            // keyPressed[0].north = true;
+            // this.turnCheckerDirection = 'north';
+            // this.currentPlayer = 1;
 
-            // if (gp.axes[0] < 0.5 && gp.axes[1] < -0.5) {
-            //   // console.log('up',gp.axes[0],gp.axes[1]);
-            //   keyPressed[0].north = true;
-            //   this.turnCheckerDirection = 'north';
-            //   this.currentPlayer = 1;
-            // }
-            // if (gp.axes[1] > -0.5 && gp.axes[0] > 0.5) {
-            //   // console.log('right',gp.axes[0],gp.axes[1]);
-            //   keyPressed[0].east = true;
-            //   this.turnCheckerDirection = 'east';
-            //   this.currentPlayer = 1;
-            // }
+            if (gp.axes[0] < 0.5 && gp.axes[1] < -0.5) {
+              // console.log('up',gp.axes[0],gp.axes[1]);
+              keyPressed[0].north = true;
+              this.turnCheckerDirection = 'north';
+              this.currentPlayer = 1;
+            }
+            if (gp.axes[1] > -0.5 && gp.axes[0] > 0.5) {
+              // console.log('right',gp.axes[0],gp.axes[1]);
+              keyPressed[0].east = true;
+              this.turnCheckerDirection = 'east';
+              this.currentPlayer = 1;
+            }
             // else {
             //   // console.log('up right',gp.axes[0],gp.axes[1]);
             //   keyPressed[0].northEast = true;
@@ -1921,55 +1921,168 @@ class App extends Component {
           // console.log('player 1 stick')
           if (gp.axes[0] < 0 && gp.axes[1] < 0) {
             // console.log('player 1 stick: 1',gp.axes[0],gp.axes[1]);
-            keyPressed[0].south = true;
-            this.turnCheckerDirection = 'south';
-            this.currentPlayer = 1;
+            // keyPressed[0].south = true;
+            // this.turnCheckerDirection = 'south';
+            // this.currentPlayer = 1;
+
+            if (gp.axes[0] < -0.5 && gp.axes[1] > -0.5) {
+              // console.log('down',gp.axes[0],gp.axes[1]);
+              keyPressed[0].south = true;
+              this.turnCheckerDirection = 'south';
+              this.currentPlayer = 1;
+            }
+            if (gp.axes[0] > -0.5 && gp.axes[1] < -0.5) {
+              // console.log('left',gp.axes[0],gp.axes[1]);
+              keyPressed[0].west = true;
+              this.turnCheckerDirection = 'west';
+              this.currentPlayer = 1;
+            }
+
           }
           if (gp.axes[0] > 0 && gp.axes[1] > 0) {
             // console.log('player 1 stick: 2',gp.axes[0],gp.axes[1]);
-            keyPressed[0].north = true;
-            this.turnCheckerDirection = 'north';
-            this.currentPlayer = 1;
+            // keyPressed[0].north = true;
+            // this.turnCheckerDirection = 'north';
+            // this.currentPlayer = 1;
+
+            if (gp.axes[0] > 0.5 && gp.axes[1] < 0.5) {
+              // console.log('up',gp.axes[0],gp.axes[1]);
+              keyPressed[0].north = true;
+              this.turnCheckerDirection = 'north';
+              this.currentPlayer = 1;
+            }
+            if (gp.axes[0] < 0.5 && gp.axes[1] > 0.5) {
+              // console.log('right',gp.axes[0],gp.axes[1]);
+              keyPressed[0].east = true;
+              this.turnCheckerDirection = 'east';
+              this.currentPlayer = 1;
+            }
+
           }
           if (gp.axes[0] < 0 && gp.axes[1] > 0) {
             // console.log('player 1 stick: 3',gp.axes[0],gp.axes[1]);
-            keyPressed[0].east = true;
-            this.turnCheckerDirection = 'east';
-            this.currentPlayer = 1;
+            // keyPressed[0].east = true;
+            // this.turnCheckerDirection = 'east';
+            // this.currentPlayer = 1;
+
+            if (gp.axes[0] > -0.5 && gp.axes[1] > 0.5) {
+              // console.log('right',gp.axes[0],gp.axes[1]);
+              keyPressed[0].east = true;
+              this.turnCheckerDirection = 'east';
+              this.currentPlayer = 1;
+            }
+            if (gp.axes[0] < -0.5 && gp.axes[1] < 0.5) {
+              // console.log('down',gp.axes[0],gp.axes[1]);
+              keyPressed[0].south = true;
+              this.turnCheckerDirection = 'south';
+              this.currentPlayer = 1;
+            }
+
           }
           if (gp.axes[0] > 0 && gp.axes[1] < 0) {
             // console.log('player 1 stick: 4',gp.axes[0],gp.axes[1]);
-            keyPressed[0].west = true;
-            this.turnCheckerDirection = 'west';
-            this.currentPlayer = 1;
+            // keyPressed[0].west = true;
+            // this.turnCheckerDirection = 'west';
+            // this.currentPlayer = 1;
+
+            if (gp.axes[0] > 0.5 && gp.axes[1] > -0.5) {
+              // console.log('up',gp.axes[0],gp.axes[1]);
+              keyPressed[0].north = true;
+              this.turnCheckerDirection = 'north';
+              this.currentPlayer = 1;
+            }
+            if (gp.axes[0] < 0.5 && gp.axes[1] < -0.5) {
+              // console.log('left',gp.axes[0],gp.axes[1]);
+              keyPressed[0].west = true;
+              this.turnCheckerDirection = 'west';
+              this.currentPlayer = 1;
+            }
+
           }
         }
+
 
         if (gp.axes[2]!== 0 && gp.axes[3] !== 0) {
           // console.log('right stick')
           if (gp.axes[2] < 0 && gp.axes[3] < 0) {
             // console.log('player 2 stick: 1',gp.axes[2],gp.axes[3]);
-            keyPressed[1].north = true;
-            this.turnCheckerDirection = 'north';
-            this.currentPlayer = 2;
+            // keyPressed[1].north = true;
+            // this.turnCheckerDirection = 'north';
+            // this.currentPlayer = 2;
+
+            if (gp.axes[2] < -0.5 && gp.axes[3] > -0.5) {
+              // console.log('up',gp.axes[2],gp.axes[3]);
+              keyPressed[1].north = true;
+              this.turnCheckerDirection = 'north';
+              this.currentPlayer = 2;
+            }
+            if (gp.axes[2] > -0.5 && gp.axes[3] < -0.5) {
+              // console.log('right',gp.axes[2],gp.axes[3]);
+              keyPressed[1].east = true;
+              this.turnCheckerDirection = 'east';
+              this.currentPlayer = 2;
+            }
+
           }
           if (gp.axes[2] > 0 && gp.axes[3] > 0) {
             // console.log('player 2 stick: 2',gp.axes[2],gp.axes[3]);
-            keyPressed[1].south = true;
-            this.turnCheckerDirection = 'south';
-            this.currentPlayer = 2;
+            // keyPressed[1].south = true;
+            // this.turnCheckerDirection = 'south';
+            // this.currentPlayer = 2;
+
+            if (gp.axes[2] < 0.5 && gp.axes[3] > 0.5) {
+              // console.log('left',gp.axes[2],gp.axes[3]);
+              keyPressed[1].west = true;
+              this.turnCheckerDirection = 'west';
+              this.currentPlayer = 2;
+            }
+            if (gp.axes[2] > 0.5 && gp.axes[3] < 0.5) {
+              // console.log('down',gp.axes[2],gp.axes[3]);
+              keyPressed[1].south = true;
+              this.turnCheckerDirection = 'south';
+              this.currentPlayer = 2;
+            }
+
           }
           if (gp.axes[2] < 0 && gp.axes[3] > 0) {
             // console.log('player 2 stick: 3',gp.axes[2],gp.axes[3]);
-            keyPressed[1].west = true;
-            this.turnCheckerDirection = 'west';
-            this.currentPlayer = 2;
+            // keyPressed[1].west = true;
+            // this.turnCheckerDirection = 'west';
+            // this.currentPlayer = 2;
+
+            if (gp.axes[2] < -0.5 && gp.axes[3] < 0.5) {
+              // console.log('up',gp.axes[2],gp.axes[3]);
+              keyPressed[1].north = true;
+              this.turnCheckerDirection = 'north';
+              this.currentPlayer = 2;
+            }
+            if (gp.axes[2] > -0.5 && gp.axes[3] > 0.5) {
+              // console.log('left',gp.axes[2],gp.axes[3]);
+              keyPressed[1].west = true;
+              this.turnCheckerDirection = 'west';
+              this.currentPlayer = 2;
+            }
+
           }
           if (gp.axes[2] > 0 && gp.axes[3] < 0) {
             // console.log('player 2 stick: 4',gp.axes[2],gp.axes[3]);
-            keyPressed[1].east = true;
-            this.turnCheckerDirection = 'east';
-            this.currentPlayer = 2;
+            // keyPressed[1].east = true;
+            // this.turnCheckerDirection = 'east';
+            // this.currentPlayer = 2;
+
+            if (gp.axes[2] < 0.5 && gp.axes[3] < -0.5) {
+              // console.log('right',gp.axes[2],gp.axes[3]);
+              keyPressed[1].east = true;
+              this.turnCheckerDirection = 'east';
+              this.currentPlayer = 2;
+            }
+            if (gp.axes[2] > 0.5 && gp.axes[3] > -0.5) {
+              // console.log('down',gp.axes[2],gp.axes[3]);
+              keyPressed[1].south = true;
+              this.turnCheckerDirection = 'south';
+              this.currentPlayer = 2;
+            }
+
           }
         }
       }
@@ -2895,8 +3008,16 @@ class App extends Component {
               if (player.target.occupant.type === 'player') {
 
                 // ATTACK SUCCESS!!
-                if (this.players.[player.target.occupant.player-1].defending.state === false) {
+                if (
+                  this.players.[player.target.occupant.player-1].defending.state === false ||
+                  this.players.[player.target.occupant.player-1].direction === player.direction
+                ) {
                   // console.log('attack success');
+
+                  if (this.players.[player.target.occupant.player-1].direction === player.direction) {
+                    console.log('back attack!!');
+                  }
+
                   player.success.attackSuccess = {
                     state: true,
                     count: 1,
@@ -2981,6 +3102,10 @@ class App extends Component {
                 // ATTACK DEFENDED!!
                 else {
                   // console.log('attackdefended');
+
+                  // if (this.players.[player.target.occupant.player-1].direction === player.direction) {
+                  //   console.log('defend the rear!!');
+                  // }
 
                   this.moveSpeed = .1;
 
@@ -3741,6 +3866,7 @@ class App extends Component {
       ghost: this.refs.ghostIndicate,
       death: this.refs.deathIndicate,
     }
+
     // let playerImgs = [
     //   {
     //     idle: {
@@ -4511,7 +4637,7 @@ class App extends Component {
         context.fillStyle = 'black';
         context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
 
-        context.fillStyle = "green";
+        context.fillStyle = "black";
         context.fillRect(center.x, center.y,5,5);
 
         let vertices = [
@@ -4676,7 +4802,6 @@ class App extends Component {
                 // if (plyr.number === 2) {
                 //   console.log('anim testing def',plyr.idleAnim.count,'plyr',plyr.number);
                 // }
-                // console.log('anim testing def',plyr.idleAnim.count,'plyr',plyr.number);
                 let animIndex3 = plyr.idleAnim.count -1;
                 finalAnimIndex = animIndex3;
               break;
@@ -5223,9 +5348,11 @@ class App extends Component {
                   plyr.direction === 'north' ||
                   plyr.direction === 'south'
                 ) {
-                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40)
                 } else {
-                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  // context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40)
                 }
                 // playerDrawLog(x,y,plyr)
               }
@@ -5238,9 +5365,11 @@ class App extends Component {
                   plyr.direction === 'north' ||
                   plyr.direction === 'south'
                 ) {
-                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40)
                 } else {
-                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  // context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40)
                 }
                 // playerDrawLog(x,y)
               }
@@ -5253,9 +5382,11 @@ class App extends Component {
                   plyr.direction === 'north' ||
                   plyr.direction === 'south'
                 ) {
-                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40)
                 } else {
-                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  // context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40)
                 }
                 // playerDrawLog(x,y)
               }
@@ -5268,9 +5399,11 @@ class App extends Component {
                   plyr.direction === 'north' ||
                   plyr.direction === 'south'
                 ) {
-                  context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40)
                 } else {
-                  context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  // context.drawImage(updatedPlayerImg, point.x-20, point.y-20, 40,40);
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40)
                 }
                 // playerDrawLog(x,y)
               }
@@ -7073,9 +7206,6 @@ class App extends Component {
 
     }
 
-    // check for terrain
-    //   based on terrain effect/buff/debuff update player props
-
 
     switch(cell.terrain.type) {
       case 'grass' :
@@ -7159,7 +7289,8 @@ class App extends Component {
     // console.log('pushing back');
 
     player.pushBack.prePushMoveSpeed = player.speed.move;
-    player.speed.move = .1;
+    player.speed.move = .125;
+
 
     let pushBackDirection = hitByPlayerDirection;
     player.strafing = {
@@ -7531,7 +7662,7 @@ class App extends Component {
               cell2.item.effect = item2.effect;
 
               item2.amount--
-              console.log('placed ingame item',cell2.number.x,cell2.number.y,item2.amount,this.itemList);
+              console.log('placed ingame item',item2.name,"@",cell2.number.x,cell2.number.y,'remaining',item2.amount);
 
               // for (const cell2 of this.gridInfo) {
               //   if (
@@ -8010,7 +8141,7 @@ class App extends Component {
   }
 
   drawGridInit = (canvas, context, canvas2, context2) => {
-    console.log('drawing initial');
+    // console.log('drawing initial');
 
     let gridInfo = [];
     class Point {
@@ -8110,7 +8241,7 @@ class App extends Component {
         context.fillStyle = 'black';
         context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
 
-        context.fillStyle = "green";
+        context.fillStyle = "black";
         context.fillRect(center.x, center.y,5,5);
 
 
@@ -8226,6 +8357,7 @@ class App extends Component {
           this.refs.playerImgIdleSheet,
           this.refs.player2ImgIdleNorth
         ]
+
         // let playerImgs = [
         //   this.refs.playerImgIdleNorth,
         //   this.refs.player2ImgIdleNorth
@@ -8248,7 +8380,6 @@ class App extends Component {
             let sWidth = this.charSpriteWidth;
             let sy = dirIndex * sHeight;
             let sx = 0 * sWidth;
-            // context.drawImage(playerImg, sx, sy, sWidth, sHeight, x, y, width, height)
 
 
             player.speed.move = .1;
@@ -8307,6 +8438,7 @@ class App extends Component {
             })
 
             this.getTarget(player);
+
             // context2.drawImage(playerImg, point.x-30, point.y-30, 60,60);
 
             context.drawImage(playerImg, sx, sy, sWidth, sHeight, point.x-30, point.y-30, 55, 55);
