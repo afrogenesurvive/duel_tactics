@@ -369,7 +369,7 @@ const DebugBox = props => {
         </li>
         <li className="debugBoxListItem">
           <p className="debugBoxText">
-            Defend Deflect: {guardBreakCrit}
+            Defend Deflect: {guardBreakCrit} %
           </p>
         </li>
         <li className="debugBoxListItem">
