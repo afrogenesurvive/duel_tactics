@@ -38,8 +38,12 @@ import './debugBox.css';
 
 const DebugBox = props => {
 
-  let singleHitCrit = Math.round((1/props.player.crits.singleHit)*100)
-  let doubleHitCrit = Math.round((1/props.player.crits.doubleHit)*100)
+  let singleHitCrit = Math.round((1/(props.player.crits.singleHit+0))*100)
+  let singleHitCritSpecialArmorMin = Math.round((1/(props.player.crits.singleHit+5))*100)
+  let singleHitCritSpecialArmorMax = Math.round((1/(props.player.crits.singleHit+10))*100)
+  let doubleHitCrit = Math.round((1/(props.player.crits.doubleHit+0))*100)
+  let doubleHitCritSpecialArmorMin = Math.round((1/(props.player.crits.doubleHit+5))*100)
+  let doubleHitCritSpecialArmorMax = Math.round((1/(props.player.crits.doubleHit+15))*100)
   let defendPushBackCrit = Math.round((1/props.player.crits.pushBack)*100)
   let attackPushBackCrit = Math.round((1/(props.player.crits.pushBack*2))*100)
   let gearDropCrit = Math.round((1/(props.player.crits.pushBack+3))*100)
@@ -385,6 +389,16 @@ const DebugBox = props => {
         <li className="debugBoxListItem">
           <p className="debugBoxText">
             Gear Drop: {gearDropCrit} %
+          </p>
+        </li>
+        <li className="debugBoxListItem">
+          <p className="debugBoxText">
+            1 Damage vs Evasive Armor: from {singleHitCritSpecialArmorMin} % to {singleHitCritSpecialArmorMax} %
+          </p>
+        </li>
+        <li className="debugBoxListItem">
+          <p className="debugBoxText">
+            2 Damage vs Evasive Armor: from {doubleHitCritSpecialArmorMin} % to {doubleHitCritSpecialArmorMax} %
           </p>
         </li>
       </ul>

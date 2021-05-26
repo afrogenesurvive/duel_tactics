@@ -794,7 +794,7 @@ class App extends Component {
         total: 3,
         type: 'armor',
         subType: 'helmet',
-        effect: 'hit-10',
+        effect: '+10',
       },
       {
         name: 'ninjaGi',
@@ -3111,15 +3111,18 @@ class App extends Component {
                   if (this.players.[player.target.occupant.player-1].currentArmor.name !== '') {
                     // console.log('opponent armour found');
                     switch(this.players.[player.target.occupant.player-1].currentArmor.effect) {
+                      case 'dblhit-5' :
+                        doubleHitChance = player.crits.doubleHit+5;
+                      break;
                       case 'dblhit-10' :
                         doubleHitChance = player.crits.doubleHit+10;
                       break;
-                      case 'dblhit-20' :
-                        doubleHitChance = player.crits.doubleHit+20;
+                      case 'dblhit-15' :
+                        doubleHitChance = player.crits.doubleHit+15;
                       break;
-                      case 'dblhit-30' :
-                        doubleHitChance = player.crits.doubleHit+30;
-                      break;
+                      // case 'dblhit-30' :
+                      //   doubleHitChance = player.crits.doubleHit+30;
+                      // break;
                       case 'snghit-5' :
                         singleHitChance = player.crits.singleHit+5;
                       break;
@@ -3830,15 +3833,18 @@ class App extends Component {
                   if (this.players.[plyr.number-1].currentArmor.name !== '') {
                     // console.log('opponent armour found');
                     switch(this.players.[plyr.number-1].currentArmor.effect) {
+                      case 'dblhit-5' :
+                        doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+5;
+                      break;
                       case 'dblhit-10' :
                         doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+10;
                       break;
-                      case 'dblhit-20' :
-                        doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+20;
+                      case 'dblhit-15' :
+                        doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+15;
                       break;
-                      case 'dblhit-30' :
-                        doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+30;
-                      break;
+                      // case 'dblhit-30' :
+                      //   doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+30;
+                      // break;
                       case 'snghit-5' :
                         singleHitChance = this.players[bolt.owner-1].crits.singleHit+5;
                       break;
@@ -8475,7 +8481,7 @@ class App extends Component {
 
 
         floor = floorImgs[cell.terrain.name]
-        
+
 
         context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
 
