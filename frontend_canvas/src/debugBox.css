@@ -73,3 +73,26 @@
   color: black;
   font-size: medium;
 }
+
+.gearPopover {
+  display: block;
+}
+
+.showCritsBtn {
+
+}
+.btnIcon {
+  color: #ffffff;
+}
+
+.critList {
+  display: inline-block;
+  columns: 2;
+}
+
+.tooltip {
+  background-color: #ffffff;
+}
+.tooltip-inner {
+  padding: .5rem;
+}

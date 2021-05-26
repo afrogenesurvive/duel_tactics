@@ -47,6 +47,8 @@ import pushbackInidcate from './assets/indicators/pushback.png';
 import ghostInidcate from './assets/indicators/ghost.png';
 import deathInidcate from './assets/indicators/death.png';
 import preAttackInidcate from './assets/indicators/preAttack.png';
+import attackBreakInidcate from './assets/indicators/attackBreak.png';
+import defendBreakInidcate from './assets/indicators/defendBreak.png';
 
 import mail1 from './assets/items/mail1.png';
 import mail2 from './assets/items/mail2.png';
@@ -283,6 +285,7 @@ class App extends Component {
           singleHit: 1,
           doubleHit: 6,
           pushBack: 3,
+          guardBreak: 3,
         },
         statusDisplay: {
           state: false,
@@ -316,6 +319,18 @@ class App extends Component {
           state: false,
           count: 0,
           limit: 5,
+        },
+        breakAnim: {
+          attack: {
+            state: false,
+            count: 0,
+            limit: 10
+          },
+          defend: {
+            state: false,
+            count: 0,
+            limit: 10
+          }
         }
       },
       {
@@ -514,6 +529,7 @@ class App extends Component {
           singleHit: 1,
           doubleHit: 6,
           pushBack: 3,
+          guardBreak: 3,
         },
         statusDisplay: {
           state: false,
@@ -547,6 +563,18 @@ class App extends Component {
           state: false,
           count: 0,
           limit: 5,
+        },
+        breakAnim: {
+          attack: {
+            state: false,
+            count: 0,
+            limit: 10
+          },
+          defend: {
+            state: false,
+            count: 0,
+            limit: 10
+          }
         }
       }
     ],
@@ -634,15 +662,15 @@ class App extends Component {
       row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x','x110x','x111x','x112x'],
       row2: ['x20x','x21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x','x210x','x211x','x212x'],
       row3: ['x30x','x31x','x32x','x33x','x34x','x35x','x36x','x37x','x38x','x39x','x310x','x311x','x312x'],
-      row4: ['x40x','x41x','x42x','x43x','x44x','x45x','x46x','x47x','x48x','z49x','x410x','x411x','x412x'],
-      row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58x','x59x','x510x','x511x','x512x'],
-      row6: ['x60x','y61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x','x610x','x611x','x612x'],
-      row7: ['x70x','y71x','x72x','x73x','x74x','x75x','x76x','y77x','x78x','x79x','x710x','x711x','x712x'],
-      row8: ['x80x','x81x','x82x','x83x','y84x','x85x','y86x','x87x','x88x','x89x','x810x','x811x','x812x'],
-      row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','x97x','x98x','x99x','x910x','x911x','x912x'],
+      row4: ['x40x','x41x','x42x','x43x','x44x','x45x','x46x','x47x','x48x','x49x','x410x','x411x','x412x'],
+      row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','y57x','x58x','x59x','x510x','x511x','x512x'],
+      row6: ['x60x','x61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x','x610x','x611x','x612x'],
+      row7: ['x70x','x71x','x72x','x73x','x74x','x75x','x76x','x77x','x78x','x79x','x710x','x711x','x712x'],
+      row8: ['x80x','x81x','x82x','z83x','x84x','x85x','x86x','x87x','x88x','x89x','x810x','x811x','x812x'],
+      row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','y97x','x98x','x99x','x910x','x911x','x912x'],
       row10: ['x100x','x101x','x102x','x103x','x104x','x105x','x106x','x107x','x108x','x109x','x1010x','x1011x','x1012x'],
       row11: ['x110x','x111x','x112x','x113x','x114x','x115x','x116x','x117x','x118x','x119x','x1110x','x1111x','x1112x'],
-      row12: ['x120x','x121x','x122x','x123x','x124x','x125x','x126x','x127x','x128x','x129x','x1210x','x1211x','x1212x'],
+      row12: ['x120x','x121x','z122x','x123x','x124x','x125x','x126x','x127x','x128x','x129x','z1210x','x1211x','x1212x'],
     };
     this.levelData9 = {
       row0: ['x00x','x01x','x02x','x03x','x04x','x05g','x06g','x07x','x08f','x09d'],
@@ -1092,6 +1120,7 @@ class App extends Component {
           singleHit: 1,
           doubleHit: 6,
           pushBack: 3,
+          guardBreak: 3,
         },
         statusDisplay: {
           state: false,
@@ -1126,6 +1155,18 @@ class App extends Component {
           count: 0,
           limit: 5,
         },
+        breakAnim: {
+          attack: {
+            state: false,
+            count: 0,
+            limit: 10
+          },
+          defend: {
+            state: false,
+            count: 0,
+            limit: 10
+          }
+        }
       },
       {
         number: 2,
@@ -1325,6 +1366,7 @@ class App extends Component {
           singleHit: 1,
           doubleHit: 6,
           pushBack: 3,
+          guardBreak: 3,
         },
         statusDisplay: {
           state: false,
@@ -1359,6 +1401,18 @@ class App extends Component {
           count: 0,
           limit: 5,
         },
+        breakAnim: {
+          attack: {
+            state: false,
+            count: 0,
+            limit: 10
+          },
+          defend: {
+            state: false,
+            count: 0,
+            limit: 10
+          }
+        }
       }
     ];
     this.stepper = {
@@ -2771,6 +2825,31 @@ class App extends Component {
           // player.idleAnim.state = false;
           player.idleAnim.count = 0;
         }
+        // BREAK ANIM STEPPERS!
+        if (player.breakAnim.attack.state === true) {
+          if (player.breakAnim.attack.count > 0 && player.breakAnim.attack.count < player.breakAnim.attack.limit) {
+            player.breakAnim.attack.count++
+          }
+          else if (player.breakAnim.attack.count >= player.breakAnim.attack.limit) {
+            player.breakAnim.attack = {
+              state: false,
+              count: 0,
+              limit: player.breakAnim.attack.limit
+            }
+          }
+        }
+        if (player.breakAnim.defend.state === true) {
+          if (player.breakAnim.defend.count > 0 && player.breakAnim.defend.count < player.breakAnim.defend.limit) {
+            player.breakAnim.defend.count++
+          }
+          else if (player.breakAnim.defend.count >= player.breakAnim.defend.limit) {
+            player.breakAnim.defend = {
+              state: false,
+              count: 0,
+              limit: player.breakAnim.defend.limit
+            }
+          }
+        }
 
 
         // KEY PRESS RELEASE CHECKS!!
@@ -3116,15 +3195,32 @@ class App extends Component {
                     limit: this.players[player.target.occupant.player-1].success.defendSuccess.limit
                   }
 
+                  // let shouldPushBack = 2;
                   let shouldPushBack = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.pushBack);
-                  // console.log('pushBack',shouldPushBack===1);
                   if (shouldPushBack === 1) {
                     let canPushback = this.pushBack(this.players[player.target.occupant.player-1],player.direction);
                   }
                   else {
                     // let deflectOpponent = this.rnJesus(1,1);
-                    let deflectOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.pushBack);
+                    let deflectOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.guardBreak);
                     if (deflectOpponent === 1) {
+                      this.players[player.target.occupant.player-1].breakAnim.defend = {
+                        state: true,
+                        count: 1,
+                        limit: player.breakAnim.defend.limit,
+                      };
+
+                      this.players[player.target.occupant.player-1].defending = {
+                        state: false,
+                        count: 0,
+                        limit: this.players[player.target.occupant.player-1].defending.limit,
+                      }
+                      this.players[player.target.occupant.player-1].attacking = {
+                        state: false,
+                        count: 0,
+                        limit: this.players[player.target.occupant.player-1].attacking.limit,
+                      }
+
                       this.players[player.target.occupant.player-1].success.deflected = {
                         state: true,
                         count: 1,
@@ -3136,7 +3232,10 @@ class App extends Component {
                   }
 
                   // PUSHBACK DEFLECT!!
-                  let shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack);
+                  // let shouldDeflectAttacker = 2;
+                  let shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
+                  // let shouldDeflectPushBack = 2;
+                  let shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack*2);
                   if (shouldDeflectPushBack === 1) {
                     let pushBackDirection;
                     switch(player.direction) {
@@ -3167,12 +3266,25 @@ class App extends Component {
                     }
 
                     let canPushback = this.pushBack(player,pushBackDirection);
-                    if (canPushback === true) {
+
+                    if (canPushback === true && shouldDeflectAttacker === 1) {
                       // console.log('predeflect --> pushback');
                       player.success.deflected.predeflect = true;
                     }
-                    else if (canPushback === false) {
+                    else if (canPushback === false && shouldDeflectAttacker === 1) {
                       // console.log('no pushback ---> just deflect');
+
+                      player.defending = {
+                        state: false,
+                        count: 0,
+                        limit: this.players[player.target.occupant.player-1].defending.limit,
+                      }
+                      player.attacking = {
+                        state: false,
+                        count: 0,
+                        limit: this.players[player.target.occupant.player-1].attacking.limit,
+                      }
+
                       player.success.deflected = {
                         state: true,
                         count: 1,
@@ -3182,8 +3294,20 @@ class App extends Component {
                       }
                     }
                   }
-                  else if (shouldDeflectPushBack !== 1) {
+                  else if (shouldDeflectPushBack !== 1 && shouldDeflectAttacker === 1) {
                     // console.log('no pushback ---> just deflect');
+
+                    player.defending = {
+                      state: false,
+                      count: 0,
+                      limit: this.players[player.target.occupant.player-1].defending.limit,
+                    }
+                    player.attacking = {
+                      state: false,
+                      count: 0,
+                      limit: this.players[player.target.occupant.player-1].attacking.limit,
+                    }
+
                     player.success.deflected = {
                       state: true,
                       count: 1,
@@ -3191,6 +3315,9 @@ class App extends Component {
                       predeflect: player.success.deflected.predeflect,
                       type: 'attack'
                     }
+                  }
+                  else if (shouldDeflectPushBack !== 1 && shouldDeflectAttacker !== 1) {
+                    // console.log('attacker not deflected or pushed back');
                   }
 
                 }
@@ -3760,6 +3887,18 @@ class App extends Component {
                   }
                   else if (miss !== true) {
                     this.players.[plyr.number-1].action = 'deflected';
+
+                    this.players[plyr.number-1].defending = {
+                      state: false,
+                      count: 0,
+                      limit: this.players[player.target.occupant.player-1].defending.limit,
+                    }
+                    this.players[plyr.number-1].attacking = {
+                      state: false,
+                      count: 0,
+                      limit: this.players[player.target.occupant.player-1].attacking.limit,
+                    }
+
                     this.players.[plyr.number-1].success.deflected = {
                       state: true,
                       count: 1,
@@ -3782,8 +3921,13 @@ class App extends Component {
                   }
 
                   // let deflectOpponent = this.rnJesus(1,3);
-                  let deflectOpponent = this.rnJesus(1,this.players[plyr.number-1].crits.pushBack);
+                  let deflectOpponent = this.rnJesus(1,this.players[plyr.number-1].crits.guardBreak);
                   if (deflectOpponent === 1) {
+                    this.players[plyr.number-1].breakAnim.defend = {
+                      state: true,
+                      count: 1,
+                      limit: player.breakAnim.defend.limit,
+                    };
                     this.players[plyr.number-1].success.deflected = {
                       state: true,
                       count: 1,
@@ -3878,6 +4022,8 @@ class App extends Component {
       pushback: this.refs.pushbackIndicate,
       ghost: this.refs.ghostIndicate,
       death: this.refs.deathIndicate,
+      attackBreak: this.refs.attackBreakIndicate,
+      defendBreak: this.refs.defendBreakIndicate,
     }
 
     // let playerImgs = [
@@ -4623,6 +4769,7 @@ class App extends Component {
 
 
         let gridInfoCell = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
+
         if (gridInfoCell.void.state === true) {
           drawFloor = false;
         }
@@ -5260,6 +5407,16 @@ class App extends Component {
               if (plyr.success.attackSuccess === true) {
                 context.drawImage(indicatorImgs.attackSuccess, point.x-20, point.y-20, 25,25);
               }
+              // if (plyr.breakAnim.attack.state === true && plyr.success.deflected.state !== true) {
+              //   context.fillStyle = "black";
+              //   context.fillText("atk break!", point.x-30, point.y-20, 40,70);
+              //   // context.drawImage(indicatorImgs.attackBreak, point.x-20, point.y-20, 25,25);
+              // }
+              // if (plyr.breakAnim.defend.state === true && plyr.success.deflected.state !== true) {
+              //   context.fillStyle = "black";
+              //   context.fillText("guard break!", point.x-30, point.y-20, 40,70);
+              //   // context.drawImage(indicatorImgs.defendBreak, point.x-20, point.y-20, 25,25);
+              // }
 
               // playerDrawLog(x,y,plyr)
             }
@@ -5698,6 +5855,17 @@ class App extends Component {
                   context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
                 }
               }
+            }
+
+            if (plyr.breakAnim.attack.state === true) {
+              // context.fillStyle = "black";
+              // context.fillText("atk break!", point.x-30, point.y-30, 40,70);
+              context.drawImage(indicatorImgs.attackBreak, point.x-40, point.y-40, 30,30);
+            }
+            if (plyr.breakAnim.defend.state === true) {
+              // context.fillStyle = "black";
+              // context.fillText("guard break!", point.x-30, point.y-30, 40,70);
+              context.drawImage(indicatorImgs.defendBreak, point.x-40, point.y-40, 30,30);
             }
           }
           if (plyr.dead.state === true && player.dead.count > 0 && plyr.dead.count < plyr.dead.limit) {
@@ -7249,7 +7417,7 @@ class App extends Component {
           applyHazard = this.rnJesus(1,2)
         }
         else {
-          applyHazard = this.rnJesus(1,4)
+          applyHazard = this.rnJesus(1,3)
         }
         if (applyHazard === 1) {
           this.players[player.number-1].hp = this.players[player.number-1].hp -1;
@@ -7308,11 +7476,22 @@ class App extends Component {
           state: false,
           count: 0,
           limit: 15,
-        }
+        };
         player.idleAnim = {
           state: false,
           count: 0,
           limit: 5,
+        };
+        player.breakAnim.attack = {
+          state: true,
+          count: 1,
+          limit: player.breakAnim.attack.limit,
+        };
+        this.players[player.number-1].statusDisplay = {
+          state: true,
+          status: 'attack break!',
+          count: 1,
+          limit: this.players[player.number-1].statusDisplay.limit,
         }
         break;
       case 'defending':
@@ -7321,12 +7500,23 @@ class App extends Component {
           state: false,
           count: 0,
           limit: 5,
-        }
+        };
         player.idleAnim = {
           state: false,
           count: 0,
           limit: 5,
-        }
+        };
+        player.breakAnim.defend = {
+          state: true,
+          count: 1,
+          limit: player.breakAnim.defend.limit,
+        };
+        this.players[player.number-1].statusDisplay = {
+          state: true,
+          status: 'guard break!',
+          count: 1,
+          limit: this.players[player.number-1].statusDisplay.limit,
+        };
         break;
     }
 
@@ -7413,6 +7603,7 @@ class App extends Component {
       singleHit: 1,
       doubleHit: 6,
       pushBack: 3,
+      guardBreak: 3,
     };
     this.players[player.number-1].items = {
       weaponIndex: 0,
@@ -7568,6 +7759,7 @@ class App extends Component {
         singleHit: 1,
         doubleHit: 6,
         pushBack: 3,
+        guardBreak: 3,
       }
       player.strafing = {
         state: false,
@@ -7750,7 +7942,8 @@ class App extends Component {
     let dropWhat = this.rnJesus(1,2);
     let shouldDrop = false;
     // let dropChance = this.rnJesus(1,1);
-    let dropChance = this.rnJesus(1,1*player.crits.pushBack);
+    // let dropChance = this.rnJesus(1,1*player.crits.pushBack);
+    let dropChance = this.rnJesus(1,player.crits.pushBack+3);
     if (
       dropChance === 1 &&
       player.falling.state !== true
@@ -8073,7 +8266,8 @@ class App extends Component {
       let elemLevelData = this.['levelData'+this.gridWidth][levelData2Row][elem.number.y];
       elem.levelData = elemLevelData;
 
-      switch(elem.levelData.charAt(3)) {
+      let terrainInfo = elem.levelData.length-1;
+      switch(elem.levelData.charAt(terrainInfo)) {
         case 'a' :
           elem.terrain = {
             name: 'grass',
@@ -8137,7 +8331,7 @@ class App extends Component {
           }
         break;
       }
-      // console.log(elem.terrain);
+      // console.log('oo2',elem.levelData,elem.number,elem.terrain);
 
       // SET EDGES!
       if (elem.number.x === 0) {
@@ -8279,8 +8473,9 @@ class App extends Component {
         let cell = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
         let cellLevelData = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y).levelData;
 
-        floor = floorImgs[cell.terrain.name]
 
+        floor = floorImgs[cell.terrain.name]
+        
 
         context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
 
@@ -8637,6 +8832,8 @@ class App extends Component {
           <img src={ghostInidcate} className='hidden playerImgs' ref="ghostIndicate" alt="logo" />
           <img src={deathInidcate} className='hidden playerImgs' ref="deathIndicate" alt="logo" />
           <img src={preAttackInidcate} className='hidden playerImgs' ref="preAttackIndicate" alt="logo" />
+          <img src={attackBreakInidcate} className='hidden playerImgs' ref="attackBreakIndicate" alt="logo" />
+          <img src={defendBreakInidcate} className='hidden playerImgs' ref="defendBreakIndicate" alt="logo" />
 
 
           <img src={sword} className='hidden playerImgs' ref="itemSword" alt="logo" />
