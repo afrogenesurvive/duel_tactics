@@ -2657,35 +2657,41 @@ class App extends Component {
     // console.log('updating player',player.number);
 
     let keyPressedDirection;
-    for (const [key, value] of Object.entries(this.keyPressed[player.number-1])) {
-      // console.log(`${key}: ${value} ....${player.number}`);
-
-
-      // if (this.keyPressed[player.number-1].north === true && this.keyPressed[player.number-1].west === true) {
-      //   console.log('double diagonal press');
-      //   this.keyPressed[player.number-1].northWest = true;
-      //   this.turnCheckerDirection = 'northWest';
-      // }
-      // else if (player.turning.state === true && player.turning.toDirection === 'northWest') {
-      //   if (this.keyPressed[player.number-1].north === false || this.keyPressed[player.number-1].west === false) {
-      //     console.log('double diagonal release');
-      //     this.keyPressed[player.number-1].northWest = false;
-      //     // this.turnCheckerDirection = 'northWest';
-      //   }
-      // }
-
-
-      if (
-        key !== 'strafe' &&
-        key !== 'attack' &&
-        key !== 'defend' &&
-        value === true
-      ) {
-        // console.log('pressed',key);
-        keyPressedDirection = key;
-      }
+    if (player.ai.state === true && player.dead.state === true) {
 
     }
+    else {
+      for (const [key, value] of Object.entries(this.keyPressed[player.number-1])) {
+        // console.log(`${key}: ${value} ....${player.number}`);
+
+
+        // if (this.keyPressed[player.number-1].north === true && this.keyPressed[player.number-1].west === true) {
+        //   console.log('double diagonal press');
+        //   this.keyPressed[player.number-1].northWest = true;
+        //   this.turnCheckerDirection = 'northWest';
+        // }
+        // else if (player.turning.state === true && player.turning.toDirection === 'northWest') {
+        //   if (this.keyPressed[player.number-1].north === false || this.keyPressed[player.number-1].west === false) {
+        //     console.log('double diagonal release');
+        //     this.keyPressed[player.number-1].northWest = false;
+        //     // this.turnCheckerDirection = 'northWest';
+        //   }
+        // }
+
+
+        if (
+          key !== 'strafe' &&
+          key !== 'attack' &&
+          key !== 'defend' &&
+          value === true
+        ) {
+          // console.log('pressed',key);
+          keyPressedDirection = key;
+        }
+
+      }
+    }
+
 
 
     let nextPosition;
@@ -4124,10 +4130,11 @@ class App extends Component {
         }
       }
     }
-    if (player.ai.state === true && player.dead.state === true ) {
-      this.keyPressed.splice(player.number-1,1)
-      this.players.splice(player.number-1,1)
-    }
+
+    // if (player.ai.state === true && player.dead.state === true ) {
+    //   this.keyPressed.splice(player.number-1,1)
+    //   this.players.splice(player.number-1,1)
+    // }
 
 
     // SYNC W/ GLOBAL PLAYER DATA
@@ -8429,10 +8436,10 @@ class App extends Component {
 
     this.players[player.number-1] = player;
 
-    // if (player.ai.state === true) {
-    //   console.log('ai player eliminated');
-    //   this.removeComPlayer(player.number)
-    // }
+    if (player.ai.state === true) {
+      console.log('ai player eliminated');
+      this.removeComPlayer(player.number)
+    }
 
   }
 
@@ -9880,6 +9887,21 @@ class App extends Component {
   }
   removeComPlayer = (playerNumber) => {
     console.log('removing ai player',playerNumber);
+    this.players[playerNumber-1].ghost = {
+      state: false,
+      position: {
+        cell: {
+          number: {
+            x: 0,
+            y: 0,
+          },
+          center: {
+            x: 0,
+            y: 0,
+          }
+        }
+      }
+    }
     this.keyPressed.splice(playerNumber-1,1)
     this.players.splice(playerNumber-1,1)
   }
