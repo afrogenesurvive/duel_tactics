@@ -2583,10 +2583,10 @@ class App extends Component {
     if(this.stepper.deltaTime > this.stepper.interval) {
       // console.log('update loop step...dt',this.stepper.deltaTime,'interval',this.stepper.interval);
       this.time++
-      // if (this.time === 300) {
-      //   // this.openVoid = true;
-      //   // this.customCellToVoid({x:0,y:9})
-      // }
+      if (this.time === 300) {
+        // this.openVoid = true;
+        this.customCellToVoid({x:2,y:2})
+      }
 
       // this.aiAct();
       if (this.gamepad === true) {
@@ -7227,6 +7227,12 @@ class App extends Component {
               }
               else {
                 console.log('you already have this weapon');
+                this.players[player.number-1].statusDisplay = {
+                  state: true,
+                  status: 'Already have this weapon!',
+                  count: 1,
+                  limit: this.players[player.number-1].statusDisplay.limit,
+                }
               }
             }
           }
@@ -7301,6 +7307,13 @@ class App extends Component {
             }
             else {
               console.log('you already have this armor');
+              this.players[player.number-1].statusDisplay = {
+                state: true,
+                status: 'Already have this armor!',
+                count: 1,
+                limit: this.players[player.number-1].statusDisplay.limit,
+              }
+
             }
           }
         }
@@ -8569,7 +8582,7 @@ class App extends Component {
 
   }
   discardGear = (player,type) => {
-    console.log('dropping gear');
+    // console.log('dropping gear');
 
     let cellToDrop = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y);
 
