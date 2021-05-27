@@ -9005,6 +9005,9 @@ class App extends Component {
   drawGridInit = (canvas, context, canvas2, context2) => {
     // console.log('drawing initial');
 
+    context.clearRect(0,0,this.canvasWidth,this.canvasHeight)
+    context2.clearRect(0,0,this.canvasWidth,this.canvasHeight)
+
     let gridInfo = [];
     class Point {
         constructor(x, y) {
