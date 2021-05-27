@@ -2583,10 +2583,10 @@ class App extends Component {
     if(this.stepper.deltaTime > this.stepper.interval) {
       // console.log('update loop step...dt',this.stepper.deltaTime,'interval',this.stepper.interval);
       this.time++
-      if (this.time === 300) {
-        // this.openVoid = true;
-        this.customCellToVoid({x:2,y:2})
-      }
+      // if (this.time === 300) {
+      //   // this.openVoid = true;
+      //   // this.customCellToVoid({x:2,y:2})
+      // }
 
       // this.aiAct();
       if (this.gamepad === true) {
@@ -4843,6 +4843,17 @@ class App extends Component {
 
         let drawFloor = true;
 
+
+
+
+        let gridInfoCell = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
+
+        if (gridInfoCell.void.state === true) {
+          drawFloor = false;
+        }
+
+        floor = floorImgs[gridInfoCell.terrain.name]
+
         // VOID BLINKER!!
         if (
           this.cellToVoid.state === true &&
@@ -4856,15 +4867,6 @@ class App extends Component {
             drawFloor = true;
           }
         }
-
-
-        let gridInfoCell = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
-
-        if (gridInfoCell.void.state === true) {
-          drawFloor = false;
-        }
-
-        floor = floorImgs[gridInfoCell.terrain.name]
 
         // CELLS UNDER ATTACK!
         if (this.cellsUnderAttack.length > 0) {
