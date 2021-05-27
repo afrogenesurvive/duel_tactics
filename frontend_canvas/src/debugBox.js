@@ -15,7 +15,7 @@ import {
   faUser,
   faBriefcase,
 } from '@fortawesome/free-solid-svg-icons';
-import attackInidcate from './assets/indicators/attack.png'
+import attackInidcate from './assets/indicators/attackx.png'
 import attackSuccessInidcate from './assets/indicators/attackSuccess.png'
 import defendInidcate from './assets/indicators/defend.png'
 import deflectInidcate from './assets/indicators/deflect.png'
@@ -43,6 +43,7 @@ const DebugBox = props => {
   let singleHitCritSpecialArmorMin = Math.round((1/(props.player.crits.singleHit+5))*100)
   let singleHitCritSpecialArmorMax = Math.round((1/(props.player.crits.singleHit+10))*100)
   let doubleHitCrit = Math.round((1/(props.player.crits.doubleHit+0))*100)
+  let doubleHitCritBackAttack = Math.round((1/2)*100)
   let doubleHitCritSpecialArmorMin = Math.round((1/(props.player.crits.doubleHit+5))*100)
   let doubleHitCritSpecialArmorMax = Math.round((1/(props.player.crits.doubleHit+15))*100)
   let defendPushBackCrit = Math.round((1/props.player.crits.pushBack)*100)
@@ -50,9 +51,8 @@ const DebugBox = props => {
   let gearDropCrit = Math.round((1/(props.player.crits.pushBack+3))*100)
   let guardBreakCrit = Math.round((1/props.player.crits.guardBreak)*100)
 
-  const [state, setState] = useState("crits");
+  const [state, setState] = useState("player");
   const handleStateChange = (args) => {
-    console.log('vvs',args);
     setState(args)
    }
 
@@ -358,6 +358,11 @@ const DebugBox = props => {
         <li className="debugBoxListItem">
           <p className="debugBoxText">
             2 Damage: {doubleHitCrit} %
+          </p>
+        </li>
+        <li className="debugBoxListItem">
+          <p className="debugBoxText">
+            2 Damage from behind: max {doubleHitCritBackAttack} %
           </p>
         </li>
         <li className="debugBoxListItem">

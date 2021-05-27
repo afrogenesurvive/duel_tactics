@@ -12,14 +12,6 @@ import {
   faMapMarked,
 
 } from '@fortawesome/free-solid-svg-icons';
-import attackInidcate from './assets/indicators/attack.png'
-import attackSuccessInidcate from './assets/indicators/attackSuccess.png'
-import defendInidcate from './assets/indicators/defend.png'
-import deflectInidcate from './assets/indicators/deflect.png'
-import pushbackInidcate from './assets/indicators/pushback.png'
-import ghostInidcate from './assets/indicators/ghost.png'
-import deathInidcate from './assets/indicators/death.png'
-import preAttackInidcate from './assets/indicators/preAttack.png'
 
 
 import './settings.css';

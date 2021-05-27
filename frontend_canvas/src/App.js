@@ -38,7 +38,8 @@ import player2ImgIdleSouth from './assets/player/idle/player2ImgSouth.png'
 import player2ImgIdleSouthWest from './assets/player/idle/player2ImgSouthWest.png'
 import player2ImgIdleSouthEast from './assets/player/idle/player2ImgSouthEast.png'
 
-import attackInidcate from './assets/indicators/attack.png';
+import attack1Indicate from './assets/indicators/attack1.png';
+import attack2Indicate from './assets/indicators/attack2.png';
 import attackSuccessInidcate from './assets/indicators/attackSuccess.png';
 import defendInidcate from './assets/indicators/defend.png';
 import deflectInidcate from './assets/indicators/deflect.png';
@@ -184,6 +185,7 @@ class App extends Component {
           count: 0,
           limit: 15,
         },
+        attackStrength: 0,
         success: {
           attackSuccess: {
             state: false,
@@ -271,6 +273,7 @@ class App extends Component {
           armor: [],
           ammo: 0,
         },
+        inventorySize: 4,
         cycleWeapon: {
           state: false,
           count: 0,
@@ -428,6 +431,7 @@ class App extends Component {
           count: 0,
           limit: 15,
         },
+        attackStrength: 0,
         success: {
           attackSuccess: {
             state: false,
@@ -515,6 +519,7 @@ class App extends Component {
           armor: [],
           ammo: 0,
         },
+        inventorySize: 4,
         cycleWeapon: {
           state: false,
           count: 0,
@@ -1019,6 +1024,7 @@ class App extends Component {
           count: 0,
           limit: 15,
         },
+        attackStrength: 0,
         success: {
           attackSuccess: {
             state: false,
@@ -1106,6 +1112,7 @@ class App extends Component {
           armor: [],
           ammo: 0,
         },
+        inventorySize: 4,
         cycleWeapon: {
           state: false,
           count: 0,
@@ -1264,6 +1271,7 @@ class App extends Component {
           count: 0,
           limit: 15,
         },
+        attackStrength: 0,
         success: {
           attackSuccess: {
             state: false,
@@ -1352,6 +1360,7 @@ class App extends Component {
           armor: [],
           ammo: 0,
         },
+        inventorySize: 4,
         cycleWeapon: {
           state: false,
           count: 0,
@@ -1539,7 +1548,6 @@ class App extends Component {
     this.charSpriteWidth = 512;
 
   }
-
 
 
   componentDidMount() {
@@ -2490,6 +2498,7 @@ class App extends Component {
       }
     }
 
+
     // for (const player of this.players) {
     //   this.playerUpdate(player, this.state.canvas, this.state.context);
     // }
@@ -2607,6 +2616,19 @@ class App extends Component {
         keyPressedDirection = key;
       }
 
+    }
+
+    if (
+      this.keyPressed[player.number-1].defend === true &&
+      this.keyPressed[player.number-1].cycleWeapon === true
+    ) {
+      this.discardGear(player,"weapon")
+    }
+    if (
+      this.keyPressed[player.number-1].defend === true &&
+      this.keyPressed[player.number-1].cycleArmor === true
+    ) {
+      this.discardGear(player,"armor")
     }
 
 
@@ -3083,7 +3105,6 @@ class App extends Component {
                 })
               }
 
-
               if (player.target.occupant.type === 'player') {
 
                 // ATTACK SUCCESS!!
@@ -3093,8 +3114,10 @@ class App extends Component {
                 ) {
                   // console.log('attack success');
 
+                  let backAttack = false;
                   if (this.players.[player.target.occupant.player-1].direction === player.direction) {
                     console.log('back attack!!');
+                    backAttack = true;
                   }
 
                   player.success.attackSuccess = {
@@ -3107,6 +3130,12 @@ class App extends Component {
                   // CALCULATE ATTACKER DOUBLE HIT!
                   let doubleHitChance = player.crits.doubleHit;
                   let singleHitChance = player.crits.singleHit;
+                  if (backAttack === true) {
+                    if (doubleHitChance > 2) {
+                      let diff = doubleHitChance - 2;
+                      doubleHitChance = doubleHitChance - diff;
+                    }
+                  }
 
                   if (this.players.[player.target.occupant.player-1].currentArmor.name !== '') {
                     // console.log('opponent armour found');
@@ -3137,11 +3166,13 @@ class App extends Component {
                   if (doubleHit === 1) {
                     console.log('double hit attack');
                     this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 2;
+                    player.attackStrength = 2;
                     this.attackedCancel(this.players[player.target.occupant.player-1])
                   }
                   else if (singleHit === 1) {
                     console.log('single hit attack');
                     this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
+                    player.attackStrength = 1;
                     this.attackedCancel(this.players[player.target.occupant.player-1])
                   }
                   let missed = false;
@@ -3337,6 +3368,7 @@ class App extends Component {
               count: 0,
               limit: player.attacking.limit
             }
+            player.attackStrength = 0;
             player.action = 'idle';
           }
         }
@@ -3815,8 +3847,10 @@ class App extends Component {
                 ) {
                   // console.log('attack success');
 
+                  let backAttack = false;
                   if (this.players.[plyr.number-1].direction === bolt.direction) {
                     console.log('back attack');
+                    backAttack = true;
                   }
 
                   this.players[bolt.owner-1].success.attackSuccess = {
@@ -3829,6 +3863,12 @@ class App extends Component {
                   // CALCULATE ATTACKER DOUBLE HIT!
                   let doubleHitChance = this.players[bolt.owner-1].crits.doubleHit;
                   let singleHitChance = this.players[bolt.owner-1].crits.singleHit;
+                  if (backAttack === true) {
+                    if (doubleHitChance > 2) {
+                      let diff = doubleHitChance - 2;
+                      doubleHitChance = doubleHitChance - diff;
+                    }
+                  }
 
                   if (this.players.[plyr.number-1].currentArmor.name !== '') {
                     // console.log('opponent armour found');
@@ -3943,7 +3983,9 @@ class App extends Component {
                     };
                   }
                 }
+
                 bolt.kill = true;
+
               }
             }
 
@@ -4020,7 +4062,8 @@ class App extends Component {
 
     let indicatorImgs = {
       preAttack: this.refs.preAttackIndicate,
-      attack: this.refs.attackIndicate,
+      attack1: this.refs.attack1Indicate,
+      attack2: this.refs.attack2Indicate,
       attackSuccess: this.refs.attackSuccessIndicate,
       defend: this.refs.defendIndicate,
       deflect: this.refs.deflectIndicate,
@@ -5398,20 +5441,26 @@ class App extends Component {
               if (plyr.attacking.state === true) {
 
                 if (plyr.attacking.count > 0 && plyr.attacking.count < 3) {
-                  context.drawImage(indicatorImgs.preAttack, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.preAttack, point.x-35, point.y-35, 35,35);
                 }
 
                 if (plyr.attacking.count > 8 && plyr.attacking.count < plyr.attacking.limit+1) {
+                  if (plyr.attackStrength === 1) {
+                    context.drawImage(indicatorImgs.attack1, point.x-35, point.y-35, 35,35);
+                  }
+                  if (plyr.attackStrength === 2) {
+                    context.drawImage(indicatorImgs.attack2, point.x-35, point.y-35, 35,35);
+                  }
                 // if (plyr.attacking.count > plyr.attacking.limit-4 && plyr.attacking.count < plyr.attacking.limit+1) {
-                  context.drawImage(indicatorImgs.attack, point.x-20, point.y-20, 25,25);
+                  // context.drawImage(indicatorImgs.attack, point.x-20, point.y-20, 25,25);
                 }
 
               }
               if (plyr.defending.state === true) {
-                context.drawImage(indicatorImgs.defend, point.x-20, point.y-20, 25,25);
+                context.drawImage(indicatorImgs.defend, point.x-35, point.y-35, 35,35);
               }
               if (plyr.success.attackSuccess === true) {
-                context.drawImage(indicatorImgs.attackSuccess, point.x-20, point.y-20, 25,25);
+                context.drawImage(indicatorImgs.attackSuccess, point.x-35, point.y-35, 35,35);
               }
               // if (plyr.breakAnim.attack.state === true && plyr.success.deflected.state !== true) {
               //   context.fillStyle = "black";
@@ -5757,10 +5806,10 @@ class App extends Component {
               ) {
                 context.drawImage(updatedPlayerImg, point.x-35, point.y-20, 55,55);
                 if (plyr.success.deflected.type === 'attack') {
-                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
                 }
                 else if (plyr.success.deflected.type === 'attacked') {
-                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
                 }
               }
             }
@@ -5771,10 +5820,10 @@ class App extends Component {
               ) {
                 context.drawImage(updatedPlayerImg, point.x-30, point.y-20, 40,40);
                 if (plyr.success.deflected.type === 'attack') {
-                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
                 }
                 else if (plyr.success.deflected.type === 'attacked') {
-                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
                 }
               }
             }
@@ -5785,10 +5834,10 @@ class App extends Component {
               ) {
                 context.drawImage(updatedPlayerImg, point.x-20, point.y-10, 40,40);
                 if (plyr.success.deflected.type === 'attack') {
-                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
                 }
                 else if (plyr.success.deflected.type === 'attacked') {
-                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
                 }
               }
             }
@@ -5799,10 +5848,10 @@ class App extends Component {
               ) {
                 context.drawImage(updatedPlayerImg, point.x-35, point.y-30, 55,55);
                 if (plyr.success.deflected.type === 'attack') {
-                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
                 }
                 else if (plyr.success.deflected.type === 'attacked') {
-                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
                 }
               }
             }
@@ -5813,10 +5862,10 @@ class App extends Component {
               ) {
                 context.drawImage(updatedPlayerImg, point.x-15, point.y-20, 55,55);
                 if (plyr.success.deflected.type === 'attack') {
-                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
                 }
                 else if (plyr.success.deflected.type === 'attacked') {
-                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
                 }
               }
             }
@@ -5827,10 +5876,10 @@ class App extends Component {
               ) {
                 context.drawImage(updatedPlayerImg, point.x-15, point.y-30, 55,55);
                 if (plyr.success.deflected.type === 'attack') {
-                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
                 }
                 else if (plyr.success.deflected.type === 'attacked') {
-                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
                 }
               }
             }
@@ -5841,10 +5890,10 @@ class App extends Component {
               ) {
                 context.drawImage(updatedPlayerImg, point.x-20, point.y-30, 40,40);
                 if (plyr.success.deflected.type === 'attack') {
-                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
                 }
                 else if (plyr.success.deflected.type === 'attacked') {
-                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
                 }
               }
             }
@@ -5855,10 +5904,10 @@ class App extends Component {
               ) {
                 context.drawImage(updatedPlayerImg, point.x-10, point.y-20, 40,40);
                 if (plyr.success.deflected.type === 'attack') {
-                  context.drawImage(indicatorImgs.deflect, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
                 }
                 else if (plyr.success.deflected.type === 'attacked') {
-                  context.drawImage(indicatorImgs.deflectInjured, point.x-25, point.y-25, 25,25);
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
                 }
               }
             }
@@ -5866,12 +5915,12 @@ class App extends Component {
             if (plyr.breakAnim.attack.state === true) {
               // context.fillStyle = "black";
               // context.fillText("atk break!", point.x-30, point.y-30, 40,70);
-              context.drawImage(indicatorImgs.attackBreak, point.x-40, point.y-40, 30,30);
+              context.drawImage(indicatorImgs.attackBreak, point.x-40, point.y-40, 35,35);
             }
             if (plyr.breakAnim.defend.state === true) {
               // context.fillStyle = "black";
               // context.fillText("guard break!", point.x-30, point.y-30, 40,70);
-              context.drawImage(indicatorImgs.defendBreak, point.x-40, point.y-40, 30,30);
+              context.drawImage(indicatorImgs.defendBreak, point.x-40, point.y-40, 35,35);
             }
           }
           if (plyr.dead.state === true && player.dead.count > 0 && plyr.dead.count < plyr.dead.limit) {
@@ -7052,39 +7101,46 @@ class App extends Component {
     return newPosition;
 
   }
-  checkDestination = (player) => {
+  checkDestination = (player,checkTerrain) => {
     // console.log('checking for item or enviro effect');
 
     this.players[player.number-1].terrainMoveSpeed.state = false;
     let pickUp = false;
+    let cell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y);
 
-    let cell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y)
-    if (cell.item.name !== '') {
-      // console.log('picked up an item');
-      if (cell.item.type === 'weapon') {
-        // console.log('weapon',cell.item);
+    let gearAmount = 0;
+    for (const weapon of player.items.weapons) {
+      if (weapon.name && weapon.name !== '') {
+        gearAmount++
+      }
+    }
+    for (const armor of player.items.armor) {
+      if (armor.name && armor.name !== '') {
+        gearAmount++
+      }
+    }
 
-        if (player.currentWeapon.name === '' || !player.currentWeapon.name) {
-          this.players[player.number-1].currentWeapon = {
-            name: cell.item.name,
-            type: cell.item.subType,
-            effect: cell.item.effect,
-          }
-          this.players[player.number-1].items.weapons.push({
-            name: cell.item.name,
-            type: cell.item.subType,
-            effect: cell.item.effect,
-          })
-          if (cell.item.subType === 'crossbow') {
-            let ammo = parseInt(cell.item.effect.split('+')[1])
-            // console.log('picked up a crossbow checking ammo',ammo);
-            this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
-            // console.log('new ammo amt',this.players[player.number-1].items.ammo);
-          }
-          pickUp = true;
-        }
-        else {
-          if (player.items.weapons.map(weapon => weapon.name).includes(cell.item.name) !== true ) {
+    let haveSpace = false;
+    if (gearAmount < player.inventorySize) {
+      haveSpace = true;
+    }
+    // console.log('gearAmount', gearAmount, 'inventorySize',player.inventorySize);
+
+    if (haveSpace === true) {
+
+
+      // let cell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y)
+      if (cell.item.name !== '') {
+        // console.log('picked up an item');
+        if (cell.item.type === 'weapon') {
+          // console.log('weapon',cell.item);
+
+          if (player.currentWeapon.name === '' || !player.currentWeapon.name) {
+            this.players[player.number-1].currentWeapon = {
+              name: cell.item.name,
+              type: cell.item.subType,
+              effect: cell.item.effect,
+            }
             this.players[player.number-1].items.weapons.push({
               name: cell.item.name,
               type: cell.item.subType,
@@ -7097,151 +7153,128 @@ class App extends Component {
               // console.log('new ammo amt',this.players[player.number-1].items.ammo);
             }
             pickUp = true;
-
-            this.players[player.number-1].statusDisplay = {
-              state: true,
-              status: 'weapon accquired',
-              count: 1,
-              limit: this.players[player.number-1].statusDisplay.limit,
-            }
           }
           else {
+            if (player.items.weapons.map(weapon => weapon.name).includes(cell.item.name) !== true ) {
+              this.players[player.number-1].items.weapons.push({
+                name: cell.item.name,
+                type: cell.item.subType,
+                effect: cell.item.effect,
+              })
+              if (cell.item.subType === 'crossbow') {
+                let ammo = parseInt(cell.item.effect.split('+')[1])
+                // console.log('picked up a crossbow checking ammo',ammo);
+                this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
+                // console.log('new ammo amt',this.players[player.number-1].items.ammo);
+              }
+              pickUp = true;
 
-            if (cell.item.subType === 'crossbow') {
-              let ammo = parseInt(cell.item.effect.split('+')[1]);
-              this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
-              console.log('you already have a crossbow but take the ammo',ammo);
-              cell.item.effect = 'ammo+0';
+              this.players[player.number-1].statusDisplay = {
+                state: true,
+                status: 'weapon accquired',
+                count: 1,
+                limit: this.players[player.number-1].statusDisplay.limit,
+              }
             }
             else {
-              console.log('you already have this weapon');
+
+              if (cell.item.subType === 'crossbow') {
+                let ammo = parseInt(cell.item.effect.split('+')[1]);
+                this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
+                console.log('you already have a crossbow but take the ammo',ammo);
+                cell.item.effect = 'ammo+0';
+              }
+              else {
+                console.log('you already have this weapon');
+              }
             }
           }
         }
-      }
-      if (cell.item.type === 'armor') {
-        // console.log('picked up armor',player.currentArmor);
-        if (player.currentArmor.name === '' || !player.currentArmor.name) {
-          // console.log('gg',cell.item.effect);
-          this.players[player.number-1].currentArmor = {
-            name: cell.item.name,
-            type: cell.item.subType,
-            effect: cell.item.effect,
-          }
-          this.players[player.number-1].items.armor.push({
-            name: cell.item.name,
-            type: cell.item.subType,
-            effect: cell.item.effect,
-          })
-
-          switch(cell.item.effect) {
-            case 'hpUp' :
-            // console.log('armor pickup buff');
-              if (this.players[player.number-1].hp < 3) {
-                // console.log('armor pickup buff hp',this.players[player.number-1].hp);
-                this.players[player.number-1].hp = player.hp + 1
-                // console.log('armor pickup buff hp',this.players[player.number-1].hp);
-
-                this.players[player.number-1].statusDisplay = {
-                  state: true,
-                  status: 'hpUp',
-                  count: 1,
-                  limit: this.players[player.number-1].statusDisplay.limit,
-                }
-              }
-            break;
-            case 'speedUp' :
-            // console.log('armor pickup buff');
-              let currentSpd1 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
-              if (this.players[player.number-1].speed.move < .2) {
-
-                // console.log('armor pickup buff speed',this.players[player.number-1].speed.move);
-                this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd1+1]
-                // console.log('armor pickup buff speed',this.players[player.number-1].speed.move);
-
-                this.players[player.number-1].statusDisplay = {
-                  state: true,
-                  status: 'speedUp',
-                  count: 1,
-                  limit: this.players[player.number-1].statusDisplay.limit,
-                }
-              }
-            break;
-          }
-
-          pickUp = true;
-        }
-        else {
-          if (player.items.armor.map(armor => armor.name).includes(cell.item.name) !== true ) {
+        if (cell.item.type === 'armor') {
+          // console.log('picked up armor',player.currentArmor);
+          if (player.currentArmor.name === '' || !player.currentArmor.name) {
+            // console.log('gg',cell.item.effect);
+            this.players[player.number-1].currentArmor = {
+              name: cell.item.name,
+              type: cell.item.subType,
+              effect: cell.item.effect,
+            }
             this.players[player.number-1].items.armor.push({
               name: cell.item.name,
               type: cell.item.subType,
               effect: cell.item.effect,
             })
-            pickUp = true;
 
-            this.players[player.number-1].statusDisplay = {
-              state: true,
-              status: 'armor accquired',
-              count: 1,
-              limit: this.players[player.number-1].statusDisplay.limit,
+            switch(cell.item.effect) {
+              case 'hpUp' :
+              // console.log('armor pickup buff');
+                if (this.players[player.number-1].hp < 3) {
+                  // console.log('armor pickup buff hp',this.players[player.number-1].hp);
+                  this.players[player.number-1].hp = player.hp + 1
+                  // console.log('armor pickup buff hp',this.players[player.number-1].hp);
+
+                  this.players[player.number-1].statusDisplay = {
+                    state: true,
+                    status: 'hpUp',
+                    count: 1,
+                    limit: this.players[player.number-1].statusDisplay.limit,
+                  }
+                }
+              break;
+              case 'speedUp' :
+              // console.log('armor pickup buff');
+                let currentSpd1 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
+                if (this.players[player.number-1].speed.move < .2) {
+
+                  // console.log('armor pickup buff speed',this.players[player.number-1].speed.move);
+                  this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd1+1]
+                  // console.log('armor pickup buff speed',this.players[player.number-1].speed.move);
+
+                  this.players[player.number-1].statusDisplay = {
+                    state: true,
+                    status: 'speedUp',
+                    count: 1,
+                    limit: this.players[player.number-1].statusDisplay.limit,
+                  }
+                }
+              break;
             }
+
+            pickUp = true;
           }
           else {
-            console.log('you already have this armor');
-          }
-        }
-      }
-      else {
-        // console.log('item',cell.item);
-        let ammo;
-        switch(cell.item.name) {
-          case 'moveSpeedUp' :
-            // console.log('moveSpeedUp');
-            let currentSpd1 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
-            // console.log('dd',currentSpd1,this.players[player.number-1].speed.range[currentSpd1]);
-            // console.log('dd2',currentSpd1,this.players[player.number-1].speed.range[currentSpd1+1]);
-            if (this.players[player.number-1].speed.move < .2) {
-              // console.log('added buff');
-              this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd1+1]
+            if (player.items.armor.map(armor => armor.name).includes(cell.item.name) !== true ) {
+              this.players[player.number-1].items.armor.push({
+                name: cell.item.name,
+                type: cell.item.subType,
+                effect: cell.item.effect,
+              })
+              pickUp = true;
 
               this.players[player.number-1].statusDisplay = {
                 state: true,
-                status: cell.item.name,
+                status: 'armor accquired',
                 count: 1,
                 limit: this.players[player.number-1].statusDisplay.limit,
               }
-              pickUp = true;
             }
             else {
-              console.log('player '+player.number+' you already have max movement speed');
+              console.log('you already have this armor');
             }
-          break;
-          case 'moveSpeedDown' :
-            // console.log('moveSpeedDown');
-            let currentSpd2 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
-            // console.log('ff',currentSpd2,this.players[player.number-1].speed.range[currentSpd2]);
-            // console.log('ff2',currentSpd2,this.players[player.number-1].speed.range[currentSpd2-1]);
-            if (this.players[player.number-1].speed.move > .05) {
-              // console.log('added debuff');
-              this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd2-1]
-
-              this.players[player.number-1].statusDisplay = {
-                state: true,
-                status: cell.item.name,
-                count: 1,
-                limit: this.players[player.number-1].statusDisplay.limit,
-              }
-              pickUp = true;
-            }
-          break;
-          case 'hpUp' :
-            // console.log('hpUp');
-            if (this.players[player.number-1].hp === 1 && this.players[player.number-1].speed.move < .1) {
-              this.players[player.number-1].speed.move = .1;
-            }
-            if (this.players[player.number-1].hp < 3) {
-                this.players[player.number-1].hp ++;
+          }
+        }
+        else {
+          // console.log('item',cell.item);
+          let ammo;
+          switch(cell.item.name) {
+            case 'moveSpeedUp' :
+              // console.log('moveSpeedUp');
+              let currentSpd1 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
+              // console.log('dd',currentSpd1,this.players[player.number-1].speed.range[currentSpd1]);
+              // console.log('dd2',currentSpd1,this.players[player.number-1].speed.range[currentSpd1+1]);
+              if (this.players[player.number-1].speed.move < .2) {
+                // console.log('added buff');
+                this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd1+1]
 
                 this.players[player.number-1].statusDisplay = {
                   state: true,
@@ -7250,15 +7283,86 @@ class App extends Component {
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
                 pickUp = true;
-            }
-            else {
-              console.log('player '+player.number+' you already have max hp');
-            }
-          break;
-          case 'hpDown' :
-            // console.log('hpDown');
-            if (player.hp > 1) {
-              this.players[player.number-1].hp --;
+              }
+              else {
+                console.log('player '+player.number+' you already have max movement speed');
+              }
+            break;
+            case 'moveSpeedDown' :
+              // console.log('moveSpeedDown');
+              let currentSpd2 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
+              // console.log('ff',currentSpd2,this.players[player.number-1].speed.range[currentSpd2]);
+              // console.log('ff2',currentSpd2,this.players[player.number-1].speed.range[currentSpd2-1]);
+              if (this.players[player.number-1].speed.move > .05) {
+                // console.log('added debuff');
+                this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd2-1]
+
+                this.players[player.number-1].statusDisplay = {
+                  state: true,
+                  status: cell.item.name,
+                  count: 1,
+                  limit: this.players[player.number-1].statusDisplay.limit,
+                }
+                pickUp = true;
+              }
+            break;
+            case 'hpUp' :
+              // console.log('hpUp');
+              if (this.players[player.number-1].hp === 1 && this.players[player.number-1].speed.move < .1) {
+                this.players[player.number-1].speed.move = .1;
+              }
+              if (this.players[player.number-1].hp < 3) {
+                  this.players[player.number-1].hp ++;
+
+                  this.players[player.number-1].statusDisplay = {
+                    state: true,
+                    status: cell.item.name,
+                    count: 1,
+                    limit: this.players[player.number-1].statusDisplay.limit,
+                  }
+                  pickUp = true;
+              }
+              else {
+                console.log('player '+player.number+' you already have max hp');
+              }
+            break;
+            case 'hpDown' :
+              // console.log('hpDown');
+              if (player.hp > 1) {
+                this.players[player.number-1].hp --;
+
+                this.players[player.number-1].statusDisplay = {
+                  state: true,
+                  status: cell.item.name,
+                  count: 1,
+                  limit: this.players[player.number-1].statusDisplay.limit,
+                }
+                pickUp = true;
+              }
+            break;
+            case 'focusUp' :
+              if (
+                this.players[player.number-1].crits.doubleHit - 2 !== 0
+              ) {
+                this.players[player.number-1].crits.doubleHit = this.players[player.number-1].crits.doubleHit - 2;
+
+                this.players[player.number-1].statusDisplay = {
+                  state: true,
+                  status: cell.item.name,
+                  count: 1,
+                  limit: this.players[player.number-1].statusDisplay.limit,
+                }
+
+              }
+              this.players[player.number-1].crits.guardBreak = this.players[player.number-1].crits.guardBreak + 1;
+
+              pickUp = true;
+            break;
+            case 'focusDown' :
+              this.players[player.number-1].crits.doubleHit = this.players[player.number-1].crits.doubleHit + 2;
+              if (this.players[player.number-1].crits.guardBreak - 1 !== 0) {
+                this.players[player.number-1].crits.guardBreak = this.players[player.number-1].crits.guardBreak - 1
+              }
 
               this.players[player.number-1].statusDisplay = {
                 state: true,
@@ -7266,14 +7370,13 @@ class App extends Component {
                 count: 1,
                 limit: this.players[player.number-1].statusDisplay.limit,
               }
+
               pickUp = true;
-            }
-          break;
-          case 'focusUp' :
-            if (
-              this.players[player.number-1].crits.doubleHit - 2 !== 0
-            ) {
-              this.players[player.number-1].crits.doubleHit = this.players[player.number-1].crits.doubleHit - 2;
+            break;
+            case 'strengthUp' :
+              this.players[player.number-1].crits.pushBack = this.players[player.number-1].crits.pushBack + 1;
+
+              this.players[player.number-1].crits.guardBreak = this.players[player.number-1].crits.guardBreak + 1;
 
               this.players[player.number-1].statusDisplay = {
                 state: true,
@@ -7283,37 +7386,38 @@ class App extends Component {
               }
 
               pickUp = true;
-            }
-          break;
-          case 'focusDown' :
-            this.players[player.number-1].crits.doubleHit = this.players[player.number-1].crits.doubleHit + 2;
+            break;
+            case 'strengthDown' :
+              if (
+                this.players[player.number-1].crits.pushBack - 1 !== 0
+              ) {
+                this.players[player.number-1].crits.pushBack = this.players[player.number-1].crits.pushBack - 1;
 
-            this.players[player.number-1].statusDisplay = {
-              state: true,
-              status: cell.item.name,
-              count: 1,
-              limit: this.players[player.number-1].statusDisplay.limit,
-            }
+                this.players[player.number-1].statusDisplay = {
+                  state: true,
+                  status: cell.item.name,
+                  count: 1,
+                  limit: this.players[player.number-1].statusDisplay.limit,
+                }
 
-            pickUp = true;
-          break;
-          case 'strengthUp' :
-            this.players[player.number-1].crits.pushBack = this.players[player.number-1].crits.pushBack + 1;
+                pickUp = true;
+              }
+              if (this.players[player.number-1].crits.guardBreak - 1 !== 0) {
+                this.players[player.number-1].crits.guardBreak = this.players[player.number-1].crits.guardBreak - 1
 
-            this.players[player.number-1].statusDisplay = {
-              state: true,
-              status: cell.item.name,
-              count: 1,
-              limit: this.players[player.number-1].statusDisplay.limit,
-            }
+                this.players[player.number-1].statusDisplay = {
+                  state: true,
+                  status: cell.item.name,
+                  count: 1,
+                  limit: this.players[player.number-1].statusDisplay.limit,
+                }
 
-            pickUp = true;
-          break;
-          case 'strengthDown' :
-            if (
-              this.players[player.number-1].crits.pushBack - 1 !== 0
-            ) {
-              this.players[player.number-1].crits.pushBack = this.players[player.number-1].crits.pushBack - 1;
+                pickUp = true;
+              }
+            break;
+            case 'ammo5' :
+              ammo = parseInt(cell.item.name.split('o')[1])
+              this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
 
               this.players[player.number-1].statusDisplay = {
                 state: true,
@@ -7323,75 +7427,427 @@ class App extends Component {
               }
 
               pickUp = true;
-            }
-          break;
-          case 'ammo5' :
-            ammo = parseInt(cell.item.name.split('o')[1])
-            this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
+            break;
+            case 'ammo10' :
+              ammo = parseInt(cell.item.name.split('o')[1])
+              this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
 
-            this.players[player.number-1].statusDisplay = {
-              state: true,
-              status: cell.item.name,
-              count: 1,
-              limit: this.players[player.number-1].statusDisplay.limit,
-            }
+              this.players[player.number-1].statusDisplay = {
+                state: true,
+                status: cell.item.name,
+                count: 1,
+                limit: this.players[player.number-1].statusDisplay.limit,
+              }
 
-            pickUp = true;
-          break;
-          case 'ammo10' :
-            ammo = parseInt(cell.item.name.split('o')[1])
-            this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
+              pickUp = true;
+            break;
+          }
 
-            this.players[player.number-1].statusDisplay = {
-              state: true,
-              status: cell.item.name,
-              count: 1,
-              limit: this.players[player.number-1].statusDisplay.limit,
-            }
-
-            pickUp = true;
-          break;
         }
-
-      }
-      if (pickUp === true) {
-        // PICKUP ANIM!!
-        if (cell.item.type === 'item') {
-          this.players[player.number-1].itemPickup = {
-            state: true,
-            count: 0,
-            limit: 10,
-            item: {
-              name: cell.item.name,
-            },
-            gear: {
-              type: '',
+        if (pickUp === true) {
+          // PICKUP ANIM!!
+          if (cell.item.type === 'item') {
+            this.players[player.number-1].itemPickup = {
+              state: true,
+              count: 0,
+              limit: 10,
+              item: {
+                name: cell.item.name,
+              },
+              gear: {
+                type: '',
+              }
             }
           }
-        }
-        else if (cell.item.type === 'weapon' || cell.item.type === 'armor') {
-          this.players[player.number-1].itemPickup = {
-            state: true,
-            count: 0,
-            limit: 10,
-            item: {
-              name: '',
-            },
-            gear: {
-              type: cell.item.subType,
+          else if (cell.item.type === 'weapon' || cell.item.type === 'armor') {
+            this.players[player.number-1].itemPickup = {
+              state: true,
+              count: 0,
+              limit: 10,
+              item: {
+                name: '',
+              },
+              gear: {
+                type: cell.item.subType,
+              }
             }
+          }
+
+          cell.item = {
+            name: '',
+            type: '',
+            subType: '',
+            initDrawn: false
           }
         }
 
-        cell.item = {
-          name: '',
-          type: '',
-          subType: '',
-          initDrawn: false
-        }
       }
 
     }
+    else if (cell.item.name !== '') {
+      console.log('Not enough space!!');
+
+      this.players[player.number-1].statusDisplay = {
+        state: true,
+        status: 'Not enough space!!',
+        count: 1,
+        limit: this.players[player.number-1].statusDisplay.limit,
+      }
+    }
+
+    // let cell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y)
+    // if (cell.item.name !== '') {
+    //   // console.log('picked up an item');
+    //   if (cell.item.type === 'weapon') {
+    //     // console.log('weapon',cell.item);
+    //
+    //     if (player.currentWeapon.name === '' || !player.currentWeapon.name) {
+    //       this.players[player.number-1].currentWeapon = {
+    //         name: cell.item.name,
+    //         type: cell.item.subType,
+    //         effect: cell.item.effect,
+    //       }
+    //       this.players[player.number-1].items.weapons.push({
+    //         name: cell.item.name,
+    //         type: cell.item.subType,
+    //         effect: cell.item.effect,
+    //       })
+    //       if (cell.item.subType === 'crossbow') {
+    //         let ammo = parseInt(cell.item.effect.split('+')[1])
+    //         // console.log('picked up a crossbow checking ammo',ammo);
+    //         this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
+    //         // console.log('new ammo amt',this.players[player.number-1].items.ammo);
+    //       }
+    //       pickUp = true;
+    //     }
+    //     else {
+    //       if (player.items.weapons.map(weapon => weapon.name).includes(cell.item.name) !== true ) {
+    //         this.players[player.number-1].items.weapons.push({
+    //           name: cell.item.name,
+    //           type: cell.item.subType,
+    //           effect: cell.item.effect,
+    //         })
+    //         if (cell.item.subType === 'crossbow') {
+    //           let ammo = parseInt(cell.item.effect.split('+')[1])
+    //           // console.log('picked up a crossbow checking ammo',ammo);
+    //           this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
+    //           // console.log('new ammo amt',this.players[player.number-1].items.ammo);
+    //         }
+    //         pickUp = true;
+    //
+    //         this.players[player.number-1].statusDisplay = {
+    //           state: true,
+    //           status: 'weapon accquired',
+    //           count: 1,
+    //           limit: this.players[player.number-1].statusDisplay.limit,
+    //         }
+    //       }
+    //       else {
+    //
+    //         if (cell.item.subType === 'crossbow') {
+    //           let ammo = parseInt(cell.item.effect.split('+')[1]);
+    //           this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
+    //           console.log('you already have a crossbow but take the ammo',ammo);
+    //           cell.item.effect = 'ammo+0';
+    //         }
+    //         else {
+    //           console.log('you already have this weapon');
+    //         }
+    //       }
+    //     }
+    //   }
+    //   if (cell.item.type === 'armor') {
+    //     // console.log('picked up armor',player.currentArmor);
+    //     if (player.currentArmor.name === '' || !player.currentArmor.name) {
+    //       // console.log('gg',cell.item.effect);
+    //       this.players[player.number-1].currentArmor = {
+    //         name: cell.item.name,
+    //         type: cell.item.subType,
+    //         effect: cell.item.effect,
+    //       }
+    //       this.players[player.number-1].items.armor.push({
+    //         name: cell.item.name,
+    //         type: cell.item.subType,
+    //         effect: cell.item.effect,
+    //       })
+    //
+    //       switch(cell.item.effect) {
+    //         case 'hpUp' :
+    //         // console.log('armor pickup buff');
+    //           if (this.players[player.number-1].hp < 3) {
+    //             // console.log('armor pickup buff hp',this.players[player.number-1].hp);
+    //             this.players[player.number-1].hp = player.hp + 1
+    //             // console.log('armor pickup buff hp',this.players[player.number-1].hp);
+    //
+    //             this.players[player.number-1].statusDisplay = {
+    //               state: true,
+    //               status: 'hpUp',
+    //               count: 1,
+    //               limit: this.players[player.number-1].statusDisplay.limit,
+    //             }
+    //           }
+    //         break;
+    //         case 'speedUp' :
+    //         // console.log('armor pickup buff');
+    //           let currentSpd1 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
+    //           if (this.players[player.number-1].speed.move < .2) {
+    //
+    //             // console.log('armor pickup buff speed',this.players[player.number-1].speed.move);
+    //             this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd1+1]
+    //             // console.log('armor pickup buff speed',this.players[player.number-1].speed.move);
+    //
+    //             this.players[player.number-1].statusDisplay = {
+    //               state: true,
+    //               status: 'speedUp',
+    //               count: 1,
+    //               limit: this.players[player.number-1].statusDisplay.limit,
+    //             }
+    //           }
+    //         break;
+    //       }
+    //
+    //       pickUp = true;
+    //     }
+    //     else {
+    //       if (player.items.armor.map(armor => armor.name).includes(cell.item.name) !== true ) {
+    //         this.players[player.number-1].items.armor.push({
+    //           name: cell.item.name,
+    //           type: cell.item.subType,
+    //           effect: cell.item.effect,
+    //         })
+    //         pickUp = true;
+    //
+    //         this.players[player.number-1].statusDisplay = {
+    //           state: true,
+    //           status: 'armor accquired',
+    //           count: 1,
+    //           limit: this.players[player.number-1].statusDisplay.limit,
+    //         }
+    //       }
+    //       else {
+    //         console.log('you already have this armor');
+    //       }
+    //     }
+    //   }
+    //   else {
+    //     // console.log('item',cell.item);
+    //     let ammo;
+    //     switch(cell.item.name) {
+    //       case 'moveSpeedUp' :
+    //         // console.log('moveSpeedUp');
+    //         let currentSpd1 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
+    //         // console.log('dd',currentSpd1,this.players[player.number-1].speed.range[currentSpd1]);
+    //         // console.log('dd2',currentSpd1,this.players[player.number-1].speed.range[currentSpd1+1]);
+    //         if (this.players[player.number-1].speed.move < .2) {
+    //           // console.log('added buff');
+    //           this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd1+1]
+    //
+    //           this.players[player.number-1].statusDisplay = {
+    //             state: true,
+    //             status: cell.item.name,
+    //             count: 1,
+    //             limit: this.players[player.number-1].statusDisplay.limit,
+    //           }
+    //           pickUp = true;
+    //         }
+    //         else {
+    //           console.log('player '+player.number+' you already have max movement speed');
+    //         }
+    //       break;
+    //       case 'moveSpeedDown' :
+    //         // console.log('moveSpeedDown');
+    //         let currentSpd2 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
+    //         // console.log('ff',currentSpd2,this.players[player.number-1].speed.range[currentSpd2]);
+    //         // console.log('ff2',currentSpd2,this.players[player.number-1].speed.range[currentSpd2-1]);
+    //         if (this.players[player.number-1].speed.move > .05) {
+    //           // console.log('added debuff');
+    //           this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd2-1]
+    //
+    //           this.players[player.number-1].statusDisplay = {
+    //             state: true,
+    //             status: cell.item.name,
+    //             count: 1,
+    //             limit: this.players[player.number-1].statusDisplay.limit,
+    //           }
+    //           pickUp = true;
+    //         }
+    //       break;
+    //       case 'hpUp' :
+    //         // console.log('hpUp');
+    //         if (this.players[player.number-1].hp === 1 && this.players[player.number-1].speed.move < .1) {
+    //           this.players[player.number-1].speed.move = .1;
+    //         }
+    //         if (this.players[player.number-1].hp < 3) {
+    //             this.players[player.number-1].hp ++;
+    //
+    //             this.players[player.number-1].statusDisplay = {
+    //               state: true,
+    //               status: cell.item.name,
+    //               count: 1,
+    //               limit: this.players[player.number-1].statusDisplay.limit,
+    //             }
+    //             pickUp = true;
+    //         }
+    //         else {
+    //           console.log('player '+player.number+' you already have max hp');
+    //         }
+    //       break;
+    //       case 'hpDown' :
+    //         // console.log('hpDown');
+    //         if (player.hp > 1) {
+    //           this.players[player.number-1].hp --;
+    //
+    //           this.players[player.number-1].statusDisplay = {
+    //             state: true,
+    //             status: cell.item.name,
+    //             count: 1,
+    //             limit: this.players[player.number-1].statusDisplay.limit,
+    //           }
+    //           pickUp = true;
+    //         }
+    //       break;
+    //       case 'focusUp' :
+    //         if (
+    //           this.players[player.number-1].crits.doubleHit - 2 !== 0
+    //         ) {
+    //           this.players[player.number-1].crits.doubleHit = this.players[player.number-1].crits.doubleHit - 2;
+    //
+    //           this.players[player.number-1].statusDisplay = {
+    //             state: true,
+    //             status: cell.item.name,
+    //             count: 1,
+    //             limit: this.players[player.number-1].statusDisplay.limit,
+    //           }
+    //
+    //         }
+    //         this.players[player.number-1].crits.guardBreak = this.players[player.number-1].crits.guardBreak + 1;
+    //
+    //         pickUp = true;
+    //       break;
+    //       case 'focusDown' :
+    //         this.players[player.number-1].crits.doubleHit = this.players[player.number-1].crits.doubleHit + 2;
+    //         if (this.players[player.number-1].crits.guardBreak - 1 !== 0) {
+    //           this.players[player.number-1].crits.guardBreak = this.players[player.number-1].crits.guardBreak - 1
+    //         }
+    //
+    //         this.players[player.number-1].statusDisplay = {
+    //           state: true,
+    //           status: cell.item.name,
+    //           count: 1,
+    //           limit: this.players[player.number-1].statusDisplay.limit,
+    //         }
+    //
+    //         pickUp = true;
+    //       break;
+    //       case 'strengthUp' :
+    //         this.players[player.number-1].crits.pushBack = this.players[player.number-1].crits.pushBack + 1;
+    //
+    //         this.players[player.number-1].crits.guardBreak = this.players[player.number-1].crits.guardBreak + 1;
+    //
+    //         this.players[player.number-1].statusDisplay = {
+    //           state: true,
+    //           status: cell.item.name,
+    //           count: 1,
+    //           limit: this.players[player.number-1].statusDisplay.limit,
+    //         }
+    //
+    //         pickUp = true;
+    //       break;
+    //       case 'strengthDown' :
+    //         if (
+    //           this.players[player.number-1].crits.pushBack - 1 !== 0
+    //         ) {
+    //           this.players[player.number-1].crits.pushBack = this.players[player.number-1].crits.pushBack - 1;
+    //
+    //           this.players[player.number-1].statusDisplay = {
+    //             state: true,
+    //             status: cell.item.name,
+    //             count: 1,
+    //             limit: this.players[player.number-1].statusDisplay.limit,
+    //           }
+    //
+    //           pickUp = true;
+    //         }
+    //         if (this.players[player.number-1].crits.guardBreak - 1 !== 0) {
+    //           this.players[player.number-1].crits.guardBreak = this.players[player.number-1].crits.guardBreak - 1
+    //
+    //           this.players[player.number-1].statusDisplay = {
+    //             state: true,
+    //             status: cell.item.name,
+    //             count: 1,
+    //             limit: this.players[player.number-1].statusDisplay.limit,
+    //           }
+    //
+    //           pickUp = true;
+    //         }
+    //       break;
+    //       case 'ammo5' :
+    //         ammo = parseInt(cell.item.name.split('o')[1])
+    //         this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
+    //
+    //         this.players[player.number-1].statusDisplay = {
+    //           state: true,
+    //           status: cell.item.name,
+    //           count: 1,
+    //           limit: this.players[player.number-1].statusDisplay.limit,
+    //         }
+    //
+    //         pickUp = true;
+    //       break;
+    //       case 'ammo10' :
+    //         ammo = parseInt(cell.item.name.split('o')[1])
+    //         this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
+    //
+    //         this.players[player.number-1].statusDisplay = {
+    //           state: true,
+    //           status: cell.item.name,
+    //           count: 1,
+    //           limit: this.players[player.number-1].statusDisplay.limit,
+    //         }
+    //
+    //         pickUp = true;
+    //       break;
+    //     }
+    //
+    //   }
+    //   if (pickUp === true) {
+    //     // PICKUP ANIM!!
+    //     if (cell.item.type === 'item') {
+    //       this.players[player.number-1].itemPickup = {
+    //         state: true,
+    //         count: 0,
+    //         limit: 10,
+    //         item: {
+    //           name: cell.item.name,
+    //         },
+    //         gear: {
+    //           type: '',
+    //         }
+    //       }
+    //     }
+    //     else if (cell.item.type === 'weapon' || cell.item.type === 'armor') {
+    //       this.players[player.number-1].itemPickup = {
+    //         state: true,
+    //         count: 0,
+    //         limit: 10,
+    //         item: {
+    //           name: '',
+    //         },
+    //         gear: {
+    //           type: cell.item.subType,
+    //         }
+    //       }
+    //     }
+    //
+    //     cell.item = {
+    //       name: '',
+    //       type: '',
+    //       subType: '',
+    //       initDrawn: false
+    //     }
+    //   }
+    //
+    // }
 
 
     switch(cell.terrain.type) {
@@ -8069,6 +8525,110 @@ class App extends Component {
     }
 
     //   if dropped gear remove buff/effect
+
+  }
+  discardGear = (player,type) => {
+    console.log('dropping gear');
+
+    let cellToDrop = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y);
+
+
+    let cellFree = false;
+    if (cellToDrop.item.name === '') {
+      cellFree = true;
+    }
+
+    if (cellFree === true) {
+      if (type === 'weapon') {
+
+        let index = player.items.weapons.findIndex(weapon => weapon.name === player.currentWeapon.name);
+
+        let weapon = player.currentWeapon;
+
+        cellToDrop.item = {
+          name: weapon.name,
+          type: 'weapon',
+          subType: weapon.type,
+          effect: weapon.effect,
+          initDrawn: false
+        }
+
+
+        this.players[player.number-1].itemDrop = {
+          state: true,
+          count: 0,
+          limit: 10,
+          item: {
+            name: '',
+          },
+          gear: {
+            type: this.players[player.number-1].items.weapons[index].type,
+          }
+        }
+        this.players[player.number-1].statusDisplay = {
+          state: true,
+          status: weapon.name+' discarded!',
+          count: 1,
+          limit: this.players[player.number-1].statusDisplay.limit,
+        }
+
+        this.players[player.number-1].items.weapons.splice(index,1);
+        this.players[player.number-1].currentWeapon = {
+          name: "",
+          type: "",
+          effect: "",
+        }
+      }
+      if (type === 'armor') {
+
+        let index2 = player.items.armor.findIndex(armor => armor.name === player.currentArmor.name);
+
+        let armor = player.currentArmor;
+
+        cellToDrop.item = {
+          name: armor.name,
+          type: 'armor',
+          subType: armor.type,
+          effect: armor.effect,
+          initDrawn: false
+        }
+
+        this.players[player.number-1].itemDrop = {
+          state: true,
+          count: 0,
+          limit: 10,
+          item: {
+            name: '',
+          },
+          gear: {
+            type: this.players[player.number-1].items.armor[index2].type,
+          }
+        }
+        this.players[player.number-1].statusDisplay = {
+          state: true,
+          status: armor.name+' discarded!',
+          count: 1,
+          limit: this.players[player.number-1].statusDisplay.limit,
+        }
+
+        this.players[player.number-1].items.armor.splice(index2,1);
+        this.players[player.number-1].currentArmor = {
+          name: "",
+          type: "",
+          effect: "",
+        }
+
+      }
+    } else {
+      console.log('cell occupied. Cant drop gear');
+
+      this.players[player.number-1].statusDisplay = {
+        state: true,
+        status: 'Cell occupied. Cant drop!',
+        count: 1,
+        limit: this.players[player.number-1].statusDisplay.limit,
+      }
+    }
 
   }
 
@@ -8829,7 +9389,8 @@ class App extends Component {
           <img src={wall2} className='hidden' ref="wall2" alt="logo" />
           <img src={wall3} className='hidden' ref="wall3" alt="logo" />
 
-          <img src={attackInidcate} className='hidden playerImgs' ref="attackIndicate" alt="logo" />
+          <img src={attack1Indicate} className='hidden playerImgs' ref="attack1Indicate" alt="logo" />
+          <img src={attack2Indicate} className='hidden playerImgs' ref="attack2Indicate" alt="logo" />
           <img src={attackSuccessInidcate} className='hidden playerImgs' ref="attackSuccessIndicate" alt="logo" />
           <img src={defendInidcate} className='hidden playerImgs' ref="defendIndicate" alt="logo" />
           <img src={deflectInidcate} className='hidden playerImgs' ref="deflectIndicate" alt="logo" />
