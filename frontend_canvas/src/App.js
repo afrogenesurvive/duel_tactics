@@ -76,6 +76,9 @@ import spear from './assets/items/spear.png';
 import sword from './assets/items/sword.png';
 
 import playerImgIdleSheet from './assets/sheet1.png';
+import player2ImgIdleSheet from './assets/sheet2.png';
+import playerComAImgIdleSheet from './assets/sheetComA.png';
+import playerComBImgIdleSheet from './assets/sheetComB.png';
 
 
 import './App.css';
@@ -339,6 +342,11 @@ class App extends Component {
             count: 0,
             limit: 10
           }
+        },
+        ai: {
+          state: false,
+          imgType: '',
+          instructions: []
         }
       },
       {
@@ -590,6 +598,11 @@ class App extends Component {
             count: 0,
             limit: 10
           }
+        },
+        ai: {
+          state: false,
+          imgType: '',
+          instructions: []
         }
       }
     ],
@@ -1091,7 +1104,7 @@ class App extends Component {
         respawn: false,
         points: 0,
         speed: {
-          move: .075,
+          move: .1,
           range: [.05,.1,.125,.2]
         },
         terrainMoveSpeed: {
@@ -1188,6 +1201,11 @@ class App extends Component {
             count: 0,
             limit: 10
           }
+        },
+        ai: {
+          state: false,
+          imgType: '',
+          instructions: []
         }
       },
       {
@@ -1441,6 +1459,11 @@ class App extends Component {
             count: 0,
             limit: 10
           }
+        },
+        ai: {
+          state: false,
+          imgType: '',
+          instructions: []
         }
       }
     ];
@@ -1566,6 +1589,12 @@ class App extends Component {
     };
     this.charSpriteHeight = 512;
     this.charSpriteWidth = 512;
+    this.addComPlayerKeyPress = false;
+    this.addComCount = {
+      state: false,
+      count: 0,
+      limit: 10,
+    }
 
   }
 
@@ -2412,6 +2441,26 @@ class App extends Component {
       // case 'p' :
       //  this.openVoid = !this.openVoid;
       // break;
+
+      case '5' :
+       this.addComPlayerKeyPress = state;
+      break;
+      case 'ArrowUp' :
+        this.keyPressed[2].north = state;
+        this.currentPlayer = 3;
+      break;
+      case 'ArrowDown' :
+        this.keyPressed[2].south = state;
+        this.currentPlayer = 3;
+      break;
+      case 'ArrowLeft' :
+        this.keyPressed[2].west = state;
+        this.currentPlayer = 3;
+      break;
+      case 'ArrowRight' :
+        this.keyPressed[2].east = state;
+        this.currentPlayer = 3;
+      break;
 
 
       // case 'u' :
@@ -4059,6 +4108,28 @@ class App extends Component {
     }
 
 
+    // ADD COM PLAYER!
+    if (this.addComPlayerKeyPress === true) {
+      this.addComPlayer()
+    }
+    if (this.addComCount.state === true) {
+      if (this.addComCount.count < this.addComCount.limit) {
+        this.addComCount.count++
+      }
+      if (this.addComCount.count >= this.addComCount.limit) {
+        this.addComCount = {
+          state: false,
+          count: 0,
+          limit: this.addComCount.limit,
+        }
+      }
+    }
+    if (player.ai.state === true && player.dead.state === true ) {
+      this.keyPressed.splice(player.number-1,1)
+      this.players.splice(player.number-1,1)
+    }
+
+
     // SYNC W/ GLOBAL PLAYER DATA
     this.players[player.number-1] = player;
     let players = this.state.players;
@@ -4728,10 +4799,96 @@ class App extends Component {
       },
       {
         idle: {
-          unarmed: this.refs.playerImgIdleSheet,
-          sword: this.refs.playerImgIdleSheet,
-          spear: this.refs.playerImgIdleSheet,
-          crossbow: this.refs.playerImgIdleSheet,
+          unarmed: this.refs.player2ImgIdleSheet,
+          sword: this.refs.player2ImgIdleSheet,
+          spear: this.refs.player2ImgIdleSheet,
+          crossbow: this.refs.player2ImgIdleSheet,
+        },
+        walking: {
+          unarmed: this.refs.player2ImgIdleSwordNorth,
+          sword: this.refs.player2ImgIdleSwordNorth,
+          spear: this.refs.player2ImgIdleSwordNorth,
+          crossbow: this.refs.player2ImgIdleSwordNorth,
+        },
+        strafing: {
+          unarmed: this.refs.player2ImgIdleSwordNorth,
+          sword: this.refs.player2ImgIdleSwordNorth,
+          spear: this.refs.player2ImgIdleSwordNorth,
+          crossbow: this.refs.player2ImgIdleSwordNorth,
+        },
+        attacking: {
+          unarmed: this.refs.player2ImgIdleSwordNorth,
+          sword: this.refs.player2ImgIdleSwordNorth,
+          spear: this.refs.player2ImgIdleSwordNorth,
+          crossbow: this.refs.player2ImgIdleSwordNorth,
+        },
+        defending: {
+          unarmed: this.refs.player2ImgIdleSwordNorth,
+          sword: this.refs.player2ImgIdleSwordNorth,
+          spear: this.refs.player2ImgIdleSwordNorth,
+          crossbow: this.refs.player2ImgIdleSwordNorth,
+        },
+        deflected: {
+          sword: this.refs.player2ImgIdleSwordNorth,
+          spear: this.refs.player2ImgIdleSwordNorth,
+          crossbow: this.refs.player2ImgIdleSwordNorth,
+        },
+        falling: {
+          unarmed: this.refs.player2ImgIdleSwordNorth,
+          sword: this.refs.player2ImgIdleSwordNorth,
+          spear: this.refs.player2ImgIdleSwordNorth,
+          crossbow: this.refs.player2ImgIdleSwordNorth,
+        },
+      },
+      {
+        idle: {
+          unarmed: this.refs.playerComAImgIdleSheet,
+          sword: this.refs.playerComAImgIdleSheet,
+          spear: this.refs.playerComAImgIdleSheet,
+          crossbow: this.refs.playerComAImgIdleSheet,
+        },
+        walking: {
+          unarmed: this.refs.player2ImgIdleSwordNorth,
+          sword: this.refs.player2ImgIdleSwordNorth,
+          spear: this.refs.player2ImgIdleSwordNorth,
+          crossbow: this.refs.player2ImgIdleSwordNorth,
+        },
+        strafing: {
+          unarmed: this.refs.player2ImgIdleSwordNorth,
+          sword: this.refs.player2ImgIdleSwordNorth,
+          spear: this.refs.player2ImgIdleSwordNorth,
+          crossbow: this.refs.player2ImgIdleSwordNorth,
+        },
+        attacking: {
+          unarmed: this.refs.player2ImgIdleSwordNorth,
+          sword: this.refs.player2ImgIdleSwordNorth,
+          spear: this.refs.player2ImgIdleSwordNorth,
+          crossbow: this.refs.player2ImgIdleSwordNorth,
+        },
+        defending: {
+          unarmed: this.refs.player2ImgIdleSwordNorth,
+          sword: this.refs.player2ImgIdleSwordNorth,
+          spear: this.refs.player2ImgIdleSwordNorth,
+          crossbow: this.refs.player2ImgIdleSwordNorth,
+        },
+        deflected: {
+          sword: this.refs.player2ImgIdleSwordNorth,
+          spear: this.refs.player2ImgIdleSwordNorth,
+          crossbow: this.refs.player2ImgIdleSwordNorth,
+        },
+        falling: {
+          unarmed: this.refs.player2ImgIdleSwordNorth,
+          sword: this.refs.player2ImgIdleSwordNorth,
+          spear: this.refs.player2ImgIdleSwordNorth,
+          crossbow: this.refs.player2ImgIdleSwordNorth,
+        },
+      },
+      {
+        idle: {
+          unarmed: this.refs.playerComBImgIdleSheet,
+          sword: this.refs.playerComBImgIdleSheet,
+          spear: this.refs.playerComBImgIdleSheet,
+          crossbow: this.refs.playerComBImgIdleSheet,
         },
         walking: {
           unarmed: this.refs.player2ImgIdleSwordNorth,
@@ -4842,8 +4999,6 @@ class App extends Component {
         }
 
         let drawFloor = true;
-
-
 
 
         let gridInfoCell = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
@@ -5072,32 +5227,71 @@ class App extends Component {
 
 
           // SPRITE SHEET SWITCH!
-          switch(plyr.action) {
-            case 'idle':
-              updatedPlayerImg = playerImgs[plyr.number-1].idle[weapon];
-              // updatedPlayerImg = playerImgs[plyr.number-1].idle[weapon];
-            break;
-            case 'moving':
-              updatedPlayerImg = playerImgs[plyr.number-1].walking[weapon];
-            break;
-            case 'strafe moving':
-              updatedPlayerImg = playerImgs[plyr.number-1].strafing[weapon];
-            break;
-            case 'falling':
-              updatedPlayerImg = playerImgs[plyr.number-1].falling[weapon];
-            break;
-            case 'attacking':
-              updatedPlayerImg = playerImgs[plyr.number-1].attacking[weapon];
-            break;
-            case 'defending':
-              updatedPlayerImg = playerImgs[plyr.number-1].defending[weapon];
-            break;
-            case 'deflected' :
-              updatedPlayerImg = playerImgs[plyr.number-1].deflected[weapon];
-            break;
-            case 'dead':
-              updatedPlayerImg = playerImgs[plyr.number-1].idle[weapon];
-            break;
+
+          if (plyr.ai.state === false) {
+            switch(plyr.action) {
+              case 'idle':
+                updatedPlayerImg = playerImgs[plyr.number-1].idle[weapon];
+              break;
+              case 'moving':
+                updatedPlayerImg = playerImgs[plyr.number-1].walking[weapon];
+              break;
+              case 'strafe moving':
+                updatedPlayerImg = playerImgs[plyr.number-1].strafing[weapon];
+              break;
+              case 'falling':
+                updatedPlayerImg = playerImgs[plyr.number-1].falling[weapon];
+              break;
+              case 'attacking':
+                updatedPlayerImg = playerImgs[plyr.number-1].attacking[weapon];
+              break;
+              case 'defending':
+                updatedPlayerImg = playerImgs[plyr.number-1].defending[weapon];
+              break;
+              case 'deflected' :
+                updatedPlayerImg = playerImgs[plyr.number-1].deflected[weapon];
+              break;
+              case 'dead':
+                updatedPlayerImg = playerImgs[plyr.number-1].idle[weapon];
+              break;
+            }
+          }
+
+          if (plyr.ai.state === true) {
+            let plyrImgIndex;
+            if (plyr.ai.imgType === "A") {
+              plyrImgIndex = 2;
+            }
+            else if (plyr.ai.imgType === "B") {
+              plyrImgIndex = 3;
+            }
+
+            switch(plyr.action) {
+              case 'idle':
+                updatedPlayerImg = playerImgs[plyrImgIndex].idle[weapon];
+              break;
+              case 'moving':
+                updatedPlayerImg = playerImgs[plyrImgIndex].walking[weapon];
+              break;
+              case 'strafe moving':
+                updatedPlayerImg = playerImgs[plyrImgIndex].strafing[weapon];
+              break;
+              case 'falling':
+                updatedPlayerImg = playerImgs[plyrImgIndex].falling[weapon];
+              break;
+              case 'attacking':
+                updatedPlayerImg = playerImgs[plyrImgIndex].attacking[weapon];
+              break;
+              case 'defending':
+                updatedPlayerImg = playerImgs[plyrImgIndex].defending[weapon];
+              break;
+              case 'deflected' :
+                updatedPlayerImg = playerImgs[plyrImgIndex].deflected[weapon];
+              break;
+              case 'dead':
+                updatedPlayerImg = playerImgs[plyrImgIndex].idle[weapon];
+              break;
+            }
           }
 
           // switch(plyr.action) {
@@ -8235,6 +8429,11 @@ class App extends Component {
 
     this.players[player.number-1] = player;
 
+    // if (player.ai.state === true) {
+    //   console.log('ai player eliminated');
+    //   this.removeComPlayer(player.number)
+    // }
+
   }
 
   restartGame = () => {
@@ -8307,6 +8506,14 @@ class App extends Component {
       cellFree = false;
     }
     if (cell2.item.name !== '') {
+      cellFree = false;
+    }
+
+    // PLAYERS 1&2 ALT RESPAWN POINTS!
+    if (cell.x === 9 && cell.y === 9) {
+      cellFree = false;
+    }
+    if (cell.x === 9 && cell.y === 0) {
       cellFree = false;
     }
 
@@ -8472,7 +8679,7 @@ class App extends Component {
 
         if (player.items.weapons.length > 0) {
           let index = player.items.weapons.findIndex(weapon => weapon.name === player.currentWeapon.name);
-          console.log("dropping weapon player ",player.number,this.players[player.number-1].items.weapons[index].name);
+          // console.log("dropping weapon player ",player.number,this.players[player.number-1].items.weapons[index].name);
 
           item.name = this.players[player.number-1].items.weapons[index].name;
           item.subType = this.players[player.number-1].items.weapons[index].type;
@@ -8513,7 +8720,7 @@ class App extends Component {
 
         if (player.items.armor.length > 0) {
           let index = player.items.armor.findIndex(armor => armor.name === player.currentArmor.name);
-          console.log("dropping armor player ",player.number,this.players[player.number-1].items.armor[index].name);
+          // console.log("dropping armor player ",player.number,this.players[player.number-1].items.armor[index].name);
           item.name = this.players[player.number-1].items.armor[index].name;
           item.subType = this.players[player.number-1].items.armor[index].type;
           item.effect = this.players[player.number-1].items.armor[index].effect;
@@ -9221,13 +9428,10 @@ class App extends Component {
 
         let playerImgs = [
           this.refs.playerImgIdleSheet,
-          this.refs.player2ImgIdleNorth
+          this.refs.player2ImgIdleSheet,
+          this.refs.playerComAImgIdleSheet,
+          this.refs.playerComBImgIdleSheet,
         ]
-
-        // let playerImgs = [
-        //   this.refs.playerImgIdleNorth,
-        //   this.refs.player2ImgIdleNorth
-        // ]
 
 
         for (const player of this.players) {
@@ -9237,7 +9441,21 @@ class App extends Component {
             y === player.startPosition.cell.number.y
           ) {
 
-            let playerImg = playerImgs[player.number-1];
+            let playerImg;
+
+            if (player.ai.state === true) {
+              let playerImgIndex;
+              if (player.ai.imgType === "A") {
+                playerImgIndex = 2;
+              }
+              else if (player.ai.imgType === "B") {
+                playerImgIndex = 3;
+              }
+
+              playerImg = playerImgs[playerImgIndex];
+            } else {
+              playerImg = playerImgs[player.number-1];
+            }
 
 
             let dirs = ['north','south','east','west']
@@ -9342,6 +9560,329 @@ class App extends Component {
     }
   }
 
+  addComPlayer = () => {
+
+    let newPlayerNumber = this.players.length+1;
+
+
+
+    let imgTypeRoll = this.rnJesus(1,2);
+    let imgType;
+    if (imgTypeRoll === 1) {
+      imgType = "A";
+    } else {
+      imgType = "B";
+    }
+
+    if (this.addComCount.state !== true) {
+
+      console.log('adding ai. Player #',newPlayerNumber);
+      this.addComCount.state = true;
+
+      let cell = {
+        x: 0,
+        y: 0
+      }
+      let checkCell = false;
+      while (checkCell === false) {
+        cell.x = this.rnJesus(0,this.gridWidth)
+        cell.y = this.rnJesus(0,this.gridWidth)
+        checkCell = this.checkCell(cell);
+      }
+
+      if (checkCell === true) {
+
+        let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y)
+        let newPlayer = {
+          number: newPlayerNumber,
+          startPosition: {
+            cell: {
+              number: {
+                x: cell.x,
+                y: cell.y,
+              },
+              center: {
+                x: cell2.center.x,
+                y: cell2.center.y,
+              }
+            }
+          },
+          currentPosition: {
+            cell: {
+              number: {
+                x: cell.x,
+                y: cell.y,
+              },
+              center: {
+                x: cell2.center.x,
+                y: cell2.center.y,
+              }
+            }
+          },
+          nextPosition: {
+            x: cell2.center.x,
+            y: cell2.center.y,
+          },
+          target: {
+            cell: {
+              number: {
+                x: 0,
+                y: 0,
+              },
+              center: {
+                x: 0,
+                y: 0,
+              },
+            },
+            cell2: {
+              number: {
+                x: 0,
+                y: 0,
+              },
+              center: {
+                x: 0,
+                y: 0,
+              },
+            },
+            free: true,
+            occupant: {
+              type: '',
+              player: '',
+            },
+            void: false
+          },
+          direction: 'north',
+          turning: {
+            state: undefined,
+            toDirection: '',
+            delayCount: 0,
+            limit: 2.1,
+          },
+          action: 'idle',
+          moving: {
+            state: false,
+            step: 0,
+            course: '',
+            origin: {
+              number: {
+                x: cell.x,
+                y: cell.y,
+              },
+              center: {
+                x: cell2.center.x,
+                y: cell2.center.y,
+              }
+            },
+            destination: {
+              x: 0,
+              y: 0,
+            }
+          },
+          strafing: {
+            state: false,
+            direction: '',
+          },
+          strafeReleaseHook: false,
+          attacking: {
+            state: false,
+            count: 0,
+            limit: 15,
+          },
+          attackStrength: 0,
+          success: {
+            attackSuccess: {
+              state: false,
+              count: 0,
+              limit: 10,
+            },
+            defendSuccess: {
+              state: false,
+              count: 0,
+              limit: 10,
+            },
+            deflected: {
+              state: false,
+              count: 0,
+              limit: 15,
+              predeflect: false,
+              type: '',
+            }
+          },
+          pushBack: {
+            state: false,
+            prePushBackMoveSpeed: 0,
+          },
+          defending: {
+            state: false,
+            count: 0,
+            limit: 5,
+          },
+          falling: {
+            state: false,
+            count: 0,
+            limit: 5,
+          },
+          dead: {
+            state: false,
+            count: 0,
+            limit: 10
+          },
+          ghost: {
+            state: false,
+            position: {
+              cell: {
+                number: {
+                  x: 0,
+                  y: 0,
+                },
+                center: {
+                  x: 0,
+                  y: 0,
+                }
+              }
+            }
+          },
+          respawn: false,
+          points: 0,
+          speed: {
+            move: .1,
+            range: [.05,.1,.125,.2]
+          },
+          terrainMoveSpeed: {
+            state: false,
+            speed: 0,
+          },
+          hp: 2,
+          currentWeapon: {
+            name: 'sword1',
+            type: 'sword',
+            effect: '',
+          },
+          currentArmor: {
+            name: '',
+            type: '',
+            effect: '',
+          },
+          items: {
+            weaponIndex: 0,
+            armorIndex: 0,
+            weapons: [
+              {
+                name: 'sword1',
+                type: 'sword',
+                effect: '',
+              }
+            ],
+            armor: [],
+            ammo: 0,
+          },
+          inventorySize: 4,
+          cycleWeapon: {
+            state: false,
+            count: 0,
+            limit: 3,
+          },
+          cycleArmor: {
+            state: false,
+            count: 0,
+            limit: 3,
+          },
+          crits: {
+            singleHit: 1,
+            doubleHit: 6,
+            pushBack: 3,
+            guardBreak: 3,
+          },
+          statusDisplay: {
+            state: false,
+            status: '',
+            count: 0,
+            limit: 15,
+          },
+          itemDrop: {
+            state: false,
+            count: 0,
+            limit: 10,
+            item: {
+              name: '',
+            },
+            gear: {
+              type: '',
+            }
+          },
+          itemPickup: {
+            state: false,
+            count: 0,
+            limit: 10,
+            item: {
+              name: '',
+            },
+            gear: {
+              type: '',
+            }
+          },
+          discardGear:{
+            state: false,
+            count: 0,
+            limit: 8,
+          },
+          idleAnim: {
+            state: false,
+            count: 0,
+            limit: 5,
+          },
+          breakAnim: {
+            attack: {
+              state: false,
+              count: 0,
+              limit: 10
+            },
+            defend: {
+              state: false,
+              count: 0,
+              limit: 10
+            }
+          },
+          ai: {
+            state: true,
+            imgType: imgType,
+            instructions: []
+          }
+        };
+        this.players.push(newPlayer);
+        this.keyPressed.push(
+          {
+            north: false,
+            south: false,
+            east: false,
+            west: false,
+            northEast: false,
+            northWest: false,
+            southEast: false,
+            southWest: false,
+            attack: false,
+            defend: false,
+            strafe: false,
+            cycleWeapon: false,
+            cycleArmor: false,
+          }
+        )
+
+      }
+
+    }
+    else if (this.addComCount.state === true) {
+      // console.log('already adding an ai player');
+    }
+
+
+
+  }
+  removeComPlayer = (playerNumber) => {
+    console.log('removing ai player',playerNumber);
+    this.keyPressed.splice(playerNumber-1,1)
+    this.players.splice(playerNumber-1,1)
+  }
   aiAct = () => {
 
 
@@ -9560,6 +10101,9 @@ class App extends Component {
           <img src={player2ImgIdleWest} className='hidden playerImgs' ref="player2ImgIdleCrossbowWest" alt="logo" />
 
           <img src={playerImgIdleSheet} className='hidden playerImgs' ref="playerImgIdleSheet" alt="logo" />
+          <img src={player2ImgIdleSheet} className='hidden playerImgs' ref="player2ImgIdleSheet" alt="logo" />
+          <img src={playerComAImgIdleSheet} className='hidden playerImgs' ref="playerComAImgIdleSheet" alt="logo" />
+          <img src={playerComBImgIdleSheet} className='hidden playerImgs' ref="playerComBImgIdleSheet" alt="logo" />
 
 
         </div>
