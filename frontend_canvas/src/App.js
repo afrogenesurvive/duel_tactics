@@ -3978,12 +3978,12 @@ class App extends Component {
                     this.players[plyr.number-1].defending = {
                       state: false,
                       count: 0,
-                      limit: this.players[player.target.occupant.player-1].defending.limit,
+                      limit: this.players[plyr.target.occupant.player-1].defending.limit,
                     }
                     this.players[plyr.number-1].attacking = {
                       state: false,
                       count: 0,
-                      limit: this.players[player.target.occupant.player-1].attacking.limit,
+                      limit: this.players[plyr.target.occupant.player-1].attacking.limit,
                     }
 
                     this.players.[plyr.number-1].success.deflected = {
