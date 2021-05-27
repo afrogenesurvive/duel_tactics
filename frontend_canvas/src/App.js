@@ -2733,7 +2733,7 @@ class App extends Component {
 
 
     // DEFLECTED PLAYER CAN'T DO ANYTHING!!
-    if (player.success.deflected.state === false) {
+    if (player.success.deflected.state === false && player.dead.state !== true) {
 
 
       // DON'T READ INPUTS. JUST MOVE!!
