@@ -318,6 +318,11 @@ class App extends Component {
             type: '',
           }
         },
+        discardGear:{
+          state: false,
+          count: 0,
+          limit: 8,
+        },
         idleAnim: {
           state: false,
           count: 0,
@@ -563,6 +568,11 @@ class App extends Component {
           gear: {
             type: '',
           }
+        },
+        discardGear:{
+          state: false,
+          count: 0,
+          limit: 8,
         },
         idleAnim: {
           state: false,
@@ -1157,6 +1167,11 @@ class App extends Component {
             type: '',
           }
         },
+        discardGear:{
+          state: false,
+          count: 0,
+          limit: 8,
+        },
         idleAnim: {
           state: false,
           count: 0,
@@ -1404,6 +1419,11 @@ class App extends Component {
           gear: {
             type: '',
           }
+        },
+        discardGear:{
+          state: false,
+          count: 0,
+          limit: 8,
         },
         idleAnim: {
           state: false,
@@ -2618,19 +2638,6 @@ class App extends Component {
 
     }
 
-    if (
-      this.keyPressed[player.number-1].defend === true &&
-      this.keyPressed[player.number-1].cycleWeapon === true
-    ) {
-      this.discardGear(player,"weapon")
-    }
-    if (
-      this.keyPressed[player.number-1].defend === true &&
-      this.keyPressed[player.number-1].cycleArmor === true
-    ) {
-      this.discardGear(player,"armor")
-    }
-
 
     let nextPosition;
 
@@ -3403,8 +3410,42 @@ class App extends Component {
         }
 
 
+        // DISCARD GEAR!!
+        if (
+          this.keyPressed[player.number-1].defend === true &&
+          this.keyPressed[player.number-1].cycleWeapon === true &&
+          player.discardGear.state !== true
+        ) {
+
+            this.discardGear(player,"weapon")
+            player.discardGear.state = true;
+        }
+        if (
+          this.keyPressed[player.number-1].defend === true &&
+          this.keyPressed[player.number-1].cycleArmor === true &&
+          player.discardGear.state !== true
+        ) {
+
+            this.discardGear(player,"armor")
+            player.discardGear.state = true;
+        }
+        // DISCARD GEAR STEPPER!!
+        if (player.discardGear.state === true) {
+          if (player.discardGear.count < player.discardGear.limit) {
+            player.discardGear.count++
+          }
+          else if (player.discardGear.count >= player.discardGear.limit) {
+            player.discardGear = {
+              state: false,
+              count: 0,
+              limit: player.discardGear.limit,
+            }
+          }
+        }
+
+
         // WEAPON/ARMOR CYCLE CHECK!!
-        if (this.keyPressed[player.number-1].cycleWeapon === true && player.cycleWeapon.state === false) {
+        if (this.keyPressed[player.number-1].cycleWeapon === true && player.cycleWeapon.state === false && player.defending.state !== true) {
           if (player.cycleWeapon.count < player.cycleWeapon.limit) {
             player.cycleWeapon.count++
             // console.log('player.cycleWeapon.count',player.cycleWeapon.count);
@@ -3457,7 +3498,7 @@ class App extends Component {
           console.log('already cycling weapon');
         }
 
-        if (this.keyPressed[player.number-1].cycleArmor === true && player.cycleArmor.state === false) {
+        if (this.keyPressed[player.number-1].cycleArmor === true && player.cycleArmor.state === false && player.defending.state !== true) {
           if (player.cycleArmor.count < player.cycleArmor.limit) {
             player.cycleArmor.count++
             // console.log('player.cycleArmor.count',player.cycleArmor.count);
@@ -8539,7 +8580,7 @@ class App extends Component {
     }
 
     if (cellFree === true) {
-      if (type === 'weapon') {
+      if (type === 'weapon' && player.items.weapons.length > 0) {
 
         let index = player.items.weapons.findIndex(weapon => weapon.name === player.currentWeapon.name);
 
@@ -8579,7 +8620,7 @@ class App extends Component {
           effect: "",
         }
       }
-      if (type === 'armor') {
+      if (type === 'armor' && player.items.armor.length > 0) {
 
         let index2 = player.items.armor.findIndex(armor => armor.name === player.currentArmor.name);
 
