@@ -196,7 +196,6 @@ const DebugBox = props => {
     {state === 'player' && (
       <ul className="debugBoxList">
         {props.player.items.weapons.map((weapon) => (
-
             <li className="debugBoxListItem">
               {props.player.currentWeapon.name !== weapon.name &&
                 weapon.type === 'sword' && (
@@ -249,8 +248,6 @@ const DebugBox = props => {
               // )
             }
             </li>
-
-
         ))}
         {props.player.items.armor.map((armor) => (
 

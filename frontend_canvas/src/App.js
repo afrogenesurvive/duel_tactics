@@ -15,7 +15,7 @@ import floorSand from './assets/floorSand.png'
 import floorStone from './assets/floorStone.png'
 import floorBramble from './assets/floorBramble.png'
 import floorLava from './assets/floorLava.png'
-import floorAttack from './assets/floor3.png'
+import floorAttack from './assets/floorAttacked.png'
 import floorVoid from './assets/floorVoid.png'
 import wall from './assets/wall.png'
 import wall2 from './assets/wall2.png'
@@ -191,7 +191,7 @@ class App extends Component {
       row12: ['x120x','x121x','z122x','x123x','x124x','x125x','x126x','x127x','x128x','x129x','z1210x','x1211x','x1212x'],
     };
     this.levelData9 = {
-      row0: ['x00x','x01x','x02x','x03x','x04x','x05g','x06g','x07x','x08f','x09d'],
+      row0: ['x00x','x01x','x02x','x03x','x04x','x05g','x06g','x07h','x08f','x09d'],
       row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18f','x19d'],
       row2: ['x20x','x21x','x22x','x23a','x24x','x25x','x26x','x27x','x28d','x29d'],
       row3: ['x30x','x31a','x32a','x33a','x34x','x35x','x36x','x37x','x38d','x39d'],
@@ -2125,7 +2125,7 @@ class App extends Component {
     this.stepper.deltaTime = (this.stepper.currentTime-this.stepper.lastTime);
 
     if(this.stepper.deltaTime > this.stepper.interval) {
-      // console.log('update loop step...dt',this.stepper.deltaTime,'interval',this.stepper.interval);
+
       this.time++
       // if (this.time === 300) {
       //   // this.openVoid = true;
@@ -2145,9 +2145,13 @@ class App extends Component {
       }
       for (const player of this.players) {
 
-        // this.pollGamepads()
+        // if (player.ai.state === true && player.dead.state === true) {
+        //   // DO nothing
+        // }
+        // else {
+        //   this.playerUpdate(player, this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
+        // }
         this.playerUpdate(player, this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
-
       }
 
       this.stepper.lastTime = this.stepper.currentTime - (this.stepper.deltaTime % this.stepper.interval);
@@ -2159,6 +2163,8 @@ class App extends Component {
     // console.log('updating player',player.number);
 
     let keyPressedDirection;
+
+    console.log();
     if (player.ai.state === true && player.dead.state === true) {
 
     }
@@ -3535,12 +3541,12 @@ class App extends Component {
                     this.players[plyr.number-1].defending = {
                       state: false,
                       count: 0,
-                      limit: this.players[plyr.target.occupant.player-1].defending.limit,
+                      limit: this.players[plyr.number-1].defending.limit,
                     }
                     this.players[plyr.number-1].attacking = {
                       state: false,
                       count: 0,
-                      limit: this.players[plyr.target.occupant.player-1].attacking.limit,
+                      limit: this.players[plyr.number-1].attacking.limit,
                     }
 
                     this.players.[plyr.number-1].success.deflected = {
@@ -8326,6 +8332,7 @@ class App extends Component {
             type: 'hazard',
             effect: '',
           }
+        break;
         case 'i' :
           elem.terrain = {
             name: 'bramble',
@@ -8733,8 +8740,6 @@ class App extends Component {
 
     let newPlayerNumber = this.players.length+1;
 
-
-
     let imgTypeRoll = this.rnJesus(1,2);
     let imgType;
     if (imgTypeRoll === 1) {
@@ -9101,6 +9106,8 @@ class App extends Component {
         )
         this.aiPlayers.push(newPlayerNumber)
         this.getTarget(this.players[newPlayerNumber-1])
+        console.log('this.players1',this.players.length,this.players);
+        console.log('this.keyPressed1',this.keyPressed.length,this.keyPressed);
       }
 
     }
@@ -9108,12 +9115,11 @@ class App extends Component {
       // console.log('already adding an ai player');
     }
 
-
-
   }
   removeAiPlayer = (playerNumber) => {
     console.log('removing ai player',playerNumber);
     let index = this.aiPlayers.indexOf(playerNumber);
+    console.log('remove index',index);
     this.aiPlayers.splice(index,1);
     this.players[playerNumber-1].ghost = {
       state: false,
@@ -9129,9 +9135,11 @@ class App extends Component {
           }
         }
       }
-    }
-    this.keyPressed.splice(playerNumber-1,1)
-    this.players.splice(playerNumber-1,1)
+    };
+    this.keyPressed.splice(playerNumber-1,1);
+    this.players.splice(playerNumber-1,1);
+    console.log('this.players2',this.players.length,this.players);
+    console.log('this.keyPressed2',this.keyPressed.length,this.keyPressed);
   }
   aiDecide = () => {
 
@@ -9259,11 +9267,11 @@ class App extends Component {
       )}
 
         <div className="containerTop">
-        <div className="timer">
-          <p className="timerText">
-          {this.time}
-          </p>
-        </div>
+          <div className="timer">
+            <p className="timerText">
+            {this.time}
+            </p>
+          </div>
 
           <div className={this.state.containerInnerClass}>
             <canvas
@@ -9317,8 +9325,6 @@ class App extends Component {
               players={this.players}
             />
           )}
-
-
 
 
           <img src={floorGrass} className='hidden' ref="floorGrass" alt="logo" id="floor1"/>
