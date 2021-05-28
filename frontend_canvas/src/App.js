@@ -41,16 +41,16 @@ import player2ImgIdleSouthEast from './assets/player/idle/player2ImgSouthEast.pn
 
 import attack1Indicate from './assets/indicators/attack1.png';
 import attack2Indicate from './assets/indicators/attack2.png';
-import attackSuccessInidcate from './assets/indicators/attackSuccess.png';
-import defendInidcate from './assets/indicators/defend.png';
-import deflectInidcate from './assets/indicators/deflect.png';
-import deflectInjuredInidcate from './assets/indicators/deflectInjured2.png';
-import pushbackInidcate from './assets/indicators/pushback.png';
-import ghostInidcate from './assets/indicators/ghost.png';
-import deathInidcate from './assets/indicators/death.png';
-import preAttackInidcate from './assets/indicators/preAttack.png';
-import attackBreakInidcate from './assets/indicators/attackBreak.png';
-import defendBreakInidcate from './assets/indicators/defendBreak.png';
+import attackSuccessIndicate from './assets/indicators/attackSuccess.png';
+import defendIndicate from './assets/indicators/defend.png';
+import deflectIndicate from './assets/indicators/deflect.png';
+import deflectInjuredIndicate from './assets/indicators/deflectInjured2.png';
+import pushbackIndicate from './assets/indicators/pushback.png';
+import ghostIndicate from './assets/indicators/ghost.png';
+import deathIndicate from './assets/indicators/death.png';
+import preAttackIndicate from './assets/indicators/preAttack.png';
+import attackBreakIndicate from './assets/indicators/attackBreak.png';
+import defendBreakIndicate from './assets/indicators/defendBreak.png';
 
 import mail1 from './assets/items/mail1.png';
 import mail2 from './assets/items/mail2.png';
@@ -1090,6 +1090,15 @@ class App extends Component {
       limit: 10,
     };
     this.aiPlayers = [];
+    this.boltDeflectAnim = {
+      position: {
+        x: 0,
+        y: 0,
+      },
+      state: false,
+      count: 0,
+      limit: 10,
+    }
 
   }
 
@@ -3561,6 +3570,15 @@ class App extends Component {
                 // ATTACK DEFENDED!!
                 else {
                   // console.log('bullet doged');
+                  this.boltDeflectAnim = {
+                    position: {
+                      x: bolt.currentPosition.center.x,
+                      y: bolt.currentPosition.center.y,
+                    },
+                    state: true,
+                    count: 1,
+                    limit: this.boltDeflectAnim.limit,
+                  }
 
                   this.players.[plyr.number-1].success.defendSuccess = {
                     state: true,
@@ -3615,6 +3633,23 @@ class App extends Component {
           bolt.currentPosition.center.y > 800
         ) {
           bolt.kill = true;
+        }
+      }
+    }
+
+    if (this.boltDeflectAnim.state === true) {
+      if (this.boltDeflectAnim.count < this.boltDeflectAnim.limit) {
+        this.boltDeflectAnim.count++;
+      }
+      if (this.boltDeflectAnim.count >= this.boltDeflectAnim.limit) {
+        this.boltDeflectAnim = {
+          position: {
+            x: 0,
+            y: 0,
+          },
+          state: false,
+          count: 0,
+          limit: this.boltDeflectAnim.limit,
         }
       }
     }
@@ -5914,6 +5949,11 @@ class App extends Component {
           }
         }
 
+        if (this.boltDeflectAnim.state === true) {
+          let boltDeflectImg = this.refs.pushbackIndicate;
+          context.drawImage(boltDeflectImg, this.boltDeflectAnim.position.x+35, this.boltDeflectAnim.position.y-35, 35, 35);
+        }
+
         let walledTiles = []
         if (walledTiles.includes(''+x+','+y+'')) {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
@@ -7864,7 +7904,6 @@ class App extends Component {
           item.type = "weapon";
           item.effect = this.players[player.number-1].items.weapons[index].effect;
 
-
           this.players[player.number-1].itemDrop = {
             state: true,
             count: 0,
@@ -7884,6 +7923,18 @@ class App extends Component {
             type: '',
             effect: '',
           }
+
+
+          if (player.currentArmor === {} || !player.currentArmor || player.currentArmor.name === '') {
+            
+            this.players[player.number-1].defending = {
+              state: false,
+              count: 0,
+              limit: this.players[player.number-1].defending.limit,
+            }
+            this.players[player.number-1].action = "idle";
+          }
+
 
           this.players[player.number-1].statusDisplay = {
             state: true,
@@ -7944,6 +7995,17 @@ class App extends Component {
             type: '',
             effect: '',
           }
+
+          if (player.currentWeapon === {} || !player.currentWeapon || player.currentWeapon.name === '') {
+            
+            this.players[player.number-1].defending = {
+              state: false,
+              count: 0,
+              limit: this.players[player.number-1].defending.limit,
+            }
+            this.players[player.number-1].action = "idle";
+          }
+
 
           this.players[player.number-1].statusDisplay = {
             state: true,
@@ -8019,6 +8081,18 @@ class App extends Component {
           type: "",
           effect: "",
         }
+
+        if (player.currentArmor === {} || !player.currentArmor || player.currentArmor.name === '') {
+          
+          this.players[player.number-1].defending = {
+            state: false,
+            count: 0,
+            limit: this.players[player.number-1].defending.limit,
+          }
+          this.players[player.number-1].action = "idle";
+        }
+
+
       }
       if (type === 'armor' && player.items.armor.length > 0) {
 
@@ -8058,6 +8132,17 @@ class App extends Component {
           type: "",
           effect: "",
         }
+
+        if (player.currentWeapon === {} || !player.currentWeapon || player.currentWeapon.name === '') {
+          
+          this.players[player.number-1].defending = {
+            state: false,
+            count: 0,
+            limit: this.players[player.number-1].defending.limit,
+          }
+          this.players[player.number-1].action = "idle";
+        }
+
 
       }
     } else {
@@ -9037,27 +9122,12 @@ class App extends Component {
                 limit: 0,
               },
               {
-                keyword: 'moveEast',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'moveWest',
+                keyword: 'attack',
                 count: 0,
                 limit: 0,
               },
               {
                 keyword: 'shortWait',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'shortWait',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'moveNorth',
                 count: 0,
                 limit: 0,
               },
@@ -9180,7 +9250,15 @@ class App extends Component {
           }
           switch(currentInstruction.keyword) {
             case 'shortWait':
-              currentInstruction.limit = 10;
+              currentInstruction.limit = 15;
+              if (currentInstruction.count < currentInstruction.limit) {
+                currentInstruction.count++;
+              } else if (currentInstruction.count >= currentInstruction.limit) {
+                plyr.ai.currentInstruction++;
+              }
+            break;
+            case 'longWait':
+              currentInstruction.limit = 25;
               if (currentInstruction.count < currentInstruction.limit) {
                 currentInstruction.count++;
               } else if (currentInstruction.count >= currentInstruction.limit) {
@@ -9358,16 +9436,16 @@ class App extends Component {
 
           <img src={attack1Indicate} className='hidden playerImgs' ref="attack1Indicate" alt="logo" />
           <img src={attack2Indicate} className='hidden playerImgs' ref="attack2Indicate" alt="logo" />
-          <img src={attackSuccessInidcate} className='hidden playerImgs' ref="attackSuccessIndicate" alt="logo" />
-          <img src={defendInidcate} className='hidden playerImgs' ref="defendIndicate" alt="logo" />
-          <img src={deflectInidcate} className='hidden playerImgs' ref="deflectIndicate" alt="logo" />
-          <img src={deflectInjuredInidcate} className='hidden playerImgs' ref="deflectInjuredIndicate" alt="logo" />
-          <img src={pushbackInidcate} className='hidden playerImgs' ref="pushbackIndicate" alt="logo" />
-          <img src={ghostInidcate} className='hidden playerImgs' ref="ghostIndicate" alt="logo" />
-          <img src={deathInidcate} className='hidden playerImgs' ref="deathIndicate" alt="logo" />
-          <img src={preAttackInidcate} className='hidden playerImgs' ref="preAttackIndicate" alt="logo" />
-          <img src={attackBreakInidcate} className='hidden playerImgs' ref="attackBreakIndicate" alt="logo" />
-          <img src={defendBreakInidcate} className='hidden playerImgs' ref="defendBreakIndicate" alt="logo" />
+          <img src={attackSuccessIndicate} className='hidden playerImgs' ref="attackSuccessIndicate" alt="logo" />
+          <img src={defendIndicate} className='hidden playerImgs' ref="defendIndicate" alt="logo" />
+          <img src={deflectIndicate} className='hidden playerImgs' ref="deflectIndicate" alt="logo" />
+          <img src={deflectInjuredIndicate} className='hidden playerImgs' ref="deflectInjuredIndicate" alt="logo" />
+          <img src={pushbackIndicate} className='hidden playerImgs' ref="pushbackIndicate" alt="logo" />
+          <img src={ghostIndicate} className='hidden playerImgs' ref="ghostIndicate" alt="logo" />
+          <img src={deathIndicate} className='hidden playerImgs' ref="deathIndicate" alt="logo" />
+          <img src={preAttackIndicate} className='hidden playerImgs' ref="preAttackIndicate" alt="logo" />
+          <img src={attackBreakIndicate} className='hidden playerImgs' ref="attackBreakIndicate" alt="logo" />
+          <img src={defendBreakIndicate} className='hidden playerImgs' ref="defendBreakIndicate" alt="logo" />
 
 
           <img src={sword} className='hidden playerImgs' ref="itemSword" alt="logo" />
