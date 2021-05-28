@@ -1945,7 +1945,15 @@ class App extends Component {
         this.currentPlayer = 3;
       break;
       case 'ArrowDown' :
-        this.keyPressed[2].west = state;
+        this.keyPressed[2].cycleWeapon = state;
+        this.currentPlayer = 3;
+      break;
+      case 'ArrowRight' :
+        this.keyPressed[2].defend = state;
+        this.currentPlayer = 3;
+      break;
+      case 'ArrowLeft' :
+        this.keyPressed[2].attack = state;
         this.currentPlayer = 3;
       break;
 
@@ -8737,7 +8745,6 @@ class App extends Component {
 
     if (this.addAiCount.state !== true) {
 
-      console.log('adding ai. Player #',newPlayerNumber);
       this.addAiCount.state = true;
 
       let cell = {
@@ -8752,6 +8759,8 @@ class App extends Component {
       }
 
       if (checkCell === true) {
+
+        console.log('adding ai. Player #',newPlayerNumber,' @',cell.x,cell.y);
 
         let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y)
         let newPlayer = {
@@ -9091,6 +9100,7 @@ class App extends Component {
           }
         )
         this.aiPlayers.push(newPlayerNumber)
+        this.getTarget(this.players[newPlayerNumber-1])
       }
 
     }
@@ -9232,14 +9242,10 @@ class App extends Component {
 
 
   }
-  openAiPlayers = () => {
+  toggleAiDisplay = () => {
+    let newState = !this.state.showAiStatus;
     this.setState({
-      showAiStatus: true
-    })
-  }
-  closeAiPlayers = () => {
-    this.setState({
-      showAiStatus: false
+      showAiStatus: newState,
     })
   }
 
@@ -9289,7 +9295,7 @@ class App extends Component {
               <a href="javascript:" className="setSwitchLink" onClick={this.openSettings}>
                 <FontAwesomeIcon icon={faCogs} size="sm" className="setSwitchIcon"/>
               </a>
-              <a href="javascript:" className="setSwitchLink" onClick={this.openAiPlayers}>
+              <a href="javascript:" className="setSwitchLink" onClick={this.toggleAiDisplay}>
                 <FontAwesomeIcon icon={faRobot} size="sm" className="setSwitchIcon"/>
               </a>
             </div>

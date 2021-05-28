@@ -65,11 +65,12 @@
   padding: 1rem;
   background-color: #ffffff;
   position: absolute;
-  bottom: 5;
-  left: 1rem;
+  bottom: 10rem;
+  left: 2rem;
   z-index: 3;
-  max-height: 18rem;
+  max-height: 25rem;
   max-width: 18rem;
+  overflow: scroll;
 }
 
 .cellInfoList {
@@ -118,4 +119,11 @@
 
 .aiStatusBox {
   text-align: center;
+}
+.aiStatusBoxSwitch {
+  margin: .1rem 0 0 1rem;
+}
+
+.aiStatHeadBox > * {
+  display: inline-block;
 }
