@@ -87,6 +87,7 @@ import DebugBox from './debugBox'
 import Settings from './settings'
 import CellInfo from './cellInfo'
 import Loading from './loading'
+import ComStatus from './comStatus'
 
 import pointInPolygon from 'point-in-polygon';
 
@@ -346,7 +347,8 @@ class App extends Component {
         ai: {
           state: false,
           imgType: '',
-          instructions: []
+          instructions: [],
+          currentInstruction: 0,
         }
       },
       {
@@ -602,11 +604,13 @@ class App extends Component {
         ai: {
           state: false,
           imgType: '',
-          instructions: []
+          instructions: [],
+          currentInstruction: 0,
         }
       }
     ],
     showSettings: true,
+    showComStatus: false,
     canvas: undefined,
     context: undefined,
     canvas2: undefined,
@@ -1205,7 +1209,10 @@ class App extends Component {
         ai: {
           state: false,
           imgType: '',
-          instructions: []
+          instructions: [
+
+          ],
+          currentInstruction: 0,
         }
       },
       {
@@ -1463,7 +1470,8 @@ class App extends Component {
         ai: {
           state: false,
           imgType: '',
-          instructions: []
+          instructions: [],
+          currentInstruction: 0,
         }
       }
     ];
@@ -1594,7 +1602,8 @@ class App extends Component {
       state: false,
       count: 0,
       limit: 10,
-    }
+    };
+    this.aiPlayers = [];
 
   }
 
@@ -2449,18 +2458,6 @@ class App extends Component {
         this.keyPressed[2].north = state;
         this.currentPlayer = 3;
       break;
-      case 'ArrowDown' :
-        this.keyPressed[2].south = state;
-        this.currentPlayer = 3;
-      break;
-      case 'ArrowLeft' :
-        this.keyPressed[2].west = state;
-        this.currentPlayer = 3;
-      break;
-      case 'ArrowRight' :
-        this.keyPressed[2].east = state;
-        this.currentPlayer = 3;
-      break;
 
 
       // case 'u' :
@@ -2637,7 +2634,10 @@ class App extends Component {
       //   // this.customCellToVoid({x:2,y:2})
       // }
 
-      // this.aiAct();
+      if (this.aiPlayers.length > 0) {
+        this.aiAct();
+      }
+
       if (this.gamepad === true) {
         this.pollGamepads();
       }
@@ -8437,7 +8437,7 @@ class App extends Component {
     this.players[player.number-1] = player;
 
     if (player.ai.state === true) {
-      console.log('ai player eliminated');
+      // console.log('ai player eliminated');
       this.removeComPlayer(player.number)
     }
 
@@ -9853,7 +9853,34 @@ class App extends Component {
           ai: {
             state: true,
             imgType: imgType,
-            instructions: []
+            currentInstruction: 0,
+            instructions: [
+              {
+                keyword: 'moveNorth',
+                count: 0,
+                limit: 0,
+              },
+              {
+                keyword: 'shortWait',
+                count: 0,
+                limit: 0,
+              },
+              {
+                keyword: 'moveSouth',
+                count: 0,
+                limit: 0,
+              },
+              {
+                keyword: 'shortWait',
+                count: 0,
+                limit: 0,
+              },
+              {
+                keyword: 'moveSouth',
+                count: 0,
+                limit: 0,
+              },
+            ]
           }
         };
         this.players.push(newPlayer);
@@ -9874,7 +9901,7 @@ class App extends Component {
             cycleArmor: false,
           }
         )
-
+        this.aiPlayers.push(newPlayerNumber)
       }
 
     }
@@ -9887,6 +9914,8 @@ class App extends Component {
   }
   removeComPlayer = (playerNumber) => {
     console.log('removing ai player',playerNumber);
+    let index = this.aiPlayers.indexOf(playerNumber);
+    this.aiPlayers.splice(index,1);
     this.players[playerNumber-1].ghost = {
       state: false,
       position: {
@@ -9907,30 +9936,95 @@ class App extends Component {
   }
   aiAct = () => {
 
+    for (const plyr of this.players) {
+      if (plyr.ai.state === true) {
+        let currentInstruction = plyr.ai.instructions[plyr.ai.currentInstruction];
 
-    // step1: turn and move in all directions
 
-    // step2: move w/pathfinding to a tile surrounding player1 and target them
+        this.keyPressed[plyr.number-1] = {
+          north: false,
+          south: false,
+          east: false,
+          west: false,
+          northEast: false,
+          northWest: false,
+          southEast: false,
+          southWest: false,
+          attack: false,
+          defend: false,
+          strafe: false,
+          cycleWeapon: false,
+          cycleArmor: false,
+        }
+        switch(currentInstruction.keyword) {
+          case 'shortWait':
+            currentInstruction.limit = 10;
+            if (currentInstruction.count < currentInstruction.limit) {
+              currentInstruction.count++;
+            } else if (currentInstruction.count >= currentInstruction.limit) {
+              plyr.ai.currentInstruction++;
+            }
+          break;
+          case 'moveNorth':
+            currentInstruction.limit = 1;
+            this.keyPressed[plyr.number-1].north = true;
+            if (currentInstruction.count < currentInstruction.limit) {
+              currentInstruction.count++;
+            } else if (currentInstruction.count >= currentInstruction.limit) {
+              plyr.ai.currentInstruction++;
+            }
+          break;
+          case 'moveSouth':
+            currentInstruction.limit = 1;
+            this.keyPressed[plyr.number-1].south = true;
+            if (currentInstruction.count < currentInstruction.limit) {
+              currentInstruction.count++;
+            } else if (currentInstruction.count >= currentInstruction.limit) {
+              plyr.ai.currentInstruction++;
+            }
+          break;
+          case 'moveEast':
+            currentInstruction.limit = 1;
+            this.keyPressed[plyr.number-1].east = true;
+            if (currentInstruction.count < currentInstruction.limit) {
+              currentInstruction.count++;
+            } else if (currentInstruction.count >= currentInstruction.limit) {
+              plyr.ai.currentInstruction++;
+            }
+          break;
+          case 'moveWest':
+            currentInstruction.limit = 1;
+            this.keyPressed[plyr.number-1].west = true;
+            if (currentInstruction.count < currentInstruction.limit) {
+              currentInstruction.count++;
+            } else if (currentInstruction.count >= currentInstruction.limit) {
+              plyr.ai.currentInstruction++;
+            }
+          break;
+          case 'strafeNorth':
+          break;
+          case 'attack':
+          break;
+          case 'longDefend':
+          break;
+          case 'shortDefend':
+          break;
+        }
+      }
+    }
 
-  // if ai setting is attack player,
-  //   make an action checklist
-  //     locate player, move to closest location, target and attack, defend when detect pre attacks
-  //     on each game step when one ation is complete the currently acting is false
-  //       if not running an ai action check action list
-  //         run the next one in the action list and set currentl acting true
-  //           if running an ai action check sub action list
-  //             run the last incomplete subaction
-  //               subaction is composed of keypresses and release/sub action completion conditions
-  //               if running a sub action, check conditions for each game step
-  //             when all subactions incomplete, action incomplete
-  //               set currently acting false
-  //
-  //
-  //             example sub action
-  //               ai strafe:
-  //                 set keypress of strafe and disired move direction
-  //                   release consdition is moving false. when moving is false changed strafe keypress false
 
+
+  }
+  openComPlayers = () => {
+    this.setState({
+      showComStatus: true
+    })
+  }
+  closeComPlayers = () => {
+    this.setState({
+      showComStatus: false
+    })
   }
 
 
@@ -9978,6 +10072,9 @@ class App extends Component {
               <a href="javascript:" className="setSwitchLink" onClick={this.openSettings}>
                 <FontAwesomeIcon icon={faCogs} size="sm" className="setSwitchIcon"/>
               </a>
+              <a href="javascript:" className="setSwitchLink" onClick={this.openComPlayers}>
+                <FontAwesomeIcon icon={faCogs} size="sm" className="setSwitchIcon"/>
+              </a>
             </div>
 
             <CellInfo
@@ -9990,6 +10087,11 @@ class App extends Component {
               gridWidth={this.gridWidth}
               onConfirm={this.loadSettings}
               onCancel={this.cancelSettings}
+            />
+          )}
+          {this.state.showComStatus === true && (
+            <ComStatus
+              players={this.players}
             />
           )}
 

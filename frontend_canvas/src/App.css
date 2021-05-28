@@ -150,6 +150,10 @@
 }
 .setSwitchIcon {
   color: #000000;
+  margin-right: 1rem;
+}
+.setSwitchLink {
+
 }
 
 .timer {

@@ -59,6 +59,18 @@
   max-height: 18rem;
   max-width: 18rem;
 }
+.cellInfoBox {
+  border: 1px solid blue;
+  border-radius: 5px;
+  padding: .5rem;
+  background-color: #ffffff;
+  position: absolute;
+  bottom: 30;
+  right: .1rem;
+  z-index: 3;
+  max-height: 18rem;
+  max-width: 18rem;
+}
 
 .cellInfoList {
   list-style-type: none;
