@@ -108,7 +108,7 @@ class App extends Component {
       twelve: 150,
     },
     loading: true,
-    test: '',
+    stateUpdater: '',
   }
 
   constructor(props) {
@@ -2124,7 +2124,7 @@ class App extends Component {
       //   // this.customCellToVoid({x:2,y:2})
       // }
       this.setState({
-        test: '..'
+        stateUpdater: '..'
       })
 
       if (this.aiPlayers.length > 0) {
@@ -6839,7 +6839,7 @@ class App extends Component {
     }
     // console.log('gearAmount', gearAmount, 'inventorySize',player.inventorySize);
 
-    if (haveSpace === true) {
+    // if (haveSpace === true && ) {
 
 
       // let cell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y)
@@ -6847,28 +6847,14 @@ class App extends Component {
         // console.log('picked up an item');
         if (cell.item.type === 'weapon') {
           // console.log('weapon',cell.item);
+          if (haveSpace === true ) {
 
-          if (player.currentWeapon.name === '' || !player.currentWeapon.name) {
-            this.players[player.number-1].currentWeapon = {
-              name: cell.item.name,
-              type: cell.item.subType,
-              effect: cell.item.effect,
-            }
-            this.players[player.number-1].items.weapons.push({
-              name: cell.item.name,
-              type: cell.item.subType,
-              effect: cell.item.effect,
-            })
-            if (cell.item.subType === 'crossbow') {
-              let ammo = parseInt(cell.item.effect.split('+')[1])
-              // console.log('picked up a crossbow checking ammo',ammo);
-              this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
-              // console.log('new ammo amt',this.players[player.number-1].items.ammo);
-            }
-            pickUp = true;
-          }
-          else {
-            if (player.items.weapons.map(weapon => weapon.name).includes(cell.item.name) !== true ) {
+            if (player.currentWeapon.name === '' || !player.currentWeapon.name) {
+              this.players[player.number-1].currentWeapon = {
+                name: cell.item.name,
+                type: cell.item.subType,
+                effect: cell.item.effect,
+              }
               this.players[player.number-1].items.weapons.push({
                 name: cell.item.name,
                 type: cell.item.subType,
@@ -6881,36 +6867,67 @@ class App extends Component {
                 // console.log('new ammo amt',this.players[player.number-1].items.ammo);
               }
               pickUp = true;
-
-              this.players[player.number-1].statusDisplay = {
-                state: true,
-                status: 'weapon accquired',
-                count: 1,
-                limit: this.players[player.number-1].statusDisplay.limit,
-              }
             }
             else {
+              if (player.items.weapons.map(weapon => weapon.name).includes(cell.item.name) !== true ) {
+                this.players[player.number-1].items.weapons.push({
+                  name: cell.item.name,
+                  type: cell.item.subType,
+                  effect: cell.item.effect,
+                })
+                if (cell.item.subType === 'crossbow') {
+                  let ammo = parseInt(cell.item.effect.split('+')[1])
+                  // console.log('picked up a crossbow checking ammo',ammo);
+                  this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
+                  // console.log('new ammo amt',this.players[player.number-1].items.ammo);
+                }
+                pickUp = true;
 
-              if (cell.item.subType === 'crossbow') {
-                let ammo = parseInt(cell.item.effect.split('+')[1]);
-                this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
-                console.log('you already have a crossbow but take the ammo',ammo);
-                cell.item.effect = 'ammo+0';
-              }
-              else {
-                console.log('you already have this weapon');
                 this.players[player.number-1].statusDisplay = {
                   state: true,
-                  status: 'Already have this weapon!',
+                  status: 'weapon accquired',
                   count: 1,
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
               }
+              else {
+
+                if (cell.item.subType === 'crossbow') {
+                  let ammo = parseInt(cell.item.effect.split('+')[1]);
+                  this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
+                  console.log('you already have a crossbow but take the ammo',ammo);
+                  cell.item.effect = 'ammo+0';
+                }
+                else {
+                  console.log('you already have this weapon');
+                  this.players[player.number-1].statusDisplay = {
+                    state: true,
+                    status: 'Already have this weapon!',
+                    count: 1,
+                    limit: this.players[player.number-1].statusDisplay.limit,
+                  }
+                }
+              }
+            }
+
+          }
+          else if (cell.item.name !== '') {
+            console.log('Not enough space!!');
+
+            this.players[player.number-1].statusDisplay = {
+              state: true,
+              status: 'Not enough space!!',
+              count: 1,
+              limit: this.players[player.number-1].statusDisplay.limit,
             }
           }
+
         }
         if (cell.item.type === 'armor') {
           // console.log('picked up armor',player.currentArmor);
+
+          if (haveSpace === true ) {
+
           if (player.currentArmor.name === '' || !player.currentArmor.name) {
             // console.log('gg',cell.item.effect);
             this.players[player.number-1].currentArmor = {
@@ -6988,6 +7005,19 @@ class App extends Component {
 
             }
           }
+
+          }
+          else if (cell.item.name !== '') {
+            console.log('Not enough space!!');
+
+            this.players[player.number-1].statusDisplay = {
+              state: true,
+              status: 'Not enough space!!',
+              count: 1,
+              limit: this.players[player.number-1].statusDisplay.limit,
+            }
+          }
+
         }
         else {
           // console.log('item',cell.item);
@@ -7012,6 +7042,13 @@ class App extends Component {
               }
               else {
                 console.log('player '+player.number+' you already have max movement speed');
+
+                this.players[player.number-1].statusDisplay = {
+                  state: true,
+                  status: 'Already Max Speed!!',
+                  count: 1,
+                  limit: this.players[player.number-1].statusDisplay.limit,
+                }
               }
             break;
             case 'moveSpeedDown' :
@@ -7050,6 +7087,13 @@ class App extends Component {
               }
               else {
                 console.log('player '+player.number+' you already have max hp');
+
+                this.players[player.number-1].statusDisplay = {
+                  state: true,
+                  status: 'Already Max HP!!',
+                  count: 1,
+                  limit: this.players[player.number-1].statusDisplay.limit,
+                }
               }
             break;
             case 'hpDown' :
@@ -7209,370 +7253,16 @@ class App extends Component {
 
       }
 
-    }
-    else if (cell.item.name !== '') {
-      console.log('Not enough space!!');
-
-      this.players[player.number-1].statusDisplay = {
-        state: true,
-        status: 'Not enough space!!',
-        count: 1,
-        limit: this.players[player.number-1].statusDisplay.limit,
-      }
-    }
-
-    // let cell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y)
-    // if (cell.item.name !== '') {
-    //   // console.log('picked up an item');
-    //   if (cell.item.type === 'weapon') {
-    //     // console.log('weapon',cell.item);
+    // }
+    // else if (cell.item.name !== '') {
+    //   console.log('Not enough space!!');
     //
-    //     if (player.currentWeapon.name === '' || !player.currentWeapon.name) {
-    //       this.players[player.number-1].currentWeapon = {
-    //         name: cell.item.name,
-    //         type: cell.item.subType,
-    //         effect: cell.item.effect,
-    //       }
-    //       this.players[player.number-1].items.weapons.push({
-    //         name: cell.item.name,
-    //         type: cell.item.subType,
-    //         effect: cell.item.effect,
-    //       })
-    //       if (cell.item.subType === 'crossbow') {
-    //         let ammo = parseInt(cell.item.effect.split('+')[1])
-    //         // console.log('picked up a crossbow checking ammo',ammo);
-    //         this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
-    //         // console.log('new ammo amt',this.players[player.number-1].items.ammo);
-    //       }
-    //       pickUp = true;
-    //     }
-    //     else {
-    //       if (player.items.weapons.map(weapon => weapon.name).includes(cell.item.name) !== true ) {
-    //         this.players[player.number-1].items.weapons.push({
-    //           name: cell.item.name,
-    //           type: cell.item.subType,
-    //           effect: cell.item.effect,
-    //         })
-    //         if (cell.item.subType === 'crossbow') {
-    //           let ammo = parseInt(cell.item.effect.split('+')[1])
-    //           // console.log('picked up a crossbow checking ammo',ammo);
-    //           this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
-    //           // console.log('new ammo amt',this.players[player.number-1].items.ammo);
-    //         }
-    //         pickUp = true;
-    //
-    //         this.players[player.number-1].statusDisplay = {
-    //           state: true,
-    //           status: 'weapon accquired',
-    //           count: 1,
-    //           limit: this.players[player.number-1].statusDisplay.limit,
-    //         }
-    //       }
-    //       else {
-    //
-    //         if (cell.item.subType === 'crossbow') {
-    //           let ammo = parseInt(cell.item.effect.split('+')[1]);
-    //           this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
-    //           console.log('you already have a crossbow but take the ammo',ammo);
-    //           cell.item.effect = 'ammo+0';
-    //         }
-    //         else {
-    //           console.log('you already have this weapon');
-    //         }
-    //       }
-    //     }
+    //   this.players[player.number-1].statusDisplay = {
+    //     state: true,
+    //     status: 'Not enough space!!',
+    //     count: 1,
+    //     limit: this.players[player.number-1].statusDisplay.limit,
     //   }
-    //   if (cell.item.type === 'armor') {
-    //     // console.log('picked up armor',player.currentArmor);
-    //     if (player.currentArmor.name === '' || !player.currentArmor.name) {
-    //       // console.log('gg',cell.item.effect);
-    //       this.players[player.number-1].currentArmor = {
-    //         name: cell.item.name,
-    //         type: cell.item.subType,
-    //         effect: cell.item.effect,
-    //       }
-    //       this.players[player.number-1].items.armor.push({
-    //         name: cell.item.name,
-    //         type: cell.item.subType,
-    //         effect: cell.item.effect,
-    //       })
-    //
-    //       switch(cell.item.effect) {
-    //         case 'hpUp' :
-    //         // console.log('armor pickup buff');
-    //           if (this.players[player.number-1].hp < 3) {
-    //             // console.log('armor pickup buff hp',this.players[player.number-1].hp);
-    //             this.players[player.number-1].hp = player.hp + 1
-    //             // console.log('armor pickup buff hp',this.players[player.number-1].hp);
-    //
-    //             this.players[player.number-1].statusDisplay = {
-    //               state: true,
-    //               status: 'hpUp',
-    //               count: 1,
-    //               limit: this.players[player.number-1].statusDisplay.limit,
-    //             }
-    //           }
-    //         break;
-    //         case 'speedUp' :
-    //         // console.log('armor pickup buff');
-    //           let currentSpd1 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
-    //           if (this.players[player.number-1].speed.move < .2) {
-    //
-    //             // console.log('armor pickup buff speed',this.players[player.number-1].speed.move);
-    //             this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd1+1]
-    //             // console.log('armor pickup buff speed',this.players[player.number-1].speed.move);
-    //
-    //             this.players[player.number-1].statusDisplay = {
-    //               state: true,
-    //               status: 'speedUp',
-    //               count: 1,
-    //               limit: this.players[player.number-1].statusDisplay.limit,
-    //             }
-    //           }
-    //         break;
-    //       }
-    //
-    //       pickUp = true;
-    //     }
-    //     else {
-    //       if (player.items.armor.map(armor => armor.name).includes(cell.item.name) !== true ) {
-    //         this.players[player.number-1].items.armor.push({
-    //           name: cell.item.name,
-    //           type: cell.item.subType,
-    //           effect: cell.item.effect,
-    //         })
-    //         pickUp = true;
-    //
-    //         this.players[player.number-1].statusDisplay = {
-    //           state: true,
-    //           status: 'armor accquired',
-    //           count: 1,
-    //           limit: this.players[player.number-1].statusDisplay.limit,
-    //         }
-    //       }
-    //       else {
-    //         console.log('you already have this armor');
-    //       }
-    //     }
-    //   }
-    //   else {
-    //     // console.log('item',cell.item);
-    //     let ammo;
-    //     switch(cell.item.name) {
-    //       case 'moveSpeedUp' :
-    //         // console.log('moveSpeedUp');
-    //         let currentSpd1 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
-    //         // console.log('dd',currentSpd1,this.players[player.number-1].speed.range[currentSpd1]);
-    //         // console.log('dd2',currentSpd1,this.players[player.number-1].speed.range[currentSpd1+1]);
-    //         if (this.players[player.number-1].speed.move < .2) {
-    //           // console.log('added buff');
-    //           this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd1+1]
-    //
-    //           this.players[player.number-1].statusDisplay = {
-    //             state: true,
-    //             status: cell.item.name,
-    //             count: 1,
-    //             limit: this.players[player.number-1].statusDisplay.limit,
-    //           }
-    //           pickUp = true;
-    //         }
-    //         else {
-    //           console.log('player '+player.number+' you already have max movement speed');
-    //         }
-    //       break;
-    //       case 'moveSpeedDown' :
-    //         // console.log('moveSpeedDown');
-    //         let currentSpd2 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
-    //         // console.log('ff',currentSpd2,this.players[player.number-1].speed.range[currentSpd2]);
-    //         // console.log('ff2',currentSpd2,this.players[player.number-1].speed.range[currentSpd2-1]);
-    //         if (this.players[player.number-1].speed.move > .05) {
-    //           // console.log('added debuff');
-    //           this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd2-1]
-    //
-    //           this.players[player.number-1].statusDisplay = {
-    //             state: true,
-    //             status: cell.item.name,
-    //             count: 1,
-    //             limit: this.players[player.number-1].statusDisplay.limit,
-    //           }
-    //           pickUp = true;
-    //         }
-    //       break;
-    //       case 'hpUp' :
-    //         // console.log('hpUp');
-    //         if (this.players[player.number-1].hp === 1 && this.players[player.number-1].speed.move < .1) {
-    //           this.players[player.number-1].speed.move = .1;
-    //         }
-    //         if (this.players[player.number-1].hp < 3) {
-    //             this.players[player.number-1].hp ++;
-    //
-    //             this.players[player.number-1].statusDisplay = {
-    //               state: true,
-    //               status: cell.item.name,
-    //               count: 1,
-    //               limit: this.players[player.number-1].statusDisplay.limit,
-    //             }
-    //             pickUp = true;
-    //         }
-    //         else {
-    //           console.log('player '+player.number+' you already have max hp');
-    //         }
-    //       break;
-    //       case 'hpDown' :
-    //         // console.log('hpDown');
-    //         if (player.hp > 1) {
-    //           this.players[player.number-1].hp --;
-    //
-    //           this.players[player.number-1].statusDisplay = {
-    //             state: true,
-    //             status: cell.item.name,
-    //             count: 1,
-    //             limit: this.players[player.number-1].statusDisplay.limit,
-    //           }
-    //           pickUp = true;
-    //         }
-    //       break;
-    //       case 'focusUp' :
-    //         if (
-    //           this.players[player.number-1].crits.doubleHit - 2 !== 0
-    //         ) {
-    //           this.players[player.number-1].crits.doubleHit = this.players[player.number-1].crits.doubleHit - 2;
-    //
-    //           this.players[player.number-1].statusDisplay = {
-    //             state: true,
-    //             status: cell.item.name,
-    //             count: 1,
-    //             limit: this.players[player.number-1].statusDisplay.limit,
-    //           }
-    //
-    //         }
-    //         this.players[player.number-1].crits.guardBreak = this.players[player.number-1].crits.guardBreak + 1;
-    //
-    //         pickUp = true;
-    //       break;
-    //       case 'focusDown' :
-    //         this.players[player.number-1].crits.doubleHit = this.players[player.number-1].crits.doubleHit + 2;
-    //         if (this.players[player.number-1].crits.guardBreak - 1 !== 0) {
-    //           this.players[player.number-1].crits.guardBreak = this.players[player.number-1].crits.guardBreak - 1
-    //         }
-    //
-    //         this.players[player.number-1].statusDisplay = {
-    //           state: true,
-    //           status: cell.item.name,
-    //           count: 1,
-    //           limit: this.players[player.number-1].statusDisplay.limit,
-    //         }
-    //
-    //         pickUp = true;
-    //       break;
-    //       case 'strengthUp' :
-    //         this.players[player.number-1].crits.pushBack = this.players[player.number-1].crits.pushBack + 1;
-    //
-    //         this.players[player.number-1].crits.guardBreak = this.players[player.number-1].crits.guardBreak + 1;
-    //
-    //         this.players[player.number-1].statusDisplay = {
-    //           state: true,
-    //           status: cell.item.name,
-    //           count: 1,
-    //           limit: this.players[player.number-1].statusDisplay.limit,
-    //         }
-    //
-    //         pickUp = true;
-    //       break;
-    //       case 'strengthDown' :
-    //         if (
-    //           this.players[player.number-1].crits.pushBack - 1 !== 0
-    //         ) {
-    //           this.players[player.number-1].crits.pushBack = this.players[player.number-1].crits.pushBack - 1;
-    //
-    //           this.players[player.number-1].statusDisplay = {
-    //             state: true,
-    //             status: cell.item.name,
-    //             count: 1,
-    //             limit: this.players[player.number-1].statusDisplay.limit,
-    //           }
-    //
-    //           pickUp = true;
-    //         }
-    //         if (this.players[player.number-1].crits.guardBreak - 1 !== 0) {
-    //           this.players[player.number-1].crits.guardBreak = this.players[player.number-1].crits.guardBreak - 1
-    //
-    //           this.players[player.number-1].statusDisplay = {
-    //             state: true,
-    //             status: cell.item.name,
-    //             count: 1,
-    //             limit: this.players[player.number-1].statusDisplay.limit,
-    //           }
-    //
-    //           pickUp = true;
-    //         }
-    //       break;
-    //       case 'ammo5' :
-    //         ammo = parseInt(cell.item.name.split('o')[1])
-    //         this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
-    //
-    //         this.players[player.number-1].statusDisplay = {
-    //           state: true,
-    //           status: cell.item.name,
-    //           count: 1,
-    //           limit: this.players[player.number-1].statusDisplay.limit,
-    //         }
-    //
-    //         pickUp = true;
-    //       break;
-    //       case 'ammo10' :
-    //         ammo = parseInt(cell.item.name.split('o')[1])
-    //         this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
-    //
-    //         this.players[player.number-1].statusDisplay = {
-    //           state: true,
-    //           status: cell.item.name,
-    //           count: 1,
-    //           limit: this.players[player.number-1].statusDisplay.limit,
-    //         }
-    //
-    //         pickUp = true;
-    //       break;
-    //     }
-    //
-    //   }
-    //   if (pickUp === true) {
-    //     // PICKUP ANIM!!
-    //     if (cell.item.type === 'item') {
-    //       this.players[player.number-1].itemPickup = {
-    //         state: true,
-    //         count: 0,
-    //         limit: 10,
-    //         item: {
-    //           name: cell.item.name,
-    //         },
-    //         gear: {
-    //           type: '',
-    //         }
-    //       }
-    //     }
-    //     else if (cell.item.type === 'weapon' || cell.item.type === 'armor') {
-    //       this.players[player.number-1].itemPickup = {
-    //         state: true,
-    //         count: 0,
-    //         limit: 10,
-    //         item: {
-    //           name: '',
-    //         },
-    //         gear: {
-    //           type: cell.item.subType,
-    //         }
-    //       }
-    //     }
-    //
-    //     cell.item = {
-    //       name: '',
-    //       type: '',
-    //       subType: '',
-    //       initDrawn: false
-    //     }
-    //   }
-    //
     // }
 
 
