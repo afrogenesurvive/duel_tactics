@@ -108,6 +108,7 @@ class App extends Component {
       twelve: 150,
     },
     loading: true,
+    test: '',
   }
 
   constructor(props) {
@@ -2122,6 +2123,9 @@ class App extends Component {
       //   // this.openVoid = true;
       //   // this.customCellToVoid({x:2,y:2})
       // }
+      this.setState({
+        test: '..'
+      })
 
       if (this.aiPlayers.length > 0) {
         this.aiDecide();
@@ -9588,6 +9592,7 @@ class App extends Component {
               <DebugBox
                 player={this.players[1]}
               />
+
             </div>
 
             <div className="settingsSwitch">
