@@ -9118,9 +9118,11 @@ class App extends Component {
   }
   removeAiPlayer = (playerNumber) => {
     console.log('removing ai player',playerNumber);
-    let index = this.aiPlayers.indexOf(playerNumber);
-    console.log('remove index',index);
-    this.aiPlayers.splice(index,1);
+    let index1 = this.players.indexOf(this.players[playerNumber-1])
+    let index2 = this.aiPlayers.indexOf(playerNumber);
+    console.log('remove this.players index',index1);
+    console.log('remove aiPlayers index',index2);
+    this.aiPlayers.splice(index2,1);
     this.players[playerNumber-1].ghost = {
       state: false,
       position: {
@@ -9136,10 +9138,14 @@ class App extends Component {
         }
       }
     };
+
     this.keyPressed.splice(playerNumber-1,1);
-    this.players.splice(playerNumber-1,1);
+    this.players.splice(index2,1);
+
     console.log('this.players2',this.players.length,this.players);
     console.log('this.keyPressed2',this.keyPressed.length,this.keyPressed);
+
+    this.addAiCount.state = true;
   }
   aiDecide = () => {
 
