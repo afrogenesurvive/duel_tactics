@@ -1940,22 +1940,18 @@ class App extends Component {
       case '5' :
        this.addAiPlayerKeyPress = state;
       break;
-      case 'ArrowUp' :
-        this.keyPressed[2].north = state;
-        this.currentPlayer = 3;
-      break;
-      case 'ArrowDown' :
-        this.keyPressed[2].cycleWeapon = state;
-        this.currentPlayer = 3;
-      break;
-      case 'ArrowRight' :
-        this.keyPressed[2].defend = state;
-        this.currentPlayer = 3;
-      break;
-      case 'ArrowLeft' :
-        this.keyPressed[2].attack = state;
-        this.currentPlayer = 3;
-      break;
+
+
+      // case 'ArrowUp' :
+      //   this.keyPressed[2].north = state;
+      //   this.turnCheckerDirection = 'north';
+      //   this.currentPlayer = 3;
+      // break;
+      // case 'ArrowDown' :
+      //   this.keyPressed[2].south = state;
+      //   this.turnCheckerDirection = 'south';
+      //   this.currentPlayer = 3;
+      // break;
 
 
       // case 'u' :
@@ -3180,6 +3176,7 @@ class App extends Component {
             // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
             if (keyPressedDirection === player.direction && player.strafing.state === false) {
 
+
               let target = this.getTarget(player)
 
               if (target.free === true && player.target.void === false) {
@@ -3242,6 +3239,7 @@ class App extends Component {
             }
             // CHANGE DIRECTION IF NOT STRAFING!!
             else if (keyPressedDirection !== player.direction && player.strafing.state === false) {
+
               // console.log('change player direction to',keyPressedDirection);
               // console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
               player.turning.state = true;
@@ -8826,7 +8824,7 @@ class App extends Component {
             },
             void: false
           },
-          direction: 'north',
+          direction: 'south',
           turning: {
             state: undefined,
             toDirection: '',
@@ -9023,66 +9021,71 @@ class App extends Component {
             imgType: imgType,
             currentInstruction: 0,
             instructions: [
-              // {
-              //   keyword: 'shortWait',
-              //   count: 0,
-              //   limit: 0,
-              // },
-              // {
-              //   keyword: 'moveEast',
-              //   count: 0,
-              //   limit: 0,
-              // },
-              // {
-              //   keyword: 'shortWait',
-              //   count: 0,
-              //   limit: 0,
-              // },
-              // {
-              //   keyword: 'moveWest',
-              //   count: 0,
-              //   limit: 0,
-              // },
-              // {
-              //   keyword: 'shortWait',
-              //   count: 0,
-              //   limit: 0,
-              // },
-              // {
-              //   keyword: 'shortWait',
-              //   count: 0,
-              //   limit: 0,
-              // },
-              // {
-              //   keyword: 'moveNorth',
-              //   count: 0,
-              //   limit: 0,
-              // },
-              // {
-              //   keyword: 'attack',
-              //   count: 0,
-              //   limit: 0,
-              // },
-              // {
-              //   keyword: 'shortWait',
-              //   count: 0,
-              //   limit: 0,
-              // },
-              // {
-              //   keyword: 'moveNorth',
-              //   count: 0,
-              //   limit: 0,
-              // },
-              // {
-              //   keyword: 'longDefend',
-              //   count: 0,
-              //   limit: 0,
-              // },
-              // {
-              //   keyword: 'shortWait',
-              //   count: 0,
-              //   limit: 0,
-              // },
+              {
+                keyword: 'shortWait',
+                count: 0,
+                limit: 0,
+              },
+              {
+                keyword: 'moveEast',
+                count: 0,
+                limit: 0,
+              },
+              {
+                keyword: 'shortWait',
+                count: 0,
+                limit: 0,
+              },
+              {
+                keyword: 'moveEast',
+                count: 0,
+                limit: 0,
+              },
+              {
+                keyword: 'moveWest',
+                count: 0,
+                limit: 0,
+              },
+              {
+                keyword: 'shortWait',
+                count: 0,
+                limit: 0,
+              },
+              {
+                keyword: 'shortWait',
+                count: 0,
+                limit: 0,
+              },
+              {
+                keyword: 'moveNorth',
+                count: 0,
+                limit: 0,
+              },
+              {
+                keyword: 'attack',
+                count: 0,
+                limit: 0,
+              },
+              {
+                keyword: 'shortWait',
+                count: 0,
+                limit: 0,
+              },
+              {
+                keyword: 'moveNorth',
+                count: 0,
+                limit: 0,
+              },
+              {
+                keyword: 'longDefend',
+                count: 0,
+                limit: 0,
+              },
+              {
+                keyword: 'shortWait',
+                count: 0,
+                limit: 0,
+              },
             ]
           }
         };
@@ -9106,8 +9109,9 @@ class App extends Component {
         )
         this.aiPlayers.push(newPlayerNumber)
         this.getTarget(this.players[newPlayerNumber-1])
-        console.log('this.players1',this.players.length,this.players);
-        console.log('this.keyPressed1',this.keyPressed.length,this.keyPressed);
+
+        // console.log('this.players1',this.players.length,this.players);
+        // console.log('this.keyPressed1',this.keyPressed.length,this.keyPressed);
       }
 
     }
@@ -9186,6 +9190,7 @@ class App extends Component {
             case 'moveNorth':
               currentInstruction.limit = 1;
               this.keyPressed[plyr.number-1].north = true;
+              this.turnCheckerDirection = 'north';
               if (currentInstruction.count < currentInstruction.limit) {
                 currentInstruction.count++;
               } else if (currentInstruction.count >= currentInstruction.limit) {
@@ -9195,6 +9200,7 @@ class App extends Component {
             case 'moveSouth':
               currentInstruction.limit = 1;
               this.keyPressed[plyr.number-1].south = true;
+              this.turnCheckerDirection = 'south';
               if (currentInstruction.count < currentInstruction.limit) {
                 currentInstruction.count++;
               } else if (currentInstruction.count >= currentInstruction.limit) {
@@ -9204,6 +9210,7 @@ class App extends Component {
             case 'moveEast':
               currentInstruction.limit = 1;
               this.keyPressed[plyr.number-1].east = true;
+              this.turnCheckerDirection = 'east';
               if (currentInstruction.count < currentInstruction.limit) {
                 currentInstruction.count++;
               } else if (currentInstruction.count >= currentInstruction.limit) {
@@ -9213,6 +9220,7 @@ class App extends Component {
             case 'moveWest':
               currentInstruction.limit = 1;
               this.keyPressed[plyr.number-1].west = true;
+              this.turnCheckerDirection = 'west';
               if (currentInstruction.count < currentInstruction.limit) {
                 currentInstruction.count++;
               } else if (currentInstruction.count >= currentInstruction.limit) {
