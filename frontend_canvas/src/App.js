@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faCogs
+  faCogs,
+  faRobot,
 } from '@fortawesome/free-solid-svg-icons';
 
 import logo from './logo.svg';
@@ -87,7 +88,7 @@ import DebugBox from './debugBox'
 import Settings from './settings'
 import CellInfo from './cellInfo'
 import Loading from './loading'
-import ComStatus from './comStatus'
+import AiStatus from './aiStatus'
 
 import pointInPolygon from 'point-in-polygon';
 
@@ -610,7 +611,7 @@ class App extends Component {
       }
     ],
     showSettings: true,
-    showComStatus: false,
+    showAiStatus: false,
     canvas: undefined,
     context: undefined,
     canvas2: undefined,
@@ -1597,8 +1598,8 @@ class App extends Component {
     };
     this.charSpriteHeight = 512;
     this.charSpriteWidth = 512;
-    this.addComPlayerKeyPress = false;
-    this.addComCount = {
+    this.addAiPlayerKeyPress = false;
+    this.addAiCount = {
       state: false,
       count: 0,
       limit: 10,
@@ -2452,10 +2453,14 @@ class App extends Component {
       // break;
 
       case '5' :
-       this.addComPlayerKeyPress = state;
+       this.addAiPlayerKeyPress = state;
       break;
       case 'ArrowUp' :
         this.keyPressed[2].north = state;
+        this.currentPlayer = 3;
+      break;
+      case 'ArrowDown' :
+        this.keyPressed[2].west = state;
         this.currentPlayer = 3;
       break;
 
@@ -2635,6 +2640,7 @@ class App extends Component {
       // }
 
       if (this.aiPlayers.length > 0) {
+        this.aiDecide();
         this.aiAct();
       }
 
@@ -4115,26 +4121,21 @@ class App extends Component {
 
 
     // ADD COM PLAYER!
-    if (this.addComPlayerKeyPress === true) {
-      this.addComPlayer()
+    if (this.addAiPlayerKeyPress === true) {
+      this.addAiPlayer()
     }
-    if (this.addComCount.state === true) {
-      if (this.addComCount.count < this.addComCount.limit) {
-        this.addComCount.count++
+    if (this.addAiCount.state === true) {
+      if (this.addAiCount.count < this.addAiCount.limit) {
+        this.addAiCount.count++
       }
-      if (this.addComCount.count >= this.addComCount.limit) {
-        this.addComCount = {
+      if (this.addAiCount.count >= this.addAiCount.limit) {
+        this.addAiCount = {
           state: false,
           count: 0,
-          limit: this.addComCount.limit,
+          limit: this.addAiCount.limit,
         }
       }
     }
-
-    // if (player.ai.state === true && player.dead.state === true ) {
-    //   this.keyPressed.splice(player.number-1,1)
-    //   this.players.splice(player.number-1,1)
-    // }
 
 
     // SYNC W/ GLOBAL PLAYER DATA
@@ -8438,7 +8439,7 @@ class App extends Component {
 
     if (player.ai.state === true) {
       // console.log('ai player eliminated');
-      this.removeComPlayer(player.number)
+      this.removeAiPlayer(player.number)
     }
 
   }
@@ -9567,7 +9568,7 @@ class App extends Component {
     }
   }
 
-  addComPlayer = () => {
+  addAiPlayer = () => {
 
     let newPlayerNumber = this.players.length+1;
 
@@ -9581,10 +9582,10 @@ class App extends Component {
       imgType = "B";
     }
 
-    if (this.addComCount.state !== true) {
+    if (this.addAiCount.state !== true) {
 
       console.log('adding ai. Player #',newPlayerNumber);
-      this.addComCount.state = true;
+      this.addAiCount.state = true;
 
       let cell = {
         x: 0,
@@ -9855,31 +9856,66 @@ class App extends Component {
             imgType: imgType,
             currentInstruction: 0,
             instructions: [
-              {
-                keyword: 'moveNorth',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'shortWait',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'moveSouth',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'shortWait',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'moveSouth',
-                count: 0,
-                limit: 0,
-              },
+              // {
+              //   keyword: 'shortWait',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'moveEast',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'shortWait',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'moveWest',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'shortWait',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'shortWait',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'moveNorth',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'attack',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'shortWait',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'moveNorth',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'longDefend',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'shortWait',
+              //   count: 0,
+              //   limit: 0,
+              // },
             ]
           }
         };
@@ -9905,14 +9941,14 @@ class App extends Component {
       }
 
     }
-    else if (this.addComCount.state === true) {
+    else if (this.addAiCount.state === true) {
       // console.log('already adding an ai player');
     }
 
 
 
   }
-  removeComPlayer = (playerNumber) => {
+  removeAiPlayer = (playerNumber) => {
     console.log('removing ai player',playerNumber);
     let index = this.aiPlayers.indexOf(playerNumber);
     this.aiPlayers.splice(index,1);
@@ -9934,81 +9970,108 @@ class App extends Component {
     this.keyPressed.splice(playerNumber-1,1)
     this.players.splice(playerNumber-1,1)
   }
+  aiDecide = () => {
+
+    // check other players & board status then feed instructions
+  }
   aiAct = () => {
 
     for (const plyr of this.players) {
       if (plyr.ai.state === true) {
         let currentInstruction = plyr.ai.instructions[plyr.ai.currentInstruction];
 
-
-        this.keyPressed[plyr.number-1] = {
-          north: false,
-          south: false,
-          east: false,
-          west: false,
-          northEast: false,
-          northWest: false,
-          southEast: false,
-          southWest: false,
-          attack: false,
-          defend: false,
-          strafe: false,
-          cycleWeapon: false,
-          cycleArmor: false,
-        }
-        switch(currentInstruction.keyword) {
-          case 'shortWait':
-            currentInstruction.limit = 10;
-            if (currentInstruction.count < currentInstruction.limit) {
-              currentInstruction.count++;
-            } else if (currentInstruction.count >= currentInstruction.limit) {
-              plyr.ai.currentInstruction++;
-            }
-          break;
-          case 'moveNorth':
-            currentInstruction.limit = 1;
-            this.keyPressed[plyr.number-1].north = true;
-            if (currentInstruction.count < currentInstruction.limit) {
-              currentInstruction.count++;
-            } else if (currentInstruction.count >= currentInstruction.limit) {
-              plyr.ai.currentInstruction++;
-            }
-          break;
-          case 'moveSouth':
-            currentInstruction.limit = 1;
-            this.keyPressed[plyr.number-1].south = true;
-            if (currentInstruction.count < currentInstruction.limit) {
-              currentInstruction.count++;
-            } else if (currentInstruction.count >= currentInstruction.limit) {
-              plyr.ai.currentInstruction++;
-            }
-          break;
-          case 'moveEast':
-            currentInstruction.limit = 1;
-            this.keyPressed[plyr.number-1].east = true;
-            if (currentInstruction.count < currentInstruction.limit) {
-              currentInstruction.count++;
-            } else if (currentInstruction.count >= currentInstruction.limit) {
-              plyr.ai.currentInstruction++;
-            }
-          break;
-          case 'moveWest':
-            currentInstruction.limit = 1;
-            this.keyPressed[plyr.number-1].west = true;
-            if (currentInstruction.count < currentInstruction.limit) {
-              currentInstruction.count++;
-            } else if (currentInstruction.count >= currentInstruction.limit) {
-              plyr.ai.currentInstruction++;
-            }
-          break;
-          case 'strafeNorth':
-          break;
-          case 'attack':
-          break;
-          case 'longDefend':
-          break;
-          case 'shortDefend':
-          break;
+        if (currentInstruction) {
+          // console.log('currentInstruction',currentInstruction);
+          this.keyPressed[plyr.number-1] = {
+            north: false,
+            south: false,
+            east: false,
+            west: false,
+            northEast: false,
+            northWest: false,
+            southEast: false,
+            southWest: false,
+            attack: false,
+            defend: false,
+            strafe: false,
+            cycleWeapon: false,
+            cycleArmor: false,
+          }
+          switch(currentInstruction.keyword) {
+            case 'shortWait':
+              currentInstruction.limit = 10;
+              if (currentInstruction.count < currentInstruction.limit) {
+                currentInstruction.count++;
+              } else if (currentInstruction.count >= currentInstruction.limit) {
+                plyr.ai.currentInstruction++;
+              }
+            break;
+            case 'moveNorth':
+              currentInstruction.limit = 1;
+              this.keyPressed[plyr.number-1].north = true;
+              if (currentInstruction.count < currentInstruction.limit) {
+                currentInstruction.count++;
+              } else if (currentInstruction.count >= currentInstruction.limit) {
+                plyr.ai.currentInstruction++;
+              }
+            break;
+            case 'moveSouth':
+              currentInstruction.limit = 1;
+              this.keyPressed[plyr.number-1].south = true;
+              if (currentInstruction.count < currentInstruction.limit) {
+                currentInstruction.count++;
+              } else if (currentInstruction.count >= currentInstruction.limit) {
+                plyr.ai.currentInstruction++;
+              }
+            break;
+            case 'moveEast':
+              currentInstruction.limit = 1;
+              this.keyPressed[plyr.number-1].east = true;
+              if (currentInstruction.count < currentInstruction.limit) {
+                currentInstruction.count++;
+              } else if (currentInstruction.count >= currentInstruction.limit) {
+                plyr.ai.currentInstruction++;
+              }
+            break;
+            case 'moveWest':
+              currentInstruction.limit = 1;
+              this.keyPressed[plyr.number-1].west = true;
+              if (currentInstruction.count < currentInstruction.limit) {
+                currentInstruction.count++;
+              } else if (currentInstruction.count >= currentInstruction.limit) {
+                plyr.ai.currentInstruction++;
+              }
+            break;
+            case 'strafeNorth':
+            break;
+            case 'attack':
+              currentInstruction.limit = 1;
+              this.keyPressed[plyr.number-1].attack = true;
+              if (currentInstruction.count < currentInstruction.limit) {
+                currentInstruction.count++;
+              } else if (currentInstruction.count >= currentInstruction.limit) {
+                plyr.ai.currentInstruction++;
+              }
+            break;
+            case 'longDefend':
+              currentInstruction.limit = 25;
+              this.keyPressed[plyr.number-1].defend = true;
+              if (currentInstruction.count < currentInstruction.limit) {
+                currentInstruction.count++;
+              } else if (currentInstruction.count >= currentInstruction.limit) {
+                plyr.ai.currentInstruction++;
+              }
+            break;
+            case 'shortDefend':
+              currentInstruction.limit = 15;
+              this.keyPressed[plyr.number-1].defend = true;
+              if (currentInstruction.count < currentInstruction.limit) {
+                currentInstruction.count++;
+              } else if (currentInstruction.count >= currentInstruction.limit) {
+                plyr.ai.currentInstruction++;
+              }
+            break;
+          }
         }
       }
     }
@@ -10016,14 +10079,14 @@ class App extends Component {
 
 
   }
-  openComPlayers = () => {
+  openAiPlayers = () => {
     this.setState({
-      showComStatus: true
+      showAiStatus: true
     })
   }
-  closeComPlayers = () => {
+  closeAiPlayers = () => {
     this.setState({
-      showComStatus: false
+      showAiStatus: false
     })
   }
 
@@ -10072,8 +10135,8 @@ class App extends Component {
               <a href="javascript:" className="setSwitchLink" onClick={this.openSettings}>
                 <FontAwesomeIcon icon={faCogs} size="sm" className="setSwitchIcon"/>
               </a>
-              <a href="javascript:" className="setSwitchLink" onClick={this.openComPlayers}>
-                <FontAwesomeIcon icon={faCogs} size="sm" className="setSwitchIcon"/>
+              <a href="javascript:" className="setSwitchLink" onClick={this.openAiPlayers}>
+                <FontAwesomeIcon icon={faRobot} size="sm" className="setSwitchIcon"/>
               </a>
             </div>
 
@@ -10089,8 +10152,8 @@ class App extends Component {
               onCancel={this.cancelSettings}
             />
           )}
-          {this.state.showComStatus === true && (
-            <ComStatus
+          {this.state.showAiStatus === true && (
+            <AiStatus
               players={this.players}
             />
           )}
