@@ -51,6 +51,7 @@ import deathIndicate from './assets/indicators/death.png';
 import preAttackIndicate from './assets/indicators/preAttack.png';
 import attackBreakIndicate from './assets/indicators/attackBreak.png';
 import defendBreakIndicate from './assets/indicators/defendBreak.png';
+import boltDefendIndicate from './assets/indicators/boltDefend.png';
 
 import mail1 from './assets/items/mail1.png';
 import mail2 from './assets/items/mail2.png';
@@ -2152,6 +2153,7 @@ class App extends Component {
 
         // if (player.ai.state === true && player.dead.state === true) {
         //   // DO nothing
+        //   console.log('cheeky',player);
         // }
         // else {
         //   this.playerUpdate(player, this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
@@ -2632,7 +2634,7 @@ class App extends Component {
               // this.boltCrementer(bolt)
             }
             if (player.currentWeapon.type === 'crossbow' && player.items.ammo <= 0) {
-              console.log('no ammo!');
+              // console.log('no ammo!');
               this.players[player.number-1].statusDisplay = {
                 state: true,
                 status: 'out of ammo',
@@ -5950,7 +5952,7 @@ class App extends Component {
         }
 
         if (this.boltDeflectAnim.state === true) {
-          let boltDeflectImg = this.refs.pushbackIndicate;
+          let boltDeflectImg = this.refs.boltDefendIndicate;
           context.drawImage(boltDeflectImg, this.boltDeflectAnim.position.x+35, this.boltDeflectAnim.position.y-35, 35, 35);
         }
 
@@ -7708,6 +7710,15 @@ class App extends Component {
 
     }
 
+
+    let plyrz = this.players
+    for (const plyr of plyrz) {
+      if (plyr.ai.state === true ) {
+        let indx = plyrz.indexOf(plyr)
+        let toRemove1 = this.players[indx];
+        this.players = this.players.filter(x=> x !== toRemove1);
+      }
+    }
     this.drawGridInit(this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
 
   }
@@ -7926,7 +7937,7 @@ class App extends Component {
 
 
           if (player.currentArmor === {} || !player.currentArmor || player.currentArmor.name === '') {
-            
+
             this.players[player.number-1].defending = {
               state: false,
               count: 0,
@@ -7997,7 +8008,7 @@ class App extends Component {
           }
 
           if (player.currentWeapon === {} || !player.currentWeapon || player.currentWeapon.name === '') {
-            
+
             this.players[player.number-1].defending = {
               state: false,
               count: 0,
@@ -8083,7 +8094,7 @@ class App extends Component {
         }
 
         if (player.currentArmor === {} || !player.currentArmor || player.currentArmor.name === '') {
-          
+
           this.players[player.number-1].defending = {
             state: false,
             count: 0,
@@ -8134,7 +8145,7 @@ class App extends Component {
         }
 
         if (player.currentWeapon === {} || !player.currentWeapon || player.currentWeapon.name === '') {
-          
+
           this.players[player.number-1].defending = {
             state: false,
             count: 0,
@@ -9106,56 +9117,56 @@ class App extends Component {
             imgType: imgType,
             currentInstruction: 0,
             instructions: [
-              {
-                keyword: 'shortWait',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'moveEast',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'shortWait',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'attack',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'shortWait',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'attack',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'shortWait',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'moveNorth',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'longDefend',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'shortWait',
-                count: 0,
-                limit: 0,
-              },
+              // {
+              //   keyword: 'shortWait',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'moveEast',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'shortWait',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'attack',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'shortWait',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'attack',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'shortWait',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'moveNorth',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'longDefend',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'shortWait',
+              //   count: 0,
+              //   limit: 0,
+              // },
             ]
           }
         };
@@ -9180,8 +9191,6 @@ class App extends Component {
         this.aiPlayers.push(newPlayerNumber)
         this.getTarget(this.players[newPlayerNumber-1])
 
-        // console.log('this.players1',this.players.length,this.players);
-        // console.log('this.keyPressed1',this.keyPressed.length,this.keyPressed);
       }
 
     }
@@ -9192,32 +9201,45 @@ class App extends Component {
   }
   removeAiPlayer = (playerNumber) => {
     console.log('removing ai player',playerNumber);
+
     let index1 = this.players.indexOf(this.players[playerNumber-1])
     let index2 = this.aiPlayers.indexOf(playerNumber);
-    console.log('remove this.players index',index1);
-    console.log('remove aiPlayers index',index2);
-    this.aiPlayers.splice(index2,1);
-    this.players[playerNumber-1].ghost = {
-      state: false,
-      position: {
-        cell: {
-          number: {
-            x: 0,
-            y: 0,
-          },
-          center: {
-            x: 0,
-            y: 0,
-          }
-        }
+
+    // SHIFT AI PLAYER NUMBERS!
+    for (let elem of this.players) {
+      let indx = this.players.indexOf(elem);
+      if (indx > index1) {
+        elem.number = elem.number - 1;
       }
-    };
+    }
+    for (let elem2 of this.aiPlayers) {
+      let indx2 = this.aiPlayers.indexOf(elem2);
+      if (indx2 > index2) {
+        elem2 = elem2 - 1;
+      }
+    }
 
+
+    this.aiPlayers.splice(index2,1);
+    // this.players[playerNumber-1].ghost = {
+    //   state: false,
+    //   position: {
+    //     cell: {
+    //       number: {
+    //         x: 0,
+    //         y: 0,
+    //       },
+    //       center: {
+    //         x: 0,
+    //         y: 0,
+    //       }
+    //     }
+    //   }
+    // };
     this.keyPressed.splice(playerNumber-1,1);
-    this.players.splice(index2,1);
 
-    console.log('this.players2',this.players.length,this.players);
-    console.log('this.keyPressed2',this.keyPressed.length,this.keyPressed);
+    let toRemove1 = this.players[index1];
+    this.players = this.players.filter(x=> x !== toRemove1);
 
     this.addAiCount.state = true;
   }
@@ -9446,6 +9468,7 @@ class App extends Component {
           <img src={preAttackIndicate} className='hidden playerImgs' ref="preAttackIndicate" alt="logo" />
           <img src={attackBreakIndicate} className='hidden playerImgs' ref="attackBreakIndicate" alt="logo" />
           <img src={defendBreakIndicate} className='hidden playerImgs' ref="defendBreakIndicate" alt="logo" />
+          <img src={boltDefendIndicate} className='hidden playerImgs' ref="boltDefendIndicate" alt="logo" />
 
 
           <img src={sword} className='hidden playerImgs' ref="itemSword" alt="logo" />
