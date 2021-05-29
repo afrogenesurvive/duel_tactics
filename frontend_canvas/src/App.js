@@ -640,7 +640,7 @@ class App extends Component {
         crits: {
           singleHit: 1,
           doubleHit: 6,
-          pushBack: 3,
+          pushBack: 5,
           guardBreak: 3,
         },
         statusDisplay: {
@@ -901,7 +901,7 @@ class App extends Component {
         crits: {
           singleHit: 1,
           doubleHit: 6,
-          pushBack: 3,
+          pushBack: 5,
           guardBreak: 3,
         },
         statusDisplay: {
@@ -2807,6 +2807,8 @@ class App extends Component {
                   }
                   else {
                     // let deflectOpponent = this.rnJesus(1,1);
+
+                    // GUARD BREAK!
                     let deflectOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.guardBreak);
                     if (deflectOpponent === 1) {
                       this.players[player.target.occupant.player-1].breakAnim.defend = {
@@ -3582,6 +3584,7 @@ class App extends Component {
                     limit: this.players.[plyr.number-1].success.defendSuccess.limit
                   }
 
+                  // GUARD BREAK!
                   // let deflectOpponent = this.rnJesus(1,3);
                   let deflectOpponent = this.rnJesus(1,this.players[plyr.number-1].crits.guardBreak);
                   if (deflectOpponent === 1) {
@@ -9053,7 +9056,7 @@ class App extends Component {
           crits: {
             singleHit: 1,
             doubleHit: 6,
-            pushBack: 3,
+            pushBack: 5,
             guardBreak: 3,
           },
           statusDisplay: {
