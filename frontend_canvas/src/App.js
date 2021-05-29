@@ -2151,13 +2151,6 @@ class App extends Component {
       }
       for (const player of this.players) {
 
-        // if (player.ai.state === true && player.dead.state === true) {
-        //   // DO nothing
-        //   console.log('cheeky',player);
-        // }
-        // else {
-        //   this.playerUpdate(player, this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
-        // }
         this.playerUpdate(player, this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
       }
 
@@ -2357,6 +2350,7 @@ class App extends Component {
                 direction: ''
               }
               player.moving.state = false;
+              player.speed.move = player.pushBack.prePushMoveSpeed;
             }
 
             if (
