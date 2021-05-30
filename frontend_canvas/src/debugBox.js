@@ -43,6 +43,7 @@ const DebugBox = props => {
   let singleHitCritSpecialArmorMin = Math.round((1/(props.player.crits.singleHit+5))*100)
   let singleHitCritSpecialArmorMax = Math.round((1/(props.player.crits.singleHit+10))*100)
   let doubleHitCrit = Math.round((1/(props.player.crits.doubleHit+0))*100)
+  let doubleHitCritSpear = Math.round((1/(props.player.crits.doubleHit+5))*100)
   let doubleHitCritBackAttack = Math.round((1/2)*100)
   let doubleHitCritSpecialArmorMin = Math.round((1/(props.player.crits.doubleHit+5))*100)
   let doubleHitCritSpecialArmorMax = Math.round((1/(props.player.crits.doubleHit+15))*100)
@@ -355,6 +356,11 @@ const DebugBox = props => {
         <li className="debugBoxListItem">
           <p className="debugBoxText">
             2 Damage: {doubleHitCrit} %
+          </p>
+        </li>
+        <li className="debugBoxListItem">
+          <p className="debugBoxText">
+            2 Damage w/ Spear: {doubleHitCritSpear} %
           </p>
         </li>
         <li className="debugBoxListItem">
