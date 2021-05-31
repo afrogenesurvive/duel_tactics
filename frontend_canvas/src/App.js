@@ -569,7 +569,7 @@ class App extends Component {
         defending: {
           state: false,
           count: 0,
-          limit: 5,
+          limit: 3,
         },
         defendDecay: {
           state: false,
@@ -649,7 +649,7 @@ class App extends Component {
         crits: {
           singleHit: 1,
           doubleHit: 6,
-          pushBack: 5,
+          pushBack: 4,
           guardBreak: 3,
         },
         statusDisplay: {
@@ -834,7 +834,7 @@ class App extends Component {
         defending: {
           state: false,
           count: 0,
-          limit: 5,
+          limit: 3,
         },
         defendDecay: {
           state: false,
@@ -915,7 +915,7 @@ class App extends Component {
         crits: {
           singleHit: 1,
           doubleHit: 6,
-          pushBack: 5,
+          pushBack: 4,
           guardBreak: 3,
         },
         statusDisplay: {
@@ -2841,7 +2841,7 @@ class App extends Component {
                   }
 
                   // let shouldPushBackOpponent = 2;
-                  let shouldPushBackOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.pushBack);
+                  let shouldPushBackOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.pushBack*2);
                   if (shouldPushBackOpponent === 1) {
                     let canPushback = this.pushBack(this.players[player.target.occupant.player-1],player.direction);
                   }
@@ -2883,7 +2883,7 @@ class App extends Component {
                   // let shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
                   let shouldDeflectAttacker = this.rnJesus(1,2);
                   // let shouldDeflectPushBack = 2;
-                  let shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack*2);
+                  let shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack);
                   if (shouldDeflectPushBack === 1) {
                     let pushBackDirection;
                     switch(player.direction) {
@@ -3140,7 +3140,13 @@ class App extends Component {
               player.items.weapons.length === 1
             ) {
               player.currentWepon = player.items.weapons[0];
-              console.log('nothing to cycle through');
+              // console.log('nothing to cycle through');
+              this.players[player.number-1].statusDisplay = {
+                state: true,
+                status: 'no weapons to cycle!',
+                count: 1,
+                limit: this.players[player.number-1].statusDisplay.limit,
+              }
             }
 
             player.cycleWeapon = {
@@ -3243,7 +3249,13 @@ class App extends Component {
               this.keyPressed[player.number-1].cycleArmor === true &&
               player.items.armor.length === 0
             ) {
-              console.log('nothing to cycle through');
+              // console.log('nothing to cycle through');
+              this.players[player.number-1].statusDisplay = {
+                state: true,
+                status: 'no armor to cycle!',
+                count: 1,
+                limit: this.players[player.number-1].statusDisplay.limit,
+              }
             }
 
             player.cycleArmor = {

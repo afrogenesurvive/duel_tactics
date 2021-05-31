@@ -47,8 +47,8 @@ const DebugBox = props => {
   let doubleHitCritBackAttack = Math.round((1/2)*100)
   let doubleHitCritSpecialArmorMin = Math.round((1/(props.player.crits.doubleHit+5))*100)
   let doubleHitCritSpecialArmorMax = Math.round((1/(props.player.crits.doubleHit+15))*100)
-  let defendPushBackCrit = Math.round((1/props.player.crits.pushBack)*100)
-  let attackPushBackCrit = Math.round((1/(props.player.crits.pushBack*2))*100)
+  let defendPushBackCrit = Math.round((1/(props.player.crits.pushBack*2))*100)
+  let attackPushBackCrit = Math.round((1/(props.player.crits.pushBack))*100)
   let gearDropCrit = Math.round((1/(props.player.crits.pushBack+3))*100)
   let guardBreakCrit = Math.round((1/props.player.crits.guardBreak)*100)
 
@@ -380,7 +380,7 @@ const DebugBox = props => {
         </li>
         <li className="debugBoxListItem">
           <p className="debugBoxText">
-            Attack Deflect: {defendPushBackCrit} %
+            Attack Deflect: 50 %
           </p>
         </li>
         <li className="debugBoxListItem">
