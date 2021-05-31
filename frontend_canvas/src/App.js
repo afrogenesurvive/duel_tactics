@@ -1121,7 +1121,7 @@ class App extends Component {
         crossbow: 30,
       },
       peak: {
-        sword: 8,
+        sword: 10,
         spear: 18,
         crossbow: 20,
       },
@@ -2309,6 +2309,48 @@ class App extends Component {
       player.action = 'deflected';
       player.success.deflected.count++
     } else if (player.success.deflected.state === true && player.success.deflected.count >= player.success.deflected.limit) {
+
+      let shouldSpin;
+      if (player.success.deflected.type === "attack") {
+        shouldSpin = this.rnJesus(1,2);
+      }
+      if (player.success.deflected.type === "defended") {
+        shouldSpin = this.rnJesus(1,10);
+      }
+      let newDirection;
+      if (shouldSpin === 1) {
+        switch(player.direction) {
+          case 'north':
+            if (shouldSpin === 1) {
+              newDirection = 'east';
+            } else {
+              newDirection = 'west';
+            }
+          break;
+          case 'south':
+            if (shouldSpin === 1) {
+              newDirection = 'east';
+            } else {
+              newDirection = 'west';
+            }
+          break;
+          case 'east':
+            if (shouldSpin === 1) {
+              newDirection = 'north';
+            } else {
+              newDirection = 'south';
+            }
+          break;
+          case 'west':
+            if (shouldSpin === 1) {
+              newDirection = 'north';
+            } else {
+              newDirection = 'south';
+            }
+          break;
+        }
+        player.direction = newDirection;
+      }
       player.action = 'idle';
       player.success.deflected = {
         state: false,
@@ -2971,6 +3013,27 @@ class App extends Component {
                 }
               }
 
+              // DESTROY ITEMS!
+              if (player.target.occupant.type !== 'player' && player.currentWeapon.name !== '') {
+                let cell = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y )
+
+                if (cell.item.name !== "") {
+                  this.players[player.number-1].statusDisplay = {
+                    state: true,
+                    status: 'Destroyed '+cell.item.name+'!',
+                    count: 1,
+                    limit: this.players[player.number-1].statusDisplay.limit,
+                  }
+                  cell.item = {
+                    name: '',
+                    type: '',
+                    subType: '',
+                    effect: '',
+                    initDrawn: false
+                  }
+                }
+              }
+
             }
 
           }
@@ -3006,13 +3069,14 @@ class App extends Component {
         //     limit: player.defending.limit,
         //   }
         // }
+
         // DECAYING DEF
         if (player.defending.count > 0 && player.defending.count < player.defending.limit+1 && player.defendDecay.state !== true) {
           player.defending.count++;
           player.action = 'defending';
-          // console.log('defend winding up',player.defending.count++, 'player',player.number);
+          console.log('defend winding up',player.defending.count++, 'player',player.number);
         } else if (player.defending.count >= player.defending.limit+1 && player.defending.state === false && player.defendDecay.state !== true) {
-          // console.log('defend wind up limit cap','player',player.number);
+          console.log('defend wind up limit cap','player',player.number);
 
           player.defending = {
             state: true,
@@ -3026,12 +3090,13 @@ class App extends Component {
           }
         }
 
+
         // DEFENSE DECAY!!
         if (player.defending.state === true && player.defending.count === 0) {
           if (player.defendDecay.state === true) {
             if (player.defendDecay.count < player.defendDecay.limit) {
               player.defendDecay.count++;
-              // console.log('defend decay1',player.defendDecay.count);
+              console.log('defend decay1',player.defendDecay.count);
             }
             if (player.defendDecay.count === player.defendDecay.limit-5) {
               player.defending = {
@@ -3047,7 +3112,7 @@ class App extends Component {
         if (player.defending.state !== true && player.defendDecay.state === true) {
           if (player.defendDecay.count < player.defendDecay.limit) {
             player.defendDecay.count++;
-            // console.log('defend decay2',player.defendDecay.count);
+            console.log('defend decay2',player.defendDecay.count);
           }
           if (player.defendDecay.count >= player.defendDecay.limit) {
 
@@ -3166,7 +3231,6 @@ class App extends Component {
         else if (this.keyPressed[player.number-1].cycleWeapon === true && player.cycleWeapon.state === true) {
           console.log('already cycling weapon');
         }
-
         if (this.keyPressed[player.number-1].cycleArmor === true && player.cycleArmor.state === false && player.defending.state !== true) {
           if (player.cycleArmor.count < player.cycleArmor.limit) {
             player.cycleArmor.count++
