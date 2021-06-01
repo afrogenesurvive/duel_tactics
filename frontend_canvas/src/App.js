@@ -2324,9 +2324,10 @@ class App extends Component {
       player.success.deflected.count++
     } else if (player.success.deflected.state === true && player.success.deflected.count >= player.success.deflected.limit) {
 
+      // DEFLECT SPIN!
       let shouldSpin;
       if (player.success.deflected.type === "attack") {
-        shouldSpin = this.rnJesus(1,2);
+        shouldSpin = this.rnJesus(1,3);
       }
       if (player.success.deflected.type === "defended") {
         shouldSpin = this.rnJesus(1,10);
@@ -2365,6 +2366,7 @@ class App extends Component {
         }
         player.direction = newDirection;
       }
+
       player.action = 'idle';
       player.success.deflected = {
         state: false,
@@ -4450,6 +4452,73 @@ class App extends Component {
 
 
           let finalAnimIndex;
+          if (
+            plyr.currentPosition.cell.number.x === x &&
+            plyr.currentPosition.cell.number.y === y
+          ) {
+            switch(plyr.action) {
+              case 'moving':
+                let rangeIndex = plyr.speed.range.indexOf(plyr.speed.move)
+                let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
+                finalAnimIndex = moveAnimIndex;
+                // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+                if (plyr.target.void == true) {
+                  // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+                }
+              break;
+              case 'strafe moving':
+                if (player.pushBack.state === true ) {
+                  let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
+                  let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
+                  finalAnimIndex = moveAnimIndex3;
+                  // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+                } else {
+                  let rangeIndex2 = plyr.speed.range.indexOf(plyr.speed.move)
+                  let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
+                  finalAnimIndex = moveAnimIndex2;
+                  // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+                }
+              break;
+              case 'attacking':
+                let animIndex = plyr.attacking.count -1;
+                finalAnimIndex = animIndex;
+                // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
+              break;
+              case 'defending':
+                if (plyr.defending.count > 0) {
+                  let animIndex2 = plyr.defending.count -1;
+                  finalAnimIndex = animIndex2;
+                  // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
+                }
+                if (plyr.defending.count === 0) {
+                  let animIndex2a = plyr.defending.limit;
+                  finalAnimIndex = animIndex2a;
+                  // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
+                }
+              break;
+              case 'idle':
+                if (plyr.number === 1) {
+                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+                }
+                if (plyr.number === 2) {
+                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+                }
+                let animIndex3 = plyr.idleAnim.count -1;
+                finalAnimIndex = animIndex3;
+              break;
+              case 'falling':
+                let animIndex4 = plyr.falling.count -1;
+                finalAnimIndex = animIndex4;
+                // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
+              break;
+              case 'deflected':
+                let animIndex5 = plyr.success.deflected.count -1;
+                finalAnimIndex = animIndex5;
+                console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number,'index',finalAnimIndex);
+              break;
+            }
+          }
+
           switch(plyr.action) {
             case 'moving':
               let rangeIndex = plyr.speed.range.indexOf(plyr.speed.move)
@@ -4506,7 +4575,7 @@ class App extends Component {
               // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
             break;
             case 'deflected':
-              let animIndex5 = plyr.falling.count -1;
+              let animIndex5 = plyr.success.deflected.count -1;
               finalAnimIndex = animIndex5;
               // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
             break;
@@ -4794,8 +4863,8 @@ class App extends Component {
                 x === plyr.moving.origin.number.x &&
                 y === plyr.moving.origin.number.y+1
               ) {
-                // context.drawImage(updatedPlayerImg, point.x-35, point.y-20, 55,55);
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  point.x-35, point.y-20, 55, 55)
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  point.x-35, point.y-20, 40, 40)
+
                 if (plyr.success.deflected.type === 'attack') {
                   context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
                 }
@@ -4804,6 +4873,94 @@ class App extends Component {
                 }
                 else if (plyr.success.deflected.type === 'blunt attacked') {
                   context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
+                }
+              }
+            }
+            if (plyr.direction === 'east') {
+              if (
+                x === plyr.currentPosition.cell.number.x &&
+                y === plyr.currentPosition.cell.number.y
+              ) {
+
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-35, point.y-30, 40,40);
+
+                if (plyr.success.deflected.type === 'attack') {
+                  context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
+                }
+                else if (plyr.success.deflected.type === 'attacked') {
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
+                }
+                else if (plyr.success.deflected.type === 'blunt attacked') {
+                  context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
+                }
+              }
+            }
+            if (plyr.direction === 'west') {
+              if (
+                x === plyr.currentPosition.cell.number.x+1 &&
+                y === plyr.currentPosition.cell.number.y
+              ) {
+
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-15, point.y-20, 40,40);
+
+                if (plyr.success.deflected.type === 'attack') {
+                  context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
+                }
+                else if (plyr.success.deflected.type === 'attacked') {
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
+                }
+                else if (plyr.success.deflected.type === 'blunt attacked') {
+                  context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
+                }
+              }
+            }
+            if (plyr.direction === 'south') {
+              if (
+                x === plyr.currentPosition.cell.number.x+1 &&
+                y === plyr.currentPosition.cell.number.y
+              ) {
+
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-15, point.y-30, 40,40);
+
+                if (plyr.success.deflected.type === 'attack') {
+                  context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
+                }
+                else if (plyr.success.deflected.type === 'attacked') {
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
+                }
+                else if (plyr.success.deflected.type === 'blunt attacked') {
+                  context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
+                }
+              }
+            }
+
+            if (plyr.direction === 'southEast') {
+              if (
+                x === plyr.currentPosition.cell.number.x &&
+                y === plyr.currentPosition.cell.number.y
+              ) {
+                // context.drawImage(updatedPlayerImg, point.x-20, point.y-30, 40,40);
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-20, point.y-30, 40,40);
+                if (plyr.success.deflected.type === 'attack') {
+                  context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
+                }
+                else if (plyr.success.deflected.type === 'attacked') {
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
+                }
+              }
+            }
+            if (plyr.direction === 'southWest') {
+              if (
+                x === plyr.currentPosition.cell.number.x+1 &&
+                y === plyr.currentPosition.cell.number.y
+              ) {
+                // context.drawImage(updatedPlayerImg, point.x-10, point.y-20, 40,40);
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-10, point.y-20, 40,40);
+                if (plyr.success.deflected.type === 'attack') {
+                  context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
+                }
+                else if (plyr.success.deflected.type === 'attacked') {
+                  context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
                 }
               }
             }
@@ -4837,82 +4994,7 @@ class App extends Component {
                 }
               }
             }
-            if (plyr.direction === 'east') {
-              if (
-                x === plyr.currentPosition.cell.number.x &&
-                y === plyr.currentPosition.cell.number.y
-              ) {
-                // context.drawImage(updatedPlayerImg, point.x-35, point.y-30, 55,55);
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-35, point.y-30, 55,55);
 
-                if (plyr.success.deflected.type === 'attack') {
-                  context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
-                }
-                else if (plyr.success.deflected.type === 'attacked') {
-                  context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
-                }
-              }
-            }
-            if (plyr.direction === 'west') {
-              if (
-                x === plyr.currentPosition.cell.number.x+1 &&
-                y === plyr.currentPosition.cell.number.y
-              ) {
-                // context.drawImage(updatedPlayerImg, point.x-15, point.y-20, 55,55);
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-15, point.y-20, 55,55);
-                if (plyr.success.deflected.type === 'attack') {
-                  context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
-                }
-                else if (plyr.success.deflected.type === 'attacked') {
-                  context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
-                }
-              }
-            }
-            if (plyr.direction === 'south') {
-              if (
-                x === plyr.currentPosition.cell.number.x+1 &&
-                y === plyr.currentPosition.cell.number.y
-              ) {
-                // context.drawImage(updatedPlayerImg, point.x-15, point.y-30, 55,55);
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-15, point.y-30, 55,55);
-                if (plyr.success.deflected.type === 'attack') {
-                  context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
-                }
-                else if (plyr.success.deflected.type === 'attacked') {
-                  context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
-                }
-              }
-            }
-            if (plyr.direction === 'southEast') {
-              if (
-                x === plyr.currentPosition.cell.number.x &&
-                y === plyr.currentPosition.cell.number.y
-              ) {
-                // context.drawImage(updatedPlayerImg, point.x-20, point.y-30, 40,40);
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-20, point.y-30, 40,40);
-                if (plyr.success.deflected.type === 'attack') {
-                  context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
-                }
-                else if (plyr.success.deflected.type === 'attacked') {
-                  context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
-                }
-              }
-            }
-            if (plyr.direction === 'southWest') {
-              if (
-                x === plyr.currentPosition.cell.number.x+1 &&
-                y === plyr.currentPosition.cell.number.y
-              ) {
-                // context.drawImage(updatedPlayerImg, point.x-10, point.y-20, 40,40);
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-10, point.y-20, 40,40);
-                if (plyr.success.deflected.type === 'attack') {
-                  context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
-                }
-                else if (plyr.success.deflected.type === 'attacked') {
-                  context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
-                }
-              }
-            }
 
             if (plyr.breakAnim.attack.state === true) {
               // context.fillStyle = "black";
