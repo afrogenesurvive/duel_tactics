@@ -31,6 +31,7 @@ import sword from './assets/items/sword.png';
 import mail from './assets/items/mail1.png';
 import greaves from './assets/items/greaves1.png';
 import helmet from './assets/items/helmet1.png';
+import unarmed from './assets/items/unarmed.png';
 
 import speed from './assets/indicators/speed.png'
 
@@ -196,6 +197,9 @@ const DebugBox = props => {
     )}
     {state === 'player' && (
       <ul className="debugBoxList">
+        {props.player.currentWeapon.name === '' && (
+          <img src={unarmed} className="debugBoxImgSelected"></img>
+        )}
         {props.player.items.weapons.map((weapon) => (
             <li className="debugBoxListItem">
               {props.player.currentWeapon.name !== weapon.name &&
@@ -333,7 +337,6 @@ const DebugBox = props => {
       </ul>
 
     )}
-
     {state === 'crits' && (
 
       <div>
@@ -419,9 +422,19 @@ const DebugBox = props => {
           </li>
         </ul>
         <ul className="debugBoxList">
+
+            {props.player.currentWeapon.name === '' && (
+              <div className="gearDetails">
+              <img src={unarmed} className="debugBoxImgSelected"></img>
+              <p className="debugBoxText">Name: Unarmed</p>
+              </div>
+            )}
+
             {props.player.items.weapons.map((weapon) => (
 
                 <li className="debugBoxListItem">
+
+
 
                   {props.player.currentWeapon.name !== weapon.name &&
                     weapon.type === 'sword' && (
