@@ -552,6 +552,15 @@ class App extends Component {
           direction: '',
         },
         strafeReleaseHook: false,
+        flanking: {
+          checking: false,
+          preFlankDirection: '',
+          direction: '',
+          state: false,
+          step: 0,
+          target1: {x:0 ,y:0},
+          target2: {x:0 ,y:0},
+        },
         attacking: {
           state: false,
           count: 0,
@@ -818,6 +827,15 @@ class App extends Component {
           direction: '',
         },
         strafeReleaseHook: false,
+        flanking: {
+          checking: false,
+          preFlankDirection: '',
+          direction: '',
+          state: false,
+          step: 0,
+          target1: {x:0 ,y:0},
+          target2: {x:0 ,y:0},
+        },
         attacking: {
           state: false,
           count: 0,
@@ -2234,6 +2252,7 @@ class App extends Component {
           key !== 'strafe' &&
           key !== 'attack' &&
           key !== 'defend' &&
+          key !== 'dodge' &&
           value === true
         ) {
           // console.log('pressed',key);
@@ -2411,6 +2430,7 @@ class App extends Component {
             nextPosition.y === player.target.cell.center.y+5
           ) {
             // console.log('next position is destination a',player.number);
+
             if (player.target.void === false) {
               player.currentPosition.cell = player.target.cell;
               player.action = 'idle';
@@ -3424,6 +3444,166 @@ class App extends Component {
         }
 
 
+        // FLANKING!
+        if (player.flanking.state === true) {
+
+          if (player.flanking.step === 2) {
+
+            switch(player.direction) {
+              case 'north' :
+                player.direction = 'south';
+              break;
+              case 'south' :
+                player.direction = 'north';
+              break;
+              case 'east' :
+                player.direction = 'west';
+              break;
+              case 'west' :
+                player.direction = 'east';
+              break;
+            }
+
+            player.flanking = {
+              checking: false,
+              direction: '',
+              preFlankDirection: '',
+              state: false,
+              step: 0,
+              target1: {x:0 ,y:0},
+              target2: {x:0 ,y:0},
+            }
+          }
+          if (player.flanking.step === 1) {
+
+            let target = this.getTarget(player);
+            if (target.free === true) {
+              player.flanking.step = 2;
+              player.flanking.target2 = target.cell.number;
+              player.action = 'moving';
+              player.moving = {
+                state: true,
+                step: 0,
+                course: '',
+                origin: {
+                  number: {
+                    x: player.currentPosition.cell.number.x,
+                    y: player.currentPosition.cell.number.y
+                  },
+                  center: {
+                    x: player.currentPosition.cell.center.x,
+                    y: player.currentPosition.cell.center.y
+                  },
+                },
+                destination: target.cell.center
+              }
+              nextPosition = this.lineCrementer(player);
+              player.nextPosition = nextPosition;
+            }
+            else {
+              this.players[player.number-1].statusDisplay = {
+                state: true,
+                status: 'flanking cancelled!',
+                count: 1,
+                limit: this.players[player.number-1].statusDisplay.limit,
+              }
+              player.flanking = {
+                checking: false,
+                direction: '',
+                state: false,
+                step: 0,
+                target1: {x:0 ,y:0},
+                target2: {x:0 ,y:0},
+              }
+            }
+          }
+
+        }
+        if (this.keyPressed[player.number-1].dodge === true ) {
+
+          if (
+            this.keyPressed[player.number-1].north === true ||
+            this.keyPressed[player.number-1].south === true ||
+            this.keyPressed[player.number-1].east === true ||
+            this.keyPressed[player.number-1].west === true &&
+            player.strafing.state !== true &&
+            player.flanking.state !== true
+          ) {
+
+            if (keyPressedDirection !== player.direction) {
+
+              let canFlank = false;
+              switch(player.direction) {
+                case 'north' :
+                  if (keyPressedDirection === 'east' || keyPressedDirection === 'west') {
+                    canFlank = true;
+                  }
+                break;
+                case 'south' :
+                  if (keyPressedDirection === 'east' || keyPressedDirection === 'west') {
+                    canFlank = true;
+                  }
+                break;
+                case 'west' :
+                  if (keyPressedDirection === 'north' || keyPressedDirection === 'south') {
+                    canFlank = true;
+                  }
+                break;
+                case 'east' :
+                  if (keyPressedDirection === 'north' || keyPressedDirection === 'south') {
+                    canFlank = true;
+                  }
+                break;
+              }
+
+              if (canFlank === true) {
+                // console.log('flanking step',keyPressedDirection,player.direction);
+                this.players[player.number-1].flanking.checking = true;
+                this.players[player.number-1].flanking.direction = keyPressedDirection;
+                this.players[player.number-1].flanking.preFlankDirection = player.direction;
+
+                let target = this.getTarget(player);
+                if (target.free === true ) {
+
+                  this.players[player.number-1].flanking.checking = false;
+                  this.players[player.number-1].flanking.state = true;
+                  this.players[player.number-1].flanking.step =  1;
+                  this.players[player.number-1].flanking.target1 = target.cell.number;
+                  player.action = 'moving';
+                  player.moving = {
+                    state: true,
+                    step: 0,
+                    course: '',
+                    origin: {
+                      number: {
+                        x: player.currentPosition.cell.number.x,
+                        y: player.currentPosition.cell.number.y
+                      },
+                      center: {
+                        x: player.currentPosition.cell.center.x,
+                        y: player.currentPosition.cell.center.y
+                      },
+                    },
+                    destination: target.cell.center
+                  }
+                  nextPosition = this.lineCrementer(player);
+                  player.nextPosition = nextPosition;
+                }
+              } else {
+                // console.log('cant flank');
+              }
+
+            } else {
+              // console.log('cant flank');
+            }
+
+          }
+
+
+        }
+
+
+
         // CAN READ MOVE INPUTS!!
         if (player.attacking.state === false && player.defending.state === false) {
           // CONFIRM MOVE KEYPRESS!!
@@ -3542,6 +3722,8 @@ class App extends Component {
                 player.nextPosition = nextPosition;
               }
             }
+
+
           }
         }
         // CAN READ NON-MOVE INPUTS!!
@@ -3584,6 +3766,7 @@ class App extends Component {
                 //   }
                 // }
 
+                // BLUNT ATTACK!!
                 if (this.keyPressed[player.number-1].dodge === true) {
                   player.bluntAttack = true;
                 }
@@ -4452,72 +4635,76 @@ class App extends Component {
 
 
           let finalAnimIndex;
-          if (
-            plyr.currentPosition.cell.number.x === x &&
-            plyr.currentPosition.cell.number.y === y
-          ) {
-            switch(plyr.action) {
-              case 'moving':
-                let rangeIndex = plyr.speed.range.indexOf(plyr.speed.move)
-                let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
-                finalAnimIndex = moveAnimIndex;
-                // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-                if (plyr.target.void == true) {
-                  // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-                }
-              break;
-              case 'strafe moving':
-                if (player.pushBack.state === true ) {
-                  let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
-                  let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
-                  finalAnimIndex = moveAnimIndex3;
-                  // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-                } else {
-                  let rangeIndex2 = plyr.speed.range.indexOf(plyr.speed.move)
-                  let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
-                  finalAnimIndex = moveAnimIndex2;
-                  // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-                }
-              break;
-              case 'attacking':
-                let animIndex = plyr.attacking.count -1;
-                finalAnimIndex = animIndex;
-                // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
-              break;
-              case 'defending':
-                if (plyr.defending.count > 0) {
-                  let animIndex2 = plyr.defending.count -1;
-                  finalAnimIndex = animIndex2;
-                  // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
-                }
-                if (plyr.defending.count === 0) {
-                  let animIndex2a = plyr.defending.limit;
-                  finalAnimIndex = animIndex2a;
-                  // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
-                }
-              break;
-              case 'idle':
-                if (plyr.number === 1) {
-                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-                }
-                if (plyr.number === 2) {
-                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-                }
-                let animIndex3 = plyr.idleAnim.count -1;
-                finalAnimIndex = animIndex3;
-              break;
-              case 'falling':
-                let animIndex4 = plyr.falling.count -1;
-                finalAnimIndex = animIndex4;
-                // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
-              break;
-              case 'deflected':
-                let animIndex5 = plyr.success.deflected.count -1;
-                finalAnimIndex = animIndex5;
-                console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number,'index',finalAnimIndex);
-              break;
-            }
-          }
+
+          // FOR TESTING BY CALLING ONLY @ 1 CELL
+          // if (
+          //   plyr.currentPosition.cell.number.x === x &&
+          //   plyr.currentPosition.cell.number.y === y
+          // ) {
+          //   switch(plyr.action) {
+          //     case 'moving':
+          //       let rangeIndex = plyr.speed.range.indexOf(plyr.speed.move)
+          //       let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
+          //       finalAnimIndex = moveAnimIndex;
+          //       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+          //       if (plyr.target.void == true) {
+          //         // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+          //       }
+          //     break;
+          //     case 'strafe moving':
+          //       if (player.pushBack.state === true ) {
+          //         let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
+          //         let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
+          //         finalAnimIndex = moveAnimIndex3;
+          //         // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+          //       } else {
+          //         let rangeIndex2 = plyr.speed.range.indexOf(plyr.speed.move)
+          //         let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
+          //         finalAnimIndex = moveAnimIndex2;
+          //         // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+          //       }
+          //     break;
+          //     case 'attacking':
+          //       let animIndex = plyr.attacking.count -1;
+          //       finalAnimIndex = animIndex;
+          //       // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
+          //     break;
+          //     case 'defending':
+          //       if (plyr.defending.count > 0) {
+          //         let animIndex2 = plyr.defending.count -1;
+          //         finalAnimIndex = animIndex2;
+          //         // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
+          //       }
+          //       if (plyr.defending.count === 0) {
+          //         let animIndex2a = plyr.defending.limit;
+          //         finalAnimIndex = animIndex2a;
+          //         // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
+          //       }
+          //     break;
+          //     case 'idle':
+          //       if (plyr.number === 1) {
+          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+          //       }
+          //       if (plyr.number === 2) {
+          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+          //       }
+          //       let animIndex3 = plyr.idleAnim.count -1;
+          //       finalAnimIndex = animIndex3;
+          //     break;
+          //     case 'falling':
+          //       let animIndex4 = plyr.falling.count -1;
+          //       finalAnimIndex = animIndex4;
+          //       // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
+          //     break;
+          //     case 'deflected':
+          //       let animIndex5 = plyr.success.deflected.count -1;
+          //       finalAnimIndex = animIndex5;
+          //       // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number,'index',finalAnimIndex);
+          //     break;
+          //   }
+          // }
+          // FOR TESTING BY CALLING ONLY @ 1 CELL
+
 
           switch(plyr.action) {
             case 'moving':
@@ -4665,18 +4852,18 @@ class App extends Component {
           let sy = dirIndex * sHeight;
           let sx = (finalAnimIndex - 1)* sWidth;
 
+
           // DEPTH SORTING!!
           if (plyr.target.void === false && plyr.moving.state === true) {
             if (plyr.direction === 'north' || plyr.direction === 'northWest' || plyr.direction === 'west') {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
                 context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40);
               }
             }
             if (plyr.direction === 'east' || plyr.direction === 'south' || plyr.direction === 'southEast') {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
-              // if (x === plyr.target.cell.number.x && y === plyr.target.cell.number.y) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
                 context2.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40);
                 // playerDrawLog(x,y,plyr)
               }
@@ -4716,9 +4903,11 @@ class App extends Component {
             if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y && plyr.success.deflected.state === false) {
               // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
 
+
               context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40)
 
               if (plyr.attacking.state === true) {
+                // console.log('ff atk',plyr.action ,finalAnimIndex,'plyr #', player.number);
 
                 if (plyr.attacking.count > 0 && plyr.attacking.count < 3) {
                   context.drawImage(indicatorImgs.preAttack, point.x-35, point.y-35, 35,35);
@@ -4846,6 +5035,90 @@ class App extends Component {
                 // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40);
                 // playerDrawLog(x,y)
+              }
+            }
+          }
+          if (plyr.flanking.state === true) {
+            if (plyr.direction === 'east') {
+              if (plyr.flanking.direction === 'north') {
+                if (plyr.flanking.step === 1) {
+                  if (
+                    x === plyr.currentPosition.cell.number.x &&
+                    y === plyr.currentPosition.cell.number.y
+                  ) {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40)
+                  }
+                }
+                if (plyr.flanking.step === 2) {
+                  if (
+                    // x === plyr.flanking.target1.x &&
+                    // y === plyr.flanking.target1.y
+                    x === plyr.currentPosition.cell.number.x &&
+                    y === plyr.currentPosition.cell.number.y+1
+                  ) {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40)
+                  }
+                }
+              }
+            }
+            if (plyr.direction === 'west') {
+              if (plyr.flanking.direction === 'south') {
+                if (plyr.flanking.step === 1) {
+                  if (
+                    x === plyr.currentPosition.cell.number.x &&
+                    y === plyr.currentPosition.cell.number.y
+                  ) {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40)
+                  }
+                }
+                if (plyr.flanking.step === 2) {
+                  if (
+                    x === plyr.flanking.target1.x &&
+                    y === plyr.flanking.target1.y
+                  ) {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40)
+                  }
+                }
+              }
+            }
+            if (plyr.direction === 'north') {
+              if (plyr.flanking.direction === 'east') {
+                if (plyr.flanking.step === 1) {
+                  if (
+                    x === plyr.flanking.target1.x &&
+                    y === plyr.flanking.target1.y
+                  ) {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40)
+                  }
+                }
+                if (plyr.flanking.step === 2) {
+                  if (
+                    x === plyr.flanking.target1.x &&
+                    y === plyr.flanking.target1.y
+                  ) {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40)
+                  }
+                }
+              }
+            }
+            if (plyr.direction === 'south') {
+              if (plyr.flanking.direction === 'west') {
+                if (plyr.flanking.step === 1) {
+                  if (
+                    x === plyr.currentPosition.cell.number.x &&
+                    y === plyr.currentPosition.cell.number.y
+                  ) {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40)
+                  }
+                }
+                if (plyr.flanking.step === 2) {
+                  if (
+                    x === plyr.flanking.target2.x &&
+                    y === plyr.flanking.target2.y
+                  ) {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40)
+                  }
+                }
               }
             }
           }
@@ -5483,6 +5756,18 @@ class App extends Component {
 
     if (player.strafing.state === true) {
       direction = player.strafing.direction;
+    }
+
+    // FLANKING!!
+    if (player.flanking.checking === true ) {
+      if (player.flanking.step === 0) {
+        direction = player.flanking.direction;
+      }
+    }
+    if (player.flanking.state === true) {
+      if (player.flanking.step === 1) {
+        direction = player.flanking.preFlankDirection;
+      }
     }
 
     let targetCellNumber = {x: 0,y: 0};
@@ -6128,6 +6413,18 @@ class App extends Component {
       // console.log('terrain speed mod',player.terrainMoveSpeed.speed);
       moveSpeed = player.terrainMoveSpeed.speed;
     }
+
+    // if (player.flanking.state === true) {
+    //   if (moveSpeed === .05) {
+    //     moveSpeed = .1
+    //   }
+    //   else if (moveSpeed === .1) {
+    //     moveSpeed = .125
+    //   }
+    //   else if (moveSpeed === .125) {
+    //     moveSpeed = .2
+    //   }
+    // }
 
     player.moving.step = +(Math.round((player.moving.step + moveSpeed) + "e+" + 3)  + "e-" + 3);
     // player.moving.step = player.moving.step + moveSpeed;
@@ -7024,6 +7321,15 @@ class App extends Component {
       state: false,
       prePushBackMoveSpeed: 0,
     };
+      this.players[player.number-1].flanking = {
+        checking: false,
+        direction: '',
+        preFlankDirection: '',
+        state: false,
+        step: 0,
+        target1: {x:0 ,y:0},
+        target2: {x:0 ,y:0},
+    }
 
 
   }
@@ -7039,6 +7345,15 @@ class App extends Component {
       state: false,
       count: 0,
       limit: 7,
+    }
+    player.flanking = {
+      checking: false,
+      direction: '',
+      preFlankDirection: '',
+      state: false,
+      step: 0,
+      target1: {x:0 ,y:0},
+      target2: {x:0 ,y:0},
     }
     player.target = {
       cell: {
@@ -8414,6 +8729,15 @@ class App extends Component {
             direction: '',
           },
           strafeReleaseHook: false,
+          flanking: {
+            checking: false,
+            preFlankDirection: '',
+            direction: '',
+            state: false,
+            step: 0,
+            target1: {x:0 ,y:0},
+            target2: {x:0 ,y:0},
+          },
           attacking: {
             state: false,
             count: 0,
