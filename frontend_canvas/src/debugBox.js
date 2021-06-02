@@ -515,7 +515,7 @@ const DebugBox = props => {
 
                   {props.player.currentArmor.name !== armor.name &&
                     armor.type === 'mail' && (
-                    <div classNmae="gearDetails">
+                    <div className="gearDetails">
                       <img src={mail}></img>
                       <p className="debugBoxText">Name: {armor.name}</p>
                       <p className="debugBoxText">Type: {armor.type}</p>
@@ -526,7 +526,7 @@ const DebugBox = props => {
 
                   {props.player.currentArmor.name !== armor.name &&
                     armor.type === 'greaves' && (
-                    <div classNmae="gearDetails">
+                    <div className="gearDetails">
                       <img src={greaves}></img>
                       <p className="debugBoxText">Name: {armor.name}</p>
                       <p className="debugBoxText">Type: {armor.type}</p>
@@ -537,7 +537,7 @@ const DebugBox = props => {
 
                   {props.player.currentArmor.name !== armor.name &&
                     armor.type === 'helmet' && (
-                    <div classNmae="gearDetails">
+                    <div className="gearDetails">
                       <img src={helmet}></img>
                       <p className="debugBoxText">Name: {armor.name}</p>
                       <p className="debugBoxText">Type: {armor.type}</p>
@@ -548,7 +548,7 @@ const DebugBox = props => {
 
                   {props.player.currentArmor.name === armor.name &&
                     armor.type === 'mail' && (
-                    <div classNmae="gearDetails">
+                    <div className="gearDetails">
                       <img src={mail} className="debugBoxImgSelected"></img>
                       <p className="debugBoxText">Name: {armor.name}</p>
                       <p className="debugBoxText">Type: {armor.type}</p>
@@ -559,7 +559,7 @@ const DebugBox = props => {
 
                   {props.player.currentArmor.name === armor.name &&
                     armor.type === 'greaves' && (
-                    <div classNmae="gearDetails">
+                    <div className="gearDetails">
                       <img src={greaves} className="debugBoxImgSelected"></img>
                       <p className="debugBoxText">Name: {armor.name}</p>
                       <p className="debugBoxText">Type: {armor.type}</p>
@@ -570,7 +570,7 @@ const DebugBox = props => {
 
                   {props.player.currentArmor.name === armor.name &&
                     armor.type === 'helmet' && (
-                    <div classNmae="gearDetails">
+                    <div className="gearDetails">
                       <img src={helmet} className="debugBoxImgSelected"></img>
                        <p className="debugBoxText">Name: {armor.name}</p>
                        <p className="debugBoxText">Type: {armor.type}</p>

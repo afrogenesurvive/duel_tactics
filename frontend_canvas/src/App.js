@@ -2209,9 +2209,9 @@ class App extends Component {
     if(this.stepper.deltaTime > this.stepper.interval) {
 
       this.time++
-      // if (this.time === 300) {
-      //   // this.openVoid = true;
-      //   // this.customCellToVoid({x:2,y:2})
+      // if (this.time === 1000) {
+      //   this.openVoid = true;
+      //   this.customCellToVoid({x:2,y:2})
       // }
       this.setState({
         stateUpdater: '..'
@@ -2561,8 +2561,8 @@ class App extends Component {
 
 
         // KEY PRESS RELEASE CHECKS!!
-        if (player.turning.state === false) {
-          // console.log('turn complete');
+        if (player.turning.state === false && player.flanking.state !== true) {
+          // console.log('turn complete');s
           player.direction = player.turning.toDirection;
           player.nextPosition = {
             x: player.currentPosition.cell.center.x,
@@ -3448,19 +3448,23 @@ class App extends Component {
         if (player.flanking.state === true) {
 
           if (player.flanking.step === 2) {
-
-            switch(player.direction) {
+            // console.log('here',player.direction,'flank dir',player.flanking.direction);
+            switch(player.flanking.direction) {
               case 'north' :
                 player.direction = 'south';
+                player.turning.toDirection = 'south';
               break;
               case 'south' :
                 player.direction = 'north';
+                player.turning.toDirection = 'north';
               break;
               case 'east' :
                 player.direction = 'west';
+                player.turning.toDirection = 'west';
               break;
               case 'west' :
                 player.direction = 'east';
+                player.turning.toDirection = 'east';
               break;
             }
 
@@ -3501,6 +3505,7 @@ class App extends Component {
               player.nextPosition = nextPosition;
             }
             else {
+              // console.log('cancel flanking');
               this.players[player.number-1].statusDisplay = {
                 state: true,
                 status: 'flanking cancelled!',
@@ -3517,7 +3522,6 @@ class App extends Component {
               }
             }
           }
-
         }
         if (this.keyPressed[player.number-1].dodge === true ) {
 
@@ -3588,6 +3592,8 @@ class App extends Component {
                   }
                   nextPosition = this.lineCrementer(player);
                   player.nextPosition = nextPosition;
+                } else {
+                  // console.log('cancel flanking');
                 }
               } else {
                 // console.log('cant flank');
@@ -5065,8 +5071,10 @@ class App extends Component {
               if (plyr.flanking.direction === 'south') {
                 if (plyr.flanking.step === 1) {
                   if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y
+                    // x === plyr.currentPosition.cell.number.x &&
+                    // y === plyr.currentPosition.cell.number.y
+                    x === plyr.flanking.target1.x &&
+                    y === plyr.flanking.target1.y
                   ) {
                     context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40)
                   }
