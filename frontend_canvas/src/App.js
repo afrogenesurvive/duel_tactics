@@ -574,10 +574,10 @@ class App extends Component {
           countState: false,
           state: false,
           count: 0,
-          limit: 25,
+          limit: 20,
           peak: {
-            start: 10,
-            end: 15,
+            start: 5,
+            end: 10,
           }
         },
         success: {
@@ -861,10 +861,10 @@ class App extends Component {
           countState: false,
           state: false,
           count: 0,
-          limit: 25,
+          limit: 20,
           peak: {
-            start: 10,
-            end: 15,
+            start: 5,
+            end: 10,
           }
         },
         success: {
@@ -2727,7 +2727,7 @@ class App extends Component {
           }
 
           if (player.attacking.count === attackPeak) {
-            console.log('attack peak',player.attacking.count);
+            // console.log('attack peak',player.attacking.count);
 
             if (player.currentWeapon.type === 'crossbow' && player.items.ammo > 0) {
               // console.log('firing crossbow');
@@ -2931,6 +2931,7 @@ class App extends Component {
                     }
                   }
 
+                  // DODGED CHECK!
                   if (this.players[player.target.occupant.player-1].dodging.state === true) {
 
                     let canDodge = true;
@@ -3295,7 +3296,7 @@ class App extends Component {
           }
           if (player.dodging.count > (player.dodging.peak.start - startMod) && player.dodging.count < (player.dodging.peak.end + endMod)) {
             player.dodging.state = true;
-            console.log('dodge peak',player.dodging.count);
+            // console.log('dodge peak',player.dodging.count);
           }
           if (player.dodging.count < (player.dodging.peak.start - startMod) || player.dodging.count > (player.dodging.peak.end + endMod)) {
             player.dodging.state = false;
@@ -4569,6 +4570,7 @@ class App extends Component {
 
         floor = floorImgs[gridInfoCell.terrain.name]
 
+
         // VOID BLINKER!!
         if (
           this.cellToVoid.state === true &&
@@ -4740,6 +4742,7 @@ class App extends Component {
           console.log('-- origin --',plyr.moving.origin.number.x,plyr.moving.origin.number.y);
           console.log('-- action --',plyr.action);
         }
+
 
         for (const plyr of this.players) {
 
@@ -4974,7 +4977,7 @@ class App extends Component {
 
 
           // DEPTH SORTING!!
-          if (plyr.target.void === false && plyr.moving.state === true) {
+          if (plyr.target.void === false && plyr.moving.state === true && plyr.falling.state !== true) {
             // console.log('move',finalAnimIndex);
             if (plyr.direction === 'north' || plyr.direction === 'northWest' || plyr.direction === 'west') {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
@@ -5087,9 +5090,17 @@ class App extends Component {
               // playerDrawLog(x,y,plyr)
             }
           }
-          else if (plyr.target.void === true && plyr.moving.state === true) {
+          else if (plyr.target.void === true && plyr.moving.state === true && plyr.falling.state !== true) {
 
             // console.log('heading for thevoid @ draw step');
+            // if (
+            //   x === plyr.currentPosition.cell.number.x &&
+            //   y === plyr.currentPosition.cell.number.y
+            // ) {
+            //   console.log('heading for thevoid @ draw step',plyr.target.cell.number);
+            // }
+
+
             if (plyr.moving.origin.number.x === this.gridWidth && plyr.moving.origin.number.y !== 0 && plyr.moving.origin.number.y !== this.gridWidth) {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y + 1) {
 
@@ -5140,7 +5151,7 @@ class App extends Component {
             }
           }
 
-          if (plyr.strafing.state === true) {
+          if (plyr.strafing.state === true && plyr.falling.state !== true) {
             if (plyr.strafing.direction === 'north' || plyr.strafing.direction === 'northWest' || plyr.strafing.direction === 'west') {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
@@ -5171,7 +5182,7 @@ class App extends Component {
               }
             }
           }
-          if (plyr.flanking.state === true) {
+          if (plyr.flanking.state === true && plyr.falling.state !== true) {
             if (plyr.direction === 'east') {
               if (plyr.flanking.direction === 'north') {
                 if (plyr.flanking.step === 1) {
@@ -5259,19 +5270,32 @@ class App extends Component {
           }
           if (plyr.falling.state === true) {
 
+
             if (
-              x === plyr.currentPosition.cell.number.x-1 &&
-              y === plyr.currentPosition.cell.number.y
+              x === plyr.target.cell.number.x &&
+              y === plyr.target.cell.number.y
             ) {
-              console.log('x,y',x,y,'count',plyr.falling.count);
+              
               context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-35, 40, 40);
               // playerDrawLog(x,y,plyr)
             }
-            // if (x === 0 && y === 0) {
-            //
-            //   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40);
-            //   // playerDrawLog(x,y,plyr)
-            // }
+
+            if (
+              plyr.target.cell.number.x < 0 ||
+              plyr.target.cell.number.y < 0 ||
+              plyr.target.cell.number.x > this.gridWidth ||
+              plyr.target.cell.number.y > this.gridWidth
+            ) {
+              if (
+                x === plyr.moving.origin.number.x &&
+                y === plyr.moving.origin.number.y
+              ) {
+
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-35, 40, 40);
+                // playerDrawLog(x,y,plyr)
+              }
+            }
+
           }
           if (plyr.success.deflected.state === true) {
 
@@ -5793,6 +5817,7 @@ class App extends Component {
           this.players[plyr.number-1] = plyr;
 
         }
+
 
         for (const bolt of this.projectiles) {
           if (
@@ -7476,6 +7501,16 @@ class App extends Component {
     this.players[player.number-1].speed.move = .1;
     this.players[player.number-1].ghost.state = false;
     this.players[player.number-1].drowning = false;
+    this.players[player.number-1].dodging = {
+      countState: false,
+      state: false,
+      count: 0,
+      limit: 20,
+      peak: {
+        start: 5,
+        end: 10,
+      }
+    };
     this.players[player.number-1].crits = {
       singleHit: 1,
       doubleHit: 6,
@@ -7636,6 +7671,16 @@ class App extends Component {
       player.hp = 2;
       player.drowning = false;
       player.action = 'idle';
+      player.dodging = {
+        countState: false,
+        state: false,
+        count: 0,
+        limit: 20,
+        peak: {
+          start: 5,
+          end: 10,
+        }
+      };
       player.crits = {
         singleHit: 1,
         doubleHit: 6,
@@ -8762,9 +8807,7 @@ class App extends Component {
 
             this.getTarget(player);
 
-            // context.drawImage(playerImg, point.x-30, point.y-30, 60,60);
-
-            context.drawImage(playerImg, sx, sy, sWidth, sHeight, point.x-30, point.y-30, 55, 55);
+            context.drawImage(playerImg, sx, sy, sWidth, sHeight, point.x-30, point.y-30, 40, 40);
 
           }
 
@@ -8942,10 +8985,10 @@ class App extends Component {
             countState: false,
             state: false,
             count: 0,
-            limit: 25,
+            limit: 20,
             peak: {
-              start: 10,
-              end: 15,
+              start: 5,
+              end: 10,
             }
           },
           success: {
