@@ -429,12 +429,12 @@ class App extends Component {
         subType: 'greaves',
         effect: 'speedUp',
       },
-      // {
-      //   name: 'ironPlate',
-      //   type: 'armor',
-      //   subType: 'mail',
-      //   effect: 'hpUp',
-      // },
+      {
+        name: 'ironPlate',
+        type: 'armor',
+        subType: 'mail',
+        effect: 'hpUp',
+      },
       // {
       //   name: 'helmet1',
       //   type: 'armor',
@@ -1191,12 +1191,10 @@ class App extends Component {
       },
     };
 
-
   }
 
 
   componentDidMount() {
-
 
     if (window.innerWidth < 1100) {
       this.setState({
@@ -1224,7 +1222,6 @@ class App extends Component {
       canvas2: canvas2,
       context2: context2
     })
-
 
     this.refs.comBImgAttackSheet.onload = () => {
       this.addListeners(canvas, canvas2);
@@ -2171,7 +2168,7 @@ class App extends Component {
 
 
     // for (const player of this.players) {
-    //   this.playerUpdate(player, this.state.canvas, this.state.context);
+    //   this.playerUpdate(player, this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
     // }
 
   }
@@ -2804,37 +2801,53 @@ class App extends Component {
               this.getTarget(player)
 
               // CELLS UNDER ATTACK!
+              let cellUnderAttack1 = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y)
+              let cellUnderAttack2;
+              if (player.currentWeapon.type === 'spear') {
+                cellUnderAttack2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y)
+              }
+
               if (player.currentWeapon.type === 'spear') {
                 // console.log('spear target',player.target);
-                this.cellsUnderAttack.push(
-                  {
+                if (cellUnderAttack1.terrain.type !== 'deep') {
+                  this.cellsUnderAttack.push(
+                    {
+                      number: {
+                        x: player.target.cell.number.x,
+                        y: player.target.cell.number.y,
+                      },
+                      count: 1,
+                      limit: 8,
+                    },
+                  )
+                }
+                if (cellUnderAttack2.terrain.type !== 'deep') {
+                  this.cellsUnderAttack.push(
+                    {
+                      number: {
+                        x: player.target.cell2.number.x,
+                        y: player.target.cell2.number.y,
+                      },
+                      count: 1,
+                      limit: 8,
+                    },
+                  )
+                }
+
+              }
+              else if (player.currentWeapon.type === 'sword' || player.currentWeapon.type === '') {
+                // console.log('sword target',player.target);
+                if (cellUnderAttack1.terrain.type !== 'deep') {
+                  this.cellsUnderAttack.push({
                     number: {
                       x: player.target.cell.number.x,
                       y: player.target.cell.number.y,
                     },
                     count: 1,
                     limit: 8,
-                  },
-                  {
-                    number: {
-                      x: player.target.cell2.number.x,
-                      y: player.target.cell2.number.y,
-                    },
-                    count: 1,
-                    limit: 8,
-                  },
-                )
-              }
-              else if (player.currentWeapon.type === 'sword' || player.currentWeapon.type === '') {
-                // console.log('sword target',player.target);
-                this.cellsUnderAttack.push({
-                  number: {
-                    x: player.target.cell.number.x,
-                    y: player.target.cell.number.y,
-                  },
-                  count: 1,
-                  limit: 8,
-                })
+                  })
+                }
+
               }
 
               if (player.target.occupant.type === 'player') {
@@ -5250,7 +5263,7 @@ class App extends Component {
               x === plyr.currentPosition.cell.number.x-1 &&
               y === plyr.currentPosition.cell.number.y
             ) {
-              console.log('x,y',x,y);
+              console.log('x,y',x,y,'count',plyr.falling.count);
               context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-35, 40, 40);
               // playerDrawLog(x,y,plyr)
             }
@@ -5523,12 +5536,6 @@ class App extends Component {
 
                 }
 
-
-                let plyrImgs = [
-                  this.refs.playerImgIdleNorth,
-                  this.refs.player2ImgIdleNorth
-                ]
-                updatedPlayerImg = plyrImgs[player.number-1];
 
                 plyr.dead.state = false;
                 plyr.currentPosition.cell = respawnPoint;
@@ -9494,77 +9501,80 @@ class App extends Component {
           <img src={focusDown} className='hidden playerImgs' ref="itemFocusDown" alt="logo" />
 
 
-          <img src={playerImgIdleNorth} className='hidden playerImgs' ref="playerImgIdleNorth" alt="logo" />
-          <img src={playerImgIdleNorthWest} className='hidden playerImgs' ref="playerImgIdleNorthWest" alt="logo" />
-          <img src={playerImgIdleNorthEast} className='hidden playerImgs' ref="playerImgIdleNorthEast" alt="logo" />
-          <img src={playerImgIdleSouth} className='hidden playerImgs' ref="playerImgIdleSouth" alt="logo" />
-          <img src={playerImgIdleSouthWest} className='hidden playerImgs' ref="playerImgIdleSouthWest" alt="logo" />
-          <img src={playerImgIdleSouthEast} className='hidden playerImgs' ref="playerImgIdleSouthEast" alt="logo" />
-          <img src={playerImgIdleEast} className='hidden playerImgs' ref="playerImgIdleEast" alt="logo" />
-          <img src={playerImgIdleWest} className='hidden playerImgs' ref="playerImgIdleWest" alt="logo" />
+          {
+            // <img src={playerImgIdleNorth} className='hidden playerImgs' ref="playerImgIdleNorth" alt="logo" />
+            // <img src={playerImgIdleNorthWest} className='hidden playerImgs' ref="playerImgIdleNorthWest" alt="logo" />
+            // <img src={playerImgIdleNorthEast} className='hidden playerImgs' ref="playerImgIdleNorthEast" alt="logo" />
+            // <img src={playerImgIdleSouth} className='hidden playerImgs' ref="playerImgIdleSouth" alt="logo" />
+            // <img src={playerImgIdleSouthWest} className='hidden playerImgs' ref="playerImgIdleSouthWest" alt="logo" />
+            // <img src={playerImgIdleSouthEast} className='hidden playerImgs' ref="playerImgIdleSouthEast" alt="logo" />
+            // <img src={playerImgIdleEast} className='hidden playerImgs' ref="playerImgIdleEast" alt="logo" />
+            // <img src={playerImgIdleWest} className='hidden playerImgs' ref="playerImgIdleWest" alt="logo" />
+            //
+            // <img src={playerImgIdleNorth} className='hidden playerImgs' ref="playerImgIdleSwordNorth" alt="logo" />
+            // <img src={playerImgIdleNorthWest} className='hidden playerImgs' ref="playerImgIdleSwordNorthWest" alt="logo" />
+            // <img src={playerImgIdleNorthEast} className='hidden playerImgs' ref="playerImgIdleSwordNorthEast" alt="logo" />
+            // <img src={playerImgIdleSouth} className='hidden playerImgs' ref="playerImgIdleSwordSouth" alt="logo" />
+            // <img src={playerImgIdleSouthWest} className='hidden playerImgs' ref="playerImgIdleSwordSouthWest" alt="logo" />
+            // <img src={playerImgIdleSouthEast} className='hidden playerImgs' ref="playerImgIdleSwordSouthEast" alt="logo" />
+            // <img src={playerImgIdleEast} className='hidden playerImgs' ref="playerImgIdleSwordEast" alt="logo" />
+            // <img src={playerImgIdleWest} className='hidden playerImgs' ref="playerImgIdleSwordWest" alt="logo" />
+            //
+            // <img src={playerImgIdleNorth} className='hidden playerImgs' ref="playerImgIdleSpearNorth" alt="logo" />
+            // <img src={playerImgIdleNorthWest} className='hidden playerImgs' ref="playerImgIdleSpearNorthWest" alt="logo" />
+            // <img src={playerImgIdleNorthEast} className='hidden playerImgs' ref="playerImgIdleSpearNorthEast" alt="logo" />
+            // <img src={playerImgIdleSouth} className='hidden playerImgs' ref="playerImgIdleSpearSouth" alt="logo" />
+            // <img src={playerImgIdleSouthWest} className='hidden playerImgs' ref="playerImgIdleSpearSouthWest" alt="logo" />
+            // <img src={playerImgIdleSouthEast} className='hidden playerImgs' ref="playerImgIdleSpearSouthEast" alt="logo" />
+            // <img src={playerImgIdleEast} className='hidden playerImgs' ref="playerImgIdleSpearEast" alt="logo" />
+            // <img src={playerImgIdleWest} className='hidden playerImgs' ref="playerImgIdleSpearWest" alt="logo" />
+            //
+            // <img src={playerImgIdleNorth} className='hidden playerImgs' ref="playerImgIdleCrossbowNorth" alt="logo" />
+            // <img src={playerImgIdleNorthWest} className='hidden playerImgs' ref="playerImgIdleCrossbowNorthWest" alt="logo" />
+            // <img src={playerImgIdleNorthEast} className='hidden playerImgs' ref="playerImgIdleCrossbowNorthEast" alt="logo" />
+            // <img src={playerImgIdleSouth} className='hidden playerImgs' ref="playerImgIdleCrossbowSouth" alt="logo" />
+            // <img src={playerImgIdleSouthWest} className='hidden playerImgs' ref="playerImgIdleCrossbowSouthWest" alt="logo" />
+            // <img src={playerImgIdleSouthEast} className='hidden playerImgs' ref="playerImgIdleCrossbowSouthEast" alt="logo" />
+            // <img src={playerImgIdleEast} className='hidden playerImgs' ref="playerImgIdleCrossbowEast" alt="logo" />
+            // <img src={playerImgIdleWest} className='hidden playerImgs' ref="playerImgIdleCrossbowWest" alt="logo" />
+            //
+            // <img src={player2ImgIdleNorth} className='hidden playerImgs' ref="player2ImgIdleNorth" alt="logo" />
+            // <img src={player2ImgIdleNorthWest} className='hidden playerImgs' ref="player2ImgIdleNorthWest" alt="logo" />
+            // <img src={player2ImgIdleNorthEast} className='hidden playerImgs' ref="player2ImgIdleNorthEast" alt="logo" />
+            // <img src={player2ImgIdleSouth} className='hidden playerImgs' ref="player2ImgIdleSouth" alt="logo" />
+            // <img src={player2ImgIdleSouthWest} className='hidden playerImgs' ref="player2ImgIdleSouthWest" alt="logo" />
+            // <img src={player2ImgIdleSouthEast} className='hidden playerImgs' ref="player2ImgIdleSouthEast" alt="logo" />
+            // <img src={player2ImgIdleEast} className='hidden playerImgs' ref="player2ImgIdleEast" alt="logo" />
+            // <img src={player2ImgIdleWest} className='hidden playerImgs' ref="player2ImgIdleWest" alt="logo" />
+            //
+            // <img src={player2ImgIdleNorth} className='hidden playerImgs' ref="player2ImgIdleSwordNorth" alt="logo" />
+            // <img src={player2ImgIdleNorthWest} className='hidden playerImgs' ref="player2ImgIdleSwordNorthWest" alt="logo" />
+            // <img src={player2ImgIdleNorthEast} className='hidden playerImgs' ref="player2ImgIdleSwordNorthEast" alt="logo" />
+            // <img src={player2ImgIdleSouth} className='hidden playerImgs' ref="player2ImgIdleSwordSouth" alt="logo" />
+            // <img src={player2ImgIdleSouthWest} className='hidden playerImgs' ref="player2ImgIdleSwordSouthWest" alt="logo" />
+            // <img src={player2ImgIdleSouthEast} className='hidden playerImgs' ref="player2ImgIdleSwordSouthEast" alt="logo" />
+            // <img src={player2ImgIdleEast} className='hidden playerImgs' ref="player2ImgIdleSwordEast" alt="logo" />
+            // <img src={player2ImgIdleWest} className='hidden playerImgs' ref="player2ImgIdleSwordWest" alt="logo" />
+            //
+            // <img src={player2ImgIdleNorth} className='hidden playerImgs' ref="player2ImgIdleSpearNorth" alt="logo" />
+            // <img src={player2ImgIdleNorthWest} className='hidden playerImgs' ref="player2ImgIdleSpearNorthWest" alt="logo" />
+            // <img src={player2ImgIdleNorthEast} className='hidden playerImgs' ref="player2ImgIdleSpearNorthEast" alt="logo" />
+            // <img src={player2ImgIdleSouth} className='hidden playerImgs' ref="player2ImgIdleSpearSouth" alt="logo" />
+            // <img src={player2ImgIdleSouthWest} className='hidden playerImgs' ref="player2ImgIdleSpearSouthWest" alt="logo" />
+            // <img src={player2ImgIdleSouthEast} className='hidden playerImgs' ref="player2ImgIdleSpearSouthEast" alt="logo" />
+            // <img src={player2ImgIdleEast} className='hidden playerImgs' ref="player2ImgIdleSpearEast" alt="logo" />
+            // <img src={player2ImgIdleWest} className='hidden playerImgs' ref="player2ImgIdleSpearWest" alt="logo" />
+            //
+            // <img src={player2ImgIdleNorth} className='hidden playerImgs' ref="player2ImgIdleCrossbowNorth" alt="logo" />
+            // <img src={player2ImgIdleNorthWest} className='hidden playerImgs' ref="player2ImgIdleCrossbowNorthWest" alt="logo" />
+            // <img src={player2ImgIdleNorthEast} className='hidden playerImgs' ref="player2ImgIdleCrossbowNorthEast" alt="logo" />
+            // <img src={player2ImgIdleSouth} className='hidden playerImgs' ref="player2ImgIdleCrossbowSouth" alt="logo" />
+            // <img src={player2ImgIdleSouthWest} className='hidden playerImgs' ref="player2ImgIdleCrossbowSouthWest" alt="logo" />
+            // <img src={player2ImgIdleSouthEast} className='hidden playerImgs' ref="player2ImgIdleCrossbowSouthEast" alt="logo" />
+            // <img src={player2ImgIdleEast} className='hidden playerImgs' ref="player2ImgIdleCrossbowEast" alt="logo" />
+            // <img src={player2ImgIdleWest} className='hidden playerImgs' ref="player2ImgIdleCrossbowWest" alt="logo" />
+          }
 
-          <img src={playerImgIdleNorth} className='hidden playerImgs' ref="playerImgIdleSwordNorth" alt="logo" />
-          <img src={playerImgIdleNorthWest} className='hidden playerImgs' ref="playerImgIdleSwordNorthWest" alt="logo" />
-          <img src={playerImgIdleNorthEast} className='hidden playerImgs' ref="playerImgIdleSwordNorthEast" alt="logo" />
-          <img src={playerImgIdleSouth} className='hidden playerImgs' ref="playerImgIdleSwordSouth" alt="logo" />
-          <img src={playerImgIdleSouthWest} className='hidden playerImgs' ref="playerImgIdleSwordSouthWest" alt="logo" />
-          <img src={playerImgIdleSouthEast} className='hidden playerImgs' ref="playerImgIdleSwordSouthEast" alt="logo" />
-          <img src={playerImgIdleEast} className='hidden playerImgs' ref="playerImgIdleSwordEast" alt="logo" />
-          <img src={playerImgIdleWest} className='hidden playerImgs' ref="playerImgIdleSwordWest" alt="logo" />
-
-          <img src={playerImgIdleNorth} className='hidden playerImgs' ref="playerImgIdleSpearNorth" alt="logo" />
-          <img src={playerImgIdleNorthWest} className='hidden playerImgs' ref="playerImgIdleSpearNorthWest" alt="logo" />
-          <img src={playerImgIdleNorthEast} className='hidden playerImgs' ref="playerImgIdleSpearNorthEast" alt="logo" />
-          <img src={playerImgIdleSouth} className='hidden playerImgs' ref="playerImgIdleSpearSouth" alt="logo" />
-          <img src={playerImgIdleSouthWest} className='hidden playerImgs' ref="playerImgIdleSpearSouthWest" alt="logo" />
-          <img src={playerImgIdleSouthEast} className='hidden playerImgs' ref="playerImgIdleSpearSouthEast" alt="logo" />
-          <img src={playerImgIdleEast} className='hidden playerImgs' ref="playerImgIdleSpearEast" alt="logo" />
-          <img src={playerImgIdleWest} className='hidden playerImgs' ref="playerImgIdleSpearWest" alt="logo" />
-
-          <img src={playerImgIdleNorth} className='hidden playerImgs' ref="playerImgIdleCrossbowNorth" alt="logo" />
-          <img src={playerImgIdleNorthWest} className='hidden playerImgs' ref="playerImgIdleCrossbowNorthWest" alt="logo" />
-          <img src={playerImgIdleNorthEast} className='hidden playerImgs' ref="playerImgIdleCrossbowNorthEast" alt="logo" />
-          <img src={playerImgIdleSouth} className='hidden playerImgs' ref="playerImgIdleCrossbowSouth" alt="logo" />
-          <img src={playerImgIdleSouthWest} className='hidden playerImgs' ref="playerImgIdleCrossbowSouthWest" alt="logo" />
-          <img src={playerImgIdleSouthEast} className='hidden playerImgs' ref="playerImgIdleCrossbowSouthEast" alt="logo" />
-          <img src={playerImgIdleEast} className='hidden playerImgs' ref="playerImgIdleCrossbowEast" alt="logo" />
-          <img src={playerImgIdleWest} className='hidden playerImgs' ref="playerImgIdleCrossbowWest" alt="logo" />
-
-          <img src={player2ImgIdleNorth} className='hidden playerImgs' ref="player2ImgIdleNorth" alt="logo" />
-          <img src={player2ImgIdleNorthWest} className='hidden playerImgs' ref="player2ImgIdleNorthWest" alt="logo" />
-          <img src={player2ImgIdleNorthEast} className='hidden playerImgs' ref="player2ImgIdleNorthEast" alt="logo" />
-          <img src={player2ImgIdleSouth} className='hidden playerImgs' ref="player2ImgIdleSouth" alt="logo" />
-          <img src={player2ImgIdleSouthWest} className='hidden playerImgs' ref="player2ImgIdleSouthWest" alt="logo" />
-          <img src={player2ImgIdleSouthEast} className='hidden playerImgs' ref="player2ImgIdleSouthEast" alt="logo" />
-          <img src={player2ImgIdleEast} className='hidden playerImgs' ref="player2ImgIdleEast" alt="logo" />
-          <img src={player2ImgIdleWest} className='hidden playerImgs' ref="player2ImgIdleWest" alt="logo" />
-
-          <img src={player2ImgIdleNorth} className='hidden playerImgs' ref="player2ImgIdleSwordNorth" alt="logo" />
-          <img src={player2ImgIdleNorthWest} className='hidden playerImgs' ref="player2ImgIdleSwordNorthWest" alt="logo" />
-          <img src={player2ImgIdleNorthEast} className='hidden playerImgs' ref="player2ImgIdleSwordNorthEast" alt="logo" />
-          <img src={player2ImgIdleSouth} className='hidden playerImgs' ref="player2ImgIdleSwordSouth" alt="logo" />
-          <img src={player2ImgIdleSouthWest} className='hidden playerImgs' ref="player2ImgIdleSwordSouthWest" alt="logo" />
-          <img src={player2ImgIdleSouthEast} className='hidden playerImgs' ref="player2ImgIdleSwordSouthEast" alt="logo" />
-          <img src={player2ImgIdleEast} className='hidden playerImgs' ref="player2ImgIdleSwordEast" alt="logo" />
-          <img src={player2ImgIdleWest} className='hidden playerImgs' ref="player2ImgIdleSwordWest" alt="logo" />
-
-          <img src={player2ImgIdleNorth} className='hidden playerImgs' ref="player2ImgIdleSpearNorth" alt="logo" />
-          <img src={player2ImgIdleNorthWest} className='hidden playerImgs' ref="player2ImgIdleSpearNorthWest" alt="logo" />
-          <img src={player2ImgIdleNorthEast} className='hidden playerImgs' ref="player2ImgIdleSpearNorthEast" alt="logo" />
-          <img src={player2ImgIdleSouth} className='hidden playerImgs' ref="player2ImgIdleSpearSouth" alt="logo" />
-          <img src={player2ImgIdleSouthWest} className='hidden playerImgs' ref="player2ImgIdleSpearSouthWest" alt="logo" />
-          <img src={player2ImgIdleSouthEast} className='hidden playerImgs' ref="player2ImgIdleSpearSouthEast" alt="logo" />
-          <img src={player2ImgIdleEast} className='hidden playerImgs' ref="player2ImgIdleSpearEast" alt="logo" />
-          <img src={player2ImgIdleWest} className='hidden playerImgs' ref="player2ImgIdleSpearWest" alt="logo" />
-
-          <img src={player2ImgIdleNorth} className='hidden playerImgs' ref="player2ImgIdleCrossbowNorth" alt="logo" />
-          <img src={player2ImgIdleNorthWest} className='hidden playerImgs' ref="player2ImgIdleCrossbowNorthWest" alt="logo" />
-          <img src={player2ImgIdleNorthEast} className='hidden playerImgs' ref="player2ImgIdleCrossbowNorthEast" alt="logo" />
-          <img src={player2ImgIdleSouth} className='hidden playerImgs' ref="player2ImgIdleCrossbowSouth" alt="logo" />
-          <img src={player2ImgIdleSouthWest} className='hidden playerImgs' ref="player2ImgIdleCrossbowSouthWest" alt="logo" />
-          <img src={player2ImgIdleSouthEast} className='hidden playerImgs' ref="player2ImgIdleCrossbowSouthEast" alt="logo" />
-          <img src={player2ImgIdleEast} className='hidden playerImgs' ref="player2ImgIdleCrossbowEast" alt="logo" />
-          <img src={player2ImgIdleWest} className='hidden playerImgs' ref="player2ImgIdleCrossbowWest" alt="logo" />
 
           <img src={playerImgIdleSheet} className='hidden playerImgs' ref="playerImgIdleSheet" alt="logo" />
           <img src={player2ImgIdleSheet} className='hidden playerImgs' ref="player2ImgIdleSheet" alt="logo" />
