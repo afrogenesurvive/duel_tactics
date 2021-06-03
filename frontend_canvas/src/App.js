@@ -5023,7 +5023,7 @@ class App extends Component {
             }
 
           }
-          else if (plyr.moving.state === false) {
+          else if (plyr.moving.state === false && plyr.ghost.state !== true) {
 
             if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y && plyr.success.deflected.state === false) {
               // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
@@ -5275,7 +5275,7 @@ class App extends Component {
               x === plyr.target.cell.number.x &&
               y === plyr.target.cell.number.y
             ) {
-              
+
               context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-35, 40, 40);
               // playerDrawLog(x,y,plyr)
             }
@@ -5607,8 +5607,8 @@ class App extends Component {
           }
           if (plyr.ghost.state === true && player.dead.count === 0) {
             if (
-              x === plyr.ghost.position.cell.number.x &&
-              y === plyr.ghost.position.cell.number.y
+              x === 0 &&
+              y === 0
             ) {
               context.drawImage(indicatorImgs.ghost, plyr.ghost.position.cell.center.x-20, plyr.ghost.position.cell.center.y-20, 25,25);
             }
