@@ -11,6 +11,7 @@ import floorGrass from './assets/floorGrass.png'
 import floorIce from './assets/floorIce.png'
 import floorMud from './assets/floorMud.png'
 import floorPond from './assets/floorPond.png'
+import floorRiver from './assets/floorRiver.png'
 import floorSand from './assets/floorSand.png'
 import floorStone from './assets/floorStone.png'
 import floorBramble from './assets/floorBramble.png'
@@ -213,12 +214,12 @@ class App extends Component {
     this.levelData9 = {
       row0: ['x00x','x01x','x02x','x03x','x04x','x05g','x06g','x07h','x08f','x09d'],
       row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18f','x19d'],
-      row2: ['x20x','x21x','x22x','x23a','x24x','x25x','x26x','x27x','x28d','x29d'],
+      row2: ['x20x','x21a','x22a','x23a','x24x','x25x','x26x','x27x','x28d','x29d'],
       row3: ['x30x','x31a','x32a','x33a','x34x','x35x','x36x','x37x','x38d','x39d'],
-      row4: ['x40x','x41a','x42a','x43a','x44x','x45x','x46x','x47x','x48f','x49d'],
-      row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58f','x59d'],
-      row6: ['x60x','x61x','x62x','x63i','x64i','x65x','x66x','x67x','x68x','x69x'],
-      row7: ['x70x','x71x','x72x','x73x','x74x','x75x','x76x','y77x','x78x','x79x'],
+      row4: ['x40j','x41j','x42b','x43j','x44b','x45j','x46j','x47j','x48d','x49d'],
+      row5: ['x50j','x51j','x52b','x53j','x54b','x55j','x56j','x57j','x58d','x59d'],
+      row6: ['x60x','x61x','x62x','x63i','x64i','x65x','x66x','x67x','x68f','x69f'],
+      row7: ['x70x','x71x','x72x','x73x','x74x','x75x','x76x','y77x','x78f','x79f'],
       row8: ['x80x','x81x','x82x','x83x','y84x','x85x','y86x','x87x','x88x','x89x'],
       row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
     };
@@ -561,6 +562,7 @@ class App extends Component {
           target1: {x:0 ,y:0},
           target2: {x:0 ,y:0},
         },
+        drowning: false,
         attacking: {
           state: false,
           count: 0,
@@ -836,6 +838,7 @@ class App extends Component {
           target1: {x:0 ,y:0},
           target2: {x:0 ,y:0},
         },
+        drowning: false,
         attacking: {
           state: false,
           count: 0,
@@ -3611,7 +3614,11 @@ class App extends Component {
 
 
         // CAN READ MOVE INPUTS!!
-        if (player.attacking.state === false && player.defending.state === false) {
+        if (
+          player.attacking.state === false &&
+          player.defending.state === false
+          // dodging
+        ) {
           // CONFIRM MOVE KEYPRESS!!
           if (
             this.keyPressed[player.number-1].north === true ||
@@ -4425,6 +4432,7 @@ class App extends Component {
       ice: this.refs.floorIce,
       lava: this.refs.floorLava,
       bramble: this.refs.floorBramble,
+      river: this.refs.floorRiver,
     }
 
     let updatedPlayerImg;
@@ -4481,6 +4489,21 @@ class App extends Component {
           } else {
             floor = this.refs.floorVoid;
             drawFloor = true;
+          }
+        }
+
+        for (const plyrb of this.players) {
+          if (plyrb.drowning === true) {
+            if (
+              plyrb.currentPosition.cell.number.x === x &&
+              plyrb.currentPosition.cell.number.y === y
+            ) {
+              if(plyrb.falling.count % 3 === 0) {
+                drawFloor = false;
+              } else {
+                floor = floorImgs[gridInfoCell.terrain.name]
+              }
+            }
           }
         }
 
@@ -4643,72 +4666,72 @@ class App extends Component {
           let finalAnimIndex;
 
           // FOR TESTING BY CALLING ONLY @ 1 CELL
-          // if (
-          //   plyr.currentPosition.cell.number.x === x &&
-          //   plyr.currentPosition.cell.number.y === y
-          // ) {
-          //   switch(plyr.action) {
-          //     case 'moving':
-          //       let rangeIndex = plyr.speed.range.indexOf(plyr.speed.move)
-          //       let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
-          //       finalAnimIndex = moveAnimIndex;
-          //       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-          //       if (plyr.target.void == true) {
-          //         // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-          //       }
-          //     break;
-          //     case 'strafe moving':
-          //       if (player.pushBack.state === true ) {
-          //         let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
-          //         let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
-          //         finalAnimIndex = moveAnimIndex3;
-          //         // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-          //       } else {
-          //         let rangeIndex2 = plyr.speed.range.indexOf(plyr.speed.move)
-          //         let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
-          //         finalAnimIndex = moveAnimIndex2;
-          //         // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-          //       }
-          //     break;
-          //     case 'attacking':
-          //       let animIndex = plyr.attacking.count -1;
-          //       finalAnimIndex = animIndex;
-          //       // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
-          //     break;
-          //     case 'defending':
-          //       if (plyr.defending.count > 0) {
-          //         let animIndex2 = plyr.defending.count -1;
-          //         finalAnimIndex = animIndex2;
-          //         // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
-          //       }
-          //       if (plyr.defending.count === 0) {
-          //         let animIndex2a = plyr.defending.limit;
-          //         finalAnimIndex = animIndex2a;
-          //         // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
-          //       }
-          //     break;
-          //     case 'idle':
-          //       if (plyr.number === 1) {
-          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-          //       }
-          //       if (plyr.number === 2) {
-          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-          //       }
-          //       let animIndex3 = plyr.idleAnim.count -1;
-          //       finalAnimIndex = animIndex3;
-          //     break;
-          //     case 'falling':
-          //       let animIndex4 = plyr.falling.count -1;
-          //       finalAnimIndex = animIndex4;
-          //       // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
-          //     break;
-          //     case 'deflected':
-          //       let animIndex5 = plyr.success.deflected.count -1;
-          //       finalAnimIndex = animIndex5;
-          //       // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number,'index',finalAnimIndex);
-          //     break;
-          //   }
-          // }
+          if (
+            plyr.currentPosition.cell.number.x === x &&
+            plyr.currentPosition.cell.number.y === y
+          ) {
+            switch(plyr.action) {
+              case 'moving':
+                let rangeIndex = plyr.speed.range.indexOf(plyr.speed.move)
+                let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
+                finalAnimIndex = moveAnimIndex;
+                // console.log('animation mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex,'move state',plyr.moving.state);
+                if (plyr.target.void == true) {
+                  // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+                }
+              break;
+              case 'strafe moving':
+                if (player.pushBack.state === true ) {
+                  let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
+                  let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
+                  finalAnimIndex = moveAnimIndex3;
+                  // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+                } else {
+                  let rangeIndex2 = plyr.speed.range.indexOf(plyr.speed.move)
+                  let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
+                  finalAnimIndex = moveAnimIndex2;
+                  // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+                }
+              break;
+              case 'attacking':
+                let animIndex = plyr.attacking.count -1;
+                finalAnimIndex = animIndex;
+                // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
+              break;
+              case 'defending':
+                if (plyr.defending.count > 0) {
+                  let animIndex2 = plyr.defending.count -1;
+                  finalAnimIndex = animIndex2;
+                  // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
+                }
+                if (plyr.defending.count === 0) {
+                  let animIndex2a = plyr.defending.limit;
+                  finalAnimIndex = animIndex2a;
+                  // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
+                }
+              break;
+              case 'idle':
+                if (plyr.number === 1) {
+                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+                }
+                if (plyr.number === 2) {
+                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+                }
+                let animIndex3 = plyr.idleAnim.count -1;
+                finalAnimIndex = animIndex3;
+              break;
+              case 'falling':
+                let animIndex4 = plyr.falling.count -1;
+                finalAnimIndex = animIndex4;
+                // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
+              break;
+              case 'deflected':
+                let animIndex5 = plyr.success.deflected.count -1;
+                finalAnimIndex = animIndex5;
+                // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number,'index',finalAnimIndex);
+              break;
+            }
+          }
           // FOR TESTING BY CALLING ONLY @ 1 CELL
 
 
@@ -4861,6 +4884,7 @@ class App extends Component {
 
           // DEPTH SORTING!!
           if (plyr.target.void === false && plyr.moving.state === true) {
+            // console.log('move',finalAnimIndex);
             if (plyr.direction === 'north' || plyr.direction === 'northWest' || plyr.direction === 'west') {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
@@ -4906,6 +4930,7 @@ class App extends Component {
 
           }
           else if (plyr.moving.state === false) {
+
             if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y && plyr.success.deflected.state === false) {
               // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
 
@@ -7088,8 +7113,55 @@ class App extends Component {
 
 
     switch(cell.terrain.type) {
+      case 'stone' :
+        // console.log('player',player.number,' stepped in',cell.terrain.name,'type',cell.terrain.type);
+      break;
       case 'grass' :
         // console.log('player',player.number,' stepped in',cell.terrain.name,'type',cell.terrain.type);
+      break;
+      case 'deep' :
+        this.players[player.number-1].falling.state = true;
+        this.players[player.number-1].action = 'falling';
+        this.players[player.number-1].drowning = true;
+
+        // this.moveSpeed = plyr.speed.move;
+        this.players[player.number-1].target = {
+          cell: {
+            number: {
+              x: player.currentPosition.cell.number.x,
+              y: player.currentPosition.cell.number.y,
+            },
+            center: {
+              x: player.currentPosition.cell.center.x,
+              y: player.currentPosition.cell.center.y,
+            },
+          },
+          free: true,
+          occupant: {
+            type: '',
+            player: '',
+          },
+          void: true
+        }
+
+        this.players[player.number-1].moving = {
+          state: true,
+          step: 0,
+          course: '',
+          origin: {
+            number: player.currentPosition.cell.number,
+            center: player.currentPosition.cell.center,
+          },
+          destination: {
+            x: player.currentPosition.cell.center.x,
+            y: player.currentPosition.cell.center.y,
+          }
+        }
+
+        let nextPosition = this.lineCrementer(player);
+        this.players[player.number-1].nextPosition = nextPosition;
+
+        console.log('player',player.number,' stepped in',cell.terrain.name,'type',cell.terrain.type);
       break;
       case 'road' :
         // console.log('player',player.number,' stepped in',cell.terrain.name,'type',cell.terrain.type);
@@ -7298,6 +7370,7 @@ class App extends Component {
     this.players[player.number-1].hp = 2;
     this.players[player.number-1].speed.move = .1;
     this.players[player.number-1].ghost.state = false;
+    this.players[player.number-1].drowning = false;
     this.players[player.number-1].crits = {
       singleHit: 1,
       doubleHit: 6,
@@ -7429,6 +7502,7 @@ class App extends Component {
     }
     // player.hp = 2;
     player.points--;
+    player.drowning = false;
 
     // this.getTarget(player)
 
@@ -7454,6 +7528,7 @@ class App extends Component {
       player.ghost.state = false;
       player.speed.move = .1;
       player.hp = 2;
+      player.drowning = false;
       player.action = 'idle';
       player.crits = {
         singleHit: 1,
@@ -8039,7 +8114,7 @@ class App extends Component {
             },
             void: true
           }
-          //
+
           this.players[plyr.number-1].moving = {
             state: true,
             step: 0,
@@ -8219,6 +8294,13 @@ class App extends Component {
             effect: '',
           }
         break;
+        case 'j' :
+          elem.terrain = {
+            name: 'river',
+            type: 'deep',
+            effect: '',
+          }
+        break;
       }
       // console.log('oo2',elem.levelData,elem.number,elem.terrain);
 
@@ -8340,6 +8422,7 @@ class App extends Component {
       ice: this.refs.floorIce,
       lava: this.refs.floorLava,
       bramble: this.refs.floorBramble,
+      river: this.refs.floorRiver,
     }
 
     this.placeItems({init: true, items: ''});
@@ -8746,6 +8829,7 @@ class App extends Component {
             target1: {x:0 ,y:0},
             target2: {x:0 ,y:0},
           },
+          drowning: false,
           attacking: {
             state: false,
             count: 0,
@@ -9252,6 +9336,7 @@ class App extends Component {
           <img src={floorSand} className='hidden' ref="floorSand" alt="logo" id="floor2"/>
           <img src={floorMud} className='hidden' ref="floorMud" alt="logo" id="floor2"/>
           <img src={floorPond} className='hidden' ref="floorPond" alt="logo" id="floor2"/>
+          <img src={floorRiver} className='hidden' ref="floorRiver" alt="logo" id="floor2"/>
           <img src={floorBramble} className='hidden' ref="floorBramble" alt="logo" id="floor2"/>
           <img src={floorLava} className='hidden' ref="floorLava" alt="logo" id="floor2"/>
           <img src={floorAttack} className='hidden' ref="floorAttack" alt="logo" id="floor3"/>
