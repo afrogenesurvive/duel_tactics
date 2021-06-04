@@ -562,6 +562,10 @@ class App extends Component {
             end: 10,
           }
         },
+        jumping: {
+          checking: false,
+          state: false,
+        },
         success: {
           attackSuccess: {
             state: false,
@@ -848,6 +852,10 @@ class App extends Component {
             start: 5,
             end: 10,
           }
+        },
+        jumping: {
+          checking: false,
+          state: false,
         },
         success: {
           attackSuccess: {
@@ -2484,6 +2492,69 @@ class App extends Component {
 
           }
 
+          if (player.jumping.state === true) {
+            console.log('mid jump');
+
+            for (const player of this.players) {
+              if (
+                player.currentPosition.cell.number.x === player.target.cell2.number.x &&
+                player.currentPosition.cell.number.y === player.target.cell2.number.y
+              ) {
+                console.log('jump destination occupied, fall into target 1');
+              }
+            }
+
+
+
+            if (
+              nextPosition.x === player.target.cell2.center.x &&
+              nextPosition.y === player.target.cell2.center.y ||
+              nextPosition.x === player.target.cell2.center.x+5 &&
+              nextPosition.y === player.target.cell2.center.y+5
+            ) {
+              console.log('at jump destination');
+              // console.log('next position is destination a',player.number);
+
+              if (player.target.void === false) {
+                player.currentPosition.cell = player.target.cell2;
+                player.action = 'idle';
+                player.moving = {
+                  state: false,
+                  step: 0,
+                  course: '',
+                  origin: {
+                    number: {
+                      x: player.target.cell2.number.x,
+                      y: player.target.cell2.number.y
+                    },
+                    center: {
+                      x: player.target.cell2.center.x,
+                      y: player.target.cell2.center.y
+                    },
+                  },
+                  destination: {
+                    x: 0,
+                    y: 0,
+                  }
+                }
+
+                this.checkDestination(player);
+
+              }
+
+              if (
+                nextPosition.x === player.target.cell2.center.x &&
+                nextPosition.y === player.target.cell2.center.y &&
+                player.target.void === true
+              ) {
+                player.falling.state = true;
+                player.action = 'falling';
+              }
+
+            }
+
+          }
+
       }
 
 
@@ -3801,7 +3872,78 @@ class App extends Component {
               }
             }
 
+            // JUMPING!!
+            else if (keyPressedDirection === player.direction && player.strafing.state === true && player.jumping.checking !== true && player.jumping.state !== true) {
+              console.log('so you wanna jump');
 
+              this.players[player.number-1].jumping.checking = true;
+              let target = this.getTarget(player);
+              console.log('jump targets',target);
+
+              let cell1 = this.gridInfo.find(elem => elem.number.x === target.cell.number.x && elem.number.y === target.cell.number.y)
+              let cell2 = this.gridInfo.find(elem => elem.number.x === target.cell2.number.x && elem.number.y === target.cell2.number.y)
+              console.log('cell1',cell1);
+              console.log('cell2',cell2);
+
+              let cellsWithinBounds = true;
+              if (cell1.number.x < 0 || cell1.number.x > this.gridWidth) {
+                cellsWithinBounds = false;
+              }
+              if (cell1.number.y < 0 || cell1.number.y > this.gridWidth) {
+                cellsWithinBounds = false;
+              }
+
+
+              if (cellsWithinBounds === true) {
+                if (
+                  cell1.void.state === true ||
+                  cell1.terrain.type === 'deep'
+                ) {
+                  console.log('a');
+                  if (
+                    cell2.levelData.charAt(0) !==  'z' ||
+                    cell2.levelData.charAt(0) !==  'y'
+                  ) {
+                    console.log('b');
+                    if (
+                      cell2.void.state !== true ||
+                      cell2.terrain.type !== 'deep'
+                    ) {
+                      console.log('can jump');
+                      this.players[player.number-1].jumping.checking = false;
+                      player.action = 'jumping'
+
+                      player.moving = {
+                        state: true,
+                        step: 0,
+                        course: '',
+                        origin: {
+                          number: player.currentPosition.cell.number,
+                          center: player.currentPosition.cell.center,
+                        },
+                        destination: target.cell2.center
+                      }
+
+                      nextPosition = this.jumpCrementer(player);
+                      player.nextPosition = nextPosition;
+                    } else {
+                      console.log('nope3');
+                      this.players[player.number-1].jumping.checking = false;
+                    }
+                  } else {
+                    console.log('jump obstacle detected');
+                    this.players[player.number-1].jumping.checking = false;
+                  }
+                } else {
+                  console.log('nope2');
+                  this.players[player.number-1].jumping.checking = false;
+                }
+              } else {
+                console.log('nope1');
+                this.players[player.number-1].jumping.checking = false;
+              }
+
+            }
           }
         }
         // CAN READ NON-MOVE INPUTS!!
@@ -3846,6 +3988,18 @@ class App extends Component {
 
                 // BLUNT ATTACK!!
                 if (this.keyPressed[player.number-1].dodge === true) {
+                  if (player.dodging.countState === true || player.dodging.state === true) {
+                    player.dodging = {
+                      countState: false,
+                      state: false,
+                      count: 0,
+                      limit: 20,
+                      peak: {
+                        start: 5,
+                        end: 10,
+                      }
+                    };
+                  }
                   player.bluntAttack = true;
                 }
 
@@ -4281,6 +4435,12 @@ class App extends Component {
           spear: this.refs.playerImgMoveSheet,
           crossbow: this.refs.playerImgMoveSheet,
         },
+        jumping: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
         strafing: {
           unarmed: this.refs.playerImgMoveSheet,
           sword: this.refs.playerImgMoveSheet,
@@ -4326,6 +4486,12 @@ class App extends Component {
           crossbow: this.refs.player2ImgIdleSheet,
         },
         walking: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        jumping: {
           unarmed: this.refs.player2ImgMoveSheet,
           sword: this.refs.player2ImgMoveSheet,
           spear: this.refs.player2ImgMoveSheet,
@@ -4381,6 +4547,12 @@ class App extends Component {
           spear: this.refs.comAImgMoveSheet,
           crossbow: this.refs.comAImgMoveSheet,
         },
+        jumping: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
         strafing: {
           unarmed: this.refs.comAImgMoveSheet,
           sword: this.refs.comAImgMoveSheet,
@@ -4426,6 +4598,12 @@ class App extends Component {
           crossbow: this.refs.playerComBImgIdleSheet,
         },
         walking: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        jumping: {
           unarmed: this.refs.comBImgMoveSheet,
           sword: this.refs.comBImgMoveSheet,
           spear: this.refs.comBImgMoveSheet,
@@ -4756,6 +4934,13 @@ class App extends Component {
           //         // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
           //       }
           //     break;
+          //     case 'jumping':
+          //       let rangeIndex = plyr.speed.range.indexOf(plyr.speed.move)
+          //       let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
+          //       finalAnimIndex = moveAnimIndex;
+          //       // console.log('animation mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex,'move state',plyr.moving.state);
+          //
+          //     break;
           //     case 'strafe moving':
           //       if (player.pushBack.state === true ) {
           //         let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
@@ -4824,6 +5009,12 @@ class App extends Component {
                 // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
               }
             break;
+            case 'jumping':
+              let rangeIndex4 = plyr.speed.range.indexOf(plyr.speed.move)
+              let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(plyr.moving.step)
+              finalAnimIndex = moveAnimIndex4;
+              // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+            break;
             case 'strafe moving':
               if (player.pushBack.state === true ) {
                 let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
@@ -4886,6 +5077,9 @@ class App extends Component {
               case 'moving':
                 updatedPlayerImg = playerImgs[plyr.number-1].walking[weapon];
               break;
+              case 'jumping':
+                updatedPlayerImg = playerImgs[plyr.number-1].jumping[weapon];
+              break;
               case 'strafe moving':
                 if (player.pushBack.state === true) {
                   updatedPlayerImg = playerImgs[plyr.number-1].pushBack[weapon];
@@ -4925,6 +5119,9 @@ class App extends Component {
               break;
               case 'moving':
                 updatedPlayerImg = playerImgs[plyrImgIndex].walking[weapon];
+              break;
+              case 'jumping':
+                updatedPlayerImg = playerImgs[plyrImgIndex].jumping[weapon];
               break;
               case 'strafe moving':
               if (player.pushBack.state === true ) {
@@ -5923,6 +6120,8 @@ class App extends Component {
       }
     }
 
+
+
     let targetCellNumber = {x: 0,y: 0};
     let targetCellCenter = {x: 0,y: 0};
 
@@ -6168,6 +6367,111 @@ class App extends Component {
 
     }
 
+    if (player.jumping.checking === true) {
+
+      switch(direction) {
+        case 'north' :
+          targetCellNumber = {
+            x: currentPosition.x,
+            y: currentPosition.y-2
+          }
+        break;
+        case 'northWest' :
+          targetCellNumber = {
+            x: currentPosition.x-1,
+            y: currentPosition.y-2
+          }
+        break;
+        case 'northEast' :
+          targetCellNumber = {
+            x: currentPosition.x+1,
+            y: currentPosition.y-2
+          }
+        break;
+        case 'south' :
+          targetCellNumber = {
+            x: currentPosition.x,
+            y: currentPosition.y+2
+          }
+        break;
+        case 'southWest' :
+          targetCellNumber = {
+            x: currentPosition.x-1,
+            y: currentPosition.y+2
+          }
+        break;
+        case 'southEast' :
+          targetCellNumber = {
+            x: currentPosition.x+1,
+            y: currentPosition.y+2
+          }
+        break;
+        case 'east' :
+          targetCellNumber = {
+            x: currentPosition.x+2,
+            y: currentPosition.y
+          }
+        break;
+        case 'west' :
+          targetCellNumber = {
+            x: currentPosition.x-2,
+            y: currentPosition.y
+          }
+        break;
+      }
+
+      switch(direction) {
+        case 'north' :
+          target.cell2.number = {
+            x: currentPosition.x,
+            y: currentPosition.y-1,
+          }
+        break;
+        case 'northWest' :
+          target.cell2.number = {
+            x: currentPosition.x-1,
+            y: currentPosition.y-1,
+          }
+        break;
+        case 'northEast' :
+          target.cell2.number = {
+            x: currentPosition.x+1,
+            y: currentPosition.y-1,
+          }
+        break;
+        case 'south' :
+          target.cell2.number = {
+            x: currentPosition.x,
+            y: currentPosition.y+1,
+          }
+        break;
+        case 'southWest' :
+          target.cell2.number = {
+            x: currentPosition.x-1,
+            y: currentPosition.y+1,
+          }
+        break;
+        case 'southEast' :
+          target.cell2.number = {
+            x: currentPosition.x+1,
+            y: currentPosition.y+1,
+          }
+        break;
+        case 'east' :
+          target.cell2.number = {
+            x: currentPosition.x+1,
+            y: currentPosition.y,
+          }
+        break;
+        case 'west' :
+          target.cell2.number = {
+            x: currentPosition.x-1,
+            y: currentPosition.y,
+          }
+        break;
+      }
+
+    }
 
     let midGridVoid = false;
     // FIND CENTER!!
@@ -6611,6 +6915,29 @@ class App extends Component {
       player.currentPosition.cell.center = newPosition;
 
     }
+
+    player.nextPosition = newPosition
+
+    this.players[player.number-1] = player;
+
+    return newPosition;
+
+  }
+  jumpCrementer = (player) => {
+    // console.log('jump crementer',player.number);
+
+    let currentPosition = player.currentPosition.cell.center;
+    let target = player.target;
+    let moveSpeed = player.speed.move;
+
+    player.moving.step = +(Math.round((player.moving.step + moveSpeed) + "e+" + 3)  + "e-" + 3);
+    let newPosition;
+
+    let startPt = currentPosition;
+    let endPt = target.cell.center;
+    let percent = player.moving.step;
+
+
 
     player.nextPosition = newPosition
 
@@ -9024,6 +9351,10 @@ class App extends Component {
               start: 5,
               end: 10,
             }
+          },
+          jumping: {
+            checking: false,
+            state: false,
           },
           success: {
             attackSuccess: {
