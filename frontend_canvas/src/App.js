@@ -1140,8 +1140,8 @@ class App extends Component {
       store1: [],
       store2: [],
     };
-    this.charSpriteHeight = 512;
-    this.charSpriteWidth = 512;
+    this.charSpriteHeight = 100;
+    this.charSpriteWidth = 100;
     this.addAiPlayerKeyPress = false;
     this.addAiCount = {
       state: false,
