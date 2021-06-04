@@ -3874,7 +3874,7 @@ class App extends Component {
 
             // JUMPING!!
             else if (keyPressedDirection === player.direction && player.strafing.state === true && player.jumping.checking !== true && player.jumping.state !== true) {
-              console.log('so you wanna jump');
+              console.log('so you wanna jump',player.direction);
 
               this.players[player.number-1].jumping.checking = true;
               let target = this.getTarget(player);
@@ -6065,7 +6065,7 @@ class App extends Component {
   }
 
   getTarget = (player) => {
-    // console.log('checking target',player.number);
+    // console.log('checking target',player.number,'dir',player.direction);
 
     let canvas = this.canvasRef.current;
     let context = canvas.getContext('2d');
@@ -6202,6 +6202,8 @@ class App extends Component {
       }
     }
 
+
+
     switch(direction) {
       case 'north' :
         targetCellNumber = {
@@ -6251,6 +6253,115 @@ class App extends Component {
           y: currentPosition.y+1
         }
       break;
+    }
+
+
+    console.log('here', direction);
+    if (player.jumping.checking === true) {
+      console.log('there', direction);
+
+      switch(direction) {
+        case 'north' :
+          targetCellNumber = {
+            x: currentPosition.x,
+            y: currentPosition.y-2
+          }
+        break;
+        case 'northWest' :
+          targetCellNumber = {
+            x: currentPosition.x-1,
+            y: currentPosition.y-2
+          }
+        break;
+        case 'northEast' :
+          targetCellNumber = {
+            x: currentPosition.x+1,
+            y: currentPosition.y-2
+          }
+        break;
+        case 'south' :
+          targetCellNumber = {
+            x: currentPosition.x,
+            y: currentPosition.y+2
+          }
+        break;
+        case 'southWest' :
+          targetCellNumber = {
+            x: currentPosition.x-1,
+            y: currentPosition.y+2
+          }
+        break;
+        case 'southEast' :
+          targetCellNumber = {
+            x: currentPosition.x+1,
+            y: currentPosition.y+2
+          }
+        break;
+        case 'east' :
+          targetCellNumber = {
+            x: currentPosition.x+2,
+            y: currentPosition.y
+          }
+        break;
+        case 'west' :
+          targetCellNumber = {
+            x: currentPosition.x-2,
+            y: currentPosition.y
+          }
+        break;
+      }
+
+      switch(direction) {
+        case 'north' :
+          target.cell2.number = {
+            x: currentPosition.x,
+            y: currentPosition.y-1,
+          }
+        break;
+        case 'northWest' :
+          target.cell2.number = {
+            x: currentPosition.x-1,
+            y: currentPosition.y-1,
+          }
+        break;
+        case 'northEast' :
+          target.cell2.number = {
+            x: currentPosition.x+1,
+            y: currentPosition.y-1,
+          }
+        break;
+        case 'south' :
+          target.cell2.number = {
+            x: currentPosition.x,
+            y: currentPosition.y+1,
+          }
+        break;
+        case 'southWest' :
+          target.cell2.number = {
+            x: currentPosition.x-1,
+            y: currentPosition.y+1,
+          }
+        break;
+        case 'southEast' :
+          target.cell2.number = {
+            x: currentPosition.x+1,
+            y: currentPosition.y+1,
+          }
+        break;
+        case 'east' :
+          target.cell2.number = {
+            x: currentPosition.x+1,
+            y: currentPosition.y,
+          }
+        break;
+        case 'west' :
+          target.cell2.number = {
+            x: currentPosition.x-1,
+            y: currentPosition.y,
+          }
+        break;
+      }
+
     }
 
 
@@ -6367,111 +6478,6 @@ class App extends Component {
 
     }
 
-    if (player.jumping.checking === true) {
-
-      switch(direction) {
-        case 'north' :
-          targetCellNumber = {
-            x: currentPosition.x,
-            y: currentPosition.y-2
-          }
-        break;
-        case 'northWest' :
-          targetCellNumber = {
-            x: currentPosition.x-1,
-            y: currentPosition.y-2
-          }
-        break;
-        case 'northEast' :
-          targetCellNumber = {
-            x: currentPosition.x+1,
-            y: currentPosition.y-2
-          }
-        break;
-        case 'south' :
-          targetCellNumber = {
-            x: currentPosition.x,
-            y: currentPosition.y+2
-          }
-        break;
-        case 'southWest' :
-          targetCellNumber = {
-            x: currentPosition.x-1,
-            y: currentPosition.y+2
-          }
-        break;
-        case 'southEast' :
-          targetCellNumber = {
-            x: currentPosition.x+1,
-            y: currentPosition.y+2
-          }
-        break;
-        case 'east' :
-          targetCellNumber = {
-            x: currentPosition.x+2,
-            y: currentPosition.y
-          }
-        break;
-        case 'west' :
-          targetCellNumber = {
-            x: currentPosition.x-2,
-            y: currentPosition.y
-          }
-        break;
-      }
-
-      switch(direction) {
-        case 'north' :
-          target.cell2.number = {
-            x: currentPosition.x,
-            y: currentPosition.y-1,
-          }
-        break;
-        case 'northWest' :
-          target.cell2.number = {
-            x: currentPosition.x-1,
-            y: currentPosition.y-1,
-          }
-        break;
-        case 'northEast' :
-          target.cell2.number = {
-            x: currentPosition.x+1,
-            y: currentPosition.y-1,
-          }
-        break;
-        case 'south' :
-          target.cell2.number = {
-            x: currentPosition.x,
-            y: currentPosition.y+1,
-          }
-        break;
-        case 'southWest' :
-          target.cell2.number = {
-            x: currentPosition.x-1,
-            y: currentPosition.y+1,
-          }
-        break;
-        case 'southEast' :
-          target.cell2.number = {
-            x: currentPosition.x+1,
-            y: currentPosition.y+1,
-          }
-        break;
-        case 'east' :
-          target.cell2.number = {
-            x: currentPosition.x+1,
-            y: currentPosition.y,
-          }
-        break;
-        case 'west' :
-          target.cell2.number = {
-            x: currentPosition.x-1,
-            y: currentPosition.y,
-          }
-        break;
-      }
-
-    }
 
     let midGridVoid = false;
     // FIND CENTER!!
@@ -6937,7 +6943,14 @@ class App extends Component {
     let endPt = target.cell.center;
     let percent = player.moving.step;
 
-
+    function getQuadraticBezierXYatPercent(startPt, controlPt, endPt, percent) {
+    var x = Math.pow(1 - percent, 2) * startPt.x + 2 * (1 - percent) * percent * controlPt.x + Math.pow(percent, 2) * endPt.x;
+    var y = Math.pow(1 - percent, 2) * startPt.y + 2 * (1 - percent) * percent * controlPt.y + Math.pow(percent, 2) * endPt.y;
+    return ({
+        x: x,
+        y: y
+      });
+    }
 
     player.nextPosition = newPosition
 
