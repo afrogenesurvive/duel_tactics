@@ -2357,6 +2357,28 @@ class App extends Component {
       // console.log('void off');
     }
 
+  // STAMINA!!
+    if (player.stamina.current < player.stamina.max) {
+
+      player.stamina.current = player.stamina.current + .05;
+      player.stamina.current = +(Math.round((player.stamina.current) + "e+" + 3)  + "e-" + 3);
+      if (player.stamina.current >= player.stamina.max) {
+        player.stamina.current = player.stamina.max;
+      }
+      if (player.stamina.current < 1) {
+        console.log('out of stamina');
+        if (player.success.deflected.state !== true) {
+          this.players[player.number-1].success.deflected = {
+            state: true,
+            count: 1,
+            limit: this.players[player.number-1].success.deflected.limit,
+            predeflect: this.players[player.number-1].success.deflected.predeflect,
+            type: 'blunt attacked',
+          };
+        }
+      }
+    }
+
 
     // CHECK AND SET DEFLECTION!!
     if (player.success.deflected.state === true && player.success.deflected.count < player.success.deflected.limit) {
@@ -3843,26 +3865,7 @@ class App extends Component {
         }
 
 
-        if (player.stamina.current < player.stamina.max) {
 
-          player.stamina.current = player.stamina.current + .05;
-          player.stamina.current = +(Math.round((player.stamina.current) + "e+" + 3)  + "e-" + 3);
-          if (player.stamina.current >= player.stamina.max) {
-            player.stamina.current = player.stamina.max;
-          }
-          if (player.stamina.current < 1) {
-            // console.log('out of stamina');
-            if (player.success.deflected.state !== true) {
-              this.players[player.number-1].success.deflected = {
-                state: true,
-                count: 1,
-                limit: this.players[player.number-1].success.deflected.limit,
-                predeflect: this.players[player.number-1].success.deflected.predeflect,
-                type: 'blunt attacked',
-              };
-            }
-          }
-        }
 
 
         // CAN READ MOVE INPUTS!!
