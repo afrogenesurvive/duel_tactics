@@ -134,7 +134,13 @@ const DebugBox = props => {
         //     </p>
         //   </li>
         // )
-      }
+        }
+
+      <li className="debugBoxListItem">
+        <p className="debugBoxText">
+          Stamina: {props.player.stamina.current}
+        </p>
+      </li>
 
       <li className="debugBoxListItem">
         <FontAwesomeIcon icon={faHeartbeat} size="sm" className="debugBoxIcon"/> :
