@@ -2357,28 +2357,6 @@ class App extends Component {
       // console.log('void off');
     }
 
-  // STAMINA!!
-    if (player.stamina.current < player.stamina.max) {
-
-      player.stamina.current = player.stamina.current + .05;
-      player.stamina.current = +(Math.round((player.stamina.current) + "e+" + 3)  + "e-" + 3);
-      if (player.stamina.current >= player.stamina.max) {
-        player.stamina.current = player.stamina.max;
-      }
-      if (player.stamina.current < 1) {
-        console.log('out of stamina');
-        if (player.success.deflected.state !== true) {
-          this.players[player.number-1].success.deflected = {
-            state: true,
-            count: 1,
-            limit: this.players[player.number-1].success.deflected.limit,
-            predeflect: this.players[player.number-1].success.deflected.predeflect,
-            type: 'blunt attacked',
-          };
-        }
-      }
-    }
-
 
     // CHECK AND SET DEFLECTION!!
     if (player.success.deflected.state === true && player.success.deflected.count < player.success.deflected.limit) {
@@ -2547,15 +2525,14 @@ class App extends Component {
                   // plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
                   // plyr.currentPosition.cell.number.y === player.target.cell2.number.y
                   plyr.target.cell.number.x === player.target.cell2.number.x &&
-                  plyr.target.cell.number.y === player.target.cell2.number.y
+                  plyr.target.cell.number.y === player.target.cell2.number.y &&
+                  plyr.moving.state === true
                 ) {
 
-                  // if (player.number === plyr.number) {
-                    // console.log('jump destination occupied, fall into target 1');
+                  // console.log('jump destination occupied, fall into target 1',player.direction);
 
-                    pushBack = true;
-                    opp = plyr;
-                  // }
+                  pushBack = true;
+                  opp = plyr;
                 }
               }
 
@@ -2619,9 +2596,34 @@ class App extends Component {
                     break;
                   }
 
-                  let canPushA = this.pushBack(this.players[player.number-1],playerAPushDir);
-                  let canPushB = this.pushBack(this.players[opp.number-1],playerBPushDir);
-                  console.log('canPushA',canPushA,'canPushB',canPushB);
+
+                  player.strafing = {
+                    state: true,
+                    direction: playerAPushDir
+                  }
+                  player.action = 'strafe moving';
+                  player.moving = {
+                    state: true,
+                    step: 0,
+                    course: '',
+                    origin: {
+                      number: {
+                        x: player.currentPosition.cell.number.x,
+                        y: player.currentPosition.cell.number.y
+                      },
+                      center: {
+                        x: player.currentPosition.cell.center,
+                        y: player.currentPosition.cell.center
+                      },
+                    },
+                    destination: player.target.cell2.center
+                  }
+                  player.target.void = true;
+                  let nextPosition = this.lineCrementer(player);
+                  player.nextPosition = nextPosition;
+
+
+
                 }
 
               }
@@ -3469,6 +3471,28 @@ class App extends Component {
                 start: player.dodging.peak.start,
                 end: player.dodging.peak.end,
               }
+            }
+          }
+        }
+
+        // STAMINA!!
+        if (player.stamina.current < player.stamina.max) {
+
+          player.stamina.current = player.stamina.current + .05;
+          player.stamina.current = +(Math.round((player.stamina.current) + "e+" + 3)  + "e-" + 3);
+          if (player.stamina.current >= player.stamina.max) {
+            player.stamina.current = player.stamina.max;
+          }
+          if (player.stamina.current < 1) {
+            // console.log('out of stamina');
+            if (player.success.deflected.state !== true) {
+              this.players[player.number-1].success.deflected = {
+                state: true,
+                count: 1,
+                limit: this.players[player.number-1].success.deflected.limit,
+                predeflect: this.players[player.number-1].success.deflected.predeflect,
+                type: 'blunt attacked',
+              };
             }
           }
         }
@@ -7975,10 +7999,10 @@ class App extends Component {
 
     }
     if (target.free === false) {
-          // console.log('target is NOT free');
+          console.log('target is NOT free');
     }
     if (player.target.void === true) {
-      // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
+      console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
       player.action = 'strafe moving';
       player.moving = {
         state: true,
