@@ -2436,74 +2436,67 @@ class App extends Component {
 
         // if (player.speed.move !== .1 && player.pushBack.state !== true) {
           // console.log('abnormal move speed');
-          if (
-            nextPosition.x === player.target.cell.center.x &&
-            nextPosition.y === player.target.cell.center.y ||
-            nextPosition.x === player.target.cell.center.x+5 &&
-            nextPosition.y === player.target.cell.center.y+5
-          ) {
-            // console.log('next position is destination a',player.number);
-
-            if (player.target.void === false) {
-              player.currentPosition.cell = player.target.cell;
-              player.action = 'idle';
-              player.moving = {
-                state: false,
-                step: 0,
-                course: '',
-                origin: {
-                  number: {
-                    x: player.target.cell.number.x,
-                    y: player.target.cell.number.y
-                  },
-                  center: {
-                    x: player.target.cell.center.x,
-                    y: player.target.cell.center.y
-                  },
-                },
-                destination: {
-                  x: 0,
-                  y: 0,
-                }
-              }
-
-              this.checkDestination(player);
-
-            }
-
-            if (player.pushBack.state === true && player.target.void !== true) {
-              player.pushBack.state = false;
-              player.strafing = {
-                state: false,
-                direction: ''
-              }
-              player.moving.state = false;
-              player.speed.move = player.pushBack.prePushMoveSpeed;
-            }
+          if (player.jumping.state !== true) {
 
             if (
               nextPosition.x === player.target.cell.center.x &&
-              nextPosition.y === player.target.cell.center.y &&
-              player.target.void === true
+              nextPosition.y === player.target.cell.center.y ||
+              nextPosition.x === player.target.cell.center.x+5 &&
+              nextPosition.y === player.target.cell.center.y+5
             ) {
-              player.falling.state = true;
-              player.action = 'falling';
-            }
+              // console.log('next position is destination a',player.number);
 
+              if (player.target.void === false) {
+                player.currentPosition.cell = player.target.cell;
+                player.action = 'idle';
+                player.moving = {
+                  state: false,
+                  step: 0,
+                  course: '',
+                  origin: {
+                    number: {
+                      x: player.target.cell.number.x,
+                      y: player.target.cell.number.y
+                    },
+                    center: {
+                      x: player.target.cell.center.x,
+                      y: player.target.cell.center.y
+                    },
+                  },
+                  destination: {
+                    x: 0,
+                    y: 0,
+                  }
+                }
+
+                this.checkDestination(player);
+
+              }
+
+              if (player.pushBack.state === true && player.target.void !== true) {
+                player.pushBack.state = false;
+                player.strafing = {
+                  state: false,
+                  direction: ''
+                }
+                player.moving.state = false;
+                player.speed.move = player.pushBack.prePushMoveSpeed;
+              }
+
+              if (
+                nextPosition.x === player.target.cell.center.x &&
+                nextPosition.y === player.target.cell.center.y &&
+                player.target.void === true
+              ) {
+                player.falling.state = true;
+                player.action = 'falling';
+              }
+
+            }
           }
 
           if (player.jumping.state === true) {
-            console.log('mid jump');
-
-            for (const player of this.players) {
-              if (
-                player.currentPosition.cell.number.x === player.target.cell2.number.x &&
-                player.currentPosition.cell.number.y === player.target.cell2.number.y
-              ) {
-                console.log('jump destination occupied, fall into target 1');
-              }
-            }
-
+            // console.log('mid jump');
 
 
             if (
@@ -2512,10 +2505,31 @@ class App extends Component {
               nextPosition.x === player.target.cell2.center.x+5 &&
               nextPosition.y === player.target.cell2.center.y+5
             ) {
-              console.log('at jump destination');
+              // console.log('at jump destination');
               // console.log('next position is destination a',player.number);
+              let pushBack = false;
+              let opp;
+
+              for (const plyr of this.players) {
+                if (
+                  plyr.currentPosition.cell.number.x === player.currentPosition.cell.number.x &&
+                  plyr.currentPosition.cell.number.y === player.currentPosition.cell.number.y
+                  // plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
+                  // plyr.currentPosition.cell.number.y === player.target.cell2.number.y
+                ) {
+
+                  // if (player.number !== plyr.number) {
+                    // console.log('jump destination occupied, fall into target 1');
+
+                    pushBack = true;
+                    opp = plyr;
+                  // }
+                }
+              }
 
               if (player.target.void === false) {
+
+                player.jumping.state = false;
                 player.currentPosition.cell = player.target.cell2;
                 player.action = 'idle';
                 player.moving = {
@@ -2540,12 +2554,47 @@ class App extends Component {
 
                 this.checkDestination(player);
 
+                if (pushBack === true ) {
+                  let playerAPushDir;
+                  let playerBPushDir;
+                  switch(opp.direction) {
+                    case 'north' :
+                      playerAPushDir = 'south';
+                    break;
+                    case 'south' :
+                      playerAPushDir = 'north';
+                    break;
+                    case 'east' :
+                      playerAPushDir = 'west';
+                    break;
+                    case 'west' :
+                      playerAPushDir = 'east';
+                    break;
+                  }
+                  switch(player.direction) {
+                    case 'north' :
+                      playerBPushDir = 'south';
+                    break;
+                    case 'south' :
+                      playerBPushDir = 'north';
+                    break;
+                    case 'east' :
+                      playerBPushDir = 'west';
+                    break;
+                    case 'west' :
+                      playerBPushDir = 'east';
+                    break;
+                  }
+
+                  this.pushBack(this.players[player.number-1],playerAPushDir);
+                  this.pushBack(this.players[opp.number-1],playerBPushDir);
+                }
+
               }
 
+              let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y)
               if (
-                nextPosition.x === player.target.cell2.center.x &&
-                nextPosition.y === player.target.cell2.center.y &&
-                player.target.void === true
+                targetCell.void.state === true
               ) {
                 player.falling.state = true;
                 player.action = 'falling';
@@ -3874,23 +3923,25 @@ class App extends Component {
 
             // JUMPING!!
             else if (keyPressedDirection === player.direction && player.strafing.state === true && player.jumping.checking !== true && player.jumping.state !== true) {
-              console.log('so you wanna jump',player.direction);
 
               this.players[player.number-1].jumping.checking = true;
               let target = this.getTarget(player);
-              console.log('jump targets',target);
 
               let cell1 = this.gridInfo.find(elem => elem.number.x === target.cell.number.x && elem.number.y === target.cell.number.y)
               let cell2 = this.gridInfo.find(elem => elem.number.x === target.cell2.number.x && elem.number.y === target.cell2.number.y)
-              console.log('cell1',cell1);
-              console.log('cell2',cell2);
+              // console.log('cell1',cell1);
+              // console.log('cell2',cell2);
 
               let cellsWithinBounds = true;
-              if (cell1.number.x < 0 || cell1.number.x > this.gridWidth) {
+              if (!cell1 || !cell2) {
                 cellsWithinBounds = false;
-              }
-              if (cell1.number.y < 0 || cell1.number.y > this.gridWidth) {
-                cellsWithinBounds = false;
+              } else {
+                if (cell1.number.x < 0 || cell1.number.x > this.gridWidth) {
+                  cellsWithinBounds = false;
+                }
+                if (cell1.number.y < 0 || cell1.number.y > this.gridWidth) {
+                  cellsWithinBounds = false;
+                }
               }
 
 
@@ -3899,47 +3950,70 @@ class App extends Component {
                   cell1.void.state === true ||
                   cell1.terrain.type === 'deep'
                 ) {
-                  console.log('a');
+                  // console.log('a');
                   if (
                     cell2.levelData.charAt(0) !==  'z' ||
                     cell2.levelData.charAt(0) !==  'y'
                   ) {
-                    console.log('b');
-                    if (
-                      cell2.void.state !== true ||
-                      cell2.terrain.type !== 'deep'
-                    ) {
-                      console.log('can jump');
-                      this.players[player.number-1].jumping.checking = false;
-                      player.action = 'jumping'
+                    // console.log('b');
 
-                      player.moving = {
-                        state: true,
-                        step: 0,
-                        course: '',
-                        origin: {
-                          number: player.currentPosition.cell.number,
-                          center: player.currentPosition.cell.center,
-                        },
-                        destination: target.cell2.center
+                    let targetOccupied = false;
+                    for (const plyr of this.players) {
+                      if (
+                        plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
+                        plyr.currentPosition.cell.number.y === player.target.cell2.number.y
+                      ) {
+                        // console.log('c');
+                        targetOccupied = true
                       }
 
-                      nextPosition = this.jumpCrementer(player);
-                      player.nextPosition = nextPosition;
-                    } else {
-                      console.log('nope3');
+                    }
+
+                    if (targetOccupied !== true) {
+                      if (
+                        cell2.void.state !== true &&
+                        cell2.terrain.type !== 'deep'
+                      ) {
+                        // console.log('can jump');
+                        this.players[player.number-1].jumping.checking = false;
+                        this.players[player.number-1].jumping.state = true;
+                        player.action = 'jumping'
+
+                        player.moving = {
+                          state: true,
+                          step: 0,
+                          course: '',
+                          origin: {
+                            number: player.currentPosition.cell.number,
+                            center: player.currentPosition.cell.center,
+                          },
+                          destination: target.cell2.center
+                        }
+
+                        nextPosition = this.lineCrementer(player);
+                        // nextPosition = this.jumpCrementer(player);
+                        player.nextPosition = nextPosition;
+                      } else {
+                        // console.log('can only jump over voids or deep water cell 2');
+                        this.players[player.number-1].jumping.checking = false;
+                      }
+                    }
+                    else {
+                      // console.log('jump destination occupied');
                       this.players[player.number-1].jumping.checking = false;
                     }
+
+
                   } else {
-                    console.log('jump obstacle detected');
+                    // console.log('jump obstacle detected');
                     this.players[player.number-1].jumping.checking = false;
                   }
                 } else {
-                  console.log('nope2');
+                  // console.log('can only jump over voids or deep water cell 2');
                   this.players[player.number-1].jumping.checking = false;
                 }
               } else {
-                console.log('nope1');
+                // console.log('cell out of bounds');
                 this.players[player.number-1].jumping.checking = false;
               }
 
@@ -4920,79 +4994,79 @@ class App extends Component {
           let finalAnimIndex;
 
           // FOR TESTING BY CALLING ONLY @ 1 CELL
-          // if (
-          //   plyr.currentPosition.cell.number.x === x &&
-          //   plyr.currentPosition.cell.number.y === y
-          // ) {
-          //   switch(plyr.action) {
-          //     case 'moving':
-          //       let rangeIndex = plyr.speed.range.indexOf(plyr.speed.move)
-          //       let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
-          //       finalAnimIndex = moveAnimIndex;
-          //       // console.log('animation mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex,'move state',plyr.moving.state);
-          //       if (plyr.target.void == true) {
-          //         // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-          //       }
-          //     break;
-          //     case 'jumping':
-          //       let rangeIndex = plyr.speed.range.indexOf(plyr.speed.move)
-          //       let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
-          //       finalAnimIndex = moveAnimIndex;
-          //       // console.log('animation mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex,'move state',plyr.moving.state);
-          //
-          //     break;
-          //     case 'strafe moving':
-          //       if (player.pushBack.state === true ) {
-          //         let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
-          //         let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
-          //         finalAnimIndex = moveAnimIndex3;
-          //         // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-          //       } else {
-          //         let rangeIndex2 = plyr.speed.range.indexOf(plyr.speed.move)
-          //         let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
-          //         finalAnimIndex = moveAnimIndex2;
-          //         // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-          //       }
-          //     break;
-          //     case 'attacking':
-          //       let animIndex = plyr.attacking.count -1;
-          //       finalAnimIndex = animIndex;
-          //       // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
-          //     break;
-          //     case 'defending':
-          //       if (plyr.defending.count > 0) {
-          //         let animIndex2 = plyr.defending.count -1;
-          //         finalAnimIndex = animIndex2;
-          //         // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
-          //       }
-          //       if (plyr.defending.count === 0) {
-          //         let animIndex2a = plyr.defending.limit;
-          //         finalAnimIndex = animIndex2a;
-          //         // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
-          //       }
-          //     break;
-          //     case 'idle':
-          //       if (plyr.number === 1) {
-          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-          //       }
-          //       if (plyr.number === 2) {
-          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-          //       }
-          //       let animIndex3 = plyr.idleAnim.count -1;
-          //       finalAnimIndex = animIndex3;
-          //     break;
-          //     case 'falling':
-          //       let animIndex4 = plyr.falling.count -1;
-          //       finalAnimIndex = animIndex4;
-          //       // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
-          //     break;
-          //     case 'deflected':
-          //       let animIndex5 = plyr.success.deflected.count -1;
-          //       finalAnimIndex = animIndex5;
-          //       // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number,'index',finalAnimIndex);
-          //     break;
-          //   }
-          // }
+          if (
+            plyr.currentPosition.cell.number.x === x &&
+            plyr.currentPosition.cell.number.y === y
+          ) {
+            switch(plyr.action) {
+              case 'moving':
+                let rangeIndex = plyr.speed.range.indexOf(plyr.speed.move)
+                let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
+                finalAnimIndex = moveAnimIndex;
+                // console.log('animation mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex,'move state',plyr.moving.state);
+                if (plyr.target.void == true) {
+                  // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+                }
+              break;
+              case 'jumping':
+                let rangeIndex4 = plyr.speed.range.indexOf(plyr.speed.move)
+                let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(plyr.moving.step)
+                finalAnimIndex = moveAnimIndex4;
+                // console.log('animation jump spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex,'move state',plyr.moving.state);
+
+              break;
+              case 'strafe moving':
+                if (player.pushBack.state === true ) {
+                  let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
+                  let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
+                  finalAnimIndex = moveAnimIndex3;
+                  // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+                } else {
+                  let rangeIndex2 = plyr.speed.range.indexOf(plyr.speed.move)
+                  let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
+                  finalAnimIndex = moveAnimIndex2;
+                  // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+                }
+              break;
+              case 'attacking':
+                let animIndex = plyr.attacking.count -1;
+                finalAnimIndex = animIndex;
+                // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
+              break;
+              case 'defending':
+                if (plyr.defending.count > 0) {
+                  let animIndex2 = plyr.defending.count -1;
+                  finalAnimIndex = animIndex2;
+                  // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
+                }
+                if (plyr.defending.count === 0) {
+                  let animIndex2a = plyr.defending.limit;
+                  finalAnimIndex = animIndex2a;
+                  // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
+                }
+              break;
+              case 'idle':
+                if (plyr.number === 1) {
+                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+                }
+                if (plyr.number === 2) {
+                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+                }
+                let animIndex3 = plyr.idleAnim.count -1;
+                finalAnimIndex = animIndex3;
+              break;
+              case 'falling':
+                let animIndex4 = plyr.falling.count -1;
+                finalAnimIndex = animIndex4;
+                // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
+              break;
+              case 'deflected':
+                let animIndex5 = plyr.success.deflected.count -1;
+                finalAnimIndex = animIndex5;
+                // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number,'index',finalAnimIndex);
+              break;
+            }
+          }
           // FOR TESTING BY CALLING ONLY @ 1 CELL
 
 
@@ -5160,17 +5234,32 @@ class App extends Component {
 
           // DEPTH SORTING!!
           if (plyr.target.void === false && plyr.moving.state === true && plyr.falling.state !== true) {
+            let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
             // console.log('move',finalAnimIndex);
             if (plyr.direction === 'north' || plyr.direction === 'northWest' || plyr.direction === 'west') {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40);
+
+                if (plyr.jumping.state === true) {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25-(jumpYCalc*3), 40, 40);
+                } else {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40);
+                }
+
+
               }
             }
             if (plyr.direction === 'east' || plyr.direction === 'south' || plyr.direction === 'southEast') {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
-                context2.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40);
+
+                if (plyr.jumping.state === true) {
+
+                  context2.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25-(jumpYCalc*3), 40, 40);
+                } else {
+                  context2.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40);
+                }
+
                 // playerDrawLog(x,y,plyr)
               }
             }
@@ -6203,7 +6292,6 @@ class App extends Component {
     }
 
 
-
     switch(direction) {
       case 'north' :
         targetCellNumber = {
@@ -6256,55 +6344,54 @@ class App extends Component {
     }
 
 
-    console.log('here', direction);
     if (player.jumping.checking === true) {
-      console.log('there', direction);
+      direction = player.direction;
 
       switch(direction) {
         case 'north' :
-          targetCellNumber = {
+          target.cell2.number = {
             x: currentPosition.x,
             y: currentPosition.y-2
           }
         break;
         case 'northWest' :
-          targetCellNumber = {
+          target.cell2.number = {
             x: currentPosition.x-1,
             y: currentPosition.y-2
           }
         break;
         case 'northEast' :
-          targetCellNumber = {
+          target.cell2.number = {
             x: currentPosition.x+1,
             y: currentPosition.y-2
           }
         break;
         case 'south' :
-          targetCellNumber = {
+          target.cell2.number = {
             x: currentPosition.x,
             y: currentPosition.y+2
           }
         break;
         case 'southWest' :
-          targetCellNumber = {
+          target.cell2.number = {
             x: currentPosition.x-1,
             y: currentPosition.y+2
           }
         break;
         case 'southEast' :
-          targetCellNumber = {
+          target.cell2.number = {
             x: currentPosition.x+1,
             y: currentPosition.y+2
           }
         break;
         case 'east' :
-          targetCellNumber = {
+          target.cell2.number = {
             x: currentPosition.x+2,
             y: currentPosition.y
           }
         break;
         case 'west' :
-          targetCellNumber = {
+          target.cell2.number = {
             x: currentPosition.x-2,
             y: currentPosition.y
           }
@@ -6313,49 +6400,49 @@ class App extends Component {
 
       switch(direction) {
         case 'north' :
-          target.cell2.number = {
+          targetCellNumber = {
             x: currentPosition.x,
             y: currentPosition.y-1,
           }
         break;
         case 'northWest' :
-          target.cell2.number = {
+          targetCellNumber = {
             x: currentPosition.x-1,
             y: currentPosition.y-1,
           }
         break;
         case 'northEast' :
-          target.cell2.number = {
+          targetCellNumber = {
             x: currentPosition.x+1,
             y: currentPosition.y-1,
           }
         break;
         case 'south' :
-          target.cell2.number = {
+          targetCellNumber = {
             x: currentPosition.x,
             y: currentPosition.y+1,
           }
         break;
         case 'southWest' :
-          target.cell2.number = {
+          targetCellNumber = {
             x: currentPosition.x-1,
             y: currentPosition.y+1,
           }
         break;
         case 'southEast' :
-          target.cell2.number = {
+          targetCellNumber = {
             x: currentPosition.x+1,
             y: currentPosition.y+1,
           }
         break;
         case 'east' :
-          target.cell2.number = {
+          targetCellNumber = {
             x: currentPosition.x+1,
             y: currentPosition.y,
           }
         break;
         case 'west' :
-          target.cell2.number = {
+          targetCellNumber = {
             x: currentPosition.x-1,
             y: currentPosition.y,
           }
@@ -6492,7 +6579,7 @@ class App extends Component {
         targetCellCenter = cell.center;
 
         // MID GRID VOID CHECK!!
-        if (cell.void.state === true ) {
+        if (cell.void.state === true && player.jumping.checking !== true) {
           target.void = true
           voidDirection = player.direction;
           midGridVoid = true
@@ -6501,6 +6588,15 @@ class App extends Component {
 
       if (player.currentWeapon.type === 'spear' && player.attacking.state === true) {
 
+        if (
+          cell.number.x === target.cell2.number.x &&
+          cell.number.y === target.cell2.number.y
+        ) {
+          target.cell2.center = cell.center;
+        }
+      }
+
+      if (player.jumping.checking === true) {
         if (
           cell.number.x === target.cell2.number.x &&
           cell.number.y === target.cell2.number.y
@@ -6867,7 +6963,7 @@ class App extends Component {
 
   }
   lineCrementer = (player) => {
-    // console.log('line crementer',player.number);
+    // console.log('line crementer',player.number,player.target);
 
     let currentPosition = player.currentPosition.cell.center;
     let target = player.target;
@@ -6875,6 +6971,9 @@ class App extends Component {
     if (player.terrainMoveSpeed.state === true) {
       // console.log('terrain speed mod',player.terrainMoveSpeed.speed);
       moveSpeed = player.terrainMoveSpeed.speed;
+    }
+    if (player.jumping.state === true) {
+      moveSpeed = .1;
     }
 
     if (player.flanking.state === true) {
@@ -6896,7 +6995,14 @@ class App extends Component {
 
     // line: percent is 0-1
     let startPt = currentPosition;
-    let endPt = target.cell.center;
+    let endPt;
+    if (player.jumping.state === true) {
+      endPt = target.cell2.center;
+    } else {
+      endPt = target.cell.center;
+    }
+
+
     let percent = player.moving.step;
 
     function getLineXYatPercent(startPt,endPt,percent) {
