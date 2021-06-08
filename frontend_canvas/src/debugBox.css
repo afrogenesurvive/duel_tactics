@@ -19,6 +19,9 @@
 .debugBoxListItem > * {
   display: inline-block;
 }
+/* .debugBoxListItem2 > * {
+  display: flex;
+} */
 
 .debugBoxText {
   color: #000000;
@@ -43,6 +46,7 @@
 .debugBoxImg {
   height: 1.5rem;
   width: 1.5rem;
+  /* display: inline-block; */
 }
 .debugBoxImgSelected {
   /* height: 2rem; */
@@ -142,4 +146,5 @@
 .staminaProgress {
   margin: 1rem .5rem 0 .5rem;
   width: 3rem;
+  /* display: inline; */
 }

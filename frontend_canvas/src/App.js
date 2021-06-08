@@ -738,8 +738,8 @@ class App extends Component {
           currentInstruction: 0,
         },
         stamina: {
-          current: 15,
-          max: 15,
+          current: 20,
+          max: 20,
         },
       },
       {
@@ -1032,8 +1032,8 @@ class App extends Component {
           currentInstruction: 0,
         },
         stamina: {
-          current: 15,
-          max: 15,
+          current: 20,
+          max: 20,
         },
       }
     ];
@@ -2377,6 +2377,29 @@ class App extends Component {
     }
 
 
+    // STAMINA!!
+    if (player.stamina.current < player.stamina.max) {
+
+      player.stamina.current = player.stamina.current + .05;
+      player.stamina.current = +(Math.round((player.stamina.current) + "e+" + 3)  + "e-" + 3);
+      if (player.stamina.current >= player.stamina.max) {
+        player.stamina.current = player.stamina.max;
+      }
+      if (player.stamina.current < 1) {
+        // console.log('out of stamina');
+        if (player.success.deflected.state !== true) {
+          this.players[player.number-1].success.deflected = {
+            state: true,
+            count: 1,
+            limit: this.players[player.number-1].success.deflected.limit,
+            predeflect: this.players[player.number-1].success.deflected.predeflect,
+            type: 'blunt attacked',
+          };
+        }
+      }
+    }
+
+
     // CHECK AND SET DEFLECTION!!
     if (player.success.deflected.state === true && player.success.deflected.count < player.success.deflected.limit) {
       player.action = 'deflected';
@@ -3518,27 +3541,27 @@ class App extends Component {
         }
 
 
-        // STAMINA!!
-        if (player.stamina.current < player.stamina.max) {
-
-          player.stamina.current = player.stamina.current + .05;
-          player.stamina.current = +(Math.round((player.stamina.current) + "e+" + 3)  + "e-" + 3);
-          if (player.stamina.current >= player.stamina.max) {
-            player.stamina.current = player.stamina.max;
-          }
-          if (player.stamina.current < 1) {
-            console.log('out of stamina');
-            if (player.success.deflected.state !== true) {
-              this.players[player.number-1].success.deflected = {
-                state: true,
-                count: 1,
-                limit: this.players[player.number-1].success.deflected.limit,
-                predeflect: this.players[player.number-1].success.deflected.predeflect,
-                type: 'blunt attacked',
-              };
-            }
-          }
-        }
+        // // STAMINA!!
+        // if (player.stamina.current < player.stamina.max) {
+        //
+        //   player.stamina.current = player.stamina.current + .05;
+        //   player.stamina.current = +(Math.round((player.stamina.current) + "e+" + 3)  + "e-" + 3);
+        //   if (player.stamina.current >= player.stamina.max) {
+        //     player.stamina.current = player.stamina.max;
+        //   }
+        //   if (player.stamina.current < 1) {
+        //     console.log('out of stamina');
+        //     if (player.success.deflected.state !== true) {
+        //       this.players[player.number-1].success.deflected = {
+        //         state: true,
+        //         count: 1,
+        //         limit: this.players[player.number-1].success.deflected.limit,
+        //         predeflect: this.players[player.number-1].success.deflected.predeflect,
+        //         type: 'blunt attacked',
+        //       };
+        //     }
+        //   }
+        // }
 
 
         // COMPLETE PUSHBACK DEFLECT FLOW!
@@ -9858,8 +9881,8 @@ class App extends Component {
             ]
           },
           stamina: {
-            current: 15,
-            max: 15,
+            current: 20,
+            max: 20,
           },
         }
 

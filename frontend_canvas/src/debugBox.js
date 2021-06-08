@@ -55,8 +55,14 @@ const DebugBox = props => {
   let gearDropCrit = Math.round((1/(props.player.crits.pushBack+3))*100)
   let guardBreakCrit = Math.round((1/props.player.crits.guardBreak)*100)
 
-  let staminaPercent = Math.round((props.player.stamina.current/15)*100)
-  let percent = 100;
+  let staminaPercent = Math.round((props.player.stamina.current/20)*100)
+  let staminaColor = "success";
+  if (staminaPercent < 20) {
+    staminaColor = "danger";
+  }
+  if (staminaPercent > 20 && staminaPercent < 60) {
+    staminaColor = "warning";
+  }
 
   const [state, setState] = useState("player");
   const handleStateChange = (args) => {
@@ -65,7 +71,6 @@ const DebugBox = props => {
 
   return (
     <div className="debugBoxContainer">
-    <ProgressBar className="staminaProgress" now={staminaPercent}  variant="success"/>
 
     {state === 'player' && (
       <ul className="debugBoxList">
@@ -148,11 +153,14 @@ const DebugBox = props => {
         // </p>
         }
 
+
       <li className="debugBoxListItem">
         <img src={stamina} className="debugBoxImg"></img>
-        <ProgressBar className="staminaProgress" now={staminaPercent} />
-
       </li>
+      <li className="debugBoxListItem3">
+        <ProgressBar className="staminaProgress" now={staminaPercent} variant={staminaColor}/>
+      </li>
+
 
       <li className="debugBoxListItem">
         <FontAwesomeIcon icon={faHeartbeat} size="sm" className="debugBoxIcon"/> :
