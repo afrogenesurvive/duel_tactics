@@ -565,6 +565,7 @@ class App extends Component {
             end: 10,
           }
         },
+        dodgeDirection: '',
         jumping: {
           checking: false,
           state: false,
@@ -860,6 +861,7 @@ class App extends Component {
             end: 10,
           }
         },
+        dodgeDirection: '',
         jumping: {
           checking: false,
           state: false,
@@ -3512,8 +3514,44 @@ class App extends Component {
 
               // console.log('dodge peak',player.dodging.count);
             }
+            if (player.dodging.count === player.dodging.peak.start) {
+              let whichDirection = this.rnJesus(1,2);
+              let dodgeDirection;
+              switch(player.direction) {
+                  case 'north':
+                  if (whichDirection === 1) {
+                    dodgeDirection = 'east';
+                  } else {
+                    dodgeDirection = 'west';
+                  }
+                  break;
+                  case 'south':
+                  if (whichDirection === 1) {
+                    dodgeDirection = 'east';
+                  } else {
+                    dodgeDirection = 'west';
+                  }
+                  break;
+                  case 'east':
+                  if (whichDirection === 1) {
+                    dodgeDirection = 'north';
+                  } else {
+                    dodgeDirection = 'south';
+                  }
+                  break;
+                  case 'west':
+                  if (whichDirection === 1) {
+                    dodgeDirection = 'north';
+                  } else {
+                    dodgeDirection = 'south';
+                  }
+                  break;
+              }
+              player.dodgeDirection = dodgeDirection;
+            }
             if (player.dodging.count < (player.dodging.peak.start - startMod) || player.dodging.count > (player.dodging.peak.end + endMod)) {
               player.dodging.state = false;
+              player.dodgeDirection = '';
               // console.log('dodge peak off');
             }
             if (player.dodging.count >= player.dodging.limit) {
@@ -3873,7 +3911,7 @@ class App extends Component {
           if (player.stamina.current - 7 >= 0) {
 
             if (player.dodging.countState === true || player.dodging.state === true) {
-              
+
               player.stamina.current = player.stamina.current + 4;
             }
 
@@ -5929,6 +5967,38 @@ class App extends Component {
               // context.fillText("guard break!", point.x-30, point.y-30, 40,70);
               context.drawImage(indicatorImgs.defendBreak, point.x-40, point.y-40, 35,35);
             }
+          }
+          if (plyr.dodging.state === true) {
+
+
+            if (plyr.direction === 'north' || plyr.direction === 'south') {
+              if (
+                // x === plyr.moving.origin.number.x &&
+                // y === plyr.moving.origin.number.y+1
+                x === plyr.currentPosition.cell.number.x &&
+                y === plyr.currentPosition.cell.number.y
+              ) {
+                if (plyr.dodgeDirection === 'east') {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  point.x-45, point.y-35, 40, 40)
+                } else {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  point.x-10, point.y-20, 40, 40)
+                }
+              }
+            }
+            if (plyr.direction === 'east' || plyr.direction === 'west') {
+              if (
+                x === plyr.currentPosition.cell.number.x &&
+                y === plyr.currentPosition.cell.number.y+1
+              ) {
+                if (plyr.dodgeDirection === 'north') {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-10, point.y-35, 40,40);
+                } else {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-45, point.y-15, 40,40);
+                }
+              }
+            }
+
+
           }
           // DEPTH SORTING!!
 
@@ -9666,6 +9736,7 @@ class App extends Component {
               end: 10,
             }
           },
+          dodgeDirection: '',
           jumping: {
             checking: false,
             state: false,
