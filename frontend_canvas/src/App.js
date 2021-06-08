@@ -126,6 +126,7 @@ class App extends Component {
 
     this.tileColumnOffset = 100; // pixels
     this.tileRowOffset = 50; // pixels
+
     this.originX = 0; // offset from left
     this.originY = 0; // offset from top
     this.Xtiles = 10;
@@ -134,18 +135,20 @@ class App extends Component {
     this.selectedTileX = -1;
     this.selectedTileY = -1;
 
-    // this.canvasWidth = 1100;
-    // this.canvasHeight = 600;
     this.canvasWidth = 1300;
     this.canvasHeight = 800;
+
     this.floorImageWidth = 103;
     this.floorImageHeight = 53;
+
     this.wallImageWidth = 103;
     this.wallImageHeight = 98;
     this.sceneX = 1100/2;
     this.sceneY = 220;
     this.tileWidth = 50;
     this.gridWidth = 9;
+    this.cellCenterOffsetX = 23;
+    this.cellCenterOffsetY = 2
 
     this.init = false;
     // this.openVoid = true;
@@ -2267,8 +2270,8 @@ class App extends Component {
       if (this.gamepad === true) {
         this.pollGamepads();
       }
-      for (const player of this.players) {
 
+      for (const player of this.players) {
         this.playerUpdate(player, this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
       }
 
@@ -5494,7 +5497,6 @@ class App extends Component {
                 } else {
                   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40);
                 }
-                console.log('tts',plyr.strafing.state,'hook',plyr.strafeReleaseHook,'act',plyr.action);
 
               }
             }
@@ -5508,7 +5510,6 @@ class App extends Component {
                 } else {
                   context2.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40);
                 }
-                console.log('tts2',plyr.strafing.state,'hook',plyr.strafeReleaseHook,'act',plyr.action);
                 // playerDrawLog(x,y,plyr)
               }
             }
@@ -9079,8 +9080,8 @@ class App extends Component {
           iso.y += sceneY
 
           let center = {
-            x: Math.round(iso.x - offset.x/2+23),
-            y: Math.round(iso.y - offset.y/2-2),
+            x: Math.round(iso.x - offset.x/2+this.cellCenterOffsetX),
+            y: Math.round(iso.y - offset.y/2-this.cellCenterOffsetY),
           }
 
         gridInfo.push({
@@ -9344,9 +9345,10 @@ class App extends Component {
         iso.x += sceneX
         iso.y += sceneY
 
+
         let center = {
-          x: iso.x - offset.x/2+23,
-          y: iso.y - offset.y/2-2,
+          x: iso.x - offset.x/2+this.cellCenterOffsetX,
+          y: iso.y - offset.y/2-this.cellCenterOffsetY,
         }
 
         let cell = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
@@ -9356,7 +9358,7 @@ class App extends Component {
         floor = floorImgs[cell.terrain.name]
 
 
-        context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
+        context.drawImage(floor, iso.x - offset.x, iso.y - offset.y, 100, 100);
 
         context.fillStyle = 'black';
         context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
