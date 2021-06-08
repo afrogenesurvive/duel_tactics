@@ -65,6 +65,8 @@ const DebugBox = props => {
 
   return (
     <div className="debugBoxContainer">
+    <ProgressBar className="staminaProgress" now={staminaPercent}  variant="success"/>
+
     {state === 'player' && (
       <ul className="debugBoxList">
 
@@ -148,10 +150,8 @@ const DebugBox = props => {
 
       <li className="debugBoxListItem">
         <img src={stamina} className="debugBoxImg"></img>
-        <p className="debugBoxText">
-          {staminaPercent}
-        </p>
-        <ProgressBar className="staminaProgress" now={100}  variant="success"/>
+        <ProgressBar className="staminaProgress" now={staminaPercent} />
+
       </li>
 
       <li className="debugBoxListItem">
