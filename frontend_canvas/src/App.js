@@ -112,6 +112,7 @@ class App extends Component {
     },
     loading: true,
     stateUpdater: '',
+    settingAiPlayers: 0,
   }
 
   constructor(props) {
@@ -1228,6 +1229,8 @@ class App extends Component {
 
       window.requestAnimationFrame(this.gameLoop);
 
+
+
     }
 
   }
@@ -2174,6 +2177,9 @@ class App extends Component {
   loadSettings = (event) => {
 
     let gridSize = event.target.gridSize.value;
+    let playerNumber = event.target.humanPlayers.value;
+    let aiPlayerNumber = event.target.aiPlayers.value;
+
     switch(gridSize) {
       case '4 x 4' :
         this.gridWidth = 3;
@@ -2204,8 +2210,20 @@ class App extends Component {
     // window.requestAnimationFrame(this.gameLoop);
 
     this.setState({
-      showSettings: false
+      showSettings: false,
     })
+
+    if (playerNumber < 2) {
+      console.log('dd');
+      this.players.splice(1,1)
+    }
+
+    if (aiPlayerNumber > 0) {
+      for (var i = 0; i < aiPlayerNumber; i++) {
+        this.addAiPlayer()
+      }
+    }
+
 
   }
   cancelSettings = () => {
@@ -2442,203 +2460,201 @@ class App extends Component {
 
         }
 
-        // if (player.speed.move !== .1 && player.pushBack.state !== true) {
-          // console.log('abnormal move speed');
-          if (player.jumping.state !== true) {
+        if (player.jumping.state !== true) {
+
+          if (
+            nextPosition.x === player.target.cell.center.x &&
+            nextPosition.y === player.target.cell.center.y ||
+            nextPosition.x === player.target.cell.center.x+5 &&
+            nextPosition.y === player.target.cell.center.y+5
+          ) {
+            // console.log('next position is destination a',player.number);
+
+            if (player.target.void === false) {
+              player.currentPosition.cell = player.target.cell;
+              player.action = 'idle';
+              player.moving = {
+                state: false,
+                step: 0,
+                course: '',
+                origin: {
+                  number: {
+                    x: player.target.cell.number.x,
+                    y: player.target.cell.number.y
+                  },
+                  center: {
+                    x: player.target.cell.center.x,
+                    y: player.target.cell.center.y
+                  },
+                },
+                destination: {
+                  x: 0,
+                  y: 0,
+                }
+              }
+
+              this.checkDestination(player);
+
+            }
+
+            if (player.pushBack.state === true && player.target.void !== true) {
+              player.pushBack.state = false;
+              player.strafing = {
+                state: false,
+                direction: ''
+              }
+              player.moving.state = false;
+              player.speed.move = player.pushBack.prePushMoveSpeed;
+            }
 
             if (
               nextPosition.x === player.target.cell.center.x &&
-              nextPosition.y === player.target.cell.center.y ||
-              nextPosition.x === player.target.cell.center.x+5 &&
-              nextPosition.y === player.target.cell.center.y+5
+              nextPosition.y === player.target.cell.center.y &&
+              player.target.void === true
             ) {
-              // console.log('next position is destination a',player.number);
+              player.falling.state = true;
+              player.action = 'falling';
+            }
 
-              if (player.target.void === false) {
-                player.currentPosition.cell = player.target.cell;
-                player.action = 'idle';
-                player.moving = {
-                  state: false,
-                  step: 0,
-                  course: '',
-                  origin: {
-                    number: {
-                      x: player.target.cell.number.x,
-                      y: player.target.cell.number.y
-                    },
-                    center: {
-                      x: player.target.cell.center.x,
-                      y: player.target.cell.center.y
-                    },
+          }
+        }
+
+        if (player.jumping.state === true) {
+          // console.log('mid jump');
+
+
+          if (
+            nextPosition.x === player.target.cell2.center.x &&
+            nextPosition.y === player.target.cell2.center.y ||
+            nextPosition.x === player.target.cell2.center.x+5 &&
+            nextPosition.y === player.target.cell2.center.y+5
+          ) {
+            // console.log('at jump destination',player.target.cell2.number);
+            // console.log('next position is destination a',player.number);
+            let pushBack = false;
+            let opp;
+
+            for (const plyr of this.players) {
+              if (
+                // plyr.currentPosition.cell.number.x === player.currentPosition.cell.number.x &&
+                // plyr.currentPosition.cell.number.y === player.currentPosition.cell.number.y
+                // plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
+                // plyr.currentPosition.cell.number.y === player.target.cell2.number.y
+                plyr.target.cell.number.x === player.target.cell2.number.x &&
+                plyr.target.cell.number.y === player.target.cell2.number.y &&
+                plyr.moving.state === true
+              ) {
+
+                // console.log('jump destination occupied, fall into target 1',player.direction);
+
+                pushBack = true;
+                opp = plyr;
+              }
+            }
+
+            if (player.target.void === false) {
+
+              player.jumping.state = false;
+              player.currentPosition.cell = player.target.cell2;
+              player.action = 'idle';
+              player.moving = {
+                state: false,
+                step: 0,
+                course: '',
+                origin: {
+                  number: {
+                    x: player.target.cell2.number.x,
+                    y: player.target.cell2.number.y
                   },
-                  destination: {
-                    x: 0,
-                    y: 0,
-                  }
+                  center: {
+                    x: player.target.cell2.center.x,
+                    y: player.target.cell2.center.y
+                  },
+                },
+                destination: {
+                  x: 0,
+                  y: 0,
                 }
-
-                this.checkDestination(player);
-
               }
 
-              if (player.pushBack.state === true && player.target.void !== true) {
-                player.pushBack.state = false;
+              this.checkDestination(player);
+
+              if (pushBack === true ) {
+                // console.log('xx');
+                let playerAPushDir;
+                let playerBPushDir;
+                switch(opp.direction) {
+                  case 'north' :
+                    playerAPushDir = 'south';
+                  break;
+                  case 'south' :
+                    playerAPushDir = 'north';
+                  break;
+                  case 'east' :
+                    playerAPushDir = 'west';
+                  break;
+                  case 'west' :
+                    playerAPushDir = 'east';
+                  break;
+                }
+                switch(player.direction) {
+                  case 'north' :
+                    playerBPushDir = 'south';
+                  break;
+                  case 'south' :
+                    playerBPushDir = 'north';
+                  break;
+                  case 'east' :
+                    playerBPushDir = 'west';
+                  break;
+                  case 'west' :
+                    playerBPushDir = 'east';
+                  break;
+                }
+
+
                 player.strafing = {
-                  state: false,
-                  direction: ''
+                  state: true,
+                  direction: playerAPushDir
                 }
-                player.moving.state = false;
-                player.speed.move = player.pushBack.prePushMoveSpeed;
-              }
-
-              if (
-                nextPosition.x === player.target.cell.center.x &&
-                nextPosition.y === player.target.cell.center.y &&
-                player.target.void === true
-              ) {
-                player.falling.state = true;
-                player.action = 'falling';
-              }
-
-            }
-          }
-
-          if (player.jumping.state === true) {
-            // console.log('mid jump');
-
-
-            if (
-              nextPosition.x === player.target.cell2.center.x &&
-              nextPosition.y === player.target.cell2.center.y ||
-              nextPosition.x === player.target.cell2.center.x+5 &&
-              nextPosition.y === player.target.cell2.center.y+5
-            ) {
-              // console.log('at jump destination',player.target.cell2.number);
-              // console.log('next position is destination a',player.number);
-              let pushBack = false;
-              let opp;
-
-              for (const plyr of this.players) {
-                if (
-                  // plyr.currentPosition.cell.number.x === player.currentPosition.cell.number.x &&
-                  // plyr.currentPosition.cell.number.y === player.currentPosition.cell.number.y
-                  // plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
-                  // plyr.currentPosition.cell.number.y === player.target.cell2.number.y
-                  plyr.target.cell.number.x === player.target.cell2.number.x &&
-                  plyr.target.cell.number.y === player.target.cell2.number.y &&
-                  plyr.moving.state === true
-                ) {
-
-                  // console.log('jump destination occupied, fall into target 1',player.direction);
-
-                  pushBack = true;
-                  opp = plyr;
-                }
-              }
-
-              if (player.target.void === false) {
-
-                player.jumping.state = false;
-                player.currentPosition.cell = player.target.cell2;
-                player.action = 'idle';
+                player.action = 'strafe moving';
                 player.moving = {
-                  state: false,
+                  state: true,
                   step: 0,
                   course: '',
                   origin: {
                     number: {
-                      x: player.target.cell2.number.x,
-                      y: player.target.cell2.number.y
+                      x: player.currentPosition.cell.number.x,
+                      y: player.currentPosition.cell.number.y
                     },
                     center: {
-                      x: player.target.cell2.center.x,
-                      y: player.target.cell2.center.y
+                      x: player.currentPosition.cell.center,
+                      y: player.currentPosition.cell.center
                     },
                   },
-                  destination: {
-                    x: 0,
-                    y: 0,
-                  }
+                  destination: player.target.cell2.center
                 }
-
-                this.checkDestination(player);
-
-                if (pushBack === true ) {
-                  // console.log('xx');
-                  let playerAPushDir;
-                  let playerBPushDir;
-                  switch(opp.direction) {
-                    case 'north' :
-                      playerAPushDir = 'south';
-                    break;
-                    case 'south' :
-                      playerAPushDir = 'north';
-                    break;
-                    case 'east' :
-                      playerAPushDir = 'west';
-                    break;
-                    case 'west' :
-                      playerAPushDir = 'east';
-                    break;
-                  }
-                  switch(player.direction) {
-                    case 'north' :
-                      playerBPushDir = 'south';
-                    break;
-                    case 'south' :
-                      playerBPushDir = 'north';
-                    break;
-                    case 'east' :
-                      playerBPushDir = 'west';
-                    break;
-                    case 'west' :
-                      playerBPushDir = 'east';
-                    break;
-                  }
-
-
-                  player.strafing = {
-                    state: true,
-                    direction: playerAPushDir
-                  }
-                  player.action = 'strafe moving';
-                  player.moving = {
-                    state: true,
-                    step: 0,
-                    course: '',
-                    origin: {
-                      number: {
-                        x: player.currentPosition.cell.number.x,
-                        y: player.currentPosition.cell.number.y
-                      },
-                      center: {
-                        x: player.currentPosition.cell.center,
-                        y: player.currentPosition.cell.center
-                      },
-                    },
-                    destination: player.target.cell2.center
-                  }
-                  player.target.void = true;
-                  let nextPosition = this.lineCrementer(player);
-                  player.nextPosition = nextPosition;
+                player.target.void = true;
+                let nextPosition = this.lineCrementer(player);
+                player.nextPosition = nextPosition;
 
 
 
-                }
-
-              }
-
-              let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y)
-              if (
-                targetCell.void.state === true
-              ) {
-                player.falling.state = true;
-                player.action = 'falling';
               }
 
             }
 
+            let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y)
+            if (
+              targetCell.void.state === true
+            ) {
+              player.falling.state = true;
+              player.action = 'falling';
+            }
+
           }
+
+        }
 
       }
 
@@ -3384,6 +3400,7 @@ class App extends Component {
         //   }
         // }
 
+
         // DECAYING DEF
         if (player.defending.count > 0 && player.defending.count < player.defending.limit+1 && player.defendDecay.state !== true) {
           player.defending.count++;
@@ -3474,6 +3491,7 @@ class App extends Component {
             }
           }
         }
+
 
         // STAMINA!!
         if (player.stamina.current < player.stamina.max) {
@@ -3887,9 +3905,6 @@ class App extends Component {
 
           }
         }
-
-
-
 
 
         // CAN READ MOVE INPUTS!!
@@ -6296,6 +6311,7 @@ class App extends Component {
       direction = player.strafing.direction;
     }
 
+
     // FLANKING!!
     if (player.flanking.checking === true ) {
       if (player.flanking.step === 0) {
@@ -6307,7 +6323,6 @@ class App extends Component {
         direction = player.flanking.preFlankDirection;
       }
     }
-
 
 
     let targetCellNumber = {x: 0,y: 0};
@@ -7128,36 +7143,6 @@ class App extends Component {
       }
       player.currentPosition.cell.center = newPosition;
 
-    }
-
-    player.nextPosition = newPosition
-
-    this.players[player.number-1] = player;
-
-    return newPosition;
-
-  }
-  jumpCrementer = (player) => {
-    // console.log('jump crementer',player.number);
-
-    let currentPosition = player.currentPosition.cell.center;
-    let target = player.target;
-    let moveSpeed = player.speed.move;
-
-    player.moving.step = +(Math.round((player.moving.step + moveSpeed) + "e+" + 3)  + "e-" + 3);
-    let newPosition;
-
-    let startPt = currentPosition;
-    let endPt = target.cell.center;
-    let percent = player.moving.step;
-
-    function getQuadraticBezierXYatPercent(startPt, controlPt, endPt, percent) {
-    var x = Math.pow(1 - percent, 2) * startPt.x + 2 * (1 - percent) * percent * controlPt.x + Math.pow(percent, 2) * endPt.x;
-    var y = Math.pow(1 - percent, 2) * startPt.y + 2 * (1 - percent) * percent * controlPt.y + Math.pow(percent, 2) * endPt.y;
-    return ({
-        x: x,
-        y: y
-      });
     }
 
     player.nextPosition = newPosition
@@ -8124,7 +8109,7 @@ class App extends Component {
 
   }
   killPlayer = (player) => {
-    console.log('killing player',player.number);
+    // console.log('killing player',player.number);
 
     player.ghost.state = true;
     player.ghost.position.cell = player.currentPosition.cell;
@@ -10055,12 +10040,14 @@ class App extends Component {
                 player={this.players[0]}
               />
             </div>
-            <div className="debugDisplay2">
-              <DebugBox
-                player={this.players[1]}
-              />
+            {this.players.length > 1 &&(
+              <div className="debugDisplay2">
+                <DebugBox
+                  player={this.players[1]}
+                />
+              </div>
+            )}
 
-            </div>
 
             <div className="settingsSwitch">
               <a href="javascript:" className="setSwitchLink" onClick={this.openSettings}>
@@ -10074,6 +10061,14 @@ class App extends Component {
             <CellInfo
               cell={this.clicked}
             />
+
+            {this.state.showAiStatus === true && (
+              <AiStatus
+                players={this.players}
+                aiPlayers={this.aiPlayers}
+                onAiAdd={this.addAiPlayer}
+              />
+            )}
           </div>
 
           {this.state.showSettings === true && (
@@ -10083,11 +10078,7 @@ class App extends Component {
               onCancel={this.cancelSettings}
             />
           )}
-          {this.state.showAiStatus === true && (
-            <AiStatus
-              players={this.players}
-            />
-          )}
+
 
 
           <img src={floorGrass} className='hidden' ref="floorGrass" alt="logo" id="floor1"/>

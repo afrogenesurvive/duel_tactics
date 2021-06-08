@@ -16,6 +16,8 @@ import {
   faDice,
   faUser,
   faBriefcase,
+  faRobot,
+  faPlus,
 } from '@fortawesome/free-solid-svg-icons';
 
 import deflectInjuredInidcate from './assets/indicators/deflectInjured.png';
@@ -63,6 +65,14 @@ const AiStatus = props => {
       </p>
       <a className="aiStatusBoxSwitch" role="button" data-slide="next" onClick={()=>handleStateChange()}>
         <FontAwesomeIcon icon={faCaretRight} size="sm" className="debugBoxIcon"/>
+      </a>
+
+    </div>
+
+    <div className="aiStatHeadBox">
+
+      <a className="" role="button" data-slide="next" onClick={props.onAiAdd}>
+        <FontAwesomeIcon icon={faPlus} size="sm" className="debugBoxIcon2"/>
       </a>
     </div>
 

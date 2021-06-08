@@ -47,6 +47,28 @@ const Settings = props => {
           </Form.Group>
         </Form.Row>
 
+        <Form.Row>
+          <Form.Group as={Col} controlId="humanPlayers" className="formGroup">
+            <Form.Label className="formLabel">Human Players</Form.Label>
+            <Form.Control as="select">
+              <option>2</option>
+              <option>1</option>
+            </Form.Control>
+          </Form.Group>
+
+          <Form.Group as={Col} controlId="aiPlayers" className="formGroup">
+            <Form.Label className="formLabel">Ai Players</Form.Label>
+            <Form.Control as="select">
+              <option>0</option>
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+            </Form.Control>
+          </Form.Group>
+        </Form.Row>
+
+
         <Form.Row className="formBtnRow">
           <Button variant="success" type="submit" className="addFormBtn">Submit</Button>
           <Button variant="danger" className="addFormBtn" onClick={props.onCancel}>Cancel</Button>

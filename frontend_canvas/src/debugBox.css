@@ -35,6 +35,11 @@
   margin: 0 .5rem 0 0;
   max-height: 2rem;
 }
+.debugBoxIcon2 {
+  color: #000000;
+  margin: 0;
+  max-height: 2rem;
+}
 .debugBoxImg {
   height: 1.5rem;
   width: 1.5rem;
@@ -65,12 +70,14 @@
   padding: 1rem;
   background-color: #ffffff;
   position: absolute;
-  bottom: 10rem;
-  left: 2rem;
+  bottom: 4rem;
+  left: .1rem;
   z-index: 3;
   max-height: 25rem;
   max-width: 18rem;
   overflow: scroll;
+
+  text-align: center;
 }
 
 .cellInfoList {
@@ -122,6 +129,10 @@
 }
 .aiStatusBoxSwitch {
   margin: .1rem 0 0 1rem;
+}
+
+.aiStatHeadBox {
+  margin: 0 auto;
 }
 
 .aiStatHeadBox > * {
