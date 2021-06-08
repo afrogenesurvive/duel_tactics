@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import Button from 'react-bootstrap/Button';
+import ProgressBar from 'react-bootstrap/ProgressBar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Popover from 'react-bootstrap/Popover';
@@ -24,6 +25,7 @@ import pushbackInidcate from './assets/indicators/pushback.png'
 import ghostInidcate from './assets/indicators/ghost.png'
 import deathInidcate from './assets/indicators/death.png'
 import preAttackInidcate from './assets/indicators/preAttack.png'
+import stamina from './assets/indicators/stamina.png'
 
 import bow from './assets/items/bow.png';
 import spear from './assets/items/spear.png';
@@ -52,6 +54,9 @@ const DebugBox = props => {
   let attackPushBackCrit = Math.round((1/(props.player.crits.pushBack))*100)
   let gearDropCrit = Math.round((1/(props.player.crits.pushBack+3))*100)
   let guardBreakCrit = Math.round((1/props.player.crits.guardBreak)*100)
+
+  let staminaPercent = Math.round((props.player.stamina.current/15)*100)
+  let percent = 100;
 
   const [state, setState] = useState("player");
   const handleStateChange = (args) => {
@@ -134,12 +139,19 @@ const DebugBox = props => {
         //     </p>
         //   </li>
         // )
+
+
+        // <p className="debugBoxText">
+        // {staminaPercent}
+        // </p>
         }
 
       <li className="debugBoxListItem">
+        <img src={stamina} className="debugBoxImg"></img>
         <p className="debugBoxText">
-          Stamina: {props.player.stamina.current}
+          {staminaPercent}
         </p>
+        <ProgressBar className="staminaProgress" now={100}  variant="success"/>
       </li>
 
       <li className="debugBoxListItem">

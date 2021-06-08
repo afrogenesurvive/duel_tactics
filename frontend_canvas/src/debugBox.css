@@ -138,3 +138,8 @@
 .aiStatHeadBox > * {
   display: inline-block;
 }
+
+.staminaProgress {
+  margin: 1rem .5rem 0 .5rem;
+  width: 3rem;
+}

@@ -36,9 +36,11 @@ import pushbackIndicate from './assets/indicators/pushback.png';
 import ghostIndicate from './assets/indicators/ghost.png';
 import deathIndicate from './assets/indicators/death.png';
 import preAttackIndicate from './assets/indicators/preAttack.png';
+import preAttack2Indicate from './assets/indicators/preAttack2.png';
 import attackBreakIndicate from './assets/indicators/attackBreak.png';
 import defendBreakIndicate from './assets/indicators/defendBreak.png';
 import boltDefendIndicate from './assets/indicators/boltDefend.png';
+import dodgeIndicate from './assets/indicators/dodge.png';
 
 import mail1 from './assets/items/mail1.png';
 import mail2 from './assets/items/mail2.png';
@@ -736,8 +738,8 @@ class App extends Component {
           currentInstruction: 0,
         },
         stamina: {
-          current: 20,
-          max: 20,
+          current: 15,
+          max: 15,
         },
       },
       {
@@ -1030,8 +1032,8 @@ class App extends Component {
           currentInstruction: 0,
         },
         stamina: {
-          current: 20,
-          max: 20,
+          current: 15,
+          max: 15,
         },
       }
     ];
@@ -2214,7 +2216,6 @@ class App extends Component {
     })
 
     if (playerNumber < 2) {
-      console.log('dd');
       this.players.splice(1,1)
     }
 
@@ -3409,17 +3410,29 @@ class App extends Component {
         } else if (player.defending.count >= player.defending.limit+1 && player.defending.state === false && player.defendDecay.state !== true) {
           // console.log('defend wind up limit cap','player',player.number);
 
-          player.defending = {
-            state: true,
-            count: 0,
-            limit: player.defending.limit,
+          if (player.stamina.current - 1.5 >= 0) {
+
+            player.defending = {
+              state: true,
+              count: 0,
+              limit: player.defending.limit,
+            }
+            player.stamina.current = player.stamina.current - 1.5;
+            player.defendDecay = {
+              state: true,
+              count: 0,
+              limit: player.defendDecay.limit,
+            }
+
+          } else {
+            player.statusDisplay = {
+              state: true,
+              status: "Out of Stamina",
+              count: 1,
+              limit: player.statusDisplay.limit,
+            }
           }
-          player.stamina.current = player.stamina.current - 1.5;
-          player.defendDecay = {
-            state: true,
-            count: 0,
-            limit: player.defendDecay.limit,
-          }
+
         }
 
         // DEFENSE DECAY!!
@@ -3462,34 +3475,46 @@ class App extends Component {
           let startMod = player.crits.dodge;
           let endMod = player.crits.dodge;
 
-          if (player.dodging.count === 1) {
-            player.stamina.current = player.stamina.current - 4;
-          }
-          if (player.dodging.count < player.dodging.limit) {
-            player.dodging.count++
-            // console.log('dodge count',player.dodging.count);
-          }
-          if (player.dodging.count > (player.dodging.peak.start - startMod) && player.dodging.count < (player.dodging.peak.end + endMod)) {
-            player.dodging.state = true;
+          if (player.stamina.current - 4 >= 0) {
 
-            // console.log('dodge peak',player.dodging.count);
-          }
-          if (player.dodging.count < (player.dodging.peak.start - startMod) || player.dodging.count > (player.dodging.peak.end + endMod)) {
-            player.dodging.state = false;
-            // console.log('dodge peak off');
-          }
-          if (player.dodging.count >= player.dodging.limit) {
-            player.dodging = {
-              countState: false,
-              state: false,
-              count: 0,
-              limit: player.dodging.limit,
-              peak: {
-                start: player.dodging.peak.start,
-                end: player.dodging.peak.end,
+            if (player.dodging.count === 1) {
+              player.stamina.current = player.stamina.current - 4;
+            }
+            if (player.dodging.count < player.dodging.limit) {
+              player.dodging.count++
+              // console.log('dodge count',player.dodging.count);
+            }
+            if (player.dodging.count > (player.dodging.peak.start - startMod) && player.dodging.count < (player.dodging.peak.end + endMod)) {
+              player.dodging.state = true;
+
+              // console.log('dodge peak',player.dodging.count);
+            }
+            if (player.dodging.count < (player.dodging.peak.start - startMod) || player.dodging.count > (player.dodging.peak.end + endMod)) {
+              player.dodging.state = false;
+              // console.log('dodge peak off');
+            }
+            if (player.dodging.count >= player.dodging.limit) {
+              player.dodging = {
+                countState: false,
+                state: false,
+                count: 0,
+                limit: player.dodging.limit,
+                peak: {
+                  start: player.dodging.peak.start,
+                  end: player.dodging.peak.end,
+                }
               }
             }
+
+          } else {
+            player.statusDisplay = {
+              state: true,
+              status: "Out of Stamina",
+              count: 1,
+              limit: player.statusDisplay.limit,
+            }
           }
+
         }
 
 
@@ -3502,7 +3527,7 @@ class App extends Component {
             player.stamina.current = player.stamina.max;
           }
           if (player.stamina.current < 1) {
-            // console.log('out of stamina');
+            console.log('out of stamina');
             if (player.success.deflected.state !== true) {
               this.players[player.number-1].success.deflected = {
                 state: true,
@@ -3812,7 +3837,9 @@ class App extends Component {
         }
         if (this.keyPressed[player.number-1].dodge === true ) {
 
-          if (
+          if (player.stamina.current - 7 >= 0) {
+
+            if (
             this.keyPressed[player.number-1].north === true ||
             this.keyPressed[player.number-1].south === true ||
             this.keyPressed[player.number-1].east === true ||
@@ -3904,6 +3931,15 @@ class App extends Component {
             }
 
           }
+          } else {
+            player.statusDisplay = {
+              state: true,
+              status: "Out of Stamina",
+              count: 1,
+              limit: player.statusDisplay.limit,
+            }
+          }
+
         }
 
 
@@ -4057,78 +4093,90 @@ class App extends Component {
                 }
               }
 
+              if (player.stamina.current - 6 >= 0) {
 
-              if (cellsWithinBounds === true) {
-                if (
-                  cell1.void.state === true ||
-                  cell1.terrain.type === 'deep'
-                ) {
-                  // console.log('a');
+                if (cellsWithinBounds === true) {
                   if (
-                    cell2.levelData.charAt(0) !==  'z' ||
-                    cell2.levelData.charAt(0) !==  'y'
+                    cell1.void.state === true ||
+                    cell1.terrain.type === 'deep'
                   ) {
-                    // console.log('b');
+                    // console.log('a');
+                    if (
+                      cell2.levelData.charAt(0) !==  'z' ||
+                      cell2.levelData.charAt(0) !==  'y'
+                    ) {
+                      // console.log('b');
 
-                    let targetOccupied = false;
-                    for (const plyr of this.players) {
-                      if (
-                        plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
-                        plyr.currentPosition.cell.number.y === player.target.cell2.number.y
-                      ) {
-                        // console.log('c');
-                        targetOccupied = true
-                      }
-
-                    }
-
-                    if (targetOccupied !== true) {
-                      if (
-                        cell2.void.state !== true &&
-                        cell2.terrain.type !== 'deep'
-                      ) {
-                        // console.log('can jump');
-                        this.players[player.number-1].jumping.checking = false;
-                        this.players[player.number-1].jumping.state = true;
-                        player.action = 'jumping'
-                        player.stamina.current = player.stamina.current - 6;
-
-                        player.moving = {
-                          state: true,
-                          step: 0,
-                          course: '',
-                          origin: {
-                            number: player.currentPosition.cell.number,
-                            center: player.currentPosition.cell.center,
-                          },
-                          destination: target.cell2.center
+                      let targetOccupied = false;
+                      for (const plyr of this.players) {
+                        if (
+                          plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
+                          plyr.currentPosition.cell.number.y === player.target.cell2.number.y
+                        ) {
+                          // console.log('c');
+                          targetOccupied = true
                         }
 
-                        nextPosition = this.lineCrementer(player);
-                        // nextPosition = this.jumpCrementer(player);
-                        player.nextPosition = nextPosition;
-                      } else {
-                        // console.log('can only jump over voids or deep water cell 2');
+                      }
+
+                      if (targetOccupied !== true) {
+                        if (
+                          cell2.void.state !== true &&
+                          cell2.terrain.type !== 'deep'
+                        ) {
+                          // console.log('can jump');
+                          this.players[player.number-1].jumping.checking = false;
+                          this.players[player.number-1].jumping.state = true;
+                          player.action = 'jumping'
+                          player.stamina.current = player.stamina.current - 6;
+
+                          player.moving = {
+                            state: true,
+                            step: 0,
+                            course: '',
+                            origin: {
+                              number: player.currentPosition.cell.number,
+                              center: player.currentPosition.cell.center,
+                            },
+                            destination: target.cell2.center
+                          }
+
+                          nextPosition = this.lineCrementer(player);
+                          // nextPosition = this.jumpCrementer(player);
+                          player.nextPosition = nextPosition;
+                        } else {
+                          // console.log('can only jump over voids or deep water cell 2');
+                          this.players[player.number-1].jumping.checking = false;
+                        }
+                      }
+                      else {
+                        // console.log('jump destination occupied');
                         this.players[player.number-1].jumping.checking = false;
                       }
-                    }
-                    else {
-                      // console.log('jump destination occupied');
+
+
+                    } else {
+                      // console.log('jump obstacle detected');
                       this.players[player.number-1].jumping.checking = false;
                     }
-
-
                   } else {
-                    // console.log('jump obstacle detected');
+                    // console.log('can only jump over voids or deep water cell 2');
                     this.players[player.number-1].jumping.checking = false;
                   }
                 } else {
-                  // console.log('can only jump over voids or deep water cell 2');
+                  // console.log('cell out of bounds');
                   this.players[player.number-1].jumping.checking = false;
                 }
-              } else {
-                // console.log('cell out of bounds');
-                this.players[player.number-1].jumping.checking = false;
+
+              }
+              else {
+                console.log('out of stamina');
+                player.statusDisplay = {
+                  state: true,
+                  status: 'Out of Stamina',
+                  count: 0,
+                  limit: player.statusDisplay.limit,
+                }
               }
 
             }
@@ -4149,55 +4197,72 @@ class App extends Component {
                 // console.log('already defending',player.number);
               }
             }
+
+
             // START ATTACK/DEFEND!!
             if (player.attacking.state === false && player.defending.state === false) {
 
+
+
               // if (this.keyPressed[player.number-1].attack === true ) {
-              if (this.keyPressed[player.number-1].attack === true && player.success.deflected.state !== true) {
-                // console.log('start attacking');
-                // console.log('pre attack');
 
-                // if (player.currentWeapon.name === '' || !player.currentWeapon.name) {
-                //   player.statusDisplay = {
-                //     state: true,
-                //     status: "No weapon. Can't attack",
-                //     count: 1,
-                //     limit: player.statusDisplay.limit,
-                //   }
-                // }
-                // else {
-                //   player.action = 'attacking';
-                //   player.attacking = {
-                //     state: true,
-                //     count: 1,
-                //     limit: player.attacking.limit,
-                //   }
-                // }
+              if (player.stamina.current - 3 >= 0) {
 
-                // BLUNT ATTACK!!
-                if (this.keyPressed[player.number-1].dodge === true) {
-                  if (player.dodging.countState === true || player.dodging.state === true) {
-                    player.dodging = {
-                      countState: false,
-                      state: false,
-                      count: 0,
-                      limit: 20,
-                      peak: {
-                        start: 5,
-                        end: 10,
-                      }
-                    };
+                if (this.keyPressed[player.number-1].attack === true && player.success.deflected.state !== true) {
+                  // console.log('start attacking');
+                  // console.log('pre attack');
+
+                  // if (player.currentWeapon.name === '' || !player.currentWeapon.name) {
+                  //   player.statusDisplay = {
+                  //     state: true,
+                  //     status: "No weapon. Can't attack",
+                  //     count: 1,
+                  //     limit: player.statusDisplay.limit,
+                  //   }
+                  // }
+                  // else {
+                  //   player.action = 'attacking';
+                  //   player.attacking = {
+                  //     state: true,
+                  //     count: 1,
+                  //     limit: player.attacking.limit,
+                  //   }
+                  // }
+
+                  // BLUNT ATTACK!!
+                  if (this.keyPressed[player.number-1].dodge === true) {
+                    if (player.dodging.countState === true || player.dodging.state === true) {
+                      player.dodging = {
+                        countState: false,
+                        state: false,
+                        count: 0,
+                        limit: 20,
+                        peak: {
+                          start: 5,
+                          end: 10,
+                        }
+                      };
+                    }
+                    player.bluntAttack = true;
                   }
-                  player.bluntAttack = true;
+
+                  player.attacking = {
+                    state: true,
+                    count: 1,
+                    limit: player.attacking.limit,
+                  }
+
                 }
 
-                player.attacking = {
+              } else {
+                player.statusDisplay = {
                   state: true,
+                  status: "Out of Stamina",
                   count: 1,
-                  limit: player.attacking.limit,
+                  limit: player.statusDisplay.limit,
                 }
-
               }
+
               if (this.keyPressed[player.number-1].defend === true) {
                 // console.log('start defending',player.number);
 
@@ -4591,6 +4656,7 @@ class App extends Component {
 
     let indicatorImgs = {
       preAttack: this.refs.preAttackIndicate,
+      preAttack2: this.refs.preAttack2Indicate,
       attack1: this.refs.attack1Indicate,
       attack2: this.refs.attack2Indicate,
       attack3: this.refs.attack3Indicate,
@@ -4606,6 +4672,7 @@ class App extends Component {
       death: this.refs.deathIndicate,
       attackBreak: this.refs.attackBreakIndicate,
       defendBreak: this.refs.defendBreakIndicate,
+      dodge: this.refs.dodgeIndicate,
     }
 
     // SPRITE SHEET ARRAY!!
@@ -5465,16 +5532,10 @@ class App extends Component {
                 context.drawImage(indicatorImgs.attackSuccess, point.x-35, point.y-35, 35,35);
               }
               if (plyr.dodging.countState === true && plyr.dodging.count < 3) {
-                context.fillStyle = 'red';
-                context.beginPath();
-                context.arc(point.x-25, point.y-35, 10, 0, 2 * Math.PI);
-                context.fill();
+                context.drawImage(indicatorImgs.preAttack2, point.x-45, point.y-35, 35,35);
               }
               if (plyr.dodging.state === true) {
-                context.fillStyle = 'white';
-                context.beginPath();
-                context.arc(point.x-25, point.y-35, 10, 0, 2 * Math.PI);
-                context.fill();
+                context.drawImage(indicatorImgs.dodge, point.x-45, point.y-35, 35,35);
               }
 
               // playerDrawLog(x,y,plyr)
@@ -9797,8 +9858,8 @@ class App extends Component {
             ]
           },
           stamina: {
-            current: 20,
-            max: 20,
+            current: 15,
+            max: 15,
           },
         }
 
@@ -10111,9 +10172,11 @@ class App extends Component {
           <img src={ghostIndicate} className='hidden playerImgs' ref="ghostIndicate" alt="logo" />
           <img src={deathIndicate} className='hidden playerImgs' ref="deathIndicate" alt="logo" />
           <img src={preAttackIndicate} className='hidden playerImgs' ref="preAttackIndicate" alt="logo" />
+          <img src={preAttack2Indicate} className='hidden playerImgs' ref="preAttack2Indicate" alt="logo" />
           <img src={attackBreakIndicate} className='hidden playerImgs' ref="attackBreakIndicate" alt="logo" />
           <img src={defendBreakIndicate} className='hidden playerImgs' ref="defendBreakIndicate" alt="logo" />
           <img src={boltDefendIndicate} className='hidden playerImgs' ref="boltDefendIndicate" alt="logo" />
+          <img src={dodgeIndicate} className='hidden playerImgs' ref="dodgeIndicate" alt="logo" />
 
 
           <img src={sword} className='hidden playerImgs' ref="itemSword" alt="logo" />
@@ -10139,81 +10202,6 @@ class App extends Component {
           <img src={strDown} className='hidden playerImgs' ref="itemStrDown" alt="logo" />
           <img src={focusUp} className='hidden playerImgs' ref="itemFocusUp" alt="logo" />
           <img src={focusDown} className='hidden playerImgs' ref="itemFocusDown" alt="logo" />
-
-
-          {
-            // <img src={playerImgIdleNorth} className='hidden playerImgs' ref="playerImgIdleNorth" alt="logo" />
-            // <img src={playerImgIdleNorthWest} className='hidden playerImgs' ref="playerImgIdleNorthWest" alt="logo" />
-            // <img src={playerImgIdleNorthEast} className='hidden playerImgs' ref="playerImgIdleNorthEast" alt="logo" />
-            // <img src={playerImgIdleSouth} className='hidden playerImgs' ref="playerImgIdleSouth" alt="logo" />
-            // <img src={playerImgIdleSouthWest} className='hidden playerImgs' ref="playerImgIdleSouthWest" alt="logo" />
-            // <img src={playerImgIdleSouthEast} className='hidden playerImgs' ref="playerImgIdleSouthEast" alt="logo" />
-            // <img src={playerImgIdleEast} className='hidden playerImgs' ref="playerImgIdleEast" alt="logo" />
-            // <img src={playerImgIdleWest} className='hidden playerImgs' ref="playerImgIdleWest" alt="logo" />
-            //
-            // <img src={playerImgIdleNorth} className='hidden playerImgs' ref="playerImgIdleSwordNorth" alt="logo" />
-            // <img src={playerImgIdleNorthWest} className='hidden playerImgs' ref="playerImgIdleSwordNorthWest" alt="logo" />
-            // <img src={playerImgIdleNorthEast} className='hidden playerImgs' ref="playerImgIdleSwordNorthEast" alt="logo" />
-            // <img src={playerImgIdleSouth} className='hidden playerImgs' ref="playerImgIdleSwordSouth" alt="logo" />
-            // <img src={playerImgIdleSouthWest} className='hidden playerImgs' ref="playerImgIdleSwordSouthWest" alt="logo" />
-            // <img src={playerImgIdleSouthEast} className='hidden playerImgs' ref="playerImgIdleSwordSouthEast" alt="logo" />
-            // <img src={playerImgIdleEast} className='hidden playerImgs' ref="playerImgIdleSwordEast" alt="logo" />
-            // <img src={playerImgIdleWest} className='hidden playerImgs' ref="playerImgIdleSwordWest" alt="logo" />
-            //
-            // <img src={playerImgIdleNorth} className='hidden playerImgs' ref="playerImgIdleSpearNorth" alt="logo" />
-            // <img src={playerImgIdleNorthWest} className='hidden playerImgs' ref="playerImgIdleSpearNorthWest" alt="logo" />
-            // <img src={playerImgIdleNorthEast} className='hidden playerImgs' ref="playerImgIdleSpearNorthEast" alt="logo" />
-            // <img src={playerImgIdleSouth} className='hidden playerImgs' ref="playerImgIdleSpearSouth" alt="logo" />
-            // <img src={playerImgIdleSouthWest} className='hidden playerImgs' ref="playerImgIdleSpearSouthWest" alt="logo" />
-            // <img src={playerImgIdleSouthEast} className='hidden playerImgs' ref="playerImgIdleSpearSouthEast" alt="logo" />
-            // <img src={playerImgIdleEast} className='hidden playerImgs' ref="playerImgIdleSpearEast" alt="logo" />
-            // <img src={playerImgIdleWest} className='hidden playerImgs' ref="playerImgIdleSpearWest" alt="logo" />
-            //
-            // <img src={playerImgIdleNorth} className='hidden playerImgs' ref="playerImgIdleCrossbowNorth" alt="logo" />
-            // <img src={playerImgIdleNorthWest} className='hidden playerImgs' ref="playerImgIdleCrossbowNorthWest" alt="logo" />
-            // <img src={playerImgIdleNorthEast} className='hidden playerImgs' ref="playerImgIdleCrossbowNorthEast" alt="logo" />
-            // <img src={playerImgIdleSouth} className='hidden playerImgs' ref="playerImgIdleCrossbowSouth" alt="logo" />
-            // <img src={playerImgIdleSouthWest} className='hidden playerImgs' ref="playerImgIdleCrossbowSouthWest" alt="logo" />
-            // <img src={playerImgIdleSouthEast} className='hidden playerImgs' ref="playerImgIdleCrossbowSouthEast" alt="logo" />
-            // <img src={playerImgIdleEast} className='hidden playerImgs' ref="playerImgIdleCrossbowEast" alt="logo" />
-            // <img src={playerImgIdleWest} className='hidden playerImgs' ref="playerImgIdleCrossbowWest" alt="logo" />
-            //
-            // <img src={player2ImgIdleNorth} className='hidden playerImgs' ref="player2ImgIdleNorth" alt="logo" />
-            // <img src={player2ImgIdleNorthWest} className='hidden playerImgs' ref="player2ImgIdleNorthWest" alt="logo" />
-            // <img src={player2ImgIdleNorthEast} className='hidden playerImgs' ref="player2ImgIdleNorthEast" alt="logo" />
-            // <img src={player2ImgIdleSouth} className='hidden playerImgs' ref="player2ImgIdleSouth" alt="logo" />
-            // <img src={player2ImgIdleSouthWest} className='hidden playerImgs' ref="player2ImgIdleSouthWest" alt="logo" />
-            // <img src={player2ImgIdleSouthEast} className='hidden playerImgs' ref="player2ImgIdleSouthEast" alt="logo" />
-            // <img src={player2ImgIdleEast} className='hidden playerImgs' ref="player2ImgIdleEast" alt="logo" />
-            // <img src={player2ImgIdleWest} className='hidden playerImgs' ref="player2ImgIdleWest" alt="logo" />
-            //
-            // <img src={player2ImgIdleNorth} className='hidden playerImgs' ref="player2ImgIdleSwordNorth" alt="logo" />
-            // <img src={player2ImgIdleNorthWest} className='hidden playerImgs' ref="player2ImgIdleSwordNorthWest" alt="logo" />
-            // <img src={player2ImgIdleNorthEast} className='hidden playerImgs' ref="player2ImgIdleSwordNorthEast" alt="logo" />
-            // <img src={player2ImgIdleSouth} className='hidden playerImgs' ref="player2ImgIdleSwordSouth" alt="logo" />
-            // <img src={player2ImgIdleSouthWest} className='hidden playerImgs' ref="player2ImgIdleSwordSouthWest" alt="logo" />
-            // <img src={player2ImgIdleSouthEast} className='hidden playerImgs' ref="player2ImgIdleSwordSouthEast" alt="logo" />
-            // <img src={player2ImgIdleEast} className='hidden playerImgs' ref="player2ImgIdleSwordEast" alt="logo" />
-            // <img src={player2ImgIdleWest} className='hidden playerImgs' ref="player2ImgIdleSwordWest" alt="logo" />
-            //
-            // <img src={player2ImgIdleNorth} className='hidden playerImgs' ref="player2ImgIdleSpearNorth" alt="logo" />
-            // <img src={player2ImgIdleNorthWest} className='hidden playerImgs' ref="player2ImgIdleSpearNorthWest" alt="logo" />
-            // <img src={player2ImgIdleNorthEast} className='hidden playerImgs' ref="player2ImgIdleSpearNorthEast" alt="logo" />
-            // <img src={player2ImgIdleSouth} className='hidden playerImgs' ref="player2ImgIdleSpearSouth" alt="logo" />
-            // <img src={player2ImgIdleSouthWest} className='hidden playerImgs' ref="player2ImgIdleSpearSouthWest" alt="logo" />
-            // <img src={player2ImgIdleSouthEast} className='hidden playerImgs' ref="player2ImgIdleSpearSouthEast" alt="logo" />
-            // <img src={player2ImgIdleEast} className='hidden playerImgs' ref="player2ImgIdleSpearEast" alt="logo" />
-            // <img src={player2ImgIdleWest} className='hidden playerImgs' ref="player2ImgIdleSpearWest" alt="logo" />
-            //
-            // <img src={player2ImgIdleNorth} className='hidden playerImgs' ref="player2ImgIdleCrossbowNorth" alt="logo" />
-            // <img src={player2ImgIdleNorthWest} className='hidden playerImgs' ref="player2ImgIdleCrossbowNorthWest" alt="logo" />
-            // <img src={player2ImgIdleNorthEast} className='hidden playerImgs' ref="player2ImgIdleCrossbowNorthEast" alt="logo" />
-            // <img src={player2ImgIdleSouth} className='hidden playerImgs' ref="player2ImgIdleCrossbowSouth" alt="logo" />
-            // <img src={player2ImgIdleSouthWest} className='hidden playerImgs' ref="player2ImgIdleCrossbowSouthWest" alt="logo" />
-            // <img src={player2ImgIdleSouthEast} className='hidden playerImgs' ref="player2ImgIdleCrossbowSouthEast" alt="logo" />
-            // <img src={player2ImgIdleEast} className='hidden playerImgs' ref="player2ImgIdleCrossbowEast" alt="logo" />
-            // <img src={player2ImgIdleWest} className='hidden playerImgs' ref="player2ImgIdleCrossbowWest" alt="logo" />
-          }
 
 
           <img src={playerImgIdleSheet} className='hidden playerImgs' ref="playerImgIdleSheet" alt="logo" />
