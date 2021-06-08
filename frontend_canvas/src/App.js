@@ -4223,7 +4223,6 @@ class App extends Component {
                         this.players[player.number-1].jumping.checking = false;
                       }
 
-
                     } else {
                       // console.log('jump obstacle detected');
                       this.players[player.number-1].jumping.checking = false;
@@ -5495,7 +5494,7 @@ class App extends Component {
                 } else {
                   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40);
                 }
-
+                console.log('tts',plyr.strafing.state,'hook',plyr.strafeReleaseHook,'act',plyr.action);
 
               }
             }
@@ -5509,7 +5508,7 @@ class App extends Component {
                 } else {
                   context2.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40);
                 }
-
+                console.log('tts2',plyr.strafing.state,'hook',plyr.strafeReleaseHook,'act',plyr.action);
                 // playerDrawLog(x,y,plyr)
               }
             }
@@ -5544,11 +5543,10 @@ class App extends Component {
             }
 
           }
-          else if (plyr.moving.state === false && plyr.ghost.state !== true) {
+          else if (plyr.moving.state === false && plyr.ghost.state !== true && plyr.dodging.state !== true) {
 
             if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y && plyr.success.deflected.state === false) {
               // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
-
 
               context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40)
 
@@ -5603,13 +5601,14 @@ class App extends Component {
               if (plyr.dodging.countState === true && plyr.dodging.count < 3) {
                 context.drawImage(indicatorImgs.preAttack2, point.x-45, point.y-35, 35,35);
               }
-              if (plyr.dodging.state === true) {
-                context.drawImage(indicatorImgs.dodge, point.x-45, point.y-35, 35,35);
-              }
+              // if (plyr.dodging.state === true) {
+              //   context.drawImage(indicatorImgs.dodge, point.x-45, point.y-35, 35,35);
+              // }
 
               // playerDrawLog(x,y,plyr)
             }
           }
+          // else if (plyr.target.void === true && plyr.moving.state === true && plyr.falling.state !== true && plyr.jumping.state !== true) {
           else if (plyr.target.void === true && plyr.moving.state === true && plyr.falling.state !== true) {
 
             // console.log('heading for thevoid @ draw step');
@@ -5671,7 +5670,7 @@ class App extends Component {
             }
           }
 
-          if (plyr.strafing.state === true && plyr.falling.state !== true) {
+          if (plyr.strafing.state === true && plyr.falling.state !== true && plyr.jumping.state !== true) {
             if (plyr.strafing.direction === 'north' || plyr.strafing.direction === 'northWest' || plyr.strafing.direction === 'west') {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
@@ -5970,7 +5969,6 @@ class App extends Component {
           }
           if (plyr.dodging.state === true) {
 
-
             if (plyr.direction === 'north' || plyr.direction === 'south') {
               if (
                 // x === plyr.moving.origin.number.x &&
@@ -6012,7 +6010,7 @@ class App extends Component {
               }
 
             }
-
+            context.drawImage(indicatorImgs.dodge, point.x-45, point.y-35, 35,35);
 
           }
           // DEPTH SORTING!!
