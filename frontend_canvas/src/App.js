@@ -5986,16 +5986,31 @@ class App extends Component {
               }
             }
             if (plyr.direction === 'east' || plyr.direction === 'west') {
-              if (
-                x === plyr.currentPosition.cell.number.x &&
-                y === plyr.currentPosition.cell.number.y+1
-              ) {
-                if (plyr.dodgeDirection === 'north') {
-                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-10, point.y-35, 40,40);
-                } else {
-                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-45, point.y-15, 40,40);
+              let cll = this.gridInfo.find(elem => elem.number.x === plyr.currentPosition.cell.number.x && elem.number.y === plyr.currentPosition.cell.number.y)
+              if (cll.edge.state === true && cll.edge.side === "south") {
+                if (
+                  x === plyr.currentPosition.cell.number.x &&
+                  y === plyr.currentPosition.cell.number.y
+                ) {
+                  if (plyr.dodgeDirection === 'north') {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-10, point.y-35, 40,40);
+                  } else {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-40, point.y-15, 40,40);
+                  }
+                }
+              } else {
+                if (
+                  x === plyr.currentPosition.cell.number.x &&
+                  y === plyr.currentPosition.cell.number.y+1
+                ) {
+                  if (plyr.dodgeDirection === 'north') {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-10, point.y-35, 40,40);
+                  } else {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-40, point.y-15, 40,40);
+                  }
                 }
               }
+
             }
 
 
