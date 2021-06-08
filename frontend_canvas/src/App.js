@@ -3860,16 +3860,22 @@ class App extends Component {
         }
         if (this.keyPressed[player.number-1].dodge === true ) {
 
+
+          if (
+          this.keyPressed[player.number-1].north === true ||
+          this.keyPressed[player.number-1].south === true ||
+          this.keyPressed[player.number-1].east === true ||
+          this.keyPressed[player.number-1].west === true &&
+          player.strafing.state !== true &&
+          player.flanking.state !== true
+        ) {
+
           if (player.stamina.current - 7 >= 0) {
 
-            if (
-            this.keyPressed[player.number-1].north === true ||
-            this.keyPressed[player.number-1].south === true ||
-            this.keyPressed[player.number-1].east === true ||
-            this.keyPressed[player.number-1].west === true &&
-            player.strafing.state !== true &&
-            player.flanking.state !== true
-          ) {
+            if (player.dodging.countState === true || player.dodging.state === true) {
+              
+              player.stamina.current = player.stamina.current + 4;
+            }
 
             if (keyPressedDirection !== player.direction) {
 
@@ -3898,6 +3904,7 @@ class App extends Component {
               }
 
               if (canFlank === true) {
+
                 // console.log('flanking step',keyPressedDirection,player.direction);
                 this.players[player.number-1].flanking.checking = true;
                 this.players[player.number-1].flanking.direction = keyPressedDirection;
@@ -3953,7 +3960,6 @@ class App extends Component {
               // console.log('cant flank');
             }
 
-          }
           } else {
             player.statusDisplay = {
               state: true,
@@ -3962,6 +3968,8 @@ class App extends Component {
               limit: player.statusDisplay.limit,
             }
           }
+
+        }
 
         }
 
