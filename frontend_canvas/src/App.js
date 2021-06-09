@@ -2253,7 +2253,7 @@ class App extends Component {
     if(this.stepper.deltaTime > this.stepper.interval) {
 
       this.time++
-      if (this.time === 300) {
+      if (this.time === 100) {
         this.openVoid = true;
         this.customCellToVoid({x:2,y:2})
       }
@@ -2523,6 +2523,10 @@ class App extends Component {
               }
 
               this.checkDestination(player);
+              if (player.drowning !== true) {
+                this.getTarget(player);
+              }
+
 
             }
 
@@ -2585,6 +2589,7 @@ class App extends Component {
 
               player.jumping.state = false;
               player.currentPosition.cell = player.target.cell2;
+              player.strafing.state = false;
               player.action = 'idle';
               player.moving = {
                 state: false,
@@ -2607,6 +2612,7 @@ class App extends Component {
               }
 
               this.checkDestination(player);
+              let trgt = this.getTarget(player);
 
               if (pushBack === true ) {
                 // console.log('xx');
@@ -5054,6 +5060,7 @@ class App extends Component {
           drawFloor = false;
         }
 
+
         floor = floorImgs[gridInfoCell.terrain.name]
 
 
@@ -5117,10 +5124,46 @@ class App extends Component {
           {x:center.x-tileWidth, y:center.y},
         ];
 
+
         for (const vertex of vertices) {
           context.fillStyle = "yellow";
           context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
+
         }
+
+        // TARGET HIGHLIGHT!!
+        let floorHighlight;
+        for (const plyr3 of this.players) {
+          if (
+            x === plyr3.target.cell.number.x &&
+            y === plyr3.target.cell.number.y
+          ) {
+            if (plyr3.ai.state !== true && plyr3.dead.state !== true && plyr3.falling.state !== true && plyr3.drowning !== true) {
+              switch(plyr3.number) {
+                case 1:
+                  floorHighlight = 'purple';
+                break;
+                case 2:
+                  floorHighlight = 'red';
+                break;
+              }
+            }
+            if (plyr3.ai.state === true && plyr3.dead.state !== true && plyr3.falling.state !== true && plyr3.drowning !== true) {
+              floorHighlight = 'brown';
+            }
+            if (plyr3.dead.state !== true) {
+              context.lineWidth = 5;
+              context.beginPath();
+              for (const vertex of vertices) {
+                context.strokeStyle = floorHighlight;
+                context.lineTo(vertex.x, vertex.y);
+              }
+              context.closePath();
+              context.stroke();
+            }
+          }
+        }
+
 
         // IN GAME ITEM PLACEMENT!!
         if (gridInfoCell.item.name !== '' && gridInfoCell.void.state !== true) {
@@ -6483,6 +6526,7 @@ class App extends Component {
       void: false
     }
 
+
     if (player.strafing.state === true) {
       direction = player.strafing.direction;
     }
@@ -6874,6 +6918,7 @@ class App extends Component {
           voidDirection = player.direction;
           midGridVoid = true
         }
+
       }
 
       if (player.currentWeapon.type === 'spear' && player.attacking.state === true) {
@@ -6894,6 +6939,8 @@ class App extends Component {
           target.cell2.center = cell.center;
         }
       }
+
+
 
     }
 
