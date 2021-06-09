@@ -739,6 +739,25 @@ class App extends Component {
         ai: {
           state: false,
           imgType: '',
+          currentObjective: '',
+          targetPlayer: {
+            number: 1,
+            currentPosition: {
+              x: undefined,
+              y: undefined,
+            },
+            target: {
+              number1: {
+                x: undefined,
+                y: undefined,
+              },
+              number2: {
+                x: undefined,
+                y: undefined,
+              },
+            },
+            action: '',
+          },
           instructions: [
 
           ],
@@ -1036,6 +1055,25 @@ class App extends Component {
         ai: {
           state: false,
           imgType: '',
+          currentObjective: '',
+          targetPlayer: {
+            number: 1,
+            currentPosition: {
+              x: undefined,
+              y: undefined,
+            },
+            target: {
+              number1: {
+                x: undefined,
+                y: undefined,
+              },
+              number2: {
+                x: undefined,
+                y: undefined,
+              },
+            },
+            action: '',
+          },
           instructions: [],
           currentInstruction: 0,
         },
@@ -1199,11 +1237,14 @@ class App extends Component {
         crossbow: 20,
       },
     };
+    this.easyStar = undefined;
 
   }
 
 
   componentDidMount() {
+
+    this.easyStar = new Easystar.js();
 
 
     if (window.innerWidth < 1100) {
@@ -1911,14 +1952,6 @@ class App extends Component {
   addListeners = (canvas,canvas2) => {
     // console.log('adding listeners');
 
-    // const canvas = this.canvasRef.current;
-    // const canvas2 = this.canvasRef2.current;
-
-    // canvas.addEventListener("click", e => {
-    //   console.log('canvas click',e);
-    //   // this.drawBall();
-    // });
-
     canvas2.addEventListener("click", e => {
       this.getCanvasClick(canvas2, e)
     });
@@ -1940,25 +1973,17 @@ class App extends Component {
   getCanvasClick = (canvas, event) => {
     const rect = canvas.getBoundingClientRect()
 
-    // let xGap = window.pageXOffset + this.canvasRef2.current.getBoundingClientRect().left
-    // let yGap = window.pageYOffset + this.canvasRef2.current.getBoundingClientRect().top
-
     const x = (event.clientX - rect.left);
     const y = (event.clientY - rect.top);
-    // const x = (event.clientX - rect.left) - xGap;
-    // const y = (event.clientY - rect.top) - yGap;
-    // const x = (event.clientX - rect.left) - 222;
-    // const y = (event.clientY - rect.top) - 158;
+
     let insideGrid = false;
-    // console.log('clicked',x,y,);
 
     for(const cell of this.gridInfo) {
       let point = [x,y];
       let polygon = [];
       for (const vertex of cell.vertices) {
         let vertexPoint = [vertex.x+10,vertex.y+5];
-        // let vertexPoint = [vertex.x-10,vertex.y-5];
-        // let vertexPoint = [vertex.x,vertex.y];
+
         polygon.push(vertexPoint)
       }
       let pip = pointInPolygon(point, polygon)
@@ -3586,7 +3611,7 @@ class App extends Component {
         }
 
 
-        // DODGE STEPPER!
+        // // DODGE STEPPER!
         if (player.dodging.countState === true) {
 
           let startMod = player.crits.dodge;
@@ -4000,11 +4025,24 @@ class App extends Component {
           player.flanking.state !== true
         ) {
 
-          if (player.stamina.current - 7 >= 0) {
+          // this.players[player.number-1].dodging = {
+          //   countState: false,
+          //   state: false,
+          //   count: 0,
+          //   limit: player.dodging.limit,
+          //   peak: {
+          //     start: player.dodging.peak.start,
+          //     end: player.dodging.peak.end,
+          //   }
+          // }
+
+          if (player.stamina.current - 6 >= 0) {
 
             if (player.dodging.countState === true || player.dodging.state === true) {
 
-              player.stamina.current = player.stamina.current + 4;
+              this.players[player.number-1].stamina.current = player.stamina.current + 4;
+
+
             }
 
             if (keyPressedDirection !== player.direction) {
@@ -5736,7 +5774,6 @@ class App extends Component {
               // playerDrawLog(x,y,plyr)
             }
           }
-          // else if (plyr.target.void === true && plyr.moving.state === true && plyr.falling.state !== true && plyr.jumping.state !== true) {
           else if (plyr.target.void === true && plyr.moving.state === true && plyr.falling.state !== true) {
 
             // console.log('heading for thevoid @ draw step');
@@ -8775,6 +8812,7 @@ class App extends Component {
       }
 
     }
+
   }
   deflectDrop = (player) => {
     // console.log('deflected! drop gear?');
@@ -9193,7 +9231,11 @@ class App extends Component {
       pathArray.push(row)
     }
     this.pathArray = pathArray;
-    // console.log('this.pathArray',this.pathArray);
+
+    this.easyStar.setGrid(this.pathArray)
+    this.easyStar.setAcceptableTiles([0])
+
+    console.log('this.pathArray',this.pathArray);
 
   }
   startProcessLevelData = (canvas) => {
@@ -10077,58 +10119,77 @@ class App extends Component {
           ai: {
             state: true,
             imgType: imgType,
+            currentObjective: '',
             currentInstruction: 0,
+            targetPlayer: {
+              number: 1,
+              currentPosition: {
+                x: undefined,
+                y: undefined,
+              },
+              target: {
+                number1: {
+                  x: undefined,
+                  y: undefined,
+                },
+                number2: {
+                  x: undefined,
+                  y: undefined,
+                },
+              },
+              action: '',
+            },
             instructions: [
-              {
-                keyword: 'shortWait',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'moveEast',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'shortWait',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'attack',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'shortWait',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'attack',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'shortWait',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'moveNorth',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'longDefend',
-                count: 0,
-                limit: 0,
-              },
-              {
-                keyword: 'shortWait',
-                count: 0,
-                limit: 0,
-              },
+              // {
+              //   keyword: 'shortWait',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'moveEast',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'shortWait',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'attack',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'shortWait',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'attack',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'shortWait',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'moveNorth',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'longDefend',
+              //   count: 0,
+              //   limit: 0,
+              // },
+              // {
+              //   keyword: 'shortWait',
+              //   count: 0,
+              //   limit: 0,
+              // },
             ]
           },
           stamina: {
@@ -10211,9 +10272,150 @@ class App extends Component {
 
     this.addAiCount.state = true;
   }
+  aiParsePath = (path,aiPlayer) => {
+
+    // create instructions based on
+    // switch(direction) {
+    //   case 'north' :
+    //     targetCellNumber = {
+    //       x: currentPosition.x,
+    //       y: currentPosition.y-1
+    //     }
+    //   break;
+    //   case 'northEast' :
+    //     targetCellNumber = {
+    //       x: currentPosition.x+1,
+    //       y: currentPosition.y-1
+    //     }
+    //   break;
+    //   case 'northWest' :
+    //     targetCellNumber = {
+    //       x: currentPosition.x-1,
+    //       y: currentPosition.y-1
+    //     }
+    //   break;
+    //   case 'east' :
+    //     targetCellNumber = {
+    //       x: currentPosition.x+1,
+    //       y: currentPosition.y
+    //     }
+    //   break;
+    //   case 'west' :
+    //     targetCellNumber = {
+    //       x: currentPosition.x-1,
+    //       y: currentPosition.y
+    //     }
+    //   break;
+    //   case 'south' :
+    //     targetCellNumber = {
+    //       x: currentPosition.x,
+    //       y: currentPosition.y+1
+    //     }
+    //   break;
+    //   case 'southEast' :
+    //     targetCellNumber = {
+    //       x: currentPosition.x+1,
+    //       y: currentPosition.y+1
+    //     }
+    //   break;
+    //   case 'southWest' :
+    //     targetCellNumber = {
+    //       x: currentPosition.x-1,
+    //       y: currentPosition.y+1
+    //     }
+    //   break;
+    // }
+    // and push TO AI PLAYER
+
+  }
   aiDecide = () => {
 
-    // check other players & board status then feed instructions
+
+    for (const plyr of this.players) {
+      if (plyr.ai.state === true) {
+
+
+        let getPath = false;
+
+        // UPDATE TARGET PLYR!!
+        let targetPlayer = this.players[plyr.ai.targetPlayer.number-1];
+        let prevTargetPos = plyr.ai.targetPlayer.currentPosition;
+        let currentTargetPos = targetPlayer.currentPosition.cell.number;
+        // console.log('prevTargetPos',prevTargetPos);
+        // console.log('currentTargetPos',currentTargetPos);
+        if (prevTargetPos.x === undefined || prevTargetPos.y === undefined) {
+          // console.log('target unset! Acquiring...');
+
+          targetPlayer = this.players[0];
+          plyr.ai.targetPlayer.currentPosition = {
+            x: targetPlayer.currentPosition.cell.number.x,
+            y: targetPlayer.currentPosition.cell.number.y,
+          }
+          getPath = true;
+        }
+        else {
+          if (
+            prevTargetPos.x !== currentTargetPos.x ||
+            prevTargetPos.y !== currentTargetPos.y
+          ) {
+            // console.log('target location changed! Updating path');
+            plyr.ai.targetPlayer.currentPosition = {
+              x: targetPlayer.currentPosition.cell.number.x,
+              y: targetPlayer.currentPosition.cell.number.y,
+            }
+            getPath = true;
+          } else {
+            // console.log('target position unchanged! Skipping path update!');
+            getPath = false;
+          }
+
+          plyr.targetPlayer = {
+            number: plyr.ai.targetPlayer.number,
+            currentPosition: {
+              x: targetPlayer.currentPosition.cell.number.x,
+              y: targetPlayer.currentPosition.cell.number.x,
+            },
+            target: {
+              number1: {
+                x: targetPlayer.target.cell.number.x,
+                y: targetPlayer.target.cell.number.x,
+              },
+              number2: {
+                x: targetPlayer.target.cell2.number.x,
+                y: targetPlayer.target.cell2.number.x,
+              },
+            },
+            action: targetPlayer.action,
+          }
+
+        }
+
+
+        if (getPath === true && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
+
+          let pathSet;
+          let aiPos = plyr.currentPosition.cell.number;
+          let targetPos = this.players[plyr.ai.targetPlayer.number-1].currentPosition.cell.number;
+          this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
+            if (path === null) {
+                console.log("Path was not found.");
+            } else {
+                console.log('path',path);
+                pathSet = path;
+            }
+          });
+          this.easyStar.calculate();
+
+          this.aiParsePath(pathSet,plyr.number);
+
+        }
+
+
+
+
+      }
+    }
+
   }
   aiAct = () => {
 
