@@ -5130,6 +5130,7 @@ class App extends Component {
           context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
 
         }
+        
 
         // TARGET HIGHLIGHT!!
         let floorHighlight;

@@ -12,7 +12,7 @@ import {
   faMapMarked,
 
 } from '@fortawesome/free-solid-svg-icons';
-
+import controls from './assets/controls.png'
 
 import './settings.css';
 
@@ -24,7 +24,7 @@ const Settings = props => {
       <h2 className="settingsHeading">
         Settings :
       </h2>
-      <Form onSubmit={props.onConfirm}>
+      <Form onSubmit={props.onConfirm} className="form">
         <Form.Row>
           <Form.Group as={Col} controlId="gridSize" className="formGroup">
             <Form.Label className="formLabel">Grid Size: {props.gridWidth+1} x {props.gridWidth+1}</Form.Label>
@@ -74,6 +74,11 @@ const Settings = props => {
           <Button variant="danger" className="addFormBtn" onClick={props.onCancel}>Cancel</Button>
         </Form.Row>
         </Form>
+
+
+        <img src={controls} className="controlsImg"></img>
+
+
       </div>
     </div>
   )
