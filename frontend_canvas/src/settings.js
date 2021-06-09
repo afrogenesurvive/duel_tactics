@@ -75,7 +75,9 @@ const Settings = props => {
         </Form.Row>
         </Form>
 
-
+        <h2 className="settingsHeading">
+          Controls :
+        </h2>
         <img src={controls} className="controlsImg"></img>
 
 

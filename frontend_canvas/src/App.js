@@ -1336,7 +1336,7 @@ class App extends Component {
             //   gp.buttons.indexOf(btn) === 9
             // ) {
             //   console.log('1 player btn',gp.buttons.indexOf(btn));
-            //   console.log('gamepads', gp.id.substr(0,7));
+            //   // console.log('gamepads', gp.id.substr(0,7));
             // }
 
             // DOWN BTN
@@ -1354,7 +1354,7 @@ class App extends Component {
             // LEFT BTN
             if (gp.buttons.indexOf(btn) === 2) {
               // console.log('1 player defend held',gp.buttons.indexOf(btn));
-
+              keyPressed[0].dodge = true;
               this.currentPlayer = 1;
             }
             // UP BTN
@@ -1365,13 +1365,13 @@ class App extends Component {
               this.currentPlayer = 1;
             }
 
-            // LEFT SHLDR BTN
+            // L BTN
             if (gp.buttons.indexOf(btn) === 4) {
               // console.log('1 player defend held',gp.buttons.indexOf(btn));
               keyPressed[0].cycleArmor = true;
               this.currentPlayer = 1;
             }
-            // RIGHT SHLDR BTN
+            // R BTN
             if (gp.buttons.indexOf(btn) === 5) {
               // console.log('1 player defend held',gp.buttons.indexOf(btn));
               keyPressed[0].cycleWeapon = true;
@@ -1383,6 +1383,18 @@ class App extends Component {
               if (this.players[0].dead.state === true) {
                 this.respawn(this.players[0])
               }
+            }
+
+            // SHOULDER BTN
+            if (gp.buttons.indexOf(btn) === 8) {
+              // console.log('1 player defend held',gp.buttons.indexOf(btn));
+
+            }
+
+            // SHOULDER TRIGGER
+            if (gp.buttons.indexOf(btn) === 6) {
+              // console.log('1 player defend held',gp.buttons.indexOf(btn));
+
             }
 
           }
@@ -1406,18 +1418,19 @@ class App extends Component {
             // DOWN BTN
             if (gp.buttons.indexOf(btn) === 14) {
               // console.log('1 player attack held',gp.buttons.indexOf(btn));
-              keyPressed[0].attack = true;
+              keyPressed[0].defend = true;
               this.currentPlayer = 1;
             }
             // RIGHT BTN
             if (gp.buttons.indexOf(btn) === 13) {
               // console.log('1 player defend held',gp.buttons.indexOf(btn));
-              keyPressed[0].defend = true;
+              keyPressed[0].attack = true;
               this.currentPlayer = 1;
             }
             // LEFT BTN
             if (gp.buttons.indexOf(btn) === 12) {
               // console.log('1 player defend held',gp.buttons.indexOf(btn));
+              keyPressed[0].dodge = true;
               this.currentPlayer = 1;
             }
             // UP BTN
@@ -1426,22 +1439,34 @@ class App extends Component {
               this.players[0].strafing.state = true;
               this.currentPlayer = 1;
             }
-            // RIGHT SHLDR BTN
+            // R BTN
             if (gp.buttons.indexOf(btn) === 19) {
               keyPressed[0].cycleArmor = true;
               this.currentPlayer = 1;
             }
-            // LEFT SHLDR BTN
+            // L BTN
             if (gp.buttons.indexOf(btn) === 18) {
               keyPressed[0].cycleWeapon = true;
               this.currentPlayer = 1;
             }
             // MINUS BTN
-            if (gp.buttons.indexOf(btn) === 19) {
+            if (gp.buttons.indexOf(btn) === 8) {
               if (this.players[0].dead.state === true) {
                 this.respawn(this.players[0])
               }
             }
+
+            // SHOULDER BTN
+            if (gp.buttons.indexOf(btn) === 4) {
+
+            }
+
+            // SHOULDER TRIGGER
+            if (gp.buttons.indexOf(btn) === 4) {
+
+            }
+
+
 
             if (
               gp.buttons.indexOf(btn) === 0 ||
@@ -1476,11 +1501,14 @@ class App extends Component {
               if (this.gamepadPollCounter.store1.length >= 2) {
                 // console.log('dbl capture',this.gamepadPollCounter.store1);
                 if (this.gamepadPollCounter.store1[0] === 1 && this.gamepadPollCounter.store1[1] === 0) {
-                  // console.log('LEFT BTN!');
+                  // console.log('DOWN BTN!');
+
+                  keyPressed[1].defend = true;
+                  this.currentPlayer = 2;
                 }
                 if (this.gamepadPollCounter.store1[0] === 0 && this.gamepadPollCounter.store1[1] === 1) {
-                  // console.log('DWN BTN!');
-                  keyPressed[1].attack = true;
+                  // console.log('LEFT BTN!');
+                  keyPressed[1].dodge = true;
                   this.currentPlayer = 2;
                 }
                 this.gamepadPollCounter.store1 = []
@@ -1494,25 +1522,76 @@ class App extends Component {
               if (this.gamepadPollCounter.store2.length >= 2) {
                 // console.log('dbl capture2',this.gamepadPollCounter.store2);
                 if (this.gamepadPollCounter.store2[0] === 2 && this.gamepadPollCounter.store2[1] === 3) {
-                  // console.log('RIGHT BTN!');
-                  keyPressed[1].defend = true;
-                  this.currentPlayer = 2;
-                }
-                if (this.gamepadPollCounter.store2[0] === 3 && this.gamepadPollCounter.store2[1] === 2) {
                   // console.log('UP BTN!');
                   keyPressed[1].strafe = true;
                   this.players[1].strafing.state = true;
+                  this.currentPlayer = 2;
+                }
+                if (this.gamepadPollCounter.store2[0] === 3 && this.gamepadPollCounter.store2[1] === 2) {
+                  // console.log('RIGHT BTN!');
+
+                  keyPressed[1].attack = true;
                   this.currentPlayer = 2;
                 }
                 this.gamepadPollCounter.store2 = []
               }
             }
 
+
+            // if (gp.buttons.indexOf(btn) === 0 || gp.buttons.indexOf(btn) === 1) {
+            //   if (this.gamepadPollCounter.store1.length < 2) {
+            //     this.gamepadPollCounter.store1.push(gp.buttons.indexOf(btn));
+            //   }
+            //   if (this.gamepadPollCounter.store1.length >= 2) {
+            //     // console.log('dbl capture',this.gamepadPollCounter.store1);
+            //     if (this.gamepadPollCounter.store1[0] === 1 && this.gamepadPollCounter.store1[1] === 0) {
+            //       // console.log('LEFT BTN!');
+            //     }
+            //     if (this.gamepadPollCounter.store1[0] === 0 && this.gamepadPollCounter.store1[1] === 1) {
+            //       // console.log('DWN BTN!');
+            //       keyPressed[1].attack = true;
+            //       this.currentPlayer = 2;
+            //     }
+            //     this.gamepadPollCounter.store1 = []
+            //   }
+            // }
+            //
+            // if (gp.buttons.indexOf(btn) === 2 || gp.buttons.indexOf(btn) === 3) {
+            //   if (this.gamepadPollCounter.store2.length < 2) {
+            //     this.gamepadPollCounter.store2.push(gp.buttons.indexOf(btn));
+            //   }
+            //   if (this.gamepadPollCounter.store2.length >= 2) {
+            //     // console.log('dbl capture2',this.gamepadPollCounter.store2);
+            //     if (this.gamepadPollCounter.store2[0] === 2 && this.gamepadPollCounter.store2[1] === 3) {
+            //       // console.log('RIGHT BTN!');
+            //       keyPressed[1].defend = true;
+            //       this.currentPlayer = 2;
+            //     }
+            //     if (this.gamepadPollCounter.store2[0] === 3 && this.gamepadPollCounter.store2[1] === 2) {
+            //       // console.log('UP BTN!');
+            //       keyPressed[1].strafe = true;
+            //       this.players[1].strafing.state = true;
+            //       this.currentPlayer = 2;
+            //     }
+            //     this.gamepadPollCounter.store2 = []
+            //   }
+            // }
+
             // PLUS BTN
             if (gp.buttons.indexOf(btn) === 9) {
               if (this.players[1].dead.state === true) {
                 this.respawn(this.players[1])
               }
+            }
+
+            // SHOULDER BTN
+            if (gp.buttons.indexOf(btn) === 5) {
+
+            }
+
+            // SHOULDER BTN
+            if (gp.buttons.indexOf(btn) === 7) {
+
             }
 
 
@@ -5130,7 +5209,7 @@ class App extends Component {
           context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
 
         }
-        
+
 
         // TARGET HIGHLIGHT!!
         let floorHighlight;

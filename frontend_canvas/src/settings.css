@@ -31,7 +31,7 @@
 .settingsContainer {
   margin: 0 auto;
   border: 1px solid #ffffff;
-  height: 28rem;
+  height: 32rem;
   width: 60%;
   padding: 1rem;
   border-radius: 5px;
@@ -48,6 +48,7 @@
 }
 .settingsHeading {
   text-align: center;
+  margin: 3rem 0 0 0;
 }
 
 .loadingImg {
