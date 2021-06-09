@@ -539,6 +539,11 @@ class App extends Component {
             y: 0,
           }
         },
+        newMoveDelay: {
+          state: false,
+          count: 0,
+          limit: 5,
+        },
         strafing: {
           state: false,
           direction: '',
@@ -853,6 +858,11 @@ class App extends Component {
             x: 0,
             y: 0,
           }
+        },
+        newMoveDelay: {
+          state: false,
+          count: 0,
+          limit: 5,
         },
         strafing: {
           state: false,
@@ -2607,6 +2617,8 @@ class App extends Component {
           ) {
             // console.log('next position is destination a',player.number);
 
+            player.newMoveDelay.state = true;
+
             if (player.target.void === false) {
               player.currentPosition.cell = player.target.cell;
               player.action = 'idle';
@@ -2672,6 +2684,9 @@ class App extends Component {
           ) {
             // console.log('at jump destination',player.target.cell2.number);
             // console.log('next position is destination a',player.number);
+            player.newMoveDelay.state = true;
+
+
             let pushBack = false;
             let opp;
 
@@ -2995,6 +3010,21 @@ class App extends Component {
                 type: '',
               }
             };
+          }
+        }
+
+
+        // CELL BY CELL MOVEMENT DELAY!
+        if (player.newMoveDelay.state === true) {
+          if (player.newMoveDelay.count < player.newMoveDelay.limit) {
+            player.newMoveDelay.count++;
+          }
+          if (player.newMoveDelay.count >= player.newMoveDelay.limit) {
+            player.newMoveDelay = {
+              state: false,
+              count: 0,
+              limit: player.newMoveDelay.limit,
+            }
           }
         }
 
@@ -4142,42 +4172,113 @@ class App extends Component {
         }
 
 
-        // CAN READ MOVE INPUTS!!
-        if (
-          player.attacking.state === false &&
-          player.defending.state === false &&
-          player.dodging.state === false &&
-          player.dodging.countState === false
-        ) {
-          // CONFIRM MOVE KEYPRESS!!
+        if (player.newMoveDelay.state !== true) {
+          // CAN READ MOVE INPUTS!!
           if (
-            this.keyPressed[player.number-1].north === true ||
-            this.keyPressed[player.number-1].south === true ||
-            this.keyPressed[player.number-1].east === true ||
-            this.keyPressed[player.number-1].west === true ||
-            this.keyPressed[player.number-1].northEast === true ||
-            this.keyPressed[player.number-1].northWest === true ||
-            this.keyPressed[player.number-1].southEast === true ||
-            this.keyPressed[player.number-1].southWest === true
+            player.attacking.state === false &&
+            player.defending.state === false &&
+            player.dodging.state === false &&
+            player.dodging.countState === false
           ) {
+            // CONFIRM MOVE KEYPRESS!!
+            if (
+              this.keyPressed[player.number-1].north === true ||
+              this.keyPressed[player.number-1].south === true ||
+              this.keyPressed[player.number-1].east === true ||
+              this.keyPressed[player.number-1].west === true ||
+              this.keyPressed[player.number-1].northEast === true ||
+              this.keyPressed[player.number-1].northWest === true ||
+              this.keyPressed[player.number-1].southEast === true ||
+              this.keyPressed[player.number-1].southWest === true
+            ) {
 
-            // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
-            if (keyPressedDirection === player.direction && player.strafing.state === false) {
+              // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
+              if (keyPressedDirection === player.direction && player.strafing.state === false) {
 
 
-              let target = this.getTarget(player)
+                let target = this.getTarget(player)
 
-              if (target.free === true && player.target.void === false) {
+                if (target.free === true && player.target.void === false) {
 
-                if (player.dead.state === true && player.dead.count === 0) {
+                  if (player.dead.state === true && player.dead.count === 0) {
 
-                  player.nextPosition = {
-                    x: -30,
-                    y: -30,
+                    player.nextPosition = {
+                      x: -30,
+                      y: -30,
+                    }
+
+                  } else if (player.turning.delayCount === 0) {
+                    player.action = 'moving';
+                    player.moving = {
+                      state: true,
+                      step: 0,
+                      course: '',
+                      origin: {
+                        number: {
+                          x: player.currentPosition.cell.number.x,
+                          y: player.currentPosition.cell.number.y
+                        },
+                        center: {
+                          x: player.currentPosition.cell.center,
+                          y: player.currentPosition.cell.center
+                        },
+                      },
+                      destination: target.cell.center
+                    }
+                    nextPosition = this.lineCrementer(player);
+                    player.nextPosition = nextPosition;
+
                   }
 
-                } else if (player.turning.delayCount === 0) {
-                  player.action = 'moving';
+                }
+
+                if (target.free === false) {
+                  // console.log('target is NOT free');
+                }
+                if (player.target.void === true) {
+                  // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
+
+                  this.moveSpeed = player.speed.move;
+
+                  player.moving = {
+                    state: true,
+                    step: 0,
+                    course: '',
+                    origin: {
+                      number: player.currentPosition.cell.number,
+                      center: player.currentPosition.cell.center,
+                    },
+                    destination: target.cell.center
+                  }
+
+                  nextPosition = this.lineCrementer(player);
+                  player.nextPosition = nextPosition;
+                }
+
+              }
+
+              // CHANGE DIRECTION IF NOT STRAFING!!
+              else if (keyPressedDirection !== player.direction && player.strafing.state === false) {
+
+                // console.log('change player direction to',keyPressedDirection);
+                // console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
+                player.turning.state = true;
+                player.turning.toDirection = keyPressedDirection;
+
+              }
+
+              // MOVE WHILE STRAFING!!
+              else if (keyPressedDirection !== player.direction && player.strafing.state === true) {
+
+                player.strafing.direction = keyPressedDirection;
+                let target = this.getTarget(player);
+
+                if (target.free === true) {
+
+                  this.moveSpeed = player.speed.move;
+
+                  // console.log('start strafing');
+                  player.action = 'strafe moving';
                   player.moving = {
                     state: true,
                     step: 0,
@@ -4188,198 +4289,370 @@ class App extends Component {
                         y: player.currentPosition.cell.number.y
                       },
                       center: {
-                        x: player.currentPosition.cell.center,
-                        y: player.currentPosition.cell.center
+                        x: player.currentPosition.cell.center.x,
+                        y: player.currentPosition.cell.center.y
                       },
                     },
                     destination: target.cell.center
                   }
                   nextPosition = this.lineCrementer(player);
                   player.nextPosition = nextPosition;
-
                 }
-
               }
 
-              if (target.free === false) {
-                // console.log('target is NOT free');
-              }
-              if (player.target.void === true) {
-                // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
+              // JUMPING!!
+              else if (keyPressedDirection === player.direction && player.strafing.state === true && player.jumping.checking !== true && player.jumping.state !== true) {
 
-                this.moveSpeed = player.speed.move;
+                this.players[player.number-1].jumping.checking = true;
+                let target = this.getTarget(player);
 
-                player.moving = {
-                  state: true,
-                  step: 0,
-                  course: '',
-                  origin: {
-                    number: player.currentPosition.cell.number,
-                    center: player.currentPosition.cell.center,
-                  },
-                  destination: target.cell.center
-                }
+                let cell1 = this.gridInfo.find(elem => elem.number.x === target.cell.number.x && elem.number.y === target.cell.number.y)
+                let cell2 = this.gridInfo.find(elem => elem.number.x === target.cell2.number.x && elem.number.y === target.cell2.number.y)
+                // console.log('cell1',cell1);
+                // console.log('cell2',cell2);
 
-                nextPosition = this.lineCrementer(player);
-                player.nextPosition = nextPosition;
-              }
-
-            }
-
-            // CHANGE DIRECTION IF NOT STRAFING!!
-            else if (keyPressedDirection !== player.direction && player.strafing.state === false) {
-
-              // console.log('change player direction to',keyPressedDirection);
-              // console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
-              player.turning.state = true;
-              player.turning.toDirection = keyPressedDirection;
-
-            }
-
-            // MOVE WHILE STRAFING!!
-            else if (keyPressedDirection !== player.direction && player.strafing.state === true) {
-
-              player.strafing.direction = keyPressedDirection;
-              let target = this.getTarget(player);
-
-              if (target.free === true) {
-
-                this.moveSpeed = player.speed.move;
-
-                // console.log('start strafing');
-                player.action = 'strafe moving';
-                player.moving = {
-                  state: true,
-                  step: 0,
-                  course: '',
-                  origin: {
-                    number: {
-                      x: player.currentPosition.cell.number.x,
-                      y: player.currentPosition.cell.number.y
-                    },
-                    center: {
-                      x: player.currentPosition.cell.center.x,
-                      y: player.currentPosition.cell.center.y
-                    },
-                  },
-                  destination: target.cell.center
-                }
-                nextPosition = this.lineCrementer(player);
-                player.nextPosition = nextPosition;
-              }
-            }
-
-            // JUMPING!!
-            else if (keyPressedDirection === player.direction && player.strafing.state === true && player.jumping.checking !== true && player.jumping.state !== true) {
-
-              this.players[player.number-1].jumping.checking = true;
-              let target = this.getTarget(player);
-
-              let cell1 = this.gridInfo.find(elem => elem.number.x === target.cell.number.x && elem.number.y === target.cell.number.y)
-              let cell2 = this.gridInfo.find(elem => elem.number.x === target.cell2.number.x && elem.number.y === target.cell2.number.y)
-              // console.log('cell1',cell1);
-              // console.log('cell2',cell2);
-
-              let cellsWithinBounds = true;
-              if (!cell1 || !cell2) {
-                cellsWithinBounds = false;
-              } else {
-                if (cell1.number.x < 0 || cell1.number.x > this.gridWidth) {
+                let cellsWithinBounds = true;
+                if (!cell1 || !cell2) {
                   cellsWithinBounds = false;
+                } else {
+                  if (cell1.number.x < 0 || cell1.number.x > this.gridWidth) {
+                    cellsWithinBounds = false;
+                  }
+                  if (cell1.number.y < 0 || cell1.number.y > this.gridWidth) {
+                    cellsWithinBounds = false;
+                  }
                 }
-                if (cell1.number.y < 0 || cell1.number.y > this.gridWidth) {
-                  cellsWithinBounds = false;
-                }
-              }
 
-              if (player.stamina.current - 6 >= 0) {
+                if (player.stamina.current - 6 >= 0) {
 
-                if (cellsWithinBounds === true) {
-                  if (
-                    cell1.void.state === true ||
-                    cell1.terrain.type === 'deep'
-                  ) {
-                    // console.log('a');
+                  if (cellsWithinBounds === true) {
                     if (
-                      cell2.levelData.charAt(0) !==  'z' ||
-                      cell2.levelData.charAt(0) !==  'y'
+                      cell1.void.state === true ||
+                      cell1.terrain.type === 'deep'
                     ) {
-                      // console.log('b');
+                      // console.log('a');
+                      if (
+                        cell2.levelData.charAt(0) !==  'z' ||
+                        cell2.levelData.charAt(0) !==  'y'
+                      ) {
+                        // console.log('b');
 
-                      let targetOccupied = false;
-                      for (const plyr of this.players) {
-                        if (
-                          plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
-                          plyr.currentPosition.cell.number.y === player.target.cell2.number.y
-                        ) {
-                          // console.log('c');
-                          targetOccupied = true
-                        }
-
-                      }
-
-                      if (targetOccupied !== true) {
-                        if (
-                          cell2.void.state !== true &&
-                          cell2.terrain.type !== 'deep'
-                        ) {
-                          // console.log('can jump');
-                          this.players[player.number-1].jumping.checking = false;
-                          this.players[player.number-1].jumping.state = true;
-                          player.action = 'jumping'
-                          player.stamina.current = player.stamina.current - 6;
-
-                          player.moving = {
-                            state: true,
-                            step: 0,
-                            course: '',
-                            origin: {
-                              number: player.currentPosition.cell.number,
-                              center: player.currentPosition.cell.center,
-                            },
-                            destination: target.cell2.center
+                        let targetOccupied = false;
+                        for (const plyr of this.players) {
+                          if (
+                            plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
+                            plyr.currentPosition.cell.number.y === player.target.cell2.number.y
+                          ) {
+                            // console.log('c');
+                            targetOccupied = true
                           }
 
-                          nextPosition = this.lineCrementer(player);
-                          // nextPosition = this.jumpCrementer(player);
-                          player.nextPosition = nextPosition;
-                        } else {
-                          // console.log('can only jump over voids or deep water cell 2');
+                        }
+
+                        if (targetOccupied !== true) {
+                          if (
+                            cell2.void.state !== true &&
+                            cell2.terrain.type !== 'deep'
+                          ) {
+                            // console.log('can jump');
+                            this.players[player.number-1].jumping.checking = false;
+                            this.players[player.number-1].jumping.state = true;
+                            player.action = 'jumping'
+                            player.stamina.current = player.stamina.current - 6;
+
+                            player.moving = {
+                              state: true,
+                              step: 0,
+                              course: '',
+                              origin: {
+                                number: player.currentPosition.cell.number,
+                                center: player.currentPosition.cell.center,
+                              },
+                              destination: target.cell2.center
+                            }
+
+                            nextPosition = this.lineCrementer(player);
+                            // nextPosition = this.jumpCrementer(player);
+                            player.nextPosition = nextPosition;
+                          } else {
+                            // console.log('can only jump over voids or deep water cell 2');
+                            this.players[player.number-1].jumping.checking = false;
+                          }
+                        }
+                        else {
+                          // console.log('jump destination occupied');
                           this.players[player.number-1].jumping.checking = false;
                         }
-                      }
-                      else {
-                        // console.log('jump destination occupied');
+
+                      } else {
+                        // console.log('jump obstacle detected');
                         this.players[player.number-1].jumping.checking = false;
                       }
-
                     } else {
-                      // console.log('jump obstacle detected');
+                      // console.log('can only jump over voids or deep water cell 2');
                       this.players[player.number-1].jumping.checking = false;
                     }
                   } else {
-                    // console.log('can only jump over voids or deep water cell 2');
+                    // console.log('cell out of bounds');
                     this.players[player.number-1].jumping.checking = false;
                   }
-                } else {
-                  // console.log('cell out of bounds');
-                  this.players[player.number-1].jumping.checking = false;
+
+                }
+                else {
+                  console.log('out of stamina');
+                  player.statusDisplay = {
+                    state: true,
+                    status: 'Out of Stamina',
+                    count: 0,
+                    limit: player.statusDisplay.limit,
+                  }
                 }
 
               }
-              else {
-                console.log('out of stamina');
-                player.statusDisplay = {
-                  state: true,
-                  status: 'Out of Stamina',
-                  count: 0,
-                  limit: player.statusDisplay.limit,
-                }
-              }
-
             }
           }
         }
+
+        // // CAN READ MOVE INPUTS!!
+        // if (
+        //   player.attacking.state === false &&
+        //   player.defending.state === false &&
+        //   player.dodging.state === false &&
+        //   player.dodging.countState === false
+        // ) {
+        //   // CONFIRM MOVE KEYPRESS!!
+        //   if (
+        //     this.keyPressed[player.number-1].north === true ||
+        //     this.keyPressed[player.number-1].south === true ||
+        //     this.keyPressed[player.number-1].east === true ||
+        //     this.keyPressed[player.number-1].west === true ||
+        //     this.keyPressed[player.number-1].northEast === true ||
+        //     this.keyPressed[player.number-1].northWest === true ||
+        //     this.keyPressed[player.number-1].southEast === true ||
+        //     this.keyPressed[player.number-1].southWest === true
+        //   ) {
+        //
+        //     // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
+        //     if (keyPressedDirection === player.direction && player.strafing.state === false) {
+        //
+        //
+        //       let target = this.getTarget(player)
+        //
+        //       if (target.free === true && player.target.void === false) {
+        //
+        //         if (player.dead.state === true && player.dead.count === 0) {
+        //
+        //           player.nextPosition = {
+        //             x: -30,
+        //             y: -30,
+        //           }
+        //
+        //         } else if (player.turning.delayCount === 0) {
+        //           player.action = 'moving';
+        //           player.moving = {
+        //             state: true,
+        //             step: 0,
+        //             course: '',
+        //             origin: {
+        //               number: {
+        //                 x: player.currentPosition.cell.number.x,
+        //                 y: player.currentPosition.cell.number.y
+        //               },
+        //               center: {
+        //                 x: player.currentPosition.cell.center,
+        //                 y: player.currentPosition.cell.center
+        //               },
+        //             },
+        //             destination: target.cell.center
+        //           }
+        //           nextPosition = this.lineCrementer(player);
+        //           player.nextPosition = nextPosition;
+        //
+        //         }
+        //
+        //       }
+        //
+        //       if (target.free === false) {
+        //         // console.log('target is NOT free');
+        //       }
+        //       if (player.target.void === true) {
+        //         // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
+        //
+        //         this.moveSpeed = player.speed.move;
+        //
+        //         player.moving = {
+        //           state: true,
+        //           step: 0,
+        //           course: '',
+        //           origin: {
+        //             number: player.currentPosition.cell.number,
+        //             center: player.currentPosition.cell.center,
+        //           },
+        //           destination: target.cell.center
+        //         }
+        //
+        //         nextPosition = this.lineCrementer(player);
+        //         player.nextPosition = nextPosition;
+        //       }
+        //
+        //     }
+        //
+        //     // CHANGE DIRECTION IF NOT STRAFING!!
+        //     else if (keyPressedDirection !== player.direction && player.strafing.state === false) {
+        //
+        //       // console.log('change player direction to',keyPressedDirection);
+        //       // console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
+        //       player.turning.state = true;
+        //       player.turning.toDirection = keyPressedDirection;
+        //
+        //     }
+        //
+        //     // MOVE WHILE STRAFING!!
+        //     else if (keyPressedDirection !== player.direction && player.strafing.state === true) {
+        //
+        //       player.strafing.direction = keyPressedDirection;
+        //       let target = this.getTarget(player);
+        //
+        //       if (target.free === true) {
+        //
+        //         this.moveSpeed = player.speed.move;
+        //
+        //         // console.log('start strafing');
+        //         player.action = 'strafe moving';
+        //         player.moving = {
+        //           state: true,
+        //           step: 0,
+        //           course: '',
+        //           origin: {
+        //             number: {
+        //               x: player.currentPosition.cell.number.x,
+        //               y: player.currentPosition.cell.number.y
+        //             },
+        //             center: {
+        //               x: player.currentPosition.cell.center.x,
+        //               y: player.currentPosition.cell.center.y
+        //             },
+        //           },
+        //           destination: target.cell.center
+        //         }
+        //         nextPosition = this.lineCrementer(player);
+        //         player.nextPosition = nextPosition;
+        //       }
+        //     }
+        //
+        //     // JUMPING!!
+        //     else if (keyPressedDirection === player.direction && player.strafing.state === true && player.jumping.checking !== true && player.jumping.state !== true) {
+        //
+        //       this.players[player.number-1].jumping.checking = true;
+        //       let target = this.getTarget(player);
+        //
+        //       let cell1 = this.gridInfo.find(elem => elem.number.x === target.cell.number.x && elem.number.y === target.cell.number.y)
+        //       let cell2 = this.gridInfo.find(elem => elem.number.x === target.cell2.number.x && elem.number.y === target.cell2.number.y)
+        //       // console.log('cell1',cell1);
+        //       // console.log('cell2',cell2);
+        //
+        //       let cellsWithinBounds = true;
+        //       if (!cell1 || !cell2) {
+        //         cellsWithinBounds = false;
+        //       } else {
+        //         if (cell1.number.x < 0 || cell1.number.x > this.gridWidth) {
+        //           cellsWithinBounds = false;
+        //         }
+        //         if (cell1.number.y < 0 || cell1.number.y > this.gridWidth) {
+        //           cellsWithinBounds = false;
+        //         }
+        //       }
+        //
+        //       if (player.stamina.current - 6 >= 0) {
+        //
+        //         if (cellsWithinBounds === true) {
+        //           if (
+        //             cell1.void.state === true ||
+        //             cell1.terrain.type === 'deep'
+        //           ) {
+        //             // console.log('a');
+        //             if (
+        //               cell2.levelData.charAt(0) !==  'z' ||
+        //               cell2.levelData.charAt(0) !==  'y'
+        //             ) {
+        //               // console.log('b');
+        //
+        //               let targetOccupied = false;
+        //               for (const plyr of this.players) {
+        //                 if (
+        //                   plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
+        //                   plyr.currentPosition.cell.number.y === player.target.cell2.number.y
+        //                 ) {
+        //                   // console.log('c');
+        //                   targetOccupied = true
+        //                 }
+        //
+        //               }
+        //
+        //               if (targetOccupied !== true) {
+        //                 if (
+        //                   cell2.void.state !== true &&
+        //                   cell2.terrain.type !== 'deep'
+        //                 ) {
+        //                   // console.log('can jump');
+        //                   this.players[player.number-1].jumping.checking = false;
+        //                   this.players[player.number-1].jumping.state = true;
+        //                   player.action = 'jumping'
+        //                   player.stamina.current = player.stamina.current - 6;
+        //
+        //                   player.moving = {
+        //                     state: true,
+        //                     step: 0,
+        //                     course: '',
+        //                     origin: {
+        //                       number: player.currentPosition.cell.number,
+        //                       center: player.currentPosition.cell.center,
+        //                     },
+        //                     destination: target.cell2.center
+        //                   }
+        //
+        //                   nextPosition = this.lineCrementer(player);
+        //                   // nextPosition = this.jumpCrementer(player);
+        //                   player.nextPosition = nextPosition;
+        //                 } else {
+        //                   // console.log('can only jump over voids or deep water cell 2');
+        //                   this.players[player.number-1].jumping.checking = false;
+        //                 }
+        //               }
+        //               else {
+        //                 // console.log('jump destination occupied');
+        //                 this.players[player.number-1].jumping.checking = false;
+        //               }
+        //
+        //             } else {
+        //               // console.log('jump obstacle detected');
+        //               this.players[player.number-1].jumping.checking = false;
+        //             }
+        //           } else {
+        //             // console.log('can only jump over voids or deep water cell 2');
+        //             this.players[player.number-1].jumping.checking = false;
+        //           }
+        //         } else {
+        //           // console.log('cell out of bounds');
+        //           this.players[player.number-1].jumping.checking = false;
+        //         }
+        //
+        //       }
+        //       else {
+        //         console.log('out of stamina');
+        //         player.statusDisplay = {
+        //           state: true,
+        //           status: 'Out of Stamina',
+        //           count: 0,
+        //           limit: player.statusDisplay.limit,
+        //         }
+        //       }
+        //
+        //     }
+        //   }
+        // }
+
+
         // CAN READ NON-MOVE INPUTS!!
         if (player.strafing.state === false) {
 
@@ -8670,6 +8943,9 @@ class App extends Component {
     if (cell2.item.name !== '') {
       cellFree = false;
     }
+    if (cell2.terrain.type === 'deep') {
+      cellFree = false;
+    }
 
     // PLAYERS 1&2 ALT RESPAWN POINTS!
     if (cell.x === 9 && cell.y === 9) {
@@ -9917,6 +10193,11 @@ class App extends Component {
               x: 0,
               y: 0,
             }
+          },
+          newMoveDelay: {
+            state: false,
+            count: 0,
+            limit: 5,
           },
           strafing: {
             state: false,
