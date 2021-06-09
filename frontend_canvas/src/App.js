@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Easystar from 'easystarjs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCogs,
@@ -173,17 +174,17 @@ class App extends Component {
     this.gridInfo2 = [];
     this.gridInfo2D2 = [];
     this.levelData =
-    [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
+    [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
     this.levelData12 = {
       row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x','x010x','x011x','x012x'],
       row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x','x110x','x111x','x112x'],
@@ -226,6 +227,8 @@ class App extends Component {
       row2: ['x20x','x21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x'],
       row3: ['x30x','x31x','x32x','x33x','x34x','x35x','x36x','x37x','x38x','x39x'],
     };
+    this.pathArray = [];
+
     this.itemList = [
       {
         name: 'moveSpeedUp',
@@ -1201,6 +1204,7 @@ class App extends Component {
 
 
   componentDidMount() {
+
 
     if (window.innerWidth < 1100) {
       this.setState({
@@ -9117,7 +9121,6 @@ class App extends Component {
       }
 
 
-
       for (const plyr of this.players) {
         if (
           plyr.currentPosition.cell.number.x === cell.x &&
@@ -9167,10 +9170,32 @@ class App extends Component {
         }
       }
 
-    // }
-    // this.openVoid = false;
+    this.updatePathArray();
+
   }
 
+  updatePathArray = () => {
+    // console.log('updating pathArray');
+
+    let pathArray = []
+
+    for (const [key, value] of Object.entries(this.['levelData'+this.gridWidth])) {
+      let row = [];
+      for (const elem3 of value) {
+        let terrainInfo2 = elem3.length-1;
+        let cell = this.gridInfo.find(elem2 => elem2.levelData === elem3)
+        if (elem3.charAt(terrainInfo2) === 'j' || cell.void.state === true) {
+          row.push(1)
+        } else {
+          row.push(0)
+        }
+      }
+      pathArray.push(row)
+    }
+    this.pathArray = pathArray;
+    // console.log('this.pathArray',this.pathArray);
+
+  }
   startProcessLevelData = (canvas) => {
 
     let gridInfo = [];
@@ -9361,6 +9386,7 @@ class App extends Component {
           side: 'north'
         }
       }
+
     }
 
     // gridInfo to 2D array
@@ -9376,10 +9402,14 @@ class App extends Component {
       gridInfo2d.push(newArray)
     }
 
+
     this.gridInfo2D = gridInfo2d;
     // console.log('gridInfo2d',this.gridInfo2D);
     this.gridInfo = allCells;
     // console.log('post parse gridInfo',this.gridInfo);
+
+    this.updatePathArray()
+
 
   }
 
