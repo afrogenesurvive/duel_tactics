@@ -2,7 +2,7 @@
 
   [build]
   command = "CI= npm run-script build"
-  publish="/frontend_canvas/build"
+  publish="/build"
   base = "/frontend_canvas"
 
   [[redirects]]
