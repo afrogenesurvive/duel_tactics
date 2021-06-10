@@ -3715,6 +3715,18 @@ class App extends Component {
             }
 
           } else {
+
+            player.dodging = {
+              countState: false,
+              state: false,
+              count: 0,
+              limit: player.dodging.limit,
+              peak: {
+                start: player.dodging.peak.start,
+                end: player.dodging.peak.end,
+              }
+            }
+
             player.statusDisplay = {
               state: true,
               status: "Out of Stamina",
@@ -3967,6 +3979,18 @@ class App extends Component {
         // FLANKING!
         if (player.flanking.state === true) {
 
+          this.players[player.number-1].dodging = {
+            countState: false,
+            state: false,
+            count: 0,
+            limit: player.dodging.limit,
+            peak: {
+              start: player.dodging.peak.start,
+              end: player.dodging.peak.end,
+            }
+          }
+
+
           if (player.flanking.step === 2) {
             // console.log('here',player.direction,'flank dir',player.flanking.direction);
             switch(player.flanking.direction) {
@@ -4055,23 +4079,24 @@ class App extends Component {
           player.flanking.state !== true
         ) {
 
-          // this.players[player.number-1].dodging = {
-          //   countState: false,
-          //   state: false,
-          //   count: 0,
-          //   limit: player.dodging.limit,
-          //   peak: {
-          //     start: player.dodging.peak.start,
-          //     end: player.dodging.peak.end,
-          //   }
-          // }
+
+          this.players[player.number-1].dodging = {
+            countState: false,
+            state: false,
+            count: 0,
+            limit: player.dodging.limit,
+            peak: {
+              start: player.dodging.peak.start,
+              end: player.dodging.peak.end,
+            }
+          }
+
 
           if (player.stamina.current - 6 >= 0) {
 
             if (player.dodging.countState === true || player.dodging.state === true) {
 
               this.players[player.number-1].stamina.current = player.stamina.current + 4;
-
 
             }
 
@@ -4113,16 +4138,18 @@ class App extends Component {
 
                   player.stamina.current = player.stamina.current - 7;
 
-                  this.players[player.number-1].dodging = {
-                    countState: false,
-                    state: false,
-                    count: 0,
-                    limit: player.dodging.limit,
-                    peak: {
-                      start: player.dodging.peak.start,
-                      end: player.dodging.peak.end,
-                    }
-                  }
+
+                  // this.players[player.number-1].dodging = {
+                  //   countState: false,
+                  //   state: false,
+                  //   count: 0,
+                  //   limit: player.dodging.limit,
+                  //   peak: {
+                  //     start: player.dodging.peak.start,
+                  //     end: player.dodging.peak.end,
+                  //   }
+                  // }
+
 
                   this.players[player.number-1].flanking.checking = false;
                   this.players[player.number-1].flanking.state = true;
