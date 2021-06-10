@@ -1248,6 +1248,7 @@ class App extends Component {
       },
     };
     this.easyStar = undefined;
+    this.getPath = false;
 
   }
 
@@ -2371,9 +2372,13 @@ class App extends Component {
     if(this.stepper.deltaTime > this.stepper.interval) {
 
       this.time++
-      if (this.time === 100) {
+      if (this.time === 200) {
         this.openVoid = true;
         this.customCellToVoid({x:2,y:2})
+      }
+      if (this.time === 300) {
+        this.openVoid = true;
+        this.customCellToVoid({x:1,y:6})
       }
 
       this.setState({
@@ -3736,29 +3741,6 @@ class App extends Component {
           }
 
         }
-
-
-        // // STAMINA!!
-        // if (player.stamina.current < player.stamina.max) {
-        //
-        //   player.stamina.current = player.stamina.current + .05;
-        //   player.stamina.current = +(Math.round((player.stamina.current) + "e+" + 3)  + "e-" + 3);
-        //   if (player.stamina.current >= player.stamina.max) {
-        //     player.stamina.current = player.stamina.max;
-        //   }
-        //   if (player.stamina.current < 1) {
-        //     console.log('out of stamina');
-        //     if (player.success.deflected.state !== true) {
-        //       this.players[player.number-1].success.deflected = {
-        //         state: true,
-        //         count: 1,
-        //         limit: this.players[player.number-1].success.deflected.limit,
-        //         predeflect: this.players[player.number-1].success.deflected.predeflect,
-        //         type: 'blunt attacked',
-        //       };
-        //     }
-        //   }
-        // }
 
 
         // COMPLETE PUSHBACK DEFLECT FLOW!
@@ -7738,6 +7720,7 @@ class App extends Component {
     }
 
     if (player.flanking.state === true) {
+      // moveSpeed = .1
       if (moveSpeed === .05) {
         moveSpeed = .1
       }
@@ -9512,6 +9495,7 @@ class App extends Component {
       }
 
     this.updatePathArray();
+    this.getPath = true;
 
   }
 
@@ -9538,7 +9522,7 @@ class App extends Component {
     this.easyStar.setGrid(this.pathArray)
     this.easyStar.setAcceptableTiles([0])
 
-    console.log('this.pathArray',this.pathArray);
+    // console.log('this.pathArray',this.pathArray);
 
   }
   startProcessLevelData = (canvas) => {
@@ -10133,7 +10117,7 @@ class App extends Component {
 
       if (checkCell === true) {
 
-        console.log('adding ai. Player #',newPlayerNumber,' @',cell.x,cell.y);
+        // console.log('adding ai. Player #',newPlayerNumber,' @',cell.x,cell.y);
 
         let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y)
         let newPlayer = {
@@ -10582,58 +10566,81 @@ class App extends Component {
   }
   aiParsePath = (path,aiPlayer) => {
 
-    // create instructions based on
-    // switch(direction) {
-    //   case 'north' :
-    //     targetCellNumber = {
-    //       x: currentPosition.x,
-    //       y: currentPosition.y-1
-    //     }
-    //   break;
-    //   case 'northEast' :
-    //     targetCellNumber = {
-    //       x: currentPosition.x+1,
-    //       y: currentPosition.y-1
-    //     }
-    //   break;
-    //   case 'northWest' :
-    //     targetCellNumber = {
-    //       x: currentPosition.x-1,
-    //       y: currentPosition.y-1
-    //     }
-    //   break;
-    //   case 'east' :
-    //     targetCellNumber = {
-    //       x: currentPosition.x+1,
-    //       y: currentPosition.y
-    //     }
-    //   break;
-    //   case 'west' :
-    //     targetCellNumber = {
-    //       x: currentPosition.x-1,
-    //       y: currentPosition.y
-    //     }
-    //   break;
-    //   case 'south' :
-    //     targetCellNumber = {
-    //       x: currentPosition.x,
-    //       y: currentPosition.y+1
-    //     }
-    //   break;
-    //   case 'southEast' :
-    //     targetCellNumber = {
-    //       x: currentPosition.x+1,
-    //       y: currentPosition.y+1
-    //     }
-    //   break;
-    //   case 'southWest' :
-    //     targetCellNumber = {
-    //       x: currentPosition.x-1,
-    //       y: currentPosition.y+1
-    //     }
-    //   break;
-    // }
-    // and push TO AI PLAYER
+    let instructions = [];
+    let init = true;
+    let initDirection = this.players[aiPlayer-1].direction;
+    let direction;
+
+    for (const [key, value] of Object.entries(path)) {
+
+        let currentCell = path[key-1];
+        let nextCell = path[key];
+        // console.log(key-1,'currentCell',currentCell,'nextCell',nextCell);
+        if (currentCell) {
+
+          let oldDirection = direction;
+          let newDirection;
+          if (init === true) {
+            oldDirection = initDirection;
+            init = false;
+          }
+
+          if (
+            nextCell.x === currentCell.x &&
+            nextCell.y === currentCell.y-1
+          ) {
+            newDirection = 'north'
+          }
+          if (
+            nextCell.x === currentCell.x &&
+            nextCell.y === currentCell.y+1
+          ) {
+            newDirection = 'south'
+          }
+          if (
+            nextCell.x === currentCell.x-1 &&
+            nextCell.y === currentCell.y
+          ) {
+            newDirection = 'west'
+          }
+          if (
+            nextCell.x === currentCell.x+1 &&
+            nextCell.y === currentCell.y
+          ) {
+            newDirection = 'east'
+          }
+
+          if (oldDirection === newDirection) {
+            instructions.push({
+              keyword: 'move_'+newDirection,
+              count: 0,
+              limit: 0,
+            })
+          }
+          if (oldDirection !== newDirection) {
+            instructions.push(
+              {
+                keyword: 'move_'+newDirection,
+                count: 0,
+                limit: 0,
+              },
+              {
+                keyword: 'move_'+newDirection,
+                count: 0,
+                limit: 0,
+              }
+            )
+          }
+
+          direction = newDirection;
+
+        }
+
+    }
+    instructions.shift();
+    instructions.pop();
+    console.log('instructions',instructions);
+    // this.players[aiPlayer-1].ai.instructions = instructions;
 
   }
   aiDecide = () => {
@@ -10641,7 +10648,6 @@ class App extends Component {
 
     for (const plyr of this.players) {
       if (plyr.ai.state === true) {
-
 
         let getPath = false;
 
@@ -10652,7 +10658,7 @@ class App extends Component {
         // console.log('prevTargetPos',prevTargetPos);
         // console.log('currentTargetPos',currentTargetPos);
         if (prevTargetPos.x === undefined || prevTargetPos.y === undefined) {
-          // console.log('target unset! Acquiring...');
+          console.log('target unset! Acquiring...');
 
           targetPlayer = this.players[0];
           plyr.ai.targetPlayer.currentPosition = {
@@ -10666,7 +10672,7 @@ class App extends Component {
             prevTargetPos.x !== currentTargetPos.x ||
             prevTargetPos.y !== currentTargetPos.y
           ) {
-            // console.log('target location changed! Updating path');
+            console.log('target location changed! Updating path');
             plyr.ai.targetPlayer.currentPosition = {
               x: targetPlayer.currentPosition.cell.number.x,
               y: targetPlayer.currentPosition.cell.number.y,
@@ -10695,32 +10701,33 @@ class App extends Component {
             },
             action: targetPlayer.action,
           }
-
         }
 
+        if (this.getPath === true) {
+          getPath = true;
+          this.getPath = false;
+        }
 
+        let pathSet = [];
         if (getPath === true && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
 
-          let pathSet;
           let aiPos = plyr.currentPosition.cell.number;
           let targetPos = this.players[plyr.ai.targetPlayer.number-1].currentPosition.cell.number;
           this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
             if (path === null) {
-                console.log("Path was not found.");
+              console.log("Path was not found.");
             } else {
-                console.log('path',path);
-                pathSet = path;
+              pathSet = path;
             }
           });
           this.easyStar.calculate();
 
-          this.aiParsePath(pathSet,plyr.number);
+          setTimeout(()=>{
+            console.log('pathSet',pathSet);
+            this.aiParsePath(pathSet,plyr.number);
+          }, 50);
 
         }
-
-
-
-
       }
     }
 
@@ -10750,7 +10757,7 @@ class App extends Component {
             dodge: false,
           }
           switch(currentInstruction.keyword) {
-            case 'shortWait':
+            case 'short_wait':
               currentInstruction.limit = 15;
               if (currentInstruction.count < currentInstruction.limit) {
                 currentInstruction.count++;
@@ -10758,7 +10765,7 @@ class App extends Component {
                 plyr.ai.currentInstruction++;
               }
             break;
-            case 'longWait':
+            case 'long_wait':
               currentInstruction.limit = 25;
               if (currentInstruction.count < currentInstruction.limit) {
                 currentInstruction.count++;
@@ -10766,7 +10773,7 @@ class App extends Component {
                 plyr.ai.currentInstruction++;
               }
             break;
-            case 'moveNorth':
+            case 'move_north':
               currentInstruction.limit = 1;
               this.keyPressed[plyr.number-1].north = true;
               this.turnCheckerDirection = 'north';
@@ -10776,7 +10783,7 @@ class App extends Component {
                 plyr.ai.currentInstruction++;
               }
             break;
-            case 'moveSouth':
+            case 'move_south':
               currentInstruction.limit = 1;
               this.keyPressed[plyr.number-1].south = true;
               this.turnCheckerDirection = 'south';
@@ -10786,7 +10793,7 @@ class App extends Component {
                 plyr.ai.currentInstruction++;
               }
             break;
-            case 'moveEast':
+            case 'move_east':
               currentInstruction.limit = 1;
               this.keyPressed[plyr.number-1].east = true;
               this.turnCheckerDirection = 'east';
@@ -10796,7 +10803,7 @@ class App extends Component {
                 plyr.ai.currentInstruction++;
               }
             break;
-            case 'moveWest':
+            case 'move_west':
               currentInstruction.limit = 1;
               this.keyPressed[plyr.number-1].west = true;
               this.turnCheckerDirection = 'west';
@@ -10806,7 +10813,7 @@ class App extends Component {
                 plyr.ai.currentInstruction++;
               }
             break;
-            case 'strafeNorth':
+            case 'strafe_north':
             break;
             case 'attack':
               currentInstruction.limit = 1;
@@ -10817,7 +10824,7 @@ class App extends Component {
                 plyr.ai.currentInstruction++;
               }
             break;
-            case 'longDefend':
+            case 'long_defend':
               currentInstruction.limit = 25;
               this.keyPressed[plyr.number-1].defend = true;
               if (currentInstruction.count < currentInstruction.limit) {
@@ -10826,7 +10833,7 @@ class App extends Component {
                 plyr.ai.currentInstruction++;
               }
             break;
-            case 'shortDefend':
+            case 'short_defend':
               currentInstruction.limit = 15;
               this.keyPressed[plyr.number-1].defend = true;
               if (currentInstruction.count < currentInstruction.limit) {
