@@ -744,7 +744,10 @@ class App extends Component {
         ai: {
           state: false,
           imgType: '',
+          mission: '',
           currentObjective: '',
+          targetSet: false,
+          targetAcquired: false,
           targetPlayer: {
             number: 1,
             currentPosition: {
@@ -763,10 +766,22 @@ class App extends Component {
             },
             action: '',
           },
-          instructions: [
-
-          ],
+          instructions: [],
           currentInstruction: 0,
+          patrolling: {
+            state: false,
+            area: [],
+          },
+          defending: {
+            state: false,
+            area: [],
+          },
+          persuing: {
+            state: false,
+          },
+          engaging: {
+            state: true,
+          },
         },
         stamina: {
           current: 20,
@@ -1065,7 +1080,10 @@ class App extends Component {
         ai: {
           state: false,
           imgType: '',
+          mission: '',
           currentObjective: '',
+          targetSet: false,
+          targetAcquired: false,
           targetPlayer: {
             number: 1,
             currentPosition: {
@@ -1086,6 +1104,20 @@ class App extends Component {
           },
           instructions: [],
           currentInstruction: 0,
+          patrolling: {
+            state: false,
+            area: [],
+          },
+          defending: {
+            state: false,
+            area: [],
+          },
+          persuing: {
+            state: false,
+          },
+          engaging: {
+            state: true,
+          },
         },
         stamina: {
           current: 20,
@@ -2383,7 +2415,8 @@ class App extends Component {
       })
 
       if (this.aiPlayers.length > 0) {
-        this.aiDecide();
+        this.aiEvaluate()
+        // this.aiDecide();
         // this.aiAct();
       }
 
@@ -10440,8 +10473,11 @@ class App extends Component {
           ai: {
             state: true,
             imgType: imgType,
+            mission: '',
             currentObjective: '',
             currentInstruction: 0,
+            targetSet: false,
+            targetAcquired: false,
             targetPlayer: {
               number: 1,
               currentPosition: {
@@ -10511,7 +10547,21 @@ class App extends Component {
               //   count: 0,
               //   limit: 0,
               // },
-            ]
+            ],
+            engaging: {
+              state: true,
+            },
+            patrolling: {
+              state: false,
+              area: [],
+            },
+            defending: {
+              state: false,
+              area: [],
+            },
+            persuing: {
+              state: false,
+            },
           },
           stamina: {
             current: 20,
@@ -10583,6 +10633,63 @@ class App extends Component {
     this.removeAi = playerNumber;
 
     this.addAiCount.state = true;
+
+  }
+  toggleAiDisplay = () => {
+    let newState = !this.state.showAiStatus;
+    this.setState({
+      showAiStatus: newState,
+    })
+  }
+
+  aiEvaluate = () => {
+    // console.log('aiEvaluate');
+
+    for (const plyr of this.players) {
+      if (plyr.ai.state === true) {
+
+
+        // EVALUTE!
+        // what is proximity of players?
+        // What is target's gear, health, speed
+        // What is my gear, health, speed
+
+
+        // SET TARGET HERE!! account for target death and falling
+        let targetPlayer = this.players[0];
+        plyr.ai.targetPlayer = {
+          number: targetPlayer.number,
+          currentPosition: {
+            x: targetPlayer.currentPosition.cell.number.x,
+            y: targetPlayer.currentPosition.cell.number.y,
+          },
+          target: {
+            number1: {
+              x: targetPlayer.target.cell.number.x,
+              y: targetPlayer.target.cell.number.y,
+            },
+            number2: {
+              x: targetPlayer.target.cell2.number.x,
+              y: targetPlayer.target.cell2.number.y,
+            },
+          },
+          action: targetPlayer.action,
+        };
+
+
+        plyr.ai.mission = 'pursue';
+        // plyr.ai.targetSet = true;
+
+
+        // if mission patrol or defend, set anchor point(s)
+        // check for player/target proximity and choose closest target
+        // set engaging based on target proximity
+        // if defend mission and target out of proximity, disengage
+
+
+        this.aiDecide(plyr)
+      }
+    }
 
   }
   aiParsePath = (path,aiPlayer) => {
@@ -10664,161 +10771,74 @@ class App extends Component {
     console.log('path',path);
     console.log('instructions',instructions);
 
+    this.players[aiPlayer-1].ai.targetAcquired = true;
     this.players[aiPlayer-1].ai.instructions = instructions;
 
   }
-  aiDecide = () => {
+  aiDecide = (aiPlayer) => {
+    // console.log('aiDecide',aiPlayer.number);
+
+    let getPath = false;
+
+    let targetPlayer = this.players[aiPlayer.ai.targetPlayer.number-1];
+    let prevTargetPos = aiPlayer.ai.targetPlayer.currentPosition;
+    let currentTargetPos = targetPlayer.currentPosition.cell.number;
 
 
-    for (const plyr of this.players) {
-      if (plyr.ai.state === true) {
+    // CHECK FOR TARGET CHANGE IF PERSUING!!
+    if (aiPlayer.ai.mission === 'pursue') {
+      if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y) {
+        console.log('target location changed! Updating path');
 
-        let getPath = false;
-
-        // UPDATE TARGET PLYR!!
-        let targetPlayer = this.players[plyr.ai.targetPlayer.number-1];
-        let prevTargetPos = plyr.ai.targetPlayer.currentPosition;
-        let currentTargetPos = targetPlayer.currentPosition.cell.number;
-        // console.log('prevTargetPos',prevTargetPos);
-        // console.log('currentTargetPos',currentTargetPos);
-
-        if (targetPlayer.dead.state === true || targetPlayer.falling.state === true) {
-          // console.log('target dead. Choosing new target');
-          prevTargetPos =  {
-            x: undefined,
-            y: undefined,
-          };
+        aiPlayer.ai.targetPlayer.currentPosition = {
+          x: targetPlayer.currentPosition.cell.number.x,
+          y: targetPlayer.currentPosition.cell.number.y,
         }
-
-        if (prevTargetPos.x === undefined || prevTargetPos.y === undefined) {
-          console.log('target unset! Acquiring...');
-
-
-          if (this.players[0].dead.state === true || this.players[0].falling.state === true) {
-            targetPlayer = this.players[1];
-            plyr.ai.targetPlayer.currentPosition = {
-              x: targetPlayer.currentPosition.cell.number.x,
-              y: targetPlayer.currentPosition.cell.number.y,
-            }
-            plyr.ai.targetPlayer = {
-              number: targetPlayer.number,
-              currentPosition: {
-                x: targetPlayer.currentPosition.cell.number.x,
-                y: targetPlayer.currentPosition.cell.number.y,
-              },
-              target: {
-                number1: {
-                  x: targetPlayer.target.cell.number.x,
-                  y: targetPlayer.target.cell.number.y,
-                },
-                number2: {
-                  x: targetPlayer.target.cell2.number.x,
-                  y: targetPlayer.target.cell2.number.y,
-                },
-              },
-              action: targetPlayer.action,
-            };
-            // console.log('new target is ',targetPlayer.number);
-          } else {
-            targetPlayer = this.players[0];
-            plyr.ai.targetPlayer.currentPosition = {
-              x: targetPlayer.currentPosition.cell.number.x,
-              y: targetPlayer.currentPosition.cell.number.y,
-            }
-            plyr.ai.targetPlayer = {
-              number: targetPlayer.number,
-              currentPosition: {
-                x: targetPlayer.currentPosition.cell.number.x,
-                y: targetPlayer.currentPosition.cell.number.y,
-              },
-              target: {
-                number1: {
-                  x: targetPlayer.target.cell.number.x,
-                  y: targetPlayer.target.cell.number.y,
-                },
-                number2: {
-                  x: targetPlayer.target.cell2.number.x,
-                  y: targetPlayer.target.cell2.number.y,
-                },
-              },
-              action: targetPlayer.action,
-            };
-            // console.log('new target is ',targetPlayer.number);
-          }
-
-          getPath = true;
-        }
-        else {
-          if (
-            prevTargetPos.x !== currentTargetPos.x ||
-            prevTargetPos.y !== currentTargetPos.y
-          ) {
-            console.log('target location changed! Updating path');
-
-            plyr.ai.targetPlayer.currentPosition = {
-              x: targetPlayer.currentPosition.cell.number.x,
-              y: targetPlayer.currentPosition.cell.number.y,
-            }
-            getPath = true;
-          } else {
-            // console.log('target position unchanged! Skipping path update!');
-            getPath = false;
-          }
-
-          if (targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
-            plyr.targetPlayer = {
-              number: plyr.ai.targetPlayer.number,
-              currentPosition: {
-                x: targetPlayer.currentPosition.cell.number.x,
-                y: targetPlayer.currentPosition.cell.number.x,
-              },
-              target: {
-                number1: {
-                  x: targetPlayer.target.cell.number.x,
-                  y: targetPlayer.target.cell.number.x,
-                },
-                number2: {
-                  x: targetPlayer.target.cell2.number.x,
-                  y: targetPlayer.target.cell2.number.x,
-                },
-              },
-              action: targetPlayer.action,
-            }
-          }
-
-        }
-
-        if (this.getPath === true) {
-          getPath = true;
-          this.getPath = false;
-        }
-
-
-
-        let pathSet = [];
-        if (getPath === true && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
-
-          let aiPos = plyr.currentPosition.cell.number;
-          let targetPos = this.players[plyr.ai.targetPlayer.number-1].currentPosition.cell.number;
-          this.easyStar.setAcceptableTiles([0])
-          this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
-            if (path === null) {
-              console.log("Path was not found.");
-            } else {
-              pathSet = path;
-            }
-          });
-          this.easyStar.calculate();
-
-          setTimeout(()=>{
-            // console.log('pathSet',pathSet);
-            this.aiParsePath(pathSet,plyr.number);
-          }, 50);
-
-        }
+        getPath = true;
       }
-      this.aiAct();
+      if (aiPlayer.ai.targetAcquired !== true) {
+        getPath = true;
+      }
+      else {
+        // console.log('target position unchanged! Skipping path update!');
+        getPath = false;
+      }
+
     }
+
+    // how to plot patrol path?
+    // repeat instructions if patrolling and unengaged
+    //
+    // what to do if engaged?
+
+
+
+    let pathSet = [];
+    if (getPath === true && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
+
+      if (aiPlayer.ai.mission === 'pursue') {
+        let aiPos = aiPlayer.currentPosition.cell.number;
+        let targetPos = this.players[aiPlayer.ai.targetPlayer.number-1].currentPosition.cell.number;
+        this.easyStar.setAcceptableTiles([0])
+        this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
+          if (path === null) {
+            console.log("Path was not found.");
+          } else {
+            pathSet = path;
+          }
+        });
+        this.easyStar.calculate();
+        setTimeout(()=>{
+          // console.log('pathSet',pathSet);
+          this.aiParsePath(pathSet,aiPlayer.number);
+        }, 50);
+      }
+
+
+
+    }
+
+    this.aiAct();
 
   }
   aiAct = () => {
@@ -10939,12 +10959,7 @@ class App extends Component {
 
 
   }
-  toggleAiDisplay = () => {
-    let newState = !this.state.showAiStatus;
-    this.setState({
-      showAiStatus: newState,
-    })
-  }
+
 
 
   render() {
