@@ -1249,6 +1249,7 @@ class App extends Component {
     };
     this.easyStar = undefined;
     this.getPath = false;
+    this.removeAi = undefined;
 
   }
 
@@ -2376,10 +2377,6 @@ class App extends Component {
         this.openVoid = true;
         this.customCellToVoid({x:2,y:2})
       }
-      if (this.time === 300) {
-        this.openVoid = true;
-        this.customCellToVoid({x:1,y:6})
-      }
 
       this.setState({
         stateUpdater: '..'
@@ -2387,12 +2384,24 @@ class App extends Component {
 
       if (this.aiPlayers.length > 0) {
         this.aiDecide();
-        this.aiAct();
+        // this.aiAct();
       }
 
       if (this.gamepad === true) {
         this.pollGamepads();
       }
+
+
+      // REMOVE AI PLAYER!
+      if (this.removeAi && this.addAiCount.state !== true) {
+
+        let aiPlayer = this.players[this.removeAi-1]
+        let newArray = this.players.filter(x=> x !== aiPlayer);
+        this.players = [];
+        this.players = newArray;
+        this.removeAi = undefined;
+      }
+
 
       for (const player of this.players) {
         this.playerUpdate(player, this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
@@ -2405,6 +2414,7 @@ class App extends Component {
 
   playerUpdate = (player, canvas, context, canvas2, context2) => {
     // console.log('updating player',player.number);
+
 
     let keyPressedDirection;
 
@@ -5692,82 +5702,6 @@ class App extends Component {
 
           let finalAnimIndex;
 
-          // FOR TESTING BY CALLING ONLY @ 1 CELL
-          // if (
-          //   plyr.currentPosition.cell.number.x === x &&
-          //   plyr.currentPosition.cell.number.y === y
-          // ) {
-          //   switch(plyr.action) {
-          //     case 'moving':
-          //       let rangeIndex = plyr.speed.range.indexOf(plyr.speed.move)
-          //       let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
-          //       finalAnimIndex = moveAnimIndex;
-          //       // console.log('animation mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex,'move state',plyr.moving.state);
-          //       if (plyr.target.void == true) {
-          //         // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-          //       }
-          //     break;
-          //     case 'jumping':
-          //       let rangeIndex4 = plyr.speed.range.indexOf(plyr.speed.move)
-          //       let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(plyr.moving.step)
-          //       finalAnimIndex = moveAnimIndex4;
-          //       // console.log('animation jump spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex,'move state',plyr.moving.state);
-          //
-          //     break;
-          //     case 'strafe moving':
-          //       if (player.pushBack.state === true ) {
-          //         let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
-          //         let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
-          //         finalAnimIndex = moveAnimIndex3;
-          //         // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-          //       } else {
-          //         let rangeIndex2 = plyr.speed.range.indexOf(plyr.speed.move)
-          //         let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
-          //         finalAnimIndex = moveAnimIndex2;
-          //         // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-          //       }
-          //     break;
-          //     case 'attacking':
-          //       let animIndex = plyr.attacking.count -1;
-          //       finalAnimIndex = animIndex;
-          //       // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
-          //     break;
-          //     case 'defending':
-          //       if (plyr.defending.count > 0) {
-          //         let animIndex2 = plyr.defending.count -1;
-          //         finalAnimIndex = animIndex2;
-          //         // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
-          //       }
-          //       if (plyr.defending.count === 0) {
-          //         let animIndex2a = plyr.defending.limit;
-          //         finalAnimIndex = animIndex2a;
-          //         // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
-          //       }
-          //     break;
-          //     case 'idle':
-          //       if (plyr.number === 1) {
-          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-          //       }
-          //       if (plyr.number === 2) {
-          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-          //       }
-          //       let animIndex3 = plyr.idleAnim.count -1;
-          //       finalAnimIndex = animIndex3;
-          //     break;
-          //     case 'falling':
-          //       let animIndex4 = plyr.falling.count -1;
-          //       finalAnimIndex = animIndex4;
-          //       // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
-          //     break;
-          //     case 'deflected':
-          //       let animIndex5 = plyr.success.deflected.count -1;
-          //       finalAnimIndex = animIndex5;
-          //       // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number,'index',finalAnimIndex);
-          //     break;
-          //   }
-          // }
-          // FOR TESTING BY CALLING ONLY @ 1 CELL
-
 
           if (plyr.attacking.state === true) {
             plyr.action = 'attacking'
@@ -5839,6 +5773,87 @@ class App extends Component {
               // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
             break;
           }
+
+
+
+          // FOR TESTING BY CALLING ONLY @ 1 CELL
+          // if (
+          //   plyr.currentPosition.cell.number.x === x &&
+          //   plyr.currentPosition.cell.number.y === y
+          // ) {
+          //   switch(plyr.action) {
+          //     case 'moving':
+          //       let rangeIndex = plyr.speed.range.indexOf(plyr.speed.move)
+          //       let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
+          //       finalAnimIndex = moveAnimIndex;
+          //       // console.log('animation mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex,'move state',plyr.moving.state);
+          //       if (plyr.target.void == true) {
+          //         // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+          //       }
+          //       if (plyr.flanking.state === true) {
+          //         // console.log('anim testing flanking spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+          //       }
+          //     break;
+          //     case 'jumping':
+          //       let rangeIndex4 = plyr.speed.range.indexOf(plyr.speed.move)
+          //       let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(plyr.moving.step)
+          //       finalAnimIndex = moveAnimIndex4;
+          //       // console.log('animation jump spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex,'move state',plyr.moving.state);
+          //
+          //     break;
+          //     case 'strafe moving':
+          //       if (player.pushBack.state === true ) {
+          //         let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
+          //         let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
+          //         finalAnimIndex = moveAnimIndex3;
+          //         // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+          //       } else {
+          //         let rangeIndex2 = plyr.speed.range.indexOf(plyr.speed.move)
+          //         let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
+          //         finalAnimIndex = moveAnimIndex2;
+          //         // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+          //       }
+          //     break;
+          //     case 'attacking':
+          //       let animIndex = plyr.attacking.count -1;
+          //       finalAnimIndex = animIndex;
+          //       // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
+          //     break;
+          //     case 'defending':
+          //       if (plyr.defending.count > 0) {
+          //         let animIndex2 = plyr.defending.count -1;
+          //         finalAnimIndex = animIndex2;
+          //         // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
+          //       }
+          //       if (plyr.defending.count === 0) {
+          //         let animIndex2a = plyr.defending.limit;
+          //         finalAnimIndex = animIndex2a;
+          //         // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
+          //       }
+          //     break;
+          //     case 'idle':
+          //       if (plyr.number === 1) {
+          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+          //       }
+          //       if (plyr.number === 2) {
+          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+          //       }
+          //       let animIndex3 = plyr.idleAnim.count -1;
+          //       finalAnimIndex = animIndex3;
+          //     break;
+          //     case 'falling':
+          //       let animIndex4 = plyr.falling.count -1;
+          //       finalAnimIndex = animIndex4;
+          //       // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
+          //     break;
+          //     case 'deflected':
+          //       let animIndex5 = plyr.success.deflected.count -1;
+          //       finalAnimIndex = animIndex5;
+          //       // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number,'index',finalAnimIndex);
+          //     break;
+          //   }
+          // }
+          // FOR TESTING BY CALLING ONLY @ 1 CELL
 
 
           // SPRITE SHEET CHAR AVATAR SWITCH!
@@ -5944,6 +5959,7 @@ class App extends Component {
                 } else {
                   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40);
                 }
+                // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex);
 
               }
             }
@@ -5957,6 +5973,7 @@ class App extends Component {
                 } else {
                   context2.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40);
                 }
+                // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex);
                 // playerDrawLog(x,y,plyr)
               }
             }
@@ -6149,6 +6166,14 @@ class App extends Component {
             }
           }
           if (plyr.flanking.state === true && plyr.falling.state !== true) {
+
+            if (
+              plyr.currentPosition.cell.number.x === x &&
+              plyr.currentPosition.cell.number.y === y
+            ){
+              // console.log('flanking @ draw','finalAnimIndex',finalAnimIndex);
+            }
+
             if (plyr.direction === 'east') {
               if (plyr.flanking.direction === 'north') {
                 if (plyr.flanking.step === 1) {
@@ -6868,19 +6893,19 @@ class App extends Component {
         let walledTiles = []
         if (walledTiles.includes(''+x+','+y+'')) {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
-          context2.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
+          context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
         }
         if(gridInfoCell.levelData.charAt(0) === 'y') {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
-          context2.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
+          context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
         }
         if(gridInfoCell.levelData.charAt(0) === 'z') {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
-          context2.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+          context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
 
           let isoHeight = wallImageHeight - floorImageHeight
           offset.y += isoHeight
-          context2.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+          context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
         }
       }
     }
@@ -9509,7 +9534,11 @@ class App extends Component {
       for (const elem3 of value) {
         let terrainInfo2 = elem3.length-1;
         let cell = this.gridInfo.find(elem2 => elem2.levelData === elem3)
-        if (elem3.charAt(terrainInfo2) === 'j' || cell.void.state === true) {
+        if (
+          elem3.charAt(terrainInfo2) === 'j' ||
+          elem3.charAt(0) !== 'x' ||
+          cell.void.state === true
+        ) {
           row.push(1)
         } else {
           row.push(0)
@@ -10540,29 +10569,21 @@ class App extends Component {
       }
     }
 
-
     this.aiPlayers.splice(index2,1);
-    // this.players[playerNumber-1].ghost = {
-    //   state: false,
-    //   position: {
-    //     cell: {
-    //       number: {
-    //         x: 0,
-    //         y: 0,
-    //       },
-    //       center: {
-    //         x: 0,
-    //         y: 0,
-    //       }
-    //     }
-    //   }
-    // };
-    this.keyPressed.splice(playerNumber-1,1);
 
-    let toRemove1 = this.players[index1];
-    this.players = this.players.filter(x=> x !== toRemove1);
+    let keyPressedToRemove = this.keyPressed[playerNumber-1];
+    this.keyPressed = this.keyPressed.filter(y=> y !== keyPressedToRemove)
+    // this.keyPressed.splice(playerNumber-1,1);
+
+
+    // let toRemove1 = this.players[index1];
+    // this.players = this.players.filter(x=> x.number !== toRemove1.number);
+    // this.players.splice(playerNumber-1,1);
+
+    this.removeAi = playerNumber;
 
     this.addAiCount.state = true;
+
   }
   aiParsePath = (path,aiPlayer) => {
 
@@ -10639,8 +10660,11 @@ class App extends Component {
     }
     instructions.shift();
     instructions.pop();
+    console.log('this.pathArray',this.pathArray);
+    console.log('path',path);
     console.log('instructions',instructions);
-    // this.players[aiPlayer-1].ai.instructions = instructions;
+
+    this.players[aiPlayer-1].ai.instructions = instructions;
 
   }
   aiDecide = () => {
@@ -10657,14 +10681,71 @@ class App extends Component {
         let currentTargetPos = targetPlayer.currentPosition.cell.number;
         // console.log('prevTargetPos',prevTargetPos);
         // console.log('currentTargetPos',currentTargetPos);
+
+        if (targetPlayer.dead.state === true || targetPlayer.falling.state === true) {
+          // console.log('target dead. Choosing new target');
+          prevTargetPos =  {
+            x: undefined,
+            y: undefined,
+          };
+        }
+
         if (prevTargetPos.x === undefined || prevTargetPos.y === undefined) {
           console.log('target unset! Acquiring...');
 
-          targetPlayer = this.players[0];
-          plyr.ai.targetPlayer.currentPosition = {
-            x: targetPlayer.currentPosition.cell.number.x,
-            y: targetPlayer.currentPosition.cell.number.y,
+
+          if (this.players[0].dead.state === true || this.players[0].falling.state === true) {
+            targetPlayer = this.players[1];
+            plyr.ai.targetPlayer.currentPosition = {
+              x: targetPlayer.currentPosition.cell.number.x,
+              y: targetPlayer.currentPosition.cell.number.y,
+            }
+            plyr.ai.targetPlayer = {
+              number: targetPlayer.number,
+              currentPosition: {
+                x: targetPlayer.currentPosition.cell.number.x,
+                y: targetPlayer.currentPosition.cell.number.y,
+              },
+              target: {
+                number1: {
+                  x: targetPlayer.target.cell.number.x,
+                  y: targetPlayer.target.cell.number.y,
+                },
+                number2: {
+                  x: targetPlayer.target.cell2.number.x,
+                  y: targetPlayer.target.cell2.number.y,
+                },
+              },
+              action: targetPlayer.action,
+            };
+            // console.log('new target is ',targetPlayer.number);
+          } else {
+            targetPlayer = this.players[0];
+            plyr.ai.targetPlayer.currentPosition = {
+              x: targetPlayer.currentPosition.cell.number.x,
+              y: targetPlayer.currentPosition.cell.number.y,
+            }
+            plyr.ai.targetPlayer = {
+              number: targetPlayer.number,
+              currentPosition: {
+                x: targetPlayer.currentPosition.cell.number.x,
+                y: targetPlayer.currentPosition.cell.number.y,
+              },
+              target: {
+                number1: {
+                  x: targetPlayer.target.cell.number.x,
+                  y: targetPlayer.target.cell.number.y,
+                },
+                number2: {
+                  x: targetPlayer.target.cell2.number.x,
+                  y: targetPlayer.target.cell2.number.y,
+                },
+              },
+              action: targetPlayer.action,
+            };
+            // console.log('new target is ',targetPlayer.number);
           }
+
           getPath = true;
         }
         else {
@@ -10673,6 +10754,7 @@ class App extends Component {
             prevTargetPos.y !== currentTargetPos.y
           ) {
             console.log('target location changed! Updating path');
+
             plyr.ai.targetPlayer.currentPosition = {
               x: targetPlayer.currentPosition.cell.number.x,
               y: targetPlayer.currentPosition.cell.number.y,
@@ -10683,24 +10765,27 @@ class App extends Component {
             getPath = false;
           }
 
-          plyr.targetPlayer = {
-            number: plyr.ai.targetPlayer.number,
-            currentPosition: {
-              x: targetPlayer.currentPosition.cell.number.x,
-              y: targetPlayer.currentPosition.cell.number.x,
-            },
-            target: {
-              number1: {
-                x: targetPlayer.target.cell.number.x,
-                y: targetPlayer.target.cell.number.x,
+          if (targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
+            plyr.targetPlayer = {
+              number: plyr.ai.targetPlayer.number,
+              currentPosition: {
+                x: targetPlayer.currentPosition.cell.number.x,
+                y: targetPlayer.currentPosition.cell.number.x,
               },
-              number2: {
-                x: targetPlayer.target.cell2.number.x,
-                y: targetPlayer.target.cell2.number.x,
+              target: {
+                number1: {
+                  x: targetPlayer.target.cell.number.x,
+                  y: targetPlayer.target.cell.number.x,
+                },
+                number2: {
+                  x: targetPlayer.target.cell2.number.x,
+                  y: targetPlayer.target.cell2.number.x,
+                },
               },
-            },
-            action: targetPlayer.action,
+              action: targetPlayer.action,
+            }
           }
+
         }
 
         if (this.getPath === true) {
@@ -10708,11 +10793,14 @@ class App extends Component {
           this.getPath = false;
         }
 
+
+
         let pathSet = [];
         if (getPath === true && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
 
           let aiPos = plyr.currentPosition.cell.number;
           let targetPos = this.players[plyr.ai.targetPlayer.number-1].currentPosition.cell.number;
+          this.easyStar.setAcceptableTiles([0])
           this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
             if (path === null) {
               console.log("Path was not found.");
@@ -10723,12 +10811,13 @@ class App extends Component {
           this.easyStar.calculate();
 
           setTimeout(()=>{
-            console.log('pathSet',pathSet);
+            // console.log('pathSet',pathSet);
             this.aiParsePath(pathSet,plyr.number);
           }, 50);
 
         }
       }
+      this.aiAct();
     }
 
   }
