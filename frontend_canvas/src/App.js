@@ -9567,14 +9567,17 @@ class App extends Component {
       for (const elem3 of value) {
         let terrainInfo2 = elem3.length-1;
         let cell = this.gridInfo.find(elem2 => elem2.levelData === elem3)
-        if (
-          elem3.charAt(terrainInfo2) === 'j' ||
-          elem3.charAt(0) !== 'x' ||
-          cell.void.state === true
-        ) {
-          row.push(1)
-        } else {
-          row.push(0)
+
+        if (cell) {
+          if (
+            elem3.charAt(terrainInfo2) === 'j' ||
+            elem3.charAt(0) !== 'x' ||
+            cell.void.state === true
+          ) {
+            row.push(1)
+          } else {
+            row.push(0)
+          }
         }
       }
       pathArray.push(row)
@@ -9584,7 +9587,7 @@ class App extends Component {
     this.easyStar.setGrid(this.pathArray)
     this.easyStar.setAcceptableTiles([0])
 
-    // console.log('this.pathArray',this.pathArray);
+    console.log('this.pathArray',this.pathArray,typeof pathArray);
 
   }
   startProcessLevelData = (canvas) => {
@@ -9610,22 +9613,22 @@ class App extends Component {
     }
 
     for (var x = 0; x < this.gridWidth+1; x++) {
-        for (var y = 0; y < this.gridWidth+1; y++) {
+      for (var y = 0; y < this.gridWidth+1; y++) {
 
-          let p = new Point();
-          p.x = x * tileWidth;
-          p.y = y * tileWidth;
-          let iso = this.cartesianToIsometric(p);
-          let offset = {x: floorImageWidth/2, y: floorImageHeight}
+        let p = new Point();
+        p.x = x * tileWidth;
+        p.y = y * tileWidth;
+        let iso = this.cartesianToIsometric(p);
+        let offset = {x: floorImageWidth/2, y: floorImageHeight}
 
-          // apply offset to center scene for a better view
-          iso.x += sceneX
-          iso.y += sceneY
+        // apply offset to center scene for a better view
+        iso.x += sceneX
+        iso.y += sceneY
 
-          let center = {
-            x: Math.round(iso.x - offset.x/2+this.cellCenterOffsetX),
-            y: Math.round(iso.y - offset.y/2-this.cellCenterOffsetY),
-          }
+        let center = {
+          x: Math.round(iso.x - offset.x/2+this.cellCenterOffsetX),
+          y: Math.round(iso.y - offset.y/2-this.cellCenterOffsetY),
+        }
 
         gridInfo.push({
           number:{x:x,y:y},
@@ -10771,7 +10774,7 @@ class App extends Component {
     console.log('path',path);
     console.log('instructions',instructions);
 
-    this.players[aiPlayer-1].ai.targetAcquired = true;
+    // this.players[aiPlayer-1].ai.targetAcquired = true;
     this.players[aiPlayer-1].ai.instructions = instructions;
 
   }
@@ -10798,6 +10801,7 @@ class App extends Component {
       }
       if (aiPlayer.ai.targetAcquired !== true) {
         getPath = true;
+        aiPlayer.ai.targetAcquired = true;
       }
       else {
         // console.log('target position unchanged! Skipping path update!');
@@ -10819,6 +10823,8 @@ class App extends Component {
       if (aiPlayer.ai.mission === 'pursue') {
         let aiPos = aiPlayer.currentPosition.cell.number;
         let targetPos = this.players[aiPlayer.ai.targetPlayer.number-1].currentPosition.cell.number;
+        this.easyStar.setIterationsPerCalculation(500)
+        this.easyStar.setGrid(this.pathArray)
         this.easyStar.setAcceptableTiles([0])
         this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
           if (path === null) {
@@ -10835,9 +10841,9 @@ class App extends Component {
       }
 
 
-
     }
 
+    this.players[aiPlayer.number-1] = aiPlayer;
     this.aiAct();
 
   }
