@@ -2416,8 +2416,6 @@ class App extends Component {
 
       if (this.aiPlayers.length > 0) {
         this.aiEvaluate()
-        // this.aiDecide();
-        // this.aiAct();
       }
 
       if (this.gamepad === true) {
