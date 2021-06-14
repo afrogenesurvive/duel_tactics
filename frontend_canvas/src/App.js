@@ -9670,14 +9670,27 @@ class App extends Component {
         let cell = this.gridInfo.find(elem2 => elem2.levelData === elem3)
 
         if (cell) {
-          if (
-            elem3.charAt(terrainInfo2) === 'j' ||
-            elem3.charAt(0) !== 'x' ||
-            cell.void.state === true
-          ) {
+          let playerCell = false;
+          for (const plyr of this.players) {
+            if (
+              plyr.currentPosition.cell.number.x === cell.number.x &&
+              plyr.currentPosition.cell.number.y === cell.number.y
+            ) {
+              playerCell = true;
+            }
+          }
+          if (playerCell === true) {
             row.push(1)
           } else {
-            row.push(0)
+            if (
+              elem3.charAt(terrainInfo2) === 'j' ||
+              elem3.charAt(0) !== 'x' ||
+              cell.void.state === true
+            ) {
+              row.push(1)
+            } else {
+              row.push(0)
+            }
           }
         }
       }
