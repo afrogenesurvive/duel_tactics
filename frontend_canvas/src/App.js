@@ -9698,8 +9698,8 @@ class App extends Component {
     }
     this.pathArray = pathArray;
 
-    this.easyStar.setGrid(this.pathArray)
-    this.easyStar.setAcceptableTiles([0])
+    // this.easyStar.setGrid(this.pathArray)
+    // this.easyStar.setAcceptableTiles([0])
 
     console.log('this.pathArray',this.pathArray,typeof pathArray);
 
@@ -10707,6 +10707,7 @@ class App extends Component {
         )
         this.aiPlayers.push(newPlayerNumber)
         this.getTarget(this.players[newPlayerNumber-1])
+        this.updatePathArray();
 
       }
 
@@ -10773,25 +10774,28 @@ class App extends Component {
 
 
         // SET TARGET HERE!! account for target death and falling
-        let targetPlayer = this.players[0];
-        plyr.ai.targetPlayer = {
-          number: targetPlayer.number,
-          currentPosition: {
-            x: targetPlayer.currentPosition.cell.number.x,
-            y: targetPlayer.currentPosition.cell.number.y,
-          },
-          target: {
-            number1: {
-              x: targetPlayer.target.cell.number.x,
-              y: targetPlayer.target.cell.number.y,
+        if (plyr.ai.targetAcquired !== true) {
+          console.log('acquiring target');
+          let targetPlayer = this.players[0];
+          plyr.ai.targetPlayer = {
+            number: targetPlayer.number,
+            currentPosition: {
+              x: targetPlayer.currentPosition.cell.number.x,
+              y: targetPlayer.currentPosition.cell.number.y,
             },
-            number2: {
-              x: targetPlayer.target.cell2.number.x,
-              y: targetPlayer.target.cell2.number.y,
+            target: {
+              number1: {
+                x: targetPlayer.target.cell.number.x,
+                y: targetPlayer.target.cell.number.y,
+              },
+              number2: {
+                x: targetPlayer.target.cell2.number.x,
+                y: targetPlayer.target.cell2.number.y,
+              },
             },
-          },
-          action: targetPlayer.action,
-        };
+            action: targetPlayer.action,
+          };
+        }
 
 
         plyr.ai.mission = 'pursue';
@@ -10884,6 +10888,7 @@ class App extends Component {
     }
     instructions.shift();
     instructions.pop();
+
     console.log('this.pathArray',this.pathArray);
     console.log('path',path);
     console.log('instructions',instructions);
@@ -10904,6 +10909,7 @@ class App extends Component {
 
     // CHECK FOR TARGET CHANGE IF PERSUING!!
     if (aiPlayer.ai.mission === 'pursue') {
+
       if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y) {
         console.log('target location changed! Updating path');
 
@@ -10935,9 +10941,15 @@ class App extends Component {
     if (getPath === true && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
 
       if (aiPlayer.ai.mission === 'pursue') {
+
+        this.updatePathArray();
         let aiPos = aiPlayer.currentPosition.cell.number;
         let targetPos = this.players[aiPlayer.ai.targetPlayer.number-1].currentPosition.cell.number;
-        this.easyStar.setIterationsPerCalculation(500)
+
+        this.pathArray[targetPos.x][targetPos.y] = 0;
+        // this.pathArray[aiPos.x][aiPos.y] = 0;
+
+        this.easyStar.setIterationsPerCalculation(1000)
         this.easyStar.setGrid(this.pathArray)
         this.easyStar.setAcceptableTiles([0])
         this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
