@@ -10819,6 +10819,8 @@ class App extends Component {
     let init = true;
     let initDirection = this.players[aiPlayer-1].direction;
     let direction;
+    // path.shift();
+    path.pop();
 
     for (const [key, value] of Object.entries(path)) {
 
@@ -10886,15 +10888,15 @@ class App extends Component {
         }
 
     }
-    instructions.shift();
-    instructions.pop();
+    // instructions.shift();
+    // instructions.pop();
 
     console.log('this.pathArray',this.pathArray);
     console.log('path',path);
     console.log('instructions',instructions);
 
     // this.players[aiPlayer-1].ai.targetAcquired = true;
-    this.players[aiPlayer-1].ai.instructions = instructions;
+    // this.players[aiPlayer-1].ai.instructions = instructions;
 
   }
   aiDecide = (aiPlayer) => {
@@ -10905,6 +10907,7 @@ class App extends Component {
     let targetPlayer = this.players[aiPlayer.ai.targetPlayer.number-1];
     let prevTargetPos = aiPlayer.ai.targetPlayer.currentPosition;
     let currentTargetPos = targetPlayer.currentPosition.cell.number;
+    this.easyStar.calculate();
 
 
     // CHECK FOR TARGET CHANGE IF PERSUING!!
@@ -10947,9 +10950,8 @@ class App extends Component {
         let targetPos = this.players[aiPlayer.ai.targetPlayer.number-1].currentPosition.cell.number;
 
         this.pathArray[targetPos.x][targetPos.y] = 0;
-        // this.pathArray[aiPos.x][aiPos.y] = 0;
+        this.pathArray[aiPos.x][aiPos.y] = 0;
 
-        this.easyStar.setIterationsPerCalculation(1000)
         this.easyStar.setGrid(this.pathArray)
         this.easyStar.setAcceptableTiles([0])
         this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
@@ -10959,7 +10961,11 @@ class App extends Component {
             pathSet = path;
           }
         });
-        this.easyStar.calculate();
+        // this.easyStar.calculate();
+        this.easyStar.setIterationsPerCalculation(1000)
+        for (const elem of this.pathArray[0]) {
+          this.easyStar.calculate();
+        }
         setTimeout(()=>{
           // console.log('pathSet',pathSet);
           this.aiParsePath(pathSet,aiPlayer.number);
@@ -11015,7 +11021,7 @@ class App extends Component {
               }
             break;
             case 'move_north':
-              currentInstruction.limit = 1;
+              currentInstruction.limit = 10;
               this.keyPressed[plyr.number-1].north = true;
               this.turnCheckerDirection = 'north';
               if (currentInstruction.count < currentInstruction.limit) {
@@ -11025,7 +11031,7 @@ class App extends Component {
               }
             break;
             case 'move_south':
-              currentInstruction.limit = 1;
+              currentInstruction.limit = 10;
               this.keyPressed[plyr.number-1].south = true;
               this.turnCheckerDirection = 'south';
               if (currentInstruction.count < currentInstruction.limit) {
@@ -11035,7 +11041,7 @@ class App extends Component {
               }
             break;
             case 'move_east':
-              currentInstruction.limit = 1;
+              currentInstruction.limit = 10;
               this.keyPressed[plyr.number-1].east = true;
               this.turnCheckerDirection = 'east';
               if (currentInstruction.count < currentInstruction.limit) {
@@ -11045,7 +11051,7 @@ class App extends Component {
               }
             break;
             case 'move_west':
-              currentInstruction.limit = 1;
+              currentInstruction.limit = 10;
               this.keyPressed[plyr.number-1].west = true;
               this.turnCheckerDirection = 'west';
               if (currentInstruction.count < currentInstruction.limit) {
