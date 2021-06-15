@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Easystar from 'easystarjs';
+import Byakugan from 'byakugan-js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCogs,
@@ -1283,13 +1284,21 @@ class App extends Component {
     this.getPath = false;
     this.removeAi = undefined;
 
+    this.byakugan = undefined;
+    this.byagukanSettings = {
+      grid: [],
+      obstacles: [1],
+      diagonal: false,
+    }
+
   }
 
 
   componentDidMount() {
 
     this.easyStar = new Easystar.js();
-
+    this.byakugan = new Byakugan(this.byakuganSettings);
+    console.log('byakugan',this.byakugan,Byakugan);
 
     if (window.innerWidth < 1100) {
       this.setState({
@@ -9654,7 +9663,8 @@ class App extends Component {
       }
 
     this.updatePathArray();
-    this.getPath = true;
+
+    this.easyStar.avoidAdditionalPoint(cell.x, cell.y);
 
   }
 
@@ -9698,10 +9708,23 @@ class App extends Component {
     }
     this.pathArray = pathArray;
 
-    // this.easyStar.setGrid(this.pathArray)
-    // this.easyStar.setAcceptableTiles([0])
+    this.easyStar.setGrid(this.pathArray)
+    this.easyStar.setAcceptableTiles([0])
 
-    console.log('this.pathArray',this.pathArray,typeof pathArray);
+    this.byagukanSettings.grid = this.pathArray;
+
+    for (const cell2 of this.gridInfo) {
+      let terrainInfo3 = cell2.levelData.length-1;
+      if (
+        cell2.levelData.charAt(terrainInfo3) === 'j' ||
+        cell2.levelData.charAt(0) !== 'x' ||
+        cell2.void.state === true
+      ) {
+        this.easyStar.avoidAdditionalPoint(cell2.number.x, cell2.number.y);
+      }
+    }
+
+    // console.log('this.pathArray',this.pathArray,typeof pathArray);
 
   }
   startProcessLevelData = (canvas) => {
@@ -10888,15 +10911,15 @@ class App extends Component {
         }
 
     }
-    // instructions.shift();
-    // instructions.pop();
+    instructions.shift();
+    instructions.pop();
 
     console.log('this.pathArray',this.pathArray);
     console.log('path',path);
     console.log('instructions',instructions);
 
     // this.players[aiPlayer-1].ai.targetAcquired = true;
-    // this.players[aiPlayer-1].ai.instructions = instructions;
+    this.players[aiPlayer-1].ai.instructions = instructions;
 
   }
   aiDecide = (aiPlayer) => {
@@ -10907,7 +10930,6 @@ class App extends Component {
     let targetPlayer = this.players[aiPlayer.ai.targetPlayer.number-1];
     let prevTargetPos = aiPlayer.ai.targetPlayer.currentPosition;
     let currentTargetPos = targetPlayer.currentPosition.cell.number;
-    this.easyStar.calculate();
 
 
     // CHECK FOR TARGET CHANGE IF PERSUING!!
@@ -10926,7 +10948,7 @@ class App extends Component {
         getPath = true;
         aiPlayer.ai.targetAcquired = true;
       }
-      else {
+      else if (getPath !== true) {
         // console.log('target position unchanged! Skipping path update!');
         getPath = false;
       }
@@ -10945,15 +10967,18 @@ class App extends Component {
 
       if (aiPlayer.ai.mission === 'pursue') {
 
-        this.updatePathArray();
+        // this.updatePathArray();
         let aiPos = aiPlayer.currentPosition.cell.number;
         let targetPos = this.players[aiPlayer.ai.targetPlayer.number-1].currentPosition.cell.number;
 
         this.pathArray[targetPos.x][targetPos.y] = 0;
-        this.pathArray[aiPos.x][aiPos.y] = 0;
+        // this.pathArray[aiPos.x][aiPos.y] = 0;
 
-        this.easyStar.setGrid(this.pathArray)
+        // this.easyStar.setGrid(this.pathArray)
+        // this.easyStar.enableCornerCutting();
         this.easyStar.setAcceptableTiles([0])
+
+        console.log('this.pathArrayx',this.pathArray);
         this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
           if (path === null) {
             console.log("Path was not found.");
@@ -10962,14 +10987,18 @@ class App extends Component {
           }
         });
         // this.easyStar.calculate();
-        this.easyStar.setIterationsPerCalculation(1000)
+        this.easyStar.setIterationsPerCalculation(5000)
         for (const elem of this.pathArray[0]) {
           this.easyStar.calculate();
         }
         setTimeout(()=>{
           // console.log('pathSet',pathSet);
-          this.aiParsePath(pathSet,aiPlayer.number);
+          // this.aiParsePath(pathSet,aiPlayer.number);
         }, 50);
+
+
+        const pathSet = this.byakugan.search(aiPos.x, aiPos.y, targetPos.x, targetPos.y);
+        this.aiParsePath(pathSet,aiPlayer.number);
       }
 
 
@@ -10986,7 +11015,7 @@ class App extends Component {
         let currentInstruction = plyr.ai.instructions[plyr.ai.currentInstruction];
 
         if (currentInstruction) {
-          // console.log('currentInstruction',currentInstruction);
+          console.log(plyr.ai.instructions.length,'currentInstruction',plyr.ai.instructions.indexOf(currentInstruction));
           this.keyPressed[plyr.number-1] = {
             north: false,
             south: false,
@@ -11091,6 +11120,9 @@ class App extends Component {
             break;
           }
         }
+        // if () {
+        //
+        // }
       }
     }
 
