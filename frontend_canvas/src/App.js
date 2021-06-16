@@ -9709,17 +9709,6 @@ class App extends Component {
     // this.easyStar.setGrid(this.pathArray)
     // this.easyStar.setAcceptableTiles([0])
 
-    // for (const cell2 of this.gridInfo) {
-    //   let terrainInfo3 = cell2.levelData.length-1;
-    //   if (
-    //     cell2.levelData.charAt(terrainInfo3) === 'j' ||
-    //     cell2.levelData.charAt(0) !== 'x' ||
-    //     cell2.void.state === true
-    //   ) {
-    //     this.easyStar.avoidAdditionalPoint(cell2.number.x, cell2.number.y);
-    //   }
-    // }
-
     // console.log('this.pathArray',this.pathArray,typeof pathArray);
 
   }
@@ -10315,6 +10304,10 @@ class App extends Component {
 
       if (checkCell === true) {
 
+        // cell = {x:7 ,y:4}
+        // cell = {x:8 ,y:0}
+        // cell = {x:3 ,y:7}
+
         // console.log('adding ai. Player #',newPlayerNumber,' @',cell.x,cell.y);
 
         let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y)
@@ -10907,7 +10900,7 @@ class App extends Component {
         }
 
     }
-    instructions.shift();
+    // instructions.shift();
     instructions.pop();
 
     console.log('this.pathArray',this.pathArray);
@@ -10963,18 +10956,34 @@ class App extends Component {
 
       if (aiPlayer.ai.mission === 'pursue') {
 
-        // this.updatePathArray();
         let aiPos = aiPlayer.currentPosition.cell.number;
         let targetPos = this.players[aiPlayer.ai.targetPlayer.number-1].currentPosition.cell.number;
 
         this.pathArray[targetPos.x][targetPos.y] = 0;
         // this.pathArray[aiPos.x][aiPos.y] = 0;
 
-
         this.easyStar.setGrid(this.pathArray);
         this.easyStar.setAcceptableTiles([0])
 
-        console.log('this.pathArrayx',this.pathArray);
+        for (const plyr of this.players) {
+          // console.log('plyr.number1',plyr.number);
+          if (plyr.number !== aiPlayer.number && plyr.number !== targetPlayer.number) {
+            // console.log('plyr.number2',plyr.number);
+            this.easyStar.avoidAdditionalPoint(plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
+          }
+        }
+        for (const cell2 of this.gridInfo) {
+          let terrainInfo3 = cell2.levelData.length-1;
+          if (
+            cell2.levelData.charAt(terrainInfo3) === 'j' ||
+            cell2.levelData.charAt(0) !== 'x' ||
+            cell2.void.state === true
+          ) {
+            this.easyStar.avoidAdditionalPoint(cell2.number.x, cell2.number.y);
+          }
+        }
+
+
         this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
           if (path === null) {
             console.log("Path was not found.");
@@ -10982,7 +10991,6 @@ class App extends Component {
             pathSet = path;
           }
         });
-        // this.easyStar.calculate();
         this.easyStar.setIterationsPerCalculation(5000)
         for (const elem of this.pathArray[0]) {
           this.easyStar.calculate();
