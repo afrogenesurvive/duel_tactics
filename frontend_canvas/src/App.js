@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Easystar from 'easystarjs';
-import Byakugan from 'byakugan-js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCogs,
@@ -1297,8 +1296,6 @@ class App extends Component {
   componentDidMount() {
 
     this.easyStar = new Easystar.js();
-    this.byakugan = new Byakugan(this.byakuganSettings);
-    console.log('byakugan',this.byakugan,Byakugan);
 
     if (window.innerWidth < 1100) {
       this.setState({
@@ -9708,21 +9705,20 @@ class App extends Component {
     }
     this.pathArray = pathArray;
 
-    this.easyStar.setGrid(this.pathArray)
-    this.easyStar.setAcceptableTiles([0])
 
-    this.byagukanSettings.grid = this.pathArray;
+    // this.easyStar.setGrid(this.pathArray)
+    // this.easyStar.setAcceptableTiles([0])
 
-    for (const cell2 of this.gridInfo) {
-      let terrainInfo3 = cell2.levelData.length-1;
-      if (
-        cell2.levelData.charAt(terrainInfo3) === 'j' ||
-        cell2.levelData.charAt(0) !== 'x' ||
-        cell2.void.state === true
-      ) {
-        this.easyStar.avoidAdditionalPoint(cell2.number.x, cell2.number.y);
-      }
-    }
+    // for (const cell2 of this.gridInfo) {
+    //   let terrainInfo3 = cell2.levelData.length-1;
+    //   if (
+    //     cell2.levelData.charAt(terrainInfo3) === 'j' ||
+    //     cell2.levelData.charAt(0) !== 'x' ||
+    //     cell2.void.state === true
+    //   ) {
+    //     this.easyStar.avoidAdditionalPoint(cell2.number.x, cell2.number.y);
+    //   }
+    // }
 
     // console.log('this.pathArray',this.pathArray,typeof pathArray);
 
@@ -10974,8 +10970,8 @@ class App extends Component {
         this.pathArray[targetPos.x][targetPos.y] = 0;
         // this.pathArray[aiPos.x][aiPos.y] = 0;
 
-        // this.easyStar.setGrid(this.pathArray)
-        // this.easyStar.enableCornerCutting();
+
+        this.easyStar.setGrid(this.pathArray);
         this.easyStar.setAcceptableTiles([0])
 
         console.log('this.pathArrayx',this.pathArray);
@@ -10992,13 +10988,10 @@ class App extends Component {
           this.easyStar.calculate();
         }
         setTimeout(()=>{
-          // console.log('pathSet',pathSet);
-          // this.aiParsePath(pathSet,aiPlayer.number);
+          console.log('pathSet',pathSet);
+          this.aiParsePath(pathSet,aiPlayer.number);
         }, 50);
 
-
-        const pathSet = this.byakugan.search(aiPos.x, aiPos.y, targetPos.x, targetPos.y);
-        this.aiParsePath(pathSet,aiPlayer.number);
       }
 
 
