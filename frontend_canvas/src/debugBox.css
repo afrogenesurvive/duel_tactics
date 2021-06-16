@@ -19,7 +19,7 @@
 .debugBoxListItem > * {
   display: inline-block;
 }
-/* .debugBoxListItem2 > * {
+/* .debugBoxListItem3 > * {
   display: flex;
 } */
 
@@ -27,6 +27,11 @@
   color: #000000;
   font-size: 1rem;
   margin-bottom: .5rem;
+  text-align: center;
+}
+.debugBoxTextAlt {
+  margin: 0;
+  font-size: 15px;
 }
 
 .bold {
@@ -144,7 +149,7 @@
 }
 
 .staminaProgress {
-  margin: 1rem .5rem 0 .5rem;
+  margin: .2rem .5rem 0 .5rem;
   width: 3rem;
   /* display: inline; */
 }

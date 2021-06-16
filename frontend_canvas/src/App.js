@@ -208,9 +208,9 @@ class App extends Component {
       row4: ['x40j','x41j','x42b','x43j','x44b','x45j','x46j','x47j','x48d','x49d'],
       row5: ['x50j','x51j','x52b','x53j','x54b','x55j','x56j','x57j','x58d','x59d'],
       row6: ['x60x','x61x','x62x','x63i','x64i','x65x','x66x','x67x','x68f','x69f'],
-      row7: ['x70x','x71x','x72x','x73x','x74x','x75x','x76x','y77x','x78f','x79f'],
-      row8: ['x80x','x81x','x82x','x83x','y84x','x85x','y86x','x87x','x88x','x89x'],
-      row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
+      row7: ['x70x','x71x','x72x','x73x','x74x','x75x','x76x','x77x','x78f','x79f'],
+      row8: ['x80x','x81x','x82x','x83x','y84x','x85x','x86x','x87x','x88x','x89x'],
+      row9: ['x90x','x91x','x92x','y93x','x94x','x95x','x96x','x97x','x98x','x99x'],
     };
     this.levelData6 = {
       row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
@@ -1282,12 +1282,10 @@ class App extends Component {
     this.easyStar = undefined;
     this.getPath = false;
     this.removeAi = undefined;
-
-    this.byakugan = undefined;
-    this.byagukanSettings = {
-      grid: [],
-      obstacles: [1],
-      diagonal: false,
+    this.showSettingsKeyPress = {
+      state: false,
+      count: 0,
+      limit: 3,
     }
 
   }
@@ -2167,7 +2165,7 @@ class App extends Component {
       break;
       case ' ' :
         if (
-          state == false &&
+          state === false &&
           this.players[0].moving.state === true &&
           this.players[0].strafing.state === true
         ) {
@@ -2207,6 +2205,9 @@ class App extends Component {
 
       case '5' :
        this.addAiPlayerKeyPress = state;
+      break;
+      case 'Enter' :
+       this.showSettingsKeyPress.state = state;
       break;
 
 
@@ -2401,50 +2402,80 @@ class App extends Component {
 
   gameLoop = () => {
 
-
-    let ts = window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
-    this.stepper.currentTime = (new Date()).getTime();
-    this.stepper.deltaTime = (this.stepper.currentTime-this.stepper.lastTime);
-
-    if(this.stepper.deltaTime > this.stepper.interval) {
-
-      this.time++
-      if (this.time === 200) {
-        this.openVoid = true;
-        this.customCellToVoid({x:2,y:2})
+    // SETTINGS KEYPRESS
+    if (this.showSettingsKeyPress.state === true) {
+      if (this.showSettingsKeyPress.count < this.showSettingsKeyPress.limit) {
+        this.showSettingsKeyPress.count++;
+      }
+      if (this.showSettingsKeyPress.count >= this.showSettingsKeyPress.limit) {
+        if (this.state.showSettings !== true) {
+          this.setState({
+            showSettings: true
+          })
+        } else {
+          this.setState({
+            showSettings: false
+          })
+        }
+        this.showSettingsKeyPress = {
+          state: false,
+          count: 0,
+          limit: this.showSettingsKeyPress.limit,
+        }
       }
 
-      this.setState({
-        stateUpdater: '..'
-      })
-
-      if (this.aiPlayers.length > 0) {
-        this.aiEvaluate()
-      }
-
-      if (this.gamepad === true) {
-        this.pollGamepads();
-      }
-
-
-      // REMOVE AI PLAYER!
-      if (this.removeAi && this.addAiCount.state !== true) {
-
-        let aiPlayer = this.players[this.removeAi-1]
-        let newArray = this.players.filter(x=> x !== aiPlayer);
-        this.players = [];
-        this.players = newArray;
-        this.removeAi = undefined;
-      }
-
-
-      for (const player of this.players) {
-        this.playerUpdate(player, this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
-      }
-
-      this.stepper.lastTime = this.stepper.currentTime - (this.stepper.deltaTime % this.stepper.interval);
     }
+
+    if (this.state.showSettings !== true) {
+
+      // let ts = window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
+      this.stepper.currentTime = (new Date()).getTime();
+      this.stepper.deltaTime = (this.stepper.currentTime-this.stepper.lastTime);
+
+      if(this.stepper.deltaTime > this.stepper.interval) {
+
+        this.time++
+        if (this.time === 200) {
+          this.openVoid = true;
+          this.customCellToVoid({x:2,y:2})
+        }
+
+        this.setState({
+          stateUpdater: '..'
+        })
+
+        if (this.aiPlayers.length > 0) {
+          this.aiEvaluate()
+        }
+
+        if (this.gamepad === true) {
+          this.pollGamepads();
+        }
+
+
+        // REMOVE AI PLAYER!
+        if (this.removeAi && this.addAiCount.state !== true) {
+
+          let aiPlayer = this.players[this.removeAi-1]
+          let newArray = this.players.filter(x=> x !== aiPlayer);
+          this.players = [];
+          this.players = newArray;
+          this.removeAi = undefined;
+        }
+
+
+        for (const player of this.players) {
+          this.playerUpdate(player, this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
+        }
+
+
+        this.stepper.lastTime = this.stepper.currentTime - (this.stepper.deltaTime % this.stepper.interval);
+      }
+
+    }
+
     requestAnimationFrame(this.gameLoop);
+
   }
 
   playerUpdate = (player, canvas, context, canvas2, context2) => {
@@ -9663,6 +9694,12 @@ class App extends Component {
 
     this.easyStar.avoidAdditionalPoint(cell.x, cell.y);
 
+    for (const plyr2 of this.players) {
+      if (plyr2.ai.state === true) {
+        plyr2.ai.targetAcquired = false;
+      }
+    }
+
   }
 
   updatePathArray = () => {
@@ -9704,12 +9741,6 @@ class App extends Component {
       pathArray.push(row)
     }
     this.pathArray = pathArray;
-
-
-    // this.easyStar.setGrid(this.pathArray)
-    // this.easyStar.setAcceptableTiles([0])
-
-    // console.log('this.pathArray',this.pathArray,typeof pathArray);
 
   }
   startProcessLevelData = (canvas) => {
@@ -10304,11 +10335,17 @@ class App extends Component {
 
       if (checkCell === true) {
 
-        // cell = {x:7 ,y:4}
-        // cell = {x:8 ,y:0}
-        // cell = {x:3 ,y:7}
-
         // console.log('adding ai. Player #',newPlayerNumber,' @',cell.x,cell.y);
+
+        // let cell = {x: 6,y: 2}
+        // let cell = {x: 6,y: 5}
+        // let cell = {x: 6,y: 3}
+        // let cell = {x: 1,y: 7}
+        // let cell = {x: 9,y: 4}
+        // let cell = {x: 8,y: 5}
+        // let cell = {x: 7,y: 5}
+        // let cell = {x: 7,y: 6}
+        let cell = {x: 7,y: 3}
 
         let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y)
         let newPlayer = {
@@ -10809,17 +10846,19 @@ class App extends Component {
           };
         }
 
+        // if target in proximity mission = engage
 
         plyr.ai.mission = 'pursue';
         // plyr.ai.targetSet = true;
 
 
         // if mission patrol or defend, set anchor point(s)
+
         // check for player/target proximity and choose closest target
         // set engaging based on target proximity
         // if defend mission and target out of proximity, disengage
 
-
+        // console.log('ffg',plyr.number);
         this.aiDecide(plyr)
       }
     }
@@ -10831,6 +10870,7 @@ class App extends Component {
     let init = true;
     let initDirection = this.players[aiPlayer-1].direction;
     let direction;
+
     // path.shift();
     path.pop();
 
@@ -10901,13 +10941,12 @@ class App extends Component {
 
     }
     // instructions.shift();
-    instructions.pop();
+    // instructions.pop();
 
-    console.log('this.pathArray',this.pathArray);
+    // console.log('this.pathArray',this.pathArray);
     console.log('path',path);
     console.log('instructions',instructions);
 
-    // this.players[aiPlayer-1].ai.targetAcquired = true;
     this.players[aiPlayer-1].ai.instructions = instructions;
 
   }
@@ -10944,63 +10983,85 @@ class App extends Component {
 
     }
 
-    // how to plot patrol path?
-    // repeat instructions if patrolling and unengaged
-    //
-    // what to do if engaged?
 
+    if (aiPlayer.ai.mission === 'patrol') {
+
+      // if instructions are empty, check current pos and set path w/ dest as anchor point that's not plyr pos
+
+    }
+    if (aiPlayer.ai.mission === 'engage') {
+
+      // set instruction based on target player action
+      // if target attacking defend or evade (move, dodge), else attack
+
+    }
+    if (aiPlayer.ai.mission === 'defend') {
+
+      // check pos and if out of range of anchor point, set path to anchor point
+
+    }
 
 
     let pathSet = [];
     if (getPath === true && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
 
-      if (aiPlayer.ai.mission === 'pursue') {
+      let aiPos;
+      let targetPos;
 
-        let aiPos = aiPlayer.currentPosition.cell.number;
-        let targetPos = this.players[aiPlayer.ai.targetPlayer.number-1].currentPosition.cell.number;
+      if (aiPlayer.ai.mission === 'pursue') {
+        aiPos = aiPlayer.currentPosition.cell.number;
+        targetPos = this.players[aiPlayer.ai.targetPlayer.number-1].currentPosition.cell.number;
 
         this.pathArray[targetPos.x][targetPos.y] = 0;
         // this.pathArray[aiPos.x][aiPos.y] = 0;
 
-        this.easyStar.setGrid(this.pathArray);
-        this.easyStar.setAcceptableTiles([0])
+      }
 
-        for (const plyr of this.players) {
-          // console.log('plyr.number1',plyr.number);
-          if (plyr.number !== aiPlayer.number && plyr.number !== targetPlayer.number) {
-            // console.log('plyr.number2',plyr.number);
-            this.easyStar.avoidAdditionalPoint(plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
-          }
-        }
-        for (const cell2 of this.gridInfo) {
-          let terrainInfo3 = cell2.levelData.length-1;
-          if (
-            cell2.levelData.charAt(terrainInfo3) === 'j' ||
-            cell2.levelData.charAt(0) !== 'x' ||
-            cell2.void.state === true
-          ) {
-            this.easyStar.avoidAdditionalPoint(cell2.number.x, cell2.number.y);
-          }
-        }
-
-
-        this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
-          if (path === null) {
-            console.log("Path was not found.");
-          } else {
-            pathSet = path;
-          }
-        });
-        this.easyStar.setIterationsPerCalculation(5000)
-        for (const elem of this.pathArray[0]) {
-          this.easyStar.calculate();
-        }
-        setTimeout(()=>{
-          console.log('pathSet',pathSet);
-          this.aiParsePath(pathSet,aiPlayer.number);
-        }, 50);
+      if (aiPlayer.ai.mission === 'patrol') {
 
       }
+      if (aiPlayer.ai.mission === 'engage') {
+
+      }
+      if (aiPlayer.ai.mission === 'defend') {
+
+      }
+
+
+      this.easyStar.setGrid(this.pathArray);
+      this.easyStar.setAcceptableTiles([0])
+
+      for (const plyr of this.players) {
+        if (plyr.number !== aiPlayer.number && plyr.number !== targetPlayer.number) {
+          this.easyStar.avoidAdditionalPoint(plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
+        }
+      }
+      for (const cell2 of this.gridInfo) {
+        let terrainInfo3 = cell2.levelData.length-1;
+        if (
+          cell2.levelData.charAt(terrainInfo3) === 'j' ||
+          cell2.levelData.charAt(0) !== 'x' ||
+          cell2.void.state === true
+        ) {
+          this.easyStar.avoidAdditionalPoint(cell2.number.x, cell2.number.y);
+        }
+      }
+
+      this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
+        if (path === null) {
+          console.log("Path was not found.");
+        } else {
+          pathSet = path;
+        }
+      });
+      this.easyStar.setIterationsPerCalculation(5000)
+      for (const elem of this.pathArray[0]) {
+        this.easyStar.calculate();
+      }
+      setTimeout(()=>{
+        // console.log('pathSet',pathSet);
+        this.aiParsePath(pathSet,aiPlayer.number);
+      }, 50);
 
 
     }
@@ -11016,7 +11077,7 @@ class App extends Component {
         let currentInstruction = plyr.ai.instructions[plyr.ai.currentInstruction];
 
         if (currentInstruction) {
-          console.log(plyr.ai.instructions.length,'currentInstruction',plyr.ai.instructions.indexOf(currentInstruction));
+          // console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
           this.keyPressed[plyr.number-1] = {
             north: false,
             south: false,
@@ -11051,42 +11112,58 @@ class App extends Component {
               }
             break;
             case 'move_north':
-              currentInstruction.limit = 10;
-              this.keyPressed[plyr.number-1].north = true;
-              this.turnCheckerDirection = 'north';
-              if (currentInstruction.count < currentInstruction.limit) {
-                currentInstruction.count++;
-              } else if (currentInstruction.count >= currentInstruction.limit) {
+              if (plyr.moving.state !== true && !plyr.turning.state) {
+                console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
+                currentInstruction.limit = 1;
+                this.keyPressed[plyr.number-1].north = true;
+                this.turnCheckerDirection = 'north';
+                // if (currentInstruction.count < currentInstruction.limit) {
+                //   currentInstruction.count++;
+                // } else if (currentInstruction.count >= currentInstruction.limit) {
+                //   plyr.ai.currentInstruction++;
+                // }
                 plyr.ai.currentInstruction++;
               }
             break;
             case 'move_south':
-              currentInstruction.limit = 10;
-              this.keyPressed[plyr.number-1].south = true;
-              this.turnCheckerDirection = 'south';
-              if (currentInstruction.count < currentInstruction.limit) {
-                currentInstruction.count++;
-              } else if (currentInstruction.count >= currentInstruction.limit) {
+              if (plyr.moving.state !== true && !plyr.turning.state) {
+                console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
+                currentInstruction.limit = 1;
+                this.keyPressed[plyr.number-1].south = true;
+                this.turnCheckerDirection = 'south';
+                // if (currentInstruction.count < currentInstruction.limit) {
+                //   currentInstruction.count++;
+                // } else if (currentInstruction.count >= currentInstruction.limit) {
+                //   plyr.ai.currentInstruction++;
+                // }
                 plyr.ai.currentInstruction++;
               }
             break;
             case 'move_east':
-              currentInstruction.limit = 10;
-              this.keyPressed[plyr.number-1].east = true;
-              this.turnCheckerDirection = 'east';
-              if (currentInstruction.count < currentInstruction.limit) {
-                currentInstruction.count++;
-              } else if (currentInstruction.count >= currentInstruction.limit) {
+              if (plyr.moving.state !== true && !plyr.turning.state) {
+                console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
+                currentInstruction.limit = 1;
+                this.keyPressed[plyr.number-1].east = true;
+                this.turnCheckerDirection = 'east';
+                // if (currentInstruction.count < currentInstruction.limit) {
+                //   currentInstruction.count++;
+                // } else if (currentInstruction.count >= currentInstruction.limit) {
+                //   plyr.ai.currentInstruction++;
+                // }
                 plyr.ai.currentInstruction++;
               }
             break;
             case 'move_west':
-              currentInstruction.limit = 10;
-              this.keyPressed[plyr.number-1].west = true;
-              this.turnCheckerDirection = 'west';
-              if (currentInstruction.count < currentInstruction.limit) {
-                currentInstruction.count++;
-              } else if (currentInstruction.count >= currentInstruction.limit) {
+              if (plyr.moving.state !== true && !plyr.turning.state) {
+                console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
+                currentInstruction.limit = 1;
+                this.keyPressed[plyr.number-1].west = true;
+                this.turnCheckerDirection = 'west';
+                // if (currentInstruction.count < currentInstruction.limit) {
+                //   currentInstruction.count++;
+                // } else if (currentInstruction.count >= currentInstruction.limit) {
+                //   plyr.ai.currentInstruction++;
+                // }
                 plyr.ai.currentInstruction++;
               }
             break;
@@ -11120,14 +11197,15 @@ class App extends Component {
               }
             break;
           }
+
+          let index = plyr.ai.instructions.indexOf(currentInstruction);
+          if (index >= plyr.ai.instructions.length) {
+            console.log('instructions complete');
+            plyr.ai.instructions = [];
+          }
         }
-        // if () {
-        //
-        // }
       }
     }
-
-
 
   }
 

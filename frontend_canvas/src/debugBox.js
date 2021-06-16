@@ -72,69 +72,72 @@ const DebugBox = props => {
   return (
     <div className="debugBoxContainer">
 
-    {state === 'player' && (
-      <ul className="debugBoxList">
+    {
+    //   state === 'player' && (
+    //   <ul className="debugBoxList">
+    //
+    //       <li className="debugBoxListItem">
+    //         <FontAwesomeIcon icon={faFistRaised} size="sm" className="debugBoxIcon" /> :
+    //         <p className="debugBoxText">
+    //          {props.player.action}
+    //         </p>
+    //       </li>
+    //
+    //       <li className="debugBoxListItem">
+    //         <FontAwesomeIcon icon={faMapMarked} size="sm" className="debugBoxIcon"/> :
+    //         <p className="debugBoxText">
+    //           {props.player.currentPosition.cell.number.x}, {props.player.currentPosition.cell.number.y}
+    //         </p>
+    //       </li>
+    //
+    //       <li className="debugBoxListItem">
+    //         <FontAwesomeIcon icon={faCrosshairs} size="sm" className="debugBoxIcon"/> :
+    //         <p className="debugBoxText">
+    //           {props.player.target.cell.number.x}, {props.player.target.cell.number.y}
+    //         </p>
+    //       </li>
+    //
+    //     {props.player.strafing.state !== true &&(
+    //
+    //         <li className="debugBoxListItem">
+    //         <FontAwesomeIcon icon={faCompass} size="sm" className="debugBoxIcon"/> :
+    //           <p className="debugBoxText">
+    //             {props.player.direction}
+    //           </p>
+    //         </li>
+    //
+    //     )}
+    //     {props.player.strafing.state === true &&(
+    //
+    //         <li className="debugBoxListItem">
+    //         <FontAwesomeIcon icon={faCompass} size="sm" className="debugBoxIcon"/> :
+    //           <p className="debugBoxText">
+    //             {props.player.strafing.direction}
+    //           </p>
+    //         </li>
+    //
+    //     )}
+    //     {
+    //     //   props.player.strafing.state === true && (
+    //     //   <li className="debugBoxListItem">
+    //     //     <p className="debugBoxText">
+    //     //       <span className="bold">Dir:</span> {props.player.strafing.direction}
+    //     //     </p>
+    //     //   </li>
+    //     // )
+    //     }
+    //
+    //     <li className="debugBoxListItem">
+    //       <FontAwesomeIcon icon={faSkullCrossbones} size="sm" className="debugBoxIcon"/> :
+    //       <p className="debugBoxText">
+    //         {props.player.points}
+    //       </p>
+    //     </li>
+    //
+    //   </ul>
+    // )
+    }
 
-          <li className="debugBoxListItem">
-            <FontAwesomeIcon icon={faFistRaised} size="sm" className="debugBoxIcon" /> :
-            <p className="debugBoxText">
-             {props.player.action}
-            </p>
-          </li>
-
-          <li className="debugBoxListItem">
-            <FontAwesomeIcon icon={faMapMarked} size="sm" className="debugBoxIcon"/> :
-            <p className="debugBoxText">
-              {props.player.currentPosition.cell.number.x}, {props.player.currentPosition.cell.number.y}
-            </p>
-          </li>
-
-          <li className="debugBoxListItem">
-            <FontAwesomeIcon icon={faCrosshairs} size="sm" className="debugBoxIcon"/> :
-            <p className="debugBoxText">
-              {props.player.target.cell.number.x}, {props.player.target.cell.number.y}
-            </p>
-          </li>
-
-        {props.player.strafing.state !== true &&(
-
-            <li className="debugBoxListItem">
-            <FontAwesomeIcon icon={faCompass} size="sm" className="debugBoxIcon"/> :
-              <p className="debugBoxText">
-                {props.player.direction}
-              </p>
-            </li>
-
-        )}
-        {props.player.strafing.state === true &&(
-
-            <li className="debugBoxListItem">
-            <FontAwesomeIcon icon={faCompass} size="sm" className="debugBoxIcon"/> :
-              <p className="debugBoxText">
-                {props.player.strafing.direction}
-              </p>
-            </li>
-
-        )}
-        {
-        //   props.player.strafing.state === true && (
-        //   <li className="debugBoxListItem">
-        //     <p className="debugBoxText">
-        //       <span className="bold">Dir:</span> {props.player.strafing.direction}
-        //     </p>
-        //   </li>
-        // )
-        }
-
-        <li className="debugBoxListItem">
-          <FontAwesomeIcon icon={faSkullCrossbones} size="sm" className="debugBoxIcon"/> :
-          <p className="debugBoxText">
-            {props.player.points}
-          </p>
-        </li>
-
-      </ul>
-    )}
     {state === 'player' && (
       <ul className="debugBoxList">
 
@@ -151,13 +154,21 @@ const DebugBox = props => {
         // <p className="debugBoxText">
         // {staminaPercent}
         // </p>
+
+        // <li className="debugBoxListItem">
+        //   <img src={stamina} className="debugBoxImg"></img>
+        // </li>
         }
 
 
       <li className="debugBoxListItem">
-        <img src={stamina} className="debugBoxImg"></img>
+        <FontAwesomeIcon icon={faSkullCrossbones} size="sm" className="debugBoxIcon"/> :
+        <p className="debugBoxText">
+          {props.player.points}
+        </p>
       </li>
       <li className="debugBoxListItem3">
+        <p className="debugBoxText debugBoxTextAlt">Stamina</p>
         <ProgressBar className="staminaProgress" now={staminaPercent} variant={staminaColor}/>
       </li>
 
