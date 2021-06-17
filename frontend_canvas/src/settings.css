@@ -44,6 +44,10 @@
   margin: 0 auto;
 }
 
+.formBtn {
+ margin: 0 2rem;
+}
+
 .formLabel {
   font-size: 1.2rem;
 }
@@ -64,4 +68,8 @@
 .form {
   margin: 0 auto;
   width: 60%;
+}
+
+.btnSubCont {
+  margin: 0 auto;
 }

@@ -70,8 +70,10 @@ const Settings = props => {
 
 
         <Form.Row className="formBtnRow">
-          <Button variant="success" type="submit" className="addFormBtn">Submit</Button>
-          <Button variant="danger" className="addFormBtn" onClick={props.onCancel}>Cancel</Button>
+          <div className="btnSubCont">
+            <Button variant="success" type="submit" className="formBtn">Submit</Button>
+            <Button variant="danger" className="formBtn" onClick={props.onCancel}>Cancel</Button>
+          </div>
         </Form.Row>
         </Form>
 

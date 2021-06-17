@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import Easystar from 'easystarjs';
+import Pathfinding from 'pathfinding';
+import { AStarFinder } from "astar-typescript";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCogs,
@@ -460,7 +462,7 @@ class App extends Component {
           cell: {
             number: {
               x: 1,
-              y: 1,
+              y: 4,
             },
             center: {
               x: 0,
@@ -1281,6 +1283,7 @@ class App extends Component {
         crossbow: 20,
       },
     };
+
     this.easyStar = undefined;
     this.getPath = false;
     this.removeAi = undefined;
@@ -1289,6 +1292,11 @@ class App extends Component {
       count: 0,
       limit: 3,
     }
+
+    this.pathfindingGrid = undefined;
+    this.pathfinder = undefined;
+    this.aStarInstance = undefined;
+
 
   }
 
@@ -1400,6 +1408,8 @@ class App extends Component {
       dodge: false,
     },
   ]
+  let showSettingsKeyPressState = false;
+
   for (const plyr of this.players) {
     this.players[plyr.number-1].strafing.state = false;
   }
@@ -1487,7 +1497,7 @@ class App extends Component {
             // SHOULDER TRIGGER
             if (gp.buttons.indexOf(btn) === 6) {
               // console.log('1 player defend held',gp.buttons.indexOf(btn));
-
+              showSettingsKeyPressState = true;
             }
 
           }
@@ -1556,7 +1566,7 @@ class App extends Component {
 
             // SHOULDER TRIGGER
             if (gp.buttons.indexOf(btn) === 4) {
-
+              showSettingsKeyPressState = true;
             }
 
 
@@ -1684,7 +1694,7 @@ class App extends Component {
 
             // SHOULDER BTN
             if (gp.buttons.indexOf(btn) === 7) {
-
+              showSettingsKeyPressState = true;
             }
 
 
@@ -1977,7 +1987,7 @@ class App extends Component {
 
 
   this.keyPressed = keyPressed;
-
+  this.showSettingsKeyPress.state = showSettingsKeyPressState;
 
   let player = this.players[this.currentPlayer-1];
   if (player.defending.state === true && player.defending.count === 0) {
@@ -10361,7 +10371,11 @@ class App extends Component {
       if (checkCell === true) {
 
         // console.log('adding ai. Player #',newPlayerNumber,' @',cell.x,cell.y);
-
+        // cell = {x:0,y:0}
+        cell = {x:9,y:0}
+        // cell = {x:9,y:9}
+        // cell = {x:0,y:9}
+        // cell = {x:7,y:6}
 
         let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y)
         let newPlayer = {
@@ -11070,14 +11084,136 @@ class App extends Component {
     }
     if (aiPlayer.ai.mission === 'engage') {
 
-      // if current weapon is bow turn to target direction and fire instructions
+      // FACE TARGET!
+      if (targetPlayer.currentPosition.cell.number.x === aiPlayer.currentPosition.cell.number.x && targetPlayer.currentPosition.cell.number.y > aiPlayer.currentPosition.cell.number.y) {
+        aiPlayer.direction = 'south';
+      }
+      if (targetPlayer.currentPosition.cell.number.x === aiPlayer.currentPosition.cell.number.x && targetPlayer.currentPosition.cell.number.y < aiPlayer.currentPosition.cell.number.y) {
+        aiPlayer.direction = 'north';
+      }
+      if (targetPlayer.currentPosition.cell.number.x < aiPlayer.currentPosition.cell.number.x && targetPlayer.currentPosition.cell.number.y === aiPlayer.currentPosition.cell.number.y) {
+        aiPlayer.direction = 'west';
+      }
+      if (targetPlayer.currentPosition.cell.number.x > aiPlayer.currentPosition.cell.number.x && targetPlayer.currentPosition.cell.number.y === aiPlayer.currentPosition.cell.number.y) {
+        aiPlayer.direction = 'east';
+      }
 
-      // set instruction based on target player action
-      // face target
-      // if target attacking defend or evade (move, dodge), else attack
+      if (aiPlayer.currentWeapon.type === 'bow') {
+        aiPlayer.ai.instructions = [
+          {
+            keyword: 'attack',
+            count: 0,
+            limit: 1,
+          },
+        ]
+      }
 
-      // if full health attack and advance
-      // if injured defend and retreat
+      if (aiPlayer.currentWeapon.type === 'spear') {
+        if (targetPlayer.defending.state !== true) {
+          aiPlayer.ai.instructions = [
+            {
+              keyword: 'attack',
+              count: 0,
+              limit: 1,
+            },
+          ]
+        }
+        if (targetPlayer.defendDecay.count > targetPlayer.defendDecay.limit - 10) {
+          aiPlayer.ai.instructions = [
+            {
+              keyword: 'attack',
+              count: 0,
+              limit: 1,
+            },
+          ]
+        }
+        if (targetPlayer.attacking.state === true) {
+          if (
+            targetPlayer.attacking.count === this.attackAnimRef.peak - 3 ||
+            targetPlayer.attacking.count === this.attackAnimRef.peak + 3
+          ) {
+            aiPlayer.ai.instructions = [
+              {
+                keyword: 'long_defend',
+                count: 0,
+                limit: 1,
+              },
+            ]
+
+            // OR DODGE
+          }
+          if (targetPlayer.attacking.count <= 3) {
+            aiPlayer.ai.instructions = [
+              {
+                keyword: 'attack',
+                count: 0,
+                limit: 1,
+              },
+            ]
+
+            // OR FLANK
+          }
+        }
+
+      }
+      if (aiPlayer.currentWeapon.type === 'sword') {
+          let instructions1 = [];
+          instructions1.push(
+            {
+              keyword: 'move_'+aiPlayer.direction,
+              count: 0,
+              limit: 1,
+            },
+          )
+
+          if (targetPlayer.defending.state !== true) {
+            instructions1.push(
+              {
+                keyword: 'attack',
+                count: 0,
+                limit: 1,
+              },
+            )
+          }
+          if (targetPlayer.defendDecay.count > targetPlayer.defendDecay.limit - 10) {
+            instructions1.push(
+              {
+                keyword: 'attack',
+                count: 0,
+                limit: 1,
+              },
+            )
+          }
+          if (targetPlayer.attacking.state === true) {
+            if (
+              targetPlayer.attacking.count === this.attackAnimRef.peak - 3 ||
+              targetPlayer.attacking.count === this.attackAnimRef.peak + 3
+            ) {
+              instructions1.push(
+                {
+                  keyword: 'long_defend',
+                  count: 0,
+                  limit: 1,
+                },
+              )
+
+              // OR DODGE
+            }
+            if (targetPlayer.attacking.count <= 3) {
+              instructions1.push(
+                {
+                  keyword: 'attack',
+                  count: 0,
+                  limit: 1,
+                },
+              )
+
+              // OR FLANK
+            }
+          }
+
+          aiPlayer.instructions = instructions1;
+      }
 
     }
     if (aiPlayer.ai.mission === 'defend') {
@@ -11180,15 +11316,29 @@ class App extends Component {
 
       }
 
-
       this.easyStar.setGrid(this.pathArray);
       this.easyStar.setAcceptableTiles([0])
+
+
+      let pathfindingGrid = new Pathfinding.Grid(this.pathArray);
+      let pathfinder = new Pathfinding.DijkstraFinder();
+
+      this.aStarInstance = new AStarFinder({
+        grid: {
+          matrix: this.pathArray
+        }
+      });
+      let myPathway = this.aStarInstance.findPath(aiPos, targetPos);
+      console.log('myPathway',myPathway);
+
 
       let removeTiles = [];
       for (const plyr of this.players) {
         if (plyr.number !== aiPlayer.number && plyr.number !== targetPlayer.number) {
           this.easyStar.avoidAdditionalPoint(plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
           removeTiles.push({x:plyr.currentPosition.cell.number.x,y:plyr.currentPosition.cell.number.y})
+
+          pathfindingGrid.setWalkableAt(plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y, false);
         }
       }
       for (const cell2 of this.gridInfo) {
@@ -11201,8 +11351,15 @@ class App extends Component {
         ) {
           this.easyStar.avoidAdditionalPoint(cell2.number.x, cell2.number.y);
           removeTiles.push({x:cell2.number.x,y:cell2.number.y})
+
+          pathfindingGrid.setWalkableAt(cell2.number.x, cell2.number.y, false);
         }
       }
+
+      let path = pathfinder.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, pathfindingGrid);
+      console.log('pathfinder path',path);
+
+
       console.log('this.pathArray',this.pathArray);
       console.log('aiPos',aiPos.x,aiPos.y);
       console.log('targetPos',targetPos.x,targetPos.y);
@@ -11215,7 +11372,7 @@ class App extends Component {
           pathSet = path;
         }
       });
-      this.easyStar.setIterationsPerCalculation(5000)
+      this.easyStar.setIterationsPerCalculation(2000)
       for (const elem of this.pathArray[0]) {
         this.easyStar.calculate();
       }
