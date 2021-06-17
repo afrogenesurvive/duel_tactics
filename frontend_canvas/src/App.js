@@ -10834,11 +10834,36 @@ class App extends Component {
       if (plyr.ai.state === true) {
 
 
+
         let targetInRange = false;
-        // EVALUTE!
-        // what is proximity of players?
-        // What is target's gear, health, speed
-        // What is my gear, health, speed
+
+        if (plyr.ai.targetSet === true) {
+          if (plyr.currentWeapon.type === 'bow') {
+            if (
+              plyr.currentPosition.cell.number.x === plyr.ai.targetPlayer.currentPosition.x ||
+              plyr.currentPosition.cell.number.y === plyr.ai.targetPlayer.currentPosition.y
+            ) {
+              console.log('in ranged attack range');
+              // targetInRange = true;
+            }
+          }
+          if (plyr.currentWeapon.type !== 'bow') {
+            if (
+              plyr.currentPosition.cell.number.x === plyr.ai.targetPlayer.currentPosition.x ||
+              plyr.currentPosition.cell.number.y === plyr.ai.targetPlayer.currentPosition.y
+            ) {
+              if (
+                plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x - 2 ||
+                plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x + 2 ||
+                plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y - 2 ||
+                plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y + 2
+              ) {
+                console.log('in melee attack range');
+                // targetInRange = true;
+              }
+            }
+          }
+        }
 
 
         // if (plyr.ai.mission === 'patrol') {
@@ -10848,8 +10873,9 @@ class App extends Component {
         //   ]
         // }
         if (plyr.ai.mission === 'defend') {
+          plyr.ai.defending.state = true;
           plyr.ai.defending.area = [
-            {x:plyr.currentPosition,y:plyr.currentPosition},
+            {x:plyr.currentPosition.cell.number.x,y:plyr.currentPosition.cell.number.y},
           ]
         }
 
@@ -10958,7 +10984,7 @@ class App extends Component {
             instructions.push({
               keyword: 'move_'+newDirection,
               count: 0,
-              limit: 0,
+              limit: 1,
             })
           }
           if (oldDirection !== newDirection) {
@@ -10966,12 +10992,12 @@ class App extends Component {
               {
                 keyword: 'move_'+newDirection,
                 count: 0,
-                limit: 0,
+                limit: 1,
               },
               {
                 keyword: 'move_'+newDirection,
                 count: 0,
-                limit: 0,
+                limit: 1,
               }
             )
           }
@@ -11027,20 +11053,96 @@ class App extends Component {
     }
 
 
+    let patrolDest;
     if (aiPlayer.ai.mission === 'patrol') {
 
-      // if instructions are empty, check current pos and set path w/ dest as anchor point that's not plyr pos
+      if (aiPlayer.ai.instructions.length === 0) {
+        let currentPatrolPoint = aiPlayer.ai.patrolling.area.indexOf({x:aiPlayer.currentPosition.cell.number.x,y:aiPlayer.currentPosition.cell.number.y})
+        if (currentPatrolPoint === 0) {
+          patrolDest = aiPlayer.ai.patrolling.area[1];
+          getPath = true;
+        } else {
+          patrolDest = aiPlayer.ai.patrolling.area[0];
+          getPath = true;
+        }
+      }
 
     }
     if (aiPlayer.ai.mission === 'engage') {
 
+      // if current weapon is bow turn to target direction and fire instructions
+
       // set instruction based on target player action
+      // face target
       // if target attacking defend or evade (move, dodge), else attack
+
+      // if full health attack and advance
+      // if injured defend and retreat
 
     }
     if (aiPlayer.ai.mission === 'defend') {
 
-      // check pos and if out of range of anchor point, set path to anchor point
+      if (
+        aiPlayer.currentPosition.cell.number.x !== aiPlayer.ai.defending.area[0].x ||
+        aiPlayer.currentPosition.cell.number.y !== aiPlayer.ai.defending.area[0].y
+      ) {
+        getPath = true;
+      }
+      else {
+        let instructions = [];
+        switch(aiPlayer.direction) {
+          case 'north':
+            instructions = [
+              {keyword: 'move_east',count: 0,limit: 10,},
+              {keyword: 'move_south',count: 0,limit: 10,},
+              {keyword: 'move_west',count: 0,limit: 10,},
+              {keyword: 'move_north',count: 0,limit: 10,},
+              {keyword: 'move_east',count: 0,limit: 10,},
+              {keyword: 'move_south',count: 0,limit: 10,},
+              {keyword: 'move_west',count: 0,limit: 10,},
+              {keyword: 'move_north',count: 0,limit: 10,},
+            ]
+          break;
+          case 'east':
+            instructions = [
+              {keyword: 'move_south',count: 0,limit: 10,},
+              {keyword: 'move_west',count: 0,limit: 10,},
+              {keyword: 'move_north',count: 0,limit: 10,},
+              {keyword: 'move_east',count: 0,limit: 10,},
+              {keyword: 'move_south',count: 0,limit: 10,},
+              {keyword: 'move_west',count: 0,limit: 10,},
+              {keyword: 'move_north',count: 0,limit: 10,},
+              {keyword: 'move_east',count: 0,limit: 10,},
+            ]
+          break;
+          case 'south':
+            instructions = [
+              {keyword: 'move_west',count: 0,limit: 10,},
+              {keyword: 'move_north',count: 0,limit: 10,},
+              {keyword: 'move_east',count: 0,limit: 10,},
+              {keyword: 'move_south',count: 0,limit: 10,},
+              {keyword: 'move_west',count: 0,limit: 10,},
+              {keyword: 'move_north',count: 0,limit: 10,},
+              {keyword: 'move_east',count: 0,limit: 10,},
+              {keyword: 'move_south',count: 0,limit: 10,},
+            ]
+          break;
+          case 'west':
+            instructions = [
+              {keyword: 'move_north',count: 0,limit: 10,},
+              {keyword: 'move_east',count: 0,limit: 10,},
+              {keyword: 'move_south',count: 0,limit: 10,},
+              {keyword: 'move_west',count: 0,limit: 10,},
+              {keyword: 'move_north',count: 0,limit: 10,},
+              {keyword: 'move_east',count: 0,limit: 10,},
+              {keyword: 'move_south',count: 0,limit: 10,},
+              {keyword: 'move_west',count: 0,limit: 10,},
+            ]
+          break;
+        }
+        aiPlayer.ai.instructions = instructions;
+        aiPlayer.ai.currentInstruction = 0;
+      }
 
     }
 
@@ -11062,11 +11164,19 @@ class App extends Component {
 
       if (aiPlayer.ai.mission === 'patrol') {
 
+        aiPos = aiPlayer.currentPosition.cell.number;
+        targetPos = patrolDest;
+        this.pathArray[targetPos.x][targetPos.y] = 0;
+
       }
       if (aiPlayer.ai.mission === 'engage') {
 
       }
       if (aiPlayer.ai.mission === 'defend') {
+
+        aiPos = aiPlayer.currentPosition.cell.number;
+        targetPos = aiPlayer.ai.defending.area[0];
+        this.pathArray[targetPos.x][targetPos.y] = 0;
 
       }
 
@@ -11164,38 +11274,74 @@ class App extends Component {
             break;
             case 'move_north':
               if (plyr.moving.state !== true && !plyr.turning.state) {
-                console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
-                currentInstruction.limit = 1;
+                // console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
+                // currentInstruction.limit = 1;
                 this.keyPressed[plyr.number-1].north = true;
                 this.turnCheckerDirection = 'north';
-                plyr.ai.currentInstruction++;
+                // plyr.ai.currentInstruction++;
+                if (currentInstruction.limit === 1) {
+                  plyr.ai.currentInstruction++;
+                } else {
+                  if (currentInstruction.count < currentInstruction.limit) {
+                    currentInstruction.count++;
+                  } else if (currentInstruction.count >= currentInstruction.limit) {
+                    plyr.ai.currentInstruction++;
+                  }
+                }
               }
             break;
             case 'move_south':
               if (plyr.moving.state !== true && !plyr.turning.state) {
-                console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
-                currentInstruction.limit = 1;
+                // console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
+                // currentInstruction.limit = 1;
                 this.keyPressed[plyr.number-1].south = true;
                 this.turnCheckerDirection = 'south';
-                plyr.ai.currentInstruction++;
+                // plyr.ai.currentInstruction++;
+                if (currentInstruction.limit === 1) {
+                  plyr.ai.currentInstruction++;
+                } else {
+                  if (currentInstruction.count < currentInstruction.limit) {
+                    currentInstruction.count++;
+                  } else if (currentInstruction.count >= currentInstruction.limit) {
+                    plyr.ai.currentInstruction++;
+                  }
+                }
               }
             break;
             case 'move_east':
               if (plyr.moving.state !== true && !plyr.turning.state) {
-                console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
-                currentInstruction.limit = 1;
+                // console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
+                // currentInstruction.limit = 1;
                 this.keyPressed[plyr.number-1].east = true;
                 this.turnCheckerDirection = 'east';
-                plyr.ai.currentInstruction++;
+                // plyr.ai.currentInstruction++;
+                if (currentInstruction.limit === 1) {
+                  plyr.ai.currentInstruction++;
+                } else {
+                  if (currentInstruction.count < currentInstruction.limit) {
+                    currentInstruction.count++;
+                  } else if (currentInstruction.count >= currentInstruction.limit) {
+                    plyr.ai.currentInstruction++;
+                  }
+                }
               }
             break;
             case 'move_west':
               if (plyr.moving.state !== true && !plyr.turning.state) {
-                console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
-                currentInstruction.limit = 1;
+                // console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
+                // currentInstruction.limit = 1;
                 this.keyPressed[plyr.number-1].west = true;
                 this.turnCheckerDirection = 'west';
-                plyr.ai.currentInstruction++;
+                // plyr.ai.currentInstruction++;
+                if (currentInstruction.limit === 1) {
+                  plyr.ai.currentInstruction++;
+                } else {
+                  if (currentInstruction.count < currentInstruction.limit) {
+                    currentInstruction.count++;
+                  } else if (currentInstruction.count >= currentInstruction.limit) {
+                    plyr.ai.currentInstruction++;
+                  }
+                }
               }
             break;
             case 'strafe_north':
