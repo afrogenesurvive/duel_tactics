@@ -207,10 +207,10 @@ class App extends Component {
       row3: ['x30x','x31a','x32a','x33a','x34x','x35x','x36x','x37x','x38d','x39d'],
       row4: ['x40j','x41j','x42b','x43j','x44b','x45j','x46j','x47j','x48d','x49d'],
       row5: ['x50j','x51j','x52b','x53j','x54b','x55j','x56j','x57j','x58d','x59d'],
-      row6: ['x60x','x61x','x62x','x63i','x64i','x65x','x66x','x67x','x68f','x69f'],
-      row7: ['x70x','x71x','x72x','x73x','x74x','x75x','x76x','x77x','x78f','x79f'],
-      row8: ['x80x','x81x','x82x','x83x','y84x','x85x','x86x','x87x','x88x','x89x'],
-      row9: ['x90x','x91x','x92x','y93x','x94x','x95x','x96x','x97x','x98x','x99x'],
+      row6: ['x60x','x61x','x62x','x63i','x64x','x65x','x66x','x67x','x68f','x69f'],
+      row7: ['x70x','x71x','x72x','x73i','x74x','x75x','x76x','x77x','x78f','x79f'],
+      row8: ['x80x','x81x','x82x','x83x','x84x','x85x','x86x','x87x','x88x','x89x'],
+      row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
     };
     this.levelData6 = {
       row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
@@ -460,7 +460,7 @@ class App extends Component {
           cell: {
             number: {
               x: 1,
-              y: 1,
+              y: 4,
             },
             center: {
               x: 0,
@@ -793,8 +793,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 2,
-              y: 1,
+              x: 1,
+              y: 6,
             },
             center: {
               x: 0,
@@ -2435,10 +2435,10 @@ class App extends Component {
       if(this.stepper.deltaTime > this.stepper.interval) {
 
         this.time++
-        if (this.time === 200) {
-          this.openVoid = true;
-          this.customCellToVoid({x:2,y:2})
-        }
+        // if (this.time === 200) {
+        //   this.openVoid = true;
+        //   this.customCellToVoid({x:2,y:2})
+        // }
 
         this.setState({
           stateUpdater: '..'
@@ -2911,6 +2911,10 @@ class App extends Component {
             }
 
           }
+
+        }
+
+        if (player.ai.state === true) {
 
         }
 
@@ -4542,7 +4546,6 @@ class App extends Component {
 
             // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
             if (keyPressedDirection === player.direction && player.strafing.state === false) {
-
 
               let target = this.getTarget(player)
 
@@ -8102,8 +8105,8 @@ class App extends Component {
 
     let moveSpeed = bolt.speed;
     // moveSpeed = bolt.speed/distanceFactor;
-    moveSpeed = bolt.speed/(distanceFactor/5);
-    // moveSpeed = bolt.speed/(distanceFactor/10);
+    // moveSpeed = bolt.speed/(distanceFactor/5);
+    moveSpeed = bolt.speed/(distanceFactor/10);
 
     bolt.moving.step = bolt.moving.step + moveSpeed;
     let newPosition;
@@ -10337,15 +10340,6 @@ class App extends Component {
 
         // console.log('adding ai. Player #',newPlayerNumber,' @',cell.x,cell.y);
 
-        // let cell = {x: 6,y: 2}
-        // let cell = {x: 6,y: 5}
-        // let cell = {x: 6,y: 3}
-        // let cell = {x: 1,y: 7}
-        // let cell = {x: 9,y: 4}
-        // let cell = {x: 8,y: 5}
-        // let cell = {x: 7,y: 5}
-        // let cell = {x: 7,y: 6}
-        let cell = {x: 7,y: 3}
 
         let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y)
         let newPlayer = {
@@ -10822,6 +10816,14 @@ class App extends Component {
         // What is my gear, health, speed
 
 
+        // if mission patrol or defend, set anchor point(s)
+
+        // check for player/target proximity and choose closest target
+        // set engaging based on target proximity
+
+        // if defend mission and target out of proximity, disengage
+
+
         // SET TARGET HERE!! account for target death and falling
         if (plyr.ai.targetAcquired !== true) {
           console.log('acquiring target');
@@ -10852,13 +10854,6 @@ class App extends Component {
         // plyr.ai.targetSet = true;
 
 
-        // if mission patrol or defend, set anchor point(s)
-
-        // check for player/target proximity and choose closest target
-        // set engaging based on target proximity
-        // if defend mission and target out of proximity, disengage
-
-        // console.log('ffg',plyr.number);
         this.aiDecide(plyr)
       }
     }
@@ -10944,8 +10939,8 @@ class App extends Component {
     // instructions.pop();
 
     // console.log('this.pathArray',this.pathArray);
-    console.log('path',path);
-    console.log('instructions',instructions);
+    // console.log('path',path);
+    // console.log('instructions',instructions);
 
     this.players[aiPlayer-1].ai.instructions = instructions;
 
@@ -11015,6 +11010,7 @@ class App extends Component {
         this.pathArray[targetPos.x][targetPos.y] = 0;
         // this.pathArray[aiPos.x][aiPos.y] = 0;
 
+
       }
 
       if (aiPlayer.ai.mission === 'patrol') {
@@ -11031,21 +11027,29 @@ class App extends Component {
       this.easyStar.setGrid(this.pathArray);
       this.easyStar.setAcceptableTiles([0])
 
+      let removeTiles = [];
       for (const plyr of this.players) {
         if (plyr.number !== aiPlayer.number && plyr.number !== targetPlayer.number) {
           this.easyStar.avoidAdditionalPoint(plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
+          removeTiles.push({x:plyr.currentPosition.cell.number.x,y:plyr.currentPosition.cell.number.y})
         }
       }
       for (const cell2 of this.gridInfo) {
         let terrainInfo3 = cell2.levelData.length-1;
         if (
           cell2.levelData.charAt(terrainInfo3) === 'j' ||
+          cell2.levelData.charAt(terrainInfo3) === 'h' ||
           cell2.levelData.charAt(0) !== 'x' ||
           cell2.void.state === true
         ) {
           this.easyStar.avoidAdditionalPoint(cell2.number.x, cell2.number.y);
+          removeTiles.push({x:cell2.number.x,y:cell2.number.y})
         }
       }
+      console.log('this.pathArray',this.pathArray);
+      console.log('aiPos',aiPos.x,aiPos.y);
+      console.log('targetPos',targetPos.x,targetPos.y);
+      console.log('removeTiles',removeTiles);
 
       this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
         if (path === null) {
@@ -11113,57 +11117,33 @@ class App extends Component {
             break;
             case 'move_north':
               if (plyr.moving.state !== true && !plyr.turning.state) {
-                console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
                 currentInstruction.limit = 1;
                 this.keyPressed[plyr.number-1].north = true;
                 this.turnCheckerDirection = 'north';
-                // if (currentInstruction.count < currentInstruction.limit) {
-                //   currentInstruction.count++;
-                // } else if (currentInstruction.count >= currentInstruction.limit) {
-                //   plyr.ai.currentInstruction++;
-                // }
                 plyr.ai.currentInstruction++;
               }
             break;
             case 'move_south':
               if (plyr.moving.state !== true && !plyr.turning.state) {
-                console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
                 currentInstruction.limit = 1;
                 this.keyPressed[plyr.number-1].south = true;
                 this.turnCheckerDirection = 'south';
-                // if (currentInstruction.count < currentInstruction.limit) {
-                //   currentInstruction.count++;
-                // } else if (currentInstruction.count >= currentInstruction.limit) {
-                //   plyr.ai.currentInstruction++;
-                // }
                 plyr.ai.currentInstruction++;
               }
             break;
             case 'move_east':
               if (plyr.moving.state !== true && !plyr.turning.state) {
-                console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
                 currentInstruction.limit = 1;
                 this.keyPressed[plyr.number-1].east = true;
                 this.turnCheckerDirection = 'east';
-                // if (currentInstruction.count < currentInstruction.limit) {
-                //   currentInstruction.count++;
-                // } else if (currentInstruction.count >= currentInstruction.limit) {
-                //   plyr.ai.currentInstruction++;
-                // }
                 plyr.ai.currentInstruction++;
               }
             break;
             case 'move_west':
               if (plyr.moving.state !== true && !plyr.turning.state) {
-                console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
                 currentInstruction.limit = 1;
                 this.keyPressed[plyr.number-1].west = true;
                 this.turnCheckerDirection = 'west';
-                // if (currentInstruction.count < currentInstruction.limit) {
-                //   currentInstruction.count++;
-                // } else if (currentInstruction.count >= currentInstruction.limit) {
-                //   plyr.ai.currentInstruction++;
-                // }
                 plyr.ai.currentInstruction++;
               }
             break;
@@ -11202,6 +11182,23 @@ class App extends Component {
           if (index >= plyr.ai.instructions.length) {
             console.log('instructions complete');
             plyr.ai.instructions = [];
+          }
+        } else {
+          this.keyPressed[plyr.number-1] = {
+            north: false,
+            south: false,
+            east: false,
+            west: false,
+            northEast: false,
+            northWest: false,
+            southEast: false,
+            southWest: false,
+            attack: false,
+            defend: false,
+            strafe: false,
+            cycleWeapon: false,
+            cycleArmor: false,
+            dodge: false,
           }
         }
       }
