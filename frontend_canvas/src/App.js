@@ -207,8 +207,8 @@ class App extends Component {
       row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18f','x19d'],
       row2: ['x20x','x21a','x22a','x23a','x24x','x25x','x26x','x27x','x28d','x29d'],
       row3: ['x30x','x31a','x32a','x33a','x34x','x35x','x36x','x37x','x38d','x39d'],
-      row4: ['x40j','x41j','x42b','x43j','x44b','x45j','x46j','x47j','x48d','x49d'],
-      row5: ['x50j','x51j','x52b','x53j','x54b','x55j','x56j','x57j','x58d','x59d'],
+      row4: ['x40j','x41b','x42b','x43j','x44b','x45b','x46j','x47j','x48d','x49d'],
+      row5: ['x50j','x51b','x52b','x53j','x54b','x55b','x56j','x57j','x58d','x59d'],
       row6: ['x60x','x61x','x62x','x63i','x64x','x65x','x66x','x67x','x68f','x69f'],
       row7: ['x70x','x71x','x72x','x73i','x74x','x75x','x76x','x77x','x78f','x79f'],
       row8: ['x80x','x81x','x82x','x83x','x84x','x85x','x86x','x87x','x88x','x89x'],
@@ -461,8 +461,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 4,
-              y: 4,
+              x: 1,
+              y: 1,
             },
             center: {
               x: 0,
@@ -9762,6 +9762,8 @@ class App extends Component {
           } else {
             if (
               elem3.charAt(terrainInfo2) === 'j' ||
+              elem3.charAt(terrainInfo2) === 'h' ||
+              elem3.charAt(terrainInfo2) === 'i' ||
               elem3.charAt(0) !== 'x' ||
               cell.void.state === true
             ) {
@@ -10893,7 +10895,7 @@ class App extends Component {
         }
 
         if (plyr.ai.targetSet !== true) {
-          console.log('acquiring target');
+          console.log('acquiring target  player',plyr.number);
           let targetPlayer;
           if ( this.players[0].dead.state !== true || this.players[0].falling.state !== true) {
             targetPlayer = this.players[0];
@@ -11024,8 +11026,8 @@ class App extends Component {
     // instructions.pop();
 
     // console.log('this.pathArray',this.pathArray);
-    // console.log('path',path);
-    // console.log('instructions',instructions);
+    console.log('path',path,'player',aiPlayer);
+    console.log('instructions',instructions,'player',aiPlayer);
 
     this.players[aiPlayer-1].ai.instructions = instructions;
 
@@ -11044,7 +11046,7 @@ class App extends Component {
     if (aiPlayer.ai.mission === 'pursue') {
 
       if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y) {
-        console.log('target location changed! Updating path');
+        console.log('target location changed! Updating path. player',aiPlayer.number);
 
         aiPlayer.ai.targetPlayer.currentPosition = {
           x: targetPlayer.currentPosition.cell.number.x,
@@ -11085,17 +11087,26 @@ class App extends Component {
 
       // FACE TARGET!
       if (targetPlayer.currentPosition.cell.number.x === aiPlayer.currentPosition.cell.number.x && targetPlayer.currentPosition.cell.number.y > aiPlayer.currentPosition.cell.number.y) {
-        aiPlayer.direction = 'south';
+        if (aiPlayer.direction !== 'south') {
+          aiPlayer.direction = 'south';
+        }
       }
       if (targetPlayer.currentPosition.cell.number.x === aiPlayer.currentPosition.cell.number.x && targetPlayer.currentPosition.cell.number.y < aiPlayer.currentPosition.cell.number.y) {
-        aiPlayer.direction = 'north';
+        if (aiPlayer.direction !== 'north') {
+          aiPlayer.direction = 'north';
+        }
       }
       if (targetPlayer.currentPosition.cell.number.x < aiPlayer.currentPosition.cell.number.x && targetPlayer.currentPosition.cell.number.y === aiPlayer.currentPosition.cell.number.y) {
-        aiPlayer.direction = 'west';
+        if (aiPlayer.direction !== 'west') {
+          aiPlayer.direction = 'west';
+        }
       }
       if (targetPlayer.currentPosition.cell.number.x > aiPlayer.currentPosition.cell.number.x && targetPlayer.currentPosition.cell.number.y === aiPlayer.currentPosition.cell.number.y) {
-        aiPlayer.direction = 'east';
+        if (aiPlayer.direction !== 'east') {
+          aiPlayer.direction = 'east';
+        }
       }
+
 
       if (aiPlayer.currentWeapon.type === 'bow') {
         aiPlayer.ai.instructions = [
@@ -11478,7 +11489,7 @@ class App extends Component {
         }
       });
       let myPathway = this.aStarInstance.findPath(aiPos, targetPos);
-      console.log('myPathway',myPathway);
+      // console.log('myPathway',myPathway);
 
 
       let removeTiles = [];
@@ -11495,6 +11506,7 @@ class App extends Component {
         if (
           cell2.levelData.charAt(terrainInfo3) === 'j' ||
           cell2.levelData.charAt(terrainInfo3) === 'h' ||
+          cell2.levelData.charAt(terrainInfo3) === 'i' ||
           cell2.levelData.charAt(0) !== 'x' ||
           cell2.void.state === true
         ) {
@@ -11506,17 +11518,17 @@ class App extends Component {
       }
 
       let path = pathfinder.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, pathfindingGrid);
-      console.log('pathfinder path',path);
+      // console.log('pathfinder path',path);
 
 
-      console.log('this.pathArray',this.pathArray);
-      console.log('aiPos',aiPos.x,aiPos.y);
-      console.log('targetPos',targetPos.x,targetPos.y);
-      console.log('removeTiles',removeTiles);
+      // console.log('this.pathArray',this.pathArray);
+      // console.log('aiPos',aiPos.x,aiPos.y);
+      // console.log('targetPos',targetPos.x,targetPos.y);
+      // console.log('removeTiles',removeTiles);
 
       this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
         if (path === null) {
-          console.log("Path was not found.");
+          console.log("Path was not found...player",aiPlayer.number);
         } else {
           pathSet = path;
         }
@@ -11580,7 +11592,7 @@ class App extends Component {
             break;
             case 'move_north':
               if (plyr.moving.state !== true && !plyr.turning.state) {
-                // console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
+                console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
                 // currentInstruction.limit = 1;
                 this.keyPressed[plyr.number-1].north = true;
                 this.turnCheckerDirection = 'north';
@@ -11598,7 +11610,7 @@ class App extends Component {
             break;
             case 'move_south':
               if (plyr.moving.state !== true && !plyr.turning.state) {
-                // console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
+                console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
                 // currentInstruction.limit = 1;
                 this.keyPressed[plyr.number-1].south = true;
                 this.turnCheckerDirection = 'south';
@@ -11616,7 +11628,7 @@ class App extends Component {
             break;
             case 'move_east':
               if (plyr.moving.state !== true && !plyr.turning.state) {
-                // console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
+                console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
                 // currentInstruction.limit = 1;
                 this.keyPressed[plyr.number-1].east = true;
                 this.turnCheckerDirection = 'east';
@@ -11634,7 +11646,7 @@ class App extends Component {
             break;
             case 'move_west':
               if (plyr.moving.state !== true && !plyr.turning.state) {
-                // console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
+                console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
                 // currentInstruction.limit = 1;
                 this.keyPressed[plyr.number-1].west = true;
                 this.turnCheckerDirection = 'west';
