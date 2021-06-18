@@ -461,7 +461,7 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 1,
+              x: 4,
               y: 4,
             },
             center: {
@@ -2492,7 +2492,6 @@ class App extends Component {
 
   playerUpdate = (player, canvas, context, canvas2, context2) => {
     // console.log('updating player',player.number);
-
 
     let keyPressedDirection;
 
@@ -11132,26 +11131,100 @@ class App extends Component {
             targetPlayer.attacking.count === this.attackAnimRef.peak - 3 ||
             targetPlayer.attacking.count === this.attackAnimRef.peak + 3
           ) {
-            aiPlayer.ai.instructions = [
-              {
-                keyword: 'long_defend',
-                count: 0,
-                limit: 1,
-              },
-            ]
+            let whatDo = this.rnJesus(1,2);
+            if (whatDo === 1) {
+              aiPlayer.ai.instructions = [
+                {
+                  keyword: 'long_defend',
+                  count: 0,
+                  limit: 1,
+                },
+              ]
+            } else {
+              aiPlayer.ai.instructions = [
+                {
+                  keyword: 'dodge',
+                  count: 0,
+                  limit: 1,
+                },
+              ]
+            }
 
-            // OR DODGE
           }
           if (targetPlayer.attacking.count <= 3) {
-            aiPlayer.ai.instructions = [
-              {
-                keyword: 'attack',
-                count: 0,
-                limit: 1,
-              },
-            ]
+            let whatDo2 = this.rnJesus(1,2);
+            if (whatDo2 === 1) {
+              aiPlayer.ai.instructions = [
+                {
+                  keyword: 'attack',
+                  count: 0,
+                  limit: 1,
+                },
+              ]
+            } else {
+              let flankDir;
+              let aiPosCell = this.gridInfo.find(elem => elem.number.x === aiPlayer.currentPosition.cell.number.x && elem.number.y === aiPlayer.currentPosition.cell.number.y)
 
-            // OR FLANK
+              switch(aiPlayer.direction) {
+                case 'north':
+                  if (aiPosCell.edge.state === true && aiPosCell.edge.side === 'east') {
+                    flankDir = 'west';
+                  }
+                  if (aiPosCell.edge.state === true && aiPosCell.edge.side === 'west') {
+                    flankDir = 'east';
+                  }
+                  else {
+                    flankDir = 'west';
+                  }
+                break;
+                case 'south':
+                  if (aiPosCell.edge.state === true && aiPosCell.edge.side === 'east') {
+                    flankDir = 'west';
+                  }
+                  if (aiPosCell.edge.state === true && aiPosCell.edge.side === 'west') {
+                    flankDir = 'east';
+                  }
+                  else {
+                    flankDir = 'west';
+                  }
+                break;
+                case 'east':
+                  if (aiPosCell.edge.state === true && aiPosCell.edge.side === 'north') {
+                    flankDir = 'south';
+                  }
+                  if (aiPosCell.edge.state === true && aiPosCell.edge.side === 'south') {
+                    flankDir = 'north';
+                  }
+                  else {
+                    flankDir = 'south';
+                  }
+                break;
+                case 'west':
+                  if (aiPosCell.edge.state === true && aiPosCell.edge.side === 'north') {
+                    flankDir = 'south';
+                  }
+                  if (aiPosCell.edge.state === true && aiPosCell.edge.side === 'south') {
+                    flankDir = 'north';
+                  }
+                  else {
+                    flankDir = 'south';
+                  }
+                break;
+              }
+              aiPlayer.ai.instructions = [
+                {
+                  keyword: 'flank_'+flankDir,
+                  count: 0,
+                  limit: 1,
+                },
+                {
+                  keyword: 'attack',
+                  count: 0,
+                  limit: 1,
+                },
+              ]
+            }
+
           }
         }
 
@@ -11189,26 +11262,101 @@ class App extends Component {
               targetPlayer.attacking.count === this.attackAnimRef.peak - 3 ||
               targetPlayer.attacking.count === this.attackAnimRef.peak + 3
             ) {
-              instructions1.push(
-                {
-                  keyword: 'long_defend',
-                  count: 0,
-                  limit: 1,
-                },
-              )
+              let whatDo = this.rnJesus(1,2);
+              if (whatDo === 1) {
+                instructions1.push(
+                  {
+                    keyword: 'long_defend',
+                    count: 0,
+                    limit: 1,
+                  },
+                )
+              } else {
+                instructions1.push(
+                  {
+                    keyword: 'dodge',
+                    count: 0,
+                    limit: 1,
+                  },
+                )
+              }
 
-              // OR DODGE
             }
             if (targetPlayer.attacking.count <= 3) {
-              instructions1.push(
-                {
-                  keyword: 'attack',
-                  count: 0,
-                  limit: 1,
-                },
-              )
+              let whatDo2 = this.rnJesus(1,2);
+              if (whatDo2 === 1) {
+                instructions1.push(
+                  {
+                    keyword: 'attack',
+                    count: 0,
+                    limit: 1,
+                  },
+                )
+              } else {
+                let flankDir2;
+                let aiPosCell2 = this.gridInfo.find(elem => elem.number.x === aiPlayer.currentPosition.cell.number.x && elem.number.y === aiPlayer.currentPosition.cell.number.y)
 
-              // OR FLANK
+                switch(aiPlayer.direction) {
+                  case 'north':
+                    if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === 'east') {
+                      flankDir2 = 'west';
+                    }
+                    if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === 'west') {
+                      flankDir2 = 'east';
+                    }
+                    else {
+                      flankDir2 = 'west';
+                    }
+                  break;
+                  case 'south':
+                    if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === 'east') {
+                      flankDir2 = 'west';
+                    }
+                    if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === 'west') {
+                      flankDir2 = 'east';
+                    }
+                    else {
+                      flankDir2 = 'west';
+                    }
+                  break;
+                  case 'east':
+                    if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === 'north') {
+                      flankDir2 = 'south';
+                    }
+                    if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === 'south') {
+                      flankDir2 = 'north';
+                    }
+                    else {
+                      flankDir2 = 'south';
+                    }
+                  break;
+                  case 'west':
+                    if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === 'north') {
+                      flankDir2 = 'south';
+                    }
+                    if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === 'south') {
+                      flankDir2 = 'north';
+                    }
+                    else {
+                      flankDir2 = 'south';
+                    }
+                  break;
+                }
+
+                instructions1.push(
+                  {
+                    keyword: 'flank_'+flankDir2,
+                    count: 0,
+                    limit: 1,
+                  },
+                  {
+                    keyword: 'attack',
+                    count: 0,
+                    limit: 1,
+                  },
+                )
+              }
+
             }
           }
 
@@ -11283,6 +11431,7 @@ class App extends Component {
     }
 
 
+    // SET PATH !!
     let pathSet = [];
     if (getPath === true && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
 
@@ -11503,6 +11652,54 @@ class App extends Component {
             break;
             case 'strafe_north':
             break;
+            case 'flank_north':
+              if (plyr.flanking.state !== true && plyr.action !== 'flanking') {
+                currentInstruction.limit = 1;
+                this.keyPressed[plyr.number-1].dodge = true;
+                this.keyPressed[plyr.number-1].north = true;
+                if (currentInstruction.count < currentInstruction.limit) {
+                  currentInstruction.count++;
+                } else if (currentInstruction.count >= currentInstruction.limit) {
+                  plyr.ai.currentInstruction++;
+                }
+              }
+            break;
+            case 'flank_south':
+              if (plyr.flanking.state !== true && plyr.action !== 'flanking') {
+                currentInstruction.limit = 1;
+                this.keyPressed[plyr.number-1].dodge = true;
+                this.keyPressed[plyr.number-1].south = true;
+                if (currentInstruction.count < currentInstruction.limit) {
+                  currentInstruction.count++;
+                } else if (currentInstruction.count >= currentInstruction.limit) {
+                  plyr.ai.currentInstruction++;
+                }
+              }
+            break;
+            case 'flank_east':
+              if (plyr.flanking.state !== true && plyr.action !== 'flanking') {
+                currentInstruction.limit = 1;
+                this.keyPressed[plyr.number-1].dodge = true;
+                this.keyPressed[plyr.number-1].east = true;
+                if (currentInstruction.count < currentInstruction.limit) {
+                  currentInstruction.count++;
+                } else if (currentInstruction.count >= currentInstruction.limit) {
+                  plyr.ai.currentInstruction++;
+                }
+              }
+            break;
+            case 'flank_west':
+              if (plyr.flanking.state !== true && plyr.action !== 'flanking') {
+                currentInstruction.limit = 1;
+                this.keyPressed[plyr.number-1].dodge = true;
+                this.keyPressed[plyr.number-1].west = true;
+                if (currentInstruction.count < currentInstruction.limit) {
+                  currentInstruction.count++;
+                } else if (currentInstruction.count >= currentInstruction.limit) {
+                  plyr.ai.currentInstruction++;
+                }
+              }
+            break;
             case 'attack':
               currentInstruction.limit = 1;
               this.keyPressed[plyr.number-1].attack = true;
@@ -11530,6 +11727,16 @@ class App extends Component {
                 plyr.ai.currentInstruction++;
               }
             break;
+            case 'dodge':
+              currentInstruction.limit = 1;
+              this.keyPressed[plyr.number-1].dodge = true;
+              if (currentInstruction.count < currentInstruction.limit) {
+                currentInstruction.count++;
+              } else if (currentInstruction.count >= currentInstruction.limit) {
+                plyr.ai.currentInstruction++;
+              }
+            break;
+
           }
 
           let index = plyr.ai.instructions.indexOf(currentInstruction);
