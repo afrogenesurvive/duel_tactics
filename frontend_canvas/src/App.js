@@ -207,8 +207,8 @@ class App extends Component {
       row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18f','x19d'],
       row2: ['x20x','x21a','x22a','x23a','x24x','x25x','x26x','x27x','x28d','x29d'],
       row3: ['x30x','x31a','x32a','x33a','x34x','x35x','x36x','x37x','x38d','x39d'],
-      row4: ['x40j','x41b','x42b','x43j','x44b','x45b','x46j','x47j','x48d','x49d'],
-      row5: ['x50j','x51b','x52b','x53j','x54b','x55b','x56j','x57j','x58d','x59d'],
+      row4: ['x40j','x41j','x42b','x43j','x44j','x45b','x46j','x47j','x48d','x49d'],
+      row5: ['x50j','x51j','x52b','x53j','x54j','x55b','x56j','x57j','x58d','x59d'],
       row6: ['x60x','x61x','x62x','x63i','x64x','x65x','x66x','x67x','x68f','x69f'],
       row7: ['x70x','x71x','x72x','x73i','x74x','x75x','x76x','x77x','x78f','x79f'],
       row8: ['x80x','x81x','x82x','x83x','x84x','x85x','x86x','x87x','x88x','x89x'],
@@ -521,6 +521,7 @@ class App extends Component {
           delayCount: 0,
           limit: 2.1,
         },
+        turnCheckerDirection: '',
         action: 'idle',
         moving: {
           state: false,
@@ -857,6 +858,7 @@ class App extends Component {
           delayCount: 0,
           limit: 2.1,
         },
+        turnCheckerDirection: '',
         action: 'idle',
         moving: {
           state: false,
@@ -1717,13 +1719,13 @@ class App extends Component {
             if (gp.axes[0] > -0.5 && gp.axes[1] < -0.5) {
               // console.log('up',gp.axes[0],gp.axes[1]);
               keyPressed[0].north = true;
-              this.turnCheckerDirection = 'north';
+              this.players[0].turnCheckerDirection = 'north';
               this.currentPlayer = 1;
             }
             if (gp.axes[1] > -0.5 && gp.axes[0] < -0.5) {
               // console.log('left',gp.axes[0],gp.axes[1]);
               keyPressed[0].west = true;
-              this.turnCheckerDirection = 'west';
+              this.players[0].turnCheckerDirection = 'west';
               this.currentPlayer = 1;
             }
             // else {
@@ -1742,13 +1744,13 @@ class App extends Component {
             if (gp.axes[1] < 0.5 && gp.axes[0] > 0.5) {
               // console.log('right',gp.axes[0],gp.axes[1]);
               keyPressed[0].east = true;
-              this.turnCheckerDirection = 'east';
+              this.players[0].turnCheckerDirection = 'east';
               this.currentPlayer = 1;
             }
             if (gp.axes[0] < 0.5 && gp.axes[1] > 0.5) {
               // console.log('down',gp.axes[0],gp.axes[1]);
               keyPressed[0].south = true;
-              this.turnCheckerDirection = 'south';
+              this.players[0].turnCheckerDirection = 'south';
               this.currentPlayer = 1;
             }
             // else {
@@ -1767,13 +1769,13 @@ class App extends Component {
             if (gp.axes[0] > -0.5 && gp.axes[1] > 0.5) {
               // console.log('down',gp.axes[0],gp.axes[1]);
               keyPressed[0].south = true;
-              this.turnCheckerDirection = 'south';
+              this.players[0].turnCheckerDirection = 'south';
               this.currentPlayer = 1;
             }
             if (gp.axes[1] < 0.5 && gp.axes[0] < -0.5) {
               // console.log('left',gp.axes[0],gp.axes[1]);
               keyPressed[0].west = true;
-              this.turnCheckerDirection = 'west';
+              this.players[0].turnCheckerDirection = 'west';
               this.currentPlayer = 1;
             }
             // else {
@@ -1792,13 +1794,13 @@ class App extends Component {
             if (gp.axes[0] < 0.5 && gp.axes[1] < -0.5) {
               // console.log('up',gp.axes[0],gp.axes[1]);
               keyPressed[0].north = true;
-              this.turnCheckerDirection = 'north';
+              this.players[0].turnCheckerDirection = 'north';
               this.currentPlayer = 1;
             }
             if (gp.axes[1] > -0.5 && gp.axes[0] > 0.5) {
               // console.log('right',gp.axes[0],gp.axes[1]);
               keyPressed[0].east = true;
-              this.turnCheckerDirection = 'east';
+              this.players[0].turnCheckerDirection = 'east';
               this.currentPlayer = 1;
             }
             // else {
@@ -1824,13 +1826,13 @@ class App extends Component {
             if (gp.axes[0] < -0.5 && gp.axes[1] > -0.5) {
               // console.log('down',gp.axes[0],gp.axes[1]);
               keyPressed[0].south = true;
-              this.turnCheckerDirection = 'south';
+              this.players[0].turnCheckerDirection = 'south';
               this.currentPlayer = 1;
             }
             if (gp.axes[0] > -0.5 && gp.axes[1] < -0.5) {
               // console.log('left',gp.axes[0],gp.axes[1]);
               keyPressed[0].west = true;
-              this.turnCheckerDirection = 'west';
+              this.players[0].turnCheckerDirection = 'west';
               this.currentPlayer = 1;
             }
 
@@ -1844,13 +1846,13 @@ class App extends Component {
             if (gp.axes[0] > 0.5 && gp.axes[1] < 0.5) {
               // console.log('up',gp.axes[0],gp.axes[1]);
               keyPressed[0].north = true;
-              this.turnCheckerDirection = 'north';
+              this.players[0].turnCheckerDirection = 'north';
               this.currentPlayer = 1;
             }
             if (gp.axes[0] < 0.5 && gp.axes[1] > 0.5) {
               // console.log('right',gp.axes[0],gp.axes[1]);
               keyPressed[0].east = true;
-              this.turnCheckerDirection = 'east';
+              this.players[0].turnCheckerDirection = 'east';
               this.currentPlayer = 1;
             }
 
@@ -1864,13 +1866,13 @@ class App extends Component {
             if (gp.axes[0] > -0.5 && gp.axes[1] > 0.5) {
               // console.log('right',gp.axes[0],gp.axes[1]);
               keyPressed[0].east = true;
-              this.turnCheckerDirection = 'east';
+              this.players[0].turnCheckerDirection = 'east';
               this.currentPlayer = 1;
             }
             if (gp.axes[0] < -0.5 && gp.axes[1] < 0.5) {
               // console.log('down',gp.axes[0],gp.axes[1]);
               keyPressed[0].south = true;
-              this.turnCheckerDirection = 'south';
+              this.players[0].turnCheckerDirection = 'south';
               this.currentPlayer = 1;
             }
 
@@ -1884,13 +1886,13 @@ class App extends Component {
             if (gp.axes[0] > 0.5 && gp.axes[1] > -0.5) {
               // console.log('up',gp.axes[0],gp.axes[1]);
               keyPressed[0].north = true;
-              this.turnCheckerDirection = 'north';
+              this.players[0].turnCheckerDirection = 'north';
               this.currentPlayer = 1;
             }
             if (gp.axes[0] < 0.5 && gp.axes[1] < -0.5) {
               // console.log('left',gp.axes[0],gp.axes[1]);
               keyPressed[0].west = true;
-              this.turnCheckerDirection = 'west';
+              this.players[0].turnCheckerDirection = 'west';
               this.currentPlayer = 1;
             }
 
@@ -1909,13 +1911,13 @@ class App extends Component {
             if (gp.axes[2] < -0.5 && gp.axes[3] > -0.5) {
               // console.log('up',gp.axes[2],gp.axes[3]);
               keyPressed[1].north = true;
-              this.turnCheckerDirection = 'north';
+              this.players[1].turnCheckerDirection = 'north';
               this.currentPlayer = 2;
             }
             if (gp.axes[2] > -0.5 && gp.axes[3] < -0.5) {
               // console.log('right',gp.axes[2],gp.axes[3]);
               keyPressed[1].east = true;
-              this.turnCheckerDirection = 'east';
+              this.players[1].turnCheckerDirection = 'east';
               this.currentPlayer = 2;
             }
 
@@ -1929,13 +1931,13 @@ class App extends Component {
             if (gp.axes[2] < 0.5 && gp.axes[3] > 0.5) {
               // console.log('left',gp.axes[2],gp.axes[3]);
               keyPressed[1].west = true;
-              this.turnCheckerDirection = 'west';
+              this.players[1].turnCheckerDirection = 'west';
               this.currentPlayer = 2;
             }
             if (gp.axes[2] > 0.5 && gp.axes[3] < 0.5) {
               // console.log('down',gp.axes[2],gp.axes[3]);
               keyPressed[1].south = true;
-              this.turnCheckerDirection = 'south';
+              this.players[1].turnCheckerDirection = 'south';
               this.currentPlayer = 2;
             }
 
@@ -1949,13 +1951,13 @@ class App extends Component {
             if (gp.axes[2] < -0.5 && gp.axes[3] < 0.5) {
               // console.log('up',gp.axes[2],gp.axes[3]);
               keyPressed[1].north = true;
-              this.turnCheckerDirection = 'north';
+              this.players[1].turnCheckerDirection = 'north';
               this.currentPlayer = 2;
             }
             if (gp.axes[2] > -0.5 && gp.axes[3] > 0.5) {
               // console.log('left',gp.axes[2],gp.axes[3]);
               keyPressed[1].west = true;
-              this.turnCheckerDirection = 'west';
+              this.players[1].turnCheckerDirection = 'west';
               this.currentPlayer = 2;
             }
 
@@ -1969,13 +1971,13 @@ class App extends Component {
             if (gp.axes[2] < 0.5 && gp.axes[3] < -0.5) {
               // console.log('right',gp.axes[2],gp.axes[3]);
               keyPressed[1].east = true;
-              this.turnCheckerDirection = 'east';
+              this.players[1].turnCheckerDirection = 'east';
               this.currentPlayer = 2;
             }
             if (gp.axes[2] > 0.5 && gp.axes[3] > -0.5) {
               // console.log('down',gp.axes[2],gp.axes[3]);
               keyPressed[1].south = true;
-              this.turnCheckerDirection = 'south';
+              this.players[1].turnCheckerDirection = 'south';
               this.currentPlayer = 2;
             }
 
@@ -2146,25 +2148,25 @@ class App extends Component {
       case 'w' :
        this.keyPressed[0].north = state;
        // direction = 'north';
-       this.turnCheckerDirection = 'north';
+       this.players[0].turnCheckerDirection = 'north';
        this.currentPlayer = 1;
       break;
       case 'a' :
        this.keyPressed[0].west = state;
        // direction = 'west';
-       this.turnCheckerDirection = 'west';
+       this.players[0].turnCheckerDirection = 'west';
        this.currentPlayer = 1;
       break;
       case 'd' :
        this.keyPressed[0].east = state;
        // direction = 'east';
-       this.turnCheckerDirection = 'east';
+       this.players[0].turnCheckerDirection = 'east';
        this.currentPlayer = 1;
       break;
       case 's' :
        this.keyPressed[0].south = state;
        // direction = 'south';
-       this.turnCheckerDirection = 'south';
+       this.players[0].turnCheckerDirection = 'south';
        this.currentPlayer = 1;
       break;
       case 'f' :
@@ -2263,26 +2265,26 @@ class App extends Component {
       case 'i' :
        this.keyPressed[1].north = state;
        // direction = 'north';
-       this.turnCheckerDirection = 'north';
+       this.players[1].turnCheckerDirection = 'north';
        this.currentPlayer = 2;
       break;
 
       case 'j' :
        this.keyPressed[1].west = state;
        // direction = 'west';
-       this.turnCheckerDirection = 'west';
+       this.players[1].turnCheckerDirection = 'west';
        this.currentPlayer = 2;
       break;
       case 'k' :
        this.keyPressed[1].south = state;
        // direction = 'south';
-       this.turnCheckerDirection = 'south';
+       this.players[1].turnCheckerDirection = 'south';
        this.currentPlayer = 2;
       break;
       case 'l' :
        this.keyPressed[1].east = state;
        // direction = 'east';
-       this.turnCheckerDirection = 'east';
+       this.players[1].turnCheckerDirection = 'east';
        this.currentPlayer = 2;
       break;
       case 'b' :
@@ -2937,9 +2939,9 @@ class App extends Component {
 
 
         // TURNER!!
-        if (player.turning.state === true && player.turning.toDirection === this.turnCheckerDirection) {
+        if (player.turning.state === true && player.turning.toDirection === this.players[player.number-1].turnCheckerDirection) {
           // console.log('player',player.number,' turn-ing');
-          if (this.keyPressed[this.currentPlayer-1][this.turnCheckerDirection] === false) {
+          if (this.keyPressed[this.currentPlayer-1][this.players[player.number-1].turnCheckerDirection] === false) {
             // console.log('player',player.number,' turn-stop');
             player.turning.state = false;
           }
@@ -10444,6 +10446,7 @@ class App extends Component {
             delayCount: 0,
             limit: 2.1,
           },
+          turnCheckerDirection: '',
           action: 'idle',
           moving: {
             state: false,
@@ -11026,8 +11029,8 @@ class App extends Component {
     // instructions.pop();
 
     // console.log('this.pathArray',this.pathArray);
-    console.log('path',path,'player',aiPlayer);
-    console.log('instructions',instructions,'player',aiPlayer);
+    // console.log('path',path,'player',aiPlayer);
+    // console.log('instructions',instructions,'player',aiPlayer);
 
     this.players[aiPlayer-1].ai.instructions = instructions;
 
@@ -11495,6 +11498,7 @@ class App extends Component {
       let removeTiles = [];
       for (const plyr of this.players) {
         if (plyr.number !== aiPlayer.number && plyr.number !== targetPlayer.number) {
+          // console.log('avoid plyrs',plyr.number);
           this.easyStar.avoidAdditionalPoint(plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
           removeTiles.push({x:plyr.currentPosition.cell.number.x,y:plyr.currentPosition.cell.number.y})
 
@@ -11533,7 +11537,7 @@ class App extends Component {
           pathSet = path;
         }
       });
-      this.easyStar.setIterationsPerCalculation(2000)
+      this.easyStar.setIterationsPerCalculation(4000)
       for (const elem of this.pathArray[0]) {
         this.easyStar.calculate();
       }
@@ -11554,7 +11558,7 @@ class App extends Component {
     for (const plyr of this.players) {
       if (plyr.ai.state === true) {
         let currentInstruction = plyr.ai.instructions[plyr.ai.currentInstruction];
-
+        // console.log('plyr',plyr.number,'length',plyr.ai.instructions.length,'current',plyr.ai.currentInstruction);
         if (currentInstruction) {
           // console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
           this.keyPressed[plyr.number-1] = {
@@ -11592,10 +11596,10 @@ class App extends Component {
             break;
             case 'move_north':
               if (plyr.moving.state !== true && !plyr.turning.state) {
-                console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
+                // console.log('plyr',plyr.number,'all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
                 // currentInstruction.limit = 1;
                 this.keyPressed[plyr.number-1].north = true;
-                this.turnCheckerDirection = 'north';
+                this.players[plyr.number-1].turnCheckerDirection = 'north';
                 // plyr.ai.currentInstruction++;
                 if (currentInstruction.limit === 1) {
                   plyr.ai.currentInstruction++;
@@ -11610,10 +11614,10 @@ class App extends Component {
             break;
             case 'move_south':
               if (plyr.moving.state !== true && !plyr.turning.state) {
-                console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
+                // console.log('plyr',plyr.number,'all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
                 // currentInstruction.limit = 1;
                 this.keyPressed[plyr.number-1].south = true;
-                this.turnCheckerDirection = 'south';
+                this.players[plyr.number-1].turnCheckerDirection = 'south';
                 // plyr.ai.currentInstruction++;
                 if (currentInstruction.limit === 1) {
                   plyr.ai.currentInstruction++;
@@ -11628,10 +11632,10 @@ class App extends Component {
             break;
             case 'move_east':
               if (plyr.moving.state !== true && !plyr.turning.state) {
-                console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
+                // console.log('plyr',plyr.number,'all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
                 // currentInstruction.limit = 1;
                 this.keyPressed[plyr.number-1].east = true;
-                this.turnCheckerDirection = 'east';
+                this.players[plyr.number-1].turnCheckerDirection = 'east';
                 // plyr.ai.currentInstruction++;
                 if (currentInstruction.limit === 1) {
                   plyr.ai.currentInstruction++;
@@ -11646,10 +11650,10 @@ class App extends Component {
             break;
             case 'move_west':
               if (plyr.moving.state !== true && !plyr.turning.state) {
-                console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
+                // console.log('plyr',plyr.number,'all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
                 // currentInstruction.limit = 1;
                 this.keyPressed[plyr.number-1].west = true;
-                this.turnCheckerDirection = 'west';
+                this.players[plyr.number-1].turnCheckerDirection = 'west';
                 // plyr.ai.currentInstruction++;
                 if (currentInstruction.limit === 1) {
                   plyr.ai.currentInstruction++;
