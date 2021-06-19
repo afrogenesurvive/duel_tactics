@@ -615,7 +615,7 @@ class App extends Component {
         defendDecay: {
           state: false,
           count: 0,
-          limit: 15,
+          limit: 25,
         },
         falling: {
           state: false,
@@ -952,7 +952,7 @@ class App extends Component {
         defendDecay: {
           state: false,
           count: 0,
-          limit: 15,
+          limit: 25,
         },
         defended: {
           state: false
@@ -1286,14 +1286,15 @@ class App extends Component {
       },
     };
 
-    this.easyStar = undefined;
-    this.getPath = false;
     this.removeAi = undefined;
     this.showSettingsKeyPress = {
       state: false,
       count: 0,
       limit: 3,
     }
+
+    this.easyStar = undefined;
+    this.getPath = false;
 
     this.pathfindingGrid = undefined;
     this.pathfinder = undefined;
@@ -2732,6 +2733,7 @@ class App extends Component {
 
             player.newMoveDelay.state = true;
 
+
             if (player.target.void === false) {
               player.currentPosition.cell = player.target.cell;
               player.action = 'idle';
@@ -2756,14 +2758,14 @@ class App extends Component {
               }
 
               this.checkDestination(player);
-              if (player.drowning !== true) {
+              if (player.drowning !== true && player.pushBack.state !== true) {
                 this.getTarget(player);
               }
-
 
             }
 
             if (player.pushBack.state === true && player.target.void !== true) {
+              // this.getTarget(player);
               player.pushBack.state = false;
               player.strafing = {
                 state: false,
@@ -2773,6 +2775,8 @@ class App extends Component {
               player.speed.move = player.pushBack.prePushMoveSpeed;
             }
 
+
+            // TARGET IS VOID, START FALLING!
             if (
               nextPosition.x === player.target.cell.center.x &&
               nextPosition.y === player.target.cell.center.y &&
@@ -3170,6 +3174,8 @@ class App extends Component {
             player.attacking.count++;
           }
 
+
+          // TIME TO ATTACK IS NOW!
           if (player.attacking.count === attackPeak) {
             // console.log('attack peak',player.attacking.count);
 
@@ -3294,6 +3300,7 @@ class App extends Component {
                 }
               }
 
+
               // ATTACK PROJECTILES!!
               for (const bolt of this.projectiles) {
                 if (player.currentWeapon.type === 'spear') {
@@ -3315,7 +3322,6 @@ class App extends Component {
               }
 
 
-
               if (player.target.occupant.type === 'player') {
 
                 // ATTACK SUCCESS!!
@@ -3325,16 +3331,18 @@ class App extends Component {
                 ) {
                   // console.log('attack success');
 
-                  let backAttack = false;
-                  if (this.players.[player.target.occupant.player-1].direction === player.direction) {
-                    console.log('back attack!!');
-                    backAttack = true;
-                  }
-
                   player.success.attackSuccess = {
                     state: true,
                     count: 1,
                     limit: player.success.attackSuccess.limit
+                  }
+
+
+                  // BACK ATTACK CHECK!
+                  let backAttack = false;
+                  if (this.players.[player.target.occupant.player-1].direction === player.direction) {
+                    console.log('back attack!!');
+                    backAttack = true;
                   }
 
 
@@ -3348,6 +3356,8 @@ class App extends Component {
                     }
                   }
 
+
+                  // ATTACK STRENGTH ARMOR MOD CHECK!
                   if (this.players.[player.target.occupant.player-1].currentArmor.name !== '') {
                     // console.log('opponent armour found');
                     switch(this.players.[player.target.occupant.player-1].currentArmor.effect) {
@@ -3376,6 +3386,7 @@ class App extends Component {
                   let singleHit = this.rnJesus(1,singleHitChance);
 
 
+                  // UNARMED ATTACK!
                   if ( player.currentWeapon.type === '') {
                     console.log('unarmed attack');
                     doubleHit = 2;
@@ -3384,6 +3395,8 @@ class App extends Component {
                     }
                   }
 
+
+                  // BLUNT ATTACK!!
                   if (player.bluntAttack === true) {
                     // console.log('blunt attack');
                     player.stamina.current = player.stamina.current - 2;
@@ -3401,6 +3414,7 @@ class App extends Component {
                     this.players[player.number-1].stamina.current = this.players[player.number-1].stamina.current - 3;
                   }
 
+
                   // DODGED CHECK!
                   if (this.players[player.target.occupant.player-1].dodging.state === true) {
 
@@ -3417,6 +3431,8 @@ class App extends Component {
                     }
                   }
 
+
+                  // ATTACK LANDED!!
                   if (doubleHit === 1) {
                     // console.log('double hit attack');
                     this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 2;
@@ -3429,6 +3445,9 @@ class App extends Component {
                     player.attackStrength = 1;
                     this.attackedCancel(this.players[player.target.occupant.player-1])
                   }
+
+
+                  // CHECK FOR MISS!
                   let missed = false;
                   if (doubleHit !== 1 && singleHit !== 1 && player.bluntAttack !== true) {
                     console.log('attacked but no damage');
@@ -3441,11 +3460,14 @@ class App extends Component {
                     }
                   }
 
+
+                  // REDUCE MOVE SPEED!
                   if (this.players[player.target.occupant.player-1].hp === 1) {
                     this.players[player.target.occupant.player-1].speed.move = .05;
                   }
 
-                  // KILL OR DEFLECT OPPONENT!
+
+                  // KILL OPPONENT!
                   if (this.players[player.target.occupant.player-1].hp <= 0) {
                     this.killPlayer(this.players[player.target.occupant.player-1]);
 
@@ -3455,6 +3477,9 @@ class App extends Component {
                     player.points++;
 
                   }
+
+
+                  // ATTACK -> DEFLECT OPPONENT!
                   else if (missed !== true && player.bluntAttack !== true) {
                     this.players[player.target.occupant.player-1].action = 'deflected';
                     this.players[player.target.occupant.player-1].success.deflected = {
@@ -3465,6 +3490,9 @@ class App extends Component {
                       type: 'attacked',
                     };
                   }
+
+
+                  // BLUNT ATTACK -> DEFLECT -!
                   else if (player.bluntAttack === true) {
                     this.players[player.target.occupant.player-1].action = 'deflected';
 
@@ -3479,6 +3507,7 @@ class App extends Component {
                   }
 
                 }
+
                 // ATTACK DEFENDED!!
                 else {
                   // console.log('attackdefended');
@@ -3489,11 +3518,14 @@ class App extends Component {
 
                   this.moveSpeed = .1;
 
+
+                  // DEFENDED STATUS DISPLAY!
                   this.players[player.target.occupant.player-1].success.defendSuccess = {
                     state: true,
                     count: 1,
                     limit: this.players[player.target.occupant.player-1].success.defendSuccess.limit
                   }
+
 
                   // UNARMED DAMAGE!
                   // if ( player.currentWeapon.type === '') {
@@ -3508,20 +3540,27 @@ class App extends Component {
                   //   }
                   // }
 
+
+                  // PUSHBACK OPPONENT!
                   // let shouldPushBackOpponent = 2;
                   let shouldPushBackOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.pushBack*2);
                   if (shouldPushBackOpponent === 1) {
                     let canPushback = this.pushBack(this.players[player.target.occupant.player-1],player.direction);
+
+
                   }
                   else {
-                    // let deflectOpponent = this.rnJesus(1,1);
 
-                    // GUARD BREAK!
+
+                    // OPPONENT GUARD BREAK ROLL!
+                    // let deflectOpponent = this.rnJesus(1,1);
                     let deflectOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.guardBreak);
                     if (player.bluntAttack === true) {
                       deflectOpponent = 1;
                     }
 
+
+                    // DEFLECT OPPONENT!
                     if (deflectOpponent === 1) {
                       this.players[player.target.occupant.player-1].breakAnim.defend = {
                         state: true,
@@ -3549,9 +3588,11 @@ class App extends Component {
                       };
                       this.players[player.target.occupant.player-1].stamina.current = this.players[player.target.occupant.player-1].stamina.current - 3;
                     }
+
                   }
 
-                  // PUSHBACK DEFLECT!!
+                  // ATTACKER PUSHBACK DEFLECT!!
+
                   // let shouldDeflectAttacker = 2;
                   // let shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
                   let shouldDeflectAttacker = this.rnJesus(1,2);
@@ -3615,6 +3656,8 @@ class App extends Component {
                       }
                     }
                   }
+
+                  // ATTACKER NO PUSHBACK, JUST DEFLECT!
                   else if (shouldDeflectPushBack !== 1 && shouldDeflectAttacker === 1) {
                     // console.log('no pushback ---> just deflect');
 
@@ -3638,18 +3681,25 @@ class App extends Component {
                     }
                     player.stamina.current = player.stamina.current - 3;
                   }
+
+
+                  // ATTACKER NO DEFLECT NO PUSHBACK!
                   else if (shouldDeflectPushBack !== 1 && shouldDeflectAttacker !== 1) {
                     // console.log('attacker not deflected or pushed back');
                   }
 
                 }
-              } else {
+              }
+
+              // EMPTY TARGET STAMINA COST!
+              else {
                 if (player.bluntAttack === true) {
                   player.stamina.current = player.stamina.current - 2;
                 } else {
                   player.stamina.current = player.stamina.current - 3;
                 }
               }
+
 
               // DESTROY ITEMS!
               if (player.target.occupant.type !== 'player') {
@@ -3676,6 +3726,9 @@ class App extends Component {
             }
 
           }
+
+
+          // ATTACK COOLDOWN AND END!
           if (player.attacking.count > attackPeak && player.attacking.count < player.attacking.limit) {
             // console.log('attack cooldown',player.attacking.count);
           }
@@ -3691,6 +3744,7 @@ class App extends Component {
             player.bluntAttack = false;
             player.action = 'idle';
           }
+
         }
 
 
@@ -3887,6 +3941,8 @@ class App extends Component {
             predeflect: false,
             type: player.success.deflected.type,
           }
+
+
         }
 
 
@@ -7260,6 +7316,9 @@ class App extends Component {
     }
 
 
+    if (player.pushBack.state === true) {
+      console.log('pushback targeting plyr dir',player.direction,'pos',currentPosition);
+    }
     switch(direction) {
       case 'north' :
         targetCellNumber = {
@@ -7309,6 +7368,10 @@ class App extends Component {
           y: currentPosition.y+1
         }
       break;
+    }
+
+    if (player.pushBack.state === true) {
+      console.log('pushback targeting plyr target',player.number,targetCellNumber);
     }
 
 
@@ -9304,8 +9367,8 @@ class App extends Component {
               cell2.item.subType = item2.subType;
               cell2.item.effect = item2.effect;
 
-              item2.amount--
-              console.log('placed ingame item',item2.name,"@",cell2.number.x,cell2.number.y,'remaining',item2.amount);
+              item2.amount--;
+              // console.log('placed ingame item',item2.name,"@",cell2.number.x,cell2.number.y,'remaining',item2.amount);
 
               // for (const cell2 of this.gridInfo) {
               //   if (
@@ -10540,7 +10603,7 @@ class App extends Component {
           defendDecay: {
             state: false,
             count: 0,
-            limit: 15,
+            limit: 20,
           },
           defended: {
             state: false
@@ -11033,6 +11096,15 @@ class App extends Component {
     // console.log('instructions',instructions,'player',aiPlayer);
 
     this.players[aiPlayer-1].ai.instructions = instructions;
+
+    for (const plyr of this.players) {
+      if (plyr.ai.state === true) {
+        console.log('plyr no',plyr.number);
+        console.log('current instruction',plyr.ai.currentInstruction);
+        console.log('instructions',plyr.ai.instructions);
+        console.log('real current instruction',plyr.ai.instructions[plyr.ai.currentInstruction]);
+      }
+    }
 
   }
   aiDecide = (aiPlayer) => {
