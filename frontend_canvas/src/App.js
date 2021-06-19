@@ -207,8 +207,8 @@ class App extends Component {
       row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18f','x19d'],
       row2: ['x20x','x21a','x22a','x23a','x24x','x25x','x26x','x27x','x28d','x29d'],
       row3: ['x30x','x31a','x32a','x33a','x34x','x35x','x36x','x37x','x38d','x39d'],
-      row4: ['x40j','x41j','x42b','x43j','x44j','x45b','x46j','x47j','x48d','x49d'],
-      row5: ['x50j','x51j','x52b','x53j','x54j','x55b','x56j','x57j','x58d','x59d'],
+      row4: ['x40j','x41b','x42b','x43j','x44b','x45j','x46j','x47j','x48d','x49d'],
+      row5: ['x50j','x51b','x52b','x53j','x54b','x55j','x56j','x57j','x58d','x59d'],
       row6: ['x60x','x61x','x62x','x63i','x64x','x65x','x66x','x67x','x68f','x69f'],
       row7: ['x70x','x71x','x72x','x73i','x74x','x75x','x76x','x77x','x78f','x79f'],
       row8: ['x80x','x81x','x82x','x83x','x84x','x85x','x86x','x87x','x88x','x89x'],
@@ -752,6 +752,7 @@ class App extends Component {
           currentObjective: '',
           targetSet: false,
           targetAcquired: false,
+          pathArray: [],
           targetPlayer: {
             number: 1,
             currentPosition: {
@@ -1090,6 +1091,7 @@ class App extends Component {
           currentObjective: '',
           targetSet: false,
           targetAcquired: false,
+          pathArray: [],
           targetPlayer: {
             number: 1,
             currentPosition: {
@@ -2756,6 +2758,9 @@ class App extends Component {
                   y: 0,
                 }
               }
+              if (player.strafing.state === true) {
+                player.strafing.state = false;
+              }
 
               this.checkDestination(player);
               if (player.drowning !== true && player.pushBack.state !== true) {
@@ -2765,7 +2770,7 @@ class App extends Component {
             }
 
             if (player.pushBack.state === true && player.target.void !== true) {
-              // this.getTarget(player);
+
               player.pushBack.state = false;
               player.strafing = {
                 state: false,
@@ -2773,6 +2778,7 @@ class App extends Component {
               }
               player.moving.state = false;
               player.speed.move = player.pushBack.prePushMoveSpeed;
+              this.getTarget(player);
             }
 
 
@@ -7316,9 +7322,6 @@ class App extends Component {
     }
 
 
-    if (player.pushBack.state === true) {
-      console.log('pushback targeting plyr dir',player.direction,'pos',currentPosition);
-    }
     switch(direction) {
       case 'north' :
         targetCellNumber = {
@@ -7368,10 +7371,6 @@ class App extends Component {
           y: currentPosition.y+1
         }
       break;
-    }
-
-    if (player.pushBack.state === true) {
-      console.log('pushback targeting plyr target',player.number,targetCellNumber);
     }
 
 
@@ -10742,6 +10741,7 @@ class App extends Component {
             currentInstruction: 0,
             targetSet: false,
             targetAcquired: false,
+            pathArray: [],
             targetPlayer: {
               number: 1,
               currentPosition: {
@@ -10961,7 +10961,7 @@ class App extends Component {
         }
 
         if (plyr.ai.targetSet !== true) {
-          console.log('acquiring target  player',plyr.number);
+          console.log('player',plyr.number,'acquiring target');
           let targetPlayer;
           if ( this.players[0].dead.state !== true || this.players[0].falling.state !== true) {
             targetPlayer = this.players[0];
@@ -11012,101 +11012,7 @@ class App extends Component {
     }
 
   }
-  aiParsePath = (path,aiPlayer) => {
 
-    let instructions = [];
-    let init = true;
-    let initDirection = this.players[aiPlayer-1].direction;
-    let direction;
-
-    // path.shift();
-    path.pop();
-
-    for (const [key, value] of Object.entries(path)) {
-
-        let currentCell = path[key-1];
-        let nextCell = path[key];
-        // console.log(key-1,'currentCell',currentCell,'nextCell',nextCell);
-        if (currentCell) {
-
-          let oldDirection = direction;
-          let newDirection;
-          if (init === true) {
-            oldDirection = initDirection;
-            init = false;
-          }
-
-          if (
-            nextCell.x === currentCell.x &&
-            nextCell.y === currentCell.y-1
-          ) {
-            newDirection = 'north'
-          }
-          if (
-            nextCell.x === currentCell.x &&
-            nextCell.y === currentCell.y+1
-          ) {
-            newDirection = 'south'
-          }
-          if (
-            nextCell.x === currentCell.x-1 &&
-            nextCell.y === currentCell.y
-          ) {
-            newDirection = 'west'
-          }
-          if (
-            nextCell.x === currentCell.x+1 &&
-            nextCell.y === currentCell.y
-          ) {
-            newDirection = 'east'
-          }
-
-          if (oldDirection === newDirection) {
-            instructions.push({
-              keyword: 'move_'+newDirection,
-              count: 0,
-              limit: 1,
-            })
-          }
-          if (oldDirection !== newDirection) {
-            instructions.push(
-              {
-                keyword: 'move_'+newDirection,
-                count: 0,
-                limit: 1,
-              },
-              {
-                keyword: 'move_'+newDirection,
-                count: 0,
-                limit: 1,
-              }
-            )
-          }
-
-          direction = newDirection;
-
-        }
-
-    }
-    // instructions.shift();
-    // instructions.pop();
-
-    // console.log('this.pathArray',this.pathArray);
-    // console.log('path',path,'player',aiPlayer);
-    // console.log('instructions',instructions,'player',aiPlayer);
-
-    this.players[aiPlayer-1].ai.instructions = instructions;
-
-    for (const plyr of this.players) {
-      if (plyr.ai.state === true) {
-        console.log('plyr no',plyr.number);
-        console.log('current instruction',plyr.ai.currentInstruction);
-        console.log('instructions',plyr.ai.instructions);
-        console.log('real current instruction',plyr.ai.instructions[plyr.ai.currentInstruction]);
-      }
-    }
-
-  }
   aiDecide = (aiPlayer) => {
     // console.log('aiDecide',aiPlayer.number);
 
@@ -11120,8 +11026,23 @@ class App extends Component {
     // CHECK FOR TARGET CHANGE IF PERSUING!!
     if (aiPlayer.ai.mission === 'pursue') {
 
+      let pathMidPursuitUpdate = false;
+
+      if (aiPlayer.ai.targetAcquired === true) {
+        for (const step of aiPlayer.ai.pathArray) {
+          for (const plyr2 of this.players) {
+            if (
+              step.x === plyr2.currentPosition.cell.number.x &&
+              step.y === plyr2.currentPosition.cell.number.y
+            ) {
+              // pathMidPursuitUpdate = true;
+            }
+          }
+        }
+      }
+
       if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y) {
-        console.log('target location changed! Updating path. player',aiPlayer.number);
+        console.log('target location changed! Updating path for player',aiPlayer.number);
 
         aiPlayer.ai.targetPlayer.currentPosition = {
           x: targetPlayer.currentPosition.cell.number.x,
@@ -11130,6 +11051,10 @@ class App extends Component {
         getPath = true;
         aiPlayer.ai.targetAcquired = true;
         aiPlayer.ai.currentInstruction = 0;
+      }
+      if (pathMidPursuitUpdate === true) {
+        console.log('someones in the way. recalculating path');
+        getPath = true;
       }
       if (aiPlayer.ai.targetSet === true && aiPlayer.ai.targetAcquired !== true) {
         getPath = true;
@@ -11570,7 +11495,7 @@ class App extends Component {
       let removeTiles = [];
       for (const plyr of this.players) {
         if (plyr.number !== aiPlayer.number && plyr.number !== targetPlayer.number) {
-          // console.log('avoid plyrs',plyr.number);
+          // console.log('avoid plyr',plyr.number);
           this.easyStar.avoidAdditionalPoint(plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
           removeTiles.push({x:plyr.currentPosition.cell.number.x,y:plyr.currentPosition.cell.number.y})
 
@@ -11622,15 +11547,103 @@ class App extends Component {
     }
 
     this.players[aiPlayer.number-1] = aiPlayer;
-    this.aiAct();
+    this.aiAct(aiPlayer);
 
   }
-  aiAct = () => {
+  aiParsePath = (path,aiPlayer) => {
 
-    for (const plyr of this.players) {
-      if (plyr.ai.state === true) {
+    let instructions = [];
+    let init = true;
+    let initDirection = this.players[aiPlayer-1].direction;
+    let direction;
+
+    // path.shift();
+    path.pop();
+
+    for (const [key, value] of Object.entries(path)) {
+
+        let currentCell = path[key-1];
+        let nextCell = path[key];
+        // console.log(key-1,'currentCell',currentCell,'nextCell',nextCell);
+        if (currentCell) {
+
+          let oldDirection = direction;
+          let newDirection;
+          if (init === true) {
+            oldDirection = initDirection;
+            init = false;
+          }
+
+          if (
+            nextCell.x === currentCell.x &&
+            nextCell.y === currentCell.y-1
+          ) {
+            newDirection = 'north'
+          }
+          if (
+            nextCell.x === currentCell.x &&
+            nextCell.y === currentCell.y+1
+          ) {
+            newDirection = 'south'
+          }
+          if (
+            nextCell.x === currentCell.x-1 &&
+            nextCell.y === currentCell.y
+          ) {
+            newDirection = 'west'
+          }
+          if (
+            nextCell.x === currentCell.x+1 &&
+            nextCell.y === currentCell.y
+          ) {
+            newDirection = 'east'
+          }
+
+          if (oldDirection === newDirection) {
+            instructions.push({
+              keyword: 'move_'+newDirection,
+              count: 0,
+              limit: 1,
+            })
+          }
+          if (oldDirection !== newDirection) {
+            instructions.push(
+              {
+                keyword: 'move_'+newDirection,
+                count: 0,
+                limit: 1,
+              },
+              {
+                keyword: 'move_'+newDirection,
+                count: 0,
+                limit: 1,
+              }
+            )
+          }
+
+          direction = newDirection;
+
+        }
+
+    }
+    // instructions.shift();
+    // instructions.pop();
+
+    // console.log('this.pathArray',this.pathArray);
+    // console.log('path',path,'player',aiPlayer);
+    // console.log('instructions',instructions,'player',aiPlayer);
+
+
+    this.players[aiPlayer-1].ai.pathArray = path;
+    this.players[aiPlayer-1].ai.instructions = instructions;
+
+  }
+  aiAct = (plyr) => {
+
+    // for (const plyr of this.players) {
+      // if (plyr.ai.state === true) {
         let currentInstruction = plyr.ai.instructions[plyr.ai.currentInstruction];
-        // console.log('plyr',plyr.number,'length',plyr.ai.instructions.length,'current',plyr.ai.currentInstruction);
+
         if (currentInstruction) {
           // console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
           this.keyPressed[plyr.number-1] = {
@@ -11850,8 +11863,8 @@ class App extends Component {
             dodge: false,
           }
         }
-      }
-    }
+      // }
+    // }
 
   }
 
