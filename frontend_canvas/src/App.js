@@ -461,8 +461,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 1,
-              y: 1,
+              x: 2,
+              y: 2,
             },
             center: {
               x: 0,
@@ -10449,7 +10449,7 @@ class App extends Component {
 
         // console.log('adding ai. Player #',newPlayerNumber,' @',cell.x,cell.y);
         // cell = {x:0,y:0}
-        cell = {x:9,y:0}
+        // cell = {x:9,y:0}
         // cell = {x:9,y:9}
         // cell = {x:0,y:9}
         // cell = {x:7,y:6}
@@ -10936,7 +10936,7 @@ class App extends Component {
               plyr.currentPosition.cell.number.x === plyr.ai.targetPlayer.currentPosition.x ||
               plyr.currentPosition.cell.number.y === plyr.ai.targetPlayer.currentPosition.y
             ) {
-              console.log('in ranged attack range');
+              // console.log('in ranged attack range');
               // targetInRange = true;
             }
           }
@@ -10951,7 +10951,7 @@ class App extends Component {
                 plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y - 2 ||
                 plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y + 2
               ) {
-                console.log('in melee attack range');
+                // console.log('in melee attack range');
                 // targetInRange = true;
               }
             }
@@ -11506,6 +11506,7 @@ class App extends Component {
 
       let removeTiles = [];
       for (const plyr of this.players) {
+        // if (plyr.number !== targetPlayer.number) {
         if (plyr.number !== aiPlayer.number && plyr.number !== targetPlayer.number) {
           // console.log('avoid plyr',plyr.number);
           this.easyStar.avoidAdditionalPoint(plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
@@ -11534,10 +11535,10 @@ class App extends Component {
       // console.log('pathfinder path',path);
 
 
-      // console.log('this.pathArray',this.pathArray);
+      console.log('this.pathArray',this.pathArray);
       // console.log('aiPos',aiPos.x,aiPos.y);
       // console.log('targetPos',targetPos.x,targetPos.y);
-      // console.log('removeTiles',removeTiles);
+      console.log('removeTiles',removeTiles);
 
       this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
         if (path === null) {
