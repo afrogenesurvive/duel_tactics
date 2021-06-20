@@ -207,8 +207,8 @@ class App extends Component {
       row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18f','x19d'],
       row2: ['x20x','x21a','x22a','x23a','x24x','x25x','x26x','x27x','x28d','x29d'],
       row3: ['x30x','x31a','x32a','x33a','x34x','x35x','x36x','x37x','x38d','x39d'],
-      row4: ['x40j','x41b','x42b','x43j','x44b','x45j','x46j','x47j','x48d','x49d'],
-      row5: ['x50j','x51b','x52b','x53j','x54b','x55j','x56j','x57j','x58d','x59d'],
+      row4: ['x40j','x41b','x42b','x43j','x44b','x45b','x46j','x47j','x48j','x49d'],
+      row5: ['x50j','x51b','x52b','x53j','x54b','x55b','x56j','x57j','x58j','x59d'],
       row6: ['x60x','x61x','x62x','x63i','x64x','x65x','x66x','x67x','x68f','x69f'],
       row7: ['x70x','x71x','x72x','x73i','x74x','x75x','x76x','x77x','x78f','x79f'],
       row8: ['x80x','x81x','x82x','x83x','x84x','x85x','x86x','x87x','x88x','x89x'],
@@ -461,8 +461,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 2,
-              y: 2,
+              x: 7,
+              y: 0,
             },
             center: {
               x: 0,
@@ -1298,9 +1298,7 @@ class App extends Component {
     this.easyStar = undefined;
     this.getPath = false;
 
-    this.pathfindingGrid = undefined;
-    this.pathfinder = undefined;
-    this.aStarInstance = undefined;
+    this.additionalAvoidArray = [];
 
 
   }
@@ -9834,19 +9832,20 @@ class App extends Component {
             }
           }
           if (playerCell === true) {
-            row.push(1)
+            // row.push(1)
           } else {
-            if (
-              elem3.charAt(terrainInfo2) === 'j' ||
-              elem3.charAt(terrainInfo2) === 'h' ||
-              elem3.charAt(terrainInfo2) === 'i' ||
-              elem3.charAt(0) !== 'x' ||
-              cell.void.state === true
-            ) {
-              row.push(1)
-            } else {
-              row.push(0)
-            }
+            // if (
+            //   elem3.charAt(terrainInfo2) === 'j' ||
+            //   elem3.charAt(terrainInfo2) === 'h' ||
+            //   elem3.charAt(terrainInfo2) === 'i' ||
+            //   elem3.charAt(0) !== 'x' ||
+            //   cell.void.state === true
+            // ) {
+            //   row.push(1)
+            // } else {
+            //   row.push(0)
+            // }
+            row.push(0)
           }
         }
       }
@@ -10448,11 +10447,6 @@ class App extends Component {
       if (checkCell === true) {
 
         // console.log('adding ai. Player #',newPlayerNumber,' @',cell.x,cell.y);
-        // cell = {x:0,y:0}
-        // cell = {x:9,y:0}
-        // cell = {x:9,y:9}
-        // cell = {x:0,y:9}
-        // cell = {x:7,y:6}
 
         let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y)
         let newPlayer = {
@@ -10912,6 +10906,16 @@ class App extends Component {
 
     this.addAiCount.state = true;
 
+
+    // REMOVE DEAD AI FINAL POSITION
+    let indx3;
+    for (const item of this.additionalAvoidArray) {
+      if (item.player === playerNumber) {
+        indx3 = this.additionalAvoidArray.indexOf(item)
+      }
+    }
+    this.additionalAvoidArray.splice(indx3,1)
+
   }
   toggleAiDisplay = () => {
     let newState = !this.state.showAiStatus;
@@ -10931,30 +10935,65 @@ class App extends Component {
         let targetInRange = false;
 
         if (plyr.ai.targetSet === true) {
+
           if (plyr.currentWeapon.type === 'bow') {
             if (
               plyr.currentPosition.cell.number.x === plyr.ai.targetPlayer.currentPosition.x ||
               plyr.currentPosition.cell.number.y === plyr.ai.targetPlayer.currentPosition.y
             ) {
               // console.log('in ranged attack range');
-              // targetInRange = true;
+              targetInRange = true;
             }
           }
-          if (plyr.currentWeapon.type !== 'bow') {
-            if (
-              plyr.currentPosition.cell.number.x === plyr.ai.targetPlayer.currentPosition.x ||
-              plyr.currentPosition.cell.number.y === plyr.ai.targetPlayer.currentPosition.y
-            ) {
+          if (plyr.currentWeapon.type === 'spear') {
+
+            if (plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x) {
               if (
-                plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x - 2 ||
-                plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x + 2 ||
-                plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y - 2 ||
-                plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y + 2
+                plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y + 2 ||
+                plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y - 2
               ) {
-                // console.log('in melee attack range');
-                // targetInRange = true;
+                // console.log('in melee attack range: spear');
+                targetInRange = true;
               }
             }
+
+            if (
+              plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y
+            ) {
+              if (
+                plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x + 2 ||
+                plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x - 2
+              ) {
+                // console.log('in melee attack range: spear');
+                targetInRange = true;
+              }
+            }
+
+          }
+          if (plyr.currentWeapon.type === 'sword') {
+
+            if (plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x) {
+              if (
+                plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y + 1 ||
+                plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y - 1
+              ) {
+                // console.log('in melee attack range: sword');
+                targetInRange = true;
+              }
+            }
+
+            if (
+              plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y
+            ) {
+              if (
+                plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x + 1 ||
+                plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x - 1
+              ) {
+                // console.log('in melee attack range: sword');
+                targetInRange = true;
+              }
+            }
+
           }
         }
 
@@ -11038,23 +11077,8 @@ class App extends Component {
     // CHECK FOR TARGET CHANGE IF PERSUING!!
     if (aiPlayer.ai.mission === 'pursue') {
 
-      let pathMidPursuitUpdate = false;
-
-      if (aiPlayer.ai.targetAcquired === true) {
-        for (const step of aiPlayer.ai.pathArray) {
-          for (const plyr2 of this.players) {
-            if (
-              step.x === plyr2.currentPosition.cell.number.x &&
-              step.y === plyr2.currentPosition.cell.number.y
-            ) {
-              // pathMidPursuitUpdate = true;
-            }
-          }
-        }
-      }
-
       if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y) {
-        console.log('target location changed! Updating path for player',aiPlayer.number);
+        console.log('pursuit target location changed! Updating path for player',aiPlayer.number);
 
         aiPlayer.ai.targetPlayer.currentPosition = {
           x: targetPlayer.currentPosition.cell.number.x,
@@ -11063,10 +11087,6 @@ class App extends Component {
         getPath = true;
         aiPlayer.ai.targetAcquired = true;
         aiPlayer.ai.currentInstruction = 0;
-      }
-      if (pathMidPursuitUpdate === true) {
-        console.log('someones in the way. recalculating path');
-        getPath = true;
       }
       if (aiPlayer.ai.targetSet === true && aiPlayer.ai.targetAcquired !== true) {
         getPath = true;
@@ -11078,7 +11098,6 @@ class App extends Component {
       }
 
     }
-
 
     let patrolDest;
     if (aiPlayer.ai.mission === 'patrol') {
@@ -11096,6 +11115,17 @@ class App extends Component {
 
     }
     if (aiPlayer.ai.mission === 'engage') {
+
+      if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y) {
+        console.log('engage target location changed! Updating path for player',aiPlayer.number);
+
+        aiPlayer.ai.targetPlayer.currentPosition = {
+          x: targetPlayer.currentPosition.cell.number.x,
+          y: targetPlayer.currentPosition.cell.number.y,
+        }
+        aiPlayer.ai.mission = 'pursue';
+        aiPlayer.ai.targetAcquired = false;
+      }
 
       // FACE TARGET!
       if (targetPlayer.currentPosition.cell.number.x === aiPlayer.currentPosition.cell.number.x && targetPlayer.currentPosition.cell.number.y > aiPlayer.currentPosition.cell.number.y) {
@@ -11254,13 +11284,13 @@ class App extends Component {
       }
       if (aiPlayer.currentWeapon.type === 'sword') {
           let instructions1 = [];
-          instructions1.push(
-            {
-              keyword: 'move_'+aiPlayer.direction,
-              count: 0,
-              limit: 1,
-            },
-          )
+          // instructions1.push(
+          //   {
+          //     keyword: 'move_'+aiPlayer.direction,
+          //     count: 0,
+          //     limit: 1,
+          //   },
+          // )
 
           if (targetPlayer.defending.state !== true) {
             instructions1.push(
@@ -11383,7 +11413,9 @@ class App extends Component {
             }
           }
 
-          aiPlayer.instructions = instructions1;
+          aiPlayer.ai.instructions = instructions1;
+          aiPlayer.ai.currentInstruction = 0;
+          // console.log('aiPlayer.instructions',aiPlayer.instructions);
       }
 
     }
@@ -11457,6 +11489,7 @@ class App extends Component {
     // SET PATH !!
     let pathSet = [];
     if (getPath === true && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
+      this.updatePathArray();
 
       let aiPos;
       let targetPos;
@@ -11489,30 +11522,13 @@ class App extends Component {
       }
 
       this.easyStar.setGrid(this.pathArray);
-      this.easyStar.setAcceptableTiles([0])
+      this.easyStar.setAcceptableTiles([0]);
 
 
-      let pathfindingGrid = new Pathfinding.Grid(this.pathArray);
-      let pathfinder = new Pathfinding.DijkstraFinder();
-
-      this.aStarInstance = new AStarFinder({
-        grid: {
-          matrix: this.pathArray
-        }
-      });
-      let myPathway = this.aStarInstance.findPath(aiPos, targetPos);
-      // console.log('myPathway',myPathway);
-
-
-      let removeTiles = [];
       for (const plyr of this.players) {
-        // if (plyr.number !== targetPlayer.number) {
         if (plyr.number !== aiPlayer.number && plyr.number !== targetPlayer.number) {
           // console.log('avoid plyr',plyr.number);
           this.easyStar.avoidAdditionalPoint(plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
-          removeTiles.push({x:plyr.currentPosition.cell.number.x,y:plyr.currentPosition.cell.number.y})
-
-          pathfindingGrid.setWalkableAt(plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y, false);
         }
       }
       for (const cell2 of this.gridInfo) {
@@ -11525,20 +11541,13 @@ class App extends Component {
           cell2.void.state === true
         ) {
           this.easyStar.avoidAdditionalPoint(cell2.number.x, cell2.number.y);
-          removeTiles.push({x:cell2.number.x,y:cell2.number.y})
-
-          pathfindingGrid.setWalkableAt(cell2.number.x, cell2.number.y, false);
         }
       }
+      // AVOID OTHER AI FINAL POSITION
+      // for (const item of this.additionalAvoidArray) {
+      //   this.easyStar.avoidAdditionalPoint(item.x, item.y);
+      // }
 
-      let path = pathfinder.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, pathfindingGrid);
-      // console.log('pathfinder path',path);
-
-
-      console.log('this.pathArray',this.pathArray);
-      // console.log('aiPos',aiPos.x,aiPos.y);
-      // console.log('targetPos',targetPos.x,targetPos.y);
-      console.log('removeTiles',removeTiles);
 
       this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
         if (path === null) {
@@ -11547,10 +11556,8 @@ class App extends Component {
           pathSet = path;
         }
       });
-      this.easyStar.setIterationsPerCalculation(4000)
-      for (const elem of this.pathArray[0]) {
-        this.easyStar.calculate();
-      }
+      // this.easyStar.setIterationsPerCalculation(4000)
+      this.easyStar.calculate();
       setTimeout(()=>{
         // console.log('pathSet',pathSet);
         this.aiParsePath(pathSet,aiPlayer.number);
@@ -11570,6 +11577,9 @@ class App extends Component {
     let initDirection = this.players[aiPlayer-1].direction;
     let direction;
 
+    // if (path.length > 3) {
+    //   path.pop();
+    // }
     // path.shift();
     path.pop();
 
@@ -11644,11 +11654,22 @@ class App extends Component {
 
     // console.log('this.pathArray',this.pathArray);
     // console.log('path',path,'player',aiPlayer);
-    // console.log('instructions',instructions,'player',aiPlayer);
+    // console.log('instructions',instructions,'player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction);
+
+
+    // AVOID OTHER AI FINAL POSITION
+    // if (path && path.length > 0) {
+    //   this.additionalAvoidArray.push({
+    //     player: aiPlayer,
+    //     x: path[path.length-1].x,
+    //     y: path[path.length-1].y,
+    //   })
+    // }
 
 
     this.players[aiPlayer-1].ai.pathArray = path;
     this.players[aiPlayer-1].ai.instructions = instructions;
+    this.players[aiPlayer-1].ai.currentInstruction = 0;
 
   }
   aiAct = (plyr) => {
@@ -11815,6 +11836,7 @@ class App extends Component {
               }
             break;
             case 'attack':
+            // console.log('plyr',plyr.number,'all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
               currentInstruction.limit = 1;
               this.keyPressed[plyr.number-1].attack = true;
               if (currentInstruction.count < currentInstruction.limit) {
