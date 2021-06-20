@@ -5942,85 +5942,6 @@ class App extends Component {
           if (plyr.attacking.state === true) {
             plyr.action = 'attacking'
           }
-          switch(plyr.action) {
-            case 'moving':
-              let rangeIndex = plyr.speed.range.indexOf(plyr.speed.move)
-              let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
-              finalAnimIndex = moveAnimIndex;
-              // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-              if (plyr.target.void == true) {
-                // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-              }
-            break;
-            case 'jumping':
-              let rangeIndex4 = plyr.speed.range.indexOf(.1)
-              let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(plyr.moving.step)
-              finalAnimIndex = moveAnimIndex4;
-              // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-            break;
-            case 'strafe moving':
-              if (player.pushBack.state === true ) {
-                let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
-                let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
-                finalAnimIndex = moveAnimIndex3;
-                // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-              } else {
-                let rangeIndex2 = plyr.speed.range.indexOf(plyr.speed.move)
-                let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
-                finalAnimIndex = moveAnimIndex2;
-                // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-              }
-            break;
-            case 'flanking':
-              let rangeIndex6 = plyr.speed.range.indexOf(.2)
-              let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(plyr.moving.step)
-              finalAnimIndex = moveAnimIndex6;
-              // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
-              // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-            break;
-            case 'attacking':
-              let animIndex = plyr.attacking.count -1;
-              finalAnimIndex = animIndex;
-              // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
-            break;
-            case 'defending':
-              if (plyr.defending.count > 0) {
-                let animIndex2 = plyr.defending.count -1;
-                finalAnimIndex = animIndex2;
-                // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
-              }
-              if (plyr.defending.count === 0) {
-                let animIndex2a = plyr.defending.limit;
-                finalAnimIndex = animIndex2a;
-                // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
-              }
-            break;
-            case 'idle':
-              if (plyr.number === 1) {
-                // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-              }
-              if (plyr.number === 2) {
-                // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-              }
-              let animIndex3 = plyr.idleAnim.count -1;
-              finalAnimIndex = animIndex3;
-            break;
-            case 'falling':
-              let animIndex4 = plyr.falling.count -1;
-              finalAnimIndex = animIndex4;
-              // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
-            break;
-            case 'deflected':
-              let animIndex5 = plyr.success.deflected.count -1;
-              finalAnimIndex = animIndex5;
-              // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
-            break;
-            case 'dodging':
-              let animIndex7 = plyr.dodging.count -1;
-              finalAnimIndex = animIndex7;
-              // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
-            break;
-          }
 
 
 
@@ -6031,7 +5952,11 @@ class App extends Component {
           ) {
             switch(plyr.action) {
               case 'moving':
-                let rangeIndex = plyr.speed.range.indexOf(plyr.speed.move)
+                let moveSpeed = plyr.speed.move;
+                if (plyr.terrainMoveSpeed.state === true) {
+                  moveSpeed = plyr.terrainMoveSpeed.speed;
+                }
+                let rangeIndex = plyr.speed.range.indexOf(moveSpeed)
                 let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
                 finalAnimIndex = moveAnimIndex;
                 // console.log('animation mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex,'move state',plyr.moving.state);
@@ -6111,6 +6036,93 @@ class App extends Component {
             }
           }
           // FOR TESTING BY CALLING ONLY @ 1 CELL
+
+
+
+          switch(plyr.action) {
+            case 'moving':
+              let moveSpeed = plyr.speed.move;
+              if (plyr.terrainMoveSpeed.state === true) {
+                moveSpeed = plyr.terrainMoveSpeed.speed;
+              }
+              let rangeIndex = plyr.speed.range.indexOf(moveSpeed)
+              let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
+              finalAnimIndex = moveAnimIndex;
+              // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+              if (plyr.target.void == true) {
+                // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+              }
+            break;
+            case 'jumping':
+              let rangeIndex4 = plyr.speed.range.indexOf(.1)
+              let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(plyr.moving.step)
+              finalAnimIndex = moveAnimIndex4;
+              // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+            break;
+            case 'strafe moving':
+              if (player.pushBack.state === true ) {
+                let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
+                let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
+                finalAnimIndex = moveAnimIndex3;
+                // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+              } else {
+                let rangeIndex2 = plyr.speed.range.indexOf(plyr.speed.move)
+                let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
+                finalAnimIndex = moveAnimIndex2;
+                // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+              }
+            break;
+            case 'flanking':
+              let rangeIndex6 = plyr.speed.range.indexOf(.2)
+              let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(plyr.moving.step)
+              finalAnimIndex = moveAnimIndex6;
+              // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
+              // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+            break;
+            case 'attacking':
+              let animIndex = plyr.attacking.count -1;
+              finalAnimIndex = animIndex;
+              // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
+            break;
+            case 'defending':
+              if (plyr.defending.count > 0) {
+                let animIndex2 = plyr.defending.count -1;
+                finalAnimIndex = animIndex2;
+                // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
+              }
+              if (plyr.defending.count === 0) {
+                let animIndex2a = plyr.defending.limit;
+                finalAnimIndex = animIndex2a;
+                // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
+              }
+            break;
+            case 'idle':
+              if (plyr.number === 1) {
+                // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+              }
+              if (plyr.number === 2) {
+                // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+              }
+              let animIndex3 = plyr.idleAnim.count -1;
+              finalAnimIndex = animIndex3;
+            break;
+            case 'falling':
+              let animIndex4 = plyr.falling.count -1;
+              finalAnimIndex = animIndex4;
+              // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
+            break;
+            case 'deflected':
+              let animIndex5 = plyr.success.deflected.count -1;
+              finalAnimIndex = animIndex5;
+              // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
+            break;
+            case 'dodging':
+              let animIndex7 = plyr.dodging.count -1;
+              finalAnimIndex = animIndex7;
+              // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
+            break;
+          }
+
 
 
           // SPRITE SHEET CHAR AVATAR SWITCH!
@@ -6228,7 +6240,7 @@ class App extends Component {
                 } else {
                   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40);
                 }
-                // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex);
+                // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
 
               }
             }
@@ -6242,7 +6254,7 @@ class App extends Component {
                 } else {
                   context2.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40);
                 }
-                // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex);
+                // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
                 // playerDrawLog(x,y,plyr)
               }
             }
