@@ -11167,16 +11167,14 @@ class App extends Component {
 
     let targetPlayer = this.players[aiPlayer.ai.targetPlayer.number-1];
     let prevTargetPos = aiPlayer.ai.targetPlayer.currentPosition;
-    let currentTargetPos = targetPlayer.currentPosition.cell.number;
-    if (targetPlayer.dead.state === true) {
-      // console.log('dudes suddenly died... your mission',aiPlayer.ai.mission,'set?',aiPlayer.ai.targetSet,'acquired?',aiPlayer.ai.targetAcquired);
-      // return
-      // this.aiEvaluate();
-      return
+    let currentTargetPos;
+    if (aiPlayer.ai.targetSet === true) {
+      currentTargetPos = targetPlayer.currentPosition.cell.number;
     }
 
+
     // CHECK FOR TARGET CHANGE IF PERSUING!!
-    if (aiPlayer.ai.mission === 'pursue') {
+    if (aiPlayer.ai.mission === 'pursue' && aiPlayer.ai.targetSet === true) {
 
       if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
         console.log('pursuit target location changed! Updating path for player',aiPlayer.number);
