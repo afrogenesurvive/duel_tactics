@@ -454,6 +454,7 @@ class App extends Component {
         {x:3 ,y:3 },
       ]
     }
+    this.playerNumber = 2;
     this.currentPlayer = 1;
     this.players = [
       {
@@ -2414,6 +2415,7 @@ class App extends Component {
 
     if (playerNumber < 2) {
       this.players.splice(1,1)
+      this.playerNumber = 1;
     }
 
     if (aiPlayerNumber > 0) {
@@ -11016,12 +11018,12 @@ class App extends Component {
         if (plyr.ai.targetSet !== true) {
           let targetAlive = false;
           let targetPlayer;
-          if ( this.players[0].dead.state !== true && this.players[0].falling.state !== true && plyr.respaw !== true) {
+          if ( this.players[0].dead.state !== true && this.players[0].falling.state !== true && plyr.respawn !== true) {
             targetPlayer = this.players[0];
             targetAlive = true;
           }
-          if ( this.players[0].dead.state === true || this.players[0].falling.state === true && plyr.respaw === true) {
-            if (this.players[1].dead.state !== true && this.players[1].falling.state !== true && plyr.respaw !== true) {
+          if ( this.players[0].dead.state === true || this.players[0].falling.state === true && plyr.respawn === true && this.playerNumber > 1) {
+            if (this.players[1].dead.state !== true && this.players[1].falling.state !== true && plyr.respawn !== true) {
               targetPlayer = this.players[1];
               targetAlive = true;
             }
@@ -11632,7 +11634,7 @@ class App extends Component {
 
 
       for (const plyr of this.players) {
-        if (plyr.dead.state !== true && plyr.falling.state !== true && plyr.respaw !== true && plyr.number !== aiPlayer.number && plyr.number !== targetPlayer.number) {
+        if (plyr.dead.state !== true && plyr.falling.state !== true && plyr.respawn !== true && plyr.number !== aiPlayer.number && plyr.number !== targetPlayer.number) {
           console.log('avoid plyr',plyr.number);
           this.easyStar.avoidAdditionalPoint(plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
         }
