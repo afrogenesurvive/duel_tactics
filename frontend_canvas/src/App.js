@@ -9181,7 +9181,7 @@ class App extends Component {
               };
           plyr.ai.instructions = [];
           plyr.action = 'idle'
-          console.log('A player died. Reseting targeting for ai player',plyr.number,'mission',plyr.ai.mission,'primary mission',plyr.ai.plrimaryMission);
+          // console.log('A player died. Reseting targeting for ai player',plyr.number,'mission',plyr.ai.mission,'primary mission',plyr.ai.plrimaryMission);
         }
 
       }
@@ -9891,6 +9891,7 @@ class App extends Component {
             }
           }
           if (playerCell === true) {
+            row.push(0)
             // row.push(1)
           } else {
             // if (
@@ -11015,12 +11016,12 @@ class App extends Component {
         if (plyr.ai.targetSet !== true) {
           let targetAlive = false;
           let targetPlayer;
-          if ( this.players[0].dead.state !== true && this.players[0].falling.state !== true) {
+          if ( this.players[0].dead.state !== true && this.players[0].falling.state !== true && plyr.respaw !== true) {
             targetPlayer = this.players[0];
             targetAlive = true;
           }
-          if ( this.players[0].dead.state === true || this.players[0].falling.state === true) {
-            if (this.players[1].dead.state !== true && this.players[1].falling.state !== true) {
+          if ( this.players[0].dead.state === true || this.players[0].falling.state === true && plyr.respaw === true) {
+            if (this.players[1].dead.state !== true && this.players[1].falling.state !== true && plyr.respaw !== true) {
               targetPlayer = this.players[1];
               targetAlive = true;
             }
@@ -11048,7 +11049,7 @@ class App extends Component {
             plyr.ai.targetSet = true
             console.log('player',plyr.number,'setting target...player',targetPlayer.number);
           } else {
-            console.log('no targets availible');
+            // console.log('no targets availible');
           }
 
         }
@@ -11631,8 +11632,8 @@ class App extends Component {
 
 
       for (const plyr of this.players) {
-        if (plyr.number !== aiPlayer.number && plyr.number !== targetPlayer.number) {
-          // console.log('avoid plyr',plyr.number);
+        if (plyr.dead.state !== true && plyr.falling.state !== true && plyr.respaw !== true && plyr.number !== aiPlayer.number && plyr.number !== targetPlayer.number) {
+          console.log('avoid plyr',plyr.number);
           this.easyStar.avoidAdditionalPoint(plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
         }
       }
@@ -11649,7 +11650,7 @@ class App extends Component {
         }
       }
 
-
+      console.log('aiPos.x, aiPos.y, targetPos.x, targetPos.y,',aiPos.x, aiPos.y, targetPos.x, targetPos.y,'targetPlayer',targetPlayer.number,'pathArray',this.pathArray,'mission',aiPlayer.ai.mission);
       this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
         if (path === null) {
           console.log("Path was not found...for player",aiPlayer.number);
