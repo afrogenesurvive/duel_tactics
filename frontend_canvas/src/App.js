@@ -747,6 +747,7 @@ class App extends Component {
         ai: {
           state: false,
           imgType: '',
+          primaryMission: '',
           mission: '',
           prevMission: '',
           currentObjective: '',
@@ -1086,6 +1087,7 @@ class App extends Component {
         ai: {
           state: false,
           imgType: '',
+          primaryMission: '',
           mission: '',
           prevMission: '',
           currentObjective: '',
@@ -1264,6 +1266,24 @@ class App extends Component {
       limit: 10,
     };
     this.aiPlayers = [];
+    this.aiInitType = 'basicPursue';
+    this.aiInitSettings = {
+      basicPursue: {
+        primaryMission: 'pursue',
+        mode: '',
+        partolArea: [
+          {
+            x: undefined,
+            y: undefined,
+          },
+          {
+            x: undefined,
+            y: undefined,
+          },
+        ]
+      }
+    };
+
     this.boltDeflectAnim = {
       position: {
         x: 0,
@@ -9129,6 +9149,44 @@ class App extends Component {
     player.points--;
     player.drowning = false;
 
+
+    // RESET TARGETTING FOR AI TARGETTING ME!!
+    if (player.ai.state !== true) {
+      for (const plyr of this.players) {
+        if (plyr.ai.state === true && plyr.ai.targetSet === true && plyr.ai.targetPlayer.number === player.number) {
+          plyr.ai.mission = 'pursue';
+          plyr.ai.prevMission = '';
+          plyr.ai.currentObjective = '';
+          plyr.ai.currentInstruction = 0;
+          plyr.ai.targetSet = false;
+          plyr.ai.targetAcquired = false;
+          plyr.ai.pathArray = [];
+          plyr.ai.targetPlayer = {
+                number: undefined,
+                currentPosition: {
+                  x: undefined,
+                  y: undefined,
+                },
+                target: {
+                  number1: {
+                    x: undefined,
+                    y: undefined,
+                  },
+                  number2: {
+                    x: undefined,
+                    y: undefined,
+                  },
+                },
+                action: '',
+              };
+          plyr.ai.instructions = [];
+          plyr.action = 'idle'
+          console.log('A player died. Reseting targeting for ai player',plyr.number,'mission',plyr.ai.mission,'primary mission',plyr.ai.plrimaryMission);
+        }
+
+      }
+    }
+
     // this.getTarget(player)
 
     this.players[player.number-1] = player;
@@ -9424,7 +9482,8 @@ class App extends Component {
     let dropChance = this.rnJesus(1,player.crits.pushBack+3);
     if (
       dropChance === 1 &&
-      player.falling.state !== true
+      player.falling.state !== true &&
+      player.dead.state !== true
     ) {
       shouldDrop = true;
 
@@ -10419,6 +10478,9 @@ class App extends Component {
 
   addAiPlayer = () => {
 
+    let aiInitSettings = this.aiInitSettings.[this.aiInitType]
+    // console.log('aiInitSettings',aiInitSettings);
+
     let newPlayerNumber = this.players.length+1;
 
     let imgTypeRoll = this.rnJesus(1,2);
@@ -10742,6 +10804,7 @@ class App extends Component {
             state: true,
             imgType: imgType,
             mission: '',
+            primaryMission: '',
             prevMission: '',
             currentObjective: '',
             currentInstruction: 0,
@@ -10861,8 +10924,24 @@ class App extends Component {
         this.aiPlayers.push(newPlayerNumber)
         this.getTarget(this.players[newPlayerNumber-1])
         this.updatePathArray();
-        this.players[newPlayerNumber-1].ai.mission = 'pursue';
-
+        this.players[newPlayerNumber-1].ai.primaryMission = aiInitSettings.primaryMission;
+        this.players[newPlayerNumber-1].ai.mission = aiInitSettings.primaryMission;
+        if (aiInitSettings.primaryMission === 'patrol') {
+          this.players[newPlayerNumber-1].ai.patrolling = {
+            state: false,
+            area: [
+              {
+                x: aiInitSettings.partolArea[0].x,
+                y: aiInitSettings.partolArea[0].y,
+              },
+              {
+                x: aiInitSettings.partolArea[1].x,
+                y: aiInitSettings.partolArea[1].y,
+              }
+            ],
+          }
+        }
+        // console.log('aiInitSettings.primaryMission',aiInitSettings.primaryMission);
       }
 
     }
@@ -10908,13 +10987,13 @@ class App extends Component {
 
 
     // REMOVE DEAD AI FINAL POSITION
-    let indx3;
-    for (const item of this.additionalAvoidArray) {
-      if (item.player === playerNumber) {
-        indx3 = this.additionalAvoidArray.indexOf(item)
-      }
-    }
-    this.additionalAvoidArray.splice(indx3,1)
+    // let indx3;
+    // for (const item of this.additionalAvoidArray) {
+    //   if (item.player === playerNumber) {
+    //     indx3 = this.additionalAvoidArray.indexOf(item)
+    //   }
+    // }
+    // this.additionalAvoidArray.splice(indx3,1)
 
   }
   toggleAiDisplay = () => {
@@ -10931,9 +11010,53 @@ class App extends Component {
       if (plyr.ai.state === true) {
 
 
+        // SET TARGET!!
+        // determine who is closer to me
+        if (plyr.ai.targetSet !== true) {
+          let targetAlive = false;
+          let targetPlayer;
+          if ( this.players[0].dead.state !== true && this.players[0].falling.state !== true) {
+            targetPlayer = this.players[0];
+            targetAlive = true;
+          }
+          if ( this.players[0].dead.state === true || this.players[0].falling.state === true) {
+            if (this.players[1].dead.state !== true && this.players[1].falling.state !== true) {
+              targetPlayer = this.players[1];
+              targetAlive = true;
+            }
+          }
 
+          if (targetAlive === true) {
+            plyr.ai.targetPlayer = {
+              number: targetPlayer.number,
+              currentPosition: {
+                x: targetPlayer.currentPosition.cell.number.x,
+                y: targetPlayer.currentPosition.cell.number.y,
+              },
+              target: {
+                number1: {
+                  x: targetPlayer.target.cell.number.x,
+                  y: targetPlayer.target.cell.number.y,
+                },
+                number2: {
+                  x: targetPlayer.target.cell2.number.x,
+                  y: targetPlayer.target.cell2.number.y,
+                },
+              },
+              action: targetPlayer.action,
+            };
+            plyr.ai.targetSet = true
+            console.log('player',plyr.number,'setting target...player',targetPlayer.number);
+          } else {
+            console.log('no targets availible');
+          }
+
+        }
+
+
+
+        // TARGET AQUISITION & RANGE FINDING!!
         let targetInRange = false;
-
         if (plyr.ai.targetSet === true) {
 
           if (plyr.currentWeapon.type === 'bow') {
@@ -10998,12 +11121,6 @@ class App extends Component {
         }
 
 
-        // if (plyr.ai.mission === 'patrol') {
-        //   plyr.ai.patrolling.area = [
-        //     {x:0,y:0},
-        //     {x:0,y:0},
-        //   ]
-        // }
         if (plyr.ai.mission === 'defend') {
           plyr.ai.defending.state = true;
           plyr.ai.defending.area = [
@@ -11011,51 +11128,30 @@ class App extends Component {
           ]
         }
 
-        if (plyr.ai.targetSet !== true) {
-          console.log('player',plyr.number,'acquiring target');
-          let targetPlayer;
-          if ( this.players[0].dead.state !== true || this.players[0].falling.state !== true) {
-            targetPlayer = this.players[0];
-            plyr.ai.targetPlayer = {
-              number: targetPlayer.number,
-              currentPosition: {
-                x: targetPlayer.currentPosition.cell.number.x,
-                y: targetPlayer.currentPosition.cell.number.y,
-              },
-              target: {
-                number1: {
-                  x: targetPlayer.target.cell.number.x,
-                  y: targetPlayer.target.cell.number.y,
-                },
-                number2: {
-                  x: targetPlayer.target.cell2.number.x,
-                  y: targetPlayer.target.cell2.number.y,
-                },
-              },
-              action: targetPlayer.action,
-            };
-            plyr.ai.targetSet = true
-          }
-        }
+
+
 
         if (targetInRange === true) {
+
           plyr.ai.prevMission = plyr.ai.mission;
           plyr.ai.mission = 'engage';
         }
 
         if (plyr.ai.mission === 'engage' && targetInRange !== true) {
-          plyr.ai.mission = plyr.ai.prevMission;
-          if (plyr.ai.prevMission === 'defend') {
+
+          plyr.ai.mission = plyr.ai.primayMission;
+          if (plyr.ai.primayMission === 'defend') {
             plyr.ai.defending.state = true;
           }
-          if (plyr.ai.prevMission === 'patrol') {
+          if (plyr.ai.primayMission === 'patrol') {
             plyr.ai.patrolling.state = true;
           }
         }
-        if (plyr.ai.mission !== 'patrol' || plyr.ai.mission !== 'defend') {
-          plyr.ai.patrolling.state = false;
-          plyr.ai.defending.state = false;
-        }
+
+        // if (plyr.ai.mission !== 'patrol' || plyr.ai.mission !== 'defend') {
+        //   plyr.ai.patrolling.state = false;
+        //   plyr.ai.defending.state = false;
+        // }
 
 
         this.aiDecide(plyr)
@@ -11072,12 +11168,17 @@ class App extends Component {
     let targetPlayer = this.players[aiPlayer.ai.targetPlayer.number-1];
     let prevTargetPos = aiPlayer.ai.targetPlayer.currentPosition;
     let currentTargetPos = targetPlayer.currentPosition.cell.number;
-
+    if (targetPlayer.dead.state === true) {
+      // console.log('dudes suddenly died... your mission',aiPlayer.ai.mission,'set?',aiPlayer.ai.targetSet,'acquired?',aiPlayer.ai.targetAcquired);
+      // return
+      // this.aiEvaluate();
+      return
+    }
 
     // CHECK FOR TARGET CHANGE IF PERSUING!!
     if (aiPlayer.ai.mission === 'pursue') {
 
-      if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y) {
+      if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
         console.log('pursuit target location changed! Updating path for player',aiPlayer.number);
 
         aiPlayer.ai.targetPlayer.currentPosition = {
@@ -11116,8 +11217,8 @@ class App extends Component {
     }
     if (aiPlayer.ai.mission === 'engage') {
 
-      if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y) {
-        console.log('engage target location changed! Updating path for player',aiPlayer.number);
+      if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
+        console.log('engage target location changed! Updating path for player',aiPlayer.number,targetPlayer.dead.state);
 
         aiPlayer.ai.targetPlayer.currentPosition = {
           x: targetPlayer.currentPosition.cell.number.x,
@@ -11413,6 +11514,12 @@ class App extends Component {
             }
           }
 
+          for (const inst of aiPlayer.ai.instructions) {
+            if (inst.keyword === 'attacking') {
+              console.log('ai '+aiPlayer.number+' decides to attack');
+            }
+
+          }
           aiPlayer.ai.instructions = instructions1;
           aiPlayer.ai.currentInstruction = 0;
           // console.log('aiPlayer.instructions',aiPlayer.instructions);
@@ -11543,15 +11650,11 @@ class App extends Component {
           this.easyStar.avoidAdditionalPoint(cell2.number.x, cell2.number.y);
         }
       }
-      // AVOID OTHER AI FINAL POSITION
-      // for (const item of this.additionalAvoidArray) {
-      //   this.easyStar.avoidAdditionalPoint(item.x, item.y);
-      // }
 
 
       this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
         if (path === null) {
-          console.log("Path was not found...player",aiPlayer.number);
+          console.log("Path was not found...for player",aiPlayer.number);
         } else {
           pathSet = path;
         }
@@ -11656,15 +11759,6 @@ class App extends Component {
     // console.log('path',path,'player',aiPlayer);
     // console.log('instructions',instructions,'player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction);
 
-
-    // AVOID OTHER AI FINAL POSITION
-    // if (path && path.length > 0) {
-    //   this.additionalAvoidArray.push({
-    //     player: aiPlayer,
-    //     x: path[path.length-1].x,
-    //     y: path[path.length-1].y,
-    //   })
-    // }
 
 
     this.players[aiPlayer-1].ai.pathArray = path;
@@ -11836,14 +11930,16 @@ class App extends Component {
               }
             break;
             case 'attack':
-            // console.log('plyr',plyr.number,'all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
-              currentInstruction.limit = 1;
-              this.keyPressed[plyr.number-1].attack = true;
-              if (currentInstruction.count < currentInstruction.limit) {
-                currentInstruction.count++;
-              } else if (currentInstruction.count >= currentInstruction.limit) {
-                plyr.ai.currentInstruction++;
-              }
+            if (plyr.attacking.state !== true) {
+              // console.log('plyr',plyr.number,'all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
+                currentInstruction.limit = 1;
+                this.keyPressed[plyr.number-1].attack = true;
+                if (currentInstruction.count < currentInstruction.limit) {
+                  currentInstruction.count++;
+                } else if (currentInstruction.count >= currentInstruction.limit) {
+                  plyr.ai.currentInstruction++;
+                }
+            }
             break;
             case 'long_defend':
               currentInstruction.limit = 25;
