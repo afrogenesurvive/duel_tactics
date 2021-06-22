@@ -1284,6 +1284,7 @@ class App extends Component {
         ]
       }
     };
+    this.aiTarget =  1;
 
     this.boltDeflectAnim = {
       position: {
@@ -9185,11 +9186,25 @@ class App extends Component {
           plyr.action = 'idle'
           // console.log('A player died. Reseting targeting for ai player',plyr.number,'mission',plyr.ai.mission,'primary mission',plyr.ai.plrimaryMission);
         }
-
       }
+
+
+      if (this.playerNumber > 1) {
+        if (player.number === 1) {
+          if (this.players[1].dead.state !== true && this.players[1].falling.state !== true && this.players[1].respawn !== true) {
+            this.aiTarget = 2;
+          }
+        }
+        if (player.number === 2) {
+          if (this.players[0].dead.state !== true && this.players[0].falling.state !== true && this.players[0].respawn !== true) {
+            this.aiTarget = 1;
+          }
+        }
+      }
+      // console.log('this.aiTarget',this.aiTarget);
+
     }
 
-    // this.getTarget(player)
 
     this.players[player.number-1] = player;
 
@@ -10885,7 +10900,7 @@ class App extends Component {
               // },
             ],
             engaging: {
-              state: true,
+              state: false,
             },
             patrolling: {
               state: false,
@@ -11012,22 +11027,32 @@ class App extends Component {
     for (const plyr of this.players) {
       if (plyr.ai.state === true) {
 
+        let fieldItemScan = []
+        for (const cell of this.gridInfo) {
+          if (cell.item.name !== '') {
+            fieldItemScan.push({
+              name: cell.item.name,
+              type: cell.item.type,
+              subType: cell.item.subType,
+              effect: cell.item.effect,
+              location: {x: cell.number.x, y: cell.number.y}
+            })
+          }
+        }
 
         // SET TARGET!!
         // determine who is closer to me
         if (plyr.ai.targetSet !== true) {
           let targetAlive = false;
           let targetPlayer;
-          if ( this.players[0].dead.state !== true && this.players[0].falling.state !== true && plyr.respawn !== true) {
-            targetPlayer = this.players[0];
+
+          targetPlayer = this.players[this.aiTarget-1];
+          if (targetPlayer.dead.state !== true && targetPlayer.falling.state !== true && targetPlayer.respawn !== true) {
             targetAlive = true;
+          } else {
+            targetAlive = false;
           }
-          if ( this.players[0].dead.state === true || this.players[0].falling.state === true && plyr.respawn === true && this.playerNumber > 1) {
-            if (this.players[1].dead.state !== true && this.players[1].falling.state !== true && plyr.respawn !== true) {
-              targetPlayer = this.players[1];
-              targetAlive = true;
-            }
-          }
+
 
           if (targetAlive === true) {
             plyr.ai.targetPlayer = {
@@ -11050,6 +11075,7 @@ class App extends Component {
             };
             plyr.ai.targetSet = true
             console.log('player',plyr.number,'setting target...player',targetPlayer.number);
+            // this.getTarget(plyr)
           } else {
             // console.log('no targets availible');
           }
@@ -11075,8 +11101,8 @@ class App extends Component {
 
             if (plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x) {
               if (
-                plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y + 2 ||
-                plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y - 2
+                plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y + 3 ||
+                plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y - 3
               ) {
                 // console.log('in melee attack range: spear');
                 targetInRange = true;
@@ -11652,7 +11678,8 @@ class App extends Component {
         }
       }
 
-      console.log('aiPos.x, aiPos.y, targetPos.x, targetPos.y,',aiPos.x, aiPos.y, targetPos.x, targetPos.y,'targetPlayer',targetPlayer.number,'pathArray',this.pathArray,'mission',aiPlayer.ai.mission);
+      // console.log('aiPos.x, aiPos.y, targetPos.x, targetPos.y,',aiPos.x, aiPos.y, targetPos.x, targetPos.y);
+      // console.log('x',aiPlayer.ai);
       this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
         if (path === null) {
           console.log("Path was not found...for player",aiPlayer.number);
