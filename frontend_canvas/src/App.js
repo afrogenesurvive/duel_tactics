@@ -362,72 +362,72 @@ class App extends Component {
       },
     ];
     this.initItemList = [
-      {
-        name: 'moveSpeedUp',
-        type: 'item',
-        effect: '',
-      },
+      // {
+      //   name: 'moveSpeedUp',
+      //   type: 'item',
+      //   effect: '',
+      // },
       // {
       //   name: 'moveSpeedDown',
       //   type: 'item',
       //   effect: '',
       // },
-      {
-        name: 'ammo5',
-        type: 'item',
-        effect: '',
-      },
+      // {
+      //   name: 'ammo5',
+      //   type: 'item',
+      //   effect: '',
+      // },
       // {
       //   name: 'ammo10',
       //   type: 'item',
       //   effect: '',
       // },
-      {
-        name: 'hpUp',
-        type: 'item',
-        effect: '',
-      },
+      // {
+      //   name: 'hpUp',
+      //   type: 'item',
+      //   effect: '',
+      // },
       // {
       //   name: 'hpDown',
       //   type: 'item',
       //   effect: '',
       // },
-      {
-        name: 'spear1',
-        type: 'weapon',
-        subType: 'spear',
-        effect: '',
-      },
+      // {
+      //   name: 'spear1',
+      //   type: 'weapon',
+      //   subType: 'spear',
+      //   effect: '',
+      // },
       // {
       //   name: 'sword2',
       //   type: 'weapon',
       //   subType: 'sword',
       //   effect: '',
       // },
-      {
-        name: 'crossbow1',
-        type: 'weapon',
-        subType: 'crossbow',
-        effect: 'ammo+10',
-      },
-      {
-        name: 'ghostMail',
-        type: 'armor',
-        subType: 'mail',
-        effect: 'snghit-5',
-      },
-      {
-        name: 'speedGreaves',
-        type: 'armor',
-        subType: 'greaves',
-        effect: 'speedUp',
-      },
-      {
-        name: 'ironPlate',
-        type: 'armor',
-        subType: 'mail',
-        effect: 'hpUp',
-      },
+      // {
+      //   name: 'crossbow1',
+      //   type: 'weapon',
+      //   subType: 'crossbow',
+      //   effect: 'ammo+10',
+      // },
+      // {
+      //   name: 'ghostMail',
+      //   type: 'armor',
+      //   subType: 'mail',
+      //   effect: 'snghit-5',
+      // },
+      // {
+      //   name: 'speedGreaves',
+      //   type: 'armor',
+      //   subType: 'greaves',
+      //   effect: 'speedUp',
+      // },
+      // {
+      //   name: 'ironPlate',
+      //   type: 'armor',
+      //   subType: 'mail',
+      //   effect: 'hpUp',
+      // },
       // {
       //   name: 'helmet1',
       //   type: 'armor',
@@ -442,7 +442,7 @@ class App extends Component {
       // },
     ];
     this.customItemPlacement = {
-      state: true,
+      state: false,
       cells: [
         {x:0 ,y:0 },
         {x:1 ,y:0 },
@@ -646,7 +646,7 @@ class App extends Component {
         respawn: false,
         points: 0,
         speed: {
-          move: .1,
+          move: .125,
           range: [.05,.1,.125,.2]
         },
         terrainMoveSpeed: {
@@ -660,9 +660,9 @@ class App extends Component {
           effect: '',
         },
         currentArmor: {
-          name: '',
-          type: '',
-          effect: '',
+          name: 'speedGreaves',
+          type: 'greaves',
+          effect: 'speedUp',
         },
         items: {
           weaponIndex: 0,
@@ -674,7 +674,13 @@ class App extends Component {
               effect: '',
             }
           ],
-          armor: [],
+          armor: [
+            {
+              name: 'speedGreaves',
+              type: 'greaves',
+              effect: 'speedUp',
+            }
+          ],
           ammo: 0,
         },
         inventorySize: 4,
@@ -775,6 +781,7 @@ class App extends Component {
           },
           instructions: [],
           currentInstruction: 0,
+          resetInstructions: false,
           patrolling: {
             state: false,
             area: [],
@@ -1115,6 +1122,7 @@ class App extends Component {
           },
           instructions: [],
           currentInstruction: 0,
+          resetInstructions: false,
           patrolling: {
             state: false,
             area: [],
@@ -9161,6 +9169,7 @@ class App extends Component {
           plyr.ai.prevMission = '';
           plyr.ai.currentObjective = '';
           plyr.ai.currentInstruction = 0;
+          plyr.ai.resetInstructions = false;
           plyr.ai.targetSet = false;
           plyr.ai.targetAcquired = false;
           plyr.ai.pathArray = [];
@@ -10407,7 +10416,7 @@ class App extends Component {
             let sx = 0 * sWidth;
 
 
-            player.speed.move = .1;
+            // player.speed.move = .1;
             player.dead.state = false;
             player.dead.count = 0;
 
@@ -10527,6 +10536,7 @@ class App extends Component {
       if (checkCell === true) {
 
         // console.log('adding ai. Player #',newPlayerNumber,' @',cell.x,cell.y);
+        cell = {x:0,y:0};
 
         let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y)
         let newPlayer = {
@@ -10826,6 +10836,7 @@ class App extends Component {
             prevMission: '',
             currentObjective: '',
             currentInstruction: 0,
+            resetInstructions: false,
             targetSet: false,
             targetAcquired: false,
             pathArray: [],
@@ -11027,6 +11038,18 @@ class App extends Component {
     for (const plyr of this.players) {
       if (plyr.ai.state === true) {
 
+        if (plyr.ai.resetInstructions === true) {
+
+          plyr.currentInstruction = 0;
+          plyr.instructions = [];
+          plyr.targetAcquired = false;
+
+          plyr.ai.resetInstructions = false;
+          console.log('true dat',plyr.instructions,plyr.targetAcquired,plyr.currentInstruction);
+          console.log('who dat',plyr.ai.resetInstructions);
+        }
+
+
         let fieldItemScan = []
         for (const cell of this.gridInfo) {
           if (cell.item.name !== '') {
@@ -11158,21 +11181,17 @@ class App extends Component {
         }
 
 
-
-
         if (targetInRange === true) {
-
           plyr.ai.prevMission = plyr.ai.mission;
           plyr.ai.mission = 'engage';
         }
 
         if (plyr.ai.mission === 'engage' && targetInRange !== true) {
-
-          plyr.ai.mission = plyr.ai.primayMission;
-          if (plyr.ai.primayMission === 'defend') {
+          plyr.ai.mission = plyr.ai.primaryMission;
+          if (plyr.ai.primaryMission === 'defend') {
             plyr.ai.defending.state = true;
           }
-          if (plyr.ai.primayMission === 'patrol') {
+          if (plyr.ai.primaryMission === 'patrol') {
             plyr.ai.patrolling.state = true;
           }
         }
@@ -11183,7 +11202,9 @@ class App extends Component {
         // }
 
 
+
         this.aiDecide(plyr)
+
       }
     }
 
@@ -11215,8 +11236,10 @@ class App extends Component {
         getPath = true;
         aiPlayer.ai.targetAcquired = true;
         aiPlayer.ai.currentInstruction = 0;
+        console.log('cc');
       }
       if (aiPlayer.ai.targetSet === true && aiPlayer.ai.targetAcquired !== true) {
+        console.log('dd');
         getPath = true;
         aiPlayer.ai.targetAcquired = true;
       }
@@ -11243,9 +11266,10 @@ class App extends Component {
 
     }
     if (aiPlayer.ai.mission === 'engage') {
+      // console.log('engaging');
 
       if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
-        console.log('engage target location changed! Updating path for player',aiPlayer.number,targetPlayer.dead.state);
+        // console.log('engage target location changed! Updating path for player',aiPlayer.number,targetPlayer.dead.state);
 
         aiPlayer.ai.targetPlayer.currentPosition = {
           x: targetPlayer.currentPosition.cell.number.x,
@@ -11421,13 +11445,13 @@ class App extends Component {
           // )
 
           if (targetPlayer.defending.state !== true) {
-            instructions1.push(
-              {
-                keyword: 'attack',
-                count: 0,
-                limit: 1,
-              },
-            )
+            // instructions1.push(
+            //   {
+            //     keyword: 'attack',
+            //     count: 0,
+            //     limit: 1,
+            //   },
+            // )
           }
           if (targetPlayer.defendDecay.count > targetPlayer.defendDecay.limit - 10) {
             instructions1.push(
@@ -11661,7 +11685,7 @@ class App extends Component {
 
       for (const plyr of this.players) {
         if (plyr.dead.state !== true && plyr.falling.state !== true && plyr.respawn !== true && plyr.number !== aiPlayer.number && plyr.number !== targetPlayer.number) {
-          console.log('avoid plyr',plyr.number);
+          // console.log('avoid plyr',plyr.number);
           this.easyStar.avoidAdditionalPoint(plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
         }
       }
@@ -11678,8 +11702,7 @@ class App extends Component {
         }
       }
 
-      // console.log('aiPos.x, aiPos.y, targetPos.x, targetPos.y,',aiPos.x, aiPos.y, targetPos.x, targetPos.y);
-      // console.log('x',aiPlayer.ai);
+
       this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
         if (path === null) {
           console.log("Path was not found...for player",aiPlayer.number);
@@ -11787,8 +11810,6 @@ class App extends Component {
     // console.log('path',path,'player',aiPlayer);
     // console.log('instructions',instructions,'player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction);
 
-
-
     this.players[aiPlayer-1].ai.pathArray = path;
     this.players[aiPlayer-1].ai.instructions = instructions;
     this.players[aiPlayer-1].ai.currentInstruction = 0;
@@ -11801,7 +11822,18 @@ class App extends Component {
         let currentInstruction = plyr.ai.instructions[plyr.ai.currentInstruction];
 
         if (currentInstruction) {
-          // console.log('all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
+          let targetCell = this.gridInfo.find(elem => elem.number.x === plyr.target.cell.number.x && elem.number.y === plyr.target.cell.number.y)
+          let playerCell = this.gridInfo.find(elem => elem.number.x === plyr.currentPosition.cell.number.x && elem.number.y === plyr.currentPosition.cell.number.y)
+
+          let pathIndx = plyr.ai.pathArray.findIndex(elem => elem.x === plyr.currentPosition.cell.number.x && elem.y === plyr.currentPosition.cell.number.y);
+          let currentPathStep = plyr.ai.pathArray[pathIndx]
+          let nextPathStep = plyr.ai.pathArray[pathIndx+1]
+          let nextPathStepCell = undefined;
+          if (nextPathStep) {
+            nextPathStepCell = this.gridInfo.find(elem => elem.number.x === nextPathStep.x && elem.number.y === nextPathStep.y)
+          }
+
+
           this.keyPressed[plyr.number-1] = {
             north: false,
             south: false,
@@ -11837,74 +11869,166 @@ class App extends Component {
             break;
             case 'move_north':
               if (plyr.moving.state !== true && !plyr.turning.state) {
-                // console.log('plyr',plyr.number,'all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
-                // currentInstruction.limit = 1;
-                this.keyPressed[plyr.number-1].north = true;
-                this.players[plyr.number-1].turnCheckerDirection = 'north';
-                // plyr.ai.currentInstruction++;
-                if (currentInstruction.limit === 1) {
-                  plyr.ai.currentInstruction++;
-                } else {
-                  if (currentInstruction.count < currentInstruction.limit) {
-                    currentInstruction.count++;
-                  } else if (currentInstruction.count >= currentInstruction.limit) {
-                    plyr.ai.currentInstruction++;
+
+                let inDanger = false;
+                if (plyr.direction === 'north') {
+                  if (!targetCell) {
+                    // console.log('heading off the edge');
+                    inDanger = true;
+                    plyr.ai.resetInstructions = true;
+                    console.log('true dat22',plyr.instructions,plyr.targetAcquired,plyr.currentInstruction);
+                  } else {
+                    if (targetCell.void.state === true || targetCell.terrain.type === 'deep' || targetCell.terrain.type === 'hazard') {
+                      // console.log('heading for mid-grid danger');
+                      inDanger = true;
+                      plyr.ai.resetInstructions = true;
+                      console.log('true dat22',plyr.instructions,plyr.targetAcquired,plyr.currentInstruction);
+                    }
                   }
                 }
+
+                if (inDanger === false) {
+                  // currentInstruction.limit = 1;
+                  this.keyPressed[plyr.number-1].north = true;
+                  this.players[plyr.number-1].turnCheckerDirection = 'north';
+                  // plyr.ai.currentInstruction++;
+                  if (currentInstruction.limit === 1) {
+                    plyr.ai.currentInstruction++;
+                  } else {
+                    if (currentInstruction.count < currentInstruction.limit) {
+                      currentInstruction.count++;
+                    } else if (currentInstruction.count >= currentInstruction.limit) {
+                      plyr.ai.currentInstruction++;
+                    }
+                  }
+
+                } else {
+
+                }
+
               }
             break;
             case 'move_south':
               if (plyr.moving.state !== true && !plyr.turning.state) {
-                // console.log('plyr',plyr.number,'all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
-                // currentInstruction.limit = 1;
-                this.keyPressed[plyr.number-1].south = true;
-                this.players[plyr.number-1].turnCheckerDirection = 'south';
-                // plyr.ai.currentInstruction++;
-                if (currentInstruction.limit === 1) {
-                  plyr.ai.currentInstruction++;
-                } else {
-                  if (currentInstruction.count < currentInstruction.limit) {
-                    currentInstruction.count++;
-                  } else if (currentInstruction.count >= currentInstruction.limit) {
-                    plyr.ai.currentInstruction++;
+
+                let inDanger = false;
+                if (plyr.direction === 'south') {
+                  if (!targetCell) {
+                    // console.log('heading off the edge');
+                    inDanger = true;
+                    plyr.ai.resetInstructions = true;
+                    console.log('true dat22',plyr.instructions,plyr.targetAcquired,plyr.currentInstruction);
+                  } else {
+                    if (targetCell.void.state === true || targetCell.terrain.type === 'deep' || targetCell.terrain.type === 'hazard') {
+                      // console.log('heading for mid-grid danger');
+                      inDanger = true;
+                      plyr.ai.resetInstructions = true;
+                      console.log('true dat22',plyr.instructions,plyr.targetAcquired,plyr.currentInstruction);
+                    }
                   }
                 }
+
+                if (inDanger === false) {
+                  // currentInstruction.limit = 1;
+                  this.keyPressed[plyr.number-1].south = true;
+                  this.players[plyr.number-1].turnCheckerDirection = 'south';
+                  // plyr.ai.currentInstruction++;
+                  if (currentInstruction.limit === 1) {
+                    plyr.ai.currentInstruction++;
+                  } else {
+                    if (currentInstruction.count < currentInstruction.limit) {
+                      currentInstruction.count++;
+                    } else if (currentInstruction.count >= currentInstruction.limit) {
+                      plyr.ai.currentInstruction++;
+                    }
+                  }
+
+                } else {
+
+                }
+
               }
             break;
             case 'move_east':
               if (plyr.moving.state !== true && !plyr.turning.state) {
-                // console.log('plyr',plyr.number,'all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
-                // currentInstruction.limit = 1;
-                this.keyPressed[plyr.number-1].east = true;
-                this.players[plyr.number-1].turnCheckerDirection = 'east';
-                // plyr.ai.currentInstruction++;
-                if (currentInstruction.limit === 1) {
-                  plyr.ai.currentInstruction++;
-                } else {
-                  if (currentInstruction.count < currentInstruction.limit) {
-                    currentInstruction.count++;
-                  } else if (currentInstruction.count >= currentInstruction.limit) {
-                    plyr.ai.currentInstruction++;
+
+                let inDanger = false;
+                if (plyr.direction === 'east') {
+                  if (!targetCell) {
+                    // console.log('heading off the edge');
+                    inDanger = true;
+                    plyr.ai.resetInstructions = true;
+                    console.log('true dat22',plyr.instructions,plyr.targetAcquired,plyr.currentInstruction);
+                  } else {
+                    if (targetCell.void.state === true || targetCell.terrain.type === 'deep' || targetCell.terrain.type === 'hazard') {
+                      // console.log('heading for mid-grid danger');
+                      inDanger = true;
+                      plyr.ai.resetInstructions = true;
+                      console.log('true dat22',plyr.instructions,plyr.targetAcquired,plyr.currentInstruction);
+                    }
                   }
                 }
+
+                if (inDanger === false) {
+                  // currentInstruction.limit = 1;
+                  this.keyPressed[plyr.number-1].east = true;
+                  this.players[plyr.number-1].turnCheckerDirection = 'east';
+                  // plyr.ai.currentInstruction++;
+                  if (currentInstruction.limit === 1) {
+                    plyr.ai.currentInstruction++;
+                  } else {
+                    if (currentInstruction.count < currentInstruction.limit) {
+                      currentInstruction.count++;
+                    } else if (currentInstruction.count >= currentInstruction.limit) {
+                      plyr.ai.currentInstruction++;
+                    }
+                  }
+
+                } else {
+
+                }
+
               }
             break;
             case 'move_west':
               if (plyr.moving.state !== true && !plyr.turning.state) {
-                // console.log('plyr',plyr.number,'all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
-                // currentInstruction.limit = 1;
-                this.keyPressed[plyr.number-1].west = true;
-                this.players[plyr.number-1].turnCheckerDirection = 'west';
-                // plyr.ai.currentInstruction++;
-                if (currentInstruction.limit === 1) {
-                  plyr.ai.currentInstruction++;
-                } else {
-                  if (currentInstruction.count < currentInstruction.limit) {
-                    currentInstruction.count++;
-                  } else if (currentInstruction.count >= currentInstruction.limit) {
-                    plyr.ai.currentInstruction++;
+
+                let inDanger = false;
+                if (plyr.direction === 'west') {
+                  if (!targetCell) {
+                    // console.log('heading off the edge');
+                    inDanger = true;
+                    plyr.ai.resetInstructions = true;
+                    console.log('true dat22',plyr.instructions,plyr.targetAcquired,plyr.currentInstruction);
+                  } else {
+                    if (targetCell.void.state === true || targetCell.terrain.type === 'deep' || targetCell.terrain.type === 'hazard') {
+                      // console.log('heading for mid-grid danger');
+                      inDanger = true;
+                      plyr.ai.resetInstructions = true;
+                      console.log('true dat22',plyr.instructions,plyr.targetAcquired,plyr.currentInstruction);
+                    }
                   }
                 }
+
+                if (inDanger === false) {
+                  // currentInstruction.limit = 1;
+                  this.keyPressed[plyr.number-1].west = true;
+                  this.players[plyr.number-1].turnCheckerDirection = 'west';
+                  // plyr.ai.currentInstruction++;
+                  if (currentInstruction.limit === 1) {
+                    plyr.ai.currentInstruction++;
+                  } else {
+                    if (currentInstruction.count < currentInstruction.limit) {
+                      currentInstruction.count++;
+                    } else if (currentInstruction.count >= currentInstruction.limit) {
+                      plyr.ai.currentInstruction++;
+                    }
+                  }
+
+                } else {
+
+                }
+
               }
             break;
             case 'strafe_north':
