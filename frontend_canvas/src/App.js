@@ -11040,13 +11040,6 @@ class App extends Component {
 
         if (plyr.ai.resetInstructions === true) {
 
-          plyr.currentInstruction = 0;
-          plyr.instructions = [];
-          plyr.targetAcquired = false;
-
-          plyr.ai.resetInstructions = false;
-          console.log('true dat',plyr.instructions,plyr.targetAcquired,plyr.currentInstruction);
-          console.log('who dat',plyr.ai.resetInstructions);
         }
 
 
@@ -11062,6 +11055,7 @@ class App extends Component {
             })
           }
         }
+
 
         // SET TARGET!!
         // determine who is closer to me
@@ -11236,10 +11230,8 @@ class App extends Component {
         getPath = true;
         aiPlayer.ai.targetAcquired = true;
         aiPlayer.ai.currentInstruction = 0;
-        console.log('cc');
       }
       if (aiPlayer.ai.targetSet === true && aiPlayer.ai.targetAcquired !== true) {
-        console.log('dd');
         getPath = true;
         aiPlayer.ai.targetAcquired = true;
       }
@@ -11725,6 +11717,7 @@ class App extends Component {
 
   }
   aiParsePath = (path,aiPlayer) => {
+    // console.log('parsing path');
 
     let instructions = [];
     let init = true;
@@ -11875,14 +11868,10 @@ class App extends Component {
                   if (!targetCell) {
                     // console.log('heading off the edge');
                     inDanger = true;
-                    plyr.ai.resetInstructions = true;
-                    console.log('true dat22',plyr.instructions,plyr.targetAcquired,plyr.currentInstruction);
                   } else {
                     if (targetCell.void.state === true || targetCell.terrain.type === 'deep' || targetCell.terrain.type === 'hazard') {
                       // console.log('heading for mid-grid danger');
                       inDanger = true;
-                      plyr.ai.resetInstructions = true;
-                      console.log('true dat22',plyr.instructions,plyr.targetAcquired,plyr.currentInstruction);
                     }
                   }
                 }
@@ -11903,7 +11892,8 @@ class App extends Component {
                   }
 
                 } else {
-
+                  // console.log('danger');
+                  plyr.ai.currentInstruction++;
                 }
 
               }
@@ -11916,14 +11906,10 @@ class App extends Component {
                   if (!targetCell) {
                     // console.log('heading off the edge');
                     inDanger = true;
-                    plyr.ai.resetInstructions = true;
-                    console.log('true dat22',plyr.instructions,plyr.targetAcquired,plyr.currentInstruction);
                   } else {
                     if (targetCell.void.state === true || targetCell.terrain.type === 'deep' || targetCell.terrain.type === 'hazard') {
                       // console.log('heading for mid-grid danger');
                       inDanger = true;
-                      plyr.ai.resetInstructions = true;
-                      console.log('true dat22',plyr.instructions,plyr.targetAcquired,plyr.currentInstruction);
                     }
                   }
                 }
@@ -11944,7 +11930,8 @@ class App extends Component {
                   }
 
                 } else {
-
+                  // console.log('danger');
+                  plyr.ai.currentInstruction++;
                 }
 
               }
@@ -11957,14 +11944,10 @@ class App extends Component {
                   if (!targetCell) {
                     // console.log('heading off the edge');
                     inDanger = true;
-                    plyr.ai.resetInstructions = true;
-                    console.log('true dat22',plyr.instructions,plyr.targetAcquired,plyr.currentInstruction);
                   } else {
                     if (targetCell.void.state === true || targetCell.terrain.type === 'deep' || targetCell.terrain.type === 'hazard') {
                       // console.log('heading for mid-grid danger');
                       inDanger = true;
-                      plyr.ai.resetInstructions = true;
-                      console.log('true dat22',plyr.instructions,plyr.targetAcquired,plyr.currentInstruction);
                     }
                   }
                 }
@@ -11985,7 +11968,8 @@ class App extends Component {
                   }
 
                 } else {
-
+                  // console.log('danger');
+                  plyr.ai.currentInstruction++;
                 }
 
               }
@@ -11998,14 +11982,10 @@ class App extends Component {
                   if (!targetCell) {
                     // console.log('heading off the edge');
                     inDanger = true;
-                    plyr.ai.resetInstructions = true;
-                    console.log('true dat22',plyr.instructions,plyr.targetAcquired,plyr.currentInstruction);
                   } else {
                     if (targetCell.void.state === true || targetCell.terrain.type === 'deep' || targetCell.terrain.type === 'hazard') {
                       // console.log('heading for mid-grid danger');
                       inDanger = true;
-                      plyr.ai.resetInstructions = true;
-                      console.log('true dat22',plyr.instructions,plyr.targetAcquired,plyr.currentInstruction);
                     }
                   }
                 }
@@ -12026,7 +12006,8 @@ class App extends Component {
                   }
 
                 } else {
-
+                  // console.log('danger');
+                  plyr.ai.currentInstruction++;
                 }
 
               }
