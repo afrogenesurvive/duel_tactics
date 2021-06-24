@@ -204,10 +204,10 @@ class App extends Component {
     };
     this.levelData9 = {
       row0: ['x00x','x01x','x02x','x03x','x04x','x05g','x06g','x07h','x08f','x09d'],
-      row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18f','x19d'],
+      row1: ['x10a','x11a','x12a','x13a','x14x','x15x','x16x','x17x','x18f','x19d'],
       row2: ['x20x','x21a','x22a','x23a','x24x','x25x','x26x','x27x','x28d','x29d'],
-      row3: ['x30x','x31a','x32a','x33a','x34x','x35x','x36x','x37x','x38d','x39d'],
-      row4: ['x40j','x41j','x42b','x43j','x44j','x45b','x46j','x47j','x48j','x49d'],
+      row3: ['x30a','x31a','x32b','x33j','x34j','x35b','x36j','x37j','x38j','x39d'],
+      row4: ['x40j','x41j','x42b','x43b','x44b','x45b','x46j','x47j','x48j','x49d'],
       row5: ['x50j','x51j','x52b','x53j','x54j','x55b','x56j','x57j','x58j','x59d'],
       row6: ['x60x','x61x','x62x','x63i','x64x','x65x','x66x','x67x','x68f','x69f'],
       row7: ['x70x','x71x','x72x','x73i','x74x','x75x','x76x','x77x','x78f','x79f'],
@@ -462,8 +462,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 7,
-              y: 0,
+              x: 8,
+              y: 2,
             },
             center: {
               x: 0,
@@ -1297,7 +1297,11 @@ class App extends Component {
       state: false,
       state2: false,
       player: 1,
+      count: 0,
+      limit: 25,
     };
+    this.allPlayersDead = false;
+
 
     this.boltDeflectAnim = {
       position: {
@@ -1333,7 +1337,6 @@ class App extends Component {
     this.easyStar = undefined;
     this.getPath = false;
 
-    this.additionalAvoidArray = [];
 
 
   }
@@ -3383,7 +3386,7 @@ class App extends Component {
                   // BACK ATTACK CHECK!
                   let backAttack = false;
                   if (this.players.[player.target.occupant.player-1].direction === player.direction) {
-                    console.log('back attack!!');
+                    // console.log('back attack!!');
                     backAttack = true;
                   }
 
@@ -3635,11 +3638,11 @@ class App extends Component {
 
                   // ATTACKER PUSHBACK DEFLECT!!
 
-                  // let shouldDeflectAttacker = 2;
+                  let shouldDeflectAttacker = 1;
                   // let shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
-                  let shouldDeflectAttacker = this.rnJesus(1,2);
-                  // let shouldDeflectPushBack = 2;
-                  let shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack);
+                  // let shouldDeflectAttacker = this.rnJesus(1,2);
+                  let shouldDeflectPushBack = 1;
+                  // let shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack);
                   if (shouldDeflectPushBack === 1) {
                     let pushBackDirection;
                     switch(player.direction) {
@@ -3985,6 +3988,14 @@ class App extends Component {
           }
 
 
+        }
+
+
+        if (player.ai.state === true && player.success.deflected.state === true) {
+          console.log('ai delfected mission', player.ai.mission);
+          console.log('ai delfected instructions', player.ai.instructions, player.ai.currentInstruction);
+          console.log('ai delfected targetSet', player.ai.targetSet);
+          console.log('ai delfected targetAcquired', player.ai.targetAcquired);
         }
 
 
@@ -9172,11 +9183,9 @@ class App extends Component {
 
     if (player.ai.state !== true) {
 
-      this.resetAiTarget = {
-        state: true,
-        state2: false,
-        player: player.number
-      };
+        this.resetAiTarget.state = true;
+        this.resetAiTarget.state2 = false;
+        this.resetAiTarget.player = player.number;
 
     }
 
@@ -9279,7 +9288,7 @@ class App extends Component {
       // player.currentArmor = {};
 
     }
-
+    this.aiTarget = 1;
 
     let plyrz = this.players
     for (const plyr of plyrz) {
@@ -9869,37 +9878,39 @@ class App extends Component {
     for (const [key, value] of Object.entries(this.['levelData'+this.gridWidth])) {
       let row = [];
       for (const elem3 of value) {
-        let terrainInfo2 = elem3.length-1;
-        let cell = this.gridInfo.find(elem2 => elem2.levelData === elem3)
+        // let terrainInfo2 = elem3.length-1;
+        // let cell = this.gridInfo.find(elem2 => elem2.levelData === elem3)
+        //
+        // if (cell) {
+        //   let playerCell = false;
+        //   for (const plyr of this.players) {
+        //     if (
+        //       plyr.currentPosition.cell.number.x === cell.number.x &&
+        //       plyr.currentPosition.cell.number.y === cell.number.y
+        //     ) {
+        //       playerCell = true;
+        //     }
+        //   }
+        //   if (playerCell === true) {
+        //     row.push(0)
+        //     // row.push(1)
+        //   } else {
+        //     if (
+        //       elem3.charAt(terrainInfo2) === 'j' ||
+        //       elem3.charAt(terrainInfo2) === 'h' ||
+        //       elem3.charAt(terrainInfo2) === 'i' ||
+        //       elem3.charAt(0) !== 'x' ||
+        //       cell.void.state === true
+        //     ) {
+        //       row.push(1)
+        //     } else {
+        //       row.push(0)
+        //     }
+        //     // row.push(0)
+        //   }
+        // }
 
-        if (cell) {
-          let playerCell = false;
-          for (const plyr of this.players) {
-            if (
-              plyr.currentPosition.cell.number.x === cell.number.x &&
-              plyr.currentPosition.cell.number.y === cell.number.y
-            ) {
-              playerCell = true;
-            }
-          }
-          if (playerCell === true) {
-            row.push(0)
-            // row.push(1)
-          } else {
-            // if (
-            //   elem3.charAt(terrainInfo2) === 'j' ||
-            //   elem3.charAt(terrainInfo2) === 'h' ||
-            //   elem3.charAt(terrainInfo2) === 'i' ||
-            //   elem3.charAt(0) !== 'x' ||
-            //   cell.void.state === true
-            // ) {
-            //   row.push(1)
-            // } else {
-            //   row.push(0)
-            // }
-            row.push(0)
-          }
-        }
+        row.push(0)
       }
       pathArray.push(row)
     }
@@ -10502,7 +10513,7 @@ class App extends Component {
       if (checkCell === true) {
 
         // console.log('adding ai. Player #',newPlayerNumber,' @',cell.x,cell.y);
-        cell = {x:0,y:0};
+        // cell = {x:0,y:0};
 
         let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y)
         let newPlayer = {
@@ -11001,56 +11012,75 @@ class App extends Component {
   aiEvaluate = () => {
     // console.log('aiEvaluate');
 
-    // if (this.resetAiTarget.state === true) {
-    //
-    //   for (const plyr of this.players) {
-    //     if (plyr.ai.state === true && plyr.ai.targetSet === true && plyr.ai.targetPlayer.number === this.resetAiTarget.player) {
-    //       this.getTarget(plyr);
-    //       this.updatePathArray();
-    //       plyr.ai.targetSet = false;
-    //       plyr.ai.targetAcquired = false;
-    //
-    //       plyr.ai.mission = 'pursue';
-    //       plyr.ai.currentInstruction = 0;
-    //       plyr.ai.pathArray = [];
-    //       plyr.ai.targetPlayer = {
-    //         number: undefined,
-    //         currentPosition: {
-    //           x: undefined,
-    //           y: undefined,
-    //         },
-    //         target: {
-    //           number1: {
-    //             x: undefined,
-    //             y: undefined,
-    //           },
-    //           number2: {
-    //             x: undefined,
-    //             y: undefined,
-    //           },
-    //         },
-    //         action: '',
-    //       };
-    //       plyr.ai.instructions = [];
-    //     }
-    //   }
-    //
-    //   if (this.playerNumber > 1) {
-    //
-    //     if (this.resetAiTarget.player === 1) {
-    //       if (this.players[1].dead.state !== true && this.players[1].falling.state !== true && this.players[1].respawn !== true) {
-    //         this.aiTarget = 2;
-    //       }
-    //     }
-    //     if (this.resetAiTarget.player === 2) {
-    //       if (this.players[0].dead.state !== true && this.players[0].falling.state !== true && this.players[0].respawn !== true) {
-    //         this.aiTarget = 1;
-    //       }
-    //     }
-    //   }
-    //   this.resetAiTarget.state2 = true;
-    //   this.resetAiTarget.state = false;
-    // }
+
+    if (this.resetAiTarget.state === true) {
+
+      for (const plyr of this.players) {
+        if (plyr.ai.state === true && plyr.ai.targetSet === true && plyr.ai.targetPlayer.number === this.resetAiTarget.player) {
+          plyr.ai.targetSet = false;
+          plyr.ai.targetAcquired = false;
+
+          plyr.ai.mission = 'pursue';
+          plyr.ai.currentInstruction = 0;
+          plyr.ai.pathArray = [];
+          plyr.ai.targetPlayer = {
+            number: undefined,
+            currentPosition: {
+              x: undefined,
+              y: undefined,
+            },
+            target: {
+              number1: {
+                x: undefined,
+                y: undefined,
+              },
+              number2: {
+                x: undefined,
+                y: undefined,
+              },
+            },
+            action: '',
+          };
+          plyr.ai.instructions = [];
+        }
+      }
+
+      if (this.playerNumber > 1) {
+
+        if (this.resetAiTarget.player === 1) {
+          if (this.players[1].dead.state !== true && this.players[1].falling.state !== true && this.players[1].respawn !== true) {
+            this.aiTarget = 2;
+            this.resetAiTarget.player = 0;
+          } else {
+            this.allPlayersDead = true;
+          }
+        }
+        if (this.resetAiTarget.player === 2) {
+          if (this.players[0].dead.state !== true && this.players[0].falling.state !== true && this.players[0].respawn !== true) {
+            this.aiTarget = 1;
+            this.resetAiTarget.player = 0;
+          } else {
+            this.allPlayersDead = true;
+          }
+        }
+
+
+
+
+      }
+      // this.resetAiTarget.state2 = true;
+      this.resetAiTarget.state = false;
+
+    }
+    if (this.allPlayersDead === true) {
+      for (const plyr2 of this.players) {
+        if (plyr2.dead.state !== true && plyr2.respawn !== true && plyr2.ai.state !== true) {
+          this.aiTarget = plyr2.number;
+          this.allPlayersDead = false;
+          this.resetAiTarget.player = 0;
+        }
+      }
+    }
 
 
     for (const plyr of this.players) {
@@ -11072,7 +11102,7 @@ class App extends Component {
 
 
         if (plyr.ai.resetInstructions === true ) {
-          console.log('reset instructions','set',plyr.ai.targetSet,'acquired',plyr.ai.targetAcquired,'mission',plyr.ai.mission);
+          // console.log('reset instructions','set',plyr.ai.targetSet,'acquired',plyr.ai.targetAcquired,'mission',plyr.ai.mission);
           plyr.ai.currentInstruction = 0;
           plyr.ai.instructions = [];
           plyr.ai.targetAcquired = false;
@@ -11122,6 +11152,7 @@ class App extends Component {
           }
 
         }
+
 
 
         // TARGET AQUISITION & RANGE FINDING!!
@@ -11217,7 +11248,6 @@ class App extends Component {
         //   plyr.ai.defending.state = false;
         // }
 
-
         this.aiDecide(plyr)
 
       }
@@ -11235,18 +11265,6 @@ class App extends Component {
     let currentTargetPos;
     if (aiPlayer.ai.targetSet === true) {
       currentTargetPos = targetPlayer.currentPosition.cell.number;
-    }
-
-
-    if (this.resetAiTarget.state2 === true) {
-      console.log('this.resetAiTarget.state2');
-      // if (currentTargetPos.x < this.gridWidth) {
-      //   prevTargetPos = {
-      //     x: currentTargetPos.x+1,
-      //     y: currentTargetPos.y
-      //   }
-      //   this.resetAiTarget.state2 = false;
-      // }
     }
 
 
@@ -11325,6 +11343,7 @@ class App extends Component {
           aiPlayer.direction = 'east';
         }
       }
+
       this.getTarget(aiPlayer);
 
       if (aiPlayer.currentWeapon.type === 'bow') {
@@ -11471,15 +11490,20 @@ class App extends Component {
           // )
 
 
-          // if (targetPlayer.defending.state !== true) {
-          //   instructions1.push(
-          //     {
-          //       keyword: 'attack',
-          //       count: 0,
-          //       limit: 1,
-          //     },
-          //   )
-          // }
+          if (targetPlayer.defending.state !== true) {
+            instructions1.push(
+              {
+                keyword: 'attack',
+                count: 0,
+                limit: 1,
+              },
+              // {
+              //   keyword: 'short_wait',
+              //   count: 0,
+              //   limit: 1,
+              // },
+            )
+          }
 
           if (targetPlayer.defendDecay.count > targetPlayer.defendDecay.limit - 10) {
             instructions1.push(
@@ -11603,6 +11627,10 @@ class App extends Component {
           aiPlayer.ai.currentInstruction = 0;
           // console.log('aiPlayer.instructions',aiPlayer.ai.instructions);
       }
+      if (aiPlayer.currentWeapon.type === '') {
+        console.log('unarmed');
+      }
+
 
     }
     if (aiPlayer.ai.mission === 'defend') {
@@ -11671,26 +11699,26 @@ class App extends Component {
 
     }
 
+    let cancelPath = false
 
     // SET PATH !!
     let pathSet = [];
     if (getPath === true && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
-      console.log('pathfinding...');
+      // console.log('pathfinding...');
       this.updatePathArray();
-
 
       let aiPos;
       let targetPos;
+
 
       if (aiPlayer.ai.mission === 'pursue') {
         aiPos = aiPlayer.currentPosition.cell.number;
         targetPos = this.players[aiPlayer.ai.targetPlayer.number-1].currentPosition.cell.number;
 
-        this.pathArray[targetPos.x][targetPos.y] = 0;
+        // this.pathArray[targetPos.x][targetPos.y] = 0;
         // this.pathArray[aiPos.x][aiPos.y] = 0;
 
       }
-
       if (aiPlayer.ai.mission === 'patrol') {
 
         aiPos = aiPlayer.currentPosition.cell.number;
@@ -11709,13 +11737,15 @@ class App extends Component {
 
       }
 
+
       this.easyStar.setGrid(this.pathArray);
       this.easyStar.setAcceptableTiles([0]);
 
 
       for (const plyr of this.players) {
+        // console.log('building pathfind obstacles checking plyr',plyr.number);
         if (plyr.dead.state !== true && plyr.falling.state !== true && plyr.respawn !== true && plyr.number !== aiPlayer.number && plyr.number !== targetPlayer.number) {
-          // console.log('avoid plyr',plyr.number);
+          console.log('avoid plyr',plyr.number,'@',plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
           this.easyStar.avoidAdditionalPoint(plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
         }
       }
@@ -11735,19 +11765,24 @@ class App extends Component {
       }
 
 
-      // console.log('path finding positions',aiPos.x, aiPos.y, targetPos.x, targetPos.y,'targetSet',aiPlayer.ai.targetSet,'targetAcquired',aiPlayer.ai.targetAcquired);
-      // console.log('player Pos',aiPlayer.currentPosition.cell.number,'target Pos',targetPlayer.currentPosition.cell.number);
-      this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
+      this.players[aiPlayer.number-1].ai.easyStarPath = this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
         if (path === null) {
+          cancelPath = true;
           console.log("Path was not found...for player",aiPlayer.number);
         } else {
           pathSet = path;
         }
       });
-      // this.easyStar.setIterationsPerCalculation(4000)
+
+      this.easyStar.setIterationsPerCalculation(4000)
       this.easyStar.calculate();
       setTimeout(()=>{
-        // console.log('pathSet',pathSet);
+        // console.log('plyr',aiPlayer.number,'pathSet',pathSet,this.players[aiPlayer.number-1].ai.easyStarPath);
+
+        if (cancelPath === true) {
+          this.easyStar = new Easystar.js();
+          this.players[aiPlayer.number-1].ai.targetAcquired = false;
+        }
         this.aiParsePath(pathSet,aiPlayer.number);
       }, 50);
 
@@ -11935,7 +11970,7 @@ class App extends Component {
             } else {
               // console.log('danger');
               plyr.ai.currentInstruction++;
-              // plyr.ai.resetInstructions = true;
+              plyr.ai.resetInstructions = true;
             }
 
           }
@@ -11974,7 +12009,7 @@ class App extends Component {
             } else {
               // console.log('danger');
               plyr.ai.currentInstruction++;
-              // plyr.ai.resetInstructions = true;
+              plyr.ai.resetInstructions = true;
             }
 
           }
@@ -12013,7 +12048,7 @@ class App extends Component {
             } else {
               // console.log('danger');
               plyr.ai.currentInstruction++;
-              // plyr.ai.resetInstructions = true;
+              plyr.ai.resetInstructions = true;
             }
 
           }
@@ -12052,7 +12087,7 @@ class App extends Component {
             } else {
               // console.log('danger');
               plyr.ai.currentInstruction++;
-              // plyr.ai.resetInstructions = true;
+              plyr.ai.resetInstructions = true;
             }
 
           }
