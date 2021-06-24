@@ -207,8 +207,8 @@ class App extends Component {
       row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18f','x19d'],
       row2: ['x20x','x21a','x22a','x23a','x24x','x25x','x26x','x27x','x28d','x29d'],
       row3: ['x30x','x31a','x32a','x33a','x34x','x35x','x36x','x37x','x38d','x39d'],
-      row4: ['x40j','x41b','x42b','x43j','x44b','x45b','x46j','x47j','x48j','x49d'],
-      row5: ['x50j','x51b','x52b','x53j','x54b','x55b','x56j','x57j','x58j','x59d'],
+      row4: ['x40j','x41j','x42b','x43j','x44j','x45b','x46j','x47j','x48j','x49d'],
+      row5: ['x50j','x51j','x52b','x53j','x54j','x55b','x56j','x57j','x58j','x59d'],
       row6: ['x60x','x61x','x62x','x63i','x64x','x65x','x66x','x67x','x68f','x69f'],
       row7: ['x70x','x71x','x72x','x73i','x74x','x75x','x76x','x77x','x78f','x79f'],
       row8: ['x80x','x81x','x82x','x83x','x84x','x85x','x86x','x87x','x88x','x89x'],
@@ -808,7 +808,7 @@ class App extends Component {
           cell: {
             number: {
               x: 1,
-              y: 6,
+              y: 8,
             },
             center: {
               x: 0,
@@ -1293,6 +1293,11 @@ class App extends Component {
       }
     };
     this.aiTarget =  1;
+    this.resetAiTarget = {
+      state: false,
+      state2: false,
+      player: 1,
+    };
 
     this.boltDeflectAnim = {
       position: {
@@ -2490,7 +2495,9 @@ class App extends Component {
           stateUpdater: '..'
         })
 
+
         if (this.aiPlayers.length > 0) {
+
           this.aiEvaluate()
         }
 
@@ -9162,55 +9169,14 @@ class App extends Component {
 
 
     // RESET TARGETTING FOR AI TARGETTING ME!!
+
     if (player.ai.state !== true) {
-      for (const plyr of this.players) {
-        if (plyr.ai.state === true && plyr.ai.targetSet === true && plyr.ai.targetPlayer.number === player.number) {
-          plyr.ai.mission = 'pursue';
-          plyr.ai.prevMission = '';
-          plyr.ai.currentObjective = '';
-          plyr.ai.currentInstruction = 0;
-          plyr.ai.resetInstructions = false;
-          plyr.ai.targetSet = false;
-          plyr.ai.targetAcquired = false;
-          plyr.ai.pathArray = [];
-          plyr.ai.targetPlayer = {
-                number: undefined,
-                currentPosition: {
-                  x: undefined,
-                  y: undefined,
-                },
-                target: {
-                  number1: {
-                    x: undefined,
-                    y: undefined,
-                  },
-                  number2: {
-                    x: undefined,
-                    y: undefined,
-                  },
-                },
-                action: '',
-              };
-          plyr.ai.instructions = [];
-          plyr.action = 'idle'
-          // console.log('A player died. Reseting targeting for ai player',plyr.number,'mission',plyr.ai.mission,'primary mission',plyr.ai.plrimaryMission);
-        }
-      }
 
-
-      if (this.playerNumber > 1) {
-        if (player.number === 1) {
-          if (this.players[1].dead.state !== true && this.players[1].falling.state !== true && this.players[1].respawn !== true) {
-            this.aiTarget = 2;
-          }
-        }
-        if (player.number === 2) {
-          if (this.players[0].dead.state !== true && this.players[0].falling.state !== true && this.players[0].respawn !== true) {
-            this.aiTarget = 1;
-          }
-        }
-      }
-      // console.log('this.aiTarget',this.aiTarget);
+      this.resetAiTarget = {
+        state: true,
+        state2: false,
+        player: player.number
+      };
 
     }
 
@@ -11035,12 +11001,60 @@ class App extends Component {
   aiEvaluate = () => {
     // console.log('aiEvaluate');
 
+    // if (this.resetAiTarget.state === true) {
+    //
+    //   for (const plyr of this.players) {
+    //     if (plyr.ai.state === true && plyr.ai.targetSet === true && plyr.ai.targetPlayer.number === this.resetAiTarget.player) {
+    //       this.getTarget(plyr);
+    //       this.updatePathArray();
+    //       plyr.ai.targetSet = false;
+    //       plyr.ai.targetAcquired = false;
+    //
+    //       plyr.ai.mission = 'pursue';
+    //       plyr.ai.currentInstruction = 0;
+    //       plyr.ai.pathArray = [];
+    //       plyr.ai.targetPlayer = {
+    //         number: undefined,
+    //         currentPosition: {
+    //           x: undefined,
+    //           y: undefined,
+    //         },
+    //         target: {
+    //           number1: {
+    //             x: undefined,
+    //             y: undefined,
+    //           },
+    //           number2: {
+    //             x: undefined,
+    //             y: undefined,
+    //           },
+    //         },
+    //         action: '',
+    //       };
+    //       plyr.ai.instructions = [];
+    //     }
+    //   }
+    //
+    //   if (this.playerNumber > 1) {
+    //
+    //     if (this.resetAiTarget.player === 1) {
+    //       if (this.players[1].dead.state !== true && this.players[1].falling.state !== true && this.players[1].respawn !== true) {
+    //         this.aiTarget = 2;
+    //       }
+    //     }
+    //     if (this.resetAiTarget.player === 2) {
+    //       if (this.players[0].dead.state !== true && this.players[0].falling.state !== true && this.players[0].respawn !== true) {
+    //         this.aiTarget = 1;
+    //       }
+    //     }
+    //   }
+    //   this.resetAiTarget.state2 = true;
+    //   this.resetAiTarget.state = false;
+    // }
+
+
     for (const plyr of this.players) {
       if (plyr.ai.state === true) {
-
-        if (plyr.ai.resetInstructions === true) {
-
-        }
 
 
         let fieldItemScan = []
@@ -11057,9 +11071,19 @@ class App extends Component {
         }
 
 
+        if (plyr.ai.resetInstructions === true ) {
+          console.log('reset instructions','set',plyr.ai.targetSet,'acquired',plyr.ai.targetAcquired,'mission',plyr.ai.mission);
+          plyr.ai.currentInstruction = 0;
+          plyr.ai.instructions = [];
+          plyr.ai.targetAcquired = false;
+          plyr.ai.resetInstructions = false;
+        }
+
+
         // SET TARGET!!
         // determine who is closer to me
         if (plyr.ai.targetSet !== true) {
+
           let targetAlive = false;
           let targetPlayer;
 
@@ -11091,14 +11115,13 @@ class App extends Component {
               action: targetPlayer.action,
             };
             plyr.ai.targetSet = true
-            console.log('player',plyr.number,'setting target...player',targetPlayer.number);
+            console.log('player',plyr.number,'setting target...player',targetPlayer.number,'my mission',plyr.ai.mission);
             // this.getTarget(plyr)
           } else {
             // console.log('no targets availible');
           }
 
         }
-
 
 
         // TARGET AQUISITION & RANGE FINDING!!
@@ -11166,14 +11189,12 @@ class App extends Component {
           }
         }
 
-
         if (plyr.ai.mission === 'defend') {
           plyr.ai.defending.state = true;
           plyr.ai.defending.area = [
             {x:plyr.currentPosition.cell.number.x,y:plyr.currentPosition.cell.number.y},
           ]
         }
-
 
         if (targetInRange === true) {
           plyr.ai.prevMission = plyr.ai.mission;
@@ -11190,11 +11211,11 @@ class App extends Component {
           }
         }
 
+
         // if (plyr.ai.mission !== 'patrol' || plyr.ai.mission !== 'defend') {
         //   plyr.ai.patrolling.state = false;
         //   plyr.ai.defending.state = false;
         // }
-
 
 
         this.aiDecide(plyr)
@@ -11217,11 +11238,23 @@ class App extends Component {
     }
 
 
+    if (this.resetAiTarget.state2 === true) {
+      console.log('this.resetAiTarget.state2');
+      // if (currentTargetPos.x < this.gridWidth) {
+      //   prevTargetPos = {
+      //     x: currentTargetPos.x+1,
+      //     y: currentTargetPos.y
+      //   }
+      //   this.resetAiTarget.state2 = false;
+      // }
+    }
+
+
     // CHECK FOR TARGET CHANGE IF PERSUING!!
     if (aiPlayer.ai.mission === 'pursue' && aiPlayer.ai.targetSet === true) {
 
       if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
-        console.log('pursuit target location changed! Updating path for player',aiPlayer.number);
+        // console.log('pursuit target location changed! Updating path for player',aiPlayer.number);
 
         aiPlayer.ai.targetPlayer.currentPosition = {
           x: targetPlayer.currentPosition.cell.number.x,
@@ -11292,7 +11325,7 @@ class App extends Component {
           aiPlayer.direction = 'east';
         }
       }
-
+      this.getTarget(aiPlayer);
 
       if (aiPlayer.currentWeapon.type === 'bow') {
         aiPlayer.ai.instructions = [
@@ -11303,7 +11336,6 @@ class App extends Component {
           },
         ]
       }
-
       if (aiPlayer.currentWeapon.type === 'spear') {
         if (targetPlayer.defending.state !== true) {
           aiPlayer.ai.instructions = [
@@ -11337,7 +11369,8 @@ class App extends Component {
                   limit: 1,
                 },
               ]
-            } else {
+            }
+            else {
               aiPlayer.ai.instructions = [
                 {
                   keyword: 'dodge',
@@ -11358,7 +11391,8 @@ class App extends Component {
                   limit: 1,
                 },
               ]
-            } else {
+            }
+            else {
               let flankDir;
               let aiPosCell = this.gridInfo.find(elem => elem.number.x === aiPlayer.currentPosition.cell.number.x && elem.number.y === aiPlayer.currentPosition.cell.number.y)
 
@@ -11436,15 +11470,17 @@ class App extends Component {
           //   },
           // )
 
-          if (targetPlayer.defending.state !== true) {
-            // instructions1.push(
-            //   {
-            //     keyword: 'attack',
-            //     count: 0,
-            //     limit: 1,
-            //   },
-            // )
-          }
+
+          // if (targetPlayer.defending.state !== true) {
+          //   instructions1.push(
+          //     {
+          //       keyword: 'attack',
+          //       count: 0,
+          //       limit: 1,
+          //     },
+          //   )
+          // }
+
           if (targetPlayer.defendDecay.count > targetPlayer.defendDecay.limit - 10) {
             instructions1.push(
               {
@@ -11558,14 +11594,14 @@ class App extends Component {
           }
 
           for (const inst of aiPlayer.ai.instructions) {
-            if (inst.keyword === 'attacking') {
-              console.log('ai '+aiPlayer.number+' decides to attack');
+            if (inst.keyword === 'attack') {
+              // console.log('ai '+aiPlayer.number+' decides to attack');
             }
-
           }
+
           aiPlayer.ai.instructions = instructions1;
           aiPlayer.ai.currentInstruction = 0;
-          // console.log('aiPlayer.instructions',aiPlayer.instructions);
+          // console.log('aiPlayer.instructions',aiPlayer.ai.instructions);
       }
 
     }
@@ -11639,7 +11675,9 @@ class App extends Component {
     // SET PATH !!
     let pathSet = [];
     if (getPath === true && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
+      console.log('pathfinding...');
       this.updatePathArray();
+
 
       let aiPos;
       let targetPos;
@@ -11681,6 +11719,8 @@ class App extends Component {
           this.easyStar.avoidAdditionalPoint(plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
         }
       }
+
+
       for (const cell2 of this.gridInfo) {
         let terrainInfo3 = cell2.levelData.length-1;
         if (
@@ -11695,6 +11735,8 @@ class App extends Component {
       }
 
 
+      // console.log('path finding positions',aiPos.x, aiPos.y, targetPos.x, targetPos.y,'targetSet',aiPlayer.ai.targetSet,'targetAcquired',aiPlayer.ai.targetAcquired);
+      // console.log('player Pos',aiPlayer.currentPosition.cell.number,'target Pos',targetPlayer.currentPosition.cell.number);
       this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
         if (path === null) {
           console.log("Path was not found...for player",aiPlayer.number);
@@ -11810,325 +11852,326 @@ class App extends Component {
   }
   aiAct = (plyr) => {
 
-    // for (const plyr of this.players) {
-      // if (plyr.ai.state === true) {
-        let currentInstruction = plyr.ai.instructions[plyr.ai.currentInstruction];
 
-        if (currentInstruction) {
-          let targetCell = this.gridInfo.find(elem => elem.number.x === plyr.target.cell.number.x && elem.number.y === plyr.target.cell.number.y)
-          let playerCell = this.gridInfo.find(elem => elem.number.x === plyr.currentPosition.cell.number.x && elem.number.y === plyr.currentPosition.cell.number.y)
+    let currentInstruction = plyr.ai.instructions[plyr.ai.currentInstruction];
 
-          let pathIndx = plyr.ai.pathArray.findIndex(elem => elem.x === plyr.currentPosition.cell.number.x && elem.y === plyr.currentPosition.cell.number.y);
-          let currentPathStep = plyr.ai.pathArray[pathIndx]
-          let nextPathStep = plyr.ai.pathArray[pathIndx+1]
-          let nextPathStepCell = undefined;
-          if (nextPathStep) {
-            nextPathStepCell = this.gridInfo.find(elem => elem.number.x === nextPathStep.x && elem.number.y === nextPathStep.y)
+    if (currentInstruction) {
+      let targetCell = this.gridInfo.find(elem => elem.number.x === plyr.target.cell.number.x && elem.number.y === plyr.target.cell.number.y)
+      let playerCell = this.gridInfo.find(elem => elem.number.x === plyr.currentPosition.cell.number.x && elem.number.y === plyr.currentPosition.cell.number.y)
+
+      let pathIndx = plyr.ai.pathArray.findIndex(elem => elem.x === plyr.currentPosition.cell.number.x && elem.y === plyr.currentPosition.cell.number.y);
+      let currentPathStep = plyr.ai.pathArray[pathIndx]
+      let nextPathStep = plyr.ai.pathArray[pathIndx+1]
+      let nextPathStepCell = undefined;
+      if (nextPathStep) {
+        nextPathStepCell = this.gridInfo.find(elem => elem.number.x === nextPathStep.x && elem.number.y === nextPathStep.y)
+      }
+      // console.log('currentInstruction',currentInstruction.keyword);
+
+      this.keyPressed[plyr.number-1] = {
+        north: false,
+        south: false,
+        east: false,
+        west: false,
+        northEast: false,
+        northWest: false,
+        southEast: false,
+        southWest: false,
+        attack: false,
+        defend: false,
+        strafe: false,
+        cycleWeapon: false,
+        cycleArmor: false,
+        dodge: false,
+      }
+      switch(currentInstruction.keyword) {
+        case 'short_wait':
+          currentInstruction.limit = 15;
+          if (currentInstruction.count < currentInstruction.limit) {
+            currentInstruction.count++;
+          } else if (currentInstruction.count >= currentInstruction.limit) {
+            plyr.ai.currentInstruction++;
           }
-
-
-          this.keyPressed[plyr.number-1] = {
-            north: false,
-            south: false,
-            east: false,
-            west: false,
-            northEast: false,
-            northWest: false,
-            southEast: false,
-            southWest: false,
-            attack: false,
-            defend: false,
-            strafe: false,
-            cycleWeapon: false,
-            cycleArmor: false,
-            dodge: false,
+        break;
+        case 'long_wait':
+          currentInstruction.limit = 25;
+          if (currentInstruction.count < currentInstruction.limit) {
+            currentInstruction.count++;
+          } else if (currentInstruction.count >= currentInstruction.limit) {
+            plyr.ai.currentInstruction++;
           }
-          switch(currentInstruction.keyword) {
-            case 'short_wait':
-              currentInstruction.limit = 15;
-              if (currentInstruction.count < currentInstruction.limit) {
-                currentInstruction.count++;
-              } else if (currentInstruction.count >= currentInstruction.limit) {
-                plyr.ai.currentInstruction++;
-              }
-            break;
-            case 'long_wait':
-              currentInstruction.limit = 25;
-              if (currentInstruction.count < currentInstruction.limit) {
-                currentInstruction.count++;
-              } else if (currentInstruction.count >= currentInstruction.limit) {
-                plyr.ai.currentInstruction++;
-              }
-            break;
-            case 'move_north':
-              if (plyr.moving.state !== true && !plyr.turning.state) {
+        break;
+        case 'move_north':
+          if (plyr.moving.state !== true && !plyr.turning.state) {
 
-                let inDanger = false;
-                if (plyr.direction === 'north') {
-                  if (!targetCell) {
-                    // console.log('heading off the edge');
-                    inDanger = true;
-                  } else {
-                    if (targetCell.void.state === true || targetCell.terrain.type === 'deep' || targetCell.terrain.type === 'hazard') {
-                      // console.log('heading for mid-grid danger');
-                      inDanger = true;
-                    }
-                  }
-                }
-
-                if (inDanger === false) {
-                  // currentInstruction.limit = 1;
-                  this.keyPressed[plyr.number-1].north = true;
-                  this.players[plyr.number-1].turnCheckerDirection = 'north';
-                  // plyr.ai.currentInstruction++;
-                  if (currentInstruction.limit === 1) {
-                    plyr.ai.currentInstruction++;
-                  } else {
-                    if (currentInstruction.count < currentInstruction.limit) {
-                      currentInstruction.count++;
-                    } else if (currentInstruction.count >= currentInstruction.limit) {
-                      plyr.ai.currentInstruction++;
-                    }
-                  }
-
-                } else {
-                  // console.log('danger');
-                  plyr.ai.currentInstruction++;
-                }
-
-              }
-            break;
-            case 'move_south':
-              if (plyr.moving.state !== true && !plyr.turning.state) {
-
-                let inDanger = false;
-                if (plyr.direction === 'south') {
-                  if (!targetCell) {
-                    // console.log('heading off the edge');
-                    inDanger = true;
-                  } else {
-                    if (targetCell.void.state === true || targetCell.terrain.type === 'deep' || targetCell.terrain.type === 'hazard') {
-                      // console.log('heading for mid-grid danger');
-                      inDanger = true;
-                    }
-                  }
-                }
-
-                if (inDanger === false) {
-                  // currentInstruction.limit = 1;
-                  this.keyPressed[plyr.number-1].south = true;
-                  this.players[plyr.number-1].turnCheckerDirection = 'south';
-                  // plyr.ai.currentInstruction++;
-                  if (currentInstruction.limit === 1) {
-                    plyr.ai.currentInstruction++;
-                  } else {
-                    if (currentInstruction.count < currentInstruction.limit) {
-                      currentInstruction.count++;
-                    } else if (currentInstruction.count >= currentInstruction.limit) {
-                      plyr.ai.currentInstruction++;
-                    }
-                  }
-
-                } else {
-                  // console.log('danger');
-                  plyr.ai.currentInstruction++;
-                }
-
-              }
-            break;
-            case 'move_east':
-              if (plyr.moving.state !== true && !plyr.turning.state) {
-
-                let inDanger = false;
-                if (plyr.direction === 'east') {
-                  if (!targetCell) {
-                    // console.log('heading off the edge');
-                    inDanger = true;
-                  } else {
-                    if (targetCell.void.state === true || targetCell.terrain.type === 'deep' || targetCell.terrain.type === 'hazard') {
-                      // console.log('heading for mid-grid danger');
-                      inDanger = true;
-                    }
-                  }
-                }
-
-                if (inDanger === false) {
-                  // currentInstruction.limit = 1;
-                  this.keyPressed[plyr.number-1].east = true;
-                  this.players[plyr.number-1].turnCheckerDirection = 'east';
-                  // plyr.ai.currentInstruction++;
-                  if (currentInstruction.limit === 1) {
-                    plyr.ai.currentInstruction++;
-                  } else {
-                    if (currentInstruction.count < currentInstruction.limit) {
-                      currentInstruction.count++;
-                    } else if (currentInstruction.count >= currentInstruction.limit) {
-                      plyr.ai.currentInstruction++;
-                    }
-                  }
-
-                } else {
-                  // console.log('danger');
-                  plyr.ai.currentInstruction++;
-                }
-
-              }
-            break;
-            case 'move_west':
-              if (plyr.moving.state !== true && !plyr.turning.state) {
-
-                let inDanger = false;
-                if (plyr.direction === 'west') {
-                  if (!targetCell) {
-                    // console.log('heading off the edge');
-                    inDanger = true;
-                  } else {
-                    if (targetCell.void.state === true || targetCell.terrain.type === 'deep' || targetCell.terrain.type === 'hazard') {
-                      // console.log('heading for mid-grid danger');
-                      inDanger = true;
-                    }
-                  }
-                }
-
-                if (inDanger === false) {
-                  // currentInstruction.limit = 1;
-                  this.keyPressed[plyr.number-1].west = true;
-                  this.players[plyr.number-1].turnCheckerDirection = 'west';
-                  // plyr.ai.currentInstruction++;
-                  if (currentInstruction.limit === 1) {
-                    plyr.ai.currentInstruction++;
-                  } else {
-                    if (currentInstruction.count < currentInstruction.limit) {
-                      currentInstruction.count++;
-                    } else if (currentInstruction.count >= currentInstruction.limit) {
-                      plyr.ai.currentInstruction++;
-                    }
-                  }
-
-                } else {
-                  // console.log('danger');
-                  plyr.ai.currentInstruction++;
-                }
-
-              }
-            break;
-            case 'strafe_north':
-            break;
-            case 'flank_north':
-              if (plyr.flanking.state !== true && plyr.action !== 'flanking') {
-                currentInstruction.limit = 1;
-                this.keyPressed[plyr.number-1].dodge = true;
-                this.keyPressed[plyr.number-1].north = true;
-                if (currentInstruction.count < currentInstruction.limit) {
-                  currentInstruction.count++;
-                } else if (currentInstruction.count >= currentInstruction.limit) {
-                  plyr.ai.currentInstruction++;
+            let inDanger = false;
+            if (plyr.direction === 'north') {
+              if (!targetCell) {
+                // console.log('heading off the edge');
+                inDanger = true;
+              } else {
+                if (targetCell.void.state === true || targetCell.terrain.type === 'deep' || targetCell.terrain.type === 'hazard') {
+                  // console.log('heading for mid-grid danger');
+                  inDanger = true;
                 }
               }
-            break;
-            case 'flank_south':
-              if (plyr.flanking.state !== true && plyr.action !== 'flanking') {
-                currentInstruction.limit = 1;
-                this.keyPressed[plyr.number-1].dodge = true;
-                this.keyPressed[plyr.number-1].south = true;
-                if (currentInstruction.count < currentInstruction.limit) {
-                  currentInstruction.count++;
-                } else if (currentInstruction.count >= currentInstruction.limit) {
-                  plyr.ai.currentInstruction++;
-                }
-              }
-            break;
-            case 'flank_east':
-              if (plyr.flanking.state !== true && plyr.action !== 'flanking') {
-                currentInstruction.limit = 1;
-                this.keyPressed[plyr.number-1].dodge = true;
-                this.keyPressed[plyr.number-1].east = true;
-                if (currentInstruction.count < currentInstruction.limit) {
-                  currentInstruction.count++;
-                } else if (currentInstruction.count >= currentInstruction.limit) {
-                  plyr.ai.currentInstruction++;
-                }
-              }
-            break;
-            case 'flank_west':
-              if (plyr.flanking.state !== true && plyr.action !== 'flanking') {
-                currentInstruction.limit = 1;
-                this.keyPressed[plyr.number-1].dodge = true;
-                this.keyPressed[plyr.number-1].west = true;
-                if (currentInstruction.count < currentInstruction.limit) {
-                  currentInstruction.count++;
-                } else if (currentInstruction.count >= currentInstruction.limit) {
-                  plyr.ai.currentInstruction++;
-                }
-              }
-            break;
-            case 'attack':
-            if (plyr.attacking.state !== true) {
-              // console.log('plyr',plyr.number,'all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
-                currentInstruction.limit = 1;
-                this.keyPressed[plyr.number-1].attack = true;
-                if (currentInstruction.count < currentInstruction.limit) {
-                  currentInstruction.count++;
-                } else if (currentInstruction.count >= currentInstruction.limit) {
-                  plyr.ai.currentInstruction++;
-                }
             }
-            break;
-            case 'long_defend':
-              currentInstruction.limit = 25;
-              this.keyPressed[plyr.number-1].defend = true;
-              if (currentInstruction.count < currentInstruction.limit) {
-                currentInstruction.count++;
-              } else if (currentInstruction.count >= currentInstruction.limit) {
+
+            if (inDanger === false) {
+              // currentInstruction.limit = 1;
+              this.keyPressed[plyr.number-1].north = true;
+              this.players[plyr.number-1].turnCheckerDirection = 'north';
+              // plyr.ai.currentInstruction++;
+              if (currentInstruction.limit === 1) {
                 plyr.ai.currentInstruction++;
+              } else {
+                if (currentInstruction.count < currentInstruction.limit) {
+                  currentInstruction.count++;
+                } else if (currentInstruction.count >= currentInstruction.limit) {
+                  plyr.ai.currentInstruction++;
+                }
               }
-            break;
-            case 'short_defend':
-              currentInstruction.limit = 15;
-              this.keyPressed[plyr.number-1].defend = true;
-              if (currentInstruction.count < currentInstruction.limit) {
-                currentInstruction.count++;
-              } else if (currentInstruction.count >= currentInstruction.limit) {
-                plyr.ai.currentInstruction++;
-              }
-            break;
-            case 'dodge':
-              currentInstruction.limit = 1;
-              this.keyPressed[plyr.number-1].dodge = true;
-              if (currentInstruction.count < currentInstruction.limit) {
-                currentInstruction.count++;
-              } else if (currentInstruction.count >= currentInstruction.limit) {
-                plyr.ai.currentInstruction++;
-              }
-            break;
+
+            } else {
+              // console.log('danger');
+              plyr.ai.currentInstruction++;
+              // plyr.ai.resetInstructions = true;
+            }
 
           }
+        break;
+        case 'move_south':
+          if (plyr.moving.state !== true && !plyr.turning.state) {
 
-          let index = plyr.ai.instructions.indexOf(currentInstruction);
-          if (index >= plyr.ai.instructions.length) {
-            console.log('instructions complete');
-            plyr.ai.instructions = [];
+            let inDanger = false;
+            if (plyr.direction === 'south') {
+              if (!targetCell) {
+                // console.log('heading off the edge');
+                inDanger = true;
+              } else {
+                if (targetCell.void.state === true || targetCell.terrain.type === 'deep' || targetCell.terrain.type === 'hazard') {
+                  // console.log('heading for mid-grid danger');
+                  inDanger = true;
+                }
+              }
+            }
+
+            if (inDanger === false) {
+              // currentInstruction.limit = 1;
+              this.keyPressed[plyr.number-1].south = true;
+              this.players[plyr.number-1].turnCheckerDirection = 'south';
+              // plyr.ai.currentInstruction++;
+              if (currentInstruction.limit === 1) {
+                plyr.ai.currentInstruction++;
+              } else {
+                if (currentInstruction.count < currentInstruction.limit) {
+                  currentInstruction.count++;
+                } else if (currentInstruction.count >= currentInstruction.limit) {
+                  plyr.ai.currentInstruction++;
+                }
+              }
+
+            } else {
+              // console.log('danger');
+              plyr.ai.currentInstruction++;
+              // plyr.ai.resetInstructions = true;
+            }
+
           }
-        } else {
-          this.keyPressed[plyr.number-1] = {
-            north: false,
-            south: false,
-            east: false,
-            west: false,
-            northEast: false,
-            northWest: false,
-            southEast: false,
-            southWest: false,
-            attack: false,
-            defend: false,
-            strafe: false,
-            cycleWeapon: false,
-            cycleArmor: false,
-            dodge: false,
+        break;
+        case 'move_east':
+          if (plyr.moving.state !== true && !plyr.turning.state) {
+
+            let inDanger = false;
+            if (plyr.direction === 'east') {
+              if (!targetCell) {
+                // console.log('heading off the edge');
+                inDanger = true;
+              } else {
+                if (targetCell.void.state === true || targetCell.terrain.type === 'deep' || targetCell.terrain.type === 'hazard') {
+                  // console.log('heading for mid-grid danger');
+                  inDanger = true;
+                }
+              }
+            }
+
+            if (inDanger === false) {
+              // currentInstruction.limit = 1;
+              this.keyPressed[plyr.number-1].east = true;
+              this.players[plyr.number-1].turnCheckerDirection = 'east';
+              // plyr.ai.currentInstruction++;
+              if (currentInstruction.limit === 1) {
+                plyr.ai.currentInstruction++;
+              } else {
+                if (currentInstruction.count < currentInstruction.limit) {
+                  currentInstruction.count++;
+                } else if (currentInstruction.count >= currentInstruction.limit) {
+                  plyr.ai.currentInstruction++;
+                }
+              }
+
+            } else {
+              // console.log('danger');
+              plyr.ai.currentInstruction++;
+              // plyr.ai.resetInstructions = true;
+            }
+
           }
+        break;
+        case 'move_west':
+          if (plyr.moving.state !== true && !plyr.turning.state) {
+
+            let inDanger = false;
+            if (plyr.direction === 'west') {
+              if (!targetCell) {
+                // console.log('heading off the edge');
+                inDanger = true;
+              } else {
+                if (targetCell.void.state === true || targetCell.terrain.type === 'deep' || targetCell.terrain.type === 'hazard') {
+                  // console.log('heading for mid-grid danger');
+                  inDanger = true;
+                }
+              }
+            }
+
+            if (inDanger === false) {
+              // currentInstruction.limit = 1;
+              this.keyPressed[plyr.number-1].west = true;
+              this.players[plyr.number-1].turnCheckerDirection = 'west';
+              // plyr.ai.currentInstruction++;
+              if (currentInstruction.limit === 1) {
+                plyr.ai.currentInstruction++;
+              } else {
+                if (currentInstruction.count < currentInstruction.limit) {
+                  currentInstruction.count++;
+                } else if (currentInstruction.count >= currentInstruction.limit) {
+                  plyr.ai.currentInstruction++;
+                }
+              }
+
+            } else {
+              // console.log('danger');
+              plyr.ai.currentInstruction++;
+              // plyr.ai.resetInstructions = true;
+            }
+
+          }
+        break;
+        case 'strafe_north':
+        break;
+        case 'flank_north':
+          if (plyr.flanking.state !== true && plyr.action !== 'flanking') {
+            currentInstruction.limit = 1;
+            this.keyPressed[plyr.number-1].dodge = true;
+            this.keyPressed[plyr.number-1].north = true;
+            if (currentInstruction.count < currentInstruction.limit) {
+              currentInstruction.count++;
+            } else if (currentInstruction.count >= currentInstruction.limit) {
+              plyr.ai.currentInstruction++;
+            }
+          }
+        break;
+        case 'flank_south':
+          if (plyr.flanking.state !== true && plyr.action !== 'flanking') {
+            currentInstruction.limit = 1;
+            this.keyPressed[plyr.number-1].dodge = true;
+            this.keyPressed[plyr.number-1].south = true;
+            if (currentInstruction.count < currentInstruction.limit) {
+              currentInstruction.count++;
+            } else if (currentInstruction.count >= currentInstruction.limit) {
+              plyr.ai.currentInstruction++;
+            }
+          }
+        break;
+        case 'flank_east':
+          if (plyr.flanking.state !== true && plyr.action !== 'flanking') {
+            currentInstruction.limit = 1;
+            this.keyPressed[plyr.number-1].dodge = true;
+            this.keyPressed[plyr.number-1].east = true;
+            if (currentInstruction.count < currentInstruction.limit) {
+              currentInstruction.count++;
+            } else if (currentInstruction.count >= currentInstruction.limit) {
+              plyr.ai.currentInstruction++;
+            }
+          }
+        break;
+        case 'flank_west':
+          if (plyr.flanking.state !== true && plyr.action !== 'flanking') {
+            currentInstruction.limit = 1;
+            this.keyPressed[plyr.number-1].dodge = true;
+            this.keyPressed[plyr.number-1].west = true;
+            if (currentInstruction.count < currentInstruction.limit) {
+              currentInstruction.count++;
+            } else if (currentInstruction.count >= currentInstruction.limit) {
+              plyr.ai.currentInstruction++;
+            }
+          }
+        break;
+        case 'attack':
+        if (plyr.attacking.state !== true) {
+          // console.log('plyr',plyr.number,'all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
+            currentInstruction.limit = 1;
+            this.keyPressed[plyr.number-1].attack = true;
+            if (currentInstruction.count < currentInstruction.limit) {
+              currentInstruction.count++;
+            } else if (currentInstruction.count >= currentInstruction.limit) {
+              plyr.ai.currentInstruction++;
+            }
         }
-      // }
-    // }
+        break;
+        case 'long_defend':
+          currentInstruction.limit = 25;
+          this.keyPressed[plyr.number-1].defend = true;
+          if (currentInstruction.count < currentInstruction.limit) {
+            currentInstruction.count++;
+          } else if (currentInstruction.count >= currentInstruction.limit) {
+            plyr.ai.currentInstruction++;
+          }
+        break;
+        case 'short_defend':
+          currentInstruction.limit = 15;
+          this.keyPressed[plyr.number-1].defend = true;
+          if (currentInstruction.count < currentInstruction.limit) {
+            currentInstruction.count++;
+          } else if (currentInstruction.count >= currentInstruction.limit) {
+            plyr.ai.currentInstruction++;
+          }
+        break;
+        case 'dodge':
+          currentInstruction.limit = 1;
+          this.keyPressed[plyr.number-1].dodge = true;
+          if (currentInstruction.count < currentInstruction.limit) {
+            currentInstruction.count++;
+          } else if (currentInstruction.count >= currentInstruction.limit) {
+            plyr.ai.currentInstruction++;
+          }
+        break;
+
+      }
+
+      let index = plyr.ai.instructions.indexOf(currentInstruction);
+      if (index >= plyr.ai.instructions.length) {
+        console.log('instructions complete');
+        plyr.ai.instructions = [];
+      }
+    } else {
+      this.keyPressed[plyr.number-1] = {
+        north: false,
+        south: false,
+        east: false,
+        west: false,
+        northEast: false,
+        northWest: false,
+        southEast: false,
+        southWest: false,
+        attack: false,
+        defend: false,
+        strafe: false,
+        cycleWeapon: false,
+        cycleArmor: false,
+        dodge: false,
+      }
+    }
 
   }
 
