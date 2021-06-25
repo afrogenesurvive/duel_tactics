@@ -2737,6 +2737,13 @@ class App extends Component {
       }
 
       this.deflectDrop(player)
+      console.log('ai delfected mission', player.ai.mission);
+      console.log('ai delfected instructions', player.ai.instructions, player.ai.currentInstruction);
+      console.log('ai delfected targetSet', player.ai.targetSet);
+      console.log('ai delfected targetAcquired', player.ai.targetAcquired);
+      // player.ai.targetAcquired = false;
+      player.ai.targetAqcuiredReset = true
+
     }
 
 
@@ -3991,12 +3998,6 @@ class App extends Component {
         }
 
 
-        if (player.ai.state === true && player.success.deflected.state === true) {
-          console.log('ai delfected mission', player.ai.mission);
-          console.log('ai delfected instructions', player.ai.instructions, player.ai.currentInstruction);
-          console.log('ai delfected targetSet', player.ai.targetSet);
-          console.log('ai delfected targetAcquired', player.ai.targetAcquired);
-        }
 
 
         // DISCARD GEAR!!
@@ -5054,6 +5055,8 @@ class App extends Component {
         }
       }
 
+    } else {
+      // console.log('sorry no key presses right now');
     }
 
 
@@ -11013,6 +11016,7 @@ class App extends Component {
     // console.log('aiEvaluate');
 
 
+
     if (this.resetAiTarget.state === true) {
 
       for (const plyr of this.players) {
@@ -11145,7 +11149,7 @@ class App extends Component {
               action: targetPlayer.action,
             };
             plyr.ai.targetSet = true
-            console.log('player',plyr.number,'setting target...player',targetPlayer.number,'my mission',plyr.ai.mission);
+            // console.log('player',plyr.number,'setting target...player',targetPlayer.number,'my mission',plyr.ai.mission);
             // this.getTarget(plyr)
           } else {
             // console.log('no targets availible');
@@ -11247,6 +11251,11 @@ class App extends Component {
         //   plyr.ai.patrolling.state = false;
         //   plyr.ai.defending.state = false;
         // }
+
+        if (plyr.ai.targetAqcuiredReset === true) {
+          plyr.ai.targetAcquired = false;
+          plyr.ai.targetAqcuiredReset = false;
+        }
 
         this.aiDecide(plyr)
 
@@ -11745,7 +11754,7 @@ class App extends Component {
       for (const plyr of this.players) {
         // console.log('building pathfind obstacles checking plyr',plyr.number);
         if (plyr.dead.state !== true && plyr.falling.state !== true && plyr.respawn !== true && plyr.number !== aiPlayer.number && plyr.number !== targetPlayer.number) {
-          console.log('avoid plyr',plyr.number,'@',plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
+          // console.log('avoid plyr',plyr.number,'@',plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
           this.easyStar.avoidAdditionalPoint(plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
         }
       }
@@ -11901,7 +11910,8 @@ class App extends Component {
       if (nextPathStep) {
         nextPathStepCell = this.gridInfo.find(elem => elem.number.x === nextPathStep.x && elem.number.y === nextPathStep.y)
       }
-      // console.log('currentInstruction',currentInstruction.keyword);
+
+      console.log('total instructions',plyr.ai.instructions.length,'currentInstruction',plyr.ai.currentInstruction,plyr.moving.state, !plyr.turning.state,'keyword',currentInstruction.keyword,'limit',currentInstruction.limit,'instructions',plyr.ai.instructions,'deflected',plyr.success.deflected.state);
 
       this.keyPressed[plyr.number-1] = {
         north: false,
@@ -11937,7 +11947,7 @@ class App extends Component {
           }
         break;
         case 'move_north':
-          if (plyr.moving.state !== true && !plyr.turning.state) {
+          if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true) {
 
             let inDanger = false;
             if (plyr.direction === 'north') {
@@ -11953,6 +11963,7 @@ class App extends Component {
             }
 
             if (inDanger === false) {
+
               // currentInstruction.limit = 1;
               this.keyPressed[plyr.number-1].north = true;
               this.players[plyr.number-1].turnCheckerDirection = 'north';
@@ -11976,7 +11987,7 @@ class App extends Component {
           }
         break;
         case 'move_south':
-          if (plyr.moving.state !== true && !plyr.turning.state) {
+          if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true) {
 
             let inDanger = false;
             if (plyr.direction === 'south') {
@@ -11992,6 +12003,7 @@ class App extends Component {
             }
 
             if (inDanger === false) {
+
               // currentInstruction.limit = 1;
               this.keyPressed[plyr.number-1].south = true;
               this.players[plyr.number-1].turnCheckerDirection = 'south';
@@ -12015,7 +12027,7 @@ class App extends Component {
           }
         break;
         case 'move_east':
-          if (plyr.moving.state !== true && !plyr.turning.state) {
+          if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true) {
 
             let inDanger = false;
             if (plyr.direction === 'east') {
@@ -12054,7 +12066,7 @@ class App extends Component {
           }
         break;
         case 'move_west':
-          if (plyr.moving.state !== true && !plyr.turning.state) {
+          if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true) {
 
             let inDanger = false;
             if (plyr.direction === 'west') {
@@ -12070,6 +12082,7 @@ class App extends Component {
             }
 
             if (inDanger === false) {
+
               // currentInstruction.limit = 1;
               this.keyPressed[plyr.number-1].west = true;
               this.players[plyr.number-1].turnCheckerDirection = 'west';
