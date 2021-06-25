@@ -515,7 +515,7 @@ class App extends Component {
           },
           void: false
         },
-        direction: 'east',
+        direction: 'south',
         turning: {
           state: undefined,
           toDirection: '',
@@ -2554,7 +2554,8 @@ class App extends Component {
           key !== 'dodge' &&
           value === true
         ) {
-          // console.log('pressed',key);
+          // console.log('pressed1',key,'plyr',player.number);
+
           keyPressedDirection = key;
         }
       }
@@ -2736,13 +2737,26 @@ class App extends Component {
         type: '',
       }
 
+      // CANCEL AI ATTACK, DEFEND!!
+      if (player.ai.state === true) {
+        if (player.ai.state === true) {
+          player.attacking = {
+            state: false,
+            count: 0,
+            limit: 15,
+          };
+        }
+
+        player.defending = {
+          state: false,
+          count: 0,
+          limit: player.defending.limit,
+        }
+
+        player.ai.targetAqcuiredReset = true
+      }
+
       this.deflectDrop(player)
-      console.log('ai delfected mission', player.ai.mission);
-      console.log('ai delfected instructions', player.ai.instructions, player.ai.currentInstruction);
-      console.log('ai delfected targetSet', player.ai.targetSet);
-      console.log('ai delfected targetAcquired', player.ai.targetAcquired);
-      // player.ai.targetAcquired = false;
-      player.ai.targetAqcuiredReset = true
 
     }
 
@@ -2816,6 +2830,27 @@ class App extends Component {
             }
 
             if (player.pushBack.state === true && player.target.void !== true) {
+
+
+              // CANCEL AI ATTACK, DEFEND!!
+              if (player.ai.state === true) {
+                if (player.ai.state === true) {
+                  player.attacking = {
+                    state: false,
+                    count: 0,
+                    limit: 15,
+                  };
+                }
+
+                player.defending = {
+                  state: false,
+                  count: 0,
+                  limit: player.defending.limit,
+                }
+
+                player.ai.targetAqcuiredReset = true
+              }
+
 
               player.pushBack.state = false;
               player.strafing = {
@@ -2992,6 +3027,7 @@ class App extends Component {
 
       // CAN READ INPUTS
       else if (player.moving.state === false) {
+
 
 
         // TURNER!!
@@ -3645,8 +3681,8 @@ class App extends Component {
 
                   // ATTACKER PUSHBACK DEFLECT!!
 
-                  let shouldDeflectAttacker = 1;
-                  // let shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
+                  // let shouldDeflectAttacker = 1;
+                  let shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
                   // let shouldDeflectAttacker = this.rnJesus(1,2);
                   let shouldDeflectPushBack = 1;
                   // let shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack);
@@ -3996,8 +4032,6 @@ class App extends Component {
 
 
         }
-
-
 
 
         // DISCARD GEAR!!
@@ -10516,7 +10550,7 @@ class App extends Component {
       if (checkCell === true) {
 
         // console.log('adding ai. Player #',newPlayerNumber,' @',cell.x,cell.y);
-        // cell = {x:0,y:0};
+        cell = {x:8,y:6};
 
         let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y)
         let newPlayer = {
@@ -10577,7 +10611,7 @@ class App extends Component {
             },
             void: false
           },
-          direction: 'south',
+          direction: 'north',
           turning: {
             state: undefined,
             toDirection: '',
@@ -11911,7 +11945,7 @@ class App extends Component {
         nextPathStepCell = this.gridInfo.find(elem => elem.number.x === nextPathStep.x && elem.number.y === nextPathStep.y)
       }
 
-      console.log('total instructions',plyr.ai.instructions.length,'currentInstruction',plyr.ai.currentInstruction,plyr.moving.state, !plyr.turning.state,'keyword',currentInstruction.keyword,'limit',currentInstruction.limit,'instructions',plyr.ai.instructions,'deflected',plyr.success.deflected.state);
+      // console.log('total instructions',plyr.ai.instructions.length,'currentInstruction',plyr.ai.currentInstruction,plyr.moving.state, !plyr.turning.state,'keyword',currentInstruction.keyword,'limit',currentInstruction.limit,'instructions',plyr.ai.instructions,'deflected',plyr.success.deflected.state);
 
       this.keyPressed[plyr.number-1] = {
         north: false,
@@ -12156,7 +12190,7 @@ class App extends Component {
           }
         break;
         case 'attack':
-        if (plyr.attacking.state !== true) {
+        if (plyr.attacking.state !== true && plyr.moving.state !== true) {
           // console.log('plyr',plyr.number,'all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
             currentInstruction.limit = 1;
             this.keyPressed[plyr.number-1].attack = true;

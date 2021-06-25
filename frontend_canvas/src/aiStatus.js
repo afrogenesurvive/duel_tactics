@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
+import ProgressBar from 'react-bootstrap/ProgressBar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCaretRight,
@@ -40,6 +41,7 @@ const AiStatus = props => {
     }
   }
 
+
   const [state, setState] = useState(0);
   const handleStateChange = () => {
     if (state + 1 > aiPlayers.length-1) {
@@ -54,6 +56,20 @@ const AiStatus = props => {
   const handleSubMenuStateChange = (args) => {
     setSubMenuState(args)
    }
+
+   let staminaPercent;
+   let staminaColor;
+   if (aiPlayers[state]) {
+     staminaPercent = Math.round((aiPlayers[state].stamina.current/20)*100)
+     staminaColor = "success";
+     if (staminaPercent < 20) {
+       staminaColor = "danger";
+     }
+     if (staminaPercent > 20 && staminaPercent < 60) {
+       staminaColor = "warning";
+     }
+   }
+
 
   return (
     <div className="cellInfoBox2">
@@ -82,50 +98,56 @@ const AiStatus = props => {
       <div className="aiStatusBox">
 
         <ul className="cellInfoList">
-          <li className="debugBoxListItem">
-            <p className="debugBoxText">
-              # - {aiPlayers[state].number}
-            </p>
-          </li>
-          <li className="debugBoxListItem">
-            <FontAwesomeIcon icon={faFistRaised} size="sm" className="debugBoxIcon" /> :
-            <p className="debugBoxText">
-              {aiPlayers[state].action}
-            </p>
-          </li>
-          <li className="debugBoxListItem">
-            <FontAwesomeIcon icon={faMapMarked} size="sm" className="debugBoxIcon"/> :
-            <p className="debugBoxText">
-              {aiPlayers[state].currentPosition.cell.number.x}, {aiPlayers[state].currentPosition.cell.number.y}
-            </p>
-          </li>
-          <li className="debugBoxListItem">
-            <FontAwesomeIcon icon={faCrosshairs} size="sm" className="debugBoxIcon"/> :
-            <p className="debugBoxText">
-              {aiPlayers[state].target.cell.number.x}, {aiPlayers[state].target.cell.number.y}
-            </p>
-          </li>
-          {aiPlayers[state].strafing.state !== true &&(
-            <li className="debugBoxListItem">
-            <FontAwesomeIcon icon={faCompass} size="sm" className="debugBoxIcon"/> :
-              <p className="debugBoxText">
-                {aiPlayers[state].direction}
-              </p>
-            </li>
-          )}
-          {aiPlayers[state].strafing.state === true &&(
-            <li className="debugBoxListItem">
-              <FontAwesomeIcon icon={faCompass} size="sm" className="debugBoxIcon"/> :
-              <p className="debugBoxText">
-                {aiPlayers[state].strafing.direction}
-              </p>
-            </li>
-          )}
+          {
+          //   <li className="debugBoxListItem">
+          //   <p className="debugBoxText">
+          //     # - {aiPlayers[state].number}
+          //   </p>
+          // </li>
+          // <li className="debugBoxListItem">
+          //   <FontAwesomeIcon icon={faFistRaised} size="sm" className="debugBoxIcon" /> :
+          //   <p className="debugBoxText">
+          //     {aiPlayers[state].action}
+          //   </p>
+          // </li>
+          // <li className="debugBoxListItem">
+          //   <FontAwesomeIcon icon={faMapMarked} size="sm" className="debugBoxIcon"/> :
+          //   <p className="debugBoxText">
+          //     {aiPlayers[state].currentPosition.cell.number.x}, {aiPlayers[state].currentPosition.cell.number.y}
+          //   </p>
+          // </li>
+          // <li className="debugBoxListItem">
+          //   <FontAwesomeIcon icon={faCrosshairs} size="sm" className="debugBoxIcon"/> :
+          //   <p className="debugBoxText">
+          //     {aiPlayers[state].target.cell.number.x}, {aiPlayers[state].target.cell.number.y}
+          //   </p>
+          // </li>
+          // {aiPlayers[state].strafing.state !== true &&(
+          //   <li className="debugBoxListItem">
+          //   <FontAwesomeIcon icon={faCompass} size="sm" className="debugBoxIcon"/> :
+          //     <p className="debugBoxText">
+          //       {aiPlayers[state].direction}
+          //     </p>
+          //   </li>
+          // )}
+          // {aiPlayers[state].strafing.state === true &&(
+          //   <li className="debugBoxListItem">
+          //     <FontAwesomeIcon icon={faCompass} size="sm" className="debugBoxIcon"/> :
+          //     <p className="debugBoxText">
+          //       {aiPlayers[state].strafing.direction}
+          //     </p>
+          //   </li>
+          // )}
+        }
           <li className="debugBoxListItem">
             <FontAwesomeIcon icon={faSkullCrossbones} size="sm" className="debugBoxIcon"/> :
             <p className="debugBoxText">
               {aiPlayers[state].points}
             </p>
+          </li>
+          <li className="debugBoxListItem3">
+            <p className="debugBoxText debugBoxTextAlt">Stamina</p>
+            <ProgressBar className="staminaProgress" now={staminaPercent} variant={staminaColor}/>
           </li>
           <li className="debugBoxListItem">
             <FontAwesomeIcon icon={faHeartbeat} size="sm" className="debugBoxIcon"/> :
