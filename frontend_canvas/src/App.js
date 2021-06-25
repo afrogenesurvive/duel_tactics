@@ -392,12 +392,12 @@ class App extends Component {
       //   type: 'item',
       //   effect: '',
       // },
-      // {
-      //   name: 'spear1',
-      //   type: 'weapon',
-      //   subType: 'spear',
-      //   effect: '',
-      // },
+      {
+        name: 'spear1',
+        type: 'weapon',
+        subType: 'spear',
+        effect: '',
+      },
       // {
       //   name: 'sword2',
       //   type: 'weapon',
@@ -442,7 +442,7 @@ class App extends Component {
       // },
     ];
     this.customItemPlacement = {
-      state: false,
+      state: true,
       cells: [
         {x:0 ,y:0 },
         {x:1 ,y:0 },
@@ -646,7 +646,7 @@ class App extends Component {
         respawn: false,
         points: 0,
         speed: {
-          move: .125,
+          move: .1,
           range: [.05,.1,.125,.2]
         },
         terrainMoveSpeed: {
@@ -660,9 +660,9 @@ class App extends Component {
           effect: '',
         },
         currentArmor: {
-          name: 'speedGreaves',
-          type: 'greaves',
-          effect: 'speedUp',
+          name: '',
+          type: '',
+          effect: '',
         },
         items: {
           weaponIndex: 0,
@@ -676,9 +676,9 @@ class App extends Component {
           ],
           armor: [
             {
-              name: 'speedGreaves',
-              type: 'greaves',
-              effect: 'speedUp',
+              name: '',
+              type: '',
+              effect: '',
             }
           ],
           ammo: 0,
@@ -2539,7 +2539,7 @@ class App extends Component {
 
     let keyPressedDirection;
 
-    console.log();
+
     if (player.ai.state === true && player.dead.state === true) {
 
     }
@@ -3598,7 +3598,7 @@ class App extends Component {
 
                 // ATTACK DEFENDED!!
                 else {
-                  // console.log('attackdefended');
+                  console.log('attackdefended');
 
                   // if (this.players.[player.target.occupant.player-1].direction === player.direction) {
                   //   console.log('defend the rear!!');
@@ -3633,6 +3633,7 @@ class App extends Component {
                   // let shouldPushBackOpponent = 2;
                   let shouldPushBackOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.pushBack*2);
                   if (shouldPushBackOpponent === 1) {
+                    console.log('pushback opponent');
                     let canPushback = this.pushBack(this.players[player.target.occupant.player-1],player.direction);
 
 
@@ -3650,6 +3651,7 @@ class App extends Component {
 
                     // DEFLECT OPPONENT!
                     if (deflectOpponent === 1) {
+                      console.log('opponent guard break');
                       this.players[player.target.occupant.player-1].breakAnim.defend = {
                         state: true,
                         count: 1,
@@ -3684,8 +3686,8 @@ class App extends Component {
                   // let shouldDeflectAttacker = 1;
                   let shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
                   // let shouldDeflectAttacker = this.rnJesus(1,2);
-                  let shouldDeflectPushBack = 1;
-                  // let shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack);
+                  // let shouldDeflectPushBack = 1;
+                  let shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack);
                   if (shouldDeflectPushBack === 1) {
                     let pushBackDirection;
                     switch(player.direction) {
@@ -3718,7 +3720,7 @@ class App extends Component {
                     let canPushback = this.pushBack(player,pushBackDirection);
 
                     if (canPushback === true && shouldDeflectAttacker === 1) {
-                      // console.log('predeflect --> pushback');
+                      console.log('predeflect --> pushback');
                       player.success.deflected.predeflect = true;
                     }
                     else if (canPushback === false && shouldDeflectAttacker === 1) {
@@ -3747,7 +3749,7 @@ class App extends Component {
 
                   // ATTACKER NO PUSHBACK, JUST DEFLECT!
                   else if (shouldDeflectPushBack !== 1 && shouldDeflectAttacker === 1) {
-                    // console.log('no pushback ---> just deflect');
+                    console.log('no pushback ---> just deflect');
 
                     player.defending = {
                       state: false,
@@ -3773,7 +3775,7 @@ class App extends Component {
 
                   // ATTACKER NO DEFLECT NO PUSHBACK!
                   else if (shouldDeflectPushBack !== 1 && shouldDeflectAttacker !== 1) {
-                    // console.log('attacker not deflected or pushed back');
+                    console.log('attacker not deflected or pushed back');
                   }
 
                 }
@@ -9434,7 +9436,7 @@ class App extends Component {
               cell2.item.effect = item.effect;
 
               // item.amount--
-              console.log('post item', item, cell2.item,cell2.number);
+              // console.log('post item', item, cell2.item,cell2.number);
 
             }
           // }
@@ -10550,7 +10552,7 @@ class App extends Component {
       if (checkCell === true) {
 
         // console.log('adding ai. Player #',newPlayerNumber,' @',cell.x,cell.y);
-        cell = {x:8,y:6};
+        // cell = {x:8,y:6};
 
         let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y)
         let newPlayer = {
@@ -11122,7 +11124,7 @@ class App extends Component {
 
 
     for (const plyr of this.players) {
-      if (plyr.ai.state === true) {
+      if (plyr.ai.state === true && plyr.dead.state !== true && plyr.falling.state !== true) {
 
 
         let fieldItemScan = []
@@ -11558,12 +11560,14 @@ class App extends Component {
             )
           }
           if (targetPlayer.attacking.state === true) {
+             console.log('ai target is attacking');
             if (
-              targetPlayer.attacking.count === this.attackAnimRef.peak - 3 ||
-              targetPlayer.attacking.count === this.attackAnimRef.peak + 3
+              targetPlayer.attacking.count === this.attackAnimRef.peak - 4
             ) {
+              console.log('almost peak attack');
               let whatDo = this.rnJesus(1,2);
               if (whatDo === 1) {
+                console.log('ai defend');
                 instructions1.push(
                   {
                     keyword: 'long_defend',
@@ -11572,6 +11576,7 @@ class App extends Component {
                   },
                 )
               } else {
+                console.log('ai dodge');
                 instructions1.push(
                   {
                     keyword: 'dodge',
@@ -11583,16 +11588,25 @@ class App extends Component {
 
             }
             if (targetPlayer.attacking.count <= 3) {
+              console.log('early attack');
               let whatDo2 = this.rnJesus(1,2);
+              whatDo2 = 1
               if (whatDo2 === 1) {
+                console.log('defend');
                 instructions1.push(
+                  // {
+                  //   keyword: 'attack',
+                  //   count: 0,
+                  //   limit: 1,
+                  // },
                   {
-                    keyword: 'attack',
+                    keyword: 'long_defend',
                     count: 0,
                     limit: 1,
                   },
                 )
               } else {
+                console.log('flank');
                 let flankDir2;
                 let aiPosCell2 = this.gridInfo.find(elem => elem.number.x === aiPlayer.currentPosition.cell.number.x && elem.number.y === aiPlayer.currentPosition.cell.number.y)
 
@@ -12202,6 +12216,7 @@ class App extends Component {
         }
         break;
         case 'long_defend':
+        console.log('ai act defend');
           currentInstruction.limit = 25;
           this.keyPressed[plyr.number-1].defend = true;
           if (currentInstruction.count < currentInstruction.limit) {
