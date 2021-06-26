@@ -611,7 +611,7 @@ class App extends Component {
         defending: {
           state: false,
           count: 0,
-          limit: 3,
+          limit: 4,
         },
         defendDecay: {
           state: false,
@@ -957,7 +957,7 @@ class App extends Component {
         defending: {
           state: false,
           count: 0,
-          limit: 3,
+          limit: 4,
         },
         defendDecay: {
           state: false,
@@ -1315,15 +1315,15 @@ class App extends Component {
     this.attackAnimRef = {
       limit: {
         unarmed: 18,
-        sword: 20,
+        sword: 22,
         spear: 25,
-        crossbow: 30,
+        crossbow: 25,
       },
       peak: {
         unarmed: 6,
-        sword: 10,
+        sword: 12,
         spear: 18,
-        crossbow: 20,
+        crossbow: 18,
       },
     };
 
@@ -3314,7 +3314,7 @@ class App extends Component {
 
           // TIME TO ATTACK IS NOW!
           if (player.attacking.count === attackPeak) {
-            // console.log('attack peak',player.attacking.count);
+            console.log('attack peak',player.attacking.count,'plyr',player.number);
 
 
             if (player.currentWeapon.type === 'crossbow' && player.items.ammo > 0) {
@@ -3571,13 +3571,13 @@ class App extends Component {
 
                   // ATTACK LANDED!!
                   if (doubleHit === 1) {
-                    // console.log('double hit attack');
+                    console.log('double hit attack plyr ',player.number,'against plyr ',player.target.occupant.player);
                     this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 2;
                     player.attackStrength = 2;
                     this.attackedCancel(this.players[player.target.occupant.player-1])
                   }
                   else if (singleHit === 1) {
-                    // console.log('single hit attack');
+                    console.log('single hit attack plyr ',player.number,'against plyr ',player.target.occupant.player);
                     this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
                     player.attackStrength = 1;
                     this.attackedCancel(this.players[player.target.occupant.player-1])
@@ -3647,7 +3647,7 @@ class App extends Component {
 
                 // ATTACK DEFENDED!!
                 else {
-                  console.log('attackdefended');
+                  console.log('attack defended by ',player.target.occupant.player,'against plyr ',player.number);
 
                   // if (this.players.[player.target.occupant.player-1].direction === player.direction) {
                   //   console.log('defend the rear!!');
@@ -3700,7 +3700,7 @@ class App extends Component {
 
                     // DEFLECT OPPONENT!
                     if (deflectOpponent === 1) {
-                      console.log('opponent guard break');
+                      console.log('opponent guard break player',player.target.occupant.player);
                       this.players[player.target.occupant.player-1].breakAnim.defend = {
                         state: true,
                         count: 1,
@@ -3908,9 +3908,9 @@ class App extends Component {
         if (player.defending.count > 0 && player.defending.count < player.defending.limit+1 && player.defendDecay.state !== true) {
           player.defending.count++;
           player.action = 'defending';
-          // console.log('defend winding up',player.defending.count++, 'player',player.number);
+          // console.log('defend winding up',player.defending.count, 'player',player.number);
         } else if (player.defending.count >= player.defending.limit+1 && player.defending.state === false && player.defendDecay.state !== true) {
-          // console.log('defend wind up limit cap','player',player.number);
+          console.log('defend peak player',player.number);
 
           if (player.stamina.current - 1.5 >= 0) {
 
@@ -4304,7 +4304,7 @@ class App extends Component {
 
 
           if (player.flanking.step === 2) {
-            // console.log('here',player.direction,'flank dir',player.flanking.direction);
+            console.log('flanking step 2',player.direction,'flank dir',player.flanking.direction);
             switch(player.flanking.direction) {
               case 'north' :
                 player.direction = 'south';
@@ -4391,7 +4391,9 @@ class App extends Component {
           player.strafing.state !== true &&
           player.flanking.state !== true
         ) {
-
+          if (player.ai.state === true) {
+            console.log('ai flanking');
+          }
 
           this.players[player.number-1].dodging = {
             countState: false,
@@ -4441,7 +4443,7 @@ class App extends Component {
 
               if (canFlank === true) {
 
-                // console.log('flanking step',keyPressedDirection,player.direction);
+                console.log('flanking step',keyPressedDirection,player.direction);
                 this.players[player.number-1].flanking.checking = true;
                 this.players[player.number-1].flanking.direction = keyPressedDirection;
                 this.players[player.number-1].flanking.preFlankDirection = player.direction;
@@ -6475,6 +6477,7 @@ class App extends Component {
                 }
 
               }
+
               if (plyr.defending.state === true) {
                 context.drawImage(indicatorImgs.defend, point.x-35, point.y-35, 35,35);
               }
@@ -6483,6 +6486,10 @@ class App extends Component {
               }
               if (plyr.dodging.countState === true && plyr.dodging.count < 3) {
                 context.drawImage(indicatorImgs.preAttack2, point.x-45, point.y-35, 35,35);
+              }
+
+              if (player.defending.count > 0 ) {
+                context.drawImage(indicatorImgs.preAttack2, point.x-35, point.y-35, 35,35);
               }
               // if (plyr.dodging.state === true) {
               //   context.drawImage(indicatorImgs.dodge, point.x-45, point.y-35, 35,35);
@@ -8961,7 +8968,7 @@ class App extends Component {
   }
 
   attackedCancel = (player) => {
-    // console.log('player', player.number,' attacked. Cancel action!',player.action);
+    console.log('player', player.number,' attacked. Cancel action!',player.action);
 
     switch(player.action) {
       case 'attacking':
@@ -10607,7 +10614,7 @@ class App extends Component {
       if (checkCell === true) {
 
         // console.log('adding ai. Player #',newPlayerNumber,' @',cell.x,cell.y);
-        // cell = {x:8,y:6};
+        cell = {x:8,y:6};
 
         let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y)
         let newPlayer = {
@@ -10764,7 +10771,7 @@ class App extends Component {
           defending: {
             state: false,
             count: 0,
-            limit: 3,
+            limit: 4,
           },
           defendDecay: {
             state: false,
@@ -11408,7 +11415,7 @@ class App extends Component {
       }
 
     }
-    if (aiPlayer.ai.mission === 'engage') {
+    if (aiPlayer.ai.mission === 'engage' ) {
       // console.log('engaging');
 
       if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
@@ -11446,7 +11453,7 @@ class App extends Component {
 
       this.getTarget(aiPlayer);
 
-      if (aiPlayer.currentWeapon.type === 'bow' && aiPlayer.action === 'idle') {
+      if (aiPlayer.currentWeapon.type === 'bow' && aiPlayer.action === 'idle' && aiPlayer.success.deflected.state !== true) {
         aiPlayer.ai.instructions = [
           {
             keyword: 'attack',
@@ -11455,131 +11462,162 @@ class App extends Component {
           },
         ]
       }
-      if (aiPlayer.currentWeapon.type === 'spear' && aiPlayer.action === 'idle') {
-        if (targetPlayer.defending.state !== true) {
-          aiPlayer.ai.instructions = [
+      if (aiPlayer.currentWeapon.type === 'spear' && aiPlayer.action === 'idle' && aiPlayer.success.deflected.state !== true) {
+        let instructions2 = [];
+
+        if (targetPlayer.defending.state !== true && targetPlayer.attacking.state !== true && targetPlayer.defendDecay.state !== true) {
+          console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,'is neither attacking nor defending')
+          instructions2.push(
             {
               keyword: 'attack',
               count: 0,
               limit: 1,
             },
-          ]
+          )
         }
         if (targetPlayer.defendDecay.count > targetPlayer.defendDecay.limit - 10) {
-          aiPlayer.ai.instructions = [
+          console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,' is defending',targetPlayer.defendDecay.count);
+          instructions2.push(
             {
               keyword: 'attack',
               count: 0,
               limit: 1,
             },
-          ]
+          )
         }
+
         if (targetPlayer.attacking.state === true) {
-          if (
-            targetPlayer.attacking.count === this.attackAnimRef.peak - 3 ||
-            targetPlayer.attacking.count === this.attackAnimRef.peak + 3
-          ) {
+          console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,' is attacking',targetPlayer.attacking.count);
+         if (
+           targetPlayer.attacking.count < this.attackAnimRef.peak.spear &&
+           targetPlayer.attacking.count >= this.attackAnimRef.peak.spear - 4
+         ) {
+           console.log('almost peak attack');
             let whatDo = this.rnJesus(1,2);
             if (whatDo === 1) {
-              aiPlayer.ai.instructions = [
+              instructions2.push(
                 {
                   keyword: 'long_defend',
                   count: 0,
                   limit: 1,
                 },
-              ]
+              )
             }
             else {
-              aiPlayer.ai.instructions = [
+              instructions2.push(
                 {
                   keyword: 'dodge',
                   count: 0,
                   limit: 1,
                 },
-              ]
+              )
             }
 
           }
-          if (targetPlayer.attacking.count <= 3) {
+          if (targetPlayer.attacking.count <= 8) {
+            console.log('early attack');
             let whatDo2 = this.rnJesus(1,2);
             if (whatDo2 === 1) {
-              aiPlayer.ai.instructions = [
+              instructions2.push(
                 {
                   keyword: 'attack',
                   count: 0,
                   limit: 1,
                 },
-              ]
+              )
             }
-            else {
-              let flankDir;
-              let aiPosCell = this.gridInfo.find(elem => elem.number.x === aiPlayer.currentPosition.cell.number.x && elem.number.y === aiPlayer.currentPosition.cell.number.y)
+            if (whatDo2 === 2) {
+
+              let flankDir2;
+              let aiPosCell2 = this.gridInfo.find(elem => elem.number.x === aiPlayer.currentPosition.cell.number.x && elem.number.y === aiPlayer.currentPosition.cell.number.y)
 
               switch(aiPlayer.direction) {
                 case 'north':
-                  if (aiPosCell.edge.state === true && aiPosCell.edge.side === 'east') {
-                    flankDir = 'west';
+                  if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === 'east') {
+                    flankDir2 = 'west';
                   }
-                  if (aiPosCell.edge.state === true && aiPosCell.edge.side === 'west') {
-                    flankDir = 'east';
+                  if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === 'west') {
+                    flankDir2 = 'east';
                   }
                   else {
-                    flankDir = 'west';
+                    flankDir2 = 'west';
                   }
                 break;
                 case 'south':
-                  if (aiPosCell.edge.state === true && aiPosCell.edge.side === 'east') {
-                    flankDir = 'west';
+                  if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === 'east') {
+                    flankDir2 = 'west';
                   }
-                  if (aiPosCell.edge.state === true && aiPosCell.edge.side === 'west') {
-                    flankDir = 'east';
+                  if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === 'west') {
+                    flankDir2 = 'east';
                   }
                   else {
-                    flankDir = 'west';
+                    flankDir2 = 'west';
                   }
                 break;
                 case 'east':
-                  if (aiPosCell.edge.state === true && aiPosCell.edge.side === 'north') {
-                    flankDir = 'south';
+                  if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === 'north') {
+                    flankDir2 = 'south';
                   }
-                  if (aiPosCell.edge.state === true && aiPosCell.edge.side === 'south') {
-                    flankDir = 'north';
+                  if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === 'south') {
+                    flankDir2 = 'north';
                   }
                   else {
-                    flankDir = 'south';
+                    flankDir2 = 'south';
                   }
                 break;
                 case 'west':
-                  if (aiPosCell.edge.state === true && aiPosCell.edge.side === 'north') {
-                    flankDir = 'south';
+                  if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === 'north') {
+                    flankDir2 = 'south';
                   }
-                  if (aiPosCell.edge.state === true && aiPosCell.edge.side === 'south') {
-                    flankDir = 'north';
+                  if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === 'south') {
+                    flankDir2 = 'north';
                   }
                   else {
-                    flankDir = 'south';
+                    flankDir2 = 'south';
                   }
                 break;
               }
-              aiPlayer.ai.instructions = [
+              console.log('ai flank',flankDir2);
+
+              instructions2.push(
                 {
-                  keyword: 'flank_'+flankDir,
+                  keyword: 'flank_'+flankDir2,
+                  count: 0,
+                  limit: 5,
+                },
+                // {
+                //   keyword: 'attack',
+                //   count: 0,
+                //   limit: 1,
+                // },
+              )
+            }
+            if ( whatDo2 === 3) {
+              console.log('ai dodge');
+              instructions2.push(
+                {
+                  keyword: 'dodge',
                   count: 0,
                   limit: 1,
                 },
-                {
-                  keyword: 'attack',
-                  count: 0,
-                  limit: 1,
-                },
-              ]
+              )
             }
 
           }
         }
 
+        for (const inst of aiPlayer.ai.instructions) {
+          if (inst.keyword === 'attack') {
+            // console.log('ai '+aiPlayer.number+' decides to attack w/ spear');
+          }
+        }
+
+        aiPlayer.ai.instructions = instructions2;
+        aiPlayer.ai.currentInstruction = 0;
+        // console.log('aiPlayer.instructions',aiPlayer.ai.instructions);
+
       }
-      if (aiPlayer.currentWeapon.type === 'sword' && aiPlayer.action === 'idle') {
+      if (aiPlayer.currentWeapon.type === 'sword' && aiPlayer.action === 'idle' && aiPlayer.success.deflected.state !== true) {
           let instructions1 = [];
           // instructions1.push(
           //   {
@@ -11590,8 +11628,8 @@ class App extends Component {
           // )
 
 
-          if (targetPlayer.defending.state !== true && targetPlayer.attacking.state !== true) {
-            console.log('ai target is neither attacking nor defending');
+          if (targetPlayer.defending.state !== true && targetPlayer.attacking.state !== true && targetPlayer.defendDecay.state !== true) {
+            console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,'is neither attacking nor defending');
             instructions1.push(
               {
                 keyword: 'attack',
@@ -11607,6 +11645,7 @@ class App extends Component {
           }
 
           if (targetPlayer.defendDecay.count > targetPlayer.defendDecay.limit - 10) {
+            console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,' is defending',targetPlayer.defendDecay.count);
             instructions1.push(
               {
                 keyword: 'attack',
@@ -11615,11 +11654,11 @@ class App extends Component {
               },
             )
           }
-          if (targetPlayer.attacking.state === true) {
-             console.log('ai target is attacking',targetPlayer.attacking.count);
+          if (targetPlayer.attacking.count > 0) {
+             console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,' is attacking',targetPlayer.attacking.count);
             if (
-              targetPlayer.attacking.count < this.attackAnimRef.peak &&
-              targetPlayer.attacking.count >= this.attackAnimRef.peak - 4
+              targetPlayer.attacking.count < this.attackAnimRef.peak.sword &&
+              targetPlayer.attacking.count >= this.attackAnimRef.peak.sword - 4
             ) {
               console.log('almost peak attack');
               let whatDo = this.rnJesus(1,2);
@@ -11644,12 +11683,12 @@ class App extends Component {
               }
 
             }
-            if (targetPlayer.attacking.count <= 3) {
+            if (targetPlayer.attacking.count <= 6) {
               console.log('early attack');
-              let whatDo2 = this.rnJesus(1,2);
-              whatDo2 = 1
+              let whatDo2 = this.rnJesus(1,3);
+              whatDo2 = 3
               if (whatDo2 === 1) {
-                console.log('defend');
+                console.log(' ai defend');
                 instructions1.push(
                   // {
                   //   keyword: 'attack',
@@ -11662,8 +11701,9 @@ class App extends Component {
                     limit: 1,
                   },
                 )
-              } else {
-                console.log('flank');
+              }
+              if (whatDo2 === 2) {
+
                 let flankDir2;
                 let aiPosCell2 = this.gridInfo.find(elem => elem.number.x === aiPlayer.currentPosition.cell.number.x && elem.number.y === aiPlayer.currentPosition.cell.number.y)
 
@@ -11713,15 +11753,26 @@ class App extends Component {
                     }
                   break;
                 }
+                console.log('ai flank',flankDir2);
 
                 instructions1.push(
                   {
                     keyword: 'flank_'+flankDir2,
                     count: 0,
-                    limit: 1,
+                    limit: 5,
                   },
+                  // {
+                  //   keyword: 'attack',
+                  //   count: 0,
+                  //   limit: 1,
+                  // },
+                )
+              }
+              if ( whatDo2 === 3) {
+                console.log('ai dodge');
+                instructions1.push(
                   {
-                    keyword: 'attack',
+                    keyword: 'dodge',
                     count: 0,
                     limit: 1,
                   },
@@ -11733,7 +11784,7 @@ class App extends Component {
 
           for (const inst of aiPlayer.ai.instructions) {
             if (inst.keyword === 'attack') {
-              // console.log('ai '+aiPlayer.number+' decides to attack');
+              // console.log('ai '+aiPlayer.number+' decides to attack w/ sword');
             }
           }
 
@@ -12216,7 +12267,8 @@ class App extends Component {
         break;
         case 'flank_north':
           if (plyr.flanking.state !== true && plyr.action !== 'flanking') {
-            currentInstruction.limit = 1;
+            // console.log('flanking north @ ai act');
+            // currentInstruction.limit = 1;
             this.keyPressed[plyr.number-1].dodge = true;
             this.keyPressed[plyr.number-1].north = true;
             if (currentInstruction.count < currentInstruction.limit) {
@@ -12228,7 +12280,8 @@ class App extends Component {
         break;
         case 'flank_south':
           if (plyr.flanking.state !== true && plyr.action !== 'flanking') {
-            currentInstruction.limit = 1;
+            // console.log('flanking south @ ai act');
+            // currentInstruction.limit = 1;
             this.keyPressed[plyr.number-1].dodge = true;
             this.keyPressed[plyr.number-1].south = true;
             if (currentInstruction.count < currentInstruction.limit) {
@@ -12240,7 +12293,8 @@ class App extends Component {
         break;
         case 'flank_east':
           if (plyr.flanking.state !== true && plyr.action !== 'flanking') {
-            currentInstruction.limit = 1;
+            // console.log('flanking east @ ai act');
+            // currentInstruction.limit = 1;
             this.keyPressed[plyr.number-1].dodge = true;
             this.keyPressed[plyr.number-1].east = true;
             if (currentInstruction.count < currentInstruction.limit) {
@@ -12252,7 +12306,8 @@ class App extends Component {
         break;
         case 'flank_west':
           if (plyr.flanking.state !== true && plyr.action !== 'flanking') {
-            currentInstruction.limit = 1;
+            // console.log('flanking west @ ai act');
+            // currentInstruction.limit = 1;
             this.keyPressed[plyr.number-1].dodge = true;
             this.keyPressed[plyr.number-1].west = true;
             if (currentInstruction.count < currentInstruction.limit) {
@@ -12275,7 +12330,7 @@ class App extends Component {
         }
         break;
         case 'long_defend':
-        console.log('ai act defend');
+        // console.log('ai act defend');
           currentInstruction.limit = 25;
           this.keyPressed[plyr.number-1].defend = true;
           if (currentInstruction.count < currentInstruction.limit) {
