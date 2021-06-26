@@ -2645,7 +2645,7 @@ class App extends Component {
       if (player.stamina.current >= player.stamina.max) {
         player.stamina.current = player.stamina.max;
       }
-      if (player.stamina.current < 1) {
+      if (player.stamina.current === 1) {
         // console.log('out of stamina');
         player.flanking = {
           checking: false,
@@ -2826,6 +2826,8 @@ class App extends Component {
               if (player.drowning !== true && player.pushBack.state !== true) {
                 this.getTarget(player);
               }
+
+
 
             }
 
@@ -3028,6 +3030,53 @@ class App extends Component {
       // CAN READ INPUTS
       else if (player.moving.state === false) {
 
+
+        // MOVEMENT OVERLAP PUSHBACK!!
+        for (const plyr4 of this.players) {
+          if (
+            player.number !== plyr4.number &&
+            player.currentPosition.cell.number.x === plyr4.currentPosition.cell.number.x &&
+            player.currentPosition.cell.number.y === plyr4.currentPosition.cell.number.y
+          ) {
+            // console.log('buck up btwn plyrs',player.number,plyr4.number,"@",player.currentPosition.cell.number,plyr4.currentPosition.cell.number);
+
+
+            let playerAPushDir2;
+            let playerBPushDir2;
+            switch(plyr4.direction) {
+              case 'north' :
+                playerAPushDir2 = 'south';
+              break;
+              case 'south' :
+                playerAPushDir2 = 'north';
+              break;
+              case 'east' :
+                playerAPushDir2 = 'west';
+              break;
+              case 'west' :
+                playerAPushDir2 = 'east';
+              break;
+            }
+            switch(player.direction) {
+              case 'north' :
+                playerBPushDir2 = 'south';
+              break;
+              case 'south' :
+                playerBPushDir2 = 'north';
+              break;
+              case 'east' :
+                playerBPushDir2 = 'west';
+              break;
+              case 'west' :
+                playerBPushDir2 = 'east';
+              break;
+            }
+
+            let canPush = this.pushBack(plyr4,playerAPushDir2)
+            let canPush2 = this.pushBack(player,playerBPushDir2)
+
+          }
+        }
 
 
         // TURNER!!
@@ -3633,7 +3682,7 @@ class App extends Component {
                   // let shouldPushBackOpponent = 2;
                   let shouldPushBackOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.pushBack*2);
                   if (shouldPushBackOpponent === 1) {
-                    console.log('pushback opponent');
+                    // console.log('pushback opponent');
                     let canPushback = this.pushBack(this.players[player.target.occupant.player-1],player.direction);
 
 
@@ -3720,7 +3769,7 @@ class App extends Component {
                     let canPushback = this.pushBack(player,pushBackDirection);
 
                     if (canPushback === true && shouldDeflectAttacker === 1) {
-                      console.log('predeflect --> pushback');
+                      // console.log('predeflect --> pushback');
                       player.success.deflected.predeflect = true;
                     }
                     else if (canPushback === false && shouldDeflectAttacker === 1) {
@@ -3775,7 +3824,7 @@ class App extends Component {
 
                   // ATTACKER NO DEFLECT NO PUSHBACK!
                   else if (shouldDeflectPushBack !== 1 && shouldDeflectAttacker !== 1) {
-                    console.log('attacker not deflected or pushed back');
+                    // console.log('attacker not deflected or pushed back');
                   }
 
                 }
@@ -3997,7 +4046,8 @@ class App extends Component {
               }
             }
 
-          } else {
+          }
+          else {
 
             player.dodging = {
               countState: false,
@@ -5015,7 +5065,8 @@ class App extends Component {
 
                 }
 
-              } else {
+              }
+              else {
                 player.statusDisplay = {
                   state: true,
                   status: "Out of Stamina",
@@ -7020,8 +7071,8 @@ class App extends Component {
           if (plyr.itemDrop.state === true) {
             let itemImg2;
             let fillClr2;
-            if (plyr.itemDrop.item.name === '') {
-              // console.log('drop a weapon or armor');
+            if (plyr.itemDrop.item.name === '' && plyr.itemDrop.gear.type !== '') {
+              // console.log('drop a weapon or armor',plyr.itemDrop.gear.type);
               switch(plyr.itemDrop.gear.type) {
                 case 'sword' :
                   fillClr2 = "orange";
@@ -7049,8 +7100,8 @@ class App extends Component {
                 break;
               }
             }
-            else if (plyr.itemDrop.gear.type === '') {
-              // console.log('drop an item');
+            else if (plyr.itemDrop.gear.type === '' && plyr.itemDrop.item.name !== '') {
+              // console.log('drop an item',plyr.itemDrop.item.name);
               switch(plyr.itemDrop.item.name) {
                 case 'moveSpeedUp' :
                   fillClr2 = "purple";
@@ -8969,7 +9020,12 @@ class App extends Component {
 
     player.pushBack.prePushMoveSpeed = player.speed.move;
     player.speed.move = .125;
-    player.stamina.current = player.stamina.current - 7;
+
+    if (player.stamina.current - 7 < 0) {
+      player.stamina.current = 0;
+    } else {
+      player.stamina.current = player.stamina.current - 7;
+    }
 
     let pushBackDirection = hitByPlayerDirection;
     player.strafing = {
@@ -9621,7 +9677,6 @@ class App extends Component {
             break;
           }
 
-
           this.players[player.number-1].items.armor.splice(index,1);
           this.players[player.number-1].items.armorIndex = 0;
           this.players[player.number-1].currentArmor = {
@@ -9639,7 +9694,6 @@ class App extends Component {
             }
             this.players[player.number-1].action = "idle";
           }
-
 
           this.players[player.number-1].statusDisplay = {
             state: true,
@@ -9662,6 +9716,7 @@ class App extends Component {
     }
 
     //   if dropped gear remove buff/effect
+    // console.log('this.players[player.number-1].itemDrop',this.players[player.number-1].itemDrop);
 
   }
   discardGear = (player,type) => {
@@ -11391,7 +11446,7 @@ class App extends Component {
 
       this.getTarget(aiPlayer);
 
-      if (aiPlayer.currentWeapon.type === 'bow') {
+      if (aiPlayer.currentWeapon.type === 'bow' && aiPlayer.action === 'idle') {
         aiPlayer.ai.instructions = [
           {
             keyword: 'attack',
@@ -11400,7 +11455,7 @@ class App extends Component {
           },
         ]
       }
-      if (aiPlayer.currentWeapon.type === 'spear') {
+      if (aiPlayer.currentWeapon.type === 'spear' && aiPlayer.action === 'idle') {
         if (targetPlayer.defending.state !== true) {
           aiPlayer.ai.instructions = [
             {
@@ -11524,7 +11579,7 @@ class App extends Component {
         }
 
       }
-      if (aiPlayer.currentWeapon.type === 'sword') {
+      if (aiPlayer.currentWeapon.type === 'sword' && aiPlayer.action === 'idle') {
           let instructions1 = [];
           // instructions1.push(
           //   {
@@ -11535,7 +11590,8 @@ class App extends Component {
           // )
 
 
-          if (targetPlayer.defending.state !== true) {
+          if (targetPlayer.defending.state !== true && targetPlayer.attacking.state !== true) {
+            console.log('ai target is neither attacking nor defending');
             instructions1.push(
               {
                 keyword: 'attack',
@@ -11560,9 +11616,10 @@ class App extends Component {
             )
           }
           if (targetPlayer.attacking.state === true) {
-             console.log('ai target is attacking');
+             console.log('ai target is attacking',targetPlayer.attacking.count);
             if (
-              targetPlayer.attacking.count === this.attackAnimRef.peak - 4
+              targetPlayer.attacking.count < this.attackAnimRef.peak &&
+              targetPlayer.attacking.count >= this.attackAnimRef.peak - 4
             ) {
               console.log('almost peak attack');
               let whatDo = this.rnJesus(1,2);
@@ -11763,6 +11820,8 @@ class App extends Component {
     if (getPath === true && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
       // console.log('pathfinding...');
       this.updatePathArray();
+
+      // this.easyStar = new Easystar.js();
 
       let aiPos;
       let targetPos;
