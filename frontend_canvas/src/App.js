@@ -11678,11 +11678,11 @@ class App extends Component {
           if (targetPlayer.defending.state !== true && targetPlayer.attacking.state !== true && targetPlayer.defendDecay.state !== true) {
             // console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,'is neither attacking nor defending');
             instructions1.push(
-              {
-                keyword: 'attack',
-                count: 0,
-                limit: 1,
-              },
+              // {
+              //   keyword: 'attack',
+              //   count: 0,
+              //   limit: 1,
+              // },
               // {
               //   keyword: 'short_wait',
               //   count: 0,
@@ -11733,7 +11733,7 @@ class App extends Component {
             if (targetPlayer.attacking.count <= 6) {
               console.log('early attack');
               let whatDo2 = this.rnJesus(1,4);
-              whatDo2 = 2
+              // whatDo2 = 4
               if (whatDo2 === 1) {
                 console.log(' ai defend');
                 instructions1.push(
@@ -11824,11 +11824,53 @@ class App extends Component {
                 console.log('ai strafe evade');
                 let evadeDirection;
                 let cellsToConsider = [
-                  {x: aiPlayer.currentPosition.cell.number.x,y: aiPlayer.currentPosition.cell.number.y}
+                  {x: aiPlayer.currentPosition.cell.number.x+1 ,y: aiPlayer.currentPosition.cell.number.y},
+                  {x: aiPlayer.currentPosition.cell.number.x-1 ,y: aiPlayer.currentPosition.cell.number.y},
+                  {x: aiPlayer.currentPosition.cell.number.x ,y: aiPlayer.currentPosition.cell.number.y+1},
+                  {x: aiPlayer.currentPosition.cell.number.x ,y: aiPlayer.currentPosition.cell.number.y-1},
                 ]
+                for (const cell of cellsToConsider) {
+                  let freeCell = true
+                  let cellRef = this.gridInfo.find(elem=> elem.number.x === cell.x && elem.number.y === cell.y);
+                  if (cellRef) {
+                    let terrainInfo3 = cellRef.levelData.length-1;
+                    if (
+                      cellRef.levelData.charAt(terrainInfo3) === 'j' ||
+                      cellRef.levelData.charAt(terrainInfo3) === 'h' ||
+                      cellRef.levelData.charAt(terrainInfo3) === 'i' ||
+                      cellRef.levelData.charAt(0) !== 'x' ||
+                      cellRef.void.state === true
+                    ) {
+                      freeCell = false;
+                    }
+                    for (const plyr5 of this.players) {
+                      if (plyr5.currentPosition.cell.number.x === cellRef.number.x && plyr5.currentPosition.cell.number.y === cellRef.number.y) {
+                        freeCell = false;
+                      }
+                    }
+                  }
+                  else {
+                    freeCell = false
+                  }
+                  if (freeCell === true) {
+                    if (cell.x === aiPlayer.currentPosition.cell.number.x+1 && cell.y === aiPlayer.currentPosition.cell.number.y) {
+                      evadeDirection = 'east'
+                    }
+                    if (cell.x === aiPlayer.currentPosition.cell.number.x-1 && cell.y === aiPlayer.currentPosition.cell.number.y) {
+                      evadeDirection = 'west'
+                    }
+                    if (cell.x === aiPlayer.currentPosition.cell.number.x && cell.y === aiPlayer.currentPosition.cell.number.y+1) {
+                      evadeDirection = 'south'
+                    }
+                    if (cell.x === aiPlayer.currentPosition.cell.number.x && cell.y === aiPlayer.currentPosition.cell.number.y-1) {
+                      evadeDirection = 'north'
+                    }
+                  }
+                }
+
                 instructions1.push(
                   {
-                    keyword: 'strafe_south',
+                    keyword: 'strafe_'+evadeDirection,
                     count: 0,
                     limit: 1,
                   },
