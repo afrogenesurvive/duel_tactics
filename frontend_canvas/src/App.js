@@ -1203,6 +1203,27 @@ class App extends Component {
         dodge: false,
       },
     ]
+    this.attackAnimRef = {
+      limit: {
+        unarmed: 18,
+        sword: 22,
+        spear: 25,
+        crossbow: 25,
+      },
+      peak: {
+        unarmed: 6,
+        sword: 12,
+        spear: 18,
+        crossbow: 18,
+      },
+    };
+    this.deflectedLengthRef = {
+      outOfStamina: 50,
+      attacked: 25,
+      bluntAttacked: 20,
+      defended: 10,
+      attack: 15
+    };
     this.clicked = {
       number:{
         x:0,
@@ -1259,6 +1280,15 @@ class App extends Component {
     this.turnCheckerDirection = '';
     this.projectiles = [];
     this.projectileSpeed = .1;
+    this.boltDeflectAnim = {
+      position: {
+        x: 0,
+        y: 0,
+      },
+      state: false,
+      count: 0,
+      limit: 10,
+    };
     this.cellsUnderAttack = [];
     this.gamepadPollCounter = {
       count1: 0,
@@ -1268,6 +1298,7 @@ class App extends Component {
     };
     this.charSpriteHeight = 100;
     this.charSpriteWidth = 100;
+
     this.addAiPlayerKeyPress = false;
     this.addAiCount = {
       state: false,
@@ -1275,19 +1306,34 @@ class App extends Component {
       limit: 10,
     };
     this.aiPlayers = [];
-    this.aiInitType = 'basicPursue';
+    this.aiInitType = 'basicPatrol';
     this.aiInitSettings = {
       basicPursue: {
         primaryMission: 'pursue',
         mode: '',
+        partolArea: []
+      },
+      basicPatrol: {
+        primaryMission: 'patrol',
+        mode: '',
         partolArea: [
           {
-            x: undefined,
-            y: undefined,
+            x: 1,
+            y: 3,
           },
           {
-            x: undefined,
-            y: undefined,
+            x: 1,
+            y: 7,
+          },
+        ]
+      },
+      basicDefend: {
+        primaryMission: 'defend',
+        mode: '',
+        partolArea: [
+          {
+            x: 8,
+            y: 7,
           },
         ]
       }
@@ -1301,43 +1347,15 @@ class App extends Component {
       limit: 25,
     };
     this.allPlayersDead = false;
-
-
-    this.boltDeflectAnim = {
-      position: {
-        x: 0,
-        y: 0,
-      },
-      state: false,
-      count: 0,
-      limit: 10,
-    };
-    this.attackAnimRef = {
-      limit: {
-        unarmed: 18,
-        sword: 22,
-        spear: 25,
-        crossbow: 25,
-      },
-      peak: {
-        unarmed: 6,
-        sword: 12,
-        spear: 18,
-        crossbow: 18,
-      },
-    };
-
     this.removeAi = undefined;
+    this.easyStar = undefined;
+    this.getPath = false;
+
     this.showSettingsKeyPress = {
       state: false,
       count: 0,
       limit: 3,
     }
-
-    this.easyStar = undefined;
-    this.getPath = false;
-
-
 
   }
 
@@ -2563,8 +2581,10 @@ class App extends Component {
 
 
     // AI STRAFE SWITCH ON!!
-    if (player.ai.state === true && this.keyPressed[player.number-1].strafe === true) {
-      this.players[player.number-1].strafing.state = true;
+    if (player.ai.state === true && this.keyPressed[player.number-1]) {
+      if (this.keyPressed[player.number-1].strafe === true) {
+        this.players[player.number-1].strafing.state = true;
+      }
     }
 
 
@@ -2695,9 +2715,9 @@ class App extends Component {
           this.players[player.number-1].success.deflected = {
             state: true,
             count: 1,
-            limit: this.players[player.number-1].success.deflected.limit,
+            limit: this.deflectedLengthRef.outOfStamina,
             predeflect: this.players[player.number-1].success.deflected.predeflect,
-            type: 'blunt attacked',
+            type: 'outOfStamina',
           };
         }
       }
@@ -3114,13 +3134,6 @@ class App extends Component {
         }
 
 
-        // DEBUFF CHECKS!!
-        // if (player.hp === 1 && player.speed.move > .05) {
-        //
-        //   player.speed.move = .05;
-        // }
-
-
         // CHECK CELL UNDER ATTACK!!
         for (const cell of this.cellsUnderAttack) {
           if (cell.count < cell.limit) {
@@ -3240,8 +3253,7 @@ class App extends Component {
         }
 
 
-
-
+        // ITEM PICKUP/DROP ANIM COUNTER!
         if (player.itemDrop.state === true) {
           if (player.itemDrop.count < player.itemDrop.limit) {
             player.itemDrop.count++
@@ -3632,7 +3644,7 @@ class App extends Component {
                     this.players[player.target.occupant.player-1].success.deflected = {
                       state: true,
                       count: 1,
-                      limit: this.players[player.target.occupant.player-1].success.deflected.limit,
+                      limit: this.deflectedLengthRef.attacked,
                       predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
                       type: 'attacked',
                     };
@@ -3647,7 +3659,7 @@ class App extends Component {
                     this.players[player.target.occupant.player-1].success.deflected = {
                       state: true,
                       count: 1,
-                      limit: this.players[player.target.occupant.player-1].success.deflected.limit,
+                      limit: this.deflectedLengthRef.bluntAttacked,
                       predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
                       type: 'blunt attacked',
                     };
@@ -3731,7 +3743,7 @@ class App extends Component {
                       this.players[player.target.occupant.player-1].success.deflected = {
                         state: true,
                         count: 1,
-                        limit: this.players[player.target.occupant.player-1].success.deflected.limit,
+                        limit: this.deflectedLengthRef.defended,
                         predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
                         type: 'defended',
                       };
@@ -3799,7 +3811,7 @@ class App extends Component {
                       player.success.deflected = {
                         state: true,
                         count: 1,
-                        limit: player.success.deflected.limit,
+                        limit: this.deflectedLengthRef.attack,
                         predeflect: player.success.deflected.predeflect,
                         type: 'attack'
                       }
@@ -3824,7 +3836,7 @@ class App extends Component {
                     player.success.deflected = {
                       state: true,
                       count: 1,
-                      limit: player.success.deflected.limit,
+                      limit: this.deflectedLengthRef.attack,
                       predeflect: player.success.deflected.predeflect,
                       type: 'attack'
                     }
@@ -4087,7 +4099,7 @@ class App extends Component {
           player.success.deflected = {
             state: true,
             count: 1,
-            limit: player.success.deflected.limit,
+            limit: this.deflectedLengthRef.attack,
             predeflect: false,
             type: player.success.deflected.type,
           }
@@ -5331,7 +5343,7 @@ class App extends Component {
                     this.players.[plyr.number-1].success.deflected = {
                       state: true,
                       count: 1,
-                      limit: this.players.[plyr.number-1].success.deflected.limit,
+                      limit: this.deflectedLengthRef.attacked,
                       predeflect: this.players.[plyr.number-1].success.deflected.predeflect,
                       type: 'attacked',
                     };
@@ -5370,7 +5382,7 @@ class App extends Component {
                     this.players[plyr.number-1].success.deflected = {
                       state: true,
                       count: 1,
-                      limit: this.players[plyr.number-1].success.deflected.limit,
+                      limit: this.deflectedLengthRef.defended,
                       predeflect: this.players[plyr.number-1].success.deflected.predeflect,
                       type: 'defended',
                     };
@@ -8970,7 +8982,7 @@ class App extends Component {
             this.players[player.number-1].success.deflected = {
               state: true,
               count: 1,
-              limit: this.players[player.number-1].success.deflected.limit,
+              limit: this.deflectedLengthRef.attacked,
               predeflect: this.players[player.number-1].success.deflected.predeflect,
               type: 'attacked',
             };
@@ -11075,7 +11087,7 @@ class App extends Component {
         this.players[newPlayerNumber-1].ai.mission = aiInitSettings.primaryMission;
         if (aiInitSettings.primaryMission === 'patrol') {
           this.players[newPlayerNumber-1].ai.patrolling = {
-            state: false,
+            state: true,
             area: [
               {
                 x: aiInitSettings.partolArea[0].x,
@@ -11086,6 +11098,17 @@ class App extends Component {
                 y: aiInitSettings.partolArea[1].y,
               }
             ],
+          }
+        }
+        if (aiInitSettings.primaryMission === 'defend') {
+          this.players[newPlayerNumber-1].ai.patrolling = {
+            state: true,
+            area: [
+              {
+                x: aiInitSettings.partolArea[0].x,
+                y: aiInitSettings.partolArea[0].y,
+              },
+            ]
           }
         }
         // console.log('aiInitSettings.primaryMission',aiInitSettings.primaryMission);
@@ -11420,8 +11443,7 @@ class App extends Component {
     }
 
 
-    // console.log('aiPlayer.flanking.state',aiPlayer.flanking.state);
-    // CHECK FOR TARGET CHANGE IF PERSUING!!
+    // CHECK FOR PURSUIT TARGET POSITION CHANGE!!
     if (aiPlayer.ai.mission === 'pursue' && aiPlayer.ai.targetSet === true) {
       // console.log('pursuing');
 
@@ -11449,6 +11471,7 @@ class App extends Component {
 
     let patrolDest;
     if (aiPlayer.ai.mission === 'patrol') {
+      console.log('patrolling');
 
       if (aiPlayer.ai.instructions.length === 0) {
         let currentPatrolPoint = aiPlayer.ai.patrolling.area.indexOf({x:aiPlayer.currentPosition.cell.number.x,y:aiPlayer.currentPosition.cell.number.y})
@@ -11465,6 +11488,8 @@ class App extends Component {
     if (aiPlayer.ai.mission === 'engage') {
       // console.log('engaging');
 
+
+      // CHECK FOR TARGET LOCATION CHNAGE!
       if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
         // console.log('engage target location changed! Updating path for player',aiPlayer.number,targetPlayer.dead.state);
 
@@ -11475,6 +11500,7 @@ class App extends Component {
         aiPlayer.ai.mission = 'pursue';
         aiPlayer.ai.targetAcquired = false;
       }
+
 
       // FACE TARGET!
       if (targetPlayer.currentPosition.cell.number.x === aiPlayer.currentPosition.cell.number.x && targetPlayer.currentPosition.cell.number.y > aiPlayer.currentPosition.cell.number.y) {
@@ -11666,16 +11692,10 @@ class App extends Component {
       }
       if (aiPlayer.currentWeapon.type === 'sword' && aiPlayer.action === 'idle' && aiPlayer.success.deflected.state !== true) {
           let instructions1 = [];
-          // instructions1.push(
-          //   {
-          //     keyword: 'move_'+aiPlayer.direction,
-          //     count: 0,
-          //     limit: 1,
-          //   },
-          // )
 
 
-          if (targetPlayer.defending.state !== true && targetPlayer.attacking.state !== true && targetPlayer.defendDecay.state !== true) {
+          // ENGAGED TARGET IS OPEN TO ATTACK!
+          if (targetPlayer.defending.state !== true && targetPlayer.attacking.state !== true && targetPlayer.defendDecay.state !== true && targetPlayer.dodging.state !== true) {
             // console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,'is neither attacking nor defending');
             instructions1.push(
               // {
@@ -11691,7 +11711,9 @@ class App extends Component {
             )
           }
 
-          if (targetPlayer.defendDecay.count > targetPlayer.defendDecay.limit - 10) {
+
+          // ENGAGED TARGET DEFENDING!
+          if (targetPlayer.defending.state === true || targetPlayer.defendDecay.count > targetPlayer.defendDecay.limit - 10) {
             console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,' is defending',targetPlayer.defendDecay.count);
             instructions1.push(
               // {
@@ -11701,14 +11723,19 @@ class App extends Component {
               // },
             )
           }
+
+
+          // ENGAGED TARGET ATTACKING!
           if (targetPlayer.attacking.count > 0) {
-             console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,' is attacking',targetPlayer.attacking.count);
-            if (
-              targetPlayer.attacking.count < this.attackAnimRef.peak.sword &&
-              targetPlayer.attacking.count >= this.attackAnimRef.peak.sword - 4
-            ) {
+             // console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,' is attacking',targetPlayer.attacking.count);
+
+
+            // ATTACK IS PEAKING!
+            if (targetPlayer.attacking.count < this.attackAnimRef.peak.sword && targetPlayer.attacking.count >= this.attackAnimRef.peak.sword - 4) {
               console.log('almost peak attack');
               let whatDo = this.rnJesus(1,2);
+
+              // DEFEND!
               if (whatDo === 1) {
                 console.log('ai defend');
                 instructions1.push(
@@ -11718,7 +11745,10 @@ class App extends Component {
                     limit: 1,
                   },
                 )
-              } else {
+              }
+
+              // DODGE!
+              else {
                 console.log('ai dodge');
                 instructions1.push(
                   {
@@ -11730,10 +11760,15 @@ class App extends Component {
               }
 
             }
+
+
+            // ATTACK IS EARLY!
             if (targetPlayer.attacking.count <= 6) {
               console.log('early attack');
               let whatDo2 = this.rnJesus(1,4);
               // whatDo2 = 4
+
+              // DEFEND!
               if (whatDo2 === 1) {
                 console.log(' ai defend');
                 instructions1.push(
@@ -11749,6 +11784,8 @@ class App extends Component {
                   },
                 )
               }
+
+              // FLANK!
               if (whatDo2 === 2) {
 
                 let flankDir2;
@@ -11810,6 +11847,8 @@ class App extends Component {
                   },
                 )
               }
+
+              // DODGE!
               if ( whatDo2 === 3) {
                 console.log('ai dodge');
                 instructions1.push(
@@ -11820,6 +11859,8 @@ class App extends Component {
                   },
                 )
               }
+
+              // STRAFE EVADE!
               if ( whatDo2 === 4) {
                 console.log('ai strafe evade');
                 let evadeDirection;
@@ -11878,15 +11919,10 @@ class App extends Component {
                 aiPlayer.ai.targetAcquired = false;
               }
 
-
             }
+
           }
 
-          for (const inst of aiPlayer.ai.instructions) {
-            if (inst.keyword === 'attack') {
-              // console.log('ai '+aiPlayer.number+' decides to attack w/ sword');
-            }
-          }
 
           aiPlayer.ai.instructions = instructions1;
           aiPlayer.ai.currentInstruction = 0;
@@ -11971,9 +12007,8 @@ class App extends Component {
     if (getPath === true && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
       // console.log('pathfinding...');
       this.updatePathArray();
-
-
       // this.easyStar = new Easystar.js();
+
 
       let aiPos;
       let targetPos;
@@ -12010,6 +12045,7 @@ class App extends Component {
       this.easyStar.setAcceptableTiles([0]);
 
 
+      // PLAYER CELLS TO AVOID
       for (const plyr of this.players) {
         // console.log('building pathfind obstacles checking plyr',plyr.number);
         if (plyr.dead.state !== true && plyr.falling.state !== true && plyr.respawn !== true && plyr.number !== aiPlayer.number && plyr.number !== targetPlayer.number) {
@@ -12019,6 +12055,7 @@ class App extends Component {
       }
 
 
+      // TERRAIN & OBSTACLE CELLS TO AVOID
       for (const cell2 of this.gridInfo) {
         let terrainInfo3 = cell2.levelData.length-1;
         if (
@@ -12033,6 +12070,7 @@ class App extends Component {
       }
 
 
+      // FIND PATH!
       this.players[aiPlayer.number-1].ai.easyStarPath = this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
         if (path === null) {
           cancelPath = true;
@@ -12054,7 +12092,6 @@ class App extends Component {
         this.aiParsePath(pathSet,aiPlayer.number);
       }, 50);
 
-
     }
 
     this.players[aiPlayer.number-1] = aiPlayer;
@@ -12069,10 +12106,7 @@ class App extends Component {
     let initDirection = this.players[aiPlayer-1].direction;
     let direction;
 
-    // if (path.length > 3) {
-    //   path.pop();
-    // }
-    // path.shift();
+
     path.pop();
 
     for (const [key, value] of Object.entries(path)) {
@@ -12629,9 +12663,10 @@ class App extends Component {
 
       let index = plyr.ai.instructions.indexOf(currentInstruction);
       if (index >= plyr.ai.instructions.length) {
-        console.log('instructions complete');
+        // console.log('instructions complete');
         plyr.ai.instructions = [];
       }
+
     } else {
       this.keyPressed[plyr.number-1] = {
         north: false,
