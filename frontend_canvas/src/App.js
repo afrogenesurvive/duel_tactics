@@ -4308,7 +4308,7 @@ class App extends Component {
 
 
           if (player.flanking.step === 2) {
-            // console.log('flanking step 2',player.direction,'flank dir',player.flanking.direction);
+            console.log('flanking step 2',player.direction,'flank dir',player.flanking.direction);
             switch(player.flanking.direction) {
               case 'north' :
                 player.direction = 'south';
@@ -4495,14 +4495,14 @@ class App extends Component {
                   nextPosition = this.lineCrementer(player);
                   player.nextPosition = nextPosition;
                 } else {
-                  // console.log('cancel flanking');
+                  console.log('cancel flanking');
                 }
               } else {
-                // console.log('cant flank');
+                console.log('cant flank');
               }
 
             } else {
-              // console.log('cant flank');
+              console.log('cant flank');
             }
 
           } else {
@@ -7927,6 +7927,26 @@ class App extends Component {
       }
     }
 
+
+    for (const plyr3 of this.players) {
+      if (
+        player.number !== plyr3.number &&
+        plyr3.moving.state == true &&
+        plyr3.target.cell.number.x === targetCellNumber.x &&
+        plyr3.target.cell.number.y === targetCellNumber.y
+      ) {
+        console.log('player',plyr3.number,'is already heading for the cell you player ',player.number,'are targeting @',plyr3.target.cell.number);
+
+        target.free = false;
+        obstacleObstructFound = true;
+        target.occupant = {
+          type: 'player',
+          player: plyr3.number
+        };
+      }
+    }
+
+
     // DIAGONALLY ALIGNED PLAYERS/OBSTACLES CAN'T MOVE!!
     let found = 0;
     switch(direction) {
@@ -8154,37 +8174,6 @@ class App extends Component {
     return target;
 
   }
-  cancelMove = (player) => {
-    console.log('cancelling movement');
-
-
-    player.currentPosition.cell.number = player.moving.origin.number;
-    player.currentPosition.cell.center = player.moving.origin.center;
-    player.action = 'idle';
-    player.moving = {
-      state: false,
-      step: 0,
-      course: '',
-      origin: {
-        number: {
-          x: player.target.cell.number.x,
-          y: player.target.cell.number.y
-        },
-        center: {
-          x: player.target.cell.center.x,
-          y: player.target.cell.center.y
-        },
-      },
-      destination: {
-        x: 0,
-        y: 0,
-      }
-    }
-    this.getTarget(player);
-
-    this.players[player.number-1] = player;
-
-  }
   lineCrementer = (player) => {
     // console.log('line crementer',player.number,player.target);
 
@@ -8221,40 +8210,6 @@ class App extends Component {
     // console.log('mover stepper',player.moving.step);
     let newPosition;
 
-    for (const plyr of this.players) {
-      if (
-        player.number !== plyr.number &&
-        plyr.moving.state == true &&
-        plyr.target.cell.number.x === player.target.cell.number.x &&
-        plyr.target.cell.number.y === player.target.cell.number.y
-      ) {
-        console.log('player',player.number,'is heading for the same cell as',plyr.number,'@',plyr.target.cell.number);
-
-        let playerMoveSpeed = player.speed.move;
-        if (player.terrainMoveSpeed.state === true) {
-          playerMoveSpeed = player.terrainMoveSpeed.speed;
-        }
-        let rangeIndex = player.speed.range.indexOf(playerMoveSpeed)
-        let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(player.moving.step)
-
-        let plyrMoveSpeed = plyr.speed.move;
-        if (plyr.terrainMoveSpeed.state === true) {
-          plyrMoveSpeed = plyr.terrainMoveSpeed.speed;
-        }
-        let rangeIndex2 = plyr.speed.range.indexOf(plyrMoveSpeed)
-        let moveAnimIndex2 = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
-
-        let cancelPlayer;
-        if (moveAnimIndex < moveAnimIndex2) {
-          cancelPlayer = player;
-        } else {
-          cancelPlayer = plyr;
-        }
-
-
-        this.cancelMove(cancelPlayer)
-      }
-    }
 
 
     // line: percent is 0-1
@@ -9089,6 +9044,11 @@ class App extends Component {
           limit: this.players[player.number-1].statusDisplay.limit,
         };
         break;
+    }
+
+    if (player.ai.state === true) {
+      this.players[player.number-1].ai.currentInstruction = 0
+      this.players[player.number-1].ai.instructions = []
     }
 
   }
