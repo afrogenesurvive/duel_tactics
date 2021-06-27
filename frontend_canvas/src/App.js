@@ -2562,6 +2562,12 @@ class App extends Component {
     }
 
 
+    // AI STRAFE SWITCH ON!!
+    if (player.ai.state === true && this.keyPressed[player.number-1].strafe === true) {
+      this.players[player.number-1].strafing.state = true;
+    }
+
+
     let nextPosition;
 
 
@@ -4308,7 +4314,7 @@ class App extends Component {
 
 
           if (player.flanking.step === 2) {
-            console.log('flanking step 2',player.direction,'flank dir',player.flanking.direction);
+            // console.log('flanking step 2',player.direction,'flank dir',player.flanking.direction);
             switch(player.flanking.direction) {
               case 'north' :
                 player.direction = 'south';
@@ -4364,6 +4370,10 @@ class App extends Component {
               }
               nextPosition = this.lineCrementer(player);
               player.nextPosition = nextPosition;
+
+              if (player.ai.state === true) {
+                this.keyPressed[player.number-1].dodge = false
+              }
             }
             else {
               // console.log('cancel flanking');
@@ -4395,9 +4405,7 @@ class App extends Component {
           player.strafing.state !== true &&
           player.flanking.state !== true
         ) {
-          if (player.ai.state === true) {
-            console.log('ai flanking');
-          }
+
 
           this.players[player.number-1].dodging = {
             countState: false,
@@ -4474,6 +4482,7 @@ class App extends Component {
                   this.players[player.number-1].flanking.state = true;
                   this.players[player.number-1].flanking.step =  1;
                   this.players[player.number-1].flanking.target1 = target.cell.number;
+                  // console.log('this.players[player.number-1].flanking.target1',this.players[player.number-1].flanking.target1);
                   // player.action = 'moving';
                   player.action = 'flanking';
                   player.moving = {
@@ -4495,14 +4504,14 @@ class App extends Component {
                   nextPosition = this.lineCrementer(player);
                   player.nextPosition = nextPosition;
                 } else {
-                  console.log('cancel flanking');
+                  // console.log('cancel flanking');
                 }
               } else {
-                console.log('cant flank');
+                // console.log('cant flank2');
               }
 
             } else {
-              console.log('cant flank');
+              // console.log('cant flank2');
             }
 
           } else {
@@ -7928,23 +7937,24 @@ class App extends Component {
     }
 
 
-    for (const plyr3 of this.players) {
-      if (
-        player.number !== plyr3.number &&
-        plyr3.moving.state == true &&
-        plyr3.target.cell.number.x === targetCellNumber.x &&
-        plyr3.target.cell.number.y === targetCellNumber.y
-      ) {
-        console.log('player',plyr3.number,'is already heading for the cell you player ',player.number,'are targeting @',plyr3.target.cell.number);
-
-        target.free = false;
-        obstacleObstructFound = true;
-        target.occupant = {
-          type: 'player',
-          player: plyr3.number
-        };
-      }
-    }
+    // DONT MOVE IF SOMEONE ELSE HAS ALREADY STARTED MOVING TO YOUR TARGET!
+    // for (const plyr3 of this.players) {
+    //   if (
+    //     player.number !== plyr3.number &&
+    //     plyr3.moving.state == true &&
+    //     plyr3.target.cell.number.x === targetCellNumber.x &&
+    //     plyr3.target.cell.number.y === targetCellNumber.y
+    //   ) {
+    //     // console.log('player',plyr3.number,'is already heading for the cell you player ',player.number,'are targeting @',plyr3.target.cell.number);
+    //
+    //     target.free = false;
+    //     obstacleObstructFound = true;
+    //     target.occupant = {
+    //       type: 'player',
+    //       player: plyr3.number
+    //     };
+    //   }
+    // }
 
 
     // DIAGONALLY ALIGNED PLAYERS/OBSTACLES CAN'T MOVE!!
@@ -11385,7 +11395,12 @@ class App extends Component {
           plyr.ai.targetAqcuiredReset = false;
         }
 
-        this.aiDecide(plyr)
+
+        // AI CAN'T ACT IF FLANKING OR MOVING!
+        if (plyr.flanking.state !== true && plyr.flanking.step !== 1 && plyr.flanking.step !== 2 && plyr.moving.state !== true) {
+          this.aiDecide(plyr)
+        }
+
 
       }
     }
@@ -11405,8 +11420,10 @@ class App extends Component {
     }
 
 
+    // console.log('aiPlayer.flanking.state',aiPlayer.flanking.state);
     // CHECK FOR TARGET CHANGE IF PERSUING!!
     if (aiPlayer.ai.mission === 'pursue' && aiPlayer.ai.targetSet === true) {
+      // console.log('pursuing');
 
       if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
         // console.log('pursuit target location changed! Updating path for player',aiPlayer.number);
@@ -11445,7 +11462,7 @@ class App extends Component {
       }
 
     }
-    if (aiPlayer.ai.mission === 'engage' ) {
+    if (aiPlayer.ai.mission === 'engage') {
       // console.log('engaging');
 
       if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
@@ -11661,11 +11678,11 @@ class App extends Component {
           if (targetPlayer.defending.state !== true && targetPlayer.attacking.state !== true && targetPlayer.defendDecay.state !== true) {
             // console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,'is neither attacking nor defending');
             instructions1.push(
-              // {
-              //   keyword: 'attack',
-              //   count: 0,
-              //   limit: 1,
-              // },
+              {
+                keyword: 'attack',
+                count: 0,
+                limit: 1,
+              },
               // {
               //   keyword: 'short_wait',
               //   count: 0,
@@ -11715,7 +11732,7 @@ class App extends Component {
             }
             if (targetPlayer.attacking.count <= 6) {
               console.log('early attack');
-              let whatDo2 = this.rnJesus(1,3);
+              let whatDo2 = this.rnJesus(1,4);
               whatDo2 = 2
               if (whatDo2 === 1) {
                 console.log(' ai defend');
@@ -11791,11 +11808,6 @@ class App extends Component {
                     count: 0,
                     limit: 5,
                   },
-                  // {
-                  //   keyword: 'attack',
-                  //   count: 0,
-                  //   limit: 1,
-                  // },
                 )
               }
               if ( whatDo2 === 3) {
@@ -11808,6 +11820,22 @@ class App extends Component {
                   },
                 )
               }
+              if ( whatDo2 === 4) {
+                console.log('ai strafe evade');
+                let evadeDirection;
+                let cellsToConsider = [
+                  {x: aiPlayer.currentPosition.cell.number.x,y: aiPlayer.currentPosition.cell.number.y}
+                ]
+                instructions1.push(
+                  {
+                    keyword: 'strafe_south',
+                    count: 0,
+                    limit: 1,
+                  },
+                )
+                aiPlayer.ai.targetAcquired = false;
+              }
+
 
             }
           }
@@ -11901,6 +11929,7 @@ class App extends Component {
     if (getPath === true && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
       // console.log('pathfinding...');
       this.updatePathArray();
+
 
       // this.easyStar = new Easystar.js();
 
@@ -12293,7 +12322,173 @@ class App extends Component {
 
           }
         break;
+        case 'strafe_south':
+        if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true) {
+          console.log('ai act strafe south');
+          let inDanger = false;
+          // if (plyr.direction === 'south') {
+            if (!targetCell) {
+              // console.log('heading off the edge');
+              inDanger = true;
+            } else {
+              if (targetCell.void.state === true || targetCell.terrain.type === 'deep' || targetCell.terrain.type === 'hazard') {
+                // console.log('heading for mid-grid danger');
+                inDanger = true;
+              }
+            }
+          // }
+
+          if (inDanger === false) {
+
+            // currentInstruction.limit = 1;
+            this.keyPressed[plyr.number-1].strafe = true;
+            this.keyPressed[plyr.number-1].south = true;
+
+            // this.players[plyr.number-1].turnCheckerDirection = 'south';
+            // plyr.ai.currentInstruction++;
+            if (currentInstruction.limit === 1) {
+              plyr.ai.currentInstruction++;
+            } else {
+              if (currentInstruction.count < currentInstruction.limit) {
+                currentInstruction.count++;
+              } else if (currentInstruction.count >= currentInstruction.limit) {
+                plyr.ai.currentInstruction++;
+              }
+            }
+
+          } else {
+            // console.log('danger');
+            plyr.ai.currentInstruction++;
+            plyr.ai.resetInstructions = true;
+          }
+
+        }
+        break;
         case 'strafe_north':
+        if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true) {
+          console.log('ai act strafe north');
+          let inDanger = false;
+          // if (plyr.direction === 'north') {
+            if (!targetCell) {
+              // console.log('heading off the edge');
+              inDanger = true;
+            } else {
+              if (targetCell.void.state === true || targetCell.terrain.type === 'deep' || targetCell.terrain.type === 'hazard') {
+                // console.log('heading for mid-grid danger');
+                inDanger = true;
+              }
+            }
+          // }
+
+          if (inDanger === false) {
+
+            // currentInstruction.limit = 1;
+            this.keyPressed[plyr.number-1].strafe = true;
+            this.keyPressed[plyr.number-1].north = true;
+
+            // this.players[plyr.number-1].turnCheckerDirection = 'north';
+            // plyr.ai.currentInstruction++;
+            if (currentInstruction.limit === 1) {
+              plyr.ai.currentInstruction++;
+            } else {
+              if (currentInstruction.count < currentInstruction.limit) {
+                currentInstruction.count++;
+              } else if (currentInstruction.count >= currentInstruction.limit) {
+                plyr.ai.currentInstruction++;
+              }
+            }
+
+          } else {
+            // console.log('danger');
+            plyr.ai.currentInstruction++;
+            plyr.ai.resetInstructions = true;
+          }
+
+        }
+        break;
+        case 'strafe_east':
+        if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true) {
+          console.log('ai act strafe east');
+          let inDanger = false;
+          // if (plyr.direction === 'east') {
+            if (!targetCell) {
+              // console.log('heading off the edge');
+              inDanger = true;
+            } else {
+              if (targetCell.void.state === true || targetCell.terrain.type === 'deep' || targetCell.terrain.type === 'hazard') {
+                // console.log('heading for mid-grid danger');
+                inDanger = true;
+              }
+            }
+          // }
+
+          if (inDanger === false) {
+
+            // currentInstruction.limit = 1;
+            this.keyPressed[plyr.number-1].strafe = true;
+            this.keyPressed[plyr.number-1].east = true;
+
+            // this.players[plyr.number-1].turnCheckerDirection = 'east';
+            // plyr.ai.currentInstruction++;
+            if (currentInstruction.limit === 1) {
+              plyr.ai.currentInstruction++;
+            } else {
+              if (currentInstruction.count < currentInstruction.limit) {
+                currentInstruction.count++;
+              } else if (currentInstruction.count >= currentInstruction.limit) {
+                plyr.ai.currentInstruction++;
+              }
+            }
+
+          } else {
+            // console.log('danger');
+            plyr.ai.currentInstruction++;
+            plyr.ai.resetInstructions = true;
+          }
+
+        }
+        break;
+        case 'strafe_west':
+        if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true) {
+          console.log('ai act strafe west');
+          let inDanger = false;
+          // if (plyr.direction === 'west') {
+            if (!targetCell) {
+              // console.log('heading off the edge');
+              inDanger = true;
+            } else {
+              if (targetCell.void.state === true || targetCell.terrain.type === 'deep' || targetCell.terrain.type === 'hazard') {
+                // console.log('heading for mid-grid danger');
+                inDanger = true;
+              }
+            }
+          // }
+
+          if (inDanger === false) {
+
+            // currentInstruction.limit = 1;
+            this.keyPressed[plyr.number-1].strafe = true;
+            this.keyPressed[plyr.number-1].west = true;
+
+            // this.players[plyr.number-1].turnCheckerDirection = 'west';
+            // plyr.ai.currentInstruction++;
+            if (currentInstruction.limit === 1) {
+              plyr.ai.currentInstruction++;
+            } else {
+              if (currentInstruction.count < currentInstruction.limit) {
+                currentInstruction.count++;
+              } else if (currentInstruction.count >= currentInstruction.limit) {
+                plyr.ai.currentInstruction++;
+              }
+            }
+
+          } else {
+            // console.log('danger');
+            plyr.ai.currentInstruction++;
+            plyr.ai.resetInstructions = true;
+          }
+
+        }
         break;
         case 'flank_north':
           if (plyr.flanking.state !== true && plyr.action !== 'flanking') {
