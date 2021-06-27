@@ -2565,6 +2565,25 @@ class App extends Component {
     let nextPosition;
 
 
+    if (player.dead.state === true) {
+
+      if (player.dead.count > 0 && player.dead.count < player.dead.limit+1) {
+        player.dead.count++
+        // console.log('player',player.number,'dying',player.dead.count);
+      }
+      else if (player.dead.count >= player.dead.limit) {
+        player.dead.count = 0;
+      }
+    }
+    if (player.dead.state === true && player.dead.count === 0) {
+      // console.log('done dying remove from board');
+      player.nextPosition = {
+        x: -30,
+        y: -30,
+      }
+    }
+
+
     // OPEN VOID!!???
     if (this.openVoid === true) {
 
@@ -3214,23 +3233,8 @@ class App extends Component {
           player.player.pushBack.prePushBackMoveSpeed = 0;
         }
 
-        if (player.dead.state === true) {
 
-          if (player.dead.count > 0 && player.dead.count < player.dead.limit+1) {
-            player.dead.count++
-            // console.log('player dying',player.dead.count);
-          }
-          else if (player.dead.count >= player.dead.limit) {
-            player.dead.count = 0;
-          }
-        }
-        if (player.dead.state === true && player.dead.count === 0) {
-          // console.log('done dying remove from board');
-          player.nextPosition = {
-            x: -30,
-            y: -30,
-          }
-        }
+
 
         if (player.itemDrop.state === true) {
           if (player.itemDrop.count < player.itemDrop.limit) {
@@ -7064,18 +7068,17 @@ class App extends Component {
               x === plyr.ghost.position.cell.number.x &&
               y === plyr.ghost.position.cell.number.y
             ) {
+              // console.log('player',plyr.number,'dying',player.dead.count);
               context.drawImage(indicatorImgs.death, plyr.ghost.position.cell.center.x-15, plyr.ghost.position.cell.center.y-15, 25,25);
             }
           }
           if (plyr.ghost.state === true && player.dead.count === 0) {
-            if (
-              x === 0 &&
-              y === 0
-            ) {
+            if (x === plyr.ghost.position.cell.number.x && y === plyr.ghost.position.cell.number.y) {
+              // console.log('player ',plyr.number,'ghost @',plyr.ghost.position.cell.number,plyr.ghost.position.cell.center);
               context.drawImage(indicatorImgs.ghost, plyr.ghost.position.cell.center.x-20, plyr.ghost.position.cell.center.y-20, 25,25);
             }
           }
-          if (plyr.itemDrop.state === true) {
+          if (plyr.itemDrop.state === true && plyr.dead.state !== true) {
             let itemImg2;
             let fillClr2;
             if (plyr.itemDrop.item.name === '' && plyr.itemDrop.gear.type !== '') {
@@ -9274,7 +9277,7 @@ class App extends Component {
     player.dead = {
       state: true,
       count: 1,
-      limit: 5
+      limit: player.dead.limit
     }
     // player.hp = 2;
     player.points--;
