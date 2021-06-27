@@ -416,12 +416,12 @@ class App extends Component {
       //   subType: 'mail',
       //   effect: 'snghit-5',
       // },
-      // {
-      //   name: 'speedGreaves',
-      //   type: 'armor',
-      //   subType: 'greaves',
-      //   effect: 'speedUp',
-      // },
+      {
+        name: 'speedGreaves',
+        type: 'armor',
+        subType: 'greaves',
+        effect: 'speedUp',
+      },
       // {
       //   name: 'ironPlate',
       //   type: 'armor',
@@ -807,8 +807,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 1,
-              y: 8,
+              x: 6,
+              y: 2,
             },
             center: {
               x: 0,
@@ -4308,7 +4308,7 @@ class App extends Component {
 
 
           if (player.flanking.step === 2) {
-            console.log('flanking step 2',player.direction,'flank dir',player.flanking.direction);
+            // console.log('flanking step 2',player.direction,'flank dir',player.flanking.direction);
             switch(player.flanking.direction) {
               case 'north' :
                 player.direction = 'south';
@@ -4447,7 +4447,7 @@ class App extends Component {
 
               if (canFlank === true) {
 
-                console.log('flanking step',keyPressedDirection,player.direction);
+                // console.log('flanking step',keyPressedDirection,player.direction);
                 this.players[player.number-1].flanking.checking = true;
                 this.players[player.number-1].flanking.direction = keyPressedDirection;
                 this.players[player.number-1].flanking.preFlankDirection = player.direction;
@@ -6492,8 +6492,8 @@ class App extends Component {
                 context.drawImage(indicatorImgs.preAttack2, point.x-45, point.y-35, 35,35);
               }
 
-              if (player.defending.count > 0 ) {
-                context.drawImage(indicatorImgs.preAttack2, point.x-35, point.y-35, 35,35);
+              if (plyr.defending.count > 0 && plyr.defending.count < plyr.defending.limit ) {
+                context2.drawImage(indicatorImgs.preAttack, point.x-35, point.y-35, 35,35);
               }
               // if (plyr.dodging.state === true) {
               //   context.drawImage(indicatorImgs.dodge, point.x-45, point.y-35, 35,35);
@@ -8154,6 +8154,37 @@ class App extends Component {
     return target;
 
   }
+  cancelMove = (player) => {
+    console.log('cancelling movement');
+
+
+    player.currentPosition.cell.number = player.moving.origin.number;
+    player.currentPosition.cell.center = player.moving.origin.center;
+    player.action = 'idle';
+    player.moving = {
+      state: false,
+      step: 0,
+      course: '',
+      origin: {
+        number: {
+          x: player.target.cell.number.x,
+          y: player.target.cell.number.y
+        },
+        center: {
+          x: player.target.cell.center.x,
+          y: player.target.cell.center.y
+        },
+      },
+      destination: {
+        x: 0,
+        y: 0,
+      }
+    }
+    this.getTarget(player);
+
+    this.players[player.number-1] = player;
+
+  }
   lineCrementer = (player) => {
     // console.log('line crementer',player.number,player.target);
 
@@ -8189,6 +8220,42 @@ class App extends Component {
     // player.moving.step = player.moving.step + moveSpeed;
     // console.log('mover stepper',player.moving.step);
     let newPosition;
+
+    for (const plyr of this.players) {
+      if (
+        player.number !== plyr.number &&
+        plyr.moving.state == true &&
+        plyr.target.cell.number.x === player.target.cell.number.x &&
+        plyr.target.cell.number.y === player.target.cell.number.y
+      ) {
+        console.log('player',player.number,'is heading for the same cell as',plyr.number,'@',plyr.target.cell.number);
+
+        let playerMoveSpeed = player.speed.move;
+        if (player.terrainMoveSpeed.state === true) {
+          playerMoveSpeed = player.terrainMoveSpeed.speed;
+        }
+        let rangeIndex = player.speed.range.indexOf(playerMoveSpeed)
+        let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(player.moving.step)
+
+        let plyrMoveSpeed = plyr.speed.move;
+        if (plyr.terrainMoveSpeed.state === true) {
+          plyrMoveSpeed = plyr.terrainMoveSpeed.speed;
+        }
+        let rangeIndex2 = plyr.speed.range.indexOf(plyrMoveSpeed)
+        let moveAnimIndex2 = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
+
+        let cancelPlayer;
+        if (moveAnimIndex < moveAnimIndex2) {
+          cancelPlayer = player;
+        } else {
+          cancelPlayer = plyr;
+        }
+
+
+        this.cancelMove(cancelPlayer)
+      }
+    }
+
 
     // line: percent is 0-1
     let startPt = currentPosition;
@@ -11632,13 +11699,13 @@ class App extends Component {
 
 
           if (targetPlayer.defending.state !== true && targetPlayer.attacking.state !== true && targetPlayer.defendDecay.state !== true) {
-            console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,'is neither attacking nor defending');
+            // console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,'is neither attacking nor defending');
             instructions1.push(
-              {
-                keyword: 'attack',
-                count: 0,
-                limit: 1,
-              },
+              // {
+              //   keyword: 'attack',
+              //   count: 0,
+              //   limit: 1,
+              // },
               // {
               //   keyword: 'short_wait',
               //   count: 0,
@@ -11650,11 +11717,11 @@ class App extends Component {
           if (targetPlayer.defendDecay.count > targetPlayer.defendDecay.limit - 10) {
             console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,' is defending',targetPlayer.defendDecay.count);
             instructions1.push(
-              {
-                keyword: 'attack',
-                count: 0,
-                limit: 1,
-              },
+              // {
+              //   keyword: 'attack',
+              //   count: 0,
+              //   limit: 1,
+              // },
             )
           }
           if (targetPlayer.attacking.count > 0) {
@@ -11689,7 +11756,7 @@ class App extends Component {
             if (targetPlayer.attacking.count <= 6) {
               console.log('early attack');
               let whatDo2 = this.rnJesus(1,3);
-              whatDo2 = 3
+              whatDo2 = 2
               if (whatDo2 === 1) {
                 console.log(' ai defend');
                 instructions1.push(
