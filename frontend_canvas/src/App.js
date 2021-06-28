@@ -1298,7 +1298,17 @@ class App extends Component {
     };
     this.charSpriteHeight = 100;
     this.charSpriteWidth = 100;
-
+    this.aiInitSettings = {
+      randomStart: false,
+      startPosition: {
+        number: {x: 7, y: 7}
+      },
+      primaryMission: 'patrol',
+      partolArea: [
+        {x: 7, y: 7},
+        {x:7 , y:4 }
+      ]
+    }
     this.addAiPlayerKeyPress = false;
     this.addAiCount = {
       state: false,
@@ -1306,38 +1316,7 @@ class App extends Component {
       limit: 10,
     };
     this.aiPlayers = [];
-    this.aiInitType = 'basicPatrol';
-    this.aiInitSettings = {
-      basicPursue: {
-        primaryMission: 'pursue',
-        mode: '',
-        partolArea: []
-      },
-      basicPatrol: {
-        primaryMission: 'patrol',
-        mode: '',
-        partolArea: [
-          {
-            x: 1,
-            y: 3,
-          },
-          {
-            x: 1,
-            y: 7,
-          },
-        ]
-      },
-      basicDefend: {
-        primaryMission: 'defend',
-        mode: '',
-        partolArea: [
-          {
-            x: 8,
-            y: 7,
-          },
-        ]
-      }
-    };
+
     this.aiTarget =  1;
     this.resetAiTarget = {
       state: false,
@@ -5442,7 +5421,7 @@ class App extends Component {
 
     // ADD COM PLAYER!
     if (this.addAiPlayerKeyPress === true) {
-      this.addAiPlayer()
+      this.addAiRandomPlayer()
     }
     if (this.addAiCount.state === true) {
       if (this.addAiCount.count < this.addAiCount.limit) {
@@ -10633,10 +10612,8 @@ class App extends Component {
     }
   }
 
-  addAiPlayer = () => {
 
-    let aiInitSettings = this.aiInitSettings.[this.aiInitType]
-    // console.log('aiInitSettings',aiInitSettings);
+  addAiPlayer = () => {
 
     let newPlayerNumber = this.players.length+1;
 
@@ -10656,17 +10633,38 @@ class App extends Component {
         x: 0,
         y: 0
       }
+
       let checkCell = false;
-      while (checkCell === false) {
-        cell.x = this.rnJesus(0,this.gridWidth)
-        cell.y = this.rnJesus(0,this.gridWidth)
-        checkCell = this.checkCell(cell);
+      if (this.aiInitSettings.randomStart === true && this.aiInitSettings.primaryMission === 'pursue') {
+        while (checkCell === false) {
+          cell.x = this.rnJesus(0,this.gridWidth)
+          cell.y = this.rnJesus(0,this.gridWidth)
+          checkCell = this.checkCell(cell);
+        }
       }
+      if (this.aiInitSettings.randomStart === true && this.aiInitSettings.primaryMission === 'patrol') {
+
+        // choose 2 cells within a certain range and check it for obstructions a set 2 objects
+        // this.aiInitSettings.partolArea.push({)
+        // set start cell and check cell true
+      }
+      if (this.aiInitSettings.randomStart === true && this.aiInitSettings.primaryMission === 'defend') {
+
+        // choose rando cell and set
+        // this.aiInitSettings.partolArea.push({x:,y:})
+        // set start cell and check cell true
+      }
+
+      if (this.aiInitSettings.randomStart !== true) {
+        checkCell = true ;
+        cell = {x:this.aiInitSettings.startPosition.number.x,y:this.aiInitSettings.startPosition.number.y};
+      }
+
 
       if (checkCell === true) {
 
         // console.log('adding ai. Player #',newPlayerNumber,' @',cell.x,cell.y);
-        cell = {x:8,y:6};
+        // cell = {x:8,y:6};
 
         let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y)
         let newPlayer = {
@@ -11083,30 +11081,30 @@ class App extends Component {
         this.aiPlayers.push(newPlayerNumber)
         this.getTarget(this.players[newPlayerNumber-1])
         this.updatePathArray();
-        this.players[newPlayerNumber-1].ai.primaryMission = aiInitSettings.primaryMission;
-        this.players[newPlayerNumber-1].ai.mission = aiInitSettings.primaryMission;
-        if (aiInitSettings.primaryMission === 'patrol') {
+        this.players[newPlayerNumber-1].ai.primaryMission = this.aiInitSettings.primaryMission;
+        this.players[newPlayerNumber-1].ai.mission = this.aiInitSettings.primaryMission;
+        if (this.aiInitSettings.primaryMission === 'patrol') {
           this.players[newPlayerNumber-1].ai.patrolling = {
             state: true,
             area: [
               {
-                x: aiInitSettings.partolArea[0].x,
-                y: aiInitSettings.partolArea[0].y,
+                x: this.aiInitSettings.partolArea[0].x,
+                y: this.aiInitSettings.partolArea[0].y,
               },
               {
-                x: aiInitSettings.partolArea[1].x,
-                y: aiInitSettings.partolArea[1].y,
+                x: this.aiInitSettings.partolArea[1].x,
+                y: this.aiInitSettings.partolArea[1].y,
               }
             ],
           }
         }
-        if (aiInitSettings.primaryMission === 'defend') {
+        if (this.aiInitSettings.primaryMission === 'defend') {
           this.players[newPlayerNumber-1].ai.patrolling = {
             state: true,
             area: [
               {
-                x: aiInitSettings.partolArea[0].x,
-                y: aiInitSettings.partolArea[0].y,
+                x: this.aiInitSettings.partolArea[0].x,
+                y: this.aiInitSettings.partolArea[0].y,
               },
             ]
           }
@@ -11165,6 +11163,21 @@ class App extends Component {
     // }
     // this.additionalAvoidArray.splice(indx3,1)
 
+  }
+  addAiRandomPlayer = () => {
+
+    this.aiInitSettings = {
+      randomStart: true,
+      startPosition: {
+        number: {x: undefined, y: undefined}
+      },
+      primaryMission: 'pursue',
+      partolArea: [
+        {x: undefined, y: undefined},
+        {x: undefined, y: undefined},
+      ]
+    }
+    this.addAiPlayer();
   }
   toggleAiDisplay = () => {
     let newState = !this.state.showAiStatus;
@@ -12750,7 +12763,7 @@ class App extends Component {
               <AiStatus
                 players={this.players}
                 aiPlayers={this.aiPlayers}
-                onAiAdd={this.addAiPlayer}
+                onAiAdd={this.addAiRandomPlayer}
               />
             )}
           </div>
