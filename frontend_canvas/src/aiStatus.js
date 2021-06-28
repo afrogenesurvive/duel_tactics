@@ -87,7 +87,7 @@ const AiStatus = props => {
 
     <div className="aiStatHeadBox">
 
-      <a className="" role="button" data-slide="next" onClick={props.onAiAdd}>
+      <a className="" role="button" data-slide="next" onClick={props.onAiAdd.bind(this,'random')}>
         <FontAwesomeIcon icon={faPlus} size="sm" className="debugBoxIcon2"/>
       </a>
     </div>

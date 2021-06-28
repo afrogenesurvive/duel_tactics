@@ -1307,8 +1307,8 @@ class App extends Component {
       },
       primaryMission: 'patrol',
       partolArea: [
-        {x: 8, y: 7},
-        {x:8 , y:5 }
+        {x: 7, y: 7},
+        {x:7 , y:4 }
       ]
     }
     this.addAiPlayerKeyPress = false;
@@ -5424,7 +5424,7 @@ class App extends Component {
 
     // ADD COM PLAYER!
     if (this.addAiPlayerKeyPress === true) {
-      // this.addAiRandomPlayer()
+      // this.addAiRandomPlayer('random')
       this.addAiPlayer()
     }
     if (this.addAiCount.state === true) {
@@ -11172,14 +11172,28 @@ class App extends Component {
     // this.additionalAvoidArray.splice(indx3,1)
 
   }
-  addAiRandomPlayer = () => {
+  addAiRandomPlayer = (mission) => {
+
+    let newMisson = mission;
+    if (mission === 'random') {
+      let whatMission = this.rnJesus(1,10)
+      if (whatMission % 2 === 0) {
+        newMisson = 'pursue'
+      }
+      if (whatMission % 3 === 0) {
+        newMisson = 'patrol'
+      }
+      if (whatMission % 5 === 0) {
+        newMisson = 'defend'
+      }
+    }
 
     this.aiInitSettings = {
       randomStart: true,
       startPosition: {
         number: {x: undefined, y: undefined}
       },
-      primaryMission: 'pursue',
+      primaryMission: newMisson,
       partolArea: [
         {x: undefined, y: undefined},
         {x: undefined, y: undefined},
@@ -11519,12 +11533,14 @@ class App extends Component {
         aiPlayer.ai.patrolling.checkin = 'checkedIn'
         patrolDest = aiPlayer.ai.patrolling.area[1]
         getPath = true;
+        // console.log('checked in to patrol point');
       }
 
 
       if (aiPlayer.ai.patrolling.checkin === 'checkedIn') {
+        console.log('currently patrolling');
         let currentPatrolPoint = aiPlayer.ai.patrolling.area.findIndex(elem => elem.x === aiPlayer.currentPosition.cell.number.x && elem.y === aiPlayer.currentPosition.cell.number.y)
-
+        // console.log('currentPatrolPoint 1',currentPatrolPoint, aiPlayer.currentPosition.cell.number);
         if (currentPatrolPoint === 0) {
           patrolDest = aiPlayer.ai.patrolling.area[1];
           getPath = true;
@@ -12159,8 +12175,13 @@ class App extends Component {
     let direction;
 
     if (this.players[aiPlayer-1].ai.mission !== 'patrol') {
-      // path.pop();
-      if (path.length > 1) {
+      path.pop();
+      // if (path.length > 1) {
+      //   path.pop();
+      // }
+    }
+    if (this.players[aiPlayer-1].ai.mission === 'patrol') {
+      if (path.length > 2) {
         path.pop();
       }
     }
