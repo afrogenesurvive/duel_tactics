@@ -1307,10 +1307,10 @@ class App extends Component {
       startPosition: {
         number: {x: 6, y: 7}
       },
-      primaryMission: 'defend',
+      primaryMission: 'patrol',
       partolArea: [
         {x: 7, y: 8},
-        // {x: 7, y: 4}
+        {x: 7, y: 4}
       ]
     }
     this.addAiPlayerKeyPress = false;
@@ -11219,12 +11219,8 @@ class App extends Component {
 
       for (const plyr of this.players) {
         if (plyr.ai.state === true && plyr.ai.targetSet === true && plyr.ai.targetPlayer.number === this.resetAiTarget.player) {
-          plyr.ai.targetSet = false;
-          plyr.ai.targetAcquired = false;
 
-          plyr.ai.mission = 'pursue';
-          plyr.ai.currentInstruction = 0;
-          plyr.ai.pathArray = [];
+          plyr.ai.targetSet = false;
           plyr.ai.targetPlayer = {
             number: undefined,
             currentPosition: {
@@ -11243,7 +11239,16 @@ class App extends Component {
             },
             action: '',
           };
-          plyr.ai.instructions = [];
+
+          if (plyr.ai.mission === 'pursue') {
+            plyr.ai.targetSet = false;
+            plyr.ai.targetAcquired = false;
+            plyr.ai.mission = plyr.ai.primaryMission;
+            plyr.ai.currentInstruction = 0;
+            plyr.ai.pathArray = [];
+            plyr.ai.instructions = [];
+          }
+
         }
       }
 
@@ -11436,11 +11441,13 @@ class App extends Component {
 
         if (plyr.ai.mission === 'engage' && targetInRange !== true) {
           // console.log('target out of range. reverting to primary mission',plyr.ai.primaryMission);
-          // plyr.ai.mission = plyr.ai.primaryMission;
+          plyr.ai.mission = plyr.ai.primaryMission;
           if (plyr.ai.primaryMission === 'defend') {
+            // console.log('defend',plyr.ai.defending.checkin);
             plyr.ai.defending.state = true;
           }
           if (plyr.ai.primaryMission === 'patrol') {
+            // console.log('patrol',plyr.ai.patrolling.checkin);
             plyr.ai.patrolling.state = true;
           }
         }
@@ -12028,7 +12035,7 @@ class App extends Component {
       }
 
       if (!aiPlayer.ai.defending.checkin) {
-        // console.log('start out to defend location');
+        console.log('start out to defend location');
         aiPlayer.ai.defending.checkin = 'enroute';
 
         let cellsToConsider2 = [
