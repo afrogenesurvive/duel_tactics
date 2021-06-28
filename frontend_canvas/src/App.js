@@ -463,7 +463,7 @@ class App extends Component {
           cell: {
             number: {
               x: 8,
-              y: 5,
+              y: 2,
             },
             center: {
               x: 0,
@@ -1305,12 +1305,12 @@ class App extends Component {
     this.aiInitSettings = {
       randomStart: false,
       startPosition: {
-        number: {x: 7, y: 8}
+        number: {x: 6, y: 7}
       },
       primaryMission: 'defend',
       partolArea: [
-        {x: 7, y: 5},
-        // {x: 1, y: 5}
+        {x: 7, y: 8},
+        // {x: 7, y: 4}
       ]
     }
     this.addAiPlayerKeyPress = false;
@@ -9323,7 +9323,6 @@ class App extends Component {
     if (player.ai.state !== true) {
 
         this.resetAiTarget.state = true;
-        this.resetAiTarget.state2 = false;
         this.resetAiTarget.player = player.number;
 
     }
@@ -11437,7 +11436,7 @@ class App extends Component {
 
         if (plyr.ai.mission === 'engage' && targetInRange !== true) {
           // console.log('target out of range. reverting to primary mission',plyr.ai.primaryMission);
-          plyr.ai.mission = plyr.ai.primaryMission;
+          // plyr.ai.mission = plyr.ai.primaryMission;
           if (plyr.ai.primaryMission === 'defend') {
             plyr.ai.defending.state = true;
           }
@@ -12029,7 +12028,7 @@ class App extends Component {
       }
 
       if (!aiPlayer.ai.defending.checkin) {
-        console.log('start out to defend location');
+        // console.log('start out to defend location');
         aiPlayer.ai.defending.checkin = 'enroute';
 
         let cellsToConsider2 = [
@@ -12040,6 +12039,7 @@ class App extends Component {
         ]
         let freeCell2 = true
         let freeCellNo;
+        let freeCells = [];
         for (const cell2 of cellsToConsider2) {
           freeCell2 = true
           let cellRef2 = this.gridInfo.find(elem=> elem.number.x === cell2.x && elem.number.y === cell2.y);
@@ -12065,30 +12065,41 @@ class App extends Component {
             freeCell2 = false
           }
           if (freeCell2 === true) {
-            freeCellNo = cell2;
+            freeCells.push(cell2)
+            // console.log('freeCellNo',freeCellNo);
           }
         }
+        let whatCell = this.rnJesus(1,freeCells.length)
 
-        defendDest = freeCellNo
+
+        defendDest = freeCells[whatCell-1]
+        console.log('defendDest',defendDest);
+        if (aiPlayer.ai.defending.area.length > 1) {
+          aiPlayer.ai.defending.area[1] = defendDest
+        }
+        if (aiPlayer.ai.defending.area.length === 1) {
+          aiPlayer.ai.defending.area.push(defendDest)
+        }
+
         getPath = true;
 
       }
       if (aiPlayer.ai.defending.checkin === 'enroute') {
 
         if (
-          aiPlayer.ai.defending.area[0].x === aiPlayer.currentPosition.cell.number.x &&
-          aiPlayer.ai.defending.area[0].y === aiPlayer.currentPosition.cell.number.y
+          aiPlayer.ai.defending.area[1].x === aiPlayer.currentPosition.cell.number.x &&
+          aiPlayer.ai.defending.area[1].y === aiPlayer.currentPosition.cell.number.y
         ) {
           aiPlayer.ai.defending.checkin = 'checkedIn';
-          console.log('arrived @ defend point');
+          // console.log('arrived @ defend point');
         } else {
-          console.log('en route to defend post. do nothing',aiPlayer.ai.defending.area[0]);
+          // console.log('en route to defend post. do nothing',aiPlayer.ai.defending.area[0]);
         }
       }
 
 
       if (aiPlayer.ai.patrolling.checkin === 'checkedIn') {
-
+        console.log('defend post checkedIn');
         let instructions = [];
         switch(aiPlayer.direction) {
           case 'north':
@@ -12178,17 +12189,6 @@ class App extends Component {
       }
 
 
-
-      if (
-        aiPlayer.currentPosition.cell.number.x !== aiPlayer.ai.defending.area[0].x ||
-        aiPlayer.currentPosition.cell.number.y !== aiPlayer.ai.defending.area[0].y
-      ) {
-        getPath = true;
-      }
-      else {
-
-      }
-
     }
 
     let cancelPath = false
@@ -12228,7 +12228,8 @@ class App extends Component {
 
         aiPos = aiPlayer.currentPosition.cell.number;
         targetPos = defendDest;
-        console.log('defendDest',defendDest);
+        // console.log('targetPos',targetPos);
+
         // this.pathArray[targetPos.x][targetPos.y] = 0;
 
       }
@@ -12299,7 +12300,7 @@ class App extends Component {
     let initDirection = this.players[aiPlayer-1].direction;
     let direction;
 
-    if (this.players[aiPlayer-1].ai.mission !== 'patrol') {
+    if (this.players[aiPlayer-1].ai.mission !== 'patrol' && this.players[aiPlayer-1].ai.mission !== 'defend') {
       path.pop();
       // if (path.length > 1) {
       //   path.pop();
