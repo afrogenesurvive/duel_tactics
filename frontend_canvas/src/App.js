@@ -463,7 +463,7 @@ class App extends Component {
           cell: {
             number: {
               x: 8,
-              y: 2,
+              y: 5,
             },
             center: {
               x: 0,
@@ -788,6 +788,7 @@ class App extends Component {
             area: [],
           },
           defending: {
+            checkin: undefined,
             state: false,
             area: [],
           },
@@ -1130,6 +1131,7 @@ class App extends Component {
             area: [],
           },
           defending: {
+            checkin: undefined,
             state: false,
             area: [],
           },
@@ -1305,10 +1307,10 @@ class App extends Component {
       startPosition: {
         number: {x: 7, y: 8}
       },
-      primaryMission: 'patrol',
+      primaryMission: 'defend',
       partolArea: [
-        {x: 7, y: 7},
-        {x:7 , y:4 }
+        {x: 7, y: 5},
+        // {x: 1, y: 5}
       ]
     }
     this.addAiPlayerKeyPress = false;
@@ -11052,6 +11054,7 @@ class App extends Component {
               area: [],
             },
             defending: {
+              checkin: undefined,
               state: false,
               area: [],
             },
@@ -11106,7 +11109,7 @@ class App extends Component {
           }
         }
         if (this.aiInitSettings.primaryMission === 'defend') {
-          this.players[newPlayerNumber-1].ai.patrolling = {
+          this.players[newPlayerNumber-1].ai.defending = {
             checkin: undefined,
             state: true,
             area: [
@@ -11358,7 +11361,7 @@ class App extends Component {
         // TARGET AQUISITION & RANGE FINDING!!
         let targetInRange = false;
         if (plyr.ai.targetSet === true) {
-
+          // console.log('range finder',plyr.ai.targetPlayer.number);
           if (plyr.currentWeapon.type === 'bow') {
             if (
               plyr.currentPosition.cell.number.x === plyr.ai.targetPlayer.currentPosition.x ||
@@ -11405,9 +11408,7 @@ class App extends Component {
               }
             }
 
-            if (
-              plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y
-            ) {
+            if (plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y) {
               if (
                 plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x + 1 ||
                 plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x - 1
@@ -11420,19 +11421,22 @@ class App extends Component {
           }
         }
 
-        if (plyr.ai.mission === 'defend') {
-          plyr.ai.defending.state = true;
-          plyr.ai.defending.area = [
-            {x:plyr.currentPosition.cell.number.x,y:plyr.currentPosition.cell.number.y},
-          ]
-        }
 
         if (targetInRange === true) {
+          // console.log('target in range. switch to engage',plyr.ai.targetSet);
+          if (plyr.ai.mission === 'patrol') {
+            plyr.ai.patrolling.checkin = undefined;
+          }
+          if (plyr.ai.mission === 'defend') {
+            plyr.ai.defending.checkin = undefined;
+          }
           plyr.ai.prevMission = plyr.ai.mission;
           plyr.ai.mission = 'engage';
+
         }
 
         if (plyr.ai.mission === 'engage' && targetInRange !== true) {
+          // console.log('target out of range. reverting to primary mission',plyr.ai.primaryMission);
           plyr.ai.mission = plyr.ai.primaryMission;
           if (plyr.ai.primaryMission === 'defend') {
             plyr.ai.defending.state = true;
@@ -11508,12 +11512,17 @@ class App extends Component {
     if (aiPlayer.ai.mission === 'patrol') {
       // console.log('patrolling',aiPlayer.ai.patrolling.checkin);
 
+      if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
+        // console.log('patrolling but target location changed! Dont update path. Just track target',aiPlayer.number);
 
-      if (
-        !aiPlayer.ai.patrolling.checkin &&
-        aiPlayer.startPosition.cell.number.x === aiPlayer.currentPosition.cell.number.x &&
-        aiPlayer.startPosition.cell.number.y === aiPlayer.currentPosition.cell.number.y
-      ) {
+        aiPlayer.ai.targetPlayer.currentPosition = {
+          x: targetPlayer.currentPosition.cell.number.x,
+          y: targetPlayer.currentPosition.cell.number.y,
+        }
+      }
+
+      if (!aiPlayer.ai.patrolling.checkin) {
+        // console.log('start out to patrol location');
         aiPlayer.ai.patrolling.checkin = 'enroute';
         patrolDest = aiPlayer.ai.patrolling.area[0]
         getPath = true;
@@ -11525,6 +11534,7 @@ class App extends Component {
           aiPlayer.ai.patrolling.area[0].y === aiPlayer.currentPosition.cell.number.y
         ) {
           aiPlayer.ai.patrolling.checkin = 'arrived';
+          // console.log('arrived @ patrol point');
         } else {
           // console.log('en route to patrol. do nothing',aiPlayer.ai.patrolling.area[0]);
         }
@@ -11538,7 +11548,7 @@ class App extends Component {
 
 
       if (aiPlayer.ai.patrolling.checkin === 'checkedIn') {
-        console.log('currently patrolling');
+        // console.log('currently patrolling');
         let currentPatrolPoint = aiPlayer.ai.patrolling.area.findIndex(elem => elem.x === aiPlayer.currentPosition.cell.number.x && elem.y === aiPlayer.currentPosition.cell.number.y)
         // console.log('currentPatrolPoint 1',currentPatrolPoint, aiPlayer.currentPosition.cell.number);
         if (currentPatrolPoint === 0) {
@@ -11565,7 +11575,10 @@ class App extends Component {
           x: targetPlayer.currentPosition.cell.number.x,
           y: targetPlayer.currentPosition.cell.number.y,
         }
-        aiPlayer.ai.mission = 'pursue';
+        if (aiPlayer.ai.primaryMission === 'pursue') {
+          aiPlayer.ai.mission = 'pursue';
+        }
+
         aiPlayer.ai.targetAcquired = false;
       }
 
@@ -12002,7 +12015,169 @@ class App extends Component {
 
 
     }
+
+    let defendDest;
     if (aiPlayer.ai.mission === 'defend') {
+
+      if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
+        // console.log('defending but target location changed! Dont update path. Just track target',aiPlayer.number);
+
+        aiPlayer.ai.targetPlayer.currentPosition = {
+          x: targetPlayer.currentPosition.cell.number.x,
+          y: targetPlayer.currentPosition.cell.number.y,
+        }
+      }
+
+      if (!aiPlayer.ai.defending.checkin) {
+        console.log('start out to defend location');
+        aiPlayer.ai.defending.checkin = 'enroute';
+
+        let cellsToConsider2 = [
+          {x: aiPlayer.ai.defending.area[0].x+1 ,y: aiPlayer.ai.defending.area[0].y},
+          {x: aiPlayer.ai.defending.area[0].x-1 ,y: aiPlayer.ai.defending.area[0].y},
+          {x: aiPlayer.ai.defending.area[0].x ,y: aiPlayer.ai.defending.area[0].y+1},
+          {x: aiPlayer.ai.defending.area[0].x ,y: aiPlayer.ai.defending.area[0].y-1},
+        ]
+        let freeCell2 = true
+        let freeCellNo;
+        for (const cell2 of cellsToConsider2) {
+          freeCell2 = true
+          let cellRef2 = this.gridInfo.find(elem=> elem.number.x === cell2.x && elem.number.y === cell2.y);
+          if (cellRef2) {
+
+            let terrainInfo4 = cellRef2.levelData.length-1;
+            if (
+              cellRef2.levelData.charAt(terrainInfo4) === 'j' ||
+              cellRef2.levelData.charAt(terrainInfo4) === 'h' ||
+              cellRef2.levelData.charAt(terrainInfo4) === 'i' ||
+              cellRef2.levelData.charAt(0) !== 'x' ||
+              cellRef2.void.state === true
+            ) {
+              freeCell2 = false;
+            }
+            for (const plyr6 of this.players) {
+              if (plyr6.currentPosition.cell.number.x === cellRef2.number.x && plyr6.currentPosition.cell.number.y === cellRef2.number.y) {
+                freeCell2 = false;
+              }
+            }
+          }
+          else {
+            freeCell2 = false
+          }
+          if (freeCell2 === true) {
+            freeCellNo = cell2;
+          }
+        }
+
+        defendDest = freeCellNo
+        getPath = true;
+
+      }
+      if (aiPlayer.ai.defending.checkin === 'enroute') {
+
+        if (
+          aiPlayer.ai.defending.area[0].x === aiPlayer.currentPosition.cell.number.x &&
+          aiPlayer.ai.defending.area[0].y === aiPlayer.currentPosition.cell.number.y
+        ) {
+          aiPlayer.ai.defending.checkin = 'checkedIn';
+          console.log('arrived @ defend point');
+        } else {
+          console.log('en route to defend post. do nothing',aiPlayer.ai.defending.area[0]);
+        }
+      }
+
+
+      if (aiPlayer.ai.patrolling.checkin === 'checkedIn') {
+
+        let instructions = [];
+        switch(aiPlayer.direction) {
+          case 'north':
+            instructions = [
+              {keyword: 'move_east',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_south',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_west',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_north',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_east',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_south',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_west',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_north',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+            ]
+          break;
+          case 'east':
+            instructions = [
+              {keyword: 'move_south',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_west',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_north',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_east',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_south',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_west',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_north',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_east',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+            ]
+          break;
+          case 'south':
+            instructions = [
+              {keyword: 'move_west',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_north',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_east',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_south',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_west',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_north',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_east',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_south',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+            ]
+          break;
+          case 'west':
+            instructions = [
+              {keyword: 'move_north',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_east',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_south',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_west',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_north',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_east',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_south',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+              {keyword: 'move_west',count: 0,limit: 10,},
+              {keyword: 'long_wait',count: 0,limit: 25,},
+            ]
+          break;
+        }
+        aiPlayer.ai.instructions = instructions;
+        aiPlayer.ai.currentInstruction = 0;
+
+      }
+
+
 
       if (
         aiPlayer.currentPosition.cell.number.x !== aiPlayer.ai.defending.area[0].x ||
@@ -12011,59 +12186,7 @@ class App extends Component {
         getPath = true;
       }
       else {
-        let instructions = [];
-        switch(aiPlayer.direction) {
-          case 'north':
-            instructions = [
-              {keyword: 'move_east',count: 0,limit: 10,},
-              {keyword: 'move_south',count: 0,limit: 10,},
-              {keyword: 'move_west',count: 0,limit: 10,},
-              {keyword: 'move_north',count: 0,limit: 10,},
-              {keyword: 'move_east',count: 0,limit: 10,},
-              {keyword: 'move_south',count: 0,limit: 10,},
-              {keyword: 'move_west',count: 0,limit: 10,},
-              {keyword: 'move_north',count: 0,limit: 10,},
-            ]
-          break;
-          case 'east':
-            instructions = [
-              {keyword: 'move_south',count: 0,limit: 10,},
-              {keyword: 'move_west',count: 0,limit: 10,},
-              {keyword: 'move_north',count: 0,limit: 10,},
-              {keyword: 'move_east',count: 0,limit: 10,},
-              {keyword: 'move_south',count: 0,limit: 10,},
-              {keyword: 'move_west',count: 0,limit: 10,},
-              {keyword: 'move_north',count: 0,limit: 10,},
-              {keyword: 'move_east',count: 0,limit: 10,},
-            ]
-          break;
-          case 'south':
-            instructions = [
-              {keyword: 'move_west',count: 0,limit: 10,},
-              {keyword: 'move_north',count: 0,limit: 10,},
-              {keyword: 'move_east',count: 0,limit: 10,},
-              {keyword: 'move_south',count: 0,limit: 10,},
-              {keyword: 'move_west',count: 0,limit: 10,},
-              {keyword: 'move_north',count: 0,limit: 10,},
-              {keyword: 'move_east',count: 0,limit: 10,},
-              {keyword: 'move_south',count: 0,limit: 10,},
-            ]
-          break;
-          case 'west':
-            instructions = [
-              {keyword: 'move_north',count: 0,limit: 10,},
-              {keyword: 'move_east',count: 0,limit: 10,},
-              {keyword: 'move_south',count: 0,limit: 10,},
-              {keyword: 'move_west',count: 0,limit: 10,},
-              {keyword: 'move_north',count: 0,limit: 10,},
-              {keyword: 'move_east',count: 0,limit: 10,},
-              {keyword: 'move_south',count: 0,limit: 10,},
-              {keyword: 'move_west',count: 0,limit: 10,},
-            ]
-          break;
-        }
-        aiPlayer.ai.instructions = instructions;
-        aiPlayer.ai.currentInstruction = 0;
+
       }
 
     }
@@ -12094,6 +12217,7 @@ class App extends Component {
 
         aiPos = aiPlayer.currentPosition.cell.number;
         targetPos = patrolDest;
+
         // this.pathArray[targetPos.x][targetPos.y] = 0;
 
       }
@@ -12103,8 +12227,9 @@ class App extends Component {
       if (aiPlayer.ai.mission === 'defend') {
 
         aiPos = aiPlayer.currentPosition.cell.number;
-        targetPos = aiPlayer.ai.defending.area[0];
-        this.pathArray[targetPos.x][targetPos.y] = 0;
+        targetPos = defendDest;
+        console.log('defendDest',defendDest);
+        // this.pathArray[targetPos.x][targetPos.y] = 0;
 
       }
 
@@ -12181,9 +12306,9 @@ class App extends Component {
       // }
     }
     if (this.players[aiPlayer-1].ai.mission === 'patrol') {
-      if (path.length > 2) {
-        path.pop();
-      }
+      // if (path.length > 2) {
+      //   path.pop();
+      // }
     }
     // if (path.length > 1) {
     //   path.pop();
@@ -12230,25 +12355,69 @@ class App extends Component {
           }
 
           if (oldDirection === newDirection) {
-            instructions.push({
-              keyword: 'move_'+newDirection,
-              count: 0,
-              limit: 1,
-            })
+
+            if (this.players[aiPlayer-1].ai.mission === 'patrol') {
+              instructions.push(
+                {
+                  keyword: 'move_'+newDirection,
+                  count: 0,
+                  limit: 1,
+                },
+                {
+                  keyword: 'long_wait',
+                  count: 0,
+                  limit: 25,
+                }
+              )
+            } else {
+              instructions.push(
+                {
+                  keyword: 'move_'+newDirection,
+                  count: 0,
+                  limit: 1,
+                }
+              )
+            }
           }
           if (oldDirection !== newDirection) {
-            instructions.push(
-              {
-                keyword: 'move_'+newDirection,
-                count: 0,
-                limit: 1,
-              },
-              {
-                keyword: 'move_'+newDirection,
-                count: 0,
-                limit: 1,
-              }
-            )
+            if (this.players[aiPlayer-1].ai.mission === 'patrol') {
+              instructions.push(
+                {
+                  keyword: 'move_'+newDirection,
+                  count: 0,
+                  limit: 1,
+                },
+                {
+                  keyword: 'long_wait',
+                  count: 0,
+                  limit: 25,
+                },
+                {
+                  keyword: 'move_'+newDirection,
+                  count: 0,
+                  limit: 1,
+                },
+                {
+                  keyword: 'long_wait',
+                  count: 0,
+                  limit: 25,
+                },
+              )
+            }
+            else {
+              instructions.push(
+                {
+                  keyword: 'move_'+newDirection,
+                  count: 0,
+                  limit: 1,
+                },
+                {
+                  keyword: 'move_'+newDirection,
+                  count: 0,
+                  limit: 1,
+                }
+              )
+            }
           }
 
           direction = newDirection;
