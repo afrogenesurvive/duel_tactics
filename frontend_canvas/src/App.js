@@ -783,6 +783,7 @@ class App extends Component {
           currentInstruction: 0,
           resetInstructions: false,
           patrolling: {
+            checkin: undefined,
             state: false,
             area: [],
           },
@@ -1124,6 +1125,7 @@ class App extends Component {
           currentInstruction: 0,
           resetInstructions: false,
           patrolling: {
+            checkin: undefined,
             state: false,
             area: [],
           },
@@ -1301,12 +1303,12 @@ class App extends Component {
     this.aiInitSettings = {
       randomStart: false,
       startPosition: {
-        number: {x: 7, y: 7}
+        number: {x: 7, y: 8}
       },
       primaryMission: 'patrol',
       partolArea: [
-        {x: 7, y: 7},
-        {x:7 , y:4 }
+        {x: 8, y: 7},
+        {x:8 , y:5 }
       ]
     }
     this.addAiPlayerKeyPress = false;
@@ -2434,7 +2436,8 @@ class App extends Component {
 
     if (aiPlayerNumber > 0) {
       for (var i = 0; i < aiPlayerNumber; i++) {
-        this.addAiPlayer()
+        this.addAiRandomPlayer()
+
       }
     }
 
@@ -5421,7 +5424,8 @@ class App extends Component {
 
     // ADD COM PLAYER!
     if (this.addAiPlayerKeyPress === true) {
-      this.addAiRandomPlayer()
+      // this.addAiRandomPlayer()
+      this.addAiPlayer()
     }
     if (this.addAiCount.state === true) {
       if (this.addAiCount.count < this.addAiCount.limit) {
@@ -10657,7 +10661,8 @@ class App extends Component {
 
       if (this.aiInitSettings.randomStart !== true) {
         checkCell = true ;
-        cell = {x:this.aiInitSettings.startPosition.number.x,y:this.aiInitSettings.startPosition.number.y};
+        cell.x = this.aiInitSettings.startPosition.number.x;
+        cell.y = this.aiInitSettings.startPosition.number.y;
       }
 
 
@@ -11042,6 +11047,7 @@ class App extends Component {
               state: false,
             },
             patrolling: {
+              checkin: undefined,
               state: false,
               area: [],
             },
@@ -11085,6 +11091,7 @@ class App extends Component {
         this.players[newPlayerNumber-1].ai.mission = this.aiInitSettings.primaryMission;
         if (this.aiInitSettings.primaryMission === 'patrol') {
           this.players[newPlayerNumber-1].ai.patrolling = {
+            checkin: undefined,
             state: true,
             area: [
               {
@@ -11100,6 +11107,7 @@ class App extends Component {
         }
         if (this.aiInitSettings.primaryMission === 'defend') {
           this.players[newPlayerNumber-1].ai.patrolling = {
+            checkin: undefined,
             state: true,
             area: [
               {
@@ -11484,17 +11492,48 @@ class App extends Component {
 
     let patrolDest;
     if (aiPlayer.ai.mission === 'patrol') {
-      console.log('patrolling');
+      // console.log('patrolling',aiPlayer.ai.patrolling.checkin);
 
-      if (aiPlayer.ai.instructions.length === 0) {
-        let currentPatrolPoint = aiPlayer.ai.patrolling.area.indexOf({x:aiPlayer.currentPosition.cell.number.x,y:aiPlayer.currentPosition.cell.number.y})
+
+      if (
+        !aiPlayer.ai.patrolling.checkin &&
+        aiPlayer.startPosition.cell.number.x === aiPlayer.currentPosition.cell.number.x &&
+        aiPlayer.startPosition.cell.number.y === aiPlayer.currentPosition.cell.number.y
+      ) {
+        aiPlayer.ai.patrolling.checkin = 'enroute';
+        patrolDest = aiPlayer.ai.patrolling.area[0]
+        getPath = true;
+      }
+      if (aiPlayer.ai.patrolling.checkin === 'enroute') {
+
+        if (
+          aiPlayer.ai.patrolling.area[0].x === aiPlayer.currentPosition.cell.number.x &&
+          aiPlayer.ai.patrolling.area[0].y === aiPlayer.currentPosition.cell.number.y
+        ) {
+          aiPlayer.ai.patrolling.checkin = 'arrived';
+        } else {
+          // console.log('en route to patrol. do nothing',aiPlayer.ai.patrolling.area[0]);
+        }
+      }
+      if (aiPlayer.ai.patrolling.checkin === 'arrived') {
+        aiPlayer.ai.patrolling.checkin = 'checkedIn'
+        patrolDest = aiPlayer.ai.patrolling.area[1]
+        getPath = true;
+      }
+
+
+      if (aiPlayer.ai.patrolling.checkin === 'checkedIn') {
+        let currentPatrolPoint = aiPlayer.ai.patrolling.area.findIndex(elem => elem.x === aiPlayer.currentPosition.cell.number.x && elem.y === aiPlayer.currentPosition.cell.number.y)
+
         if (currentPatrolPoint === 0) {
           patrolDest = aiPlayer.ai.patrolling.area[1];
           getPath = true;
-        } else {
+        }
+        if (currentPatrolPoint === 1) {
           patrolDest = aiPlayer.ai.patrolling.area[0];
           getPath = true;
         }
+
       }
 
     }
@@ -12039,7 +12078,7 @@ class App extends Component {
 
         aiPos = aiPlayer.currentPosition.cell.number;
         targetPos = patrolDest;
-        this.pathArray[targetPos.x][targetPos.y] = 0;
+        // this.pathArray[targetPos.x][targetPos.y] = 0;
 
       }
       if (aiPlayer.ai.mission === 'engage') {
@@ -12112,15 +12151,23 @@ class App extends Component {
 
   }
   aiParsePath = (path,aiPlayer) => {
-    // console.log('parsing path');
+    // console.log('parsing path',path);
 
     let instructions = [];
     let init = true;
     let initDirection = this.players[aiPlayer-1].direction;
     let direction;
 
-
-    path.pop();
+    if (this.players[aiPlayer-1].ai.mission !== 'patrol') {
+      // path.pop();
+      if (path.length > 1) {
+        path.pop();
+      }
+    }
+    // if (path.length > 1) {
+    //   path.pop();
+    // }
+    // path.pop();
 
     for (const [key, value] of Object.entries(path)) {
 
