@@ -462,8 +462,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 8,
-              y: 2,
+              x: 1,
+              y: 5,
             },
             center: {
               x: 0,
@@ -810,8 +810,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 6,
-              y: 2,
+              x: 1,
+              y: 4,
             },
             center: {
               x: 0,
@@ -1309,10 +1309,10 @@ class App extends Component {
       startPosition: {
         number: {x: 5, y: 5}
       },
-      primaryMission: 'defend',
+      primaryMission: 'patrol',
       partolArea: [
-        {x: 8, y: 7},
-        // {x: 7, y: 4}
+        {x: 6, y: 7},
+        {x: 8, y: 4}
       ]
     }
     this.addAiPlayerKeyPress = false;
@@ -5429,9 +5429,10 @@ class App extends Component {
     // ADD COM PLAYER!
     if (this.addAiPlayerKeyPress === true) {
       // this.addAiRandomPlayer('random')
+      // this.addAiRandomPlayer('pursue')
       // this.addAiRandomPlayer('patrol')
-      // this.addAiRandomPlayer('defend')
-      this.addAiPlayer()
+      this.addAiRandomPlayer('defend')
+      // this.addAiPlayer()
     }
     if (this.addAiCount.state === true) {
       if (this.addAiCount.count < this.addAiCount.limit) {
@@ -10636,12 +10637,15 @@ class App extends Component {
 
     if (this.addAiCount.state !== true) {
 
+      if (this.aiInitSettings.randomStart === true) {
+        console.log('random ai mission is',this.aiInitSettings.primaryMission);
+      }
+
       this.addAiCount.state = true;
 
-      let cell = {
-        x: 0,
-        y: 0
-      }
+      let cell = {x: 0, y: 0}
+      let cell1 = {x: 0, y: 0}
+      let cell3 = {x: 0, y: 0}
 
       let checkCell = false;
       if (this.aiInitSettings.randomStart === true && this.aiInitSettings.primaryMission === 'pursue') {
@@ -10655,46 +10659,106 @@ class App extends Component {
 
         let checkPatrolCell1 = false;
         let checkPatrolCell2 = false;
-        let cell1 = {x: 0, y: 0}
-        let cell2 = {x: 0, y: 0}
+        let inBounds = false;
+
         while (checkPatrolCell1 === false) {
           cell1.x = this.rnJesus(0,this.gridWidth)
           cell1.y = this.rnJesus(0,this.gridWidth)
           checkPatrolCell1 = this.checkCell(cell1);
         }
-        while (checkPatrolCell2 === false) {
-        // while (checkPatrolCell2 === false && checkPatrolCell1 === true) {
-          // choose a direction,
-          // inbounds = false
-          // while in inrange false, move range cells in direction from cell1
-          // if inbounds is true , run checkCell
-          // if checkCell false, checkPatrolCell1 = false
 
-          cell2.x = this.rnJesus(0,this.gridWidth)
-          cell2.y = this.rnJesus(0,this.gridWidth)
-          checkPatrolCell2 = this.checkCell(cell2);
-        }
+        while (checkPatrolCell2 === false && checkPatrolCell1 === true) {
 
-        if (checkPatrolCell1 === true && checkPatrolCell2 === true) {
-          this.aiInitSettings.partolArea[0] = cell1;
-          this.aiInitSettings.partolArea[1] = cell2;
+          // console.log('cell1 chosen',cell1);
+          let range = 4;
+          let directions = ['north','east','south','west'];
+          let whatDir1 = this.rnJesus(1,4)
+          let chooseDirection = directions[whatDir1-1];
 
-          while (checkCell === false) {
-            cell.x = this.rnJesus(0,this.gridWidth)
-            cell.y = this.rnJesus(0,this.gridWidth)
-            checkCell = this.checkCell(cell);
+          switch(chooseDirection) {
+            case 'north':
+              cell3 = {
+                x: cell1.x,
+                y: cell1.y-range,
+              }
+            break;
+            case 'south':
+              cell3 = cell1.y+range;
+              cell3 = {
+                x: cell1.x,
+                y: cell1.y+range,
+              }
+            break;
+            case 'west':
+              cell3 = {
+                x: cell1.x-range,
+                y: cell1.y,
+              }
+            break;
+            case 'east':
+              cell3 = {
+                x: cell1.x+range,
+                y: cell1.y,
+              }
+            break;
+          }
+          // console.log('proposed cell 2',cell3);
+          if (
+            cell3.x < 0 || cell3.x > this.gridWidth ||
+            cell3.y < 0 || cell3.y > this.gridWidth
+          ) {
+            // console.log('2nd cell is out of bounds');
+          } else {
+            cell3.x = this.rnJesus(0,this.gridWidth)
+            cell3.y = this.rnJesus(0,this.gridWidth)
+            checkPatrolCell2 = this.checkCell(cell3);
           }
 
         }
 
+        if (checkPatrolCell1 === true && checkPatrolCell2 === true) {
+          // console.log('patrol cells 1 & 2 chosen',cell1,cell3);
+          this.aiInitSettings.partolArea[0] = cell1;
+          this.aiInitSettings.partolArea[1] = cell3;
+          inBounds = true;
+        }
+        if (inBounds === true) {
+          while (checkCell === false ) {
+            cell.x = this.rnJesus(0,this.gridWidth)
+            cell.y = this.rnJesus(0,this.gridWidth)
+            checkCell = this.checkCell(cell);
+            if (cell === cell1 || cell === cell3) {
+              checkCell = false
+            }
+          }
+        }
+        if (checkCell === true) {
+          console.log('random patrol points chosen: start',cell,'patrol points',cell1,cell3);
+        }
+
+
       }
       if (this.aiInitSettings.randomStart === true && this.aiInitSettings.primaryMission === 'defend') {
+        let checkCell2 = false;
+        let cell4 = {x:0,y:0}
+        while (checkCell2 === false) {
+          cell4.x = this.rnJesus(0,this.gridWidth)
+          cell4.y = this.rnJesus(0,this.gridWidth)
+          checkCell2 = this.checkCell(cell4);
+        }
+        if (checkCell2 === true) {
+          this.aiInitSettings.partolArea[0] = cell4;
+        }
 
-        while (checkCell === false) {
+        while (checkCell === false && checkCell2 === true) {
           cell.x = this.rnJesus(0,this.gridWidth)
           cell.y = this.rnJesus(0,this.gridWidth)
           checkCell = this.checkCell(cell);
         }
+        if (checkCell === true) {
+          console.log('random defend points chosen: start',cell,'defend point',cell4);
+        }
+
       }
 
       if (this.aiInitSettings.randomStart !== true) {
@@ -10706,9 +10770,12 @@ class App extends Component {
 
       if (checkCell === true) {
 
-        if (this.aiInitSettings.primaryMission === 'defend' && this.aiInitSettings.randomStart === true) {
-          this.aiInitSettings.partolArea[0] = cell;
-        }
+        // if (this.aiInitSettings.primaryMission === 'defend' && this.aiInitSettings.randomStart === true) {
+        //   this.aiInitSettings.partolArea[0] = cell;
+        // }
+        // if (this.aiInitSettings.primaryMission === 'patrol' && this.aiInitSettings.randomStart === true) {
+        //   console.log('random patrol points chosen: start',cell,'patrol points',cell1,cell3);
+        // }
 
         // console.log('adding ai. Player #',newPlayerNumber,' @',cell.x,cell.y);
         // cell = {x:8,y:6};
@@ -11171,6 +11238,37 @@ class App extends Component {
     }
 
   }
+  addAiRandomPlayer = (mission) => {
+
+    let newMisson = mission;
+    if (mission === 'random') {
+      let whatMission = this.rnJesus(1,10)
+      if (whatMission % 2 === 0) {
+        newMisson = 'pursue'
+      }
+      if (whatMission % 3 === 0) {
+        newMisson = 'patrol'
+      }
+      if (whatMission % 5 === 0) {
+        newMisson = 'defend'
+      }
+
+    }
+
+
+    this.aiInitSettings = {
+      randomStart: true,
+      startPosition: {
+        number: {x: undefined, y: undefined}
+      },
+      primaryMission: newMisson,
+      partolArea: [
+        {x: undefined, y: undefined},
+        {x: undefined, y: undefined},
+      ]
+    }
+    this.addAiPlayer();
+  }
   removeAiPlayer = (playerNumber) => {
     console.log('removing ai player',playerNumber);
 
@@ -11217,35 +11315,7 @@ class App extends Component {
     // this.additionalAvoidArray.splice(indx3,1)
 
   }
-  addAiRandomPlayer = (mission) => {
 
-    let newMisson = mission;
-    if (mission === 'random') {
-      let whatMission = this.rnJesus(1,10)
-      if (whatMission % 2 === 0) {
-        newMisson = 'pursue'
-      }
-      if (whatMission % 3 === 0) {
-        newMisson = 'patrol'
-      }
-      if (whatMission % 5 === 0) {
-        newMisson = 'defend'
-      }
-    }
-
-    this.aiInitSettings = {
-      randomStart: true,
-      startPosition: {
-        number: {x: undefined, y: undefined}
-      },
-      primaryMission: newMisson,
-      partolArea: [
-        {x: undefined, y: undefined},
-        {x: undefined, y: undefined},
-      ]
-    }
-    this.addAiPlayer();
-  }
   toggleAiDisplay = () => {
     let newState = !this.state.showAiStatus;
     this.setState({
@@ -11404,6 +11474,8 @@ class App extends Component {
         }
 
 
+
+        // ****check if both on-ai players in range and if player inrange is not current target player, switch target****
 
         // TARGET AQUISITION & RANGE FINDING!!
         let targetInRange = false;
@@ -12400,7 +12472,7 @@ class App extends Component {
 
           if (oldDirection === newDirection) {
 
-            if (this.players[aiPlayer-1].ai.mission === 'patrol') {
+            if (this.players[aiPlayer-1].ai.mission === 'patrol' && this.players[aiPlayer-1].ai.patrolling.checkin !== 'enroute') {
               instructions.push(
                 {
                   keyword: 'move_'+newDirection,
@@ -12424,7 +12496,7 @@ class App extends Component {
             }
           }
           if (oldDirection !== newDirection) {
-            if (this.players[aiPlayer-1].ai.mission === 'patrol') {
+            if (this.players[aiPlayer-1].ai.mission === 'patrol' && this.players[aiPlayer-1].ai.patrolling.checkin !== 'enroute') {
               instructions.push(
                 {
                   keyword: 'move_'+newDirection,
