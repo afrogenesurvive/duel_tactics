@@ -10649,15 +10649,46 @@ class App extends Component {
       }
       if (this.aiInitSettings.randomStart === true && this.aiInitSettings.primaryMission === 'patrol') {
 
-        // choose 2 cells within a certain range and check it for obstructions a set 2 objects
-        // this.aiInitSettings.partolArea.push({)
-        // set start cell and check cell true
+        let checkPatrolCell1 = false;
+        let checkPatrolCell2 = false;
+        let cell1 = {x: 0, y: 0}
+        let cell2 = {x: 0, y: 0}
+        while (checkPatrolCell1 === false) {
+          cell1.x = this.rnJesus(0,this.gridWidth)
+          cell1.y = this.rnJesus(0,this.gridWidth)
+          checkPatrolCell1 = this.checkCell(cell1);
+        }
+        while (checkPatrolCell2 === false) {
+        // while (checkPatrolCell2 === false && checkPatrolCell1 === true) {
+          // choose a direction,
+          // move range cells in direction from cell1, then run checkCell
+          // if checkCell false, checkPatrolCell1 = false
+
+          cell2.x = this.rnJesus(0,this.gridWidth)
+          cell2.y = this.rnJesus(0,this.gridWidth)
+          checkPatrolCell2 = this.checkCell(cell2);
+        }
+
+        if (checkPatrolCell1 === true && checkPatrolCell2 === true) {
+          this.aiInitSettings.partolArea[0] = cell1;
+          this.aiInitSettings.partolArea[1] = cell2;
+
+          while (checkCell === false) {
+            cell.x = this.rnJesus(0,this.gridWidth)
+            cell.y = this.rnJesus(0,this.gridWidth)
+            checkCell = this.checkCell(cell);
+          }
+
+        }
+
       }
       if (this.aiInitSettings.randomStart === true && this.aiInitSettings.primaryMission === 'defend') {
 
-        // choose rando cell and set
-        // this.aiInitSettings.partolArea.push({x:,y:})
-        // set start cell and check cell true
+        while (checkCell === false) {
+          cell.x = this.rnJesus(0,this.gridWidth)
+          cell.y = this.rnJesus(0,this.gridWidth)
+          checkCell = this.checkCell(cell);
+        }
       }
 
       if (this.aiInitSettings.randomStart !== true) {
@@ -10668,6 +10699,10 @@ class App extends Component {
 
 
       if (checkCell === true) {
+
+        if (this.aiInitSettings.primaryMission === 'defend') {
+          this.aiInitSettings.partolArea[0] = cell;
+        }
 
         // console.log('adding ai. Player #',newPlayerNumber,' @',cell.x,cell.y);
         // cell = {x:8,y:6};
