@@ -1311,8 +1311,8 @@ class App extends Component {
       },
       primaryMission: 'patrol',
       partolArea: [
-        {x: 6, y: 7},
-        {x: 8, y: 4}
+        {x: 7, y: 7},
+        {x: 7, y: 4}
       ]
     }
     this.addAiPlayerKeyPress = false;
@@ -5431,8 +5431,8 @@ class App extends Component {
       // this.addAiRandomPlayer('random')
       // this.addAiRandomPlayer('pursue')
       // this.addAiRandomPlayer('patrol')
-      this.addAiRandomPlayer('defend')
-      // this.addAiPlayer()
+      // this.addAiRandomPlayer('defend')
+      this.addAiPlayer()
     }
     if (this.addAiCount.state === true) {
       if (this.addAiCount.count < this.addAiCount.limit) {
@@ -9327,8 +9327,8 @@ class App extends Component {
 
     if (player.ai.state !== true) {
 
-        this.resetAiTarget.state = true;
-        this.resetAiTarget.player = player.number;
+      this.resetAiTarget.state = true;
+      this.resetAiTarget.player = player.number;
 
     }
 
@@ -11326,6 +11326,12 @@ class App extends Component {
   aiEvaluate = () => {
     // console.log('aiEvaluate');
 
+    if (this.time === 700) {
+      this.players[2].ai.primaryMission = 'pursue'
+      this.players[2].ai.mission = 'pursue'
+      this.players[2].ai.targetAcquired = false
+    }
+
 
 
     if (this.resetAiTarget.state === true) {
@@ -11467,76 +11473,249 @@ class App extends Component {
             plyr.ai.targetSet = true
             // console.log('player',plyr.number,'setting target...player',targetPlayer.number,'my mission',plyr.ai.mission);
             // this.getTarget(plyr)
-          } else {
+          }
+          else {
             // console.log('no targets availible');
           }
 
         }
 
 
-
-        // ****check if both on-ai players in range and if player inrange is not current target player, switch target****
-
         // TARGET AQUISITION & RANGE FINDING!!
         let targetInRange = false;
+        // if (plyr.ai.targetSet === true) {
+        //   // console.log('range finder',plyr.ai.targetPlayer.number);
+        //   if (plyr.currentWeapon.type === 'bow') {
+        //     if (
+        //       plyr.currentPosition.cell.number.x === plyr.ai.targetPlayer.currentPosition.x ||
+        //       plyr.currentPosition.cell.number.y === plyr.ai.targetPlayer.currentPosition.y
+        //     ) {
+        //       // console.log('in ranged attack range');
+        //       targetInRange = true;
+        //     }
+        //   }
+        //   if (plyr.currentWeapon.type === 'spear') {
+        //
+        //     if (plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x) {
+        //       if (
+        //         plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y + 3 ||
+        //         plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y - 3
+        //       ) {
+        //         // console.log('in melee attack range: spear');
+        //         targetInRange = true;
+        //       }
+        //     }
+        //
+        //     if (
+        //       plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y
+        //     ) {
+        //       if (
+        //         plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x + 2 ||
+        //         plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x - 2
+        //       ) {
+        //         // console.log('in melee attack range: spear');
+        //         targetInRange = true;
+        //       }
+        //     }
+        //
+        //   }
+        //   if (plyr.currentWeapon.type === 'sword') {
+        //
+        //     if (plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x) {
+        //       if (
+        //         plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y + 1 ||
+        //         plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y - 1
+        //       ) {
+        //         // console.log('in melee attack range: sword');
+        //         targetInRange = true;
+        //       }
+        //     }
+        //
+        //     if (plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y) {
+        //       if (
+        //         plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x + 1 ||
+        //         plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x - 1
+        //       ) {
+        //         // console.log('in melee attack range: sword');
+        //         targetInRange = true;
+        //       }
+        //     }
+        //
+        //   }
+        // }
+
         if (plyr.ai.targetSet === true) {
-          // console.log('range finder',plyr.ai.targetPlayer.number);
-          if (plyr.currentWeapon.type === 'bow') {
-            if (
-              plyr.currentPosition.cell.number.x === plyr.ai.targetPlayer.currentPosition.x ||
-              plyr.currentPosition.cell.number.y === plyr.ai.targetPlayer.currentPosition.y
-            ) {
-              // console.log('in ranged attack range');
-              targetInRange = true;
-            }
-          }
-          if (plyr.currentWeapon.type === 'spear') {
+          for (const plyr2 of this.players) {
+            if (plyr2.ai.state !== true) {
+              if (plyr.currentWeapon.type === 'bow') {
+                if (
+                  plyr.currentPosition.cell.number.x === plyr2.currentPosition.cell.number.x ||
+                  plyr.currentPosition.cell.number.y === plyr2.currentPosition.cell.number.y
+                ) {
+                  if (plyr.ai.targetPlayer.number === plyr2.number) {
+                    targetInRange = true;
+                  }
+                  else {
+                    console.log('alternative target in range. Switching');
+                    plyr.ai.targetPlayer = {
+                      number: plyr2.number,
+                      currentPosition: {
+                        x: plyr2.currentPosition.cell.number.x,
+                        y: plyr2.currentPosition.cell.number.y,
+                      },
+                      target: {
+                        number1: {
+                          x: plyr2.target.cell.number.x,
+                          y: plyr2.target.cell.number.y,
+                        },
+                        number2: {
+                          x: plyr2.target.cell2.number.x,
+                          y: plyr2.target.cell2.number.y,
+                        },
+                      },
+                      action: plyr2.action,
+                    };
+                  }
+                }
+              }
 
-            if (plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x) {
-              if (
-                plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y + 3 ||
-                plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y - 3
-              ) {
-                // console.log('in melee attack range: spear');
-                targetInRange = true;
+              if (plyr.currentWeapon.type === 'spear') {
+
+                if (plyr.currentPosition.cell.number.x === plyr2.currentPosition.cell.number.x) {
+                  if (
+                    plyr.currentPosition.cell.number.y === plyr2.currentPosition.cell.number.y + 3 ||
+                    plyr.currentPosition.cell.number.y === plyr2.currentPosition.cell.number.y - 3
+                  ) {
+                    if (plyr.ai.targetPlayer.number === plyr2.number) {
+                      targetInRange = true;
+                    }
+                    else {
+                      console.log('alternative target in range. Switching');
+                      plyr.ai.targetPlayer = {
+                        number: plyr2.number,
+                        currentPosition: {
+                          x: plyr2.currentPosition.cell.number.x,
+                          y: plyr2.currentPosition.cell.number.y,
+                        },
+                        target: {
+                          number1: {
+                            x: plyr2.target.cell.number.x,
+                            y: plyr2.target.cell.number.y,
+                          },
+                          number2: {
+                            x: plyr2.target.cell2.number.x,
+                            y: plyr2.target.cell2.number.y,
+                          },
+                        },
+                        action: plyr2.action,
+                      };
+                    }
+                  }
+                }
+
+                if (
+                  plyr.currentPosition.cell.number.y === plyr2.currentPosition.cell.number.y
+                ) {
+                  if (
+                    plyr.currentPosition.cell.number.x === plyr2.currentPosition.cell.number.x + 2 ||
+                    plyr.currentPosition.cell.number.x === plyr2.currentPosition.cell.number.x - 2
+                  ) {
+                    if (plyr.ai.targetPlayer.number === plyr2.number) {
+                      targetInRange = true;
+                    }
+                    else {
+                      console.log('alternative target in range. Switching');
+                      plyr.ai.targetPlayer = {
+                        number: plyr2.number,
+                        currentPosition: {
+                          x: plyr2.currentPosition.cell.number.x,
+                          y: plyr2.currentPosition.cell.number.y,
+                        },
+                        target: {
+                          number1: {
+                            x: plyr2.target.cell.number.x,
+                            y: plyr2.target.cell.number.y,
+                          },
+                          number2: {
+                            x: plyr2.target.cell2.number.x,
+                            y: plyr2.target.cell2.number.y,
+                          },
+                        },
+                        action: plyr2.action,
+                      };
+                    }
+                  }
+                }
+
+              }
+
+              if (plyr.currentWeapon.type === 'sword') {
+
+                if (plyr.currentPosition.cell.number.x ===  plyr2.currentPosition.cell.number.x) {
+                  if (
+                    plyr.currentPosition.cell.number.y ===  plyr2.currentPosition.cell.number.y + 1 ||
+                    plyr.currentPosition.cell.number.y ===  plyr2.currentPosition.cell.number.y - 1
+                  ) {
+                    if (plyr.ai.targetPlayer.number === plyr2.number) {
+                      targetInRange = true;
+                    }
+                    else {
+                      console.log('alternative target in range. Switching');
+                      plyr.ai.targetPlayer = {
+                        number: plyr2.number,
+                        currentPosition: {
+                          x: plyr2.currentPosition.cell.number.x,
+                          y: plyr2.currentPosition.cell.number.y,
+                        },
+                        target: {
+                          number1: {
+                            x: plyr2.target.cell.number.x,
+                            y: plyr2.target.cell.number.y,
+                          },
+                          number2: {
+                            x: plyr2.target.cell2.number.x,
+                            y: plyr2.target.cell2.number.y,
+                          },
+                        },
+                        action: plyr2.action,
+                      };
+                    }
+                  }
+                }
+
+                if (plyr.currentPosition.cell.number.y ===  plyr2.currentPosition.cell.number.y) {
+                  if (
+                    plyr.currentPosition.cell.number.x ===  plyr2.currentPosition.cell.number.x + 1 ||
+                    plyr.currentPosition.cell.number.x ===  plyr2.currentPosition.cell.number.x - 1
+                  ) {
+                    if (plyr.ai.targetPlayer.number === plyr2.number) {
+                      targetInRange = true;
+                    }
+                    else {
+                      console.log('alternative target in range. Switching');
+                      plyr.ai.targetPlayer = {
+                        number: plyr2.number,
+                        currentPosition: {
+                          x: plyr2.currentPosition.cell.number.x,
+                          y: plyr2.currentPosition.cell.number.y,
+                        },
+                        target: {
+                          number1: {
+                            x: plyr2.target.cell.number.x,
+                            y: plyr2.target.cell.number.y,
+                          },
+                          number2: {
+                            x: plyr2.target.cell2.number.x,
+                            y: plyr2.target.cell2.number.y,
+                          },
+                        },
+                        action: plyr2.action,
+                      };
+                    }
+                  }
+                }
               }
             }
-
-            if (
-              plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y
-            ) {
-              if (
-                plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x + 2 ||
-                plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x - 2
-              ) {
-                // console.log('in melee attack range: spear');
-                targetInRange = true;
-              }
-            }
-
-          }
-          if (plyr.currentWeapon.type === 'sword') {
-
-            if (plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x) {
-              if (
-                plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y + 1 ||
-                plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y - 1
-              ) {
-                // console.log('in melee attack range: sword');
-                targetInRange = true;
-              }
-            }
-
-            if (plyr.currentPosition.cell.number.y ===  plyr.ai.targetPlayer.currentPosition.y) {
-              if (
-                plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x + 1 ||
-                plyr.currentPosition.cell.number.x ===  plyr.ai.targetPlayer.currentPosition.x - 1
-              ) {
-                // console.log('in melee attack range: sword');
-                targetInRange = true;
-              }
-            }
-
           }
         }
 
@@ -11605,7 +11784,7 @@ class App extends Component {
 
     // CHECK FOR PURSUIT TARGET POSITION CHANGE!!
     if (aiPlayer.ai.mission === 'pursue' && aiPlayer.ai.targetSet === true) {
-      // console.log('pursuing');
+      console.log('pursuing','target');
 
       if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
         // console.log('pursuit target location changed! Updating path for player',aiPlayer.number);
