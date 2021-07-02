@@ -1303,12 +1303,13 @@ class App extends Component {
       store2: [],
     };
     this.charSpriteHeight = 100;
+    this.charSpriteWidth = 100;
     this.aiInitSettings = {
       randomStart: false,
       startPosition: {
         number: {x: 8, y: 2}
       },
-      primaryMission: 'patrol',
+      primaryMission: 'pursue',
       partolArea: [
         {x: 7, y: 7},
         {x: 7, y:  4}
@@ -1334,7 +1335,7 @@ class App extends Component {
     this.removeAi = undefined;
     this.easyStar = undefined;
     this.getPath = false;
-    this.aiCarefulRange = false;
+    this.aiCarefulRange = true;
 
     this.showSettingsKeyPress = {
       state: false,
@@ -2387,7 +2388,7 @@ class App extends Component {
       }
     }
 
-
+    //
     // for (const player of this.players) {
     //   this.playerUpdate(player, this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
     // }
@@ -2495,6 +2496,7 @@ class App extends Component {
         this.time++
         // if (this.time === 200) {
         //   this.openVoid = true;
+        // OR
         //   this.customCellToVoid({x:2,y:2})
         // }
 
@@ -2525,6 +2527,7 @@ class App extends Component {
 
 
         for (const player of this.players) {
+
           this.playerUpdate(player, this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
         }
 
@@ -6448,6 +6451,7 @@ class App extends Component {
             if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y && plyr.success.deflected.state === false) {
               // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
 
+              // console.log('updatedPlayerImg',finalAnimIndex,sx, sy, sWidth, sHeight,point);
               context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40)
 
               if (plyr.attacking.state === true) {
@@ -10982,8 +10986,8 @@ class App extends Component {
           },
           hp: 2,
           currentWeapon: {
-            name: 'spear1',
-            type: 'spear',
+            name: 'sword1',
+            type: 'sword',
             effect: '',
           },
           currentArmor: {
@@ -10995,8 +10999,8 @@ class App extends Component {
             weaponIndex: 0,
             armorIndex: 0,
             weapons: [{
-              name: 'spear1',
-              type: 'spear',
+              name: 'sword1',
+              type: 'sword',
               effect: '',
             }],
             armor: [],
@@ -11284,6 +11288,19 @@ class App extends Component {
       for (const plyr of this.players) {
         if (plyr.ai.state === true && plyr.ai.targetSet === true && plyr.ai.targetPlayer.number === this.resetAiTarget.player) {
 
+          if (plyr.attacking.state === true) {
+            plyr.attacking.state = false;
+            plyr.action = 'idle';
+            // this.attackedCancel(plyr)
+            plyr.ai.targetSet = false;
+            plyr.ai.targetAcquired = false;
+            plyr.ai.mission = plyr.ai.primaryMission;
+            plyr.ai.currentInstruction = 0;
+            plyr.ai.pathArray = [];
+            plyr.ai.instructions = [];
+          }
+
+
           plyr.ai.targetSet = false;
           plyr.ai.targetPlayer = {
             number: undefined,
@@ -11444,7 +11461,7 @@ class App extends Component {
                   ) {
                     if (plyr.ai.targetPlayer.number === plyr2.number) {
                       targetInRange = true;
-                      // console.log('target in bow range for player',plyr.number);
+                      // console.log('target in bow range for player',plyr.number,'@',plyr.currentPosition.cell.number);
                       plyr.ai.currentInstruction = 0;
                     }
                     else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage') {
@@ -11482,7 +11499,7 @@ class App extends Component {
                   ) {
                       if (plyr.ai.targetPlayer.number === plyr2.number) {
                         targetInRange = true;
-                        // console.log('target in bow range for player',plyr.number);
+                        // console.log('target in bow range for player',plyr.number,'@',plyr.currentPosition.cell.number);
                         plyr.ai.currentInstruction = 0;
                       }
                       else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage') {
@@ -11516,7 +11533,7 @@ class App extends Component {
               if (plyr.currentWeapon.type === 'spear') {
                 let range = 2;
                 if (this.aiCarefulRange === true) {
-                  console.log('careful range finding');
+                  // console.log('careful range finding');
                   range = 3;
                 }
 
@@ -11527,7 +11544,7 @@ class App extends Component {
                   ) {
                     if (plyr.ai.targetPlayer.number === plyr2.number) {
                       targetInRange = true;
-                      // console.log('target in spear range for player',plyr.number);
+                      // console.log('target in spear range for player',plyr.number,'@',plyr.currentPosition.cell.number);
                     }
                     else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage') {
                       // console.log('alternative target in range. Switching');
@@ -11560,7 +11577,7 @@ class App extends Component {
                   ) {
                     if (plyr.ai.targetPlayer.number === plyr2.number) {
                       targetInRange = true;
-                      // console.log('target in spear range for player',plyr.number);
+                      // console.log('target in spear range for player',plyr.number,'@',plyr.currentPosition.cell.number);
                     }
                     else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage') {
                       // console.log('alternative target in range. Switching');
@@ -11591,7 +11608,7 @@ class App extends Component {
               if (plyr.currentWeapon.type === 'sword') {
                 let range2 = 1;
                 if (this.aiCarefulRange === true) {
-                  console.log('careful range finding');
+                  // console.log('careful range finding');
                   range2 = 2;
                 }
 
@@ -11602,7 +11619,7 @@ class App extends Component {
                   ) {
                     if (plyr.ai.targetPlayer.number === plyr2.number) {
                       targetInRange = true;
-                      // console.log('target in sword range for player',plyr.number);
+                      // console.log('target in sword range for player',plyr.number,'@',plyr.currentPosition.cell.number);
                     }
                     else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage') {
                       // console.log('alternative target in range. Switching');
@@ -11635,7 +11652,7 @@ class App extends Component {
                   ) {
                     if (plyr.ai.targetPlayer.number === plyr2.number) {
                       targetInRange = true;
-                      // console.log('target in sword range for player',plyr.number);
+                      // console.log('target in sword range for player',plyr.number,'@',plyr.currentPosition.cell.number);
                     }
                     else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage') {
                       // console.log('alternative target in range. Switching');
@@ -11734,7 +11751,7 @@ class App extends Component {
 
     // CHECK FOR PURSUIT TARGET POSITION CHANGE!!
     if (aiPlayer.ai.mission === 'pursue' && aiPlayer.ai.targetSet === true) {
-      // console.log('pursuing','target');
+      // console.log('pursuing');
 
       if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
         // console.log('pursuit target location changed! Updating path for player',aiPlayer.number);
@@ -11902,33 +11919,39 @@ class App extends Component {
           if (this.aiCarefulRange === true) {
             console.log('safe range attack flow');
 
-            if (aiPlayer.ai.target.occupied === true) {
-              instructions2.push(
-                {
-                  keyword: 'strafe_'+oppositeDir,
-                  count: 0,
-                  limit: 1,
-                },
-              )
-            }
-            instructions2.push(
-              {
-                keyword: 'move_'+aiPlayer.direction,
-                count: 0,
-                limit: 1,
-              },
-              {
-                keyword: 'attack',
-                count: 0,
-                limit: 1,
-              },
-              {
-                keyword: 'strafe_'+oppositeDir,
-                count: 0,
-                limit: 1,
-              },
-            )
-          } else {
+            // if (aiPlayer.target.free !== true) {
+            //   instructions2.push(
+            //     {
+            //       keyword: 'strafe_'+oppositeDir,
+            //       count: 0,
+            //       limit: 1,
+            //     },
+            //   )
+            // }
+            // instructions2.push(
+            //   {
+            //     keyword: 'long_wait',
+            //     count: 0,
+            //     limit: 25,
+            //   },
+            //   {
+            //     keyword: 'move_'+aiPlayer.direction,
+            //     count: 0,
+            //     limit: 1,
+            //   },
+            //   {
+            //     keyword: 'attack',
+            //     count: 0,
+            //     limit: 1,
+            //   },
+            //   {
+            //     keyword: 'strafe_'+oppositeDir,
+            //     count: 0,
+            //     limit: 1,
+            //   },
+            // )
+          }
+          else {
             instructions2.push(
               {
                 keyword: 'attack',
@@ -11947,33 +11970,39 @@ class App extends Component {
           if (this.aiCarefulRange === true) {
             console.log('safe range attack flow');
 
-            if (aiPlayer.ai.target.occupied === true) {
-              instructions2.push(
-                {
-                  keyword: 'strafe_'+oppositeDir,
-                  count: 0,
-                  limit: 1,
-                },
-              )
-            }
-            instructions2.push(
-              {
-                keyword: 'move_'+aiPlayer.direction,
-                count: 0,
-                limit: 1,
-              },
-              {
-                keyword: 'attack',
-                count: 0,
-                limit: 1,
-              },
-              {
-                keyword: 'strafe_'+oppositeDir,
-                count: 0,
-                limit: 1,
-              },
-            )
-          } else {
+            // if (aiPlayer.target.free !== true) {
+            //   instructions2.push(
+            //     {
+            //       keyword: 'strafe_'+oppositeDir,
+            //       count: 0,
+            //       limit: 1,
+            //     },
+            //   )
+            // }
+            // instructions2.push(
+            //   {
+            //     keyword: 'long_wait',
+            //     count: 0,
+            //     limit: 25,
+            //   },
+            //   {
+            //     keyword: 'move_'+aiPlayer.direction,
+            //     count: 0,
+            //     limit: 1,
+            //   },
+            //   {
+            //     keyword: 'attack',
+            //     count: 0,
+            //     limit: 1,
+            //   },
+            //   {
+            //     keyword: 'strafe_'+oppositeDir,
+            //     count: 0,
+            //     limit: 1,
+            //   },
+            // )
+          }
+          else {
             instructions2.push(
               {
                 keyword: 'attack',
@@ -12027,33 +12056,39 @@ class App extends Component {
               if (this.aiCarefulRange === true) {
                 console.log('safe range attack flow');
 
-                if (aiPlayer.ai.target.occupied === true) {
-                  instructions2.push(
-                    {
-                      keyword: 'strafe_'+oppositeDir,
-                      count: 0,
-                      limit: 1,
-                    },
-                  )
-                }
-                instructions2.push(
-                  {
-                    keyword: 'move_'+aiPlayer.direction,
-                    count: 0,
-                    limit: 1,
-                  },
-                  {
-                    keyword: 'attack',
-                    count: 0,
-                    limit: 1,
-                  },
-                  {
-                    keyword: 'strafe_'+oppositeDir,
-                    count: 0,
-                    limit: 1,
-                  },
-                )
-              } else {
+                // if (aiPlayer.target.free !== true) {
+                //   instructions2.push(
+                //     {
+                //       keyword: 'strafe_'+oppositeDir,
+                //       count: 0,
+                //       limit: 1,
+                //     },
+                //   )
+                // }
+                // instructions2.push(
+                //   {
+                //     keyword: 'long_wait',
+                //     count: 0,
+                //     limit: 25,
+                //   },
+                //   {
+                //     keyword: 'move_'+aiPlayer.direction,
+                //     count: 0,
+                //     limit: 1,
+                //   },
+                //   {
+                //     keyword: 'attack',
+                //     count: 0,
+                //     limit: 1,
+                //   },
+                //   {
+                //     keyword: 'strafe_'+oppositeDir,
+                //     count: 0,
+                //     limit: 1,
+                //   },
+                // )
+              }
+              else {
                 instructions2.push(
                   {
                     keyword: 'attack',
@@ -12169,7 +12204,7 @@ class App extends Component {
             if (this.aiCarefulRange === true) {
               console.log('safe range attack flow');
 
-              if (aiPlayer.ai.target.occupied === true) {
+              if (aiPlayer.target.free !== true) {
                 instructions1.push(
                   {
                     keyword: 'strafe_'+oppositeDir,
@@ -12179,6 +12214,11 @@ class App extends Component {
                 )
               }
               instructions1.push(
+                // {
+                //   keyword: 'long_wait',
+                //   count: 0,
+                //   limit: 25,
+                // },
                 {
                   keyword: 'move_'+aiPlayer.direction,
                   count: 0,
@@ -12195,7 +12235,8 @@ class App extends Component {
                   limit: 1,
                 },
               )
-            } else {
+            }
+            else {
               instructions1.push(
                 {
                   keyword: 'attack',
@@ -12220,7 +12261,7 @@ class App extends Component {
             if (this.aiCarefulRange === true) {
               console.log('safe range attack flow');
 
-              if (aiPlayer.ai.target.occupied === true) {
+              if (aiPlayer.target.free !== true) {
                 instructions1.push(
                   {
                     keyword: 'strafe_'+oppositeDir,
@@ -12230,6 +12271,11 @@ class App extends Component {
                 )
               }
               instructions1.push(
+                {
+                  keyword: 'long_wait',
+                  count: 0,
+                  limit: 25,
+                },
                 {
                   keyword: 'move_'+aiPlayer.direction,
                   count: 0,
@@ -12656,7 +12702,6 @@ class App extends Component {
 
 
           if (this.aiCarefulRange === true) {
-            let pursuitRange;
 
             let candidateTargets = [
               {x: 0, y: 0},
@@ -12666,15 +12711,15 @@ class App extends Component {
             ]
 
             if (aiPlayer.currentWeapon.type === "crossbow") {
-               pursuitRange = [
+               candidateTargets = [
                  {x: targetPos.x-5, y: targetPos.y},
                  {x: targetPos.x+5, y: targetPos.y},
                  {x: targetPos.x, y: targetPos.y+5},
                  {x: targetPos.x, y: targetPos.y-5},
                ]
 
-               for (const rangeElem of pursuitRange)  {
-                 let indx = pursuitRange.findIndex(rng => rng.x === rangeElem.x && rng.y === rangeElem.y)
+               for (const rangeElem of candidateTargets)  {
+                 let indx = candidateTargets.findIndex(rng => rng.x === rangeElem.x && rng.y === rangeElem.y)
 
                  let pursuitTargetRef = this.gridInfo.find(elem => elem.number.x === rangeElem.x && elem.number.y === rangeElem.y)
 
@@ -12727,6 +12772,7 @@ class App extends Component {
                        }
                        let cellRef3 = this.gridInfo.find(elema => elema.number.x === rngElCell.x && elema.number.y === rngElCell.y)
                        if (
+                         cellRef3 &&
                          cellRef3.levelData.charAt(0) ===  'z' ||
                          cellRef3.levelData.charAt(0) ===  'y'
                        ) {
@@ -12740,29 +12786,148 @@ class App extends Component {
                    } else {
                      console.log('your safe path is blocked');
                    }
-
                  }
-
-
                }
 
             }
             if (aiPlayer.currentWeapon.type === "spear") {
-              pursuitRange = [
+              candidateTargets = [
                 {x: targetPos.x-3, y: targetPos.y},
                 {x: targetPos.x+3, y: targetPos.y},
                 {x: targetPos.x, y: targetPos.y+3},
                 {x: targetPos.x, y: targetPos.y-3},
               ]
 
+              for (const rangeElem of candidateTargets)  {
+                let indx = candidateTargets.findIndex(rng => rng.x === rangeElem.x && rng.y === rangeElem.y)
+
+                let pursuitTargetRef = this.gridInfo.find(elem => elem.number.x === rangeElem.x && elem.number.y === rangeElem.y)
+
+                if (!pursuitTargetRef) {
+                 console.log('range element is out of bounds');
+                } else {
+                  let rangeElemCells;
+
+                  switch(indx) {
+                    case 0:
+                      rangeElemCells = [
+                        {x:rangeElem - 2, y: rangeElem.y },
+                        {x:rangeElem - 1, y: rangeElem.y },
+                      ]
+                    break;
+                    case 1:
+                      rangeElemCells = [
+                        {x:rangeElem + 2, y: rangeElem.y },
+                        {x:rangeElem + 1, y: rangeElem.y },
+                      ]
+                    break;
+                    case 2:
+                      rangeElemCells = [
+                        {x:rangeElem, y: rangeElem.y + 2},
+                        {x:rangeElem, y: rangeElem.y + 1},
+                      ]
+                    break;
+                    case 3:
+                      rangeElemCells = [
+                        {x:rangeElem, y: rangeElem.y - 2},
+                        {x:rangeElem, y: rangeElem.y - 1},
+                      ]
+                    break;
+                  }
+
+                  let rngElCellFree = true;
+                  for (const rngElCell of rangeElemCells) {
+
+                    for (const plyr of this.players) {
+                      if (plyr.currentPosition.cell.number.x === rngElCell.x && plyr.currentPosition.cell.number.y === rngElCell.y) {
+                        rngElCellFree = false;
+                      }
+                      let cellRef3 = this.gridInfo.find(elema => elema.number.x === rngElCell.x && elema.number.y === rngElCell.y)
+                      if (
+                        cellRef3 &&
+                        cellRef3.levelData.charAt(0) ===  'z' ||
+                        cellRef3.levelData.charAt(0) ===  'y'
+                      ) {
+                        rngElCellFree = false;
+                      }
+                    }
+                  }
+                  if (rngElCellFree === true) {
+                    targetPos = rangeElem;
+                    console.log('found path to safe bow range');
+                  } else {
+                    console.log('your safe path is blocked');
+                  }
+                }
+              }
+
             }
             if (aiPlayer.currentWeapon.type === "sword") {
-              pursuitRange = [
+              candidateTargets = [
                 {x: targetPos.x-2, y: targetPos.y},
                 {x: targetPos.x+2, y: targetPos.y},
                 {x: targetPos.x, y: targetPos.y+2},
                 {x: targetPos.x, y: targetPos.y-2},
               ]
+
+              for (const rangeElem of candidateTargets)  {
+                let indx = candidateTargets.findIndex(rng => rng.x === rangeElem.x && rng.y === rangeElem.y)
+
+                let pursuitTargetRef = this.gridInfo.find(elem => elem.number.x === rangeElem.x && elem.number.y === rangeElem.y)
+
+                if (!pursuitTargetRef) {
+                 console.log('range element is out of bounds');
+                } else {
+                  let rangeElemCells;
+
+                  switch(indx) {
+                    case 0:
+                      rangeElemCells = [
+                        {x:rangeElem - 1, y: rangeElem.y },
+                      ]
+                    break;
+                    case 1:
+                      rangeElemCells = [
+                        {x:rangeElem + 1, y: rangeElem.y },
+                      ]
+                    break;
+                    case 2:
+                      rangeElemCells = [
+                        {x:rangeElem, y: rangeElem.y + 1},
+                      ]
+                    break;
+                    case 3:
+                      rangeElemCells = [
+                        {x:rangeElem, y: rangeElem.y - 1},
+                      ]
+                    break;
+                  }
+
+                  let rngElCellFree = true;
+                  for (const rngElCell of rangeElemCells) {
+
+                    for (const plyr of this.players) {
+                      if (plyr.currentPosition.cell.number.x === rngElCell.x && plyr.currentPosition.cell.number.y === rngElCell.y) {
+                        rngElCellFree = false;
+                      }
+                      let cellRef3 = this.gridInfo.find(elema => elema.number.x === rngElCell.x && elema.number.y === rngElCell.y)
+                      if (
+                        cellRef3 &&
+                        cellRef3.levelData.charAt(0) ===  'z' ||
+                        cellRef3.levelData.charAt(0) ===  'y'
+                      ) {
+                        rngElCellFree = false;
+                      }
+                    }
+                  }
+                  if (rngElCellFree === true) {
+                    targetPos = rangeElem;
+                    console.log('found path to safe bow range');
+                  } else {
+                    console.log('your safe path is blocked');
+                  }
+                }
+              }
 
             }
 
@@ -12996,7 +13161,7 @@ class App extends Component {
 
     // console.log('this.pathArray',this.pathArray);
     // console.log('path',path,'player',aiPlayer);
-    console.log('instructions',instructions,'player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction);
+    // console.log('instructions',instructions,'player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction);
 
 
     this.players[aiPlayer-1].ai.pathArray = path;
