@@ -798,6 +798,7 @@ class App extends Component {
           },
           engaging: {
             state: true,
+            targetAction: '',
           },
           waiting: {state: false},
         },
@@ -1143,6 +1144,7 @@ class App extends Component {
           },
           engaging: {
             state: true,
+            targetAction: '',
           },
           waiting: {state: false},
         },
@@ -3472,10 +3474,7 @@ class App extends Component {
               if (player.target.occupant.type === 'player') {
 
                 // ATTACK SUCCESS!!
-                if (
-                  this.players.[player.target.occupant.player-1].defending.state === false ||
-                  this.players.[player.target.occupant.player-1].direction === player.direction
-                ) {
+                if (this.players.[player.target.occupant.player-1].defending.state === false || this.players.[player.target.occupant.player-1].direction === player.direction) {
                   // console.log('attack success');
 
                   player.success.attackSuccess = {
@@ -3557,7 +3556,8 @@ class App extends Component {
                       count: 1,
                       limit: this.players[player.number-1].statusDisplay.limit,
                     }
-                  } else {
+                  }
+                  else {
                     this.players[player.number-1].stamina.current = this.players[player.number-1].stamina.current - 3;
                   }
 
@@ -3757,9 +3757,9 @@ class App extends Component {
                     this.players[player.target.occupant.player-1].defending.state === true &&
                     player.defendDecay.state !== true ||
                     player.defendDecay.state === true &&
-                    player.defendDecay.count < 5
+                    player.defendDecay.count < 4
                   ) {
-                    console.log('peak defend/parry');
+                    // console.log('peak defend/parry');
                     shouldDeflectAttacker = this.rnJesus(1,1);
                     shouldDeflectPushBack = this.rnJesus(1,1);
 
@@ -3771,7 +3771,7 @@ class App extends Component {
                     }
                   }
                   else {
-                    console.log('off peak defend');
+                    // console.log('off peak defend');
                     shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
                     shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack);
 
@@ -6138,6 +6138,7 @@ class App extends Component {
 
 
 
+
           // FOR TESTING BY CALLING ONLY @ 1 CELL
           if (
             plyr.currentPosition.cell.number.x === x &&
@@ -6418,6 +6419,21 @@ class App extends Component {
           let sWidth = this.charSpriteWidth;
           let sy = dirIndex * sHeight;
           let sx = (finalAnimIndex - 1)* sWidth;
+
+          // if (plyr.ai.state === true && plyr.ai.mission === 'engage' && plyr.action === 'moving') {
+          //     if (finalAnimIndex < 0) {
+          //       console.log('1');
+          //     }
+          //     if (!finalAnimIndex) {
+          //       console.log('2');
+          //     }
+          //     if (!plyr.moving.step) {
+          //       console.log('3');
+          //     }
+          //     if (!plyr.moving.step) {
+          //       console.log('4');
+          //     }
+          // }
 
 
           // DEPTH SORTING!!
@@ -11229,6 +11245,7 @@ class App extends Component {
             ],
             engaging: {
               state: false,
+              targetAction: '',
             },
             patrolling: {
               checkin: undefined,
@@ -11305,7 +11322,6 @@ class App extends Component {
             ]
           }
         }
-        // console.log('aiInitSettings.primaryMission',aiInitSettings.primaryMission);
       }
 
     }
@@ -11368,13 +11384,8 @@ class App extends Component {
     this.aiPlayers.splice(index2,1);
 
     let keyPressedToRemove = this.keyPressed[playerNumber-1];
-    this.keyPressed = this.keyPressed.filter(y=> y !== keyPressedToRemove)
-    // this.keyPressed.splice(playerNumber-1,1);
+    this.keyPressed = this.keyPressed.filter(y=> y !== keyPressedToRemove);
 
-
-    // let toRemove1 = this.players[index1];
-    // this.players = this.players.filter(x=> x.number !== toRemove1.number);
-    // this.players.splice(playerNumber-1,1);
 
     this.removeAi = playerNumber;
 
@@ -11401,7 +11412,6 @@ class App extends Component {
 
   aiEvaluate = () => {
     // console.log('aiEvaluate');
-
 
 
     if (this.resetAiTarget.state === true) {
@@ -12006,7 +12016,6 @@ class App extends Component {
           plyr.moving.state !== true &&
           plyr.attacking.state !== true &&
           plyr.defending.state !== true
-          // && plyr.ai.waiting.state !== true
         ) {
           this.aiDecide(plyr)
         }
@@ -12148,7 +12157,7 @@ class App extends Component {
 
 
       let oppositeDir;
-
+      let engageTargetAction;
       // FACE TARGET!
       if (targetPlayer.currentPosition.cell.number.x === aiPlayer.currentPosition.cell.number.x && targetPlayer.currentPosition.cell.number.y > aiPlayer.currentPosition.cell.number.y) {
         if (aiPlayer.direction !== 'south') {
@@ -12198,22 +12207,38 @@ class App extends Component {
 
 
       this.getTarget(aiPlayer);
-      if (aiPlayer.ai.engaging.state !== true) {
+      // if (aiPlayer.ai.engaging.state === true) {
+      // if (aiPlayer.ai.engaging.state !== true) {
 
         if (aiPlayer.currentWeapon.type === 'crossbow' && aiPlayer.action === 'idle' && aiPlayer.success.deflected.state !== true ) {
-          console.log('bow attack?');
           let instructions3 = [];
-          instructions3.push(
-            {
-              keyword: 'attack',
-              count: 0,
-              limit: 1,
-            },
-          )
+          // ENGAGED TARGET IS OPEN TO ATTACK!
+          if (targetPlayer.defending.state !== true && targetPlayer.attacking.state !== true && targetPlayer.defendDecay.state !== true && targetPlayer.dodging.state !== true) {
+            // console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,'is neither attacking nor defending');
 
-          aiPlayer.ai.instructions = instructions3;
-          aiPlayer.ai.currentInstruction = 0;
-          aiPlayer.ai.engaging.state = true;
+            instructions3.push(
+              {
+                keyword: 'attack',
+                count: 0,
+                limit: 1,
+              },
+            )
+            engageTargetAction = 'open'
+          }
+          if (targetPlayer.defending.state === true || targetPlayer.defendDecay.count > targetPlayer.defendDecay.limit - 10) {
+
+
+          }
+
+          if (aiPlayer.ai.engaging.targetAction !== engageTargetAction) {
+            // console.log('target status has changed. switch up the approach');
+
+            aiPlayer.ai.instructions = instructions3;
+            aiPlayer.ai.currentInstruction = 0;
+            aiPlayer.ai.engaging.state = true;
+            aiPlayer.ai.engaging.targetAction = engageTargetAction;
+          }
+
 
         }
         if (aiPlayer.currentWeapon.type === 'spear' && aiPlayer.action === 'idle' && aiPlayer.success.deflected.state !== true ) {
@@ -12274,7 +12299,7 @@ class App extends Component {
                 },
               )
             }
-
+            engageTargetAction = 'open';
           }
 
 
@@ -12332,7 +12357,7 @@ class App extends Component {
                 },
               )
             }
-
+            engageTargetAction = 'defend';
           }
 
 
@@ -12526,6 +12551,7 @@ class App extends Component {
 
             }
 
+            engageTargetAction = 'attack'
           }
 
           for (const inst of aiPlayer.ai.instructions) {
@@ -12534,9 +12560,15 @@ class App extends Component {
             }
           }
 
-          aiPlayer.ai.instructions = instructions2;
-          aiPlayer.ai.currentInstruction = 0;
-          aiPlayer.ai.engaging.state = true;
+          if (aiPlayer.ai.engaging.targetAction !== engageTargetAction) {
+            // console.log('target status has changed. switch up the approach');
+
+            aiPlayer.ai.instructions = instructions2;
+            aiPlayer.ai.currentInstruction = 0;
+            aiPlayer.ai.engaging.state = true;
+            aiPlayer.ai.engaging.targetAction = engageTargetAction;
+          }
+
           // console.log('aiPlayer.instructions',aiPlayer.ai.instructions);
 
         }
@@ -12599,13 +12631,13 @@ class App extends Component {
                   },
                 )
               }
-
+              engageTargetAction = 'open';
             }
 
 
             // ENGAGED TARGET DEFENDING!
             if (targetPlayer.defending.state === true || targetPlayer.defendDecay.count > targetPlayer.defendDecay.limit - 10) {
-              console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,' is defending',targetPlayer.defendDecay.count);
+              // console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,' is defending',targetPlayer.defendDecay.count);
 
               if (this.aiCarefulRange === true) {
                 if (oppositeDir) {
@@ -12658,7 +12690,7 @@ class App extends Component {
                   },
                 )
               }
-
+              engageTargetAction = 'defend';
             }
 
 
@@ -12671,6 +12703,7 @@ class App extends Component {
               if (targetPlayer.attacking.count < this.attackAnimRef.peak.sword && targetPlayer.attacking.count >= this.attackAnimRef.peak.sword - 4) {
                 console.log('almost peak attack');
                 let whatDo = this.rnJesus(1,2);
+                // whatDo = 1
 
                 // DEFEND!
                 if (whatDo === 1) {
@@ -12703,7 +12736,7 @@ class App extends Component {
               if (targetPlayer.attacking.count <= 6) {
                 console.log('early attack');
                 let whatDo2 = this.rnJesus(1,4);
-                // whatDo2 = 4
+                // whatDo2 = 3
 
                 // DEFEND!
                 if (whatDo2 === 1) {
@@ -12853,12 +12886,19 @@ class App extends Component {
 
               }
 
+
+              engageTargetAction = 'attack';
             }
 
+            if (aiPlayer.ai.engaging.targetAction !== engageTargetAction) {
+              // console.log('target status has changed. switch up the approach');
 
-            aiPlayer.ai.instructions = instructions1;
-            aiPlayer.ai.currentInstruction = 0;
-            aiPlayer.ai.engaging.state = true;
+              aiPlayer.ai.instructions = instructions1;
+              aiPlayer.ai.currentInstruction = 0;
+              aiPlayer.ai.engaging.state = true;
+              aiPlayer.ai.engaging.targetAction = engageTargetAction;
+            }
+
             // console.log('aiPlayer.instructions',aiPlayer.ai.instructions);
         }
 
@@ -12923,6 +12963,7 @@ class App extends Component {
               )
             }
 
+            engageTargetAction = 'open';
           }
 
 
@@ -12982,6 +13023,7 @@ class App extends Component {
               )
             }
 
+            engageTargetAction = 'defend';
           }
 
 
@@ -13176,17 +13218,24 @@ class App extends Component {
 
             }
 
+            engageTargetAction = 'attack';
           }
 
+          if (aiPlayer.ai.engaging.targetAction !== engageTargetAction) {
+            // console.log('target status has changed. switch up the approach');
 
-          aiPlayer.ai.instructions = instructions4;
-          aiPlayer.ai.currentInstruction = 0;
-          aiPlayer.ai.engaging.state = true;
+            aiPlayer.ai.instructions = instructions4;
+            aiPlayer.ai.currentInstruction = 0;
+            aiPlayer.ai.engaging.state = true;
+            aiPlayer.ai.engaging.targetAction = engageTargetAction;
+          }
+
           // console.log('aiPlayer.instructions',aiPlayer.ai.instructions);
 
         }
 
-      }
+
+      // }
 
 
     }
@@ -13373,7 +13422,6 @@ class App extends Component {
 
         let aiPos;
         let targetPos;
-
 
 
         if (aiPlayer.ai.mission === 'pursue') {
@@ -13621,16 +13669,13 @@ class App extends Component {
 
           // this.pathArray[targetPos.x][targetPos.y] = 0;
           // this.pathArray[aiPos.x][aiPos.y] = 0;
-
         }
-
         if (aiPlayer.ai.mission === 'patrol') {
 
           aiPos = aiPlayer.currentPosition.cell.number;
           targetPos = patrolDest;
 
           // this.pathArray[targetPos.x][targetPos.y] = 0;
-
         }
         if (aiPlayer.ai.mission === 'engage') {
 
@@ -13639,10 +13684,9 @@ class App extends Component {
 
           aiPos = aiPlayer.currentPosition.cell.number;
           targetPos = defendDest;
+
           // console.log('targetPos',targetPos);
-
           // this.pathArray[targetPos.x][targetPos.y] = 0;
-
         }
 
 
@@ -13958,6 +14002,9 @@ class App extends Component {
         break;
         case 'move_south':
         // console.log('ai act -- move_south');
+        if (plyr.ai.mission === 'engage') {
+          console.log('fff');
+        }
           if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true) {
 
             let inDanger = false;
@@ -14350,15 +14397,17 @@ class App extends Component {
 
 
       if (plyr.ai.currentInstruction === plyr.ai.instructions.length) {
-        console.log('NO MORE INSTRUCTIONS!!');
+        // console.log('NO MORE INSTRUCTIONS!!');
         if (plyr.ai.engaging.state === true) {
-          plyr.ai.engaging.state = false
+          plyr.ai.engaging.state = false;
+          plyr.ai.engaging.targetAction = '';
         }
       }
       if (plyr.ai.mission === 'engage' && plyr.currentWeapon.type === 'crossbow') {
         if (plyr.ai.currentInstruction === plyr.ai.instructions.length-1) {
           if (plyr.ai.engaging.state === true) {
-            plyr.ai.engaging.state = false
+            plyr.ai.engaging.state = false;
+            plyr.ai.engaging.targetAction = ''
           }
         }
       }
