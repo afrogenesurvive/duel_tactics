@@ -3753,12 +3753,35 @@ class App extends Component {
                   shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack);
 
 
-                  // check if opponenet/ defender defending.state === true and defendDecay.count < 4
-                  // 100% deflect 85/75% pushback
-                  // else {
-                    // shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
-                    // shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack);
-                  // }
+                  if (
+                    this.players[player.target.occupant.player-1].defending.state === true &&
+                    player.defendDecay.state !== true ||
+                    player.defendDecay.state === true &&
+                    player.defendDecay.count < 5
+                  ) {
+                    console.log('peak defend/parry');
+                    shouldDeflectAttacker = this.rnJesus(1,1);
+                    shouldDeflectPushBack = this.rnJesus(1,1);
+
+                    player.statusDisplay = {
+                      state: true,
+                      status: 'Parry!',
+                      count: 1,
+                      limit: this.players[player.number-1].statusDisplay.limit,
+                    }
+                  }
+                  else {
+                    console.log('off peak defend');
+                    shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
+                    shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack);
+
+                    player.statusDisplay = {
+                      state: true,
+                      status: 'Defend',
+                      count: 1,
+                      limit: this.players[player.number-1].statusDisplay.limit,
+                    }
+                  }
 
 
                   if (shouldDeflectPushBack === 1) {
@@ -9335,6 +9358,64 @@ class App extends Component {
       count: 1,
       limit: player.dead.limit
     }
+    player.strafing = {
+      state: false,
+      direction: '',
+    };
+    player.pushBack = {
+      state: false,
+      prePushBackMoveSpeed: 0,
+    };
+    player.itemDrop = {
+      state: false,
+      count: 0,
+      limit: 10,
+      item: {
+        name: '',
+      },
+      gear: {
+        type: '',
+      }
+    };
+    player.itemPickup = {
+      state: false,
+      count: 0,
+      limit: 10,
+      item: {
+        name: '',
+      },
+      gear: {
+        type: '',
+      }
+    };
+    player.jumping = {
+      checking: false,
+      state: false,
+    };
+    player.stamina = {
+      current: 20,
+      max: 20,
+    };
+    player.defendDecay = {
+      state: false,
+      count: 0,
+      limit: 25,
+    };
+    player.dodging = {
+      countState: false,
+      state: false,
+      count: 0,
+      limit: 20,
+      peak: {
+        start: 5,
+        end: 10,
+      }
+    };
+    player.defending = {
+      state: false,
+      count: 0,
+      limit: 4,
+    };
     // player.hp = 2;
     player.points--;
     player.drowning = false;
@@ -9444,6 +9525,35 @@ class App extends Component {
       player.stamina = {
         current: 20,
         max: 20,
+      };
+      player.defendDecay = {
+        state: false,
+        count: 0,
+        limit: 25,
+      };
+      player.dodging = {
+        countState: false,
+        state: false,
+        count: 0,
+        limit: 20,
+        peak: {
+          start: 5,
+          end: 10,
+        }
+      };
+      player.defending = {
+        state: false,
+        count: 0,
+        limit: 4,
+      };
+      player.flanking = {
+        checking: false,
+        preFlankDirection: '',
+        direction: '',
+        state: false,
+        step: 0,
+        target1: {x:0 ,y:0},
+        target2: {x:0 ,y:0},
       };
       // player.currentArmor = {};
 
@@ -10997,8 +11107,8 @@ class App extends Component {
           },
           hp: 2,
           currentWeapon: {
-            name: 'crossbow1',
-            type: 'crossbow',
+            name: 'sword1',
+            type: 'sword',
             effect: '',
           },
           currentArmor: {
@@ -11010,8 +11120,8 @@ class App extends Component {
             weaponIndex: 0,
             armorIndex: 0,
             weapons: [{
-              name: 'crossbow1',
-              type: 'crossbow',
+              name: 'sword1',
+              type: 'sword',
               effect: '',
             }],
             armor: [],
