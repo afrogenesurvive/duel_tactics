@@ -800,7 +800,6 @@ class App extends Component {
             state: true,
             targetAction: '',
           },
-          waiting: {state: false},
         },
         stamina: {
           current: 20,
@@ -1146,7 +1145,6 @@ class App extends Component {
             state: true,
             targetAction: '',
           },
-          waiting: {state: false},
         },
         stamina: {
           current: 20,
@@ -1340,6 +1338,8 @@ class App extends Component {
     this.easyStar = undefined;
     this.getPath = false;
     this.aiCarefulRange = true;
+    this.aiDeflectCheck = false;
+    this.aiDeflectedCheck = [];
 
     this.showSettingsKeyPress = {
       state: false,
@@ -2570,6 +2570,7 @@ class App extends Component {
     }
 
 
+
     // AI STRAFE SWITCH ON!!
     if (player.ai.state === true && this.keyPressed[player.number-1]) {
       if (this.keyPressed[player.number-1].strafe === true) {
@@ -2709,6 +2710,13 @@ class App extends Component {
             predeflect: this.players[player.number-1].success.deflected.predeflect,
             type: 'outOfStamina',
           };
+
+
+          if (this.aiDeflectedCheck.includes(this.players[player.number-1].number) !== true) {
+            this.aiDeflectedCheck.push(this.players[player.number-1].number)
+          }
+
+
         }
       }
     }
@@ -2718,6 +2726,16 @@ class App extends Component {
     if (player.success.deflected.state === true && player.success.deflected.count < player.success.deflected.limit) {
       player.action = 'deflected';
       player.success.deflected.count++
+
+
+      // if (player.ai.state === true) {
+      //   player.ai.instructions = []
+      //   player.ai.currentInstruction = 0
+      //   if (player.ai.mission === 'engage') {
+      //     player.ai.engaging.targetAction = ''
+      //   }
+      // }
+
     } else if (player.success.deflected.state === true && player.success.deflected.count >= player.success.deflected.limit) {
 
       // DEFLECT SPIN!
@@ -2772,6 +2790,11 @@ class App extends Component {
         type: '',
       }
 
+      let indx = this.aiDeflectedCheck.indexOf(player.number)
+      this.aiDeflectedCheck.splice(indx,1)
+      console.log('this.aiDeflectedCheck',this.aiDeflectedCheck);
+
+
       // CANCEL AI ATTACK, DEFEND!!
       if (player.ai.state === true) {
         if (player.ai.state === true) {
@@ -2789,6 +2812,7 @@ class App extends Component {
         }
 
         player.ai.targetAqcuiredReset = true
+
       }
 
       this.deflectDrop(player)
@@ -3052,10 +3076,6 @@ class App extends Component {
             }
 
           }
-
-        }
-
-        if (player.ai.state === true) {
 
         }
 
@@ -3636,6 +3656,13 @@ class App extends Component {
                       predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
                       type: 'attacked',
                     };
+
+
+                    if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
+                      this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
+                    }
+
+
                   }
 
 
@@ -3651,6 +3678,13 @@ class App extends Component {
                       predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
                       type: 'blunt attacked',
                     };
+
+
+                    if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
+                      this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
+                    }
+
+
                   }
 
                 }
@@ -3736,17 +3770,23 @@ class App extends Component {
                         type: 'defended',
                       };
                       this.players[player.target.occupant.player-1].stamina.current = this.players[player.target.occupant.player-1].stamina.current - 3;
+
+
+                      if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
+                        this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
+                      }
+
+
                     }
 
                   }
 
                   // ATTACKER PUSHBACK DEFLECT!!
 
-                  // let shouldDeflectAttacker = 1;
                   let shouldDeflectAttacker;
 
                   // let shouldDeflectAttacker = this.rnJesus(1,2);
-                  // let shouldDeflectPushBack = 1;
+
                   let shouldDeflectPushBack;
 
                   shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
@@ -3782,6 +3822,9 @@ class App extends Component {
                       limit: this.players[player.number-1].statusDisplay.limit,
                     }
                   }
+
+                  shouldDeflectPushBack = 1;
+                  shouldDeflectAttacker = 1;
 
 
                   if (shouldDeflectPushBack === 1) {
@@ -3840,7 +3883,21 @@ class App extends Component {
                         predeflect: player.success.deflected.predeflect,
                         type: 'attack'
                       }
+
+
+                      if (this.aiDeflectedCheck.includes(player.number) !== true) {
+                        this.aiDeflectedCheck.push(player.number)
+                      }
+
+
                     }
+
+
+                    if (this.aiDeflectedCheck.includes(player.number) !== true) {
+                      this.aiDeflectedCheck.push(player.number)
+                    }
+
+
                   }
 
                   // ATTACKER NO PUSHBACK, JUST DEFLECT!
@@ -3866,6 +3923,12 @@ class App extends Component {
                       type: 'attack'
                     }
                     player.stamina.current = player.stamina.current - 3;
+
+
+                    if (this.aiDeflectedCheck.includes(player.number) !== true) {
+                      this.aiDeflectedCheck.push(player.number)
+                    }
+
                   }
 
 
@@ -4127,6 +4190,11 @@ class App extends Component {
             limit: this.deflectedLengthRef.attack,
             predeflect: false,
             type: player.success.deflected.type,
+          }
+
+
+          if (this.aiDeflectedCheck.includes(player.number) !== true) {
+            this.aiDeflectedCheck.push(player.number)
           }
 
 
@@ -4834,12 +4902,11 @@ class App extends Component {
 
                 if (player.dead.state === true && player.dead.count === 0) {
 
-                  player.nextPosition = {
-                    x: -30,
-                    y: -30,
-                  }
+                  player.nextPosition = {x: -30,y: -30}
 
-                } else if (player.turning.delayCount === 0) {
+                }
+                else if (player.turning.delayCount === 0) {
+
                   player.action = 'moving';
                   player.moving = {
                     state: true,
@@ -4857,6 +4924,8 @@ class App extends Component {
                     },
                     destination: target.cell.center
                   }
+
+
                   nextPosition = this.lineCrementer(player);
                   player.nextPosition = nextPosition;
 
@@ -5372,6 +5441,13 @@ class App extends Component {
                       predeflect: this.players.[plyr.number-1].success.deflected.predeflect,
                       type: 'attacked',
                     };
+
+
+                    if (this.aiDeflectedCheck.includes(this.players.[plyr.number-1].number) !== true) {
+                      this.aiDeflectedCheck.push(this.players.[plyr.number-1].number)
+                    }
+
+
                   }
 
 
@@ -5411,6 +5487,13 @@ class App extends Component {
                       predeflect: this.players[plyr.number-1].success.deflected.predeflect,
                       type: 'defended',
                     };
+
+
+                    if (this.aiDeflectedCheck.includes(this.players[plyr.number-1].number) !== true) {
+                      this.aiDeflectedCheck.push(this.players[plyr.number-1].number)
+                    }
+
+
                   }
                 }
 
@@ -6138,7 +6221,6 @@ class App extends Component {
 
 
 
-
           // FOR TESTING BY CALLING ONLY @ 1 CELL
           if (
             plyr.currentPosition.cell.number.x === x &&
@@ -6220,7 +6302,7 @@ class App extends Component {
               case 'deflected':
                 let animIndex5 = plyr.success.deflected.count -1;
                 finalAnimIndex = animIndex5;
-                // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number,'index',finalAnimIndex);
+                // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number,'index',finalAnimIndex,'moving',plyr.moving.state);
               break;
               case 'dodging':
                 let animIndex7 = plyr.dodging.count -1;
@@ -6420,20 +6502,7 @@ class App extends Component {
           let sy = dirIndex * sHeight;
           let sx = (finalAnimIndex - 1)* sWidth;
 
-          // if (plyr.ai.state === true && plyr.ai.mission === 'engage' && plyr.action === 'moving') {
-          //     if (finalAnimIndex < 0) {
-          //       console.log('1');
-          //     }
-          //     if (!finalAnimIndex) {
-          //       console.log('2');
-          //     }
-          //     if (!plyr.moving.step) {
-          //       console.log('3');
-          //     }
-          //     if (!plyr.moving.step) {
-          //       console.log('4');
-          //     }
-          // }
+
 
 
           // DEPTH SORTING!!
@@ -9032,6 +9101,13 @@ class App extends Component {
               predeflect: this.players[player.number-1].success.deflected.predeflect,
               type: 'attacked',
             };
+
+
+            if (this.aiDeflectedCheck.includes(this.players[player.number-1].number) !== true) {
+              this.aiDeflectedCheck.push(this.players[player.number-1].number)
+            }
+
+
           }
         }
       break;
@@ -11261,7 +11337,6 @@ class App extends Component {
             persuing: {
               state: false,
             },
-            waiting: {state: false},
           },
           stamina: {
             current: 20,
@@ -12009,13 +12084,18 @@ class App extends Component {
 
 
         // AI CAN'T ACT IF FLANKING OR MOVING!
+
+
         if (
           plyr.flanking.state !== true &&
           plyr.flanking.step !== 1 &&
           plyr.flanking.step !== 2 &&
           plyr.moving.state !== true &&
           plyr.attacking.state !== true &&
-          plyr.defending.state !== true
+          plyr.defending.state !== true &&
+          plyr.success.deflected.state !== true &&
+          plyr.action !== 'deflected' &&
+          plyr.pushBack.state !== true
         ) {
           this.aiDecide(plyr)
         }
@@ -12028,6 +12108,7 @@ class App extends Component {
 
   aiDecide = (aiPlayer) => {
     // console.log('aiDecide',aiPlayer.number);
+
 
     let getPath = false;
 
@@ -12229,6 +12310,7 @@ class App extends Component {
 
 
           }
+
 
           if (aiPlayer.ai.engaging.targetAction !== engageTargetAction) {
             // console.log('target status has changed. switch up the approach');
@@ -12560,6 +12642,7 @@ class App extends Component {
             }
           }
 
+
           if (aiPlayer.ai.engaging.targetAction !== engageTargetAction) {
             // console.log('target status has changed. switch up the approach');
 
@@ -12582,7 +12665,7 @@ class App extends Component {
               // console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,'is neither attacking nor defending');
               if (this.aiCarefulRange === true) {
                 if (oppositeDir) {
-                  console.log('safe sword range attack flow');
+                  // console.log('safe sword range attack flow');
 
                   if (aiPlayer.target.free !== true) {
                     instructions1.push(
@@ -12641,7 +12724,7 @@ class App extends Component {
 
               if (this.aiCarefulRange === true) {
                 if (oppositeDir) {
-                  console.log('safe range attack flow');
+                  // console.log('safe range attack flow');
 
                   if (aiPlayer.target.free !== true) {
                     instructions1.push(
@@ -12890,7 +12973,22 @@ class App extends Component {
               engageTargetAction = 'attack';
             }
 
-            if (aiPlayer.ai.engaging.targetAction !== engageTargetAction) {
+
+
+            let deflecting = false;
+            if (this.aiDeflectedCheck.includes(aiPlayer.number) === true) {
+              deflecting = true;
+            }
+            if (deflecting === true) {
+              aiPlayer.ai.instructions = [];
+              aiPlayer.ai.currentInstruction = 0;
+              aiPlayer.ai.engaging.targetAction = ''
+            }
+
+
+            if (aiPlayer.ai.engaging.targetAction !== engageTargetAction && deflecting !== true) {
+            // if (aiPlayer.ai.engaging.targetAction !== engageTargetAction ) {
+
               // console.log('target status has changed. switch up the approach');
 
               aiPlayer.ai.instructions = instructions1;
@@ -12913,7 +13011,7 @@ class App extends Component {
             // console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,'is neither attacking nor defending');
             if (this.aiCarefulRange === true) {
               if (oppositeDir) {
-                console.log('safe sword range attack flow');
+                // console.log('safe sword range attack flow');
 
                 if (aiPlayer.target.free !== true) {
                   instructions4.push(
@@ -12973,7 +13071,7 @@ class App extends Component {
 
             if (this.aiCarefulRange === true) {
               if (oppositeDir) {
-                console.log('safe range attack flow');
+                // console.log('safe range attack flow');
 
                 if (aiPlayer.target.free !== true) {
                   instructions4.push(
@@ -13220,6 +13318,7 @@ class App extends Component {
 
             engageTargetAction = 'attack';
           }
+
 
           if (aiPlayer.ai.engaging.targetAction !== engageTargetAction) {
             // console.log('target status has changed. switch up the approach');
@@ -13746,6 +13845,8 @@ class App extends Component {
 
 
     this.players[aiPlayer.number-1] = aiPlayer;
+
+
     this.aiAct(aiPlayer);
 
   }
@@ -14002,9 +14103,7 @@ class App extends Component {
         break;
         case 'move_south':
         // console.log('ai act -- move_south');
-        if (plyr.ai.mission === 'engage') {
-          console.log('fff');
-        }
+
           if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true) {
 
             let inDanger = false;
@@ -14126,6 +14225,7 @@ class App extends Component {
           }
         break;
         case 'strafe_south':
+
         // console.log('ai act -- strafe_south');
         if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true) {
           let inDanger = false;
