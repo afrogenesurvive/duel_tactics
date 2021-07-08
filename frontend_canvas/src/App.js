@@ -1311,7 +1311,7 @@ class App extends Component {
       startPosition: {
         number: {x: 8, y: 2}
       },
-      primaryMission: 'pursue',
+      primaryMission: 'patrol',
       partolArea: [
         {x: 7, y: 7},
         {x: 7, y:  4}
@@ -2506,10 +2506,10 @@ class App extends Component {
         })
 
 
-        if (this.aiPlayers.length > 0) {
-
-          this.aiEvaluate()
-        }
+        // if (this.aiPlayers.length > 0) {
+        //
+        //   this.aiEvaluate()
+        // }
 
         if (this.gamepad === true) {
           this.pollGamepads();
@@ -5572,6 +5572,10 @@ class App extends Component {
 
     // SYNC W/ GLOBAL PLAYER DATA
     this.players[player.number-1] = player;
+
+    if (player.ai.state === true ) {
+      this.aiEvaluate(player)
+    }
 
     this.drawPlayerStep(player.number, canvas, context, canvas2, context2);
 
@@ -11485,7 +11489,7 @@ class App extends Component {
     })
   }
 
-  aiEvaluate = () => {
+  aiEvaluate = (plyr) => {
     // console.log('aiEvaluate');
 
 
@@ -11578,8 +11582,8 @@ class App extends Component {
     }
 
 
-    for (const plyr of this.players) {
-      if (plyr.ai.state === true && plyr.dead.state !== true && plyr.falling.state !== true) {
+    // for (const plyr of this.players) {
+      // if (plyr.ai.state === true && plyr.dead.state !== true && plyr.falling.state !== true) {
 
 
         let fieldItemScan = []
@@ -12101,8 +12105,8 @@ class App extends Component {
         }
 
 
-      }
-    }
+      // }
+    // }
 
   }
 
@@ -14041,10 +14045,8 @@ class App extends Component {
         // console.log('ai act -- short_wait');
           currentInstruction.limit = 15;
           if (currentInstruction.count < currentInstruction.limit) {
-            plyr.ai.waiting.state = true;
             currentInstruction.count++;
           } else if (currentInstruction.count >= currentInstruction.limit) {
-            plyr.ai.waiting.state = false;
             plyr.ai.currentInstruction++;
           }
         break;
@@ -14052,10 +14054,8 @@ class App extends Component {
         // console.log('ai act -- long_wait');
           currentInstruction.limit = 25;
           if (currentInstruction.count < currentInstruction.limit) {
-            plyr.ai.waiting.state = true;
             currentInstruction.count++;
           } else if (currentInstruction.count >= currentInstruction.limit) {
-            plyr.ai.waiting.state = false;
             plyr.ai.currentInstruction++;
           }
         break;
