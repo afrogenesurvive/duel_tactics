@@ -1311,7 +1311,7 @@ class App extends Component {
       startPosition: {
         number: {x: 8, y: 2}
       },
-      primaryMission: 'patrol',
+      primaryMission: 'pursue',
       partolArea: [
         {x: 7, y: 7},
         {x: 7, y:  4}
@@ -2571,12 +2571,12 @@ class App extends Component {
 
 
 
-    // AI STRAFE SWITCH ON!!
-    if (player.ai.state === true && this.keyPressed[player.number-1]) {
-      if (this.keyPressed[player.number-1].strafe === true) {
-        this.players[player.number-1].strafing.state = true;
-      }
-    }
+    // // AI STRAFE SWITCH ON!!
+    // if (player.ai.state === true && this.keyPressed[player.number-1]) {
+    //   if (this.keyPressed[player.number-1].strafe === true) {
+    //     this.players[player.number-1].strafing.state = true;
+    //   }
+    // }
 
 
     let nextPosition;
@@ -2822,6 +2822,14 @@ class App extends Component {
 
     // DEFLECTED PLAYER CAN'T DO ANYTHING!!
     if (player.success.deflected.state === false && player.dead.state !== true) {
+
+
+      // AI STRAFE SWITCH ON!!
+      if (player.ai.state === true && this.keyPressed[player.number-1]) {
+        if (this.keyPressed[player.number-1].strafe === true) {
+          this.players[player.number-1].strafing.state = true;
+        }
+      }
 
 
       // DON'T READ INPUTS. JUST MOVE!!
@@ -5574,6 +5582,9 @@ class App extends Component {
     this.players[player.number-1] = player;
 
     if (player.ai.state === true ) {
+      if (player.dead.state === true && player.falling.state === true) {
+        console.log('xxvx');
+      }
       this.aiEvaluate(player)
     }
 
@@ -6603,6 +6614,16 @@ class App extends Component {
                 }
                 if (plyr.attacking.count > attackPeak && plyr.attacking.count < plyr.attacking.limit+1) {
                   if (plyr.attackStrength === 1) {
+
+                    // context.fillStyle = fillClr2;
+                    // context.beginPath();
+                    // context.arc(pos.x-10, pos.y, 10, 0, 2 * Math.PI);
+                    // context.fill();
+
+                    // context.beginPath();
+                    // context.rect(20, 20, 150, 100);
+                    // context.stroke();
+
                     context.drawImage(indicatorImgs.attack1, point.x-35, point.y-35, 35,35);
                   }
                   if (plyr.attackStrength === 2) {
@@ -12099,7 +12120,9 @@ class App extends Component {
           plyr.defending.state !== true &&
           plyr.success.deflected.state !== true &&
           plyr.action !== 'deflected' &&
-          plyr.pushBack.state !== true
+          plyr.pushBack.state !== true &&
+          plyr.dead.state !== true &&
+          plyr.falling.state !== true
         ) {
           this.aiDecide(plyr)
         }
@@ -12790,7 +12813,7 @@ class App extends Component {
               if (targetPlayer.attacking.count < this.attackAnimRef.peak.sword && targetPlayer.attacking.count >= this.attackAnimRef.peak.sword - 4) {
                 console.log('almost peak attack');
                 let whatDo = this.rnJesus(1,2);
-                // whatDo = 1
+                whatDo = 1
 
                 // DEFEND!
                 if (whatDo === 1) {
@@ -12823,7 +12846,7 @@ class App extends Component {
               if (targetPlayer.attacking.count <= 6) {
                 console.log('early attack');
                 let whatDo2 = this.rnJesus(1,4);
-                // whatDo2 = 3
+                whatDo2 = 1
 
                 // DEFEND!
                 if (whatDo2 === 1) {
