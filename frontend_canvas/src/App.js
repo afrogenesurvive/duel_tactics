@@ -3561,8 +3561,8 @@ class App extends Component {
                   let doubleHit = this.rnJesus(1,doubleHitChance);
                   let singleHit = this.rnJesus(1,singleHitChance);
 
-                  // doubleHit = 2
-                  // singleHit = 2
+                  doubleHit = 2
+                  singleHit = 2
 
 
                   // UNARMED ATTACK!
@@ -4005,6 +4005,7 @@ class App extends Component {
             player.attackStrength = 0;
             player.bluntAttack = false;
             player.action = 'idle';
+            console.log('attack end');
 
           }
 
@@ -5192,6 +5193,7 @@ class App extends Component {
                     player.bluntAttack = true;
                   }
 
+                  player.action = 'attacking';
                   player.attacking = {
                     state: true,
                     count: 1,
@@ -5586,6 +5588,13 @@ class App extends Component {
 
     // SYNC W/ GLOBAL PLAYER DATA
     this.players[player.number-1] = player;
+
+    if (player.ai.state === true ) {
+      // if (player.attacking.state === true) {
+      //   this.keyPressed[player.number-1].attack = false;
+      // }
+      this.aiEvaluate(player)
+    }
 
 
     this.drawPlayerStep(player.number, canvas, context, canvas2, context2);
@@ -7504,9 +7513,9 @@ class App extends Component {
     this.players[player.number-1] = player;
 
 
-    if (player.ai.state === true ) {
-      this.aiEvaluate(player)
-    }
+    // if (player.ai.state === true ) {
+    //   this.aiEvaluate(player)
+    // }
 
   }
 
@@ -12263,8 +12272,8 @@ class App extends Component {
 
     }
     if (
-      aiPlayer.ai.mission === 'engage' &&
-      aiPlayer.attacking.state !== true
+      aiPlayer.ai.mission === 'engage'
+      && aiPlayer.attacking.state !== true
     ) {
       // console.log('engaging');
 
@@ -13065,15 +13074,12 @@ class App extends Component {
             // if (aiPlayer.ai.engaging.targetAction !== engageTargetAction ) {
 
               // console.log('target status has changed. switch up the approach');
-              console.log('sword engage instructions set1',aiPlayer.currentPosition.cell.number);
-              console.log('sword engage instructions set2',aiPlayer.ai.instructions);
 
               aiPlayer.ai.instructions = instructions1;
               aiPlayer.ai.currentInstruction = 0;
               aiPlayer.ai.engaging.state = true;
               aiPlayer.ai.engaging.targetAction = engageTargetAction;
 
-              console.log('sword engage instructions set3',aiPlayer.ai.instructions);
             }
 
             // console.log('aiPlayer.instructions',aiPlayer.ai.instructions);
@@ -14147,7 +14153,7 @@ class App extends Component {
         break;
         case 'move_north':
         // console.log('ai act -- move_north');
-          if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true) {
+          if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true && plyr.action === 'idle') {
 
             let inDanger = false;
             if (plyr.direction === 'north') {
@@ -14190,7 +14196,7 @@ class App extends Component {
         case 'move_south':
         // console.log('ai act -- move_south');
 
-          if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true) {
+          if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true && plyr.action === 'idle') {
 
             let inDanger = false;
             if (plyr.direction === 'south') {
@@ -14231,7 +14237,7 @@ class App extends Component {
         break;
         case 'move_east':
         // console.log('ai act -- move_east');
-          if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true) {
+          if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true && plyr.action === 'idle') {
 
             let inDanger = false;
             if (plyr.direction === 'east') {
@@ -14271,7 +14277,7 @@ class App extends Component {
         break;
         case 'move_west':
         // console.log('ai act -- move_west');
-          if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true) {
+          if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true && plyr.action === 'idle') {
 
             let inDanger = false;
             if (plyr.direction === 'west') {
@@ -14313,7 +14319,7 @@ class App extends Component {
         case 'strafe_south':
 
         // console.log('ai act -- strafe_south');
-        if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true) {
+        if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true && plyr.action === 'idle') {
           let inDanger = false;
           // if (plyr.direction === 'south') {
             if (!targetCell) {
@@ -14355,7 +14361,7 @@ class App extends Component {
         break;
         case 'strafe_north':
         // console.log('ai act -- strafe_north');
-        if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true) {
+        if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true && plyr.action === 'idle') {
           let inDanger = false;
           // if (plyr.direction === 'north') {
             if (!targetCell) {
@@ -14397,7 +14403,7 @@ class App extends Component {
         break;
         case 'strafe_east':
         // console.log('ai act -- strafe_east');
-        if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true) {
+        if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true && plyr.action === 'idle') {
           let inDanger = false;
           // if (plyr.direction === 'east') {
             if (!targetCell) {
@@ -14439,7 +14445,7 @@ class App extends Component {
         break;
         case 'strafe_west':
         // console.log('ai act -- strafe_west');
-        if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true) {
+        if (plyr.moving.state !== true && !plyr.turning.state && plyr.success.deflected.state !== true && plyr.action === 'idle') {
           let inDanger = false;
           // if (plyr.direction === 'west') {
             if (!targetCell) {
@@ -14552,12 +14558,6 @@ class App extends Component {
               }
             }
 
-            // if (currentInstruction.count < currentInstruction.limit) {
-            //   currentInstruction.count++;
-            // } else if (currentInstruction.count >= currentInstruction.limit) {
-            //   plyr.ai.currentInstruction++;
-            //   console.log('plyr.ai.instructions',plyr.ai.instructions);
-            // }
         }
         break;
         case 'long_defend':
