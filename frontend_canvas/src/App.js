@@ -1315,7 +1315,12 @@ class App extends Component {
       partolArea: [
         {x: 7, y: 7},
         {x: 7, y:  4}
-      ]
+      ],
+      weapon: {
+        name: 'spear1',
+        type: 'spear',
+        effect: '',
+      }
     }
     this.addAiPlayerKeyPress = false;
     this.addAiCount = {
@@ -2507,9 +2512,9 @@ class App extends Component {
 
 
         // if (this.aiPlayers.length > 0) {
-        //
         //   this.aiEvaluate()
         // }
+
 
         if (this.gamepad === true) {
           this.pollGamepads();
@@ -2566,17 +2571,12 @@ class App extends Component {
 
           keyPressedDirection = key;
         }
+
+
       }
     }
 
 
-
-    // // AI STRAFE SWITCH ON!!
-    // if (player.ai.state === true && this.keyPressed[player.number-1]) {
-    //   if (this.keyPressed[player.number-1].strafe === true) {
-    //     this.players[player.number-1].strafing.state = true;
-    //   }
-    // }
 
 
     let nextPosition;
@@ -2791,7 +2791,9 @@ class App extends Component {
       }
 
       let indx = this.aiDeflectedCheck.indexOf(player.number)
-      this.aiDeflectedCheck.splice(indx,1)
+      // this.aiDeflectedCheck.splice(indx,1)
+      let newArr = this.aiDeflectedCheck.filter(x=>x !== player.number)
+      this.aiDeflectedCheck = newArr;
       console.log('this.aiDeflectedCheck',this.aiDeflectedCheck);
 
 
@@ -3559,6 +3561,9 @@ class App extends Component {
                   let doubleHit = this.rnJesus(1,doubleHitChance);
                   let singleHit = this.rnJesus(1,singleHitChance);
 
+                  // doubleHit = 2
+                  // singleHit = 2
+
 
                   // UNARMED ATTACK!
                   if ( player.currentWeapon.type === '') {
@@ -4000,6 +4005,7 @@ class App extends Component {
             player.attackStrength = 0;
             player.bluntAttack = false;
             player.action = 'idle';
+
           }
 
         }
@@ -5581,12 +5587,6 @@ class App extends Component {
     // SYNC W/ GLOBAL PLAYER DATA
     this.players[player.number-1] = player;
 
-    if (player.ai.state === true ) {
-      if (player.dead.state === true && player.falling.state === true) {
-        console.log('xxvx');
-      }
-      this.aiEvaluate(player)
-    }
 
     this.drawPlayerStep(player.number, canvas, context, canvas2, context2);
 
@@ -6318,6 +6318,9 @@ class App extends Component {
                 let animIndex5 = plyr.success.deflected.count -1;
                 finalAnimIndex = animIndex5;
                 // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number,'index',finalAnimIndex,'moving',plyr.moving.state);
+                // if (plyr.ai.state === true) {
+                //   console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number,'index',finalAnimIndex,'moving',plyr.moving.state);
+                // }
               break;
               case 'dodging':
                 let animIndex7 = plyr.dodging.count -1;
@@ -7499,6 +7502,11 @@ class App extends Component {
     }
 
     this.players[player.number-1] = player;
+
+
+    if (player.ai.state === true ) {
+      this.aiEvaluate(player)
+    }
 
   }
 
@@ -9533,6 +9541,13 @@ class App extends Component {
       count: 0,
       limit: 4,
     };
+    player.deflected = {
+      state: false,
+      count: 0,
+      limit: 20,
+      predeflect: false,
+      type: '',
+    };
     // player.hp = 2;
     player.points--;
     player.drowning = false;
@@ -11224,9 +11239,9 @@ class App extends Component {
           },
           hp: 2,
           currentWeapon: {
-            name: 'sword1',
-            type: 'sword',
-            effect: '',
+            name: this.aiInitSettings.weapon.name,
+            type: this.aiInitSettings.weapon.type,
+            effect: this.aiInitSettings.weapon.effect,
           },
           currentArmor: {
             name: '',
@@ -11237,9 +11252,9 @@ class App extends Component {
             weaponIndex: 0,
             armorIndex: 0,
             weapons: [{
-              name: 'sword1',
-              type: 'sword',
-              effect: '',
+              name: this.aiInitSettings.weapon.name,
+              type: this.aiInitSettings.weapon.type,
+              effect: this.aiInitSettings.weapon.effect,
             }],
             armor: [],
             ammo: 10,
@@ -11464,6 +11479,7 @@ class App extends Component {
   removeAiPlayer = (playerNumber) => {
     console.log('removing ai player',playerNumber);
 
+
     let index1 = this.players.indexOf(this.players[playerNumber-1])
     let index2 = this.aiPlayers.indexOf(playerNumber);
 
@@ -11510,6 +11526,7 @@ class App extends Component {
     })
   }
 
+  // aiEvaluate = () => {
   aiEvaluate = (plyr) => {
     // console.log('aiEvaluate');
 
@@ -11604,7 +11621,7 @@ class App extends Component {
 
 
     // for (const plyr of this.players) {
-      // if (plyr.ai.state === true && plyr.dead.state !== true && plyr.falling.state !== true) {
+    //   if (plyr.ai.state === true && plyr.dead.state !== true && plyr.falling.state !== true) {
 
 
         let fieldItemScan = []
@@ -12116,7 +12133,7 @@ class App extends Component {
           plyr.flanking.step !== 1 &&
           plyr.flanking.step !== 2 &&
           plyr.moving.state !== true &&
-          plyr.attacking.state !== true &&
+          // plyr.attacking.state !== true &&
           plyr.defending.state !== true &&
           plyr.success.deflected.state !== true &&
           plyr.action !== 'deflected' &&
@@ -12128,8 +12145,9 @@ class App extends Component {
         }
 
 
-      // }
+    //   }
     // }
+
 
   }
 
@@ -12244,7 +12262,10 @@ class App extends Component {
       }
 
     }
-    if (aiPlayer.ai.mission === 'engage') {
+    if (
+      aiPlayer.ai.mission === 'engage' &&
+      aiPlayer.attacking.state !== true
+    ) {
       // console.log('engaging');
 
 
@@ -12339,7 +12360,18 @@ class App extends Component {
           }
 
 
-          if (aiPlayer.ai.engaging.targetAction !== engageTargetAction) {
+          let deflecting = false;
+          if (this.aiDeflectedCheck.includes(aiPlayer.number) === true) {
+            deflecting = true;
+          }
+          if (deflecting === true) {
+            aiPlayer.ai.instructions = [];
+            aiPlayer.ai.currentInstruction = 0;
+            aiPlayer.ai.engaging.targetAction = ''
+          }
+
+
+          if (aiPlayer.ai.engaging.targetAction !== engageTargetAction && deflecting !== true) {
             // console.log('target status has changed. switch up the approach');
 
             aiPlayer.ai.instructions = instructions3;
@@ -12670,19 +12702,35 @@ class App extends Component {
           }
 
 
-          if (aiPlayer.ai.engaging.targetAction !== engageTargetAction) {
+          let deflecting = false;
+          if (this.aiDeflectedCheck.includes(aiPlayer.number) === true) {
+            deflecting = true;
+          }
+          if (deflecting === true) {
+            aiPlayer.ai.instructions = [];
+            aiPlayer.ai.currentInstruction = 0;
+            aiPlayer.ai.engaging.targetAction = ''
+          }
+
+
+          if (aiPlayer.ai.engaging.targetAction !== engageTargetAction && deflecting !== true) {
             // console.log('target status has changed. switch up the approach');
+            console.log('spear engage instructions set1',aiPlayer.currentPosition.cell.number);
+            console.log('spear engage instructions set2',aiPlayer.ai.instructions);
 
             aiPlayer.ai.instructions = instructions2;
             aiPlayer.ai.currentInstruction = 0;
             aiPlayer.ai.engaging.state = true;
             aiPlayer.ai.engaging.targetAction = engageTargetAction;
+
+            console.log('spear engage instructions set3',aiPlayer.ai.instructions);
           }
 
           // console.log('aiPlayer.instructions',aiPlayer.ai.instructions);
 
         }
         if (aiPlayer.currentWeapon.type === 'sword' && aiPlayer.action === 'idle' && aiPlayer.success.deflected.state !== true ) {
+          // console.log('ai decide sword engagement');
 
             let instructions1 = [];
 
@@ -13013,15 +13061,19 @@ class App extends Component {
             }
 
 
-            if (aiPlayer.ai.engaging.targetAction !== engageTargetAction && deflecting !== true) {
+            if (aiPlayer.ai.engaging.targetAction !== engageTargetAction && deflecting !== true ) {
             // if (aiPlayer.ai.engaging.targetAction !== engageTargetAction ) {
 
               // console.log('target status has changed. switch up the approach');
+              console.log('sword engage instructions set1',aiPlayer.currentPosition.cell.number);
+              console.log('sword engage instructions set2',aiPlayer.ai.instructions);
 
               aiPlayer.ai.instructions = instructions1;
               aiPlayer.ai.currentInstruction = 0;
               aiPlayer.ai.engaging.state = true;
               aiPlayer.ai.engaging.targetAction = engageTargetAction;
+
+              console.log('sword engage instructions set3',aiPlayer.ai.instructions);
             }
 
             // console.log('aiPlayer.instructions',aiPlayer.ai.instructions);
@@ -13347,7 +13399,18 @@ class App extends Component {
           }
 
 
-          if (aiPlayer.ai.engaging.targetAction !== engageTargetAction) {
+          let deflecting = false;
+          if (this.aiDeflectedCheck.includes(aiPlayer.number) === true) {
+            deflecting = true;
+          }
+          if (deflecting === true) {
+            aiPlayer.ai.instructions = [];
+            aiPlayer.ai.currentInstruction = 0;
+            aiPlayer.ai.engaging.targetAction = ''
+          }
+
+
+          if (aiPlayer.ai.engaging.targetAction !== engageTargetAction && deflecting !== true) {
             // console.log('target status has changed. switch up the approach');
 
             aiPlayer.ai.instructions = instructions4;
@@ -13541,7 +13604,7 @@ class App extends Component {
 
     if (targetPlayer) {
       if (getPath === true && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
-        // console.log('pathfinding...');
+        console.log('pathfinding...',aiPlayer.currentPosition.cell.number);
         this.updatePathArray();
         this.easyStar = new Easystar.js();
 
@@ -13782,7 +13845,7 @@ class App extends Component {
                   }
                   if (rngElCellFree === true) {
                     targetPos = rangeElem;
-                    // console.log('found path to safe sword range');
+                    // console.log('found path to safe sword range',targetPos);
                   } else {
                     console.log('your safe path is blocked');
                   }
@@ -14020,7 +14083,7 @@ class App extends Component {
 
     // console.log('this.pathArray',this.pathArray);
     // console.log('path',path,'player',aiPlayer);
-    // console.log('instructions',instructions,'player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction);
+    console.log('instructions',instructions,'player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction);
 
 
     this.players[aiPlayer-1].ai.pathArray = path;
@@ -14473,16 +14536,28 @@ class App extends Component {
           }
         break;
         case 'attack':
-        // console.log('ai act -- attack');
+        console.log('ai act -- attack');
         if (plyr.attacking.state !== true && plyr.moving.state !== true) {
           // console.log('plyr',plyr.number,'all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
             currentInstruction.limit = 1;
             this.keyPressed[plyr.number-1].attack = true;
-            if (currentInstruction.count < currentInstruction.limit) {
-              currentInstruction.count++;
-            } else if (currentInstruction.count >= currentInstruction.limit) {
+
+            if (currentInstruction.limit === 1) {
               plyr.ai.currentInstruction++;
+            } else {
+              if (currentInstruction.count < currentInstruction.limit) {
+                currentInstruction.count++;
+              } else if (currentInstruction.count >= currentInstruction.limit) {
+                plyr.ai.currentInstruction++;
+              }
             }
+
+            // if (currentInstruction.count < currentInstruction.limit) {
+            //   currentInstruction.count++;
+            // } else if (currentInstruction.count >= currentInstruction.limit) {
+            //   plyr.ai.currentInstruction++;
+            //   console.log('plyr.ai.instructions',plyr.ai.instructions);
+            // }
         }
         break;
         case 'long_defend':
