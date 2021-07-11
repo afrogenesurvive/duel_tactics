@@ -800,6 +800,30 @@ class App extends Component {
             state: true,
             targetAction: '',
           },
+          retrieving: {
+            checkin: undefined,
+            state: false,
+            point: {x: undefined, y: undefined},
+            targetItem: {
+              name: '',
+              type: '',
+              effect: ''
+            },
+            safe: true,
+          },
+          retreating: {
+            checkin: undefined,
+            state: false,
+            point: {x: undefined, y: undefined},
+            level: 0,
+            safe: true,
+          },
+          cycling: {
+            state: false,
+            type: ''
+          },
+          mode: '',
+          upgradeGear: false,
         },
         stamina: {
           current: 20,
@@ -1145,6 +1169,30 @@ class App extends Component {
             state: true,
             targetAction: '',
           },
+          retrieving: {
+            checkin: undefined,
+            state: false,
+            point: {x: undefined, y: undefined},
+            targetItem: {
+              name: '',
+              type: '',
+              effect: ''
+            },
+            safe: true,
+          },
+          retreating: {
+            checkin: undefined,
+            state: false,
+            point: {x: undefined, y: undefined},
+            level: 0,
+            safe: true,
+          },
+          cycling: {
+            state: false,
+            type: ''
+          },
+          mode: '',
+          upgradeGear: false,
         },
         stamina: {
           current: 20,
@@ -1317,10 +1365,15 @@ class App extends Component {
         {x: 7, y:  4}
       ],
       weapon: {
-        name: 'spear1',
-        type: 'spear',
+        name: 'sword1',
+        type: 'sword',
         effect: '',
-      }
+      },
+      armor: {
+        name: '',
+        type: '',
+        effect: '',
+      },
     }
     this.addAiPlayerKeyPress = false;
     this.addAiCount = {
@@ -3561,8 +3614,8 @@ class App extends Component {
                   let doubleHit = this.rnJesus(1,doubleHitChance);
                   let singleHit = this.rnJesus(1,singleHitChance);
 
-                  doubleHit = 2
-                  singleHit = 2
+                  // doubleHit = 2
+                  // singleHit = 2
 
 
                   // UNARMED ATTACK!
@@ -5401,6 +5454,10 @@ class App extends Component {
 
                   let doubleHit = this.rnJesus(1,doubleHitChance);
                   let singleHit = this.rnJesus(1,singleHitChance);
+
+                  // doubleHit = 2;
+                  // singleHit = 2;
+
                   let miss;
                   if (doubleHit === 1) {
                     console.log('double hit attack');
@@ -5590,9 +5647,6 @@ class App extends Component {
     this.players[player.number-1] = player;
 
     if (player.ai.state === true ) {
-      // if (player.attacking.state === true) {
-      //   this.keyPressed[player.number-1].attack = false;
-      // }
       this.aiEvaluate(player)
     }
 
@@ -9713,6 +9767,21 @@ class App extends Component {
 
   }
 
+  scanTargetAreaThreat = (args) => {
+
+    // args.origin {x,y}
+    // args.target {x,y}
+    // args.players to scan for
+    //
+    // choose the bigger x and get the difference
+    // choose the bigger y and get the difference
+    // add the differences
+    // assign diff totals to player no, coords, difftotal, distIndex object in array
+    // sort in ascending order of difftotal and assign distindex to each element
+    // return
+
+
+  }
   checkCell = (cell) => {
     // console.log('check cell');
 
@@ -10544,6 +10613,7 @@ class App extends Component {
 
   }
 
+
   drawGridInit = (canvas, context, canvas2, context2) => {
     // console.log('drawing initial');
 
@@ -11253,9 +11323,9 @@ class App extends Component {
             effect: this.aiInitSettings.weapon.effect,
           },
           currentArmor: {
-            name: '',
-            type: '',
-            effect: '',
+            name: this.aiInitSettings.armor.name,
+            type: this.aiInitSettings.armor.type,
+            effect: this.aiInitSettings.armor.effect,
           },
           items: {
             weaponIndex: 0,
@@ -11265,7 +11335,11 @@ class App extends Component {
               type: this.aiInitSettings.weapon.type,
               effect: this.aiInitSettings.weapon.effect,
             }],
-            armor: [],
+            armor: [{
+              name: this.aiInitSettings.armor.name,
+              type: this.aiInitSettings.armor.type,
+              effect: this.aiInitSettings.armor.effect,
+            }],
             ammo: 10,
           },
           inventorySize: 4,
@@ -11386,6 +11460,30 @@ class App extends Component {
             persuing: {
               state: false,
             },
+            retrieving: {
+              checkin: undefined,
+              state: false,
+              point: {x: undefined, y: undefined},
+              targetItem: {
+                name: '',
+                type: '',
+                effect: '',
+              },
+              safe: true,
+            },
+            retreating: {
+              checkin: undefined,
+              state: false,
+              point: {x: undefined, y: undefined},
+              level: 0,
+              safe: true,
+            },
+            cycling: {
+              state: false,
+              type: ''
+            },
+            mode: '',
+            upgradeGear: true,
           },
           stamina: {
             current: 20,
@@ -11481,7 +11579,17 @@ class App extends Component {
       partolArea: [
         {x: undefined, y: undefined},
         {x: undefined, y: undefined},
-      ]
+      ],
+      weapon: {
+        name: 'sword1',
+        type: 'sword',
+        effect: '',
+      },
+      armor: {
+        name: '',
+        type: '',
+        effect: '',
+      },
     }
     this.addAiPlayer();
   }
@@ -11633,18 +11741,47 @@ class App extends Component {
     //   if (plyr.ai.state === true && plyr.dead.state !== true && plyr.falling.state !== true) {
 
 
-        let fieldItemScan = []
-        for (const cell of this.gridInfo) {
-          if (cell.item.name !== '') {
-            fieldItemScan.push({
-              name: cell.item.name,
-              type: cell.item.type,
-              subType: cell.item.subType,
-              effect: cell.item.effect,
-              location: {x: cell.number.x, y: cell.number.y}
-            })
-          }
-        }
+    let fieldItemScan = []
+    for (const cell of this.gridInfo) {
+      if (cell.item.name !== '') {
+        fieldItemScan.push({
+          name: cell.item.name,
+          type: cell.item.type,
+          subType: cell.item.subType,
+          effect: cell.item.effect,
+          location: {x: cell.number.x, y: cell.number.y}
+        })
+      }
+    }
+
+    // scan fielded items and inventory and current weapon
+    // record player pathNerfObstacles and factor into find path
+
+
+    //if ai.upgrade gear true upgrade weapon
+    // set weapon type priority array
+    // set armor type priority array
+    //
+    //   do i have x weapon?
+    //   if I do, set cycle to it, in (add plyr.ai.cyclingGear{state, type})
+    //   If not, is it in the field (if crossbow, check if it/ or you have ammo 1st)
+    //   If it is, is check w/ target area threat
+    //   check for closeness with target area threat formula here
+    //    if safe set mission to set retrieving point/pos and target item
+    //   if not in the field or not safe, step priority array index and do above checks for that weapon
+    //   repeat if not decided
+    // reset upgrade gear
+
+    // if someone died upgrade gear true
+
+    //
+    //
+    //   if slow or injured retrieve appropriate if present
+    //
+    //   @ item drop, if player is ai, retrieve lost gear
+    //   if not engaged go back for it
+    //   if engaged only back if no other weapon to cycle
+
 
 
         if (plyr.ai.resetInstructions === true ) {
@@ -12100,7 +12237,10 @@ class App extends Component {
             plyr.ai.defending.checkin = undefined;
           }
           plyr.ai.prevMission = plyr.ai.mission;
-          plyr.ai.mission = 'engage';
+          if (plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
+            plyr.ai.mission = 'engage';
+          }
+
           // plyr.ai.engaging.state = true;
         }
 
@@ -12131,6 +12271,51 @@ class App extends Component {
         if (plyr.ai.targetAqcuiredReset === true) {
           plyr.ai.targetAcquired = false;
           plyr.ai.targetAqcuiredReset = false;
+        }
+
+
+
+        if (plyr.ai.mission === 'retrieve') {
+          console.log('retrieve @  ai evaluate', plyr.ai.retrieving);
+
+           if (!plyr.ai.retrieving.checkin) {
+
+
+
+
+           }
+
+
+           // check if target positions are safe
+           // for each human player check they are without a certain range of target\
+           // this.scanTargetAreaThreat()
+           // return isSafe and array of players and their distance rank/index
+
+
+           // scan target within a certain range and set plyr ai.retrieving/retreating.safe true
+
+           // if not safe and retrieving, change mission depending on an ai's mode (aggro or timid) if target not safe, retreat or engage/proceed
+
+
+
+          // if checkin = retrieved || abort , point area no longer safe, revert to primary mission and set checkin undefined
+        }
+        if (plyr.ai.mission === 'retreat') {
+
+          // if checkin undefined
+
+
+          // check if target positions are safe
+          // for each human player check they are without a certain range of target\
+          // this.scanTargetAreaThreat()
+          // return isSafe and array of players and their distance rank/index
+
+
+          // scan target within a certain range and set plyr ai.retrieving/retreating.safe true
+          // if not safe & retreating, choose new safe target
+
+
+          // if point area not safe, check in = complete, revert to primary mission and set checkin undefined
         }
 
 
@@ -12271,6 +12456,8 @@ class App extends Component {
       }
 
     }
+
+
     if (
       aiPlayer.ai.mission === 'engage'
       && aiPlayer.attacking.state !== true
@@ -12354,13 +12541,25 @@ class App extends Component {
           if (targetPlayer.defending.state !== true && targetPlayer.attacking.state !== true && targetPlayer.defendDecay.state !== true && targetPlayer.dodging.state !== true) {
             // console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,'is neither attacking nor defending');
 
-            instructions3.push(
-              {
-                keyword: 'attack',
-                count: 0,
-                limit: 1,
-              },
-            )
+            if (
+              aiPlayer.currentPosition.cell.number.x === targetPlayer.currentPosition.cell.number.x - 3 ||
+              aiPlayer.currentPosition.cell.number.x === targetPlayer.currentPosition.cell.number.x + 3 ||
+              aiPlayer.currentPosition.cell.number.y === targetPlayer.currentPosition.cell.number.y - 3 ||
+              aiPlayer.currentPosition.cell.number.y === targetPlayer.currentPosition.cell.number.y + 3
+            ) {
+              console.log('engaging w/ crossbow but too close for comfort');
+              // aiPlayer.ai.mission = 'retreat'
+            }
+            else {
+              instructions3.push(
+                {
+                  keyword: 'attack',
+                  count: 0,
+                  limit: 1,
+                },
+              )
+            }
+
             engageTargetAction = 'open'
           }
           if (targetPlayer.defending.state === true || targetPlayer.defendDecay.count > targetPlayer.defendDecay.limit - 10) {
@@ -12402,7 +12601,13 @@ class App extends Component {
               if (oppositeDir) {
 
                 if (aiPlayer.target.free !== true) {
+                  console.log('target is too close! back it up');
                   instructions2.push(
+                    {
+                      keyword: 'strafe_'+oppositeDir,
+                      count: 0,
+                      limit: 1,
+                    },
                     {
                       keyword: 'strafe_'+oppositeDir,
                       count: 0,
@@ -12410,12 +12615,21 @@ class App extends Component {
                     },
                   )
                 }
+                if (
+                  aiPlayer.currentPosition.cell.number.x === targetPlayer.currentPosition.cell.number.x - 3 ||
+                  aiPlayer.currentPosition.cell.number.x === targetPlayer.currentPosition.cell.number.x + 3 ||
+                  aiPlayer.currentPosition.cell.number.y === targetPlayer.currentPosition.cell.number.y - 3 ||
+                  aiPlayer.currentPosition.cell.number.y === targetPlayer.currentPosition.cell.number.y + 3
+                ) {
+                  instructions2.push(
+                    {
+                      keyword: 'move_'+aiPlayer.direction,
+                      count: 0,
+                      limit: 1,
+                    },
+                  )
+                }
                 instructions2.push(
-                  {
-                    keyword: 'move_'+aiPlayer.direction,
-                    count: 0,
-                    limit: 1,
-                  },
                   {
                     keyword: 'attack',
                     count: 0,
@@ -12460,7 +12674,13 @@ class App extends Component {
               if (oppositeDir) {
 
                 if (aiPlayer.target.free !== true) {
+                  console.log('target is too close! back it up');
                   instructions2.push(
+                    {
+                      keyword: 'strafe_'+oppositeDir,
+                      count: 0,
+                      limit: 1,
+                    },
                     {
                       keyword: 'strafe_'+oppositeDir,
                       count: 0,
@@ -12468,12 +12688,21 @@ class App extends Component {
                     },
                   )
                 }
+                if (
+                  aiPlayer.currentPosition.cell.number.x === targetPlayer.currentPosition.cell.number.x - 3 ||
+                  aiPlayer.currentPosition.cell.number.x === targetPlayer.currentPosition.cell.number.x + 3 ||
+                  aiPlayer.currentPosition.cell.number.y === targetPlayer.currentPosition.cell.number.y - 3 ||
+                  aiPlayer.currentPosition.cell.number.y === targetPlayer.currentPosition.cell.number.y + 3
+                ) {
+                  instructions2.push(
+                    {
+                      keyword: 'move_'+aiPlayer.direction,
+                      count: 0,
+                      limit: 1,
+                    },
+                  )
+                }
                 instructions2.push(
-                  {
-                    keyword: 'move_'+aiPlayer.direction,
-                    count: 0,
-                    limit: 1,
-                  },
                   {
                     keyword: 'attack',
                     count: 0,
@@ -12724,15 +12953,12 @@ class App extends Component {
 
           if (aiPlayer.ai.engaging.targetAction !== engageTargetAction && deflecting !== true) {
             // console.log('target status has changed. switch up the approach');
-            console.log('spear engage instructions set1',aiPlayer.currentPosition.cell.number);
-            console.log('spear engage instructions set2',aiPlayer.ai.instructions);
 
             aiPlayer.ai.instructions = instructions2;
             aiPlayer.ai.currentInstruction = 0;
             aiPlayer.ai.engaging.state = true;
             aiPlayer.ai.engaging.targetAction = engageTargetAction;
 
-            console.log('spear engage instructions set3',aiPlayer.ai.instructions);
           }
 
           // console.log('aiPlayer.instructions',aiPlayer.ai.instructions);
@@ -12752,6 +12978,7 @@ class App extends Component {
                   // console.log('safe sword range attack flow');
 
                   if (aiPlayer.target.free !== true) {
+                    console.log('target is too close! back it up');
                     instructions1.push(
                       {
                         keyword: 'strafe_'+oppositeDir,
@@ -12811,6 +13038,7 @@ class App extends Component {
                   // console.log('safe range attack flow');
 
                   if (aiPlayer.target.free !== true) {
+                    console.log('target is too close! back it up');
                     instructions1.push(
                       {
                         keyword: 'strafe_'+oppositeDir,
@@ -13084,7 +13312,6 @@ class App extends Component {
 
             // console.log('aiPlayer.instructions',aiPlayer.ai.instructions);
         }
-
         if (aiPlayer.currentWeapon.type === '' && aiPlayer.action === 'idle' && aiPlayer.success.deflected.state !== true) {
           // console.log('unarmed engagement');
 
@@ -13099,6 +13326,7 @@ class App extends Component {
                 // console.log('safe sword range attack flow');
 
                 if (aiPlayer.target.free !== true) {
+                  console.log('target is too close! back it up');
                   instructions4.push(
                     {
                       keyword: 'strafe_'+oppositeDir,
@@ -13159,6 +13387,7 @@ class App extends Component {
                 // console.log('safe range attack flow');
 
                 if (aiPlayer.target.free !== true) {
+                  console.log('target is too close! back it up');
                   instructions4.push(
                     {
                       keyword: 'strafe_'+oppositeDir,
@@ -13603,6 +13832,32 @@ class App extends Component {
 
     }
 
+    if (aiPlayer.ai.mission === 'retrieve') {
+      // if plyr.ai.retrieving.state !== true
+      // checkkin = enroute
+      // set state true
+      // pathSet
+
+      // if state is true & checkin = enroute, if  target cell doesn't have item, checkin = abort
+      //
+      // if state = true, checkin = enroute, if target item is in current gear or items, checkin = complete
+
+    }
+    if (aiPlayer.ai.mission === 'retreat') {
+      // if  plyr.ai.retreating.state !== true
+      // set state true
+      // checkn = enroute
+      // pathSet
+      //
+      // if state is true, checkin = enroute and plyr point is target point checkin = resting, dont set path
+      //
+      // if state true and checkin = resting and stamina recovered, checkin = complete
+    }
+
+    // if player cycling and path set not true add cycle gear to plyr instructions
+
+
+
     let cancelPath = false
 
     // SET PATH !!
@@ -13610,7 +13865,7 @@ class App extends Component {
 
     if (targetPlayer) {
       if (getPath === true && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
-        console.log('pathfinding...',aiPlayer.currentPosition.cell.number);
+        // console.log('pathfinding...');
         this.updatePathArray();
         this.easyStar = new Easystar.js();
 
@@ -13707,7 +13962,7 @@ class App extends Component {
                    }
                    if (rngElCellFree === true) {
                      targetPos = rangeElem;
-                     // console.log('found path to safe bow range');
+                     console.log('found path to safe bow range',targetPos);
                    } else {
                      console.log('your safe path is blocked');
                    }
@@ -13882,6 +14137,12 @@ class App extends Component {
 
           // console.log('targetPos',targetPos);
           // this.pathArray[targetPos.x][targetPos.y] = 0;
+        }
+        if (aiPlayer.ai.mission === 'retreat') {
+          // set appropriate target pos, retreating.point
+        }
+        if (aiPlayer.ai.mission === 'retrieve') {
+          // set appropriate target pos, choose a random cell while there are no human players near it
         }
 
 
@@ -14089,7 +14350,7 @@ class App extends Component {
 
     // console.log('this.pathArray',this.pathArray);
     // console.log('path',path,'player',aiPlayer);
-    console.log('instructions',instructions,'player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction);
+    // console.log('instructions',instructions,'player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction);
 
 
     this.players[aiPlayer-1].ai.pathArray = path;
@@ -14097,6 +14358,7 @@ class App extends Component {
     this.players[aiPlayer-1].ai.currentInstruction = 0;
 
   }
+
   aiAct = (plyr) => {
 
 
@@ -14542,7 +14804,7 @@ class App extends Component {
           }
         break;
         case 'attack':
-        console.log('ai act -- attack');
+        // console.log('ai act -- attack');
         if (plyr.attacking.state !== true && plyr.moving.state !== true) {
           // console.log('plyr',plyr.number,'all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
             currentInstruction.limit = 1;
