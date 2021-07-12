@@ -1362,7 +1362,7 @@ class App extends Component {
         number: {x: 8, y: 2}
       },
       primaryMission: 'pursue',
-      mission: undefined,
+      mission: 'retrieve',
       mode: 'careful',
       partolArea: [
         {x: 7, y: 7},
@@ -11545,10 +11545,10 @@ class App extends Component {
 
 
         // REMOVE AFER TESTING!!
-        if (this.aiInitSettings.mission === true) {
+        if (this.aiInitSettings.mission === 'retrieve') {
           console.log('here');
-          this.players[newPlayerNumber-1].ai.retriveing.point = {x: 1, y: 0};
-          this.players[newPlayerNumber-1].ai.retriveing.targetItem = {
+          this.players[newPlayerNumber-1].ai.retrieving.point = {x: 1, y: 0};
+          this.players[newPlayerNumber-1].ai.retrieving.targetItem = {
             name: 'crossbow1',
             type: 'weapon',
             subType: 'crossbow',
@@ -11568,11 +11568,14 @@ class App extends Component {
   addAiRandomPlayer = (mission) => {
 
     let newMisson = mission;
-    let weapon;
+    let weapon = {
+      name: 'sword1',
+      type: 'sword'
+    };
 
     if (mission === 'random') {
       let whatMission = this.rnJesus(1,10)
-      if (whatMission % 2 === 0) {
+      if (whatMission % 2 === 0 || whatMission % 7 === 0) {
         newMisson = 'pursue'
       }
       if (whatMission % 3 === 0) {
@@ -11585,20 +11588,20 @@ class App extends Component {
     }
 
 
-    let whatWeapon = this.rnJesus(1,3)
-    if (whatWeapon === 1) {
+    let whatWeapon = this.rnJesus(1,10)
+    if (whatWeapon % 2 === 0 || whatWeapon % 3 === 0) {
       weapon = {
         name: 'sword1',
         type: 'sword'
       }
     }
-    if (whatWeapon === 2) {
+    if (whatWeapon % 5 === 0) {
       weapon = {
         name: 'spear1',
         type: 'spear'
       }
     }
-    if (whatWeapon === 2) {
+    if (whatWeapon % 7 === 0) {
       weapon = {
         name: 'crossbow1',
         type: 'crossbow'
@@ -11692,20 +11695,57 @@ class App extends Component {
     let threats = []
      for (const player of this.players) {
        if (player.ai.state !== true && player.number !== args.player) {
-         playerPositions.push(player.currentPosition.cell.number)
+         playerPositions.push({
+           player: player.number,
+           position: player.currentPosition.cell.number,
+         })
        }
      }
      for (const playerPos of playerPositions) {
 
-     }
-    //
-    // choose the bigger x and get the difference
-    // choose the bigger y and get the difference
-    // add the differences
-    // assign diff totals to player no, coords, difftotal, distIndex object in array
-    // sort in ascending order of difftotal and assign distindex to each element
+       let xDiff;
+       let yDiff;
+       let largerx = Math.max(point.x, playerPos.position.x);
+       if (largerx === point.x) {
+         xDiff = point.x - playerPos.position.x;
+       } else {
+         xDiff = playerPos.position.x - point.x;
+       }
+       let largery = Math.max(point.y, playerPos.position.y);
+       if (largery === point.y) {
+         xDiff = point.y - playerPos.position.y;
+       } else {
+         xDiff = playerPos.position.y - point.y;
+       }
+       let diffSum = xDiff + yDiff;
+       console.log('vv',playerPos.player,diffSum);
 
-    // if distance value = or less than range
+       if (diffSum <= range) {
+         threats.push({
+           player: playerPos.player,
+           position: playerPos.position,
+           distValue: diffSum,
+           distIndex: undefined,
+         })
+       }
+
+     }
+
+     if (threats.length > 0) {
+       isSafe = false;
+     }
+
+     threats.sort((a, b) => (a.distValue > b.distValue) ? 1 : -1);
+     for (const threat of threats) {
+       let threatIndex = threats.findIndex(x => x.player === threat.player)
+       threat.distIndex = threatIndex;
+     }
+     console.log('threats',threats);
+
+     return {
+       isSafe: isSafe,
+       threats: threats
+     }
 
 
   }
@@ -12368,6 +12408,8 @@ class App extends Component {
               plyr.ai.mission = 'retreat';
              }
 
+           } else {
+             console.log('target area clear. proceed w/ retrieval');
            }
 
            if (plyr.ai.retrieving.checkin === 'complete') {
@@ -13971,7 +14013,7 @@ class App extends Component {
       if (aiPlayer.ai.retrieving.state === true) {
 
         if (aiPlayer.ai.retrieving.checkin === 'enroute') {
-          console.log('en route to retreat point',aiPlayer.ai.retrieving.point);
+          console.log('en route to retrieve point',aiPlayer.ai.retrieving.point);
 
           let targetCell = this.gridInfo.find(elem => elem.number.x === aiPlayer.ai.retrieving.point.x && elem.number.y === aiPlayer.ai.retrieving.point.y);
           if (targetCell.item.name === '' || aiPlayer.ai.retrieving.targetItem.name !== targetCell.item.name) {
@@ -13983,7 +14025,7 @@ class App extends Component {
             aiPlayer.currentPosition.cell.number.x === aiPlayer.ai.retrieving.point.x &&
             aiPlayer.currentPosition.cell.number.y === aiPlayer.ai.retrieving.point.y
           ) {
-
+            console.log('arrived at retrieval location');
             aiPlayer.ai.retrieving.checkin = 'complete';
             aiPlayer.ai.retrieving.state = false;
           }
@@ -14292,7 +14334,12 @@ class App extends Component {
           // set appropriate target pos, retreating.point
         }
         if (aiPlayer.ai.mission === 'retrieve') {
-          // set appropriate target pos, choose a random cell while there are no human players near it
+          // console.log('get retrive path',aiPlayer.ai.retrieving.point);
+          aiPos = aiPlayer.currentPosition.cell.number;
+          targetPos = {
+            x: aiPlayer.ai.retrieving.point.x,
+            y: aiPlayer.ai.retrieving.point.y,
+          }
         }
 
 
