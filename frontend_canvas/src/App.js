@@ -416,12 +416,12 @@ class App extends Component {
       //   subType: 'mail',
       //   effect: 'snghit-5',
       // },
-      {
-        name: 'speedGreaves',
-        type: 'armor',
-        subType: 'greaves',
-        effect: 'speedUp',
-      },
+      // {
+      //   name: 'speedGreaves',
+      //   type: 'armor',
+      //   subType: 'greaves',
+      //   effect: 'speedUp',
+      // },
       // {
       //   name: 'ironPlate',
       //   type: 'armor',
@@ -1362,15 +1362,15 @@ class App extends Component {
         number: {x: 8, y: 2}
       },
       primaryMission: 'pursue',
-      mission: 'retrieve',
+      mission: undefined,
       mode: 'careful',
       partolArea: [
         {x: 7, y: 7},
         {x: 7, y:  4}
       ],
       weapon: {
-        name: 'sword1',
-        type: 'sword',
+        name: 'crossbow1',
+        type: 'crossbow',
         effect: '',
       },
       armor: {
@@ -2772,8 +2772,11 @@ class App extends Component {
           if (this.aiDeflectedCheck.includes(this.players[player.number-1].number) !== true) {
             this.aiDeflectedCheck.push(this.players[player.number-1].number)
           }
+        }
 
-
+        if (player.ai.state === true) {
+          console.log('ai player',player.number,' out of stamina. Retreat');
+          player.ai.mission = 'retreat'
         }
       }
     }
@@ -3618,8 +3621,8 @@ class App extends Component {
                   let doubleHit = this.rnJesus(1,doubleHitChance);
                   let singleHit = this.rnJesus(1,singleHitChance);
 
-                  // doubleHit = 2
-                  // singleHit = 2
+                  doubleHit = 2
+                  singleHit = 2
 
 
                   // UNARMED ATTACK!
@@ -11460,14 +11463,14 @@ class App extends Component {
                 subType: '',
                 effect: '',
               },
-              safe: true,
+              safe: false,
             },
             retreating: {
               checkin: undefined,
               state: false,
               point: {x: undefined, y: undefined},
               level: 0,
-              safe: true,
+              safe: false,
             },
             cycling: {
               state: false,
@@ -11544,14 +11547,14 @@ class App extends Component {
         }
 
 
-        // REMOVE AFER TESTING!!
+        // REMOVE AFtER TESTING!!
         if (this.aiInitSettings.mission === 'retrieve') {
           console.log('here');
-          this.players[newPlayerNumber-1].ai.retrieving.point = {x: 1, y: 0};
+          this.players[newPlayerNumber-1].ai.retrieving.point = {x: 0, y: 0};
           this.players[newPlayerNumber-1].ai.retrieving.targetItem = {
-            name: 'crossbow1',
+            name: 'spear1',
             type: 'weapon',
-            subType: 'crossbow',
+            subType: 'spear',
             effect: '',
           };
         }
@@ -11686,7 +11689,7 @@ class App extends Component {
   }
 
   scanTargetAreaThreat = (args) => {
-    console.log('scanning area for threats');
+    // console.log('scanning area for threats');
 
     let point = args.point;
     let range = args.range;
@@ -11706,19 +11709,21 @@ class App extends Component {
        let xDiff;
        let yDiff;
        let largerx = Math.max(point.x, playerPos.position.x);
+       // console.log('playerPos.position.x',playerPos.position.x,'point.x',point.x,'largerx',largerx);
        if (largerx === point.x) {
          xDiff = point.x - playerPos.position.x;
        } else {
          xDiff = playerPos.position.x - point.x;
        }
        let largery = Math.max(point.y, playerPos.position.y);
+       // console.log('playerPos.position.y',playerPos.position.y,'point.y',point.y,'largery',largery);
        if (largery === point.y) {
-         xDiff = point.y - playerPos.position.y;
+         yDiff = point.y - playerPos.position.y;
        } else {
-         xDiff = playerPos.position.y - point.y;
+         yDiff = playerPos.position.y - point.y;
        }
        let diffSum = xDiff + yDiff;
-       console.log('vv',playerPos.player,diffSum);
+       // console.log('vv',playerPos.player,diffSum);
 
        if (diffSum <= range) {
          threats.push({
@@ -11740,7 +11745,7 @@ class App extends Component {
        let threatIndex = threats.findIndex(x => x.player === threat.player)
        threat.distIndex = threatIndex;
      }
-     console.log('threats',threats);
+     // console.log('threats',threats);
 
      return {
        isSafe: isSafe,
@@ -12383,7 +12388,7 @@ class App extends Component {
 
 
         if (plyr.ai.mission === 'retrieve') {
-          console.log('retrieve @  ai evaluate', plyr.ai.retrieving);
+          // console.log('retrieve @  ai evaluate', plyr.ai.retrieving);
 
 
            let targetSafeData = this.scanTargetAreaThreat({
@@ -12399,23 +12404,27 @@ class App extends Component {
 
 
            if (targetSafeData.isSafe !== true) {
-             console.log('target area in under threat');
+             // console.log('target area is under threat');
              if (plyr.ai.mode === 'aggressive') {
                // switch  mission to pursue set target to targetSafeData.threats closest to me
                //  find a way switch back to retrieve after disengage
              }
-             if (plyr.ai.mode === 'careful') {
+             if (plyr.ai.mode === 'careful' && plyr.ai.retrieving.checkin === 'enroute') {
+               console.log('was enroute, now retreating');
               plyr.ai.mission = 'retreat';
              }
 
            } else {
-             console.log('target area clear. proceed w/ retrieval');
+             // console.log('target area clear. proceed w/ retrieval');
+             plyr.ai.retrieving.safe = true;
            }
 
            if (plyr.ai.retrieving.checkin === 'complete') {
 
              plyr.ai.mission = plyr.ai.primaryMission;
              plyr.ai.retrieving.checkin = undefined;
+             plyr.ai.retrieving.safe = false;
+             console.log('retrieval complete. revert mission',plyr.ai.mission);
 
              let itemRetrieved;
 
@@ -12454,37 +12463,75 @@ class App extends Component {
            }
 
         }
+
         if (plyr.ai.mission === 'retreat') {
+          // console.log('retreating @ ai evaluate');
 
-          // if checkin undefined
+          if (!plyr.ai.retreating.checkin) {
 
-          // let targetSafeData = this.scanTargetAreaThreat({
-          //   point: {
-          //     x: plyr.ai.retrieving.point.x,
-          //     y: plyr.ai.retrieving.point.y,
-          //   }
-          // })
+            let cell = {x: 0,y: 0}
+            let checkCell = false;
+            let safeTarget = false;
+            while (
+              checkCell === false &&
+              safeTarget !== true
+            ) {
+              cell.x = this.rnJesus(0,this.gridWidth)
+              cell.y = this.rnJesus(0,this.gridWidth)
+              checkCell = this.checkCell(cell);
+              safeTarget = this.scanTargetAreaThreat({
+                player: plyr.number,
+                point: {
+                  x: cell.x,
+                  y: cell.y,
+                },
+                range: 3,
+              }).isSafe
+            }
 
-          // pick a random point and scan it for obstacles terrain then safety
-          // while the above checks fail, pick another point
-          // while (checkCell === false) {
-          //   cell.x = this.rnJesus(0,this.gridWidth)
-          //   cell.y = this.rnJesus(0,this.gridWidth)
-          //   checkCell = this.checkCell(cell);
-          // }
-          //
-          // retreating = {
-          //   checkin: undefined,
-          //   state: false,
-          //   point: {x: undefined, y: undefined},
-          //   level: 0,
-          //   safe: true,
-          // },
+            if (
+              checkCell === true &&
+              safeTarget === true
+            ) {
+              plyr.ai.retreating.point = cell;
+              plyr.ai.retreating.safe = safeTarget;
+              console.log('found a free, safe retreat location',cell);
+            }
+
+          }
+
+          if (plyr.ai.retreating.checkin) {
+
+            let targetSafeData = this.scanTargetAreaThreat({
+              player: plyr.number,
+              point: {
+                x: plyr.ai.retreating.point.x,
+                y: plyr.ai.retreating.point.y,
+              },
+              range: 3,
+            })
+
+            plyr.ai.retrieving.safe = targetSafeData.isSafe;
 
 
+            if (targetSafeData.isSafe !== true) {
+              console.log('retreat target area is under threat. Find another target');
+              plyr.ai.retreating.checkin = undefined;
+              plyr.ai.retreating.safe = false;
+            }
+
+            if (plyr.ai.retreating.checkin === 'complete') {
+              plyr.ai.retreating.checkin = undefined;
+              plyr.ai.retreating.safe = false;
+              plyr.ai.mission = plyr.ai.primaryMission;
+            }
+
+          }
 
 
-          // if point area not safe, check in = complete, revert to primary mission and set checkin undefined
+          // plyr.ai.retreating.level pick a spot further away depending on levelData
+
+
         }
 
 
@@ -12626,11 +12673,7 @@ class App extends Component {
 
     }
 
-
-    if (
-      aiPlayer.ai.mission === 'engage'
-      && aiPlayer.attacking.state !== true
-    ) {
+    if (aiPlayer.ai.mission === 'engage' && aiPlayer.attacking.state !== true) {
       // console.log('engaging');
 
 
@@ -12714,10 +12757,18 @@ class App extends Component {
               aiPlayer.currentPosition.cell.number.x === targetPlayer.currentPosition.cell.number.x - 3 ||
               aiPlayer.currentPosition.cell.number.x === targetPlayer.currentPosition.cell.number.x + 3 ||
               aiPlayer.currentPosition.cell.number.y === targetPlayer.currentPosition.cell.number.y - 3 ||
-              aiPlayer.currentPosition.cell.number.y === targetPlayer.currentPosition.cell.number.y + 3
+              aiPlayer.currentPosition.cell.number.y === targetPlayer.currentPosition.cell.number.y + 3 ||
+              aiPlayer.currentPosition.cell.number.x === targetPlayer.currentPosition.cell.number.x - 2 ||
+              aiPlayer.currentPosition.cell.number.x === targetPlayer.currentPosition.cell.number.x + 2 ||
+              aiPlayer.currentPosition.cell.number.y === targetPlayer.currentPosition.cell.number.y - 2 ||
+              aiPlayer.currentPosition.cell.number.y === targetPlayer.currentPosition.cell.number.y + 2 ||
+              aiPlayer.currentPosition.cell.number.x === targetPlayer.currentPosition.cell.number.x - 1 ||
+              aiPlayer.currentPosition.cell.number.x === targetPlayer.currentPosition.cell.number.x + 1 ||
+              aiPlayer.currentPosition.cell.number.y === targetPlayer.currentPosition.cell.number.y - 1 ||
+              aiPlayer.currentPosition.cell.number.y === targetPlayer.currentPosition.cell.number.y + 1
             ) {
               console.log('engaging w/ crossbow but too close for comfort');
-              // aiPlayer.ai.mission = 'retreat'
+              aiPlayer.ai.mission = 'retreat'
             }
             else {
               instructions3.push(
@@ -14003,8 +14054,8 @@ class App extends Component {
 
     if (aiPlayer.ai.mission === 'retrieve') {
 
-      if (aiPlayer.ai.retrieving.state !== true) {
-        console.log('retrive mission start');
+      if (aiPlayer.ai.retrieving.state !== true && aiPlayer.ai.retrieving.safe === true) {
+        console.log('retrive mission start: target item ',aiPlayer.ai.retrieving.targetItem.name);
         aiPlayer.ai.retrieving.state = true;
         aiPlayer.ai.retrieving.checkin = 'enroute';
         getPath = true;
@@ -14036,14 +14087,40 @@ class App extends Component {
 
     }
     if (aiPlayer.ai.mission === 'retreat') {
-      // if  plyr.ai.retreating.state !== true
-      // set state true
-      // checkn = enroute
-      // pathSet
-      //
-      // if state is true, checkin = enroute and plyr point is target point checkin = resting, dont set path
-      //
-      // if state true and checkin = resting and stamina recovered, checkin = complete
+
+      if (aiPlayer.ai.retreating.state !== true && aiPlayer.ai.retreating.safe === true) {
+        // console.log('start retreating to',aiPlayer.ai.retreating.point);
+        aiPlayer.ai.retreating.state = true;
+        aiPlayer.ai.retreating.checkin = 'enroute';
+        getPath = true;
+      }
+
+      if (aiPlayer.ai.retreating.state === true) {
+
+        if (aiPlayer.ai.retreating.checkin === 'enroute') {
+          // console.log('enroute to retreat point @',aiPlayer.ai.retreating.point);
+          if (
+            aiPlayer.currentPosition.cell.number.x === aiPlayer.ai.retreating.point.x &&
+            aiPlayer.currentPosition.cell.number.y === aiPlayer.ai.retreating.point.y
+          ) {
+            console.log('arrived at retreat location');
+            aiPlayer.ai.instructions.push({keyword: 'long_wait',count: 0,limit: 25,},)
+            aiPlayer.ai.retreating.checkin = 'resting';
+
+          }
+
+        }
+
+        if (aiPlayer.ai.retreating.checkin === 'resting') {
+          if (aiPlayer.stamina.current >= aiPlayer.stamina.max) {
+            console.log('plyr is well rested. retreat complete');
+            aiPlayer.ai.retreating.checkin = 'complete';
+            aiPlayer.ai.retreating.state = false;
+          }
+
+        }
+      }
+
     }
 
     // if player cycling and path set not true add cycle gear to plyr instructions
@@ -14331,7 +14408,12 @@ class App extends Component {
           // this.pathArray[targetPos.x][targetPos.y] = 0;
         }
         if (aiPlayer.ai.mission === 'retreat') {
-          // set appropriate target pos, retreating.point
+          // console.log('get retreat path',aiPlayer.ai.retreating.point);
+          aiPos = aiPlayer.currentPosition.cell.number;
+          targetPos = {
+            x: aiPlayer.ai.retreating.point.x,
+            y: aiPlayer.ai.retreating.point.y,
+          }
         }
         if (aiPlayer.ai.mission === 'retrieve') {
           // console.log('get retrive path',aiPlayer.ai.retrieving.point);
