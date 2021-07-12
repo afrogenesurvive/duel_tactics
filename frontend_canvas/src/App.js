@@ -807,6 +807,7 @@ class App extends Component {
             targetItem: {
               name: '',
               type: '',
+              subType: '',
               effect: ''
             },
             safe: true,
@@ -1176,6 +1177,7 @@ class App extends Component {
             targetItem: {
               name: '',
               type: '',
+              subType: '',
               effect: ''
             },
             safe: true,
@@ -1360,6 +1362,8 @@ class App extends Component {
         number: {x: 8, y: 2}
       },
       primaryMission: 'pursue',
+      mission: undefined,
+      mode: 'careful',
       partolArea: [
         {x: 7, y: 7},
         {x: 7, y:  4}
@@ -9767,21 +9771,7 @@ class App extends Component {
 
   }
 
-  scanTargetAreaThreat = (args) => {
 
-    // args.origin {x,y}
-    // args.target {x,y}
-    // args.players to scan for
-    //
-    // choose the bigger x and get the difference
-    // choose the bigger y and get the difference
-    // add the differences
-    // assign diff totals to player no, coords, difftotal, distIndex object in array
-    // sort in ascending order of difftotal and assign distindex to each element
-    // return
-
-
-  }
   checkCell = (cell) => {
     // console.log('check cell');
 
@@ -11467,6 +11457,7 @@ class App extends Component {
               targetItem: {
                 name: '',
                 type: '',
+                subType: '',
                 effect: '',
               },
               safe: true,
@@ -11482,7 +11473,7 @@ class App extends Component {
               state: false,
               type: ''
             },
-            mode: '',
+            mode: this.aiInitSettings.mode,
             upgradeGear: true,
           },
           stamina: {
@@ -11514,7 +11505,14 @@ class App extends Component {
         this.getTarget(this.players[newPlayerNumber-1])
         this.updatePathArray();
         this.players[newPlayerNumber-1].ai.primaryMission = this.aiInitSettings.primaryMission;
-        this.players[newPlayerNumber-1].ai.mission = this.aiInitSettings.primaryMission;
+        if (!this.aiInitSettings.mission) {
+          this.players[newPlayerNumber-1].ai.mission = this.aiInitSettings.primaryMission;
+        }
+
+        else if (this.aiInitSettings.mission) {
+          this.players[newPlayerNumber-1].ai.mission = this.aiInitSettings.mission;
+        }
+
         if (this.aiInitSettings.primaryMission === 'patrol') {
           this.players[newPlayerNumber-1].ai.patrolling = {
             checkin: undefined,
@@ -11544,6 +11542,21 @@ class App extends Component {
             ]
           }
         }
+
+
+        // REMOVE AFER TESTING!!
+        if (this.aiInitSettings.mission === true) {
+          console.log('here');
+          this.players[newPlayerNumber-1].ai.retriveing.point = {x: 1, y: 0};
+          this.players[newPlayerNumber-1].ai.retriveing.targetItem = {
+            name: 'crossbow1',
+            type: 'weapon',
+            subType: 'crossbow',
+            effect: '',
+          };
+        }
+
+
       }
 
     }
@@ -11555,6 +11568,8 @@ class App extends Component {
   addAiRandomPlayer = (mission) => {
 
     let newMisson = mission;
+    let weapon;
+
     if (mission === 'random') {
       let whatMission = this.rnJesus(1,10)
       if (whatMission % 2 === 0) {
@@ -11570,19 +11585,43 @@ class App extends Component {
     }
 
 
+    let whatWeapon = this.rnJesus(1,3)
+    if (whatWeapon === 1) {
+      weapon = {
+        name: 'sword1',
+        type: 'sword'
+      }
+    }
+    if (whatWeapon === 2) {
+      weapon = {
+        name: 'spear1',
+        type: 'spear'
+      }
+    }
+    if (whatWeapon === 2) {
+      weapon = {
+        name: 'crossbow1',
+        type: 'crossbow'
+      }
+    }
+
+
+
     this.aiInitSettings = {
       randomStart: true,
       startPosition: {
         number: {x: undefined, y: undefined}
       },
       primaryMission: newMisson,
+      mission: undefined,
+      mode: 'careful',
       partolArea: [
         {x: undefined, y: undefined},
         {x: undefined, y: undefined},
       ],
       weapon: {
-        name: 'sword1',
-        type: 'sword',
+        name: weapon.name,
+        type: weapon.type,
         effect: '',
       },
       armor: {
@@ -11641,6 +11680,34 @@ class App extends Component {
     this.setState({
       showAiStatus: newState,
     })
+  }
+
+  scanTargetAreaThreat = (args) => {
+    console.log('scanning area for threats');
+
+    let point = args.point;
+    let range = args.range;
+    let playerPositions = [];
+    let isSafe = true;
+    let threats = []
+     for (const player of this.players) {
+       if (player.ai.state !== true && player.number !== args.player) {
+         playerPositions.push(player.currentPosition.cell.number)
+       }
+     }
+     for (const playerPos of playerPositions) {
+
+     }
+    //
+    // choose the bigger x and get the difference
+    // choose the bigger y and get the difference
+    // add the differences
+    // assign diff totals to player no, coords, difftotal, distIndex object in array
+    // sort in ascending order of difftotal and assign distindex to each element
+
+    // if distance value = or less than range
+
+
   }
 
   // aiEvaluate = () => {
@@ -12278,49 +12345,109 @@ class App extends Component {
         if (plyr.ai.mission === 'retrieve') {
           console.log('retrieve @  ai evaluate', plyr.ai.retrieving);
 
-           if (!plyr.ai.retrieving.checkin) {
+
+           let targetSafeData = this.scanTargetAreaThreat({
+             player: plyr.number,
+             point: {
+               x: plyr.ai.retrieving.point.x,
+               y: plyr.ai.retrieving.point.y,
+             },
+             range: 3,
+           })
+
+           plyr.ai.retrieving.safe = targetSafeData.isSafe;
 
 
-
+           if (targetSafeData.isSafe !== true) {
+             console.log('target area in under threat');
+             if (plyr.ai.mode === 'aggressive') {
+               // switch  mission to pursue set target to targetSafeData.threats closest to me
+               //  find a way switch back to retrieve after disengage
+             }
+             if (plyr.ai.mode === 'careful') {
+              plyr.ai.mission = 'retreat';
+             }
 
            }
 
+           if (plyr.ai.retrieving.checkin === 'complete') {
 
-           // check if target positions are safe
-           // for each human player check they are without a certain range of target\
-           // this.scanTargetAreaThreat()
-           // return isSafe and array of players and their distance rank/index
+             plyr.ai.mission = plyr.ai.primaryMission;
+             plyr.ai.retrieving.checkin = undefined;
 
+             let itemRetrieved;
 
-           // scan target within a certain range and set plyr ai.retrieving/retreating.safe true
+             if (plyr.ai.retrieving.targetItem.type !== 'item') {
+               if (plyr.ai.retrieving.targetItem.type === 'weapon') {
+                 if (plyr.currentWeapon.name === plyr.ai.retrieving.targetItem.name) {
+                   itemRetrieved = true
+                 }
+                 for (const item of plyr.items.weapons) {
+                   if (item.name === plyr.ai.retrieving.targetItem.name) {
+                     itemRetrieved = true
+                     plyr.currentWeapon =  {
+                       name: plyr.ai.retrieving.targetItem.name,
+                       type: plyr.ai.retrieving.targetItem.subType,
+                       effect: plyr.ai.retrieving.targetItem.effect,
+                     }
+                   }
+                 }
+               }
+               if (plyr.ai.retrieving.targetItem.type === 'armor') {
+                 if (plyr.currentArmor.name === plyr.ai.retrieving.targetItem.name) {
+                   itemRetrieved = true
+                 }
+                 for (const item of plyr.items.armor) {
+                   if (item.name === plyr.ai.retrieving.targetItem.name) {
+                     itemRetrieved = true
+                     plyr.currentArmor =  {
+                       name: plyr.ai.retrieving.targetItem.name,
+                       type: plyr.ai.retrieving.targetItem.subType,
+                       effect: plyr.ai.retrieving.targetItem.effect,
+                     }
+                   }
+                 }
+               }
+             }
+           }
 
-           // if not safe and retrieving, change mission depending on an ai's mode (aggro or timid) if target not safe, retreat or engage/proceed
-
-
-
-          // if checkin = retrieved || abort , point area no longer safe, revert to primary mission and set checkin undefined
         }
         if (plyr.ai.mission === 'retreat') {
 
           // if checkin undefined
 
+          // let targetSafeData = this.scanTargetAreaThreat({
+          //   point: {
+          //     x: plyr.ai.retrieving.point.x,
+          //     y: plyr.ai.retrieving.point.y,
+          //   }
+          // })
 
-          // check if target positions are safe
-          // for each human player check they are without a certain range of target\
-          // this.scanTargetAreaThreat()
-          // return isSafe and array of players and their distance rank/index
+          // pick a random point and scan it for obstacles terrain then safety
+          // while the above checks fail, pick another point
+          // while (checkCell === false) {
+          //   cell.x = this.rnJesus(0,this.gridWidth)
+          //   cell.y = this.rnJesus(0,this.gridWidth)
+          //   checkCell = this.checkCell(cell);
+          // }
+          //
+          // retreating = {
+          //   checkin: undefined,
+          //   state: false,
+          //   point: {x: undefined, y: undefined},
+          //   level: 0,
+          //   safe: true,
+          // },
 
 
-          // scan target within a certain range and set plyr ai.retrieving/retreating.safe true
-          // if not safe & retreating, choose new safe target
 
 
           // if point area not safe, check in = complete, revert to primary mission and set checkin undefined
         }
 
 
-        // AI CAN'T ACT IF FLANKING OR MOVING!
 
+        // AI CAN'T ACT IF FLANKING OR MOVING!
 
         if (
           plyr.flanking.state !== true &&
@@ -13833,14 +13960,37 @@ class App extends Component {
     }
 
     if (aiPlayer.ai.mission === 'retrieve') {
-      // if plyr.ai.retrieving.state !== true
-      // checkkin = enroute
-      // set state true
-      // pathSet
 
-      // if state is true & checkin = enroute, if  target cell doesn't have item, checkin = abort
-      //
-      // if state = true, checkin = enroute, if target item is in current gear or items, checkin = complete
+      if (aiPlayer.ai.retrieving.state !== true) {
+        console.log('retrive mission start');
+        aiPlayer.ai.retrieving.state = true;
+        aiPlayer.ai.retrieving.checkin = 'enroute';
+        getPath = true;
+
+      }
+      if (aiPlayer.ai.retrieving.state === true) {
+
+        if (aiPlayer.ai.retrieving.checkin === 'enroute') {
+          console.log('en route to retreat point',aiPlayer.ai.retrieving.point);
+
+          let targetCell = this.gridInfo.find(elem => elem.number.x === aiPlayer.ai.retrieving.point.x && elem.number.y === aiPlayer.ai.retrieving.point.y);
+          if (targetCell.item.name === '' || aiPlayer.ai.retrieving.targetItem.name !== targetCell.item.name) {
+            console.log('item to retrieve is longer there. abort');
+            aiPlayer.ai.retrieving.checkin = 'abort';
+          }
+
+          if (
+            aiPlayer.currentPosition.cell.number.x === aiPlayer.ai.retrieving.point.x &&
+            aiPlayer.currentPosition.cell.number.y === aiPlayer.ai.retrieving.point.y
+          ) {
+
+            aiPlayer.ai.retrieving.checkin = 'complete';
+            aiPlayer.ai.retrieving.state = false;
+          }
+        }
+
+      }
+
 
     }
     if (aiPlayer.ai.mission === 'retreat') {
