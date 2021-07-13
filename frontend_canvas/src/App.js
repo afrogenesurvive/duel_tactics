@@ -206,7 +206,7 @@ class App extends Component {
       row0: ['x00x','x01x','x02x','x03x','x04x','x05g','x06g','x07h','x08f','x09d'],
       row1: ['x10a','x11a','x12a','x13a','x14x','x15x','x16x','x17x','x18f','x19d'],
       row2: ['x20x','x21a','x22a','x23a','x24x','x25x','x26x','x27x','x28d','x29d'],
-      row3: ['x30a','x31a','x32b','x33j','x34j','x35b','x36j','x37j','x38j','x39d'],
+      row3: ['x30a','x31j','x32b','x33j','x34j','x35b','x36j','x37j','x38j','x39d'],
       row4: ['x40j','x41j','x42b','x43b','x44b','x45b','x46j','x47j','x48j','x49d'],
       row5: ['x50j','x51j','x52b','x53j','x54j','x55b','x56j','x57j','x58j','x59d'],
       row6: ['x60x','x61x','x62x','x63i','x64x','x65x','x66x','x67x','x68f','x69f'],
@@ -1275,6 +1275,14 @@ class App extends Component {
         crossbow: 18,
       },
     };
+    this.staminaCostRef = {
+      attack: {
+        unarmed: 0,
+        sword: 3,
+        spear: 4,
+        crossbow: 3,
+      }
+    }
     this.deflectedLengthRef = {
       outOfStamina: 50,
       attacked: 25,
@@ -2774,8 +2782,10 @@ class App extends Component {
           }
         }
 
+      }
+      if (player.stamina.current <= 4) {
         if (player.ai.state === true) {
-          console.log('ai player',player.number,' out of stamina. Retreat');
+          console.log('ai player',player.number,' almost out of stamina. Retreat');
           player.ai.mission = 'retreat'
         }
       }
@@ -9789,7 +9799,10 @@ class App extends Component {
     if (cell2.item.name !== '') {
       cellFree = false;
     }
-    if (cell2.terrain.type === 'deep') {
+    if (
+      cell2.terrain.type === 'deep' ||
+      cell2.terrain.type === 'haard'
+    ) {
       cellFree = false;
     }
 
@@ -11752,7 +11765,23 @@ class App extends Component {
        threats: threats
      }
 
+  }
 
+  safeDistanceRetreat = (plyr,cell) => {
+
+    let isSafeDistance = false;
+    let safeRetreatDistance = 3;
+    if (
+      cell.x <= plyr.currentPosition.cell.number.x + safeRetreatDistance ||
+      cell.x >= plyr.currentPosition.cell.number.x - safeRetreatDistance ||
+      cell.y <= plyr.currentPosition.cell.number.y + safeRetreatDistance ||
+      cell.y >= plyr.currentPosition.cell.number.y - safeRetreatDistance
+    ) {
+      isSafeDistance = false;
+    } else {
+      isSafeDistance = true;
+    }
+    return isSafeDistance;
   }
 
   // aiEvaluate = () => {
@@ -12469,12 +12498,15 @@ class App extends Component {
 
           if (!plyr.ai.retreating.checkin) {
 
+            let isSafeDistance = false;
+
             let cell = {x: 0,y: 0}
             let checkCell = false;
             let safeTarget = false;
             while (
               checkCell === false &&
-              safeTarget !== true
+              safeTarget !== true &&
+              isSafeDistance !== true
             ) {
               cell.x = this.rnJesus(0,this.gridWidth)
               cell.y = this.rnJesus(0,this.gridWidth)
@@ -12486,12 +12518,14 @@ class App extends Component {
                   y: cell.y,
                 },
                 range: 3,
-              }).isSafe
+              }).isSafe;
+              isSafeDistance = this.safeDistanceRetreat(plyr,cell)
             }
 
             if (
               checkCell === true &&
-              safeTarget === true
+              safeTarget === true &&
+              isSafeDistance !== true
             ) {
               plyr.ai.retreating.point = cell;
               plyr.ai.retreating.safe = safeTarget;
@@ -12524,6 +12558,9 @@ class App extends Component {
               plyr.ai.retreating.checkin = undefined;
               plyr.ai.retreating.safe = false;
               plyr.ai.mission = plyr.ai.primaryMission;
+
+              plyr.ai.targetSet = false
+              plyr.ai.targetAcquired = false
             }
 
           }
@@ -12768,6 +12805,8 @@ class App extends Component {
               aiPlayer.currentPosition.cell.number.y === targetPlayer.currentPosition.cell.number.y + 1
             ) {
               console.log('engaging w/ crossbow but too close for comfort');
+              aiPlayer.ai.retreating.state = false;
+              aiPlayer.ai.retreating.checkin = undefined;
               aiPlayer.ai.mission = 'retreat'
             }
             else {
@@ -14098,7 +14137,7 @@ class App extends Component {
       if (aiPlayer.ai.retreating.state === true) {
 
         if (aiPlayer.ai.retreating.checkin === 'enroute') {
-          // console.log('enroute to retreat point @',aiPlayer.ai.retreating.point);
+          console.log('enroute to retreat point @',aiPlayer.ai.retreating.point,'instructions',aiPlayer.ai.instructions,aiPlayer.ai.currentInstruction);
           if (
             aiPlayer.currentPosition.cell.number.x === aiPlayer.ai.retreating.point.x &&
             aiPlayer.currentPosition.cell.number.y === aiPlayer.ai.retreating.point.y
