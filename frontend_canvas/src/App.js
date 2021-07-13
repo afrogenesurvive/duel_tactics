@@ -1281,7 +1281,8 @@ class App extends Component {
         sword: 3,
         spear: 4,
         crossbow: 3,
-      }
+      },
+      deflect: 0
     }
     this.deflectedLengthRef = {
       outOfStamina: 50,
