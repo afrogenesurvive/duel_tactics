@@ -837,7 +837,7 @@ class App extends Component {
           cell: {
             number: {
               x: 0,
-              y: 1,
+              y: 3,
             },
             center: {
               x: 0,
@@ -1277,12 +1277,18 @@ class App extends Component {
     };
     this.staminaCostRef = {
       attack: {
-        unarmed: 0,
+        blunt: 2,
+        unarmed: 2,
         sword: 3,
         spear: 4,
         crossbow: 3,
       },
-      deflect: 0
+      deflected: 0,
+      defend: 1.5,
+      dodge: 4,
+      flank: 5,
+      jump: 6,
+      pushBack: 7,
     }
     this.deflectedLengthRef = {
       outOfStamina: 50,
@@ -4176,7 +4182,7 @@ class App extends Component {
           if (player.stamina.current - 4 >= 0) {
 
             if (player.dodging.count === 1) {
-              player.stamina.current = player.stamina.current - 2;
+              player.stamina.current = player.stamina.current - 4;
             }
             if (player.dodging.count < player.dodging.limit) {
               player.dodging.count++
@@ -9802,7 +9808,7 @@ class App extends Component {
     }
     if (
       cell2.terrain.type === 'deep' ||
-      cell2.terrain.type === 'haard'
+      cell2.terrain.type === 'hazard'
     ) {
       cellFree = false;
     }
@@ -14261,7 +14267,9 @@ class App extends Component {
                        if (cellRef3) {
                          if (
                            cellRef3.levelData.charAt(0) ===  'z' ||
-                           cellRef3.levelData.charAt(0) ===  'y'
+                           cellRef3.levelData.charAt(0) ===  'y' ||
+                           cellRef3.terrain.type ===  'deep' ||
+                           cellRef3.terrain.type ===  'hazard'
                          ) {
                            rngElCellFree = false;
                          }
@@ -14335,7 +14343,9 @@ class App extends Component {
                       if (cellRef3) {
                         if (
                           cellRef3.levelData.charAt(0) ===  'z' ||
-                          cellRef3.levelData.charAt(0) ===  'y'
+                          cellRef3.levelData.charAt(0) ===  'y' ||
+                          cellRef3.terrain.type ===  'deep' ||
+                          cellRef3.terrain.type ===  'hazard'
                         ) {
                           rngElCellFree = false;
                         }
@@ -14405,7 +14415,9 @@ class App extends Component {
                       if (cellRef3) {
                         if (
                           cellRef3.levelData.charAt(0) ===  'z' ||
-                          cellRef3.levelData.charAt(0) ===  'y'
+                          cellRef3.levelData.charAt(0) ===  'y' ||
+                          cellRef3.terrain.type ===  'deep' ||
+                          cellRef3.terrain.type ===  'hazard'
                         ) {
                           rngElCellFree = false;
                         }
