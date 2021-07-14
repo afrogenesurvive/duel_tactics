@@ -9311,6 +9311,7 @@ class App extends Component {
     }
 
     if (player.ai.state === true) {
+      console.log('xx1');
       this.players[player.number-1].ai.currentInstruction = 0
       this.players[player.number-1].ai.instructions = []
     }
@@ -11797,7 +11798,7 @@ class App extends Component {
 
 
     if (this.resetAiTarget.state === true) {
-      // console.log('someone died. reset ai targets');
+      console.log('someone died. reset ai targets');
 
       for (const plyr of this.players) {
         if (plyr.ai.state === true && plyr.ai.targetSet === true && plyr.ai.targetPlayer.number === this.resetAiTarget.player) {
@@ -11812,6 +11813,7 @@ class App extends Component {
             plyr.ai.currentInstruction = 0;
             plyr.ai.pathArray = [];
             plyr.ai.instructions = [];
+            console.log('xx2');
           }
 
 
@@ -11842,6 +11844,7 @@ class App extends Component {
             plyr.ai.currentInstruction = 0;
             plyr.ai.pathArray = [];
             plyr.ai.instructions = [];
+            console.log('xx3');
           }
 
         }
@@ -11938,6 +11941,19 @@ class App extends Component {
           plyr.ai.instructions = [];
           plyr.ai.targetAcquired = false;
           plyr.ai.resetInstructions = false;
+          
+          if (plyr.ai.mission === 'retreat') {
+            plyr.ai.retreating.checkin = undefined
+            plyr.ai.retreating.state = false
+          }
+          if (plyr.ai.mission === 'retrieve') {
+            plyr.ai.retrieving.checkin = undefined
+            plyr.ai.retrieving.state = false
+          }
+          if (plyr.ai.mission === 'patrol') {
+            plyr.ai.patrolilng.checkin = undefined
+            plyr.ai.patrolilng.state = false
+          }
         }
 
 
@@ -12692,6 +12708,7 @@ class App extends Component {
         aiPlayer.ai.patrolling.checkin = 'checkedIn'
         aiPlayer.ai.currentInstruction = 0;
         aiPlayer.ai.instructions = [];
+        console.log('xx5');
         patrolDest = aiPlayer.ai.patrolling.area[1]
         getPath = true;
         // console.log('checked in to patrol point. moving to 2nd point @ ',patrolDest);
@@ -12840,6 +12857,7 @@ class App extends Component {
           }
           if (deflecting === true) {
             aiPlayer.ai.instructions = [];
+            console.log('xx6');
             aiPlayer.ai.currentInstruction = 0;
             aiPlayer.ai.engaging.targetAction = ''
           }
@@ -13212,6 +13230,7 @@ class App extends Component {
           }
           if (deflecting === true) {
             aiPlayer.ai.instructions = [];
+            console.log('xx7');
             aiPlayer.ai.currentInstruction = 0;
             aiPlayer.ai.engaging.targetAction = ''
           }
@@ -13559,6 +13578,7 @@ class App extends Component {
             }
             if (deflecting === true) {
               aiPlayer.ai.instructions = [];
+              console.log('xx8');
               aiPlayer.ai.currentInstruction = 0;
               aiPlayer.ai.engaging.targetAction = ''
             }
@@ -13906,6 +13926,7 @@ class App extends Component {
           }
           if (deflecting === true) {
             aiPlayer.ai.instructions = [];
+            console.log('xx9');
             aiPlayer.ai.currentInstruction = 0;
             aiPlayer.ai.engaging.targetAction = ''
           }
@@ -14013,6 +14034,7 @@ class App extends Component {
         ) {
           aiPlayer.ai.defending.checkin = 'checkedIn';
           aiPlayer.ai.instructions = []
+          console.log('xx10');
           aiPlayer.ai.currentInstruction = 0;
           // console.log('arrived @ defend point',aiPlayer.ai.instructions);
         } else {
@@ -15207,11 +15229,13 @@ class App extends Component {
       if (index >= plyr.ai.instructions.length-1 && plyr.ai.mission === "patrol" && plyr.ai.patrolling.checkin === 'checkedIn') {
         // console.log('patrol instructions complete');
         plyr.ai.instructions = [];
+        console.log('xx11');
         this.players[plyr.number-1].ai.patrolling.loopControl = false;
       }
       if (index >= plyr.ai.instructions.length-1 && plyr.ai.mission === "defend" && plyr.ai.defending.checkin === 'checkedIn') {
         // console.log('defend instructions complete');
         plyr.ai.instructions = [];
+        console.log('xx12');
       }
 
     } else {
