@@ -3655,7 +3655,7 @@ class App extends Component {
                   // BLUNT ATTACK!!
                   if (player.bluntAttack === true) {
                     // console.log('blunt attack');
-                    player.stamina.current = player.stamina.current - 2;
+                    player.stamina.current = player.stamina.current - this.staminaCostRef.attack.blunt;
 
                     singleHit = 2;
                     doubleHit = 2;
@@ -3668,7 +3668,11 @@ class App extends Component {
                     }
                   }
                   else {
-                    this.players[player.number-1].stamina.current = this.players[player.number-1].stamina.current - 3;
+                    let weapon = player.currentWeapon.type
+                    if (weapon === '') {
+                      weapon = 'unarmed'
+                    }
+                    this.players[player.number-1].stamina.current = this.players[player.number-1].stamina.current - this.staminaCostRef.attack[weapon];
                   }
 
 
@@ -4012,7 +4016,7 @@ class App extends Component {
                       predeflect: player.success.deflected.predeflect,
                       type: 'attack'
                     }
-                    player.stamina.current = player.stamina.current - 3;
+                    player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
 
 
                     if (this.aiDeflectedCheck.includes(player.number) !== true) {
@@ -4033,9 +4037,13 @@ class App extends Component {
               // EMPTY TARGET STAMINA COST!
               else {
                 if (player.bluntAttack === true) {
-                  player.stamina.current = player.stamina.current - 2;
+                  player.stamina.current = player.stamina.current - this.staminaCostRef.attack.blunt;
                 } else {
-                  player.stamina.current = player.stamina.current - 3;
+                  let weapon = player.currentWeapon.type
+                  if (weapon === '') {
+                    weapon = 'unarmed'
+                  }
+                  player.stamina.current = player.stamina.current - this.staminaCostRef.attack[weapon];
                 }
               }
 
@@ -4121,7 +4129,7 @@ class App extends Component {
               count: 0,
               limit: player.defending.limit,
             }
-            player.stamina.current = player.stamina.current - 1.5;
+            player.stamina.current = player.stamina.current - this.staminaCostRef.defend;
             player.defendDecay = {
               state: true,
               count: 0,
@@ -4182,7 +4190,7 @@ class App extends Component {
           if (player.stamina.current - 4 >= 0) {
 
             if (player.dodging.count === 1) {
-              player.stamina.current = player.stamina.current - 4;
+              player.stamina.current = player.stamina.current - this.staminaCostRef.dodge;
             }
             if (player.dodging.count < player.dodging.limit) {
               player.dodging.count++
@@ -4660,7 +4668,7 @@ class App extends Component {
                 let target = this.getTarget(player);
                 if (target.free === true ) {
 
-                  player.stamina.current = player.stamina.current - 5;
+                  player.stamina.current = player.stamina.current - this.staminaCostRef.flank;
 
 
                   // this.players[player.number-1].dodging = {
@@ -4911,7 +4919,7 @@ class App extends Component {
                             this.players[player.number-1].jumping.checking = false;
                             this.players[player.number-1].jumping.state = true;
                             player.action = 'jumping'
-                            player.stamina.current = player.stamina.current - 6;
+                            player.stamina.current = player.stamina.current - this.staminaCostRef.jump;
 
                             player.moving = {
                               state: true,
@@ -5151,7 +5159,7 @@ class App extends Component {
                           this.players[player.number-1].jumping.checking = false;
                           this.players[player.number-1].jumping.state = true;
                           player.action = 'jumping'
-                          player.stamina.current = player.stamina.current - 6;
+                          player.stamina.current = player.stamina.current - this.staminaCostRef.jump;
 
                           player.moving = {
                             state: true,
@@ -5267,6 +5275,7 @@ class App extends Component {
                         }
                       };
                     }
+                    player.stamina.current = player.stamina.current + this.staminaCostRef.attack.blunt;
                     player.bluntAttack = true;
                   }
 
@@ -9311,7 +9320,6 @@ class App extends Component {
     }
 
     if (player.ai.state === true) {
-      console.log('xx1');
       this.players[player.number-1].ai.currentInstruction = 0
       this.players[player.number-1].ai.instructions = []
     }
@@ -9326,8 +9334,9 @@ class App extends Component {
     if (player.stamina.current - 7 < 0) {
       player.stamina.current = 0;
     } else {
-      player.stamina.current = player.stamina.current - 7;
+      player.stamina.current = player.stamina.current - this.staminaCostRef.pushBack;
     }
+
 
     let pushBackDirection = hitByPlayerDirection;
     player.strafing = {
@@ -11813,7 +11822,6 @@ class App extends Component {
             plyr.ai.currentInstruction = 0;
             plyr.ai.pathArray = [];
             plyr.ai.instructions = [];
-            console.log('xx2');
           }
 
 
@@ -11844,7 +11852,6 @@ class App extends Component {
             plyr.ai.currentInstruction = 0;
             plyr.ai.pathArray = [];
             plyr.ai.instructions = [];
-            console.log('xx3');
           }
 
         }
@@ -11941,7 +11948,7 @@ class App extends Component {
           plyr.ai.instructions = [];
           plyr.ai.targetAcquired = false;
           plyr.ai.resetInstructions = false;
-          
+
           if (plyr.ai.mission === 'retreat') {
             plyr.ai.retreating.checkin = undefined
             plyr.ai.retreating.state = false
@@ -12708,7 +12715,6 @@ class App extends Component {
         aiPlayer.ai.patrolling.checkin = 'checkedIn'
         aiPlayer.ai.currentInstruction = 0;
         aiPlayer.ai.instructions = [];
-        console.log('xx5');
         patrolDest = aiPlayer.ai.patrolling.area[1]
         getPath = true;
         // console.log('checked in to patrol point. moving to 2nd point @ ',patrolDest);
@@ -12857,7 +12863,6 @@ class App extends Component {
           }
           if (deflecting === true) {
             aiPlayer.ai.instructions = [];
-            console.log('xx6');
             aiPlayer.ai.currentInstruction = 0;
             aiPlayer.ai.engaging.targetAction = ''
           }
@@ -13230,7 +13235,6 @@ class App extends Component {
           }
           if (deflecting === true) {
             aiPlayer.ai.instructions = [];
-            console.log('xx7');
             aiPlayer.ai.currentInstruction = 0;
             aiPlayer.ai.engaging.targetAction = ''
           }
@@ -13578,7 +13582,6 @@ class App extends Component {
             }
             if (deflecting === true) {
               aiPlayer.ai.instructions = [];
-              console.log('xx8');
               aiPlayer.ai.currentInstruction = 0;
               aiPlayer.ai.engaging.targetAction = ''
             }
@@ -13926,7 +13929,6 @@ class App extends Component {
           }
           if (deflecting === true) {
             aiPlayer.ai.instructions = [];
-            console.log('xx9');
             aiPlayer.ai.currentInstruction = 0;
             aiPlayer.ai.engaging.targetAction = ''
           }
@@ -14034,7 +14036,6 @@ class App extends Component {
         ) {
           aiPlayer.ai.defending.checkin = 'checkedIn';
           aiPlayer.ai.instructions = []
-          console.log('xx10');
           aiPlayer.ai.currentInstruction = 0;
           // console.log('arrived @ defend point',aiPlayer.ai.instructions);
         } else {
@@ -15229,13 +15230,11 @@ class App extends Component {
       if (index >= plyr.ai.instructions.length-1 && plyr.ai.mission === "patrol" && plyr.ai.patrolling.checkin === 'checkedIn') {
         // console.log('patrol instructions complete');
         plyr.ai.instructions = [];
-        console.log('xx11');
         this.players[plyr.number-1].ai.patrolling.loopControl = false;
       }
       if (index >= plyr.ai.instructions.length-1 && plyr.ai.mission === "defend" && plyr.ai.defending.checkin === 'checkedIn') {
         // console.log('defend instructions complete');
         plyr.ai.instructions = [];
-        console.log('xx12');
       }
 
     } else {
