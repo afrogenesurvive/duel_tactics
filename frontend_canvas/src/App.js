@@ -12165,17 +12165,76 @@ class App extends Component {
         let inTheField = fieldItemScan.find(elem => elem.type === 'crossbow')
         if (inTheField) {
           if (inTheField.effect.split('+')[1] !== 0 && inTheField.effect.split('+')[1] !== '0') {
-            // scan for safety
-            // if safe, retrieve
-            // if unsafe switch weapon
-            // if no other weapon, plyr.ai.upgradeWeapon = true
+
+            let targetSafeData2 = this.scanTargetAreaThreat({
+              player: plyr.number,
+              point: {
+                x: inTheField.location.x,
+                y: inTheField.location.y,
+              },
+              range: 3,
+            })
+
+            if (targetSafeData2.isSafe === true) {
+
+              plyr.ai.mission = 'retrieve';
+              plyr.ai.retrieving.point = {
+                x: inTheField.location.x,
+                y: inTheField.location.y,
+              }
+              plyr.ai.retrieving.targetItem = {
+                name: inTheField.name,
+                type: inTheField.type,
+                subType: inTheField.subType,
+                effect: inTheField.effect,
+              };
+              plyr.ai.retrieving.safe = true;
+              plyr.ai.upgradeWeapon = false;
+
+            }
+            else {
+              console.log('unsafe to retrieve. Choose from inventory');
+
+              if (plyr.items.weapons.length > 1) {
+                plyr.currentWeapon = {
+                  name: plyr.items.weapons[1].name,
+                  type: plyr.items.weapons[1].type,
+                  effect: plyr.items.weapons[1].effect,
+                }
+              } else {
+                console.log('nothing else in inventory');
+                plyr.ai.upgradeWeapon = true
+              }
+
+            }
+
           } else {
-            // switch weapon
-            // if no other weapon, plyr.ai.upgradeWeapon = true
+            console.log('bow in the field but no ammo');
+
+            if (plyr.items.weapons.length > 1) {
+              plyr.currentWeapon = {
+                name: plyr.items.weapons[1].name,
+                type: plyr.items.weapons[1].type,
+                effect: plyr.items.weapons[1].effect,
+              }
+            } else {
+              plyr.ai.upgradeWeapon = true
+            }
+
           }
         } else {
-          // switch weapon
-          // if no other weapon, plyr.ai.upgradeWeapon = true
+          console.log('no bow in the field');
+
+          if (plyr.items.weapons.length > 1) {
+            plyr.currentWeapon = {
+              name: plyr.items.weapons[1].name,
+              type: plyr.items.weapons[1].type,
+              effect: plyr.items.weapons[1].effect,
+            }
+          } else {
+            plyr.ai.upgradeWeapon = true
+          }
+
         }
       }
 
@@ -12290,14 +12349,97 @@ class App extends Component {
       let droppedGear = fieldItemScan.find(elem => elem.name === plyr.ai.organizing.drop.gear.name)
 
       if (plyr.ai.mission !== 'engage') {
-        // scan for safety and retrieve
+
+        let targetSafeData2 = this.scanTargetAreaThreat({
+          player: plyr.number,
+          point: {
+            x: droppedGear.location.x,
+            y: droppedGear.location.y,
+          },
+          range: 3,
+        })
+
+        if (targetSafeData2.isSafe === true) {
+
+          plyr.ai.mission = 'retrieve';
+          plyr.ai.retrieving.point = {
+            x: droppedGear.location.x,
+            y: droppedGear.location.y,
+          }
+          plyr.ai.retrieving.targetItem = {
+            name: droppedGear.name,
+            type: droppedGear.type,
+            subType: droppedGear.subType,
+            effect: droppedGear.effect,
+          };
+          plyr.ai.retrieving.safe = true;
+
+        } else {
+          console.log('unsafe to retrieve. check inventory');
+
+          if (plyr.items.weapons.length > 1) {
+            plyr.currentWeapon = {
+              name: plyr.items.weapons[1].name,
+              type: plyr.items.weapons[1].type,
+              effect: plyr.items.weapons[1].effect,
+            }
+          } else {
+            // plyr.ai.upgradeWeapon = true  ??
+          }
+        }
 
 
       }
       else {
-        // if other weapon, switch
-        //
-        // else, retrieve
+
+        if (plyr.items.weapons.length > 1) {
+          plyr.currentWeapon = {
+            name: plyr.items.weapons[1].name,
+            type: plyr.items.weapons[1].type,
+            effect: plyr.items.weapons[1].effect,
+          }
+        } else {
+
+          let targetSafeData2 = this.scanTargetAreaThreat({
+            player: plyr.number,
+            point: {
+              x: droppedGear.location.x,
+              y: droppedGear.location.y,
+            },
+            range: 3,
+          })
+
+          if (targetSafeData2.isSafe === true) {
+
+            plyr.ai.mission = 'retrieve';
+            plyr.ai.retrieving.point = {
+              x: droppedGear.location.x,
+              y: droppedGear.location.y,
+            }
+            plyr.ai.retrieving.targetItem = {
+              name: droppedGear.name,
+              type: droppedGear.type,
+              subType: droppedGear.subType,
+              effect: droppedGear.effect,
+            };
+            plyr.ai.retrieving.safe = true;
+
+          } else {
+            console.log('unsafe to retrieve. check inventory');
+
+            if (plyr.items.weapons.length > 1) {
+              plyr.currentWeapon = {
+                name: plyr.items.weapons[1].name,
+                type: plyr.items.weapons[1].type,
+                effect: plyr.items.weapons[1].effect,
+              }
+            } else {
+              plyr.ai.upgradeWeapon = true
+            }
+
+          }
+
+        }
 
       }
 
