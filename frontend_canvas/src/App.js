@@ -1402,8 +1402,8 @@ class App extends Component {
         {x: 7, y:  4}
       ],
       weapon: {
-        name: 'crossbow1',
-        type: 'crossbow',
+        name: 'sword1',
+        type: 'sword',
         effect: '',
       },
       armor: {
@@ -12004,8 +12004,8 @@ class App extends Component {
     if (plyr.ai.upgradeWeapon === true) {
       console.log('upgrade weapon');
 
-      let weaponPriorityIndex = plyr.ai.weaponPriorityIndex
-      let havePriorityWeapon = false;
+      let weaponPriorityIndex = plyr.ai.organizing.weaponPriorityIndex;
+      let havePriorityWeapon = true;
       weaponUpgradePriority = ['crossbow','spear','sword'];
       let inMyInventory = plyr.items.weapons.find(elem => elem.type === weaponUpgradePriority[weaponPriorityIndex]);
 
@@ -12021,7 +12021,7 @@ class App extends Component {
         havePriorityWeapon = false;
       }
 
-      if (inMyInventory) {
+      if (inMyInventory && plyr.currentWeapon.type !== weaponUpgradePriority[weaponPriorityIndex]) {
         console.log('priority weapon is in my inventory. Switching to it');
         plyr.currentWeapon.name = inMyInventory.name;
         plyr.currentWeapon.type = inMyInventory.type;
@@ -12029,7 +12029,7 @@ class App extends Component {
 
         havePriorityWeapon = true;
         plyr.ai.upgradeWeapon = false
-      } else {
+      } else if (plyr.currentWeapon.type !== weaponUpgradePriority[weaponPriorityIndex]) {
         havePriorityWeapon = false;
       }
 
@@ -12038,7 +12038,7 @@ class App extends Component {
 
         let inTheField = fieldItemScan.find(elem => elem.type === weaponUpgradePriority[weaponPriorityIndex])
         if (inTheField) {
-
+          console.log('priority weapon is in the field');
 
           if (inTheField.type === 'crossbow') {
             console.log('priority is a crossbow',inTheField.effect.split('+')[1]);
@@ -12343,49 +12343,57 @@ class App extends Component {
     // },
 
 
-    if (plyr.ai.organizing.drop.state === true) {
+    if (plyr.ai.organizing.dropped.state === true) {
 
 
       let droppedGear = fieldItemScan.find(elem => elem.name === plyr.ai.organizing.drop.gear.name)
 
       if (plyr.ai.mission !== 'engage') {
 
-        let targetSafeData2 = this.scanTargetAreaThreat({
-          player: plyr.number,
-          point: {
-            x: droppedGear.location.x,
-            y: droppedGear.location.y,
-          },
-          range: 3,
-        })
-
-        if (targetSafeData2.isSafe === true) {
-
-          plyr.ai.mission = 'retrieve';
-          plyr.ai.retrieving.point = {
-            x: droppedGear.location.x,
-            y: droppedGear.location.y,
-          }
-          plyr.ai.retrieving.targetItem = {
-            name: droppedGear.name,
-            type: droppedGear.type,
-            subType: droppedGear.subType,
-            effect: droppedGear.effect,
-          };
-          plyr.ai.retrieving.safe = true;
-
+        if (droppedGear.location === plyr.currentPosition.cell.number) {
+          // plyr.ai.instructions.push({
+          //
+          // })
         } else {
-          console.log('unsafe to retrieve. check inventory');
 
-          if (plyr.items.weapons.length > 1) {
-            plyr.currentWeapon = {
-              name: plyr.items.weapons[1].name,
-              type: plyr.items.weapons[1].type,
-              effect: plyr.items.weapons[1].effect,
+          let targetSafeData2 = this.scanTargetAreaThreat({
+            player: plyr.number,
+            point: {
+              x: droppedGear.location.x,
+              y: droppedGear.location.y,
+            },
+            range: 3,
+          })
+
+          if (targetSafeData2.isSafe === true) {
+
+            plyr.ai.mission = 'retrieve';
+            plyr.ai.retrieving.point = {
+              x: droppedGear.location.x,
+              y: droppedGear.location.y,
             }
+            plyr.ai.retrieving.targetItem = {
+              name: droppedGear.name,
+              type: droppedGear.type,
+              subType: droppedGear.subType,
+              effect: droppedGear.effect,
+            };
+            plyr.ai.retrieving.safe = true;
+
           } else {
-            // plyr.ai.upgradeWeapon = true  ??
+            console.log('unsafe to retrieve. check inventory');
+
+            if (plyr.items.weapons.length > 1) {
+              plyr.currentWeapon = {
+                name: plyr.items.weapons[1].name,
+                type: plyr.items.weapons[1].type,
+                effect: plyr.items.weapons[1].effect,
+              }
+            } else {
+              // plyr.ai.upgradeWeapon = true  ??
+            }
           }
+
         }
 
 
