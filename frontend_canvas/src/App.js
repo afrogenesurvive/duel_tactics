@@ -237,56 +237,56 @@ class App extends Component {
         amount: 5,
         total: 5,
         type: 'item',
-        effect: '',
+        effect: 'speedUp',
       },
       {
         name: 'moveSpeedDown',
         amount: 5,
         total: 5,
         type: 'item',
-        effect: '',
+        effect: 'speedDown',
       },
       {
         name: 'hpUp',
         amount: 4,
         total: 4,
         type: 'item',
-        effect: '',
+        effect: 'hpUp',
       },
       {
         name: 'hpDown',
         amount: 4,
         total: 4,
         type: 'item',
-        effect: '',
+        effect: 'hpDown',
       },
       {
         name: 'focusUp',
         amount: 4,
         total: 4,
         type: 'item',
-        effect: '',
+        effect: 'focusUp',
       },
       {
         name: 'focusDown',
         amount: 4,
         total: 4,
         type: 'item',
-        effect: '',
+        effect: 'focusDown',
       },
       {
         name: 'strengthUp',
         amount: 4,
         total: 4,
         type: 'item',
-        effect: '',
+        effect: 'strengthUp',
       },
       {
         name: 'strengthDown',
         amount: 4,
         total: 4,
         type: 'item',
-        effect: '',
+        effect: 'strengthDown',
       },
       {
         name: 'spear1',
@@ -362,16 +362,16 @@ class App extends Component {
       },
     ];
     this.initItemList = [
-      // {
-      //   name: 'moveSpeedUp',
-      //   type: 'item',
-      //   effect: '',
-      // },
-      // {
-      //   name: 'moveSpeedDown',
-      //   type: 'item',
-      //   effect: '',
-      // },
+      {
+        name: 'moveSpeedUp',
+        type: 'item',
+        effect: 'speedUp',
+      },
+      {
+        name: 'moveSpeedDown',
+        type: 'item',
+        effect: 'speedDown',
+      },
       // {
       //   name: 'ammo5',
       //   type: 'item',
@@ -382,16 +382,16 @@ class App extends Component {
       //   type: 'item',
       //   effect: '',
       // },
-      // {
-      //   name: 'hpUp',
-      //   type: 'item',
-      //   effect: '',
-      // },
-      // {
-      //   name: 'hpDown',
-      //   type: 'item',
-      //   effect: '',
-      // },
+      {
+        name: 'hpUp',
+        type: 'item',
+        effect: 'hpUp',
+      },
+      {
+        name: 'hpDown',
+        type: 'item',
+        effect: 'hpDown',
+      },
       {
         name: 'spear1',
         type: 'weapon',
@@ -416,18 +416,18 @@ class App extends Component {
       //   subType: 'mail',
       //   effect: 'snghit-5',
       // },
-      // {
-      //   name: 'speedGreaves',
-      //   type: 'armor',
-      //   subType: 'greaves',
-      //   effect: 'speedUp',
-      // },
-      // {
-      //   name: 'ironPlate',
-      //   type: 'armor',
-      //   subType: 'mail',
-      //   effect: 'hpUp',
-      // },
+      {
+        name: 'speedGreaves',
+        type: 'armor',
+        subType: 'greaves',
+        effect: 'speedUp',
+      },
+      {
+        name: 'ironPlate',
+        type: 'armor',
+        subType: 'mail',
+        effect: 'hpUp',
+      },
       // {
       //   name: 'helmet1',
       //   type: 'armor',
@@ -451,7 +451,7 @@ class App extends Component {
         {x:0 ,y:3 },
         {x:1 ,y:3 },
         {x:2 ,y:3 },
-        {x:3 ,y:3 },
+        {x:4 ,y:3 },
       ]
     }
     this.playerNumber = 2;
@@ -819,12 +819,21 @@ class App extends Component {
             level: 0,
             safe: true,
           },
-          cycling: {
-            state: false,
-            type: ''
+          organizing: {
+            weaponPriorityIndex: 0,
+            armorPriorityIndex: 0,
+            dropped: {
+              state: false,
+              gear: {
+                name: '',
+                type: '',
+                subType: '',
+                effect: ''
+              },
+            },
           },
           mode: '',
-          upgradeGear: false,
+          upgradeWeapon: false,
         },
         stamina: {
           current: 20,
@@ -836,8 +845,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 0,
-              y: 3,
+              x: 3,
+              y: 5,
             },
             center: {
               x: 0,
@@ -1189,12 +1198,21 @@ class App extends Component {
             level: 0,
             safe: true,
           },
-          cycling: {
-            state: false,
-            type: ''
+          organizing: {
+            weaponPriorityIndex: 0,
+            armorPriorityIndex: 0,
+            dropped: {
+              state: false,
+              gear: {
+                name: '',
+                type: '',
+                subType: '',
+                effect: ''
+              },
+            },
           },
           mode: '',
-          upgradeGear: false,
+          upgradeWeapon: false,
         },
         stamina: {
           current: 20,
@@ -1283,7 +1301,7 @@ class App extends Component {
         spear: 4,
         crossbow: 3,
       },
-      deflected: 0,
+      deflected: 3,
       defend: 1.5,
       dodge: 4,
       flank: 5,
@@ -9667,6 +9685,14 @@ class App extends Component {
       this.removeAiPlayer(player.number)
     }
 
+
+    for (const player2 of this.players) {
+      if (player2.ai.state === true) {
+        console.log('player death/item drop. Search for weapon upgrades');
+        player2.ai.upgradeWeapon = true;
+      }
+    }
+
   }
 
   restartGame = () => {
@@ -10014,6 +10040,17 @@ class App extends Component {
             }
           }
 
+          if (player.ai.state === true) {
+            console.log('ai dropping weapon');
+            player.ai.organizing.dropped.state = true;
+            player.ai.organizing.dropped.gear = {
+              name: item.name,
+              type: item.type,
+              subType: item.subType,
+              effect: item.effect
+            };
+          }
+
           this.players[player.number-1].items.weapons.splice(index,1);
           this.players[player.number-1].items.weaponIndex = 0;
           this.players[player.number-1].currentWeapon = {
@@ -10064,6 +10101,18 @@ class App extends Component {
             gear: {
               type: this.players[player.number-1].items.armor[index].type,
             }
+          }
+
+
+          if (player.ai.state === true) {
+            console.log('ai dropping armor');
+            player.ai.organizing.dropped.state = true;
+            player.ai.organizing.dropped.gear = {
+              name: item.name,
+              type: item.type,
+              subType: item.subType,
+              effect: item.effect
+            };
           }
 
 
@@ -11502,12 +11551,21 @@ class App extends Component {
               level: 0,
               safe: false,
             },
-            cycling: {
-              state: false,
-              type: ''
+            organizing: {
+              weaponPriorityIndex: 0,
+              armorPriorityIndex: 0,
+              dropped: {
+                state: false,
+                gear: {
+                  name: '',
+                  type: '',
+                  subType: '',
+                  effect: ''
+                },
+              },
             },
             mode: this.aiInitSettings.mode,
-            upgradeGear: true,
+            upgradeWeapon: true,
           },
           stamina: {
             current: 20,
@@ -11575,6 +11633,7 @@ class App extends Component {
             ]
           }
         }
+
 
 
         // REMOVE AFtER TESTING!!
@@ -11899,6 +11958,7 @@ class App extends Component {
     //   if (plyr.ai.state === true && plyr.dead.state !== true && plyr.falling.state !== true) {
 
 
+    // ITEM LOGIC
     let fieldItemScan = []
     for (const cell of this.gridInfo) {
       if (cell.item.name !== '') {
@@ -11912,33 +11972,162 @@ class App extends Component {
       }
     }
 
-    // scan fielded items and inventory and current weapon
-    // record player pathNerfObstacles and factor into find path
+
+    let nerfItemPositions = [];
+    for (const item of fieldItemScan) {
+
+      switch(item.name) {
+        case 'moveSpeedDown':
+          nerfItemPositions.push(item)
+        break;
+        case 'hpDown':
+          nerfItemPositions.push(item)
+        break;
+        case 'focusDown':
+          nerfItemPositions.push(item)
+        break;
+        case 'strengthDown':
+          nerfItemPositions.push(item)
+        break;
+      }
+
+    };
+
+    console.log('fieldItemScan',fieldItemScan);
+    console.log('nerfItemPositions',nerfItemPositions);
+
+    let weaponUpgradePriority = [];
+    let armorUpgradePriority = [];
+
+    // organizing: {
+    //   weaponPriorityIndex: 0,
+    //   armorPriorityIndex: 0,
+    //   dropped: {
+    //     state: false,
+    //     gear: {
+    //       name: '',
+    //       type: '',
+    //       effect: ''
+    //     },
+    //   },
+    // },
+
+    if (plyr.ai.upgradeWeapon === true) {
 
 
-    //if ai.upgrade gear true upgrade weapon
-    // set weapon type priority array
-    // set armor type priority array
-    //
-    //   do i have x weapon?
-    //   if I do, set cycle to it, in (add plyr.ai.cyclingGear{state, type})
-    //   If not, is it in the field (if crossbow, check if it/ or you have ammo 1st)
-    //   If it is, is check w/ target area threat
-    //   check for closeness with target area threat formula here
-    //    if safe set mission to set retrieving point/pos and target item
-    //   if not in the field or not safe, step priority array index and do above checks for that weapon
-    //   repeat if not decided
-    // reset upgrade gear
+      let weaponPriorityIndex = plyr.ai.weaponPriorityIndex
+      let havePriorityWeapon = false;
+      weaponUpgradePriority = ['crossbow','spear','sword'];
+      let inMyInventory = plyr.items.weapons.find(elem => elem.type === weaponUpgradePriority[weaponPriorityIndex]);
 
-    // if someone died upgrade gear true
+      if (plyr.currentWeapon.type === weaponUpgradePriority[weaponPriorityIndex]) {
+        havePriorityWeapon = true;
+        // plyr.ai.upgradeWeapon = false
+      } else {
+        havePriorityWeapon = false;
+      }
 
-    //
-    //
-    //   if slow or injured retrieve appropriate if present
-    //
-    //   @ item drop, if player is ai, retrieve lost gear
-    //   if not engaged go back for it
-    //   if engaged only back if no other weapon to cycle
+      if (inMyInventory) {
+        // switch to weapon
+        havePriorityWeapon = true;
+        // plyr.ai.upgradeWeapon = false
+      } else {
+        havePriorityWeapon = false;
+      }
+
+      if (havePriorityWeapon === false) {
+
+        let inTheField = fieldItemScan.find(elem => elem.type === weaponUpgradePriority[weaponPriorityIndex])
+        if (inTheField) {
+
+          // (if crossbow, check if it/ or you have ammo 1st)
+
+          let targetSafeData = this.scanTargetAreaThreat({
+            player: plyr.number,
+            point: {
+              x: inTheField.location.x,
+              y: inTheField.location.y,
+            },
+            range: 3,
+          })
+
+          // if safe, set mission = retrieve, and retrieve props
+          // plyr.ai.upgradeWeapon = false
+
+
+          // if not safe
+
+          // if index is max plyr.ai.upgradeWeapon = false
+          // else, let weaponPriorityIndex++;
+
+
+        } else {
+
+
+
+          // if index is max plyr.ai.upgradeWeapon = false
+          // else, let weaponPriorityIndex++;
+
+
+        }
+
+      }
+
+    }
+
+
+    // RELOAD BOW AMMO
+    if (plyr.currentWeapon.type === 'crossbow') {
+      // if no ammo search field scan, for ammo or bow w/ ammo & retrieve
+
+      // if none, switch weapon, if no other weapon
+      //  plyr.ai.upgradeWeapon = true
+    }
+
+
+    if (plyr.hp === 1) {
+      let itemToRetrieve = undefined;
+      for (const item2 of fieldItemScan) {
+        if (item2.effect === 'hpUp') {
+          itemToRetrieve = item2
+        }
+      }
+
+      if (itemToRetrieve) {
+        // plyr.ai.mission = 'retrieve'
+        // plyr.ai.retrieving props
+      }
+    }
+
+    if (plyr.speed.move === .05) {
+      let itemToRetrieve = undefined;
+      for (const item3 of fieldItemScan) {
+        if (item3.effect === 'speedUp') {
+          itemToRetrieve = item3;
+        }
+      }
+
+      if (itemToRetrieve) {
+        // plyr.ai.mission = 'retrieve'
+        // plyr.ai.retrieving props
+      }
+    }
+
+
+    if (plyr.ai.organizing.drop.state === true) {
+
+      // locate the dropped gear
+      // if mission not engage, retrieve
+      //
+      // if engage, check if other weapon to use
+      //   if not other weapon, retrieve
+      //
+      //   if other weapon is bow no ammo, retrieve
+      //   else switch weapon
+
+      plyr.ai.organizing.drop.state = true
+
+    }
 
 
 
@@ -11954,10 +12143,12 @@ class App extends Component {
             plyr.ai.retreating.state = false
           }
           if (plyr.ai.mission === 'retrieve') {
+
             plyr.ai.retrieving.checkin = undefined
             plyr.ai.retrieving.state = false
           }
           if (plyr.ai.mission === 'patrol') {
+
             plyr.ai.patrolilng.checkin = undefined
             plyr.ai.patrolilng.state = false
           }
