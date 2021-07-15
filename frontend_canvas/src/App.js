@@ -11999,6 +11999,277 @@ class App extends Component {
     let weaponUpgradePriority = [];
     let armorUpgradePriority = [];
 
+
+
+    if (plyr.ai.upgradeWeapon === true) {
+      console.log('upgrade weapon');
+
+      let weaponPriorityIndex = plyr.ai.weaponPriorityIndex
+      let havePriorityWeapon = false;
+      weaponUpgradePriority = ['crossbow','spear','sword'];
+      let inMyInventory = plyr.items.weapons.find(elem => elem.type === weaponUpgradePriority[weaponPriorityIndex]);
+
+      console.log('priority weapon',weaponUpgradePriority[weaponPriorityIndex]);
+
+
+
+      if (plyr.currentWeapon.type === weaponUpgradePriority[weaponPriorityIndex]) {
+        console.log('priority weapon is my current');
+        havePriorityWeapon = true;
+        plyr.ai.upgradeWeapon = false
+      } else {
+        havePriorityWeapon = false;
+      }
+
+      if (inMyInventory) {
+        console.log('priority weapon is in my inventory. Switching to it');
+        plyr.currentWeapon.name = inMyInventory.name;
+        plyr.currentWeapon.type = inMyInventory.type;
+        plyr.currentWeapon.effect = inMyInventory.effect;
+
+        havePriorityWeapon = true;
+        plyr.ai.upgradeWeapon = false
+      } else {
+        havePriorityWeapon = false;
+      }
+
+      if (havePriorityWeapon === false) {
+        console.log('dont have priority weapon');
+
+        let inTheField = fieldItemScan.find(elem => elem.type === weaponUpgradePriority[weaponPriorityIndex])
+        if (inTheField) {
+
+
+          if (inTheField.type === 'crossbow') {
+            console.log('priority is a crossbow',inTheField.effect.split('+')[1]);
+
+
+            if (inTheField.effect.split('+')[1] !== 0 && inTheField.effect.split('+')[1] !== '0') {
+
+
+              let targetSafeData = this.scanTargetAreaThreat({
+                player: plyr.number,
+                point: {
+                  x: inTheField.location.x,
+                  y: inTheField.location.y,
+                },
+                range: 3,
+              })
+
+              if (targetSafeData.isSafe === true) {
+
+                plyr.ai.mission = 'retrieve';
+                plyr.ai.retrieving.point = {
+                  x: inTheField.location.x,
+                  y: inTheField.location.y,
+                }
+                plyr.ai.retrieving.targetItem = {
+                  name: inTheField.name,
+                  type: inTheField.type,
+                  subType: inTheField.subType,
+                  effect: inTheField.effect,
+                };
+                plyr.ai.retrieving.safe = true;
+                plyr.ai.upgradeWeapon = false;
+
+
+              }
+              else {
+
+                if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
+                  plyr.ai.upgradeWeapon = false;
+                  console.log('priority index max w/ nothing to retrieve');
+                }
+                else {
+                  plyr.ai.organizing.weaponPriorityIndex++;
+                }
+
+              }
+
+            }
+            else if (inTheField.effect.split('+')[1] === 0 || inTheField.effect.split('+')[1] === '0') {
+              console.log('has no ammo');
+              if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
+                plyr.ai.upgradeWeapon = false;
+                console.log('priority index max w/ nothing to retrieve');
+              }
+              else {
+                plyr.ai.organizing.weaponPriorityIndex++;
+              }
+            }
+
+          } else {
+            console.log('priority is not a crossbow');
+
+            let targetSafeData2 = this.scanTargetAreaThreat({
+              player: plyr.number,
+              point: {
+                x: inTheField.location.x,
+                y: inTheField.location.y,
+              },
+              range: 3,
+            })
+
+            if (targetSafeData2.isSafe === true) {
+
+              plyr.ai.mission = 'retrieve';
+              plyr.ai.retrieving.point = {
+                x: inTheField.location.x,
+                y: inTheField.location.y,
+              }
+              plyr.ai.retrieving.targetItem = {
+                name: inTheField.name,
+                type: inTheField.type,
+                subType: inTheField.subType,
+                effect: inTheField.effect,
+              };
+              plyr.ai.retrieving.safe = true;
+              plyr.ai.upgradeWeapon = false;
+
+            }
+            else {
+
+              if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
+                plyr.ai.upgradeWeapon = false;
+                console.log('priority index max w/ nothing to retrieve');
+              }
+              else {
+                plyr.ai.organizing.weaponPriorityIndex++;
+              }
+
+            }
+
+          }
+
+        } else {
+
+          if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
+            plyr.ai.upgradeWeapon = false;
+            console.log('priority index max w/ nothing to retrieve');
+          }
+          else {
+            plyr.ai.organizing.weaponPriorityIndex++;
+          }
+
+        }
+
+      }
+
+    }
+
+
+    // RELOAD BOW AMMO
+    if (plyr.currentWeapon.type === 'crossbow') {
+      // if no ammo search field scan, for ammo or bow w/ ammo & retrieve
+      if (plyr.items.ammo === 0) {
+        let inTheField = fieldItemScan.find(elem => elem.type === 'crossbow')
+        if (inTheField) {
+          if (inTheField.effect.split('+')[1] !== 0 && inTheField.effect.split('+')[1] !== '0') {
+            // scan for safety
+            // if safe, retrieve
+            // if unsafe switch weapon
+            // if no other weapon, plyr.ai.upgradeWeapon = true
+          } else {
+            // switch weapon
+            // if no other weapon, plyr.ai.upgradeWeapon = true
+          }
+        } else {
+          // switch weapon
+          // if no other weapon, plyr.ai.upgradeWeapon = true
+        }
+      }
+
+    }
+
+
+    if (plyr.hp === 1) {
+      console.log('injured. check for heal item');
+      let itemToRetrieve = undefined;
+      for (const item2 of fieldItemScan) {
+        if (item2.effect === 'hpUp') {
+          itemToRetrieve = item2
+        }
+      }
+
+      if (itemToRetrieve) {
+        console.log('found hpup item in the field. retrieve');
+
+        let targetSafeData2 = this.scanTargetAreaThreat({
+          player: plyr.number,
+          point: {
+            x: itemToRetrieve.location.x,
+            y: itemToRetrieve.location.y,
+          },
+          range: 3,
+        })
+
+        if (targetSafeData2.isSafe === true) {
+
+          plyr.ai.mission = 'retrieve';
+          plyr.ai.retrieving.point = {
+            x: itemToRetrieve.location.x,
+            y: itemToRetrieve.location.y,
+          }
+          plyr.ai.retrieving.targetItem = {
+            name: itemToRetrieve.name,
+            type: itemToRetrieve.type,
+            subType: itemToRetrieve.subType,
+            effect: itemToRetrieve.effect,
+          };
+          plyr.ai.retrieving.safe = true;
+          plyr.ai.upgradeWeapon = false;
+
+        } else {
+          console.log('no heal item found');
+        }
+
+      }
+    }
+
+    if (plyr.speed.move === .05) {
+      console.log('slow. check for speed up item');
+      let itemToRetrieve = undefined;
+      for (const item3 of fieldItemScan) {
+        if (item3.effect === 'speedUp') {
+          itemToRetrieve = item3;
+        }
+      }
+
+      if (itemToRetrieve) {
+        console.log('found speed up item in the field. retrieve');
+
+        let targetSafeData2 = this.scanTargetAreaThreat({
+          player: plyr.number,
+          point: {
+            x: itemToRetrieve.location.x,
+            y: itemToRetrieve.location.y,
+          },
+          range: 3,
+        })
+
+        if (targetSafeData2.isSafe === true) {
+
+          plyr.ai.mission = 'retrieve';
+          plyr.ai.retrieving.point = {
+            x: itemToRetrieve.location.x,
+            y: itemToRetrieve.location.y,
+          }
+          plyr.ai.retrieving.targetItem = {
+            name: itemToRetrieve.name,
+            type: itemToRetrieve.type,
+            subType: itemToRetrieve.subType,
+            effect: itemToRetrieve.effect,
+          };
+          plyr.ai.retrieving.safe = true;
+          plyr.ai.upgradeWeapon = false;
+
+        } else {
+          console.log('no speed up item found');
+        }
+
+      }
+    }
+
     // organizing: {
     //   weaponPriorityIndex: 0,
     //   armorPriorityIndex: 0,
@@ -12012,118 +12283,23 @@ class App extends Component {
     //   },
     // },
 
-    if (plyr.ai.upgradeWeapon === true) {
-
-
-      let weaponPriorityIndex = plyr.ai.weaponPriorityIndex
-      let havePriorityWeapon = false;
-      weaponUpgradePriority = ['crossbow','spear','sword'];
-      let inMyInventory = plyr.items.weapons.find(elem => elem.type === weaponUpgradePriority[weaponPriorityIndex]);
-
-      if (plyr.currentWeapon.type === weaponUpgradePriority[weaponPriorityIndex]) {
-        havePriorityWeapon = true;
-        // plyr.ai.upgradeWeapon = false
-      } else {
-        havePriorityWeapon = false;
-      }
-
-      if (inMyInventory) {
-        // switch to weapon
-        havePriorityWeapon = true;
-        // plyr.ai.upgradeWeapon = false
-      } else {
-        havePriorityWeapon = false;
-      }
-
-      if (havePriorityWeapon === false) {
-
-        let inTheField = fieldItemScan.find(elem => elem.type === weaponUpgradePriority[weaponPriorityIndex])
-        if (inTheField) {
-
-          // (if crossbow, check if it/ or you have ammo 1st)
-
-          let targetSafeData = this.scanTargetAreaThreat({
-            player: plyr.number,
-            point: {
-              x: inTheField.location.x,
-              y: inTheField.location.y,
-            },
-            range: 3,
-          })
-
-          // if safe, set mission = retrieve, and retrieve props
-          // plyr.ai.upgradeWeapon = false
-
-
-          // if not safe
-
-          // if index is max plyr.ai.upgradeWeapon = false
-          // else, let weaponPriorityIndex++;
-
-
-        } else {
-
-
-
-          // if index is max plyr.ai.upgradeWeapon = false
-          // else, let weaponPriorityIndex++;
-
-
-        }
-
-      }
-
-    }
-
-
-    // RELOAD BOW AMMO
-    if (plyr.currentWeapon.type === 'crossbow') {
-      // if no ammo search field scan, for ammo or bow w/ ammo & retrieve
-
-      // if none, switch weapon, if no other weapon
-      //  plyr.ai.upgradeWeapon = true
-    }
-
-
-    if (plyr.hp === 1) {
-      let itemToRetrieve = undefined;
-      for (const item2 of fieldItemScan) {
-        if (item2.effect === 'hpUp') {
-          itemToRetrieve = item2
-        }
-      }
-
-      if (itemToRetrieve) {
-        // plyr.ai.mission = 'retrieve'
-        // plyr.ai.retrieving props
-      }
-    }
-
-    if (plyr.speed.move === .05) {
-      let itemToRetrieve = undefined;
-      for (const item3 of fieldItemScan) {
-        if (item3.effect === 'speedUp') {
-          itemToRetrieve = item3;
-        }
-      }
-
-      if (itemToRetrieve) {
-        // plyr.ai.mission = 'retrieve'
-        // plyr.ai.retrieving props
-      }
-    }
-
 
     if (plyr.ai.organizing.drop.state === true) {
 
-      // locate the dropped gear
-      // if mission not engage, retrieve
-      //
-      // if engage, check if other weapon to use
-      //   if not other weapon, retrieve
-      //
-      //   if other weapon is bow no ammo, retrieve
-      //   else switch weapon
+
+      let droppedGear = fieldItemScan.find(elem => elem.name === plyr.ai.organizing.drop.gear.name)
+
+      if (plyr.ai.mission !== 'engage') {
+        // scan for safety and retrieve
+
+
+      }
+      else {
+        // if other weapon, switch
+        //
+        // else, retrieve
+
+      }
 
       plyr.ai.organizing.drop.state = true
 
