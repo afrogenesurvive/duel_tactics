@@ -845,8 +845,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 6,
-              y: 7,
+              x: 0,
+              y: 9,
             },
             center: {
               x: 0,
@@ -12461,11 +12461,12 @@ class App extends Component {
           plyr.ai.resetInstructions = false;
 
           if (plyr.ai.mission === 'retreat') {
+            console.log('retreat pathfinding reset');
             plyr.ai.retreating.checkin = undefined
             plyr.ai.retreating.state = false
           }
           if (plyr.ai.mission === 'retrieve') {
-
+            console.log('retrieve pathfinding reset');
             plyr.ai.retrieving.checkin = undefined
             plyr.ai.retrieving.state = false
           }
@@ -12913,7 +12914,7 @@ class App extends Component {
 
 
         if (targetInRange === true) {
-          // console.log('target in range. switch to engage',plyr.ai.targetSet);
+          console.log('target in range. switch to engage',plyr.ai.targetSet);
           if (plyr.ai.mission === 'patrol') {
             plyr.ai.patrolling.checkin = undefined;
           }
@@ -14646,11 +14647,11 @@ class App extends Component {
       if (aiPlayer.ai.retrieving.state === true) {
 
         if (aiPlayer.ai.retrieving.checkin === 'enroute') {
-          console.log('en route to retrieve point',aiPlayer.ai.retrieving.point);
+          // console.log('en route to retrieve point',aiPlayer.ai.retrieving.point);
 
           let targetCell = this.gridInfo.find(elem => elem.number.x === aiPlayer.ai.retrieving.point.x && elem.number.y === aiPlayer.ai.retrieving.point.y);
           if (targetCell.item.name === '' || aiPlayer.ai.retrieving.targetItem.name !== targetCell.item.name) {
-            console.log('item to retrieve is longer there. abort');
+            console.log('item to retrieve is no longer there. abort');
             aiPlayer.ai.retrieving.checkin = 'abort';
           }
 
@@ -14680,7 +14681,7 @@ class App extends Component {
       if (aiPlayer.ai.retreating.state === true) {
 
         if (aiPlayer.ai.retreating.checkin === 'enroute') {
-          console.log('enroute to retreat point @',aiPlayer.ai.retreating.point,'instructions',aiPlayer.ai.instructions,aiPlayer.ai.currentInstruction);
+          // console.log('enroute to retreat point @',aiPlayer.ai.retreating.point,'instructions',aiPlayer.ai.instructions,aiPlayer.ai.currentInstruction);
           if (
             aiPlayer.currentPosition.cell.number.x === aiPlayer.ai.retreating.point.x &&
             aiPlayer.currentPosition.cell.number.y === aiPlayer.ai.retreating.point.y
