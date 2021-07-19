@@ -462,8 +462,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 1,
-              y: 6,
+              x: 9,
+              y: 2,
             },
             center: {
               x: 0,
@@ -845,8 +845,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 3,
-              y: 5,
+              x: 6,
+              y: 7,
             },
             center: {
               x: 0,
@@ -11636,19 +11636,6 @@ class App extends Component {
 
 
 
-        // REMOVE AFtER TESTING!!
-        if (this.aiInitSettings.mission === 'retrieve') {
-          console.log('here');
-          this.players[newPlayerNumber-1].ai.retrieving.point = {x: 0, y: 0};
-          this.players[newPlayerNumber-1].ai.retrieving.targetItem = {
-            name: 'spear1',
-            type: 'weapon',
-            subType: 'spear',
-            effect: '',
-          };
-        }
-
-
       }
 
     }
@@ -11993,8 +11980,8 @@ class App extends Component {
 
     };
 
-    console.log('fieldItemScan',fieldItemScan);
-    console.log('nerfItemPositions',nerfItemPositions);
+    // console.log('fieldItemScan',fieldItemScan);
+    // console.log('nerfItemPositions',nerfItemPositions);
 
     let weaponUpgradePriority = [];
     let armorUpgradePriority = [];
@@ -12009,7 +11996,7 @@ class App extends Component {
       weaponUpgradePriority = ['crossbow','spear','sword'];
       let inMyInventory = plyr.items.weapons.find(elem => elem.type === weaponUpgradePriority[weaponPriorityIndex]);
 
-      console.log('priority weapon',weaponUpgradePriority[weaponPriorityIndex]);
+      console.log('priority weapon',weaponUpgradePriority[weaponPriorityIndex],'index',weaponPriorityIndex);
 
 
 
@@ -12036,11 +12023,12 @@ class App extends Component {
       if (havePriorityWeapon === false) {
         console.log('dont have priority weapon');
 
-        let inTheField = fieldItemScan.find(elem => elem.type === weaponUpgradePriority[weaponPriorityIndex])
+        let inTheField = fieldItemScan.find(elem => elem.subType === weaponUpgradePriority[weaponPriorityIndex])
+        // console.log('inTheField',inTheField);
         if (inTheField) {
           console.log('priority weapon is in the field');
 
-          if (inTheField.type === 'crossbow') {
+          if (inTheField.subType === 'crossbow') {
             console.log('priority is a crossbow',inTheField.effect.split('+')[1]);
 
 
@@ -12057,6 +12045,7 @@ class App extends Component {
               })
 
               if (targetSafeData.isSafe === true) {
+                console.log('priority weapon target is safe. Retrieve');
 
                 plyr.ai.mission = 'retrieve';
                 plyr.ai.retrieving.point = {
@@ -12075,12 +12064,14 @@ class App extends Component {
 
               }
               else {
+                console.log('priority weapon target is unsafe.');
 
                 if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
                   plyr.ai.upgradeWeapon = false;
                   console.log('priority index max w/ nothing to retrieve');
                 }
                 else {
+                  console.log('check next priority weapon');
                   plyr.ai.organizing.weaponPriorityIndex++;
                 }
 
@@ -12128,12 +12119,14 @@ class App extends Component {
 
             }
             else {
+              console.log('priority weapon is not in the field');
 
               if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
                 plyr.ai.upgradeWeapon = false;
                 console.log('priority index max w/ nothing to retrieve');
               }
               else {
+                console.log('choose next priority weapon');
                 plyr.ai.organizing.weaponPriorityIndex++;
               }
 
@@ -12158,10 +12151,12 @@ class App extends Component {
     }
 
 
+
     // RELOAD BOW AMMO
     if (plyr.currentWeapon.type === 'crossbow') {
       // if no ammo search field scan, for ammo or bow w/ ammo & retrieve
       if (plyr.items.ammo === 0) {
+        console.log('my crossbow out of ammo');
         let inTheField = fieldItemScan.find(elem => elem.type === 'crossbow')
         if (inTheField) {
           if (inTheField.effect.split('+')[1] !== 0 && inTheField.effect.split('+')[1] !== '0') {
@@ -12239,6 +12234,7 @@ class App extends Component {
       }
 
     }
+
 
 
     if (plyr.hp === 1) {
