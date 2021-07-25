@@ -2846,7 +2846,8 @@ class App extends Component {
       //   }
       // }
 
-    } else if (player.success.deflected.state === true && player.success.deflected.count >= player.success.deflected.limit) {
+    }
+    else if (player.success.deflected.state === true && player.success.deflected.count >= player.success.deflected.limit) {
 
       // DEFLECT SPIN!
       let shouldSpin;
@@ -4016,14 +4017,12 @@ class App extends Component {
                         this.aiDeflectedCheck.push(player.number)
                       }
 
-
                     }
 
 
                     if (this.aiDeflectedCheck.includes(player.number) !== true) {
                       this.aiDeflectedCheck.push(player.number)
                     }
-
 
                   }
 
@@ -10055,16 +10054,6 @@ class App extends Component {
             }
           }
 
-          if (player.ai.state === true) {
-            console.log('ai dropping weapon');
-            player.ai.organizing.dropped.state = true;
-            player.ai.organizing.dropped.gear = {
-              name: item.name,
-              type: item.type,
-              subType: item.subType,
-              effect: item.effect
-            };
-          }
 
           this.players[player.number-1].items.weapons.splice(index,1);
           this.players[player.number-1].items.weaponIndex = 0;
@@ -10119,18 +10108,6 @@ class App extends Component {
           }
 
 
-          if (player.ai.state === true) {
-            console.log('ai dropping armor');
-            player.ai.organizing.dropped.state = true;
-            player.ai.organizing.dropped.gear = {
-              name: item.name,
-              type: item.type,
-              subType: item.subType,
-              effect: item.effect
-            };
-          }
-
-
           switch(item.effect) {
             case 'hpUp' :
               if (this.players[player.number-1].hp > 1) {
@@ -10181,6 +10158,31 @@ class App extends Component {
 
       let dropCellIndex = this.gridInfo.findIndex(cell => cell.number.x === player.currentPosition.cell.number.x && cell.number.y === player.currentPosition.cell.number.y);
       this.gridInfo[dropCellIndex].item = item;
+
+
+      if (player.ai.state === true) {
+        if (dropWhat === 1) {
+          console.log('ai dropping weapon');
+          player.ai.organizing.dropped.state = true;
+          player.ai.organizing.dropped.gear = {
+            name: item.name,
+            type: item.type,
+            subType: item.subType,
+            effect: item.effect
+          };
+        }
+        else {
+          console.log('ai dropping armor');
+          player.ai.organizing.dropped.state = true;
+          player.ai.organizing.dropped.gear = {
+            name: item.name,
+            type: item.type,
+            subType: item.subType,
+            effect: item.effect
+          };
+        }
+      }
+
 
     }
     else {
@@ -12082,7 +12084,7 @@ class App extends Component {
 
             }
             else if (inTheField.effect.split('+')[1] === 0 || inTheField.effect.split('+')[1] === '0') {
-              console.log('has no ammo');
+              console.log('bow in the field but has no ammo');
               if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
                 plyr.ai.upgradeWeapon = false;
                 console.log('priority index max w/ nothing to retrieve');
@@ -12155,7 +12157,8 @@ class App extends Component {
 
 
     // RELOAD BOW AMMO
-    if (plyr.currentWeapon.type === 'crossbow') {
+    // if (plyr.currentWeapon.type === 'crossbow') {
+    if (plyr.currentWeapon.type === 'crossbow' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
       // if no ammo search field scan, for ammo or bow w/ ammo & retrieve
       if (plyr.items.ammo === 0) {
         console.log('my crossbow out of ammo');
@@ -12193,13 +12196,16 @@ class App extends Component {
               console.log('unsafe to retrieve. Choose from inventory');
 
               if (plyr.items.weapons.length > 1) {
+                console.log('fallback to other weapon');
                 plyr.currentWeapon = {
                   name: plyr.items.weapons[1].name,
                   type: plyr.items.weapons[1].type,
                   effect: plyr.items.weapons[1].effect,
                 }
+
+                plyr.ai.targetAcquired = false;
               } else {
-                console.log('nothing else in inventory');
+                console.log('nothing else in inventory. find other in the field');
                 plyr.ai.upgradeWeapon = true
               }
 
@@ -12209,12 +12215,16 @@ class App extends Component {
             console.log('bow in the field but no ammo');
 
             if (plyr.items.weapons.length > 1) {
+              console.log('fallback to other weapon');
               plyr.currentWeapon = {
                 name: plyr.items.weapons[1].name,
                 type: plyr.items.weapons[1].type,
                 effect: plyr.items.weapons[1].effect,
               }
+
+              plyr.ai.targetAcquired = false;
             } else {
+              console.log('nothing else in inventory. find other in the field');
               plyr.ai.upgradeWeapon = true
             }
 
@@ -12223,12 +12233,16 @@ class App extends Component {
           console.log('no bow or ammo in the field');
 
           if (plyr.items.weapons.length > 1) {
+            console.log('fallback to other weapon');
             plyr.currentWeapon = {
               name: plyr.items.weapons[0].name,
               type: plyr.items.weapons[0].type,
               effect: plyr.items.weapons[0].effect,
             }
+
+            plyr.ai.targetAcquired = false;
           } else {
+            console.log('nothing else in inventory. find other in the field');
             plyr.ai.upgradeWeapon = true
           }
 
@@ -12343,6 +12357,19 @@ class App extends Component {
 
     // RETRIEVE DROPPED GEAR!
     if (plyr.ai.organizing.dropped.state === true) {
+      console.log('ai retrieve dropped gear flow');
+
+      for (const cell of this.gridInfo) {
+        if (cell.item.name !== '') {
+          fieldItemScan.push({
+            name: cell.item.name,
+            type: cell.item.type,
+            subType: cell.item.subType,
+            effect: cell.item.effect,
+            location: {x: cell.number.x, y: cell.number.y}
+          })
+        }
+      }
 
 
       let droppedGear = fieldItemScan.find(elem => elem.name === plyr.ai.organizing.dropped.gear.name)
@@ -12383,13 +12410,17 @@ class App extends Component {
             console.log('unsafe to retrieve. check inventory');
 
             if (plyr.items.weapons.length > 1) {
+              console.log('fallback to other weapon');
               plyr.currentWeapon = {
                 name: plyr.items.weapons[1].name,
                 type: plyr.items.weapons[1].type,
                 effect: plyr.items.weapons[1].effect,
               }
+
+              plyr.ai.organizing.dropped.state = false;
             } else {
-              // plyr.ai.upgradeWeapon = true  ??
+              console.log('nothing else in inventory. find other in the field');
+              plyr.ai.upgradeWeapon = true;
             }
           }
 
@@ -12435,12 +12466,16 @@ class App extends Component {
             console.log('unsafe to retrieve. check inventory');
 
             if (plyr.items.weapons.length > 1) {
+              console.log('fallback to other weapon');
               plyr.currentWeapon = {
                 name: plyr.items.weapons[1].name,
                 type: plyr.items.weapons[1].type,
                 effect: plyr.items.weapons[1].effect,
               }
+
+              plyr.ai.organizing.dropped.state = false;
             } else {
+              console.log('nothing else in inventory. find other in the field');
               plyr.ai.upgradeWeapon = true
             }
 
@@ -12450,12 +12485,13 @@ class App extends Component {
 
       }
 
-      plyr.ai.organizing.drop.state = true
+      plyr.ai.organizing.dropped.state = true
 
     }
 
 
     if (plyr.ai.resetInstructions === true ) {
+      console.log('pathfinding reset');
       // console.log('reset instructions','set',plyr.ai.targetSet,'acquired',plyr.ai.targetAcquired,'mission',plyr.ai.mission);
       plyr.ai.currentInstruction = 0;
       plyr.ai.instructions = [];
@@ -12927,6 +12963,7 @@ class App extends Component {
         plyr.ai.mission = 'engage';
       }
 
+
       // plyr.ai.engaging.state = true;
     }
 
@@ -13031,6 +13068,10 @@ class App extends Component {
                }
              }
            }
+         }
+
+         if (plyr.ai.organizing.dropped.state === true) {
+           plyr.ai.organizing.dropped.state = false;
          }
        }
 
@@ -13401,7 +13442,7 @@ class App extends Component {
               if (oppositeDir) {
 
                 if (aiPlayer.target.free !== true) {
-                  console.log('target is too close! back it up');
+                  // console.log('target is too close! back it up');
                   instructions2.push(
                     {
                       keyword: 'strafe_'+oppositeDir,
@@ -13474,7 +13515,7 @@ class App extends Component {
               if (oppositeDir) {
 
                 if (aiPlayer.target.free !== true) {
-                  console.log('target is too close! back it up');
+                  // console.log('target is too close! back it up');
                   instructions2.push(
                     {
                       keyword: 'strafe_'+oppositeDir,
@@ -13778,7 +13819,7 @@ class App extends Component {
                   // console.log('safe sword range attack flow');
 
                   if (aiPlayer.target.free !== true) {
-                    console.log('target is too close! back it up');
+                    // console.log('target is too close! back it up');
                     instructions1.push(
                       {
                         keyword: 'strafe_'+oppositeDir,
@@ -13838,7 +13879,7 @@ class App extends Component {
                   // console.log('safe range attack flow');
 
                   if (aiPlayer.target.free !== true) {
-                    console.log('target is too close! back it up');
+                    // console.log('target is too close! back it up');
                     instructions1.push(
                       {
                         keyword: 'strafe_'+oppositeDir,
@@ -14126,7 +14167,7 @@ class App extends Component {
                 // console.log('safe sword range attack flow');
 
                 if (aiPlayer.target.free !== true) {
-                  console.log('target is too close! back it up');
+                  // console.log('target is too close! back it up');
                   instructions4.push(
                     {
                       keyword: 'strafe_'+oppositeDir,
@@ -14187,7 +14228,7 @@ class App extends Component {
                 // console.log('safe range attack flow');
 
                 if (aiPlayer.target.free !== true) {
-                  console.log('target is too close! back it up');
+                  // console.log('target is too close! back it up');
                   instructions4.push(
                     {
                       keyword: 'strafe_'+oppositeDir,
@@ -15215,10 +15256,13 @@ class App extends Component {
 
     // console.log('this.pathArray',this.pathArray);
     // console.log('path',path,'player',aiPlayer);
-    // console.log('instructions',instructions,'player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction);
-    if (this.players[aiPlayer-1].ai.mission === 'retreat') {
-      console.log('instructions',instructions,'player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction,'path',path);
-    }
+    console.log('instructions',instructions,'player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction);
+    // if (this.players[aiPlayer-1].ai.mission === 'retreat') {
+    //   console.log('retreat instructions',instructions,'player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction,'path',path);
+    // }
+    // if (this.players[aiPlayer-1].ai.mission === 'retrieve') {
+    //   console.log('retrieve instructions',instructions,'player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction,'path',path);
+    // }
 
 
     this.players[aiPlayer-1].ai.pathArray = path;
