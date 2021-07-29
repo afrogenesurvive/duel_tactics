@@ -12164,14 +12164,95 @@ class App extends Component {
     if (plyr.ai.upgradeArmor === true && plyr.ai.upgradeWeapon !== true && plyr.ai.mission !== 'retreat' && plyr.ai.mission !== 'retrieve') {
       console.log('upgrade armor');
 
+      let armorInTheField;
       if (plyr.hp === 1) {
 
+        armorInTheField = fieldItemScan.find(gear => gear.effect === 'hpUp')[0]
+        if (armorInTheField) {
+
+          console.log('found hpup gear in the field. retrieve!');
+
+          let targetSafeData2 = this.scanTargetAreaThreat({
+            player: plyr.number,
+            point: {
+              x: armorInTheField.location.x,
+              y: armorInTheField.location.y,
+            },
+            range: 3,
+          })
+
+          if (targetSafeData2.isSafe === true) {
+
+            plyr.ai.mission = 'retrieve';
+            plyr.ai.retrieving.point = {
+              x: armorInTheField.location.x,
+              y: armorInTheField.location.y,
+            }
+            plyr.ai.retrieving.targetItem = {
+              name: armorInTheField.name,
+              type: armorInTheField.type,
+              subType: armorInTheField.subType,
+              effect: armorInTheField.effect,
+            };
+            plyr.ai.retrieving.safe = true;
+            plyr.ai.upgradeArmor = false;
+        }
+        else {
+          console.log('hp up gear unsafe to retrieve');
+          plyr.ai.upgradeArmor = false;
+        }
+
       }
+      else {
+        console.log('no hpUp gear in the field');
+        plyr.ai.upgradeArmor = false;
+      }
+
       if (plyr.speed.move < .1) {
 
+        armorInTheField = fieldItemScan.find(gear => gear.effect === 'speedUp')
+
+        if (armorInTheField) {
+
+          console.log('found speedUp gear in the field. retrieve!');
+
+          let targetSafeData2 = this.scanTargetAreaThreat({
+            player: plyr.number,
+            point: {
+              x: armorInTheField.location.x,
+              y: armorInTheField.location.y,
+            },
+            range: 3,
+          })
+
+          if (targetSafeData2.isSafe === true) {
+
+            plyr.ai.mission = 'retrieve';
+            plyr.ai.retrieving.point = {
+              x: armorInTheField.location.x,
+              y: armorInTheField.location.y,
+            }
+            plyr.ai.retrieving.targetItem = {
+              name: armorInTheField.name,
+              type: armorInTheField.type,
+              subType: armorInTheField.subType,
+              effect: armorInTheField.effect,
+            };
+            plyr.ai.retrieving.safe = true;
+            plyr.ai.upgradeArmor = false;
+        }
+        else {
+          console.log('speedUp gear unsafe to retrieve');
+          plyr.ai.upgradeArmor = false;
+        }
+
+      }
+      else {
+        console.log('no speedUp gear in the field');
+        plyr.ai.upgradeArmor = false;
       }
 
-      // if armor for priority need is in items, equip
+      }
 
     }
 
@@ -12310,7 +12391,8 @@ class App extends Component {
           plyr.ai.upgradeWeapon = false;
 
         } else {
-          console.log('no heal item found');
+          console.log('no heal item found. Check for armor');
+          plyr.ai.upgradeArmor = true;
         }
 
       }
@@ -12354,7 +12436,8 @@ class App extends Component {
           plyr.ai.upgradeWeapon = false;
 
         } else {
-          console.log('no speed up item found');
+          console.log('no speedup item found. Check for armor');
+          plyr.ai.upgradeArmor = true;
         }
 
       }
