@@ -849,6 +849,7 @@ class App extends Component {
           },
           mode: '',
           upgradeWeapon: false,
+          upgradeArmor: false,
         },
         stamina: {
           current: 20,
@@ -1228,6 +1229,7 @@ class App extends Component {
           },
           mode: '',
           upgradeWeapon: false,
+          upgradeArmor: false,
         },
         stamina: {
           current: 20,
@@ -10165,7 +10167,7 @@ class App extends Component {
 
       if (player.ai.state === true && item.name !== "" && player.ai.organizing.dropped.state !== true) {
         if (dropWhat === 1) {
-          console.log('ai dropping weapon');
+          // console.log('ai dropping weapon');
           player.ai.organizing.dropped.state = true;
           player.ai.organizing.dropped.gear = {
             name: item.name,
@@ -10175,7 +10177,7 @@ class App extends Component {
           };
         }
         else {
-          console.log('ai dropping armor');
+          // console.log('ai dropping armor');
           player.ai.organizing.dropped.state = true;
           player.ai.organizing.dropped.gear = {
             name: item.name,
@@ -11580,6 +11582,7 @@ class App extends Component {
             },
             mode: this.aiInitSettings.mode,
             upgradeWeapon: true,
+            upgradeArmor: false,
           },
           stamina: {
             current: 20,
@@ -11863,7 +11866,7 @@ class App extends Component {
 
 
   aiEvaluate = (plyr) => {
-    console.log('aiEvaluate',plyr.ai.organizing.dropped.state);
+    // console.log('aiEvaluate',plyr.ai.organizing.dropped.state);
 
 
     if (this.resetAiTarget.state === true) {
@@ -12158,10 +12161,22 @@ class App extends Component {
       }
 
     }
+    if (plyr.ai.upgradeArmor === true && plyr.ai.upgradeWeapon !== true && plyr.ai.mission !== 'retreat' && plyr.ai.mission !== 'retrieve') {
+      console.log('upgrade armor');
+
+      if (plyr.hp === 1) {
+
+      }
+      if (plyr.speed.move < .1) {
+
+      }
+
+      // if armor for priority need is in items, equip
+
+    }
 
 
     // RELOAD BOW AMMO
-    // if (plyr.currentWeapon.type === 'crossbow') {
     if (plyr.currentWeapon.type === 'crossbow' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
       // if no ammo search field scan, for ammo or bow w/ ammo & retrieve
       if (plyr.items.ammo === 0) {
@@ -12256,7 +12271,7 @@ class App extends Component {
     }
 
 
-
+    // INJURED OR SLOW!
     if (plyr.hp === 1) {
       console.log('injured. check for heal item');
       let itemToRetrieve = undefined;
@@ -12345,19 +12360,6 @@ class App extends Component {
       }
     }
 
-    // organizing: {
-    //   weaponPriorityIndex: 0,
-    //   armorPriorityIndex: 0,
-    //   dropped: {
-    //     state: false,
-    //     gear: {
-    //       name: '',
-    //       type: '',
-    //       effect: ''
-    //     },
-    //   },
-    // },
-
 
     // RETRIEVE DROPPED GEAR!
     if (plyr.ai.organizing.dropped.state === true) {
@@ -12380,7 +12382,7 @@ class App extends Component {
       // console.log('droppedGear',droppedGear);
 
       if (plyr.ai.mission !== 'engage') {
-        // console.log('gear dropped out of battle',droppedGear.location, plyr.currentPosition.cell.number);
+        console.log('gear dropped out of battle');
 
         if (
           droppedGear.location.x === plyr.currentPosition.cell.number.x &&
@@ -12397,7 +12399,8 @@ class App extends Component {
 
           console.log('standing over dropped gear',plyr.ai.organizing.dropped.state);
 
-        } else {
+        }
+        else {
           console.log('retrieve dropped gear');
 
           plyr.ai.mission = 'retrieve';
@@ -12462,82 +12465,103 @@ class App extends Component {
       else {
         console.log('dropped gear in battle');
 
-        if (plyr.items.weapons.length > 1) {
-          console.log('switch to something else from inventory');
-          plyr.currentWeapon = {
-            name: plyr.items.weapons[0].name,
-            type: plyr.items.weapons[0].type,
-            effect: plyr.items.weapons[0].effect,
-          }
-        } else {
-          console.log('retrieve dropped gear');
+        if (
+          droppedGear.location.x === plyr.currentPosition.cell.number.x &&
+          droppedGear.location.y === plyr.currentPosition.cell.number.y
+        ) {
 
-          plyr.ai.mission = 'retrieve';
-          plyr.ai.retrieving.point = {
-            x: droppedGear.location.x,
-            y: droppedGear.location.y,
-          }
-          plyr.ai.retrieving.targetItem = {
-            name: droppedGear.name,
-            type: droppedGear.type,
-            subType: droppedGear.subType,
-            effect: droppedGear.effect,
-          };
-          plyr.ai.retrieving.safe = true;
+          plyr.ai.instructions.push({
+            keyword: 'pickup',
+            count: 0,
+            limit: 1,
+          })
 
-          // let targetSafeData2 = this.scanTargetAreaThreat({
-          //   player: plyr.number,
-          //   point: {
-          //     x: droppedGear.location.x,
-          //     y: droppedGear.location.y,
-          //   },
-          //   range: 3,
-          // })
-          //
-          // if (targetSafeData2.isSafe === true) {
-          //
-          //   plyr.ai.mission = 'retrieve';
-          //   plyr.ai.retrieving.point = {
-          //     x: droppedGear.location.x,
-          //     y: droppedGear.location.y,
-          //   }
-          //   plyr.ai.retrieving.targetItem = {
-          //     name: droppedGear.name,
-          //     type: droppedGear.type,
-          //     subType: droppedGear.subType,
-          //     effect: droppedGear.effect,
-          //   };
-          //   plyr.ai.retrieving.safe = true;
-          //
-          // }
-          // else {
-          //   console.log('unsafe to retrieve. check inventory');
-          //
-          //   if (plyr.items.weapons.length > 1) {
-          //     console.log('fallback to other weapon');
-          //     plyr.currentWeapon = {
-          //       name: plyr.items.weapons[1].name,
-          //       type: plyr.items.weapons[1].type,
-          //       effect: plyr.items.weapons[1].effect,
-          //     }
-          //
-          //     plyr.ai.organizing.dropped.state = false;
-          //   } else {
-          //     console.log('nothing else in inventory. find other in the field');
-          //     plyr.ai.upgradeWeapon = true
-          //   }
-          //
-          // }
+          this.players[plyr.number-1].ai.organizing.dropped.state = false;
+
+          console.log('standing over dropped gear',plyr.ai.organizing.dropped.state);
+
+        }
+        else {
+
+          if (plyr.items.weapons.length > 1) {
+            console.log('switch to something else from inventory');
+            plyr.currentWeapon = {
+              name: plyr.items.weapons[0].name,
+              type: plyr.items.weapons[0].type,
+              effect: plyr.items.weapons[0].effect,
+            }
+          } else {
+            console.log('retrieve dropped gear');
+
+            plyr.ai.mission = 'retrieve';
+            plyr.ai.retrieving.point = {
+              x: droppedGear.location.x,
+              y: droppedGear.location.y,
+            }
+            plyr.ai.retrieving.targetItem = {
+              name: droppedGear.name,
+              type: droppedGear.type,
+              subType: droppedGear.subType,
+              effect: droppedGear.effect,
+            };
+            plyr.ai.retrieving.safe = true;
+
+            // let targetSafeData2 = this.scanTargetAreaThreat({
+            //   player: plyr.number,
+            //   point: {
+            //     x: droppedGear.location.x,
+            //     y: droppedGear.location.y,
+            //   },
+            //   range: 3,
+            // })
+            //
+            // if (targetSafeData2.isSafe === true) {
+            //
+            //   plyr.ai.mission = 'retrieve';
+            //   plyr.ai.retrieving.point = {
+            //     x: droppedGear.location.x,
+            //     y: droppedGear.location.y,
+            //   }
+            //   plyr.ai.retrieving.targetItem = {
+            //     name: droppedGear.name,
+            //     type: droppedGear.type,
+            //     subType: droppedGear.subType,
+            //     effect: droppedGear.effect,
+            //   };
+            //   plyr.ai.retrieving.safe = true;
+            //
+            // }
+            // else {
+            //   console.log('unsafe to retrieve. check inventory');
+            //
+            //   if (plyr.items.weapons.length > 1) {
+            //     console.log('fallback to other weapon');
+            //     plyr.currentWeapon = {
+            //       name: plyr.items.weapons[1].name,
+            //       type: plyr.items.weapons[1].type,
+            //       effect: plyr.items.weapons[1].effect,
+            //     }
+            //
+            //     plyr.ai.organizing.dropped.state = false;
+            //   } else {
+            //     console.log('nothing else in inventory. find other in the field');
+            //     plyr.ai.upgradeWeapon = true
+            //   }
+            //
+            // }
+
+          }
 
         }
 
       }
 
-      plyr.ai.organizing.dropped.state = true
+      // plyr.ai.organizing.dropped.state = true
 
     }
 
 
+    // PATHFIND ERROR/ PREVENT SUICIDE!
     if (plyr.ai.resetInstructions === true ) {
       console.log('pathfinding reset');
       // console.log('reset instructions','set',plyr.ai.targetSet,'acquired',plyr.ai.targetAcquired,'mission',plyr.ai.mission);
@@ -13036,10 +13060,6 @@ class App extends Component {
 
     }
 
-    // if (plyr.ai.mission !== 'patrol' || plyr.ai.mission !== 'defend') {
-    //   plyr.ai.patrolling.state = false;
-    //   plyr.ai.defending.state = false;
-    // }
 
     if (plyr.ai.targetAqcuiredReset === true) {
       plyr.ai.targetAcquired = false;
