@@ -12355,94 +12355,98 @@ class App extends Component {
 
 
     // INJURED OR SLOW!
-    if (plyr.hp === 1) {
+    if (plyr.hp === 1 && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retrieve') {
       console.log('injured. check for heal item');
-      let itemToRetrieve = undefined;
-      for (const item2 of fieldItemScan) {
-        if (item2.effect === 'hpUp') {
-          itemToRetrieve = item2
-        }
-      }
 
-      if (itemToRetrieve) {
-        console.log('found hpup item in the field. retrieve');
-
-        let targetSafeData2 = this.scanTargetAreaThreat({
-          player: plyr.number,
-          point: {
-            x: itemToRetrieve.location.x,
-            y: itemToRetrieve.location.y,
-          },
-          range: 3,
-        })
-
-        if (targetSafeData2.isSafe === true) {
-
-          plyr.ai.mission = 'retrieve';
-          plyr.ai.retrieving.point = {
-            x: itemToRetrieve.location.x,
-            y: itemToRetrieve.location.y,
+        let itemToRetrieve = undefined;
+        for (const item2 of fieldItemScan) {
+          if (item2.effect === 'hpUp') {
+            itemToRetrieve = item2
           }
-          plyr.ai.retrieving.targetItem = {
-            name: itemToRetrieve.name,
-            type: itemToRetrieve.type,
-            subType: itemToRetrieve.subType,
-            effect: itemToRetrieve.effect,
-          };
-          plyr.ai.retrieving.safe = true;
-          plyr.ai.upgradeWeapon = false;
-
-        } else {
-          console.log('no heal item found. Check for armor');
-          plyr.ai.upgradeArmor = true;
         }
 
-      }
+        if (itemToRetrieve) {
+
+          let targetSafeData2 = this.scanTargetAreaThreat({
+            player: plyr.number,
+            point: {
+              x: itemToRetrieve.location.x,
+              y: itemToRetrieve.location.y,
+            },
+            range: 3,
+          })
+          console.log('found hpup item in the field. retrieve @ ',itemToRetrieve.location);
+
+          if (targetSafeData2.isSafe === true) {
+
+            plyr.ai.mission = 'retrieve';
+            plyr.ai.retrieving.point = {
+              x: itemToRetrieve.location.x,
+              y: itemToRetrieve.location.y,
+            }
+            plyr.ai.retrieving.targetItem = {
+              name: itemToRetrieve.name,
+              type: itemToRetrieve.type,
+              subType: itemToRetrieve.subType,
+              effect: itemToRetrieve.effect,
+            };
+            plyr.ai.retrieving.safe = true;
+
+
+          } else {
+            console.log('no heal item/gear found.');
+          }
+
+        }
+
     }
 
-    if (plyr.speed.move < .1) {
+    if (plyr.speed.move < .1 && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retrieve') {
       console.log('slow. check for speed up item');
-      let itemToRetrieve = undefined;
-      for (const item3 of fieldItemScan) {
-        if (item3.effect === 'speedUp') {
-          itemToRetrieve = item3;
-        }
-      }
 
-      if (itemToRetrieve) {
-        console.log('found speed up item in the field. retrieve');
 
-        let targetSafeData2 = this.scanTargetAreaThreat({
-          player: plyr.number,
-          point: {
-            x: itemToRetrieve.location.x,
-            y: itemToRetrieve.location.y,
-          },
-          range: 3,
-        })
-
-        if (targetSafeData2.isSafe === true) {
-
-          plyr.ai.mission = 'retrieve';
-          plyr.ai.retrieving.point = {
-            x: itemToRetrieve.location.x,
-            y: itemToRetrieve.location.y,
+        let itemToRetrieve = undefined;
+        for (const item3 of fieldItemScan) {
+          if (item3.effect === 'speedUp') {
+            itemToRetrieve = item3;
           }
-          plyr.ai.retrieving.targetItem = {
-            name: itemToRetrieve.name,
-            type: itemToRetrieve.type,
-            subType: itemToRetrieve.subType,
-            effect: itemToRetrieve.effect,
-          };
-          plyr.ai.retrieving.safe = true;
-          plyr.ai.upgradeWeapon = false;
-
-        } else {
-          console.log('no speedup item found. Check for armor');
-          plyr.ai.upgradeArmor = true;
         }
 
-      }
+        if (itemToRetrieve) {
+          console.log('found speed up item in the field. retrieve');
+
+          let targetSafeData2 = this.scanTargetAreaThreat({
+            player: plyr.number,
+            point: {
+              x: itemToRetrieve.location.x,
+              y: itemToRetrieve.location.y,
+            },
+            range: 3,
+          })
+
+          if (targetSafeData2.isSafe === true) {
+
+            plyr.ai.mission = 'retrieve';
+            plyr.ai.retrieving.point = {
+              x: itemToRetrieve.location.x,
+              y: itemToRetrieve.location.y,
+            }
+            plyr.ai.retrieving.targetItem = {
+              name: itemToRetrieve.name,
+              type: itemToRetrieve.type,
+              subType: itemToRetrieve.subType,
+              effect: itemToRetrieve.effect,
+            };
+            plyr.ai.retrieving.safe = true;
+            plyr.ai.upgradeWeapon = false;
+
+          } else {
+            console.log('no speedup item/gear found. Check for armor');
+            plyr.ai.upgradeArmor = true;
+          }
+
+        }
+
     }
 
 
@@ -13156,7 +13160,8 @@ class App extends Component {
       plyr.ai.targetAqcuiredReset = false;
     }
 
-    if (plyr.ai.mission === 'retrieve' && plyr.ai.retrieving.state !== true) {
+    // if (plyr.ai.mission === 'retrieve' && plyr.ai.retrieving.state !== true) {
+    if (plyr.ai.mission === 'retrieve') {
       // console.log('retrieve @  ai evaluate', plyr.ai.retrieving);
 
 
@@ -13195,7 +13200,7 @@ class App extends Component {
          plyr.ai.retrieving.checkin = undefined;
          plyr.ai.retrieving.safe = false;
          plyr.ai.targetAcquired = false;
-         // console.log('retrieval complete. revert mission',plyr.ai.mission,plyr.ai.targetSet,plyr.ai.targetPlayer.currentPosition,plyr.ai.targetAcquired,plyr.ai.targetPlayer);
+         console.log('retrieval complete. revert mission',plyr.ai.mission,plyr.ai.targetSet,plyr.ai.targetPlayer.currentPosition,plyr.ai.targetAcquired,plyr.ai.targetPlayer);
 
          let itemRetrieved;
 
@@ -14941,6 +14946,12 @@ class App extends Component {
             ]
 
             if (aiPlayer.currentWeapon.type === "crossbow") {
+               // candidateTargets = [
+               //   {x: targetPos.x-6, y: targetPos.y},
+               //   {x: targetPos.x+6, y: targetPos.y},
+               //   {x: targetPos.x, y: targetPos.y+6},
+               //   {x: targetPos.x, y: targetPos.y-6},
+               // ]
                candidateTargets = [
                  {x: targetPos.x-5, y: targetPos.y},
                  {x: targetPos.x+5, y: targetPos.y},
@@ -14961,6 +14972,7 @@ class App extends Component {
                    switch(indx) {
                      case 0:
                        rangeElemCells = [
+                         // {x:rangeElem - 5, y: rangeElem.y },
                          {x:rangeElem - 4, y: rangeElem.y },
                          {x:rangeElem - 3, y: rangeElem.y },
                          {x:rangeElem - 2, y: rangeElem.y },
@@ -14969,6 +14981,7 @@ class App extends Component {
                      break;
                      case 1:
                        rangeElemCells = [
+                         // {x:rangeElem + 5, y: rangeElem.y },
                          {x:rangeElem + 4, y: rangeElem.y },
                          {x:rangeElem + 3, y: rangeElem.y },
                          {x:rangeElem + 2, y: rangeElem.y },
@@ -14977,6 +14990,7 @@ class App extends Component {
                      break;
                      case 2:
                        rangeElemCells = [
+                         // {x:rangeElem, y: rangeElem.y + 5},
                          {x:rangeElem, y: rangeElem.y + 4},
                          {x:rangeElem, y: rangeElem.y + 3},
                          {x:rangeElem, y: rangeElem.y + 2},
@@ -14985,12 +14999,22 @@ class App extends Component {
                      break;
                      case 3:
                        rangeElemCells = [
+                         // {x:rangeElem, y: rangeElem.y - 5},
                          {x:rangeElem, y: rangeElem.y - 4},
                          {x:rangeElem, y: rangeElem.y - 3},
                          {x:rangeElem, y: rangeElem.y - 2},
                          {x:rangeElem, y: rangeElem.y - 1},
                        ]
                      break;
+                     // case 4:
+                     //   rangeElemCells = [
+                     //     {x:rangeElem, y: rangeElem.y - 5},
+                     //     {x:rangeElem, y: rangeElem.y - 4},
+                     //     {x:rangeElem, y: rangeElem.y - 3},
+                     //     {x:rangeElem, y: rangeElem.y - 2},
+                     //     {x:rangeElem, y: rangeElem.y - 1},
+                     //   ]
+                     // break;
                    }
 
                    let rngElCellFree = true;
@@ -15100,7 +15124,7 @@ class App extends Component {
               }
 
             }
-            if (aiPlayer.currentWeapon.type === "sword") {
+            if (aiPlayer.currentWeapon.type === "sword" || aiPlayer.currentWeapon.name === "") {
               candidateTargets = [
                 {x: targetPos.x-2, y: targetPos.y},
                 {x: targetPos.x+2, y: targetPos.y},
@@ -15226,6 +15250,182 @@ class App extends Component {
             this.easyStar.avoidAdditionalPoint(plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
           }
         }
+
+        if (aiPlayer.ai.mission === 'retreat' || aiPlayer.ai.mission === 'retrive') {
+
+          for (const plyr of this.players) {
+            if (plyr.ai.state !== true) {
+              console.log(aiPlayer.ai.mission,' careful pathfinding. enemy is plyr #',plyr.number);
+              let rng;
+              let span;
+
+              if (plyr.currentWeapon.type === "sword" || plyr.currentWeapon.name === "") {
+                rng = 1;
+              }
+              else {
+                rng = 2;
+              }
+              span = (rng*2)+1;
+              let cornerCell = undefined;
+              let whichCorner;
+
+              while (!cornerCell) {
+
+                let whichCorner2 = this.rnJesus(1,4)
+
+                switch(whichCorner2) {
+                  case 1:
+                    cornerCell = this.gridInfo.find(elem=> elem.number.x === plyr.currentPosition.cell.number.x+rng && elem.number.y === plyr.currentPosition.cell.number.y+rng)
+                    whichCorner = 'southEast';
+                  break;
+                  case 2:
+                    cornerCell = this.gridInfo.find(elem=> elem.number.x === plyr.currentPosition.cell.number.x-rng && elem.number.y === plyr.currentPosition.cell.number.y-rng)
+                    whichCorner = 'northWest';
+                  break;
+                  case 3:
+                    cornerCell = this.gridInfo.find(elem=> elem.number.x === plyr.currentPosition.cell.number.x-rng && elem.number.y === plyr.currentPosition.cell.number.y+rng)
+                    whichCorner = 'southWest';
+                  break;
+                  case 4:
+                    cornerCell = this.gridInfo.find(elem=> elem.number.x === plyr.currentPosition.cell.number.x+rng && elem.number.y === plyr.currentPosition.cell.number.y-rng)
+                    whichCorner = 'northEast';
+                  break;
+                }
+
+              }
+
+
+              if (cornerCell) {
+                // console.log('cornerCell',cornerCell.number);
+
+                for (var i = 0; i < span; i++) {
+
+                  let startCell;
+                  switch(whichCorner) {
+                    case 'southEast':
+                      startCell = {
+                        x: cornerCell.number.x-i,
+                        y: cornerCell.number.y
+                      }
+                    break;
+                    case 'northEast':
+                      startCell = {
+                        x: cornerCell.number.x-i,
+                        y: cornerCell.number.y
+                      }
+                    break;
+                    case 'southWest':
+                      startCell = {
+                        x: cornerCell.number.x+i,
+                        y: cornerCell.number.y
+                      }
+                    break;
+                    case 'northWest':
+                      startCell = {
+                        x: cornerCell.number.x+i,
+                        y: cornerCell.number.y
+                      }
+                    break;
+                  }
+                  console.log('startCell',startCell);
+
+                  for (var i = 0; i < span; i++) {
+                    let cell;
+
+                    switch(whichCorner) {
+                      case 'southEast':
+                        cell = {
+                          x: startCell.x,
+                          y: startCell.y-i,
+                        }
+                      break;
+                      case 'northEast':
+                        cell = {
+                          x: startCell.x,
+                          y: startCell.y+i,
+                        }
+                      break;
+                      case 'southWest':
+                        cell = {
+                          x: startCell.x,
+                          y: startCell.y-i,
+                        }
+                      break;
+                      case 'northWest':
+                        cell = {
+                          x: startCell.x,
+                          y: startCell.y+i,
+                        }
+                      break;
+                    }
+                    console.log('cell',cell);
+
+
+                    if (
+                      cell.x <= this.gridWidth || cell.x >= 0 &&
+                      cell.y <= this.gridWidth || cell.y >= 0
+                    ) {
+                      console.log(aiPlayer.ai.mission,'avoid cell ',cell);
+                      // this.easyStar.avoidAdditionalPoint(cell2.number.x, cell2.number.y);
+                    }
+                  }
+                }
+
+              }
+
+            }
+          }
+
+
+
+         // AVOID DEBUFFS!!
+         if (aiPlayer.ai.mission === 'retrive') {
+
+
+           let fieldItemScan = []
+           for (const cell of this.gridInfo) {
+             if (cell.item.name !== '') {
+               fieldItemScan.push({
+                 name: cell.item.name,
+                 type: cell.item.type,
+                 subType: cell.item.subType,
+                 effect: cell.item.effect,
+                 location: {x: cell.number.x, y: cell.number.y}
+               })
+             }
+           }
+
+
+           let nerfItemPositions = [];
+           for (const item of fieldItemScan) {
+
+             switch(item.name) {
+               case 'moveSpeedDown':
+                 nerfItemPositions.push(item)
+               break;
+               case 'hpDown':
+                 nerfItemPositions.push(item)
+               break;
+               case 'focusDown':
+                 nerfItemPositions.push(item)
+               break;
+               case 'strengthDown':
+                 nerfItemPositions.push(item)
+               break;
+             }
+
+           };
+
+           for (const nerf of nerfItemPositions) {
+
+             this.easyStar.avoidAdditionalPoint(nerf.location.x, nerf.location.y);
+
+           }
+
+         }
+
+        }
+
 
 
         // TERRAIN & OBSTACLE CELLS TO AVOID
