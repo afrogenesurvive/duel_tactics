@@ -2930,6 +2930,10 @@ class App extends Component {
 
       }
 
+      if (player.success.deflected.type === 'outOfStamina') {
+        console.log('boomshakkalakka');
+      }
+
       this.deflectDrop(player)
 
     }
@@ -3524,6 +3528,11 @@ class App extends Component {
               player.currentWeapon.effect = 'ammo+0';
 
               this.getBoltTarget(boltx)
+
+
+              // STAMINA COST!!
+
+              this.players[player.number-1].stamina.current = this.players[player.number-1].stamina.current - this.staminaCostRef.attack.crossbow;
               // console.log('start projectile',boltx.currentPosition.number, this.players[boltx.owner-1].currentPosition.cell.number,this.projectiles);
 
               // this.boltCrementer(bolt)
@@ -3704,6 +3713,8 @@ class App extends Component {
                     }
                   }
                   else {
+
+                    // WEAPON STAMINA COST!!
                     let weapon = player.currentWeapon.type
                     if (weapon === '') {
                       weapon = 'unarmed'
@@ -11850,7 +11861,7 @@ class App extends Component {
   safeDistanceRetreat = (plyr,cell) => {
 
     let isSafeDistance = false;
-    let safeRetreatDistance = 3;
+    let safeRetreatDistance = 2;
     if (
       cell.x <= plyr.currentPosition.cell.number.x + safeRetreatDistance ||
       cell.x >= plyr.currentPosition.cell.number.x - safeRetreatDistance ||
@@ -12196,21 +12207,17 @@ class App extends Component {
             };
             plyr.ai.retrieving.safe = true;
             plyr.ai.upgradeArmor = false;
+          }
+
         }
         else {
-          console.log('hp up gear unsafe to retrieve');
-          plyr.ai.upgradeArmor = false;
+          console.log('no hp up gear found in the field');
         }
-
-      }
-      else {
-        console.log('no hpUp gear in the field');
-        plyr.ai.upgradeArmor = false;
       }
 
       if (plyr.speed.move < .1) {
 
-        armorInTheField = fieldItemScan.find(gear => gear.effect === 'speedUp')
+        armorInTheField = fieldItemScan.find(gear => gear.effect === 'speedUp')[0]
 
         if (armorInTheField) {
 
@@ -12240,17 +12247,12 @@ class App extends Component {
             };
             plyr.ai.retrieving.safe = true;
             plyr.ai.upgradeArmor = false;
+          }
+
         }
         else {
-          console.log('speedUp gear unsafe to retrieve');
-          plyr.ai.upgradeArmor = false;
+          console.log('no spped up gear found in the field');
         }
-
-      }
-      else {
-        console.log('no speedUp gear in the field');
-        plyr.ai.upgradeArmor = false;
-      }
 
       }
 
@@ -12732,12 +12734,12 @@ class App extends Component {
                 plyr2.currentPosition.cell.number.y > plyr.currentPosition.cell.number.y - 7 &&
                 plyr2.currentPosition.cell.number.y < plyr.currentPosition.cell.number.y
               ) {
-                if (plyr.ai.targetPlayer.number === plyr2.number) {
+                if (plyr.ai.targetPlayer.number === plyr2.number && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                   targetInRange = true;
                   // console.log('target in bow range for player',plyr.number,'@',plyr.currentPosition.cell.number);
                   plyr.ai.currentInstruction = 0;
                 }
-                else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage') {
+                else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                   plyr.ai.currentInstruction = 0;
                   // console.log('alternative target in range. Switching');
                   plyr.ai.targetPlayer = {
@@ -12770,12 +12772,12 @@ class App extends Component {
                  plyr2.currentPosition.cell.number.x > plyr.currentPosition.cell.number.x - 7 &&
                  plyr2.currentPosition.cell.number.x < plyr.currentPosition.cell.number.x
               ) {
-                  if (plyr.ai.targetPlayer.number === plyr2.number) {
+                  if (plyr.ai.targetPlayer.number === plyr2.number && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     targetInRange = true;
                     // console.log('target in bow range for player',plyr.number,'@',plyr.currentPosition.cell.number);
                     plyr.ai.currentInstruction = 0;
                   }
-                  else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage') {
+                  else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     plyr.ai.currentInstruction = 0;
                     // console.log('alternative target in range. Switching');
                     plyr.ai.targetPlayer = {
@@ -12820,11 +12822,11 @@ class App extends Component {
                   plyr.currentPosition.cell.number.y === plyr2.currentPosition.cell.number.y + (range - 2) ||
                   plyr.currentPosition.cell.number.y === plyr2.currentPosition.cell.number.y - (range - 2)
                 ) {
-                  if (plyr.ai.targetPlayer.number === plyr2.number) {
+                  if (plyr.ai.targetPlayer.number === plyr2.number && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     targetInRange = true;
                     // console.log('target in spear range for player',plyr.number,'@',plyr.currentPosition.cell.number);
                   }
-                  else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage') {
+                  else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     // console.log('alternative target in range. Switching');
                     plyr.ai.targetPlayer = {
                       number: plyr2.number,
@@ -12852,11 +12854,11 @@ class App extends Component {
                   plyr.currentPosition.cell.number.y === plyr2.currentPosition.cell.number.y + range ||
                   plyr.currentPosition.cell.number.y === plyr2.currentPosition.cell.number.y - range
                 ) {
-                  if (plyr.ai.targetPlayer.number === plyr2.number) {
+                  if (plyr.ai.targetPlayer.number === plyr2.number && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     targetInRange = true;
                     // console.log('target in spear range for player',plyr.number,'@',plyr.currentPosition.cell.number);
                   }
-                  else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage') {
+                  else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     // console.log('alternative target in range. Switching');
                     plyr.ai.targetPlayer = {
                       number: plyr2.number,
@@ -12892,11 +12894,11 @@ class App extends Component {
                   plyr.currentPosition.cell.number.x === plyr2.currentPosition.cell.number.x - (range - 2) ||
                   plyr.currentPosition.cell.number.x === plyr2.currentPosition.cell.number.x - (range - 2)
                 ) {
-                  if (plyr.ai.targetPlayer.number === plyr2.number) {
+                  if (plyr.ai.targetPlayer.number === plyr2.number && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     targetInRange = true;
                     // console.log('target in spear range for player',plyr.number,'@',plyr.currentPosition.cell.number);
                   }
-                  else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage') {
+                  else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     // console.log('alternative target in range. Switching');
                     plyr.ai.targetPlayer = {
                       number: plyr2.number,
@@ -12924,11 +12926,11 @@ class App extends Component {
                   plyr.currentPosition.cell.number.x === plyr2.currentPosition.cell.number.x + range ||
                   plyr.currentPosition.cell.number.x === plyr2.currentPosition.cell.number.x - range
                 ) {
-                  if (plyr.ai.targetPlayer.number === plyr2.number) {
+                  if (plyr.ai.targetPlayer.number === plyr2.number && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     targetInRange = true;
                     // console.log('target in spear range for player',plyr.number,'@',plyr.currentPosition.cell.number);
                   }
-                  else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage') {
+                  else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     // console.log('alternative target in range. Switching');
                     plyr.ai.targetPlayer = {
                       number: plyr2.number,
@@ -12972,11 +12974,11 @@ class App extends Component {
                   plyr.currentPosition.cell.number.y ===  plyr2.currentPosition.cell.number.y + (range2 - 1) ||
                   plyr.currentPosition.cell.number.y ===  plyr2.currentPosition.cell.number.y - (range2 - 1)
                 ) {
-                  if (plyr.ai.targetPlayer.number === plyr2.number) {
+                  if (plyr.ai.targetPlayer.number === plyr2.number && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     targetInRange = true;
                     // console.log('target in sword range for player',plyr.number,'@',plyr.currentPosition.cell.number);
                   }
-                  else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage') {
+                  else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     // console.log('alternative target in range. Switching');
                     plyr.ai.targetPlayer = {
                       number: plyr2.number,
@@ -13004,11 +13006,11 @@ class App extends Component {
                   plyr.currentPosition.cell.number.y ===  plyr2.currentPosition.cell.number.y + range2 ||
                   plyr.currentPosition.cell.number.y ===  plyr2.currentPosition.cell.number.y - range2
                 ) {
-                  if (plyr.ai.targetPlayer.number === plyr2.number) {
+                  if (plyr.ai.targetPlayer.number === plyr2.number && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     targetInRange = true;
                     // console.log('target in sword range for player',plyr.number,'@',plyr.currentPosition.cell.number);
                   }
-                  else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage') {
+                  else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     // console.log('alternative target in range. Switching');
                     plyr.ai.targetPlayer = {
                       number: plyr2.number,
@@ -13041,11 +13043,11 @@ class App extends Component {
                   plyr.currentPosition.cell.number.x ===  plyr2.currentPosition.cell.number.x + (range2 - 1) ||
                   plyr.currentPosition.cell.number.x ===  plyr2.currentPosition.cell.number.x - (range2 - 1)
                 ) {
-                  if (plyr.ai.targetPlayer.number === plyr2.number) {
+                  if (plyr.ai.targetPlayer.number === plyr2.number && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     targetInRange = true;
                     // console.log('target in sword range for player',plyr.number,'@',plyr.currentPosition.cell.number);
                   }
-                  else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage') {
+                  else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     // console.log('alternative target in range. Switching');
                     plyr.ai.targetPlayer = {
                       number: plyr2.number,
@@ -13072,11 +13074,11 @@ class App extends Component {
                   plyr.currentPosition.cell.number.x ===  plyr2.currentPosition.cell.number.x + range2 ||
                   plyr.currentPosition.cell.number.x ===  plyr2.currentPosition.cell.number.x - range2
                 ) {
-                  if (plyr.ai.targetPlayer.number === plyr2.number) {
+                  if (plyr.ai.targetPlayer.number === plyr2.number && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     targetInRange = true;
                     // console.log('target in sword range for player',plyr.number,'@',plyr.currentPosition.cell.number);
                   }
-                  else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage') {
+                  else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     // console.log('alternative target in range. Switching');
                     plyr.ai.targetPlayer = {
                       number: plyr2.number,
@@ -13118,7 +13120,12 @@ class App extends Component {
 
       plyr.ai.prevMission = plyr.ai.mission;
       if (plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
+        // console.log('player',plyr.number,'target in range. Engage!');
         plyr.ai.mission = 'engage';
+      }
+
+      if (plyr.ai.mission === 'retrieve' || plyr.ai.mission === 'retreat') {
+        // console.log('xxx');
       }
 
       // plyr.ai.engaging.state = true;
@@ -13149,7 +13156,7 @@ class App extends Component {
       plyr.ai.targetAqcuiredReset = false;
     }
 
-    if (plyr.ai.mission === 'retrieve') {
+    if (plyr.ai.mission === 'retrieve' && plyr.ai.retrieving.state !== true) {
       // console.log('retrieve @  ai evaluate', plyr.ai.retrieving);
 
 
@@ -13187,7 +13194,8 @@ class App extends Component {
          plyr.ai.mission = plyr.ai.primaryMission;
          plyr.ai.retrieving.checkin = undefined;
          plyr.ai.retrieving.safe = false;
-         console.log('retrieval complete. revert mission',plyr.ai.mission);
+         plyr.ai.targetAcquired = false;
+         // console.log('retrieval complete. revert mission',plyr.ai.mission,plyr.ai.targetSet,plyr.ai.targetPlayer.currentPosition,plyr.ai.targetAcquired,plyr.ai.targetPlayer);
 
          let itemRetrieved;
 
@@ -13236,6 +13244,7 @@ class App extends Component {
 
       if (!plyr.ai.retreating.checkin) {
 
+
         let isSafeDistance = false;
 
         let cell = {x: 0,y: 0}
@@ -13272,7 +13281,8 @@ class App extends Component {
 
       }
 
-      if (plyr.ai.retreating.checkin) {
+      if (plyr.ai.retreating.checkin && plyr.ai.retreating.state !== true) {
+
 
         let targetSafeData = this.scanTargetAreaThreat({
           player: plyr.number,
@@ -13524,10 +13534,12 @@ class App extends Component {
               aiPlayer.currentPosition.cell.number.y === targetPlayer.currentPosition.cell.number.y - 1 ||
               aiPlayer.currentPosition.cell.number.y === targetPlayer.currentPosition.cell.number.y + 1
             ) {
-              console.log('engaging w/ crossbow but too close for comfort');
+              console.log('plyr',aiPlayer.number,' engaging w/ crossbow but too close for comfort');
               aiPlayer.ai.retreating.state = false;
               aiPlayer.ai.retreating.checkin = undefined;
-              aiPlayer.ai.mission = 'retreat'
+              aiPlayer.ai.mission = 'retreat';
+              aiPlayer.ai.retreating.safe = false;
+              // aiPlayer.ai.currentInstruction = 0;
             }
             else if (aiPlayer.items.ammo > 0) {
               instructions3.push(
@@ -14917,7 +14929,7 @@ class App extends Component {
         if (aiPlayer.ai.mission === 'pursue') {
           aiPos = aiPlayer.currentPosition.cell.number;
           targetPos = this.players[aiPlayer.ai.targetPlayer.number-1].currentPosition.cell.number;
-
+          // console.log('pursuit target ',targetPos);
 
           if (this.aiCarefulRange === true) {
 
@@ -15407,7 +15419,7 @@ class App extends Component {
 
     // console.log('this.pathArray',this.pathArray);
     // console.log('path',path,'player',aiPlayer);
-    console.log('instructions',instructions,'player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction);
+    // console.log('player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction,'mission',this.players[aiPlayer-1].ai.mission,'instructions',instructions);
     // if (this.players[aiPlayer-1].ai.mission === 'retreat') {
     //   console.log('retreat instructions',instructions,'player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction,'path',path);
     // }
@@ -15440,6 +15452,7 @@ class App extends Component {
       }
 
       // console.log('total instructions',plyr.ai.instructions.length,'currentInstruction',plyr.ai.currentInstruction,plyr.moving.state, !plyr.turning.state,'keyword',currentInstruction.keyword,'limit',currentInstruction.limit,'instructions',plyr.ai.instructions,'deflected',plyr.success.deflected.state);
+      // console.log('ai act',plyr.ai.currentInstruction,currentInstruction,'mission',plyr.ai.mission,'instructions',plyr.ai.instructions);
 
       this.keyPressed[plyr.number-1] = {
         north: false,
@@ -15494,12 +15507,13 @@ class App extends Component {
             }
 
             if (inDanger === false) {
-
+              // console.log('safe');
               // currentInstruction.limit = 1;
               this.keyPressed[plyr.number-1].north = true;
               this.players[plyr.number-1].turnCheckerDirection = 'north';
               // plyr.ai.currentInstruction++;
               if (currentInstruction.limit === 1) {
+
                 plyr.ai.currentInstruction++;
               } else {
                 if (currentInstruction.count < currentInstruction.limit) {
@@ -15543,6 +15557,7 @@ class App extends Component {
               this.players[plyr.number-1].turnCheckerDirection = 'south';
               // plyr.ai.currentInstruction++;
               if (currentInstruction.limit === 1) {
+
                 plyr.ai.currentInstruction++;
               } else {
                 if (currentInstruction.count < currentInstruction.limit) {
@@ -15583,6 +15598,7 @@ class App extends Component {
               this.players[plyr.number-1].turnCheckerDirection = 'east';
               // plyr.ai.currentInstruction++;
               if (currentInstruction.limit === 1) {
+
                 plyr.ai.currentInstruction++;
               } else {
                 if (currentInstruction.count < currentInstruction.limit) {
@@ -15624,6 +15640,7 @@ class App extends Component {
               this.players[plyr.number-1].turnCheckerDirection = 'west';
               // plyr.ai.currentInstruction++;
               if (currentInstruction.limit === 1) {
+
                 plyr.ai.currentInstruction++;
               } else {
                 if (currentInstruction.count < currentInstruction.limit) {
