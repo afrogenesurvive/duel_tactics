@@ -1453,6 +1453,8 @@ class App extends Component {
     this.aiDeflectCheck = false;
     this.aiDeflectedCheck = [];
 
+    this.aiSettingFormStartPosList = [];
+
     this.showSettingsKeyPress = {
       state: false,
       count: 0,
@@ -2560,6 +2562,9 @@ class App extends Component {
     }
 
 
+    // if multiple non random ai, loop set ai settings and call addAiPlayer()
+
+
   }
   cancelSettings = () => {
     this.setState({
@@ -2570,6 +2575,16 @@ class App extends Component {
     this.setState({
       showSettings: true,
     })
+  }
+  getCustomAiStartPosList = (args) => {
+
+    for (const elem of this.gridInfo) {
+
+      if (this.checkCell({x:elem.number.x,y:elem.number.y}) === true) {
+        this.aiSettingFormStartPosList.push({ x:elem.number.x,y:elem.number.y});
+      }
+    }
+
   }
 
   gameLoop = () => {
@@ -16283,6 +16298,7 @@ class App extends Component {
               gridWidth={this.gridWidth}
               onConfirm={this.loadSettings}
               onCancel={this.cancelSettings}
+              getCustomAiStartPosList={this.getCustomAiStartPosList}
             />
           )}
 
