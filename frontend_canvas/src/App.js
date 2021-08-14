@@ -15327,47 +15327,48 @@ class App extends Component {
                       }
                     break;
                   }
-                  console.log('startCell',startCell);
+                  // console.log('startCell',startCell,i);
 
-                  for (var i = 0; i < span; i++) {
+                  for (var j = 0; j < span; j++) {
                     let cell;
 
                     switch(whichCorner) {
                       case 'southEast':
                         cell = {
                           x: startCell.x,
-                          y: startCell.y-i,
+                          y: startCell.y-j,
                         }
                       break;
                       case 'northEast':
                         cell = {
                           x: startCell.x,
-                          y: startCell.y+i,
+                          y: startCell.y+j,
                         }
                       break;
                       case 'southWest':
                         cell = {
                           x: startCell.x,
-                          y: startCell.y-i,
+                          y: startCell.y-j,
                         }
                       break;
                       case 'northWest':
                         cell = {
                           x: startCell.x,
-                          y: startCell.y+i,
+                          y: startCell.y+j,
                         }
                       break;
                     }
-                    console.log('cell',cell);
+                    // console.log('cell',cell,j);
 
 
                     if (
-                      cell.x <= this.gridWidth || cell.x >= 0 &&
-                      cell.y <= this.gridWidth || cell.y >= 0
+                      cell.x <= this.gridWidth && cell.x >= 0 &&
+                      cell.y <= this.gridWidth && cell.y >= 0
                     ) {
-                      console.log(aiPlayer.ai.mission,'avoid cell ',cell);
-                      // this.easyStar.avoidAdditionalPoint(cell2.number.x, cell2.number.y);
+                      // console.log(aiPlayer.ai.mission,'avoid cell ',cell);
+                      this.easyStar.avoidAdditionalPoint(cell.x, cell.y);
                     }
+
                   }
                 }
 
