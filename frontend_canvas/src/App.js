@@ -2582,29 +2582,36 @@ class App extends Component {
 
     let avoidCells = [];
 
-    for (const plyr of args) {
-      // switch(plyr.mission) {
-      //   case 'pursue':
-      //
-      //   break;
-      //   case 'patrol':
-      //   break;
-      //   case 'defend':
-      //   break;
-      // }
-
-      let array1 = [];
-      for (const elem of this.gridInfo) {
-        if (
-          this.checkCell({x:elem.number.x,y:elem.number.y}) === true &&
-          !avoidCells.find(elem2 => elem2.x === elem.number.x && elem2.y === elem.number.y)
-        ) {
-          array1.push({x:elem.number.x,y:elem.number.y});
-        }
-      }
-      this.settingsFormAiStartPosList.push({plyrNo:plyr.plyrNo,mission:plyr.mission,posArray:array1})
-
+    if (args.length === 0) {
+      this.settingsFormAiStartPosList = [];
     }
+    else {
+      for (const plyr of args) {
+        // switch(plyr.mission) {
+        //   case 'pursue':
+        //
+        //   break;
+        //   case 'patrol':
+        //   break;
+        //   case 'defend':
+        //   break;
+        // }
+
+        let array1 = [];
+        for (const elem of this.gridInfo) {
+          if (
+            this.checkCell({x:elem.number.x,y:elem.number.y}) === true &&
+            !avoidCells.find(elem2 => elem2.x === elem.number.x && elem2.y === elem.number.y)
+          ) {
+            array1.push({x:elem.number.x,y:elem.number.y});
+          }
+        }
+        this.settingsFormAiStartPosList.push({plyrNo:plyr.plyrNo,mission:plyr.mission,posArray:array1})
+
+      }
+    }
+
+
 
   }
 

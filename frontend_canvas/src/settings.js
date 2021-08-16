@@ -108,6 +108,7 @@ const Settings = (props) => {
       break;
     }
     setAiMission([])
+    props.getCustomAiStartPosList([])
 
     setAiCount({
       count: args,
