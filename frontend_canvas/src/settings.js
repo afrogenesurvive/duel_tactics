@@ -27,6 +27,7 @@ let playerSettings = {
 
 
 const Settings = (props) => {
+  // console.log('props.aiStartPosList',props.aiStartPosList);
 
   const [aiCount, setAiCount] = useState({
     count: 0,
@@ -141,7 +142,16 @@ const Settings = (props) => {
       })
     }
     setAiMission(array2);
-    props.getCustomAiStartPosList(array2)
+
+    let newArray = array2.map(y => y = {
+      plyrNo: y.plyrNo,
+      mission: y.mission,
+      selected: []
+    });
+    console.log('newArray 1',newArray);
+    props.getCustomAiStartPosList(newArray)
+
+    // props.getCustomAiStartPosList(array2)
 
     let multiAiFormAiMissionColWidth;
     switch(x.length) {
@@ -171,13 +181,52 @@ const Settings = (props) => {
     }
     setAiMission(array);
     console.log('setAiMission',aiMission);
-    props.getCustomAiStartPosList(aiMission)
+
+    let newArray = aiMission.map(y => y = {
+      plyrNo: y.plyrNo,
+      mission: y.mission,
+      selected: []
+    });
+    console.log('newArray 2',newArray);
+    props.getCustomAiStartPosList(newArray)
+    console.log('props.aiStartPosList 1',props.aiStartPosList);
 
   }
 
   const [aiStartPos, setAiStartPos] = useState([]);
-  const handleAiStartPosStateChange = (plyrNo,value) => {
+  const handleAiStartPosStateChange = (mission,plyrNo,type,value) => {
     // setAiStartPos(args);
+    let newArray = props.aiStartPosList.map(y => y = {
+      plyrNo: y.plyrNo,
+      mission: y.mission,
+      selected: y.selected,
+    });
+
+    console.log('props.aiStartPosList 2',props.aiStartPosList);
+
+    let plyrChange = newArray.find(x => x.plyrNo === plyrNo);
+
+    if (plyrChange.selected.length === 0) {
+      plyrChange.selected.push({type:type,cell:{x:value.split(",")[0],y:value.split(",")[1]}})
+    }
+    else {
+      console.log('plyrChange',plyrChange);
+      let selectedElem = plyrChange.selected.find(j=>j.type === type)
+      let indx = newArray.findIndex(j=>j.plyrNo === plyrChange.plyrNo)
+      if (selectedElem) {
+        console.log('a selectedElem',selectedElem);
+        selectedElem.cell = {x:parseInt(value.split(",")[0]),y:parseInt(value.split(",")[1])};
+      }
+      else {
+        console.log('b');
+        plyrChange.selected.push({type:type,cell:{x:parseInt(value.split(",")[0]),y:parseInt(value.split(",")[1])}});
+      }
+    }
+
+    props.getCustomAiStartPosList(newArray)
+
+    // console.log('val',value,'newArray',newArray,'plyrChange2',plyrChange,'type',type);
+
   }
 
   const [multiAiFormAiColWidth, setMultiAiFormAiColWidth] = useState(8);
@@ -283,12 +332,22 @@ const Settings = (props) => {
         {props.aiStartPosList.length > 0 && (
           <Row className="multiAiFormBox">
             {props.aiStartPosList.map((posArray) => {
-              if (posArray.mission !== 'patrol' ) {
+
+
+              if (posArray.mission === 'pursue' ) {
                 return<Col className="multiAiFormAi" sm={multiAiFormAiMissionColWidth}>
                   <Form.Row>
-                    <Form.Group as={Col} controlId="aiStartPos1" className="formGroup">
-                      <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position</Form.Label>
-                      <Form.Control as="select"  onChange={e=>handleAiStartPosStateChange(posArray.plyrNo,e.target.value)}>
+                    <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
+                      {posArray.selected.map((selected) => {
+                        if (selected.type === 'start') {
+                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position ({selected.cell.x},{selected.cell.y})</Form.Label>
+                        }
+                        else {
+                          return <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position</Form.Label>
+                        }
+                      })}
+                      <Form.Control as="select"  onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start',e.target.value)}>
+
                         {posArray.posArray.map((pos) => (
                           <option>{pos.x},{pos.y}</option>
                         ))}
@@ -297,20 +356,90 @@ const Settings = (props) => {
                   </Form.Row>
                 </Col>
               }
-              if (posArray.mission === 'patrol' ) {
+
+              if (posArray.mission === 'defend' ) {
                 return<Col className="multiAiFormAi" sm={multiAiFormAiMissionColWidth}>
                   <Form.Row>
-                    <Form.Group as={Col} controlId="aiStartPos1" className="formGroup">
-                      <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position</Form.Label>
-                      <Form.Control as="select"  onChange={e=>handleAiStartPosStateChange(posArray.plyrNo,e.target.value)}>
+                    <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
+                      {posArray.selected.map((selected) => {
+                        if (selected.type === 'start') {
+                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position ({selected.cell.x},{selected.cell.y})</Form.Label>
+                        }
+                        else {
+                          <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position</Form.Label>
+                        }
+                      })}
+                      <Form.Control as="select"  onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start',e.target.value)}>
                         {posArray.posArray.map((pos) => (
                           <option>{pos.x},{pos.y}</option>
                         ))}
                       </Form.Control>
                     </Form.Group>
-                    <Form.Group as={Col} controlId="aiStartPos2" className="formGroup">
-                      <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position</Form.Label>
-                      <Form.Control as="select"  onChange={e=>handleAiStartPosStateChange(posArray.plyrNo,e.target.value)}>
+                  </Form.Row>
+                  <Form.Row>
+                    <Form.Group as={Col} controlId="aiDefendPos" className="formGroup">
+                      {posArray.selected.map((selected) => {
+                        if (selected.type === 'defend') {
+                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position ({selected.cell.x},{selected.cell.y})</Form.Label>
+                        }
+                        else {
+                          <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position</Form.Label>
+                        }
+                      })}
+                      <Form.Control as="select"  onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'defend',e.target.value)}>
+                        {posArray.posArray.map((pos) => (
+                          <option>{pos.x},{pos.y}</option>
+                        ))}
+                      </Form.Control>
+                    </Form.Group>
+                  </Form.Row>
+                </Col>
+              }
+
+              if (posArray.mission === 'patrol' ) {
+                return<Col className="multiAiFormAi" sm={multiAiFormAiMissionColWidth}>
+                  <Form.Row>
+                    <Form.Group as={Col} controlId="aiStartPos1" className="formGroup">
+                      {posArray.selected.map((selected) => {
+                        if (selected.type === 'start') {
+                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position ({selected.cell.x},{selected.cell.y})</Form.Label>
+                        }
+                        else {
+                          <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position</Form.Label>
+                        }
+                      })}
+                      <Form.Control as="select"  onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start',e.target.value)}>
+                        {posArray.posArray.map((pos) => (
+                          <option>{pos.x},{pos.y}</option>
+                        ))}
+                      </Form.Control>
+                    </Form.Group>
+                    <Form.Group as={Col} controlId="aiPatrolPos1" className="formGroup">
+                      {posArray.selected.map((selected) => {
+                        if (selected.type === 'patrol1') {
+                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 1 ({selected.cell.x},{selected.cell.y})</Form.Label>
+                        }
+                        else {
+                          <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 1</Form.Label>
+                        }
+                      })}
+                      <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 1</Form.Label>
+                      <Form.Control as="select"  onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol1',e.target.value)}>
+                        {posArray.posArray.map((pos) => (
+                          <option>{pos.x},{pos.y}</option>
+                        ))}
+                      </Form.Control>
+                    </Form.Group>
+                    <Form.Group as={Col} controlId="aiPatrolPos2" className="formGroup">
+                      {posArray.selected.map((selected) => {
+                        if (selected.type === 'patrol2') {
+                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 2 ({selected.cell.x},{selected.cell.y})</Form.Label>
+                        }
+                        else {
+                          <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 2</Form.Label>
+                        }
+                      })}
+                      <Form.Control as="select"  onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol2',e.target.value)}>
                         {posArray.posArray.map((pos) => (
                           <option>{pos.x},{pos.y}</option>
                         ))}

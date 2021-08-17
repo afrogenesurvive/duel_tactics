@@ -2568,9 +2568,11 @@ class App extends Component {
 
   }
   cancelSettings = () => {
+    this.settingsFormAiStartPosList = [];
     this.setState({
-      showSettings: false
+      showSettings: false,
     })
+
   }
   openSettings = () => {
     this.setState({
@@ -2583,9 +2585,16 @@ class App extends Component {
     let avoidCells = [];
 
     if (args.length === 0) {
+
       this.settingsFormAiStartPosList = [];
+
+      this.setState({
+        stateUpdater: '..'
+      })
     }
     else {
+      avoidCells = [];
+      this.settingsFormAiStartPosList = [];
       for (const plyr of args) {
         // switch(plyr.mission) {
         //   case 'pursue':
@@ -2598,20 +2607,83 @@ class App extends Component {
         // }
 
         let array1 = [];
+        console.log('plyr.selected',plyr.selected);
+        if (plyr.selected.length > 0) {
+          for (const selected of plyr.selected) {
+            avoidCells.push(selected.cell)
+          }
+        }
+        console.log('avoid cells',avoidCells);
+
         for (const elem of this.gridInfo) {
+
           if (
             this.checkCell({x:elem.number.x,y:elem.number.y}) === true &&
             !avoidCells.find(elem2 => elem2.x === elem.number.x && elem2.y === elem.number.y)
           ) {
             array1.push({x:elem.number.x,y:elem.number.y});
+
           }
+
         }
-        this.settingsFormAiStartPosList.push({plyrNo:plyr.plyrNo,mission:plyr.mission,posArray:array1})
+
+
+        if (plyr.selected.length === 0) {
+          let doubleCheckArray = array1;
+
+          if (plyr.mission === 'patrol') {
+            // avoidCells.push({x:array1[0].x,y:array1[0].y})
+            // avoidCells.push({x:array1[1].x,y:array1[1].y})
+            // avoidCells.push({x:array1[2].x,y:array1[2].y})
+
+            plyr.selected.push({type:'start',cell:{x:array1[0].x,y:array1[0].y}})
+            plyr.selected.push({type:'patrol1',cell:{x:array1[1].x,y:array1[1].y}})
+            plyr.selected.push({type:'patrol2',cell:{x:array1[2].x,y:array1[2].y}})
+
+            doubleCheckArray = array1.filter(i=>i !== array1[0])
+            doubleCheckArray = array1.filter(i=>i !== array1[1])
+            doubleCheckArray = array1.filter(i=>i !== array1[2])
+          }
+          if (plyr.mission === 'defend') {
+            // avoidCells.push({x:array1[0].x,y:array1[0].y})
+            // avoidCells.push({x:array1[1].x,y:array1[1].y})
+
+            plyr.selected.push({type:'start',cell:{x:array1[0].x,y:array1[0].y}})
+            plyr.selected.push({type:'defend',cell:{x:array1[1].x,y:array1[1].y}})
+
+            doubleCheckArray = array1.filter(i=>i !== array1[0])
+            doubleCheckArray = array1.filter(i=>i !== array1[1])
+          }
+          if (plyr.mission === 'pursue') {
+            // avoidCells.push({x:array1[0].x,y:array1[0].y})
+
+            plyr.selected.push({type:'start',cell:{x:array1[0].x,y:array1[0].y}})
+
+            doubleCheckArray = array1.filter(i=>i !== array1[0])
+          }
+
+          array1 = doubleCheckArray;
+        }
+
+        console.log('array1',array1,'plyr.selected',plyr.selected);
+
+        this.settingsFormAiStartPosList.push({
+          plyrNo:plyr.plyrNo,
+          mission:plyr.mission,
+          posArray:array1,
+          selected: plyr.selected,
+        })
+
+        this.setState({
+          stateUpdater: '..'
+        })
+
 
       }
+
+      console.log('settingsFormAiStartPosList',this.settingsFormAiStartPosList);
+
     }
-
-
 
   }
 
