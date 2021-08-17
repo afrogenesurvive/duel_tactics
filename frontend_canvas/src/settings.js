@@ -202,7 +202,7 @@ const Settings = (props) => {
       selected: y.selected,
     });
 
-    console.log('props.aiStartPosList 2',props.aiStartPosList);
+    // console.log('props.aiStartPosList 2',props.aiStartPosList);
 
     let plyrChange = newArray.find(x => x.plyrNo === plyrNo);
 
@@ -423,7 +423,6 @@ const Settings = (props) => {
                           <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 1</Form.Label>
                         }
                       })}
-                      <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 1</Form.Label>
                       <Form.Control as="select"  onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol1',e.target.value)}>
                         {posArray.posArray.map((pos) => (
                           <option>{pos.x},{pos.y}</option>

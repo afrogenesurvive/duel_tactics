@@ -2580,7 +2580,7 @@ class App extends Component {
     })
   }
   getCustomAiStartPosList = (args) => {
-    console.log('getCustomAiStartPosList',args);
+    // console.log('getCustomAiStartPosList',args);
 
     let avoidCells = [];
 
@@ -2607,13 +2607,11 @@ class App extends Component {
         // }
 
         let array1 = [];
-        console.log('plyr.selected',plyr.selected);
         if (plyr.selected.length > 0) {
           for (const selected of plyr.selected) {
             avoidCells.push(selected.cell)
           }
         }
-        console.log('avoid cells',avoidCells);
 
         for (const elem of this.gridInfo) {
 
@@ -2629,6 +2627,7 @@ class App extends Component {
 
 
         if (plyr.selected.length === 0) {
+          console.log('xxx');
           let doubleCheckArray = array1;
 
           if (plyr.mission === 'patrol') {
@@ -2641,8 +2640,8 @@ class App extends Component {
             plyr.selected.push({type:'patrol2',cell:{x:array1[2].x,y:array1[2].y}})
 
             doubleCheckArray = array1.filter(i=>i !== array1[0])
-            doubleCheckArray = array1.filter(i=>i !== array1[1])
-            doubleCheckArray = array1.filter(i=>i !== array1[2])
+            doubleCheckArray = doubleCheckArray.filter(i=>i !== array1[1])
+            doubleCheckArray = doubleCheckArray.filter(i=>i !== array1[2])
           }
           if (plyr.mission === 'defend') {
             // avoidCells.push({x:array1[0].x,y:array1[0].y})
@@ -2652,7 +2651,7 @@ class App extends Component {
             plyr.selected.push({type:'defend',cell:{x:array1[1].x,y:array1[1].y}})
 
             doubleCheckArray = array1.filter(i=>i !== array1[0])
-            doubleCheckArray = array1.filter(i=>i !== array1[1])
+            doubleCheckArray = doubleCheckArray.filter(i=>i !== array1[1])
           }
           if (plyr.mission === 'pursue') {
             // avoidCells.push({x:array1[0].x,y:array1[0].y})
@@ -2665,7 +2664,6 @@ class App extends Component {
           array1 = doubleCheckArray;
         }
 
-        console.log('array1',array1,'plyr.selected',plyr.selected);
 
         this.settingsFormAiStartPosList.push({
           plyrNo:plyr.plyrNo,
