@@ -1455,6 +1455,7 @@ class App extends Component {
 
 
     this.settingsFormAiStartPosList = [];
+    this.updateSettingsFormAiData = {};
 
     this.showSettingsKeyPress = {
       state: false,
@@ -2563,6 +2564,7 @@ class App extends Component {
     }
 
 
+    console.log('updateSettingsFormAiData',this.updateSettingsFormAiData,);
     // if multiple non random ai, loop set ai settings and call addAiPlayer()
 
 
@@ -2627,7 +2629,6 @@ class App extends Component {
 
 
         if (plyr.selected.length === 0) {
-          console.log('xxx');
           let doubleCheckArray = array1;
 
           if (plyr.mission === 'patrol') {
@@ -2680,14 +2681,21 @@ class App extends Component {
       }
 
       console.log('settingsFormAiStartPosList',this.settingsFormAiStartPosList);
+      console.log('settingsFormAiStartPosList',this.settingsFormAiStartPosList);
 
     }
 
   }
 
-  aiSettingsFormHandler = (aiCount) => {
+  updateSettingsFormAiData = (arg) => {
 
-    console.log('aiCount',aiCount);
+    this.updateSettingsFormAiData = {
+      count: args.count,
+      random: args.random,
+      mode: args.mode,
+      weapon: args.weapon,
+      mission: args.mission,
+    }
 
   }
 
@@ -16407,6 +16415,7 @@ class App extends Component {
               getCustomAiStartPosList={this.getCustomAiStartPosList}
               aiStartPosList={this.settingsFormAiStartPosList}
               aiSettingsFormHandler={this.aiSettingsFormHandler}
+              updateSettingsFormAiData={this.updateSettingsFormAiData}
             />
           )}
 

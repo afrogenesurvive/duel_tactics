@@ -108,6 +108,8 @@ const Settings = (props) => {
         ]);
       break;
     }
+    setAiMode([])
+    setAiWeapon([])
     setAiMission([])
     props.getCustomAiStartPosList([])
 
@@ -119,6 +121,7 @@ const Settings = (props) => {
     setMultiAiFormAiColWidth(multiAiFormAiColWidth);
 
     // props.aiSettingsFormHandler.bind(this, '')
+    
   }
 
   const [aiRandom, setAiRandom] = useState([]);
@@ -132,18 +135,45 @@ const Settings = (props) => {
     }
     setAiRandom(array)
 
+
+    // props.getCustomAiStartPosList(array2)
+
+
+
+
     console.log('aiRandom',aiRandom);
     let x = aiRandom.filter(elem => elem.random === 'custom' )
     let array2 = [];
     for (const plyr of x ) {
       array2.push({
         plyrNo: plyr.plyrNo,
+        mode: 'careful'
+      })
+    }
+    setAiMode(array2);
+
+
+    let array3 = [];
+    for (const plyr of x ) {
+      array3.push({
+        plyrNo: plyr.plyrNo,
+        weapon: 'sword'
+      })
+    }
+    setAiWeapon(array3);
+
+
+    let array4 = [];
+    for (const plyr of x ) {
+      array4.push({
+        plyrNo: plyr.plyrNo,
         mission: 'pursue'
       })
     }
-    setAiMission(array2);
+    setAiMission(array4);
 
-    let newArray = array2.map(y => y = {
+
+    let newArray = array4.map(y => y = {
       plyrNo: y.plyrNo,
       mission: y.mission,
       selected: []
@@ -151,7 +181,6 @@ const Settings = (props) => {
     console.log('newArray 1',newArray);
     props.getCustomAiStartPosList(newArray)
 
-    // props.getCustomAiStartPosList(array2)
 
     let multiAiFormAiMissionColWidth;
     switch(x.length) {
@@ -170,7 +199,65 @@ const Settings = (props) => {
     }
     setMultiAiFormAiMissionColWidth(multiAiFormAiMissionColWidth)
 
+
+    props.updateSettingsFormAiData.bind(this, {
+      count: aiCount,
+      random: aiRandom,
+      mode: aiMode,
+      weapon: aiWeapon,
+      mission: aiMission,
+    })
+
   }
+
+  const [aiMode, setAiMode] = useState([]);
+  const handleAiModeStateChange = (plyrNo,value) => {
+
+
+    let array = aiMode;
+    let plyr2 = array.find(elem => elem.plyrNo === plyrNo)
+    if (plyr2) {
+      plyr2.mode = value;
+    }
+    setAiMode(array);
+    console.log('setAiMode',aiMode);
+
+
+    props.updateSettingsFormAiData.bind(this, {
+      count: aiCount,
+      random: aiRandom,
+      mode: aiMode,
+      weapon: aiWeapon,
+      mission: aiMission,
+    })
+
+  }
+
+
+  const [aiWeapon, setAiWeapon] = useState([]);
+  const handleAiWeaponStateChange = (plyrNo,value) => {
+
+
+    let array = aiMode;
+    let plyr2 = array.find(elem => elem.plyrNo === plyrNo)
+    if (plyr2) {
+      plyr2.weapon = value;
+    }
+    setAiWeapon(array);
+    console.log('setAiWeapon',aiWeapon);
+
+
+    props.updateSettingsFormAiData.bind(this, {
+      count: aiCount,
+      random: aiRandom,
+      mode: aiMode,
+      weapon: aiWeapon,
+      mission: aiMission,
+    })
+
+  }
+
+
   const [aiMission, setAiMission] = useState([]);
   const handleAiMissionStateChange = (plyrNo,value) => {
 
@@ -190,6 +277,15 @@ const Settings = (props) => {
     console.log('newArray 2',newArray);
     props.getCustomAiStartPosList(newArray)
     console.log('props.aiStartPosList 1',props.aiStartPosList);
+
+
+    props.updateSettingsFormAiData.bind(this, {
+      count: aiCount,
+      random: aiRandom,
+      mode: aiMode,
+      weapon: aiWeapon,
+      mission: aiMission,
+    })
 
   }
 
@@ -226,6 +322,13 @@ const Settings = (props) => {
     props.getCustomAiStartPosList(newArray)
 
     // console.log('val',value,'newArray',newArray,'plyrChange2',plyrChange,'type',type);
+    props.updateSettingsFormAiData.bind(this, {
+      count: aiCount,
+      random: aiRandom,
+      mode: aiMode,
+      weapon: aiWeapon,
+      mission: aiMission,
+    })
 
   }
 
@@ -303,6 +406,47 @@ const Settings = (props) => {
             </Form.Row>
             </Col>
           ))}
+          </Row>
+        )}
+
+
+        {aiMode.length > 0 && (
+          <Row className="multiAiFormBox">
+            {aiMode.map((plyr) => (
+              <Col className="multiAiFormAi" sm={multiAiFormAiMissionColWidth}>
+                <Form.Row>
+                  <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
+                    <Form.Label className="formLabel">Ai {plyr.plyrNo} Mode</Form.Label>
+                    <Form.Control as="select"  onChange={e=>handleAiModeStateChange(plyr.plyrNo,e.target.value)}>
+                      <option>careful</option>
+                      <option>aggressive</option>
+                    </Form.Control>
+                  </Form.Group>
+                </Form.Row>
+              </Col>
+
+            ))}
+          </Row>
+        )}
+
+
+        {aiWeapon.length > 0 && (
+          <Row className="multiAiFormBox">
+            {aiWeapon.map((plyr) => (
+              <Col className="multiAiFormAi" sm={multiAiFormAiMissionColWidth}>
+                <Form.Row>
+                  <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
+                    <Form.Label className="formLabel">Ai {plyr.plyrNo} Weapon</Form.Label>
+                    <Form.Control as="select"  onChange={e=>handleAiWeaponStateChange(plyr.plyrNo,e.target.value)}>
+                      <option>sword</option>
+                      <option>spear</option>
+                      <option>crossbow</option>
+                    </Form.Control>
+                  </Form.Group>
+                </Form.Row>
+              </Col>
+
+            ))}
           </Row>
         )}
 
