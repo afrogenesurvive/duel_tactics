@@ -1455,7 +1455,7 @@ class App extends Component {
 
 
     this.settingsFormAiStartPosList = [];
-    this.updateSettingsFormAiData = {};
+    this.updateSettingsFormAiDataData = {};
 
     this.showSettingsKeyPress = {
       state: false,
@@ -2513,10 +2513,11 @@ class App extends Component {
   }
 
   loadSettings = (event) => {
+    event.preventDefault();
 
     let gridSize = event.target.gridSize.value;
     let playerNumber = event.target.humanPlayers.value;
-    let aiPlayerNumber = event.target.aiPlayers.value;
+    let aiPlayerNumber = event.target.aiCount.value;
 
     switch(gridSize) {
       case '4 x 4' :
@@ -2547,9 +2548,7 @@ class App extends Component {
 
     // window.requestAnimationFrame(this.gameLoop);
 
-    this.setState({
-      showSettings: false,
-    })
+
 
     if (playerNumber < 2) {
       this.players.splice(1,1)
@@ -2557,14 +2556,111 @@ class App extends Component {
     }
 
     if (aiPlayerNumber > 0) {
-      for (var i = 0; i < aiPlayerNumber; i++) {
-        this.addAiRandomPlayer()
+
+
+      // console.log('updateSettingsFormAiData',this.updateSettingsFormAiDataData);
+      // console.log('settingsFormAiStartPosList',this.settingsFormAiStartPosList);
+
+      let initArray = this.updateSettingsFormAiDataData.random.map(x=>x = {
+        plyrNo: x.plyrNo,
+        random: x.random,
+        mode: null,
+        weapon: null,
+        mission: null,
+        startPos: null,
+        otherPositions: [],
+      });
+
+
+      for (const plyr of initArray) {
+
+        for (const elem of this.updateSettingsFormAiDataData.mode) {
+          if (elem.plyrNo === plyr.plyrNo) {
+            plyr.mode = elem.mode;
+          }
+        }
+
+        for (const elem2 of this.updateSettingsFormAiDataData.weapon) {
+          if (elem2.plyrNo === plyr.plyrNo) {
+            plyr.weapon = elem2.weapon;
+          }
+        }
+
+        for (const elem3 of this.updateSettingsFormAiDataData.mission) {
+          if (elem3.plyrNo === plyr.plyrNo) {
+            plyr.mission = elem3.mission;
+          }
+        }
+
+        for (const elem4 of this.settingsFormAiStartPosList) {
+          if (elem4.plyrNo === plyr.plyrNo) {
+            for (const cell of elem4.selected) {
+              if (cell.type === 'start') {
+                plyr.startPos = cell.cell;
+              }
+              else {
+                plyr.otherPositions.push(cell.cell)
+              }
+            }
+          }
+        }
 
       }
+
+      console.log('initArray',initArray);
+
+
+      for (const elem5 of initArray) {
+
+        if (elem5.random === 'random') {
+          this.addAiRandomPlayer()
+        }
+        else {
+
+          this.aiInitSettings = {
+            randomStart: false,
+            startPosition: {
+              number: {
+                x: elem5.startPos.x,
+                y: elem5.startPos.y,
+              }
+            },
+            primaryMission: elem5.mission,
+            mission: undefined,
+            mode: elem5.mode,
+            partolArea: elem5.otherPositions,
+            weapon: {
+              name: elem5.weapon+'1',
+              type: elem5.weapon,
+              effect: '',
+            },
+            armor: {
+              name: '',
+              type: '',
+              effect: '',
+            },
+          }
+
+          this.addAiPlayer();
+
+        }
+      }
+
+
+      this.setState({
+        showSettings: false,
+      })
+
+    } else {
+
+      this.setState({
+        showSettings: false,
+      })
+
     }
 
 
-    console.log('updateSettingsFormAiData',this.updateSettingsFormAiData,);
+
     // if multiple non random ai, loop set ai settings and call addAiPlayer()
 
 
@@ -2632,9 +2728,9 @@ class App extends Component {
           let doubleCheckArray = array1;
 
           if (plyr.mission === 'patrol') {
-            // avoidCells.push({x:array1[0].x,y:array1[0].y})
-            // avoidCells.push({x:array1[1].x,y:array1[1].y})
-            // avoidCells.push({x:array1[2].x,y:array1[2].y})
+            avoidCells.push({x:array1[0].x,y:array1[0].y})
+            avoidCells.push({x:array1[1].x,y:array1[1].y})
+            avoidCells.push({x:array1[2].x,y:array1[2].y})
 
             plyr.selected.push({type:'start',cell:{x:array1[0].x,y:array1[0].y}})
             plyr.selected.push({type:'patrol1',cell:{x:array1[1].x,y:array1[1].y}})
@@ -2645,8 +2741,8 @@ class App extends Component {
             doubleCheckArray = doubleCheckArray.filter(i=>i !== array1[2])
           }
           if (plyr.mission === 'defend') {
-            // avoidCells.push({x:array1[0].x,y:array1[0].y})
-            // avoidCells.push({x:array1[1].x,y:array1[1].y})
+            avoidCells.push({x:array1[0].x,y:array1[0].y})
+            avoidCells.push({x:array1[1].x,y:array1[1].y})
 
             plyr.selected.push({type:'start',cell:{x:array1[0].x,y:array1[0].y}})
             plyr.selected.push({type:'defend',cell:{x:array1[1].x,y:array1[1].y}})
@@ -2655,7 +2751,7 @@ class App extends Component {
             doubleCheckArray = doubleCheckArray.filter(i=>i !== array1[1])
           }
           if (plyr.mission === 'pursue') {
-            // avoidCells.push({x:array1[0].x,y:array1[0].y})
+            avoidCells.push({x:array1[0].x,y:array1[0].y})
 
             plyr.selected.push({type:'start',cell:{x:array1[0].x,y:array1[0].y}})
 
@@ -2677,25 +2773,33 @@ class App extends Component {
           stateUpdater: '..'
         })
 
-
       }
 
-      console.log('settingsFormAiStartPosList',this.settingsFormAiStartPosList);
-      console.log('settingsFormAiStartPosList',this.settingsFormAiStartPosList);
+      let lastAvailiblePosArray = this.settingsFormAiStartPosList[this.settingsFormAiStartPosList.length-1].posArray;
+      for (const elem of this.settingsFormAiStartPosList) {
+        elem.posArray = lastAvailiblePosArray;
+      }
+      this.setState({
+        stateUpdater: '..'
+      })
 
     }
 
   }
 
-  updateSettingsFormAiData = (arg) => {
+  updateSettingsFormAiData = (args) => {
 
-    this.updateSettingsFormAiData = {
+    this.updateSettingsFormAiDataData = {
       count: args.count,
       random: args.random,
       mode: args.mode,
       weapon: args.weapon,
       mission: args.mission,
     }
+    this.setState({
+      stateUpdater: '..'
+    })
+    // console.log('updateSettingsFormAiData',this.updateSettingsFormAiDataData);
 
   }
 

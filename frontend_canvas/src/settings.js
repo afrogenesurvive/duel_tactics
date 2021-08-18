@@ -34,7 +34,7 @@ const Settings = (props) => {
     playerNumbers: [],
   });
   const handleAiCountStateChange = (args) => {
-    console.log('log',args);
+
     let plyrNumbers = [];
     let multiAiFormAiColWidth;
     switch(args) {
@@ -121,12 +121,11 @@ const Settings = (props) => {
     setMultiAiFormAiColWidth(multiAiFormAiColWidth);
 
     // props.aiSettingsFormHandler.bind(this, '')
-    
+
   }
 
   const [aiRandom, setAiRandom] = useState([]);
   const handleAiRandomStateChange = (plyrNumber,value) => {
-    console.log('handleAiRandomStateChange',plyrNumber,value);
 
     let array = aiRandom;
     let plyr = array.find(elem => elem.plyrNo === plyrNumber)
@@ -136,12 +135,7 @@ const Settings = (props) => {
     setAiRandom(array)
 
 
-    // props.getCustomAiStartPosList(array2)
-
-
-
-
-    console.log('aiRandom',aiRandom);
+    // console.log('aiRandom',aiRandom);
     let x = aiRandom.filter(elem => elem.random === 'custom' )
     let array2 = [];
     for (const plyr of x ) {
@@ -149,6 +143,7 @@ const Settings = (props) => {
         plyrNo: plyr.plyrNo,
         mode: 'careful'
       })
+      // handleAiModeStateChange(plyr.plyrNo,'careful')
     }
     setAiMode(array2);
 
@@ -159,6 +154,7 @@ const Settings = (props) => {
         plyrNo: plyr.plyrNo,
         weapon: 'sword'
       })
+      // handleAiWeaponStateChange(plyr.plyrNo,'sword')
     }
     setAiWeapon(array3);
 
@@ -169,6 +165,7 @@ const Settings = (props) => {
         plyrNo: plyr.plyrNo,
         mission: 'pursue'
       })
+      // handleAiMissionStateChange(plyr.plyrNo,'pursue')
     }
     setAiMission(array4);
 
@@ -178,7 +175,7 @@ const Settings = (props) => {
       mission: y.mission,
       selected: []
     });
-    console.log('newArray 1',newArray);
+
     props.getCustomAiStartPosList(newArray)
 
 
@@ -200,13 +197,23 @@ const Settings = (props) => {
     setMultiAiFormAiMissionColWidth(multiAiFormAiMissionColWidth)
 
 
-    props.updateSettingsFormAiData.bind(this, {
-      count: aiCount,
-      random: aiRandom,
-      mode: aiMode,
-      weapon: aiWeapon,
-      mission: aiMission,
-    })
+      // console.log('aiCount',aiCount,'aiRandom',aiRandom,'aiMode',aiMode,'aiWeapon',aiWeapon,'aiMission',aiMission);
+
+      props.updateSettingsFormAiData({
+        count: aiCount,
+        random: aiRandom,
+        mode: array2,
+        weapon: array3,
+        mission: array4,
+      })
+
+      // props.updateSettingsFormAiData({
+      //   count: aiCount,
+      //   random: aiRandom,
+      //   mode: aiMode,
+      //   weapon: aiWeapon,
+      //   mission: aiMission,
+      // })
 
   }
 
@@ -220,16 +227,16 @@ const Settings = (props) => {
       plyr2.mode = value;
     }
     setAiMode(array);
-    console.log('setAiMode',aiMode);
+    // console.log('setAiMode',aiMode);
 
 
-    props.updateSettingsFormAiData.bind(this, {
-      count: aiCount,
-      random: aiRandom,
-      mode: aiMode,
-      weapon: aiWeapon,
-      mission: aiMission,
-    })
+    props.updateSettingsFormAiData({
+        count: aiCount,
+        random: aiRandom,
+        mode: aiMode,
+        weapon: aiWeapon,
+        mission: aiMission,
+      })
 
   }
 
@@ -238,22 +245,23 @@ const Settings = (props) => {
   const handleAiWeaponStateChange = (plyrNo,value) => {
 
 
-    let array = aiMode;
+    let array = aiWeapon;
     let plyr2 = array.find(elem => elem.plyrNo === plyrNo)
+
     if (plyr2) {
       plyr2.weapon = value;
     }
     setAiWeapon(array);
-    console.log('setAiWeapon',aiWeapon);
+    // console.log('setAiWeapon',aiWeapon,value,array);
 
 
-    props.updateSettingsFormAiData.bind(this, {
-      count: aiCount,
-      random: aiRandom,
-      mode: aiMode,
-      weapon: aiWeapon,
-      mission: aiMission,
-    })
+    props.updateSettingsFormAiData({
+        count: aiCount,
+        random: aiRandom,
+        mode: aiMode,
+        weapon: aiWeapon,
+        mission: aiMission,
+      })
 
   }
 
@@ -267,25 +275,26 @@ const Settings = (props) => {
       plyr2.mission = value;
     }
     setAiMission(array);
-    console.log('setAiMission',aiMission);
+    // console.log('setAiMission',aiMission);
 
     let newArray = aiMission.map(y => y = {
       plyrNo: y.plyrNo,
       mission: y.mission,
       selected: []
     });
-    console.log('newArray 2',newArray);
+
     props.getCustomAiStartPosList(newArray)
-    console.log('props.aiStartPosList 1',props.aiStartPosList);
 
 
-    props.updateSettingsFormAiData.bind(this, {
-      count: aiCount,
-      random: aiRandom,
-      mode: aiMode,
-      weapon: aiWeapon,
-      mission: aiMission,
-    })
+    props.updateSettingsFormAiData({
+        count: aiCount,
+        random: aiRandom,
+        mode: aiMode,
+        weapon: aiWeapon,
+        mission: aiMission,
+      })
+
+
 
   }
 
@@ -306,15 +315,13 @@ const Settings = (props) => {
       plyrChange.selected.push({type:type,cell:{x:value.split(",")[0],y:value.split(",")[1]}})
     }
     else {
-      console.log('plyrChange',plyrChange);
+      // console.log('plyrChange',plyrChange);
       let selectedElem = plyrChange.selected.find(j=>j.type === type)
       let indx = newArray.findIndex(j=>j.plyrNo === plyrChange.plyrNo)
       if (selectedElem) {
-        console.log('a selectedElem',selectedElem);
         selectedElem.cell = {x:parseInt(value.split(",")[0]),y:parseInt(value.split(",")[1])};
       }
       else {
-        console.log('b');
         plyrChange.selected.push({type:type,cell:{x:parseInt(value.split(",")[0]),y:parseInt(value.split(",")[1])}});
       }
     }
@@ -322,7 +329,7 @@ const Settings = (props) => {
     props.getCustomAiStartPosList(newArray)
 
     // console.log('val',value,'newArray',newArray,'plyrChange2',plyrChange,'type',type);
-    props.updateSettingsFormAiData.bind(this, {
+    props.updateSettingsFormAiData({
       count: aiCount,
       random: aiRandom,
       mode: aiMode,
@@ -417,7 +424,7 @@ const Settings = (props) => {
                 <Form.Row>
                   <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
                     <Form.Label className="formLabel">Ai {plyr.plyrNo} Mode</Form.Label>
-                    <Form.Control as="select"  onChange={e=>handleAiModeStateChange(plyr.plyrNo,e.target.value)}>
+                    <Form.Control as="select" onChange={e=>handleAiModeStateChange(plyr.plyrNo,e.target.value)}>
                       <option>careful</option>
                       <option>aggressive</option>
                     </Form.Control>
@@ -437,7 +444,7 @@ const Settings = (props) => {
                 <Form.Row>
                   <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
                     <Form.Label className="formLabel">Ai {plyr.plyrNo} Weapon</Form.Label>
-                    <Form.Control as="select"  onChange={e=>handleAiWeaponStateChange(plyr.plyrNo,e.target.value)}>
+                    <Form.Control as="select" onChange={e=>handleAiWeaponStateChange(plyr.plyrNo,e.target.value)}>
                       <option>sword</option>
                       <option>spear</option>
                       <option>crossbow</option>
@@ -458,7 +465,7 @@ const Settings = (props) => {
                 <Form.Row>
                   <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
                     <Form.Label className="formLabel">Ai {plyr.plyrNo} Mission</Form.Label>
-                    <Form.Control as="select"  onChange={e=>handleAiMissionStateChange(plyr.plyrNo,e.target.value)}>
+                    <Form.Control as="select" onChange={e=>handleAiMissionStateChange(plyr.plyrNo,e.target.value)}>
                       <option>pursue</option>
                       <option>patrol</option>
                       <option>defend</option>
