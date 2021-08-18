@@ -2576,12 +2576,45 @@ class App extends Component {
 
         for (const elem of this.updateSettingsFormAiDataData.mode) {
           if (elem.plyrNo === plyr.plyrNo) {
+
+            if (elem.mode === 'random') {
+              let whatMode = this.rnJesus(1,2);
+
+              switch(whatMode) {
+                case 1:
+                  elem.mode = 'aggressive'
+                break;
+                case 2:
+                  elem.mode = 'careful'
+                break;
+              }
+
+            }
+
             plyr.mode = elem.mode;
           }
         }
 
         for (const elem2 of this.updateSettingsFormAiDataData.weapon) {
           if (elem2.plyrNo === plyr.plyrNo) {
+
+            if (elem2.weapon === 'random') {
+              let whatWeapon = this.rnJesus(1,3);
+
+              switch(whatWeapon) {
+                case 1:
+                  elem2.weapon = 'sword'
+                break;
+                case 2:
+                  elem2.weapon = 'spear'
+                break;
+                case 3:
+                  elem2.weapon = 'crossbow'
+                break;
+              }
+
+            }
+
             plyr.weapon = elem2.weapon;
           }
         }
@@ -2613,7 +2646,7 @@ class App extends Component {
       for (const elem5 of initArray) {
 
         if (elem5.random === 'random') {
-          this.addAiRandomPlayer()
+          this.addAiRandomPlayer(elem5.random)
         }
         else {
 
@@ -2651,8 +2684,11 @@ class App extends Component {
         showSettings: false,
       })
 
+
     } else {
 
+      this.updateSettingsFormAiDataData = {};
+      this.settingsFormAiStartPosList = [];
       this.setState({
         showSettings: false,
       })
@@ -2666,6 +2702,8 @@ class App extends Component {
 
   }
   cancelSettings = () => {
+
+    this.updateSettingsFormAiDataData = {};
     this.settingsFormAiStartPosList = [];
     this.setState({
       showSettings: false,
@@ -2776,9 +2814,15 @@ class App extends Component {
       }
 
       let lastAvailiblePosArray = this.settingsFormAiStartPosList[this.settingsFormAiStartPosList.length-1].posArray;
+      let hasRandomCell = lastAvailiblePosArray.find(x=>x === 'random')
+      if (!hasRandomCell) {
+        lastAvailiblePosArray.push('random')
+      }
+
       for (const elem of this.settingsFormAiStartPosList) {
         elem.posArray = lastAvailiblePosArray;
       }
+
       this.setState({
         stateUpdater: '..'
       })
@@ -2818,6 +2862,9 @@ class App extends Component {
             showSettings: true
           })
         } else {
+
+          this.updateSettingsFormAiDataData = {};
+          this.settingsFormAiStartPosList = [];
           this.setState({
             showSettings: false
           })
@@ -10086,7 +10133,6 @@ class App extends Component {
 
   }
 
-
   checkCell = (cell) => {
     // console.log('check cell');
 
@@ -11825,7 +11871,7 @@ class App extends Component {
               },
             },
             mode: this.aiInitSettings.mode,
-            upgradeWeapon: true,
+            upgradeWeapon: false,
             upgradeArmor: false,
           },
           stamina: {
@@ -16520,6 +16566,7 @@ class App extends Component {
               aiStartPosList={this.settingsFormAiStartPosList}
               aiSettingsFormHandler={this.aiSettingsFormHandler}
               updateSettingsFormAiData={this.updateSettingsFormAiData}
+              rnJesus={this.rnJesus}
             />
           )}
 

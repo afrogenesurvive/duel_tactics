@@ -120,7 +120,22 @@ const Settings = (props) => {
 
     setMultiAiFormAiColWidth(multiAiFormAiColWidth);
 
-    // props.aiSettingsFormHandler.bind(this, '')
+    let initArray = [];
+    for (const plyr of plyrNumbers) {
+      initArray.push({
+        plyrNo: plyr,
+        random: 'random'
+      })
+    }
+
+    props.updateSettingsFormAiData({
+      count: aiCount,
+      random: initArray,
+      mode: aiMode,
+      weapon: aiWeapon,
+      mission: aiMission,
+    })
+
 
   }
 
@@ -207,13 +222,6 @@ const Settings = (props) => {
         mission: array4,
       })
 
-      // props.updateSettingsFormAiData({
-      //   count: aiCount,
-      //   random: aiRandom,
-      //   mode: aiMode,
-      //   weapon: aiWeapon,
-      //   mission: aiMission,
-      // })
 
   }
 
@@ -269,6 +277,21 @@ const Settings = (props) => {
   const [aiMission, setAiMission] = useState([]);
   const handleAiMissionStateChange = (plyrNo,value) => {
 
+    if (value === 'random') {
+      let whatMission = props.rnJesus(1,3);
+      switch(whatMission) {
+        case 1:
+          value = 'pursue'
+        break;
+        case 2:
+          value = 'defend'
+        break;
+        case 3:
+          value = 'patrol'
+        break;
+      }
+    }
+
     let array = aiMission;
     let plyr2 = array.find(elem => elem.plyrNo === plyrNo)
     if (plyr2) {
@@ -285,7 +308,6 @@ const Settings = (props) => {
 
     props.getCustomAiStartPosList(newArray)
 
-
     props.updateSettingsFormAiData({
         count: aiCount,
         random: aiRandom,
@@ -301,11 +323,22 @@ const Settings = (props) => {
   const [aiStartPos, setAiStartPos] = useState([]);
   const handleAiStartPosStateChange = (mission,plyrNo,type,value) => {
     // setAiStartPos(args);
+
     let newArray = props.aiStartPosList.map(y => y = {
       plyrNo: y.plyrNo,
       mission: y.mission,
       selected: y.selected,
     });
+
+    if (value === 'random') {
+
+      let whichCell = props.rnJesus(1,props.aiStartPosList.length)
+      let posList = props.aiStartPosList.find(j=>j.plyrNo === plyrNo).posArray;
+      let randomPos = posList[whichCell-1]
+      // console.log('randomPos',randomPos);
+      value = ''+randomPos.x+','+randomPos.y+''
+
+    }
 
     // console.log('props.aiStartPosList 2',props.aiStartPosList);
 
@@ -427,6 +460,7 @@ const Settings = (props) => {
                     <Form.Control as="select" onChange={e=>handleAiModeStateChange(plyr.plyrNo,e.target.value)}>
                       <option>careful</option>
                       <option>aggressive</option>
+                      <option>random</option>
                     </Form.Control>
                   </Form.Group>
                 </Form.Row>
@@ -448,6 +482,7 @@ const Settings = (props) => {
                       <option>sword</option>
                       <option>spear</option>
                       <option>crossbow</option>
+                      <option>random</option>
                     </Form.Control>
                   </Form.Group>
                 </Form.Row>
@@ -469,6 +504,7 @@ const Settings = (props) => {
                       <option>pursue</option>
                       <option>patrol</option>
                       <option>defend</option>
+                      <option>random</option>
                     </Form.Control>
                   </Form.Group>
                 </Form.Row>
@@ -499,9 +535,13 @@ const Settings = (props) => {
                       })}
                       <Form.Control as="select"  onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start',e.target.value)}>
 
-                        {posArray.posArray.map((pos) => (
-                          <option>{pos.x},{pos.y}</option>
-                        ))}
+                        {posArray.posArray.map((pos) => {
+                          if (pos === 'random') {
+                            return<option>{pos}</option>
+                          } else {
+                            return<option>{pos.x},{pos.y}</option>
+                          }
+                        })}
                       </Form.Control>
                     </Form.Group>
                   </Form.Row>
@@ -521,9 +561,13 @@ const Settings = (props) => {
                         }
                       })}
                       <Form.Control as="select"  onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start',e.target.value)}>
-                        {posArray.posArray.map((pos) => (
-                          <option>{pos.x},{pos.y}</option>
-                        ))}
+                        {posArray.posArray.map((pos) => {
+                          if (pos === 'random') {
+                            return<option>{pos}</option>
+                          } else {
+                            return<option>{pos.x},{pos.y}</option>
+                          }
+                        })}
                       </Form.Control>
                     </Form.Group>
                   </Form.Row>
@@ -538,9 +582,13 @@ const Settings = (props) => {
                         }
                       })}
                       <Form.Control as="select"  onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'defend',e.target.value)}>
-                        {posArray.posArray.map((pos) => (
-                          <option>{pos.x},{pos.y}</option>
-                        ))}
+                        {posArray.posArray.map((pos) => {
+                          if (pos === 'random') {
+                            return<option>{pos}</option>
+                          } else {
+                            return<option>{pos.x},{pos.y}</option>
+                          }
+                        })}
                       </Form.Control>
                     </Form.Group>
                   </Form.Row>
@@ -560,9 +608,13 @@ const Settings = (props) => {
                         }
                       })}
                       <Form.Control as="select"  onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start',e.target.value)}>
-                        {posArray.posArray.map((pos) => (
-                          <option>{pos.x},{pos.y}</option>
-                        ))}
+                        {posArray.posArray.map((pos) => {
+                          if (pos === 'random') {
+                            return<option>{pos}</option>
+                          } else {
+                            return<option>{pos.x},{pos.y}</option>
+                          }
+                        })}
                       </Form.Control>
                     </Form.Group>
                     <Form.Group as={Col} controlId="aiPatrolPos1" className="formGroup">
@@ -575,9 +627,13 @@ const Settings = (props) => {
                         }
                       })}
                       <Form.Control as="select"  onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol1',e.target.value)}>
-                        {posArray.posArray.map((pos) => (
-                          <option>{pos.x},{pos.y}</option>
-                        ))}
+                        {posArray.posArray.map((pos) => {
+                          if (pos === 'random') {
+                            return<option>{pos}</option>
+                          } else {
+                            return<option>{pos.x},{pos.y}</option>
+                          }
+                        })}
                       </Form.Control>
                     </Form.Group>
                     <Form.Group as={Col} controlId="aiPatrolPos2" className="formGroup">
@@ -590,9 +646,13 @@ const Settings = (props) => {
                         }
                       })}
                       <Form.Control as="select"  onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol2',e.target.value)}>
-                        {posArray.posArray.map((pos) => (
-                          <option>{pos.x},{pos.y}</option>
-                        ))}
+                        {posArray.posArray.map((pos) => {
+                          if (pos === 'random') {
+                            return<option>{pos}</option>
+                          } else {
+                            return<option>{pos.x},{pos.y}</option>
+                          }
+                        })}
                       </Form.Control>
                     </Form.Group>
                   </Form.Row>
