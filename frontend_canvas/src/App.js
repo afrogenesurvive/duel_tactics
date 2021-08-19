@@ -1453,7 +1453,7 @@ class App extends Component {
     this.aiDeflectCheck = false;
     this.aiDeflectedCheck = [];
 
-
+    this.settingsFormAiGridInfo = [] ;
     this.settingsFormAiStartPosList = [];
     this.updateSettingsFormAiDataData = {};
 
@@ -2558,9 +2558,6 @@ class App extends Component {
     if (aiPlayerNumber > 0) {
 
 
-      // console.log('updateSettingsFormAiData',this.updateSettingsFormAiDataData);
-      // console.log('settingsFormAiStartPosList',this.settingsFormAiStartPosList);
-
       let initArray = this.updateSettingsFormAiDataData.random.map(x=>x = {
         plyrNo: x.plyrNo,
         random: x.random,
@@ -2643,43 +2640,52 @@ class App extends Component {
       console.log('initArray',initArray);
 
 
-      for (const elem5 of initArray) {
+      for (let i = 1; i < initArray.length+1; i++) {
+        setTimeout(() => {
+        // setTimeout(function timer() {
 
-        if (elem5.random === 'random') {
-          this.addAiRandomPlayer(elem5.random)
-        }
-        else {
+          let elem5 = initArray[i-1]
 
-          this.aiInitSettings = {
-            randomStart: false,
-            startPosition: {
-              number: {
-                x: elem5.startPos.x,
-                y: elem5.startPos.y,
-              }
-            },
-            primaryMission: elem5.mission,
-            mission: undefined,
-            mode: elem5.mode,
-            partolArea: elem5.otherPositions,
-            weapon: {
-              name: elem5.weapon+'1',
-              type: elem5.weapon,
-              effect: '',
-            },
-            armor: {
-              name: '',
-              type: '',
-              effect: '',
-            },
+          // console.log('plyr',elem5.plyrNo,'this.addAiCount.state',this.addAiCount.state);
+
+          if (elem5.random === 'random') {
+            this.addAiRandomPlayer(elem5.random)
+          }
+          else {
+
+            this.aiInitSettings = {
+              randomStart: false,
+              startPosition: {
+                number: {
+                  x: elem5.startPos.x,
+                  y: elem5.startPos.y,
+                }
+              },
+              primaryMission: elem5.mission,
+              mission: undefined,
+              mode: elem5.mode,
+              partolArea: elem5.otherPositions,
+              weapon: {
+                name: elem5.weapon+'1',
+                type: elem5.weapon,
+                effect: '',
+              },
+              armor: {
+                name: '',
+                type: '',
+                effect: '',
+              },
+            }
+
+            this.addAiPlayer();
           }
 
-          this.addAiPlayer();
-
-        }
+        }, i * 1000);
       }
 
 
+      this.updateSettingsFormAiDataData = {};
+      this.settingsFormAiStartPosList = [];
       this.setState({
         showSettings: false,
       })
@@ -2696,10 +2702,6 @@ class App extends Component {
     }
 
 
-
-    // if multiple non random ai, loop set ai settings and call addAiPlayer()
-
-
   }
   cancelSettings = () => {
 
@@ -2714,6 +2716,8 @@ class App extends Component {
     this.setState({
       showSettings: true,
     })
+
+    this.settingsFormAiGridInfo = this.gridInfo;
   }
   getCustomAiStartPosList = (args) => {
     // console.log('getCustomAiStartPosList',args);
@@ -2749,7 +2753,7 @@ class App extends Component {
           }
         }
 
-        for (const elem of this.gridInfo) {
+        for (const elem of this.settingsFormAiGridInfo) {
 
           if (
             this.checkCell({x:elem.number.x,y:elem.number.y}) === true &&
@@ -2828,6 +2832,29 @@ class App extends Component {
       })
 
     }
+
+  }
+  settingsFormGridWidthUpdate = (args) => {
+
+    let prevGridWidth = this.gridWidth;
+    let canvas = this.state.canvas;
+
+    this.gridWidth = args;
+
+    let gridInfo;
+    this.startProcessLevelData(this.state.canvas);
+    gridInfo = this.gridInfo;
+    this.processLevelData(gridInfo);
+
+    this.settingsFormAiGridInfo = this.gridInfo;
+    this.gridWidth = prevGridWidth;
+
+    this.startProcessLevelData(this.state.canvas);
+    gridInfo = this.gridInfo;
+    this.processLevelData(gridInfo);
+
+    // console.log('settingsFormAiGridInfo',this.settingsFormAiGridInfo);
+    // console.log('gridInfo',this.gridInfo);
 
   }
 
@@ -10803,6 +10830,7 @@ class App extends Component {
         }
     }
 
+
     for (var x = 0; x < this.gridWidth+1; x++) {
       for (var y = 0; y < this.gridWidth+1; y++) {
 
@@ -10862,7 +10890,6 @@ class App extends Component {
   processLevelData = (allCells) => {
     // console.log('processing level data');
 
-    // compare & combine w/ levelData2
 
     for(const elem of allCells) {
 
@@ -10991,6 +11018,8 @@ class App extends Component {
     this.gridInfo2D = gridInfo2d;
     // console.log('gridInfo2d',this.gridInfo2D);
     this.gridInfo = allCells;
+
+    // this.settingsFormAiGridInfo = this.gridInfo;
     // console.log('post parse gridInfo',this.gridInfo);
 
     this.updatePathArray()
@@ -16567,6 +16596,7 @@ class App extends Component {
               aiSettingsFormHandler={this.aiSettingsFormHandler}
               updateSettingsFormAiData={this.updateSettingsFormAiData}
               rnJesus={this.rnJesus}
+              settingsFormGridWidthUpdate={this.settingsFormGridWidthUpdate}
             />
           )}
 

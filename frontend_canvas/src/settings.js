@@ -29,6 +29,25 @@ let playerSettings = {
 const Settings = (props) => {
   // console.log('props.aiStartPosList',props.aiStartPosList);
 
+  const [gridWidth, setGridWidth] = useState(9);
+  const handleGridWidthChange = (args) => {
+
+    let width = parseInt(args.charAt(0))-1;
+    setGridWidth(width);
+    props.settingsFormGridWidthUpdate(width);
+
+    setAiCount({
+      count: 0,
+      playerNumbers: [],
+    })
+    setAiMode([])
+    setAiWeapon([])
+    setAiMission([])
+    props.getCustomAiStartPosList([])
+
+  }
+
+
   const [aiCount, setAiCount] = useState({
     count: 0,
     playerNumbers: [],
@@ -391,7 +410,7 @@ const Settings = (props) => {
         <Form.Row>
           <Form.Group as={Col} controlId="gridSize" className="formGroup">
             <Form.Label className="formLabel">Grid Size: {props.gridWidth+1} x {props.gridWidth+1}</Form.Label>
-            <Form.Control as="select">
+            <Form.Control as="select" onChange={e=>handleGridWidthChange(e.target.value)}>
               <option>10 x 10</option>
               <option>7 x 7</option>
               <option>4 x 4</option>
