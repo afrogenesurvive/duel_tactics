@@ -375,6 +375,7 @@ class App extends Component {
         effect: '',
       },
     ];
+    this.disableInitItems = false;
     this.initItemList = [
       {
         name: 'moveSpeedUp',
@@ -456,7 +457,7 @@ class App extends Component {
       // },
     ];
     this.customItemPlacement = {
-      state: true,
+      state: false,
       cells: [
         {x:0 ,y:0 },
         {x:1 ,y:0 },
@@ -477,8 +478,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 9,
-              y: 2,
+              x: 0,
+              y: 0,
             },
             center: {
               x: 0,
@@ -862,7 +863,7 @@ class App extends Component {
           cell: {
             number: {
               x: 0,
-              y: 9,
+              y: 2,
             },
             center: {
               x: 0,
@@ -2764,6 +2765,8 @@ class App extends Component {
           }
 
         }
+        console.log('this.settingsFormAiGridInfo',this.settingsFormAiGridInfo);
+        console.log('array1',array1);
 
 
         if (plyr.selected.length === 0) {
@@ -10212,7 +10215,7 @@ class App extends Component {
   }
   placeItems = (args) => {
 
-    if (args.init === true) {
+    if (args.init === true && this.disableInitItems === false) {
       // console.log('placing items init');
 
       if (this.customItemPlacement.state === true) {
@@ -11070,6 +11073,8 @@ class App extends Component {
     gridInfo = this.gridInfo;
 
     this.processLevelData(gridInfo)
+
+    this.settingsFormGridWidthUpdate(this.gridWidth)
 
     let itemImgs = {
       moveSpeedUp: this.refs.itemSpdUp,

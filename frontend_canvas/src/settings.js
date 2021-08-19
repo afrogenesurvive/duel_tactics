@@ -476,7 +476,7 @@ const Settings = (props) => {
                 <Form.Row>
                   <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
                     <Form.Label className="formLabel">Ai {plyr.plyrNo} Mode</Form.Label>
-                    <Form.Control as="select" onChange={e=>handleAiModeStateChange(plyr.plyrNo,e.target.value)}>
+                    <Form.Control as="select" value={plyr.mode} onChange={e=>handleAiModeStateChange(plyr.plyrNo,e.target.value)}>
                       <option>careful</option>
                       <option>aggressive</option>
                       <option>random</option>
