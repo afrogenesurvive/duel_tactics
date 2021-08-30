@@ -149,7 +149,8 @@
 }
 
 .staminaProgress {
-  margin: .2rem .5rem 0 .5rem;
+  margin: 0.2rem 1rem 0 2rem;
+  /* margin: .2rem .5rem 0 .5rem; */
   width: 3rem;
   /* display: inline; */
 }

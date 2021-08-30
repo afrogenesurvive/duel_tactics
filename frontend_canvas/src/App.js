@@ -375,7 +375,7 @@ class App extends Component {
         effect: '',
       },
     ];
-    this.disableInitItems = false;
+    this.disableInitItems = true;
     this.initItemList = [
       {
         name: 'moveSpeedUp',
@@ -1417,7 +1417,7 @@ class App extends Component {
       mode: 'careful',
       partolArea: [
         {x: 7, y: 7},
-        {x: 7, y:  4}
+        {x: 7, y: 4}
       ],
       weapon: {
         name: 'sword1',
@@ -2359,6 +2359,7 @@ class App extends Component {
       break;
       case 'r' :
         this.restartGame();
+        this.loadAiSettings();
       break;
       case '2' :
        this.keyPressed[0].cycleWeapon = state;
@@ -2521,19 +2522,19 @@ class App extends Component {
     let aiPlayerNumber = event.target.aiCount.value;
 
     switch(gridSize) {
-      case '4 x 4' :
+      case '3' :
         this.gridWidth = 3;
         this.sceneY = this.state.sceneY.three;
       break;
-      case '7 x 7' :
+      case '6' :
         this.gridWidth = 6;
         this.sceneY = this.state.sceneY.six;
       break;
-      case '10 x 10' :
+      case '9' :
         this.gridWidth = 9;
         this.sceneY = this.state.sceneY.nine;
       break;
-      case '13 x 13' :
+      case '12' :
         this.gridWidth = 12;
         this.sceneY = this.state.sceneY.twelve;
       break;
@@ -2558,139 +2559,7 @@ class App extends Component {
 
     if (aiPlayerNumber > 0) {
 
-
-      let initArray = this.updateSettingsFormAiDataData.random.map(x=>x = {
-        plyrNo: x.plyrNo,
-        random: x.random,
-        mode: null,
-        weapon: null,
-        mission: null,
-        startPos: null,
-        otherPositions: [],
-      });
-
-
-      for (const plyr of initArray) {
-
-        for (const elem of this.updateSettingsFormAiDataData.mode) {
-          if (elem.plyrNo === plyr.plyrNo) {
-
-            if (elem.mode === 'random') {
-              let whatMode = this.rnJesus(1,2);
-
-              switch(whatMode) {
-                case 1:
-                  elem.mode = 'aggressive'
-                break;
-                case 2:
-                  elem.mode = 'careful'
-                break;
-              }
-
-            }
-
-            plyr.mode = elem.mode;
-          }
-        }
-
-        for (const elem2 of this.updateSettingsFormAiDataData.weapon) {
-          if (elem2.plyrNo === plyr.plyrNo) {
-
-            if (elem2.weapon === 'random') {
-              let whatWeapon = this.rnJesus(1,3);
-
-              switch(whatWeapon) {
-                case 1:
-                  elem2.weapon = 'sword'
-                break;
-                case 2:
-                  elem2.weapon = 'spear'
-                break;
-                case 3:
-                  elem2.weapon = 'crossbow'
-                break;
-              }
-
-            }
-
-            plyr.weapon = elem2.weapon;
-          }
-        }
-
-        for (const elem3 of this.updateSettingsFormAiDataData.mission) {
-          if (elem3.plyrNo === plyr.plyrNo) {
-            plyr.mission = elem3.mission;
-          }
-        }
-
-        for (const elem4 of this.settingsFormAiStartPosList) {
-          if (elem4.plyrNo === plyr.plyrNo) {
-            for (const cell of elem4.selected) {
-              if (cell.type === 'start') {
-                plyr.startPos = cell.cell;
-              }
-              else {
-                plyr.otherPositions.push(cell.cell)
-              }
-            }
-          }
-        }
-
-      }
-
-      console.log('initArray',initArray);
-
-
-      for (let i = 1; i < initArray.length+1; i++) {
-        setTimeout(() => {
-        // setTimeout(function timer() {
-
-          let elem5 = initArray[i-1]
-
-          // console.log('plyr',elem5.plyrNo,'this.addAiCount.state',this.addAiCount.state);
-
-          if (elem5.random === 'random') {
-            this.addAiRandomPlayer(elem5.random)
-          }
-          else {
-
-            this.aiInitSettings = {
-              randomStart: false,
-              startPosition: {
-                number: {
-                  x: elem5.startPos.x,
-                  y: elem5.startPos.y,
-                }
-              },
-              primaryMission: elem5.mission,
-              mission: undefined,
-              mode: elem5.mode,
-              partolArea: elem5.otherPositions,
-              weapon: {
-                name: elem5.weapon+'1',
-                type: elem5.weapon,
-                effect: '',
-              },
-              armor: {
-                name: '',
-                type: '',
-                effect: '',
-              },
-            }
-
-            this.addAiPlayer();
-          }
-
-        }, i * 1000);
-      }
-
-
-      this.updateSettingsFormAiDataData = {};
-      this.settingsFormAiStartPosList = [];
-      this.setState({
-        showSettings: false,
-      })
-
+      this.loadAiSettings()
 
     } else {
 
@@ -2702,6 +2571,141 @@ class App extends Component {
 
     }
 
+
+  }
+  loadAiSettings = () => {
+
+    let initArray = this.updateSettingsFormAiDataData.random.map(x=>x = {
+      plyrNo: x.plyrNo,
+      random: x.random,
+      mode: null,
+      weapon: null,
+      mission: null,
+      startPos: null,
+      otherPositions: [],
+    });
+
+
+    for (const plyr of initArray) {
+
+      for (const elem of this.updateSettingsFormAiDataData.mode) {
+        if (elem.plyrNo === plyr.plyrNo) {
+
+          if (elem.mode === 'random') {
+            let whatMode = this.rnJesus(1,2);
+
+            switch(whatMode) {
+              case 1:
+                elem.mode = 'aggressive'
+              break;
+              case 2:
+                elem.mode = 'careful'
+              break;
+            }
+
+          }
+
+          plyr.mode = elem.mode;
+        }
+      }
+
+      for (const elem2 of this.updateSettingsFormAiDataData.weapon) {
+        if (elem2.plyrNo === plyr.plyrNo) {
+
+          if (elem2.weapon === 'random') {
+            let whatWeapon = this.rnJesus(1,3);
+
+            switch(whatWeapon) {
+              case 1:
+                elem2.weapon = 'sword'
+              break;
+              case 2:
+                elem2.weapon = 'spear'
+              break;
+              case 3:
+                elem2.weapon = 'crossbow'
+              break;
+            }
+
+          }
+
+          plyr.weapon = elem2.weapon;
+        }
+      }
+
+      for (const elem3 of this.updateSettingsFormAiDataData.mission) {
+        if (elem3.plyrNo === plyr.plyrNo) {
+          plyr.mission = elem3.mission;
+        }
+      }
+
+      for (const elem4 of this.settingsFormAiStartPosList) {
+        if (elem4.plyrNo === plyr.plyrNo) {
+          for (const cell of elem4.selected) {
+            if (cell.type === 'start') {
+              plyr.startPos = cell.cell;
+            }
+            else {
+              plyr.otherPositions.push(cell.cell)
+            }
+          }
+        }
+      }
+
+    }
+
+    console.log('initArray',initArray);
+
+
+    for (let i = 1; i < initArray.length+1; i++) {
+      setTimeout(() => {
+      // setTimeout(function timer() {
+
+        let elem5 = initArray[i-1]
+
+        // console.log('plyr',elem5.plyrNo,'this.addAiCount.state',this.addAiCount.state);
+
+        if (elem5.random === 'random') {
+          this.addAiRandomPlayer(elem5.random)
+        }
+        else {
+
+          this.aiInitSettings = {
+            randomStart: false,
+            startPosition: {
+              number: {
+                x: elem5.startPos.x,
+                y: elem5.startPos.y,
+              }
+            },
+            primaryMission: elem5.mission,
+            mission: undefined,
+            mode: elem5.mode,
+            partolArea: elem5.otherPositions,
+            weapon: {
+              name: elem5.weapon+'1',
+              type: elem5.weapon,
+              effect: '',
+            },
+            armor: {
+              name: '',
+              type: '',
+              effect: '',
+            },
+          }
+
+          this.addAiPlayer();
+        }
+
+      }, i * 1000);
+    }
+
+
+    // this.updateSettingsFormAiDataData = {};
+    // this.settingsFormAiStartPosList = [];
+    this.setState({
+      showSettings: false,
+    })
 
   }
   cancelSettings = () => {
@@ -2757,16 +2761,15 @@ class App extends Component {
         for (const elem of this.settingsFormAiGridInfo) {
 
           if (
-            this.checkCell({x:elem.number.x,y:elem.number.y}) === true &&
-            !avoidCells.find(elem2 => elem2.x === elem.number.x && elem2.y === elem.number.y)
+            this.checkCell({x:elem.number.x,y:elem.number.y}) === true
+            && !avoidCells.find(elem2 => elem2.x === elem.number.x && elem2.y === elem.number.y)
           ) {
             array1.push({x:elem.number.x,y:elem.number.y});
-
           }
 
         }
-        console.log('this.settingsFormAiGridInfo',this.settingsFormAiGridInfo);
-        console.log('array1',array1);
+        // console.log('this.settingsFormAiGridInfo',this.settingsFormAiGridInfo);
+        // console.log('array1',array1);
 
 
         if (plyr.selected.length === 0) {
@@ -2827,6 +2830,7 @@ class App extends Component {
       }
 
       for (const elem of this.settingsFormAiStartPosList) {
+        // console.log('elem',elem);
         elem.posArray = lastAvailiblePosArray;
       }
 
@@ -2835,9 +2839,11 @@ class App extends Component {
       })
 
     }
+    // console.log('updateSettingsFormAiData',this.updateSettingsFormAiDataData);
 
   }
   settingsFormGridWidthUpdate = (args) => {
+    // console.log('settingsFormGridWidthUpdate args',args);
 
     let prevGridWidth = this.gridWidth;
     let canvas = this.state.canvas;
@@ -10891,7 +10897,7 @@ class App extends Component {
 
   }
   processLevelData = (allCells) => {
-    // console.log('processing level data');
+    // console.log('processing level data','grid width',this.gridWidth);
 
 
     for(const elem of allCells) {
@@ -11395,7 +11401,7 @@ class App extends Component {
     if (this.addAiCount.state !== true) {
 
       if (this.aiInitSettings.randomStart === true) {
-        console.log('random ai mission is',this.aiInitSettings.primaryMission);
+        // console.log('random ai mission is',this.aiInitSettings.primaryMission);
       }
 
       this.addAiCount.state = true;
@@ -12190,6 +12196,7 @@ class App extends Component {
 
 
   aiEvaluate = (plyr) => {
+    // console.log('aiEvaluate',plyr);
     // console.log('aiEvaluate',plyr.ai.organizing.dropped.state);
 
 
@@ -14978,7 +14985,7 @@ class App extends Component {
 
     let defendDest;
     if (aiPlayer.ai.mission === 'defend') {
-      // console.log('defending');
+      // console.log('defending',aiPlayer.ai.defending);
 
 
       if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
@@ -15931,8 +15938,9 @@ class App extends Component {
     // instructions.shift();
     // instructions.pop();
 
-    // console.log('this.pathArray',this.pathArray);
-    // console.log('path',path,'player',aiPlayer);
+    console.log('this.pathArray',this.pathArray);
+    console.log('path',path,'player',aiPlayer);
+    console.log('instructions',instructions);
     // console.log('player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction,'mission',this.players[aiPlayer-1].ai.mission,'instructions',instructions);
     // if (this.players[aiPlayer-1].ai.mission === 'retreat') {
     //   console.log('retreat instructions',instructions,'player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction,'path',path);

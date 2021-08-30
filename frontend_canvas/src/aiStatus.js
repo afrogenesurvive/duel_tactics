@@ -19,6 +19,7 @@ import {
   faBriefcase,
   faRobot,
   faPlus,
+  faBullseye,
 } from '@fortawesome/free-solid-svg-icons';
 
 import deflectInjuredInidcate from './assets/indicators/deflectInjured.png';
@@ -139,6 +140,12 @@ const AiStatus = props => {
           //   </li>
           // )}
         }
+          <li className="debugBoxListItem">
+            <FontAwesomeIcon icon={faBullseye} size="sm" className="debugBoxIcon"/> :
+            <p className="debugBoxText">
+              {aiPlayers[state].ai.mission}
+            </p>
+          </li>
           <li className="debugBoxListItem">
             <FontAwesomeIcon icon={faSkullCrossbones} size="sm" className="debugBoxIcon"/> :
             <p className="debugBoxText">

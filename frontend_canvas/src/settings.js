@@ -32,7 +32,8 @@ const Settings = (props) => {
   const [gridWidth, setGridWidth] = useState(9);
   const handleGridWidthChange = (args) => {
 
-    let width = parseInt(args.charAt(0))-1;
+    // let width = parseInt(args.split('x')[0])-1;
+    let width = parseInt(args);
     setGridWidth(width);
     props.settingsFormGridWidthUpdate(width);
 
@@ -40,6 +41,7 @@ const Settings = (props) => {
       count: 0,
       playerNumbers: [],
     })
+    setAiRandom([])
     setAiMode([])
     setAiWeapon([])
     setAiMission([])
@@ -60,7 +62,7 @@ const Settings = (props) => {
       case '0':
         plyrNumbers = []
         multiAiFormAiColWidth = 0;
-        setAiRandom = [];
+        setAiRandom([]);
       break;
       case '1':
         plyrNumbers = [1];
@@ -342,6 +344,7 @@ const Settings = (props) => {
   const [aiStartPos, setAiStartPos] = useState([]);
   const handleAiStartPosStateChange = (mission,plyrNo,type,value) => {
     // setAiStartPos(args);
+    // console.log('handleAiStartPosStateChange: mission ',mission,'plyrNo',plyrNo,'type',type,'value',value);
 
     let newArray = props.aiStartPosList.map(y => y = {
       plyrNo: y.plyrNo,
@@ -411,10 +414,10 @@ const Settings = (props) => {
           <Form.Group as={Col} controlId="gridSize" className="formGroup">
             <Form.Label className="formLabel">Grid Size: {props.gridWidth+1} x {props.gridWidth+1}</Form.Label>
             <Form.Control as="select" onChange={e=>handleGridWidthChange(e.target.value)}>
-              <option>10 x 10</option>
-              <option>7 x 7</option>
-              <option>4 x 4</option>
-              <option>13 x 13</option>
+              <option value={9} >10 x 10</option>
+              <option value={6} >7 x 7</option>
+              <option value={3} >4 x 4</option>
+              <option value={12} >13 x 13</option>
             </Form.Control>
           </Form.Group>
         </Form.Row>
@@ -552,8 +555,12 @@ const Settings = (props) => {
                           return <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position</Form.Label>
                         }
                       })}
-                      <Form.Control as="select"  onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start',e.target.value)}>
-
+                      <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='start')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start',e.target.value)}>
+                      {posArray.selected.map((selected) => {
+                        if (selected.type === 'start') {
+                          return<option selected >{selected.cell.x},{selected.cell.y}</option>
+                        }
+                      })}
                         {posArray.posArray.map((pos) => {
                           if (pos === 'random') {
                             return<option>{pos}</option>
@@ -579,7 +586,12 @@ const Settings = (props) => {
                           <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position</Form.Label>
                         }
                       })}
-                      <Form.Control as="select"  onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start',e.target.value)}>
+                      <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='start')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start',e.target.value)}>
+                      {posArray.selected.map((selected) => {
+                        if (selected.type === 'start') {
+                          return<option selected >{selected.cell.x},{selected.cell.y}</option>
+                        }
+                      })}
                         {posArray.posArray.map((pos) => {
                           if (pos === 'random') {
                             return<option>{pos}</option>
@@ -600,7 +612,12 @@ const Settings = (props) => {
                           <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position</Form.Label>
                         }
                       })}
-                      <Form.Control as="select"  onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'defend',e.target.value)}>
+                      <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='defend')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'defend',e.target.value)}>
+                      {posArray.selected.map((selected) => {
+                        if (selected.type === 'defend') {
+                          return<option selected >{selected.cell.x},{selected.cell.y}</option>
+                        }
+                      })}
                         {posArray.posArray.map((pos) => {
                           if (pos === 'random') {
                             return<option>{pos}</option>
@@ -626,7 +643,12 @@ const Settings = (props) => {
                           <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position</Form.Label>
                         }
                       })}
-                      <Form.Control as="select"  onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start',e.target.value)}>
+                      <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='start')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start',e.target.value)}>
+                      {posArray.selected.map((selected) => {
+                        if (selected.type === 'start') {
+                          return<option selected >{selected.cell.x},{selected.cell.y}</option>
+                        }
+                      })}
                         {posArray.posArray.map((pos) => {
                           if (pos === 'random') {
                             return<option>{pos}</option>
@@ -645,7 +667,12 @@ const Settings = (props) => {
                           <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 1</Form.Label>
                         }
                       })}
-                      <Form.Control as="select"  onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol1',e.target.value)}>
+                      <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='patrol1')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol1',e.target.value)}>
+                      {posArray.selected.map((selected) => {
+                        if (selected.type === 'patrol1') {
+                          return<option selected >{selected.cell.x},{selected.cell.y}</option>
+                        }
+                      })}
                         {posArray.posArray.map((pos) => {
                           if (pos === 'random') {
                             return<option>{pos}</option>
@@ -664,7 +691,12 @@ const Settings = (props) => {
                           <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 2</Form.Label>
                         }
                       })}
-                      <Form.Control as="select"  onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol2',e.target.value)}>
+                      <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='patrol2')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol2',e.target.value)}>
+                      {posArray.selected.map((selected) => {
+                        if (selected.type === 'patrol2') {
+                          return<option selected >{selected.cell.x},{selected.cell.y}</option>
+                        }
+                      })}
                         {posArray.posArray.map((pos) => {
                           if (pos === 'random') {
                             return<option>{pos}</option>
