@@ -1410,18 +1410,18 @@ class App extends Component {
     this.aiInitSettings = {
       randomStart: false,
       startPosition: {
-        number: {x: 8, y: 2}
+        number: {x: 1, y: 7}
       },
-      primaryMission: 'pursue',
+      primaryMission: 'defend',
       mission: undefined,
       mode: 'careful',
       partolArea: [
-        {x: 7, y: 7},
-        {x: 7, y: 4}
+        {x: 8, y: 6},
+        // {x: 7, y: 4}
       ],
       weapon: {
-        name: 'sword1',
-        type: 'sword',
+        name: 'spear1',
+        type: 'spear',
         effect: '',
       },
       armor: {
@@ -1457,6 +1457,8 @@ class App extends Component {
     this.settingsFormAiGridInfo = [] ;
     this.settingsFormAiStartPosList = [];
     this.updateSettingsFormAiDataData = {};
+
+    this.settingsFormPlyrStartPosList = [];
 
     this.showSettingsKeyPress = {
       state: false,
@@ -2723,6 +2725,12 @@ class App extends Component {
     })
 
     this.settingsFormAiGridInfo = this.gridInfo;
+    this.settingsFormPlyrGridInfo = this.gridInfo;
+  }
+  getCustomPlyrStartPosList = (args) => {
+
+    let avoidCells = [];
+
   }
   getCustomAiStartPosList = (args) => {
     // console.log('getCustomAiStartPosList',args);
@@ -2990,6 +2998,9 @@ class App extends Component {
           key !== 'dodge' &&
           value === true
         ) {
+          // if (player.ai.state === true) {
+          //   console.log('ai pressed',key,'plyr',player.number);
+          // }
           // console.log('pressed1',key,'plyr',player.number);
 
           keyPressedDirection = key;
@@ -5353,7 +5364,6 @@ class App extends Component {
             this.keyPressed[player.number-1].southEast === true ||
             this.keyPressed[player.number-1].southWest === true
           ) {
-
             // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
             if (keyPressedDirection === player.direction && player.strafing.state === false) {
 
@@ -5422,7 +5432,6 @@ class App extends Component {
             // CHANGE DIRECTION IF NOT STRAFING!!
             else if (keyPressedDirection !== player.direction && player.strafing.state === false) {
 
-              // console.log('change player direction to',keyPressedDirection);
               // console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
               player.turning.state = true;
               player.turning.toDirection = keyPressedDirection;
@@ -8369,6 +8378,7 @@ class App extends Component {
           }
         break;
       }
+      // console.log('target.cell2.number',target.cell2.number);
 
       if (targetCellNumber.x < 0 || targetCellNumber.x > this.gridWidth) {
         target.void = true;
@@ -8509,16 +8519,25 @@ class App extends Component {
             targetCellNumber.y === obstaclePosition.y
           ) {
             // console.log('an obstacle is in your way');
+
             target.free = false;
             target.occupant.type = 'obstacle';
             obstacleObstructFound = true;
           }
-          if (
-            target.cell2.number.x === obstaclePosition.x &&
-            target.cell2.number.y === obstaclePosition.y
-          ) {
-            spearCell2Obstacle = true;
+          if (player.currentWeapon.type === 'spear' && player.attacking.state === true && player.strafing.state !== true) {
+            if (
+              target.cell2.number.x === obstaclePosition.x &&
+              target.cell2.number.y === obstaclePosition.y
+            ) {
+              spearCell2Obstacle = true;
+            }
           }
+          // if (
+          //   target.cell2.number.x === obstaclePosition.x &&
+          //   target.cell2.number.y === obstaclePosition.y
+          // ) {
+          //   spearCell2Obstacle = true;
+          // }
         }
       }
     }
@@ -8537,18 +8556,21 @@ class App extends Component {
             player: plyr2.number
           };
         }
-        if (
-          target.cell2.number.x === plyr2.currentPosition.cell.number.x &&
-          target.cell2.number.y === plyr2.currentPosition.cell.number.y
-        ) {
-          // console.log('opposing player is in your way');
-          target.free = false;
-          obstacleObstructFound = true;
-          target.occupant = {
-            type: 'player',
-            player: plyr2.number
-          };
+        if (player.currentWeapon.type === 'spear' && player.attacking.state === true) {
+          if (
+            target.cell2.number.x === plyr2.currentPosition.cell.number.x &&
+            target.cell2.number.y === plyr2.currentPosition.cell.number.y
+          ) {
+            // console.log('opposing player is in your way',plyr2,target.cell2.number.x === plyr2.currentPosition.cell.number.x && target.cell2.number.y === plyr2.currentPosition.cell.number.y,plyr2.currentPosition.cell.number.x,plyr2.currentPosition.cell.number.y);
+            target.free = false;
+            obstacleObstructFound = true;
+            target.occupant = {
+              type: 'player',
+              player: plyr2.number
+            };
+          }
         }
+
       }
     }
 
@@ -11114,6 +11136,8 @@ class App extends Component {
     }
 
     this.placeItems({init: true, items: ''});
+
+    this.getCustomPlyrStartPosList([])
 
     for (var x = 0; x < this.gridWidth+1; x++) {
       for (var y = 0; y < this.gridWidth+1; y++) {
@@ -15234,7 +15258,6 @@ class App extends Component {
 
     // if player cycling and path set not true add cycle gear to plyr instructions
 
-
     let cancelPath = false
 
     // SET PATH !!
@@ -15938,9 +15961,10 @@ class App extends Component {
     // instructions.shift();
     // instructions.pop();
 
-    console.log('this.pathArray',this.pathArray);
-    console.log('path',path,'player',aiPlayer);
-    console.log('instructions',instructions);
+    // console.log('this.pathArray',this.pathArray);
+    // console.log('path',path,'player',aiPlayer);
+    // console.log('instructions',instructions);
+
     // console.log('player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction,'mission',this.players[aiPlayer-1].ai.mission,'instructions',instructions);
     // if (this.players[aiPlayer-1].ai.mission === 'retreat') {
     //   console.log('retreat instructions',instructions,'player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction,'path',path);
@@ -15991,8 +16015,10 @@ class App extends Component {
         cycleWeapon: false,
         cycleArmor: false,
         dodge: false,
-      }
+      };
+
       switch(currentInstruction.keyword) {
+
         case 'short_wait':
         // console.log('ai act -- short_wait');
           currentInstruction.limit = 15;
@@ -16610,6 +16636,8 @@ class App extends Component {
               updateSettingsFormAiData={this.updateSettingsFormAiData}
               rnJesus={this.rnJesus}
               settingsFormGridWidthUpdate={this.settingsFormGridWidthUpdate}
+              plyrStartPosList={this.settingsFormPlyrStartPosList}
+              getCustomPlyrStartPosList={this.getCustomPlyrStartPosList}
             />
           )}
 

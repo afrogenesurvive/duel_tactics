@@ -29,6 +29,39 @@ let playerSettings = {
 const Settings = (props) => {
   // console.log('props.aiStartPosList',props.aiStartPosList);
 
+  const [plyrCount, setPlyrCount] = useState({
+    count: 2,
+    playerNumbers: [1,2],
+  });
+  const handlePlyrCountStateChange = (args) => {
+
+    let plyrNumbers = [];
+    let multiPlyrFormPlyrColWidth;
+    switch(args) {
+      case '1':
+        plyrNumbers = [1];
+        multiPlyrFormPlyrColWidth = 8;
+      break;
+      case '2':
+        plyrNumbers = [1,2];
+        multiPlyrFormPlyrColWidth = 6;
+      break;
+    }
+    props.getCustomPlyrStartPosList([])
+
+    setPlyrCount({
+      count: args,
+      playerNumbers: plyrNumbers,
+    });
+
+  }
+
+  const [plyrStartPos, setPlyrStartPos] = useState([]);
+  const handlePlyrStartPosStateChange = (mission,plyrNo,type,value) => {
+
+  }
+
+
   const [gridWidth, setGridWidth] = useState(9);
   const handleGridWidthChange = (args) => {
 
@@ -398,9 +431,8 @@ const Settings = (props) => {
   const handleMultiAiFormAiColWidthChange = (args) => {
     setMultiAiFormAiColWidth(args);
   }
+
   const [multiAiFormAiMissionColWidth, setMultiAiFormAiMissionColWidth] = useState(8);
-
-
 
 
   return (
@@ -435,7 +467,7 @@ const Settings = (props) => {
         <Form.Row>
           <Form.Group as={Col} controlId="humanPlayers" className="formGroup">
             <Form.Label className="formLabel">Human Players</Form.Label>
-            <Form.Control as="select">
+            <Form.Control as="select" onChange={e=>handlePlyrCountStateChange(e.target.value)}>
               <option>2</option>
               <option>1</option>
             </Form.Control>
