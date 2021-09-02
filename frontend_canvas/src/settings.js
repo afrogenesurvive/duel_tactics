@@ -28,36 +28,110 @@ let playerSettings = {
 
 const Settings = (props) => {
   // console.log('props.aiStartPosList',props.aiStartPosList);
+  console.log('props.plyrStartPosList',props.plyrStartPosList);
 
-  const [plyrCount, setPlyrCount] = useState({
-    count: 2,
-    playerNumbers: [1,2],
-  });
+  const [plyrCount, setPlyrCount] = useState(
+    // [
+    //   {
+    //     plyrNo: 1,
+    //     selected: [],
+    //     posArray: []
+    //   },
+    //   {
+    //     plyrNo: 2,
+    //     selected: [],
+    //     posArray: []
+    //   }
+    // ]
+    '2'
+  );
   const handlePlyrCountStateChange = (args) => {
 
-    let plyrNumbers = [];
-    let multiPlyrFormPlyrColWidth;
-    switch(args) {
-      case '1':
-        plyrNumbers = [1];
-        multiPlyrFormPlyrColWidth = 8;
+    let array = [];
+    let plyrStartPosWidth;
+    switch(parseInt(args)) {
+      case 1:
+        array = [
+          {
+            plyrNo: 1,
+            selected: undefined,
+            posArray: []
+          }
+        ]
+        plyrStartPosWidth = 8;
       break;
-      case '2':
-        plyrNumbers = [1,2];
-        multiPlyrFormPlyrColWidth = 6;
+      case 2:
+        array = [
+          {
+            plyrNo: 1,
+            selected: undefined,
+            posArray: []
+          },
+          {
+            plyrNo: 2,
+            selected: undefined,
+            posArray: []
+          }
+        ]
+        plyrStartPosWidth = 6;
       break;
     }
-    props.getCustomPlyrStartPosList([])
 
-    setPlyrCount({
-      count: args,
-      playerNumbers: plyrNumbers,
-    });
+    props.getCustomPlyrStartPosList(array)
+
+    setPlyrCount(parseInt(args));
+
+    setPlyrStartPosWidth(plyrStartPosWidth);
 
   }
 
+
+  const [plyrStartPosWidth, setPlyrStartPosWidth] = useState(8);
+  // const handlePlyrStartPosWidthChange = (args) => {
+  //   setPlyrStartPosWidth(args);
+  // }
+
+
   const [plyrStartPos, setPlyrStartPos] = useState([]);
-  const handlePlyrStartPosStateChange = (mission,plyrNo,type,value) => {
+  const handlePlyrStartPosStateChange = (plyrNo,value) => {
+    console.log('handlePlyrStartPosStateChange',props.aiStartPosList);
+
+
+    // let newArray = props.aiStartPosList.map(y => y = {
+    //   plyrNo: y.plyrNo,
+    //   selected: y.selected,
+    // });
+
+    if (value === 'random') {
+
+      let whichCell = props.rnJesus(1,props.plyrStartPosList.length)
+      let posList = props.plyrStartPosList.find(j=>j.plyrNo === plyrNo).posArray;
+      let randomPos = posList[whichCell-1]
+      // console.log('randomPos',randomPos);
+      value = ''+randomPos.x+','+randomPos.y+''
+
+    }
+
+    // console.log('props.aiStartPosList 2',props.aiStartPosList);
+
+    // let plyrChange = newArray.find(x => x.plyrNo === plyrNo);
+    //
+    // if (plyrChange.selected.length === 0) {
+    //   plyrChange.selected.push({type:type,cell:{x:value.split(",")[0],y:value.split(",")[1]}})
+    // }
+    // else {
+    //   // console.log('plyrChange',plyrChange);
+    //   let selectedElem = plyrChange.selected.find(j=>j.type === type)
+    //   let indx = newArray.findIndex(j=>j.plyrNo === plyrChange.plyrNo)
+    //   if (selectedElem) {
+    //     selectedElem.cell = {x:parseInt(value.split(",")[0]),y:parseInt(value.split(",")[1])};
+    //   }
+    //   else {
+    //     plyrChange.selected.push({type:type,cell:{x:parseInt(value.split(",")[0]),y:parseInt(value.split(",")[1])}});
+    //   }
+    // }
+    //
+    // props.getCustomPlyrStartPosList(newArray)
 
   }
 
@@ -302,7 +376,6 @@ const Settings = (props) => {
 
   }
 
-
   const [aiWeapon, setAiWeapon] = useState([]);
   const handleAiWeaponStateChange = (plyrNo,value) => {
 
@@ -472,7 +545,31 @@ const Settings = (props) => {
               <option>1</option>
             </Form.Control>
           </Form.Group>
+        </Form.Row>
 
+
+        {props.plyrStartPosList.length > 0 && (
+          <Row className="multiAiFormBox">
+          <p>Plyr {props.plyrStartPosList[0].plyrNo}</p>
+          {props.plyrStartPosList.map((posArray2) => {
+
+            <Col className="multiAiFormAi" sm={8}>
+              <Form.Row>
+                <Form.Group as={Col} controlId="plyrStartPos" className="formGroup">
+                  <Form.Label className="formLabel">Plyr {posArray2.plyrNo} Start Position ({posArray2.selected.x},{posArray2.selected.y})</Form.Label>
+
+                  <Form.Control as="select" value={posArray2.selected} onChange={e=>handleAiStartPosStateChange(posArray2.plyrNo,e.target.value)}>
+                    <option selected >{posArray2.selected.x},{posArray2.selected.y}</option>
+                    
+                  </Form.Control>
+                </Form.Group>
+              </Form.Row>
+            </Col>
+          })}
+          </Row>
+        )}
+
+        <Form.Row>
           <Form.Group as={Col} controlId="aiCount" className="formGroup">
             <Form.Label className="formLabel">Ai Players</Form.Label>
             <Form.Control as="select" value={aiCount.count} onChange={e=>handleAiCountStateChange(e.target.value)}>
@@ -484,6 +581,7 @@ const Settings = (props) => {
             </Form.Control>
           </Form.Group>
         </Form.Row>
+
 
         {aiRandom.length > 0 && (
           <Row className="multiAiFormBox">

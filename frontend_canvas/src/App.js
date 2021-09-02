@@ -1458,6 +1458,7 @@ class App extends Component {
     this.settingsFormAiStartPosList = [];
     this.updateSettingsFormAiDataData = {};
 
+    this.settingsFormPlyrGridInfo = [];
     this.settingsFormPlyrStartPosList = [];
 
     this.showSettingsKeyPress = {
@@ -1504,6 +1505,20 @@ class App extends Component {
       this.addListeners(canvas, canvas2);
 
       this.drawGridInit(this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
+      this.getCustomPlyrStartPosList(
+        [
+          {
+            plyrNo: 1,
+            selected: undefined,
+            posArray: []
+          },
+          {
+            plyrNo: 2,
+            selected: undefined,
+            posArray: []
+          }
+        ]
+      )
 
       window.requestAnimationFrame(this.gameLoop);
 
@@ -2725,11 +2740,137 @@ class App extends Component {
     })
 
     this.settingsFormAiGridInfo = this.gridInfo;
-    this.settingsFormPlyrGridInfo = this.gridInfo;
+
+    console.log();
+    this.getCustomPlyrStartPosList(
+      [
+        {
+          plyrNo: 1,
+          selected: undefined,
+          posArray: []
+        },
+        {
+          plyrNo: 2,
+          selected: undefined,
+          posArray: []
+        }
+      ]
+    )
+
   }
   getCustomPlyrStartPosList = (args) => {
+    this.settingsFormPlyrGridInfo = this.gridInfo;
+
+    this.playerNumber = args;
 
     let avoidCells = [];
+
+
+    this.settingsFormPlyrStartPosList = [];
+
+    for (const plyr of args) {
+
+      let array1 = [];
+      if (plyr.selected) {
+        avoidCells.push(plyr.selected)
+      }
+
+      if (this.updateSettingsFormAiDataData.count < 0) {
+        for (const plyr2 of this.settingsFormAiStartPosList) {
+          for (const selected of plyr2.selected) {
+            avoidCells.push(selected.cell)
+          }
+        }
+      }
+
+      // console.log('this.settingsFormPlyrGridInfo',this.settingsFormPlyrGridInfo);
+      for (const elem of this.settingsFormPlyrGridInfo) {
+
+        if (
+          this.plyrStartPosCheckCell({x:elem.number.x,y:elem.number.y}) === true
+          && !avoidCells.find(elem2 => elem2.x === elem.number.x && elem2.y === elem.number.y)
+        ) {
+          array1.push({x:elem.number.x,y:elem.number.y});
+        }
+
+      }
+      // console.log('array1',array1);
+
+
+      if (!plyr.selected) {
+
+        let doubleCheckArray = array1;
+        let playerStartPos = this.players[plyr.plyrNo-1].currentPosition.cell.number;
+
+        avoidCells.push({x:playerStartPos.x,y:playerStartPos.y})
+        plyr.selected = {x:playerStartPos.x,y:playerStartPos.y}
+        doubleCheckArray = array1.filter(i=>i !== playerStartPos)
+        array1 = doubleCheckArray;
+
+      }
+
+
+      this.settingsFormPlyrStartPosList.push({
+        plyrNo:plyr.plyrNo,
+        posArray:array1,
+        selected: plyr.selected,
+      })
+
+      this.setState({
+        stateUpdater: '..'
+      })
+
+    }
+
+
+    let lastAvailiblePosArray = this.settingsFormPlyrStartPosList[this.settingsFormPlyrStartPosList.length-1].posArray;
+    let hasRandomCell = lastAvailiblePosArray.find(x=>x === 'random')
+    if (!hasRandomCell) {
+      lastAvailiblePosArray.push('random')
+    }
+
+    for (const elem of this.settingsFormPlyrStartPosList) {
+      // console.log('elem',elem);
+      elem.posArray = lastAvailiblePosArray;
+    }
+
+    this.setState({
+      stateUpdater: '..'
+    })
+
+    // console.log('this.settingsFormPlyrStartPosList',this.settingsFormPlyrStartPosList);
+
+  }
+
+  plyrStartPosCheckCell = (cell) => {
+
+    let cellFree = true;
+    let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y);
+    if (
+      cell2.levelData.charAt(0) ===  'z' ||
+      cell2.levelData.charAt(0) ===  'y'
+    ) {
+      cellFree = false;
+    }
+    if (cell2.item.name !== '') {
+      cellFree = false;
+    }
+    if (
+      cell2.terrain.type === 'deep' ||
+      cell2.terrain.type === 'hazard'
+    ) {
+      cellFree = false;
+    }
+
+    // PLAYERS 1&2 ALT RESPAWN POINTS!
+    if (cell.x === this.gridWidth && cell.y === this.gridWidth) {
+      cellFree = false;
+    }
+    if (cell.x === this.gridWidth && cell.y === 0) {
+      cellFree = false;
+    }
+
+    return cellFree;
 
   }
   getCustomAiStartPosList = (args) => {
@@ -10213,10 +10354,10 @@ class App extends Component {
     }
 
     // PLAYERS 1&2 ALT RESPAWN POINTS!
-    if (cell.x === 9 && cell.y === 9) {
+    if (cell.x === this.gridWidth && cell.y === this.gridWidth) {
       cellFree = false;
     }
-    if (cell.x === 9 && cell.y === 0) {
+    if (cell.x === this.gridWidth && cell.y === 0) {
       cellFree = false;
     }
 
@@ -11137,7 +11278,6 @@ class App extends Component {
 
     this.placeItems({init: true, items: ''});
 
-    this.getCustomPlyrStartPosList([])
 
     for (var x = 0; x < this.gridWidth+1; x++) {
       for (var y = 0; y < this.gridWidth+1; y++) {
