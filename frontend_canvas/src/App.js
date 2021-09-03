@@ -2563,16 +2563,20 @@ class App extends Component {
     }
     this.gamepad = gamepad;
 
-    this.restartGame();
-
     // window.requestAnimationFrame(this.gameLoop);
-
 
 
     if (playerNumber < 2) {
       this.players.splice(1,1)
       this.playerNumber = 1;
     }
+
+
+    for (const plyr of this.settingsFormPlyrStartPosList) {
+      this.players[plyr.plyrNo-1].startPosition.cell.number = plyr.selected
+    }
+
+    this.restartGame();
 
     if (aiPlayerNumber > 0) {
 
@@ -2588,6 +2592,9 @@ class App extends Component {
 
     }
 
+    // console.log('this.settingsFormPlyrStartPosList',this.settingsFormPlyrStartPosList);
+    // console.log('this.updateSettingsFormAiData',this.updateSettingsFormAiDataData);
+    // console.log('this.settingsFormAiStartPosList',this.settingsFormAiStartPosList);
 
   }
   loadAiSettings = () => {
@@ -2671,7 +2678,7 @@ class App extends Component {
 
     }
 
-    console.log('initArray',initArray);
+    // console.log('initArray',initArray);
 
 
     for (let i = 1; i < initArray.length+1; i++) {
@@ -2724,6 +2731,7 @@ class App extends Component {
       showSettings: false,
     })
 
+
   }
   cancelSettings = () => {
 
@@ -2765,7 +2773,6 @@ class App extends Component {
 
     let avoidCells = [];
 
-
     this.settingsFormPlyrStartPosList = [];
 
     for (const plyr of args) {
@@ -2775,15 +2782,26 @@ class App extends Component {
         avoidCells.push(plyr.selected)
       }
 
-      if (this.updateSettingsFormAiDataData.count < 0) {
-        for (const plyr2 of this.settingsFormAiStartPosList) {
-          for (const selected of plyr2.selected) {
-            avoidCells.push(selected.cell)
+      if (!plyr.selected) {
+
+        let playerStartPos = this.players[plyr.plyrNo-1].currentPosition.cell.number;
+
+        avoidCells.push({x:playerStartPos.x,y:playerStartPos.y})
+
+      }
+
+
+      if (this.updateSettingsFormAiDataData.count) {
+        if (parseInt(this.updateSettingsFormAiDataData.count.count) > 0) {
+          for (const plyr2 of this.settingsFormAiStartPosList) {
+            for (const selected of plyr2.selected) {
+              avoidCells.push(selected.cell)
+            }
           }
         }
       }
 
-      // console.log('this.settingsFormPlyrGridInfo',this.settingsFormPlyrGridInfo);
+
       for (const elem of this.settingsFormPlyrGridInfo) {
 
         if (
@@ -2794,18 +2812,12 @@ class App extends Component {
         }
 
       }
-      // console.log('array1',array1);
 
 
       if (!plyr.selected) {
-
-        let doubleCheckArray = array1;
         let playerStartPos = this.players[plyr.plyrNo-1].currentPosition.cell.number;
 
-        avoidCells.push({x:playerStartPos.x,y:playerStartPos.y})
         plyr.selected = {x:playerStartPos.x,y:playerStartPos.y}
-        doubleCheckArray = array1.filter(i=>i !== playerStartPos)
-        array1 = doubleCheckArray;
 
       }
 
@@ -2828,6 +2840,7 @@ class App extends Component {
     if (!hasRandomCell) {
       lastAvailiblePosArray.push('random')
     }
+    // console.log('lastAvailiblePosArray',lastAvailiblePosArray);
 
     for (const elem of this.settingsFormPlyrStartPosList) {
       // console.log('elem',elem);
@@ -2904,6 +2917,12 @@ class App extends Component {
         if (plyr.selected.length > 0) {
           for (const selected of plyr.selected) {
             avoidCells.push(selected.cell)
+          }
+        }
+
+        if (this.settingsFormPlyrStartPosList[0]) {
+          for (const plyr2 of this.settingsFormPlyrStartPosList) {
+            avoidCells.push(plyr2.selected)
           }
         }
 
@@ -3013,9 +3032,11 @@ class App extends Component {
 
     // console.log('settingsFormAiGridInfo',this.settingsFormAiGridInfo);
     // console.log('gridInfo',this.gridInfo);
+    // this.setState({
+    //   stateUpdater: '..'
+    // })
 
   }
-
   updateSettingsFormAiData = (args) => {
 
     this.updateSettingsFormAiDataData = {
@@ -3031,7 +3052,6 @@ class App extends Component {
     // console.log('updateSettingsFormAiData',this.updateSettingsFormAiDataData);
 
   }
-
 
 
   gameLoop = () => {
