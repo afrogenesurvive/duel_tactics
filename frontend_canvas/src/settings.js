@@ -29,12 +29,12 @@ let playerSettings = {
 const Settings = (props) => {
 
 
-  const [plyrCount, setPlyrCount] = useState(2);
+  const [plyrCount, setPlyrCount] = useState('2');
   const handlePlyrCountStateChange = (args) => {
 
     let array = [];
     let plyrStartPosWidth;
-    switch(args) {
+    switch(parseInt(args)) {
       case 1:
         array = [
           {
@@ -570,9 +570,9 @@ const Settings = (props) => {
         <Form.Row>
           <Form.Group as={Col} controlId="humanPlayers" className="formGroup">
             <Form.Label className="formLabel">Human Players</Form.Label>
-            <Form.Control as="select" value={props.plyrStartPosList.length} onChange={e=>handlePlyrCountStateChange(e.target.value)}>
-              <option value={2}>2</option>
-              <option value={1}>1</option>
+            <Form.Control as="select" value={props.plyrStartPosList.length.toString()} onChange={e=>handlePlyrCountStateChange(e.target.value)}>
+              <option >2</option>
+              <option >1</option>
             </Form.Control>
           </Form.Group>
         </Form.Row>
