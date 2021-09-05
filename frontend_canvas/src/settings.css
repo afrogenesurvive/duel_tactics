@@ -84,3 +84,7 @@
   border-radius: 5px;
   margin: 0 auto;
 }
+
+.settingsCanvas {
+  z-index: 7;
+}

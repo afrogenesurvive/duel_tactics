@@ -29,6 +29,19 @@ let playerSettings = {
 const Settings = (props) => {
 
 
+  let preInput;
+  if (props.gamepad !== true) {
+    preInput = "Keyboard";
+  } else {
+    preInput = "Gamepad"
+  }
+
+  const [input, setInput] = useState(preInput);
+  const handleInputChange = (args) => {
+    setInput(args);
+  }
+
+
   const [plyrCount, setPlyrCount] = useState('2');
   const handlePlyrCountStateChange = (args) => {
 
@@ -79,12 +92,6 @@ const Settings = (props) => {
     }
 
   }
-
-
-  const [plyrStartPosWidth, setPlyrStartPosWidth] = useState(8);
-  // const handlePlyrStartPosWidthChange = (args) => {
-  //   setPlyrStartPosWidth(args);
-  // }
 
 
   const [plyrStartPos, setPlyrStartPos] = useState([]);
@@ -141,8 +148,14 @@ const Settings = (props) => {
 
   }
 
-  let gridWidthx = props.gridWidth;
-  const [gridWidth, setGridWidth] = useState(9);
+
+  const [plyrStartPosWidth, setPlyrStartPosWidth] = useState(6);
+  // const handlePlyrStartPosWidthChange = (args) => {
+  //   setPlyrStartPosWidth(args);
+  // }
+
+  let preGridWidth = props.gridWidth;
+  const [gridWidth, setGridWidth] = useState(preGridWidth);
   const handleGridWidthChange = (args) => {
 
     // let width = parseInt(args.split('x')[0])-1;
@@ -281,6 +294,7 @@ const Settings = (props) => {
 
   }
 
+
   const [aiRandom, setAiRandom] = useState([]);
   const handleAiRandomStateChange = (plyrNumber,value) => {
 
@@ -375,6 +389,7 @@ const Settings = (props) => {
 
   }
 
+
   const [aiMode, setAiMode] = useState([]);
   const handleAiModeStateChange = (plyrNo,value) => {
 
@@ -397,6 +412,7 @@ const Settings = (props) => {
       })
 
   }
+
 
   const [aiWeapon, setAiWeapon] = useState([]);
   const handleAiWeaponStateChange = (plyrNo,value) => {
@@ -469,6 +485,7 @@ const Settings = (props) => {
 
   }
 
+
   const [aiStartPos, setAiStartPos] = useState([]);
   const handleAiStartPosStateChange = (mission,plyrNo,type,value) => {
     // setAiStartPos(args);
@@ -530,6 +547,7 @@ const Settings = (props) => {
 
   }
 
+
   const [multiAiFormAiColWidth, setMultiAiFormAiColWidth] = useState(8);
   const handleMultiAiFormAiColWidthChange = (args) => {
     setMultiAiFormAiColWidth(args);
@@ -544,11 +562,19 @@ const Settings = (props) => {
       <h2 className="settingsHeading">
         Settings :
       </h2>
+
+      <canvas
+        width={props.canvasWidth}
+        height={props.canvasHeight}
+        ref={props.canvasRef}
+        className="settingsCanvas"
+      />
+
       <Form onSubmit={props.onConfirm} className="form">
         <Form.Row>
           <Form.Group as={Col} controlId="gridSize" className="formGroup">
-            <Form.Label className="formLabel">Grid Size: {props.gridWidth+1} x {props.gridWidth+1}</Form.Label>
-            <Form.Control as="select"  onChange={e=>handleGridWidthChange(e.target.value)}>
+            <Form.Label className="formLabel">Grid Size:</Form.Label>
+            <Form.Control as="select" value={gridWidth} onChange={e=>handleGridWidthChange(e.target.value)}>
               <option value={9} >10 x 10</option>
               <option value={6} >7 x 7</option>
               <option value={3} >4 x 4</option>
@@ -560,7 +586,7 @@ const Settings = (props) => {
         <Form.Row>
           <Form.Group as={Col} controlId="input" className="formGroup">
             <Form.Label className="formLabel">Input Source</Form.Label>
-            <Form.Control as="select">
+            <Form.Control value={input} onChange={e=>handleInputChange(e.target.value)} as="select">
               <option>Keyboard</option>
               <option>Gamepad</option>
             </Form.Control>
@@ -569,7 +595,7 @@ const Settings = (props) => {
 
         <Form.Row>
           <Form.Group as={Col} controlId="humanPlayers" className="formGroup">
-            <Form.Label className="formLabel">Human Players</Form.Label>
+            <Form.Label className="formLabel">Players</Form.Label>
             <Form.Control as="select" value={props.plyrStartPosList.length.toString()} onChange={e=>handlePlyrCountStateChange(e.target.value)}>
               <option >2</option>
               <option >1</option>
@@ -581,10 +607,10 @@ const Settings = (props) => {
         {props.plyrStartPosList.length > 0 && (
           <Row className="multiAiFormBox">
           {props.plyrStartPosList.map((posArray) => {
-            return<Col className="multiAiFormAi" sm={8}>
+            return<Col className="multiAiFormAi" sm={plyrStartPosWidth}>
               <Form.Row>
                 <Form.Group as={Col} controlId="plyrStartPos" className="formGroup">
-                  <Form.Label className="formLabel">Plyr {posArray.plyrNo} Start Position ({posArray.selected.x},{posArray.selected.y})</Form.Label>
+                  <Form.Label className="formLabel">P{posArray.plyrNo} Start Position</Form.Label>
 
                   <Form.Control as="select" value={posArray.selected} onChange={e=>handlePlyrStartPosStateChange(posArray.plyrNo,e.target.value)}>
                     <option selected >{posArray.selected.x},{posArray.selected.y}</option>
@@ -606,7 +632,7 @@ const Settings = (props) => {
 
         <Form.Row>
           <Form.Group as={Col} controlId="aiCount" className="formGroup">
-            <Form.Label className="formLabel">Ai Players</Form.Label>
+            <Form.Label className="formLabel">Ai</Form.Label>
             <Form.Control as="select" value={aiCount.count} onChange={e=>handleAiCountStateChange(e.target.value)}>
               <option>0</option>
               <option>1</option>
@@ -624,7 +650,7 @@ const Settings = (props) => {
             <Col className="multiAiFormAi" sm={multiAiFormAiColWidth}>
             <Form.Row>
               <Form.Group as={Col} controlId="aiRandom" className="formGroup">
-                <Form.Label className="formLabel">Plyr {plyr.plyrNo} Random?</Form.Label>
+                <Form.Label className="formLabel">Ai {plyr.plyrNo} Random?</Form.Label>
                 <Form.Control as="select" value={plyr.random} onChange={e=>handleAiRandomStateChange(plyr.plyrNo,e.target.value)}>
                   <option>random</option>
                   <option>custom</option>
@@ -714,7 +740,7 @@ const Settings = (props) => {
                     <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
                       {posArray.selected.map((selected) => {
                         if (selected.type === 'start') {
-                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position ({selected.cell.x},{selected.cell.y})</Form.Label>
+                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position</Form.Label>
                         }
                         else {
                           return <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position</Form.Label>
@@ -745,7 +771,7 @@ const Settings = (props) => {
                     <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
                       {posArray.selected.map((selected) => {
                         if (selected.type === 'start') {
-                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position ({selected.cell.x},{selected.cell.y})</Form.Label>
+                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position</Form.Label>
                         }
                         else {
                           <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position</Form.Label>
@@ -771,7 +797,7 @@ const Settings = (props) => {
                     <Form.Group as={Col} controlId="aiDefendPos" className="formGroup">
                       {posArray.selected.map((selected) => {
                         if (selected.type === 'defend') {
-                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position ({selected.cell.x},{selected.cell.y})</Form.Label>
+                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position</Form.Label>
                         }
                         else {
                           <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position</Form.Label>
@@ -802,7 +828,7 @@ const Settings = (props) => {
                     <Form.Group as={Col} controlId="aiStartPos1" className="formGroup">
                       {posArray.selected.map((selected) => {
                         if (selected.type === 'start') {
-                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position ({selected.cell.x},{selected.cell.y})</Form.Label>
+                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position</Form.Label>
                         }
                         else {
                           <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position</Form.Label>
@@ -826,7 +852,7 @@ const Settings = (props) => {
                     <Form.Group as={Col} controlId="aiPatrolPos1" className="formGroup">
                       {posArray.selected.map((selected) => {
                         if (selected.type === 'patrol1') {
-                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 1 ({selected.cell.x},{selected.cell.y})</Form.Label>
+                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 1 </Form.Label>
                         }
                         else {
                           <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 1</Form.Label>
@@ -850,7 +876,7 @@ const Settings = (props) => {
                     <Form.Group as={Col} controlId="aiPatrolPos2" className="formGroup">
                       {posArray.selected.map((selected) => {
                         if (selected.type === 'patrol2') {
-                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 2 ({selected.cell.x},{selected.cell.y})</Form.Label>
+                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 2</Form.Label>
                         }
                         else {
                           <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 2</Form.Label>

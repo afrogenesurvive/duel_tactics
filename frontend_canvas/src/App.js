@@ -126,6 +126,7 @@ class App extends Component {
 
     this.canvasRef = React.createRef();
     this.canvasRef2 = React.createRef();
+    this.canvasRef3 = React.createRef();
 
     this.tileColumnOffset = 100; // pixels
     this.tileRowOffset = 50; // pixels
@@ -140,6 +141,9 @@ class App extends Component {
 
     this.canvasWidth = 1300;
     this.canvasHeight = 800;
+
+    this.settingsCanvasHeight = 200;
+    this.settingsCanvasWidth = 200;
 
     this.floorImageWidth = 103;
     this.floorImageHeight = 53;
@@ -1407,6 +1411,18 @@ class App extends Component {
     };
     this.charSpriteHeight = 100;
     this.charSpriteWidth = 100;
+    this.playerColourRef = {
+      player1: 'red',
+      player2: 'blue',
+      player3: 'green',
+      player4: 'purple',
+      player5: 'orange',
+      player6: 'brown',
+      player7: '',
+      player8: '',
+    }
+
+
     this.aiInitSettings = {
       randomStart: false,
       startPosition: {
@@ -1494,17 +1510,22 @@ class App extends Component {
     let canvas2 = this.canvasRef2.current;
     let context2 = canvas2.getContext('2d');
 
+    let canvas3 = this.canvasRef3.current;
+    let context3 = canvas3.getContext('2d');
+
     this.setState({
       canvas: canvas,
       context: context,
       canvas2: canvas2,
-      context2: context2
+      context2: context2,
+      canvas3: canvas3,
+      context3: context3
     })
 
     this.refs.comBImgAttackSheet.onload = () => {
       this.addListeners(canvas, canvas2);
 
-      this.drawGridInit(this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
+      this.drawGridInit(this.state.canvas, this.state.context, this.state.canvas2, this.state.context2, this.state.canvas3, this.state.context3);
       this.getCustomPlyrStartPosList(
         [
           {
@@ -3126,7 +3147,7 @@ class App extends Component {
 
         for (const player of this.players) {
 
-          this.playerUpdate(player, this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
+          this.playerUpdate(player, this.state.canvas, this.state.context, this.state.canvas2, this.state.context2, this.state.canvas3, this.state.context3);
         }
 
 
@@ -3139,7 +3160,7 @@ class App extends Component {
 
   }
 
-  playerUpdate = (player, canvas, context, canvas2, context2) => {
+  playerUpdate = (player, canvas, context, canvas2, context2, canvas3, context3) => {
     // console.log('updating player',player.number);
 
     let keyPressedDirection;
@@ -6215,11 +6236,11 @@ class App extends Component {
     }
 
 
-    this.drawPlayerStep(player.number, canvas, context, canvas2, context2);
+    this.drawPlayerStep(player.number, canvas, context, canvas2, context2, canvas3, context3);
 
   }
 
-  drawPlayerStep = (playerNumber, canvas, context, canvas2, context2) => {
+  drawPlayerStep = (playerNumber, canvas, context, canvas2, context2, canvas3, context3) => {
     // console.log('drawing player step',playerNumber);
 
     let gridInfo = [];
@@ -11220,7 +11241,7 @@ class App extends Component {
   }
 
 
-  drawGridInit = (canvas, context, canvas2, context2) => {
+  drawGridInit = (canvas, context, canvas2, context2, canvas3, context3) => {
     // console.log('drawing initial');
 
     context.clearRect(0,0,this.canvasWidth,this.canvasHeight)
@@ -12360,7 +12381,6 @@ class App extends Component {
      }
 
   }
-
   safeDistanceRetreat = (plyr,cell) => {
 
     let isSafeDistance = false;
@@ -12377,7 +12397,6 @@ class App extends Component {
     }
     return isSafeDistance;
   }
-
 
   aiEvaluate = (plyr) => {
     // console.log('aiEvaluate',plyr);
@@ -13849,7 +13868,6 @@ class App extends Component {
 
 
   }
-
   aiDecide = (aiPlayer) => {
     // console.log('aiDecide',aiPlayer.number);
 
@@ -16139,7 +16157,6 @@ class App extends Component {
     this.players[aiPlayer-1].ai.currentInstruction = 0;
 
   }
-
   aiAct = (plyr) => {
 
 
@@ -16798,6 +16815,10 @@ class App extends Component {
               settingsFormGridWidthUpdate={this.settingsFormGridWidthUpdate}
               plyrStartPosList={this.settingsFormPlyrStartPosList}
               getCustomPlyrStartPosList={this.getCustomPlyrStartPosList}
+              gamepad={this.gamepad}
+              canvasRef={this.canvasRef3}
+              canvasHeight={this.settingsCanvasHeight}
+              canvasWidth={this.settingsCanvasWidth}
             />
           )}
 
