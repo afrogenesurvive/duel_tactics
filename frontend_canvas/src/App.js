@@ -7170,7 +7170,7 @@ class App extends Component {
 
 
 
-          // DEPTH SORTING!!
+          //PLAYER DEPTH SORTING!!
           if (plyr.target.void === false && plyr.moving.state === true && plyr.falling.state !== true) {
             let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
             // console.log('move',finalAnimIndex);
@@ -7966,6 +7966,10 @@ class App extends Component {
                 break;
               }
             }
+            if (plyr.itemDrop.gear.type === '' && plyr.itemDrop.item.name === '') {
+              console.log('nothing to drop');
+              return
+            }
             if (plyr.itemDrop.count < 4) {
 
               let pos = plyr.currentPosition.cell.center;
@@ -7980,7 +7984,7 @@ class App extends Component {
             if (plyr.itemDrop.count > 3) {
 
               let pos = plyr.currentPosition.cell.center;
-              // console.log('drawing item drop',itemImg2);
+              // console.log('drawing item drop',itemImg2,'pos',pos);
               // context.fillStyle = fillClr2;
               // context.beginPath();
               // context.arc(pos.x-10, pos.y+(plyr.itemDrop.count*2), 10, 0, 2 * Math.PI);
