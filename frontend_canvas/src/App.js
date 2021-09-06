@@ -7890,108 +7890,111 @@ class App extends Component {
             }
           }
           if (plyr.itemDrop.state === true && plyr.dead.state !== true) {
-            let itemImg2;
-            let fillClr2;
-            if (plyr.itemDrop.item.name === '' && plyr.itemDrop.gear.type !== '') {
-              // console.log('drop a weapon or armor',plyr.itemDrop.gear.type);
-              switch(plyr.itemDrop.gear.type) {
-                case 'sword' :
-                  fillClr2 = "orange";
-                  itemImg2 = itemImgs[plyr.itemDrop.gear.type];
-                break;
-                case 'spear' :
-                  fillClr2 = "maroon";
-                  itemImg2 = itemImgs[plyr.itemDrop.gear.type];
-                break;
-                case 'crossbow' :
-                  fillClr2 = "navy";
-                  itemImg2 = itemImgs[plyr.itemDrop.gear.type];
-                break;
-                case 'helmet' :
-                  fillClr2 = "grey";
-                  itemImg2 = itemImgs[plyr.itemDrop.gear.type];
-                break;
-                case 'mail' :
-                  fillClr2 = "olive";
-                  itemImg2 = itemImgs[plyr.itemDrop.gear.type];
-                break;
-                case 'greaves' :
-                  fillClr2 = "#b5179e";
-                  itemImg2 = itemImgs[plyr.itemDrop.gear.type];
-                break;
-              }
-            }
-            else if (plyr.itemDrop.gear.type === '' && plyr.itemDrop.item.name !== '') {
-              // console.log('drop an item',plyr.itemDrop.item.name);
-              switch(plyr.itemDrop.item.name) {
-                case 'moveSpeedUp' :
-                  fillClr2 = "purple";
-                  itemImg2 = itemImgs[plyr.itemDrop.item.name];
-                break;
-                case 'moveSpeedDown' :
-                  fillClr2 = "blue";
-                  itemImg2 = itemImgs[plyr.itemDrop.item.name];
-                break;
-                case 'hpUp' :
-                  fillClr2 = "yellow";
-                  itemImg2 = itemImgs[plyr.itemDrop.item.name];
-                break;
-                case 'hpDown' :
-                  fillClr2 = "brown";
-                  itemImg2 = itemImgs[plyr.itemDrop.item.name];
-                break;
-                case 'focusUp' :
-                  fillClr2 = "white";
-                  itemImg2 = itemImgs[plyr.itemDrop.item.name];
-                break;
-                case 'focusDown' :
-                  fillClr2 = "black";
-                  itemImg2 = itemImgs[plyr.itemDrop.item.name];
-                break;
-                case 'strengthUp' :
-                  fillClr2 = "green";
-                  itemImg2 = itemImgs[plyr.itemDrop.item.name];
-                break;
-                case 'strengthDown' :
-                  fillClr2 = "red";
-                  itemImg2 = itemImgs[plyr.itemDrop.item.name];
-                break;
-                case 'ammo5' :
-                  fillClr2 = "#283618";
-                  itemImg2 = itemImgs[plyr.itemDrop.item.name];
-                break;
-                case 'ammo10' :
-                  fillClr2 = "#283618";
-                  itemImg2 = itemImgs[plyr.itemDrop.item.name];
-                break;
-              }
-            }
             if (plyr.itemDrop.gear.type === '' && plyr.itemDrop.item.name === '') {
-              console.log('nothing to drop');
-              return
+              // console.log('nothing to drop');
             }
-            if (plyr.itemDrop.count < 4) {
+            else {
+              let itemImg2;
+              let fillClr2;
+              if (plyr.itemDrop.item.name === '' && plyr.itemDrop.gear.type !== '') {
+                // console.log('drop a weapon or armor',plyr.itemDrop.gear.type);
+                switch(plyr.itemDrop.gear.type) {
+                  case 'sword' :
+                    fillClr2 = "orange";
+                    itemImg2 = itemImgs[plyr.itemDrop.gear.type];
+                  break;
+                  case 'spear' :
+                    fillClr2 = "maroon";
+                    itemImg2 = itemImgs[plyr.itemDrop.gear.type];
+                  break;
+                  case 'crossbow' :
+                    fillClr2 = "navy";
+                    itemImg2 = itemImgs[plyr.itemDrop.gear.type];
+                  break;
+                  case 'helmet' :
+                    fillClr2 = "grey";
+                    itemImg2 = itemImgs[plyr.itemDrop.gear.type];
+                  break;
+                  case 'mail' :
+                    fillClr2 = "olive";
+                    itemImg2 = itemImgs[plyr.itemDrop.gear.type];
+                  break;
+                  case 'greaves' :
+                    fillClr2 = "#b5179e";
+                    itemImg2 = itemImgs[plyr.itemDrop.gear.type];
+                  break;
+                }
+              }
+              else if (plyr.itemDrop.gear.type === '' && plyr.itemDrop.item.name !== '') {
+                // console.log('drop an item',plyr.itemDrop.item.name);
+                switch(plyr.itemDrop.item.name) {
+                  case 'moveSpeedUp' :
+                    fillClr2 = "purple";
+                    itemImg2 = itemImgs[plyr.itemDrop.item.name];
+                  break;
+                  case 'moveSpeedDown' :
+                    fillClr2 = "blue";
+                    itemImg2 = itemImgs[plyr.itemDrop.item.name];
+                  break;
+                  case 'hpUp' :
+                    fillClr2 = "yellow";
+                    itemImg2 = itemImgs[plyr.itemDrop.item.name];
+                  break;
+                  case 'hpDown' :
+                    fillClr2 = "brown";
+                    itemImg2 = itemImgs[plyr.itemDrop.item.name];
+                  break;
+                  case 'focusUp' :
+                    fillClr2 = "white";
+                    itemImg2 = itemImgs[plyr.itemDrop.item.name];
+                  break;
+                  case 'focusDown' :
+                    fillClr2 = "black";
+                    itemImg2 = itemImgs[plyr.itemDrop.item.name];
+                  break;
+                  case 'strengthUp' :
+                    fillClr2 = "green";
+                    itemImg2 = itemImgs[plyr.itemDrop.item.name];
+                  break;
+                  case 'strengthDown' :
+                    fillClr2 = "red";
+                    itemImg2 = itemImgs[plyr.itemDrop.item.name];
+                  break;
+                  case 'ammo5' :
+                    fillClr2 = "#283618";
+                    itemImg2 = itemImgs[plyr.itemDrop.item.name];
+                  break;
+                  case 'ammo10' :
+                    fillClr2 = "#283618";
+                    itemImg2 = itemImgs[plyr.itemDrop.item.name];
+                  break;
+                }
+              }
 
-              let pos = plyr.currentPosition.cell.center;
-              // console.log('drawing item drop',itemImg2);
-              // context.fillStyle = fillClr2;
-              // context.beginPath();
-              // context.arc(pos.x-10, pos.y, 10, 0, 2 * Math.PI);
-              // context.fill();
+              if (plyr.itemDrop.count < 4) {
 
-              // context.drawImage(itemImg2, pos.x-10, pos.y);
+                let pos = plyr.currentPosition.cell.center;
+                // console.log('drawing item drop',itemImg2);
+                // context.fillStyle = fillClr2;
+                // context.beginPath();
+                // context.arc(pos.x-10, pos.y, 10, 0, 2 * Math.PI);
+                // context.fill();
+
+                // context.drawImage(itemImg2, pos.x-10, pos.y);
+              }
+              if (plyr.itemDrop.count > 3) {
+
+                let pos = plyr.currentPosition.cell.center;
+                // console.log('drawing item drop',itemImg2,'pos',pos);
+                // context.fillStyle = fillClr2;
+                // context.beginPath();
+                // context.arc(pos.x-10, pos.y+(plyr.itemDrop.count*2), 10, 0, 2 * Math.PI);
+                // context.fill();
+
+                context.drawImage(itemImg2, pos.x-10, pos.y+(plyr.itemDrop.count*2));
+              }
             }
-            if (plyr.itemDrop.count > 3) {
 
-              let pos = plyr.currentPosition.cell.center;
-              // console.log('drawing item drop',itemImg2,'pos',pos);
-              // context.fillStyle = fillClr2;
-              // context.beginPath();
-              // context.arc(pos.x-10, pos.y+(plyr.itemDrop.count*2), 10, 0, 2 * Math.PI);
-              // context.fill();
-
-              context.drawImage(itemImg2, pos.x-10, pos.y+(plyr.itemDrop.count*2));
-            }
           }
           if (plyr.itemPickup.state === true) {
             let itemImg3;
