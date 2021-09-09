@@ -176,6 +176,7 @@ class App extends Component {
     this.gamepad = false;
 
     this.gridInfo = [];
+    this.settingsGridInfo = [];
     this.gridInfo2D = [];
     this.gridInfo2 = [];
     this.gridInfo2D2 = [];
@@ -727,6 +728,7 @@ class App extends Component {
           count: 0,
           limit: 15,
         },
+        popups: [],
         itemDrop: {
           state: false,
           count: 0,
@@ -1107,6 +1109,7 @@ class App extends Component {
           count: 0,
           limit: 15,
         },
+        popups: [],
         itemDrop: {
           state: false,
           count: 0,
@@ -1482,6 +1485,47 @@ class App extends Component {
       count: 0,
       limit: 3,
     }
+    this.popupImageRef = {
+      attacking: '',
+      attacked: '',
+      attackDefended: '',
+      injured: '',
+      defending: '',
+      defendSuccess: '',
+      guardBroken: '',
+      deflected: '',
+      pushedBack: '',
+      falling: '',
+      pursuingEnroute: '',
+      retrievingEnroute: '',
+      retrieveSuccess: '',
+      defending: '',
+      defendingEnroute: '',
+      patrolling: '',
+      engaging: '',
+      retreatingEnroute: '',
+      retreatSuccess: '',
+      engaging: '',
+      alarmed: '',
+      aggressive: '',
+      passive: '',
+      pickupWeapon: '',
+      pickupArmor: '',
+      pickupBuff: '',
+      pickupDebuff: '',
+      dropWeapon: '',
+      dropArmor: '',
+      drowning: '',
+      terrainSlowdown: '',
+      terrainIjured: '',
+      destroyedItem: '',
+      sword: '',
+      spear: '',
+      crossbow: '',
+      helmet: '',
+      mail: '',
+      greaves: '',
+    };
 
   }
 
@@ -5938,6 +5982,71 @@ class App extends Component {
     }
 
 
+    // POPUPS
+
+    // player.popups.push(
+    //   {
+    //     state: false,
+    //     count: 0,
+    //     limit: 10,
+    //     type: '',
+    //     position: '',
+    //     msg: '',
+    //     img: '',
+    //
+    //   }
+    // )
+
+
+
+    if (player.popups.length > 0) {
+      console.log('player.popups',player.popups);
+
+      for (const popup of player.popups) {
+        let indx = player.notif.findIndex(x=>x===popup);
+        console.log('indx',indx);
+        if (popup.state === true) {
+          if (popup.limit > 0) {
+            if (popup.state === true && popup.count < popup.limit) {
+              popup.count++
+            }
+            if (popup.state === true && popup.count < popup.limit) {
+              popup.count++
+            }
+            if (popup.count >= popup.limit) {
+              console.log('removing popup');
+              player.popups.splice(indx,1)
+            }
+          }
+          if (popup.limit === 0) {
+            // check if the player state it relates to is true, if not remove it
+          }
+
+        }
+
+
+      }
+
+      console.log('after remove dead',player.popups);
+      // all popups at the top of the array should be true and counting up
+
+      let currentPopupCount = player.popups.filter(x=>x.state === true).length;
+      while (currentPopupCount < 8) {
+        for (const popup2 of player.popups) {
+          let indx = player.notif.findIndex(x=>x===popup2);
+          console.log('indx',indx);
+          if (popup2.state === false) {
+            popup2.state = true;
+            console.log('adding new popup');
+          }
+        }
+      }
+
+
+    }
+
+
+
     // // CHECK PROJECTILES!!
     for (const bolt of this.projectiles) {
       if (bolt.kill === true) {
@@ -7183,6 +7292,7 @@ class App extends Component {
                 } else {
                   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, 40, 40);
                 }
+
                 // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
 
               }
@@ -7306,6 +7416,10 @@ class App extends Component {
               if (plyr.defending.count > 0 && plyr.defending.count < plyr.defending.limit ) {
                 context2.drawImage(indicatorImgs.preAttack, point.x-35, point.y-35, 35,35);
               }
+              // context.fillStyle = 'white';
+              // context.beginPath();
+              // context.rect(point.x-25, point.y-25, 50, 50);
+              // context.stroke();
               // if (plyr.dodging.state === true) {
               //   context.drawImage(indicatorImgs.dodge, point.x-45, point.y-35, 35,35);
               // }
@@ -8099,6 +8213,96 @@ class App extends Component {
 
           this.players[plyr.number-1] = plyr;
 
+
+          if (x === this.gridWidth && y === this.gridWidth) {
+
+            context.beginPath();
+            context.lineWidth = "2"
+            context.rect(point.x-25, point.y-25, 40, 40);
+            context.strokeStyle = 'white';
+            context.stroke();
+          }
+
+
+          // popupS
+
+        // function drawBubble(ctx,x,y,w,h,radius,px,py){
+        //    var r = x + w;
+        //    var b = y + h;
+        //    if(py<y || py>y+h){
+        //     var con1 = Math.min(Math.max(x+radius,px-10),r-radius-20);
+        //     var con2 = Math.min(Math.max(x+radius+20,px+10),r-radius);
+        //    }
+        //    else{
+        //     var con1 = Math.min(Math.max(y+radius,py-10),b-radius-20);
+        //     var con2 = Math.min(Math.max(y+radius+20,py+10),b-radius);
+        //    }
+        //    var dir;
+        //    if(py < y) dir = 2;
+        //    if(py > y) dir = 3;
+        //    if(px < x && py>=y && py<=b) dir = 0;
+        //    if(px > x && py>=y && py<=b) dir = 1;
+        //    if(px >= x && px <= r && py >= y && py <= b) dir = -1;
+        //    ctx.clearRect(0,0,400,400);
+        //    ctx.beginPath();
+        //    ctx.strokeStyle="black";
+        //    ctx.lineWidth="2";
+        //    ctx.moveTo(x+radius,y);
+        //    if(dir==2){
+        //     ctx.lineTo(con1,y);
+        //     ctx.lineTo(px,py);
+        //     ctx.lineTo(con2,y);
+        //     ctx.lineTo(r-radius,y);
+        //    }
+        //    else ctx.lineTo(r-radius,y);
+        //    ctx.quadraticCurveTo(r,y,r,y+radius);
+        //    if(dir==1){
+        //     ctx.lineTo(r,con1);
+        //     ctx.lineTo(px,py);
+        //     ctx.lineTo(r,con2);
+        //     ctx.lineTo(r,b-radius);
+        //    }
+        //    else ctx.lineTo(r,b-radius);
+        //    ctx.quadraticCurveTo(r, b, r-radius, b);
+        //    if(dir==3){
+        //     ctx.lineTo(con2,b);
+        //     ctx.lineTo(px,py);
+        //     ctx.lineTo(con1,b);
+        //     ctx.lineTo(x+radius,b);
+        //    }
+        //    else ctx.lineTo(x+radius,b);
+        //    ctx.quadraticCurveTo(x, b, x, b-radius);
+        //    if(dir==0){
+        //     ctx.lineTo(x,con2);
+        //     ctx.lineTo(px,py);
+        //     ctx.lineTo(x,con1);
+        //     ctx.lineTo(x,y+radius);
+        //    }
+        //    else ctx.lineTo(x,y+radius);
+        //    ctx.quadraticCurveTo(x, y, x+radius, y);
+        //    ctx.stroke();
+        // }
+
+
+          if (plyr.dead.state !== true && plyr.popups.length > 0) {
+            for (const popup of plyr.popups) {
+              if (popup.state === true) {
+                console.log('drawing a popup');
+                if (popup.position === '' || !popup.position) {
+                  let currentPopups = player.popups.filter(x=>x.state === true);
+                  let positions = ['north','east','south','west','northEast','northWest','southEast','southWest']
+                  // calc new position based on what popup positions are currently occupied and what does not overlap a human player or their popups
+
+                  // use this.popupImageRef with popup.img
+                  // calc position cords and draw
+                }
+                else {
+                  // calc position cords and draw
+                }
+              }
+            }
+          }
+
         }
 
 
@@ -8161,6 +8365,9 @@ class App extends Component {
     // if (player.ai.state === true ) {
     //   this.aiEvaluate(player)
     // }
+
+  }
+  drawPopup = (context) => {
 
   }
 
@@ -10062,6 +10269,7 @@ class App extends Component {
       current: 20,
       max: 20,
     };
+    this.players[player.number-1].popups = [];
 
 
   }
@@ -10363,6 +10571,8 @@ class App extends Component {
         target1: {x:0 ,y:0},
         target2: {x:0 ,y:0},
       };
+      player.popups = [];
+
       // player.currentArmor = {};
 
     }
@@ -11031,6 +11241,7 @@ class App extends Component {
   startProcessLevelData = (canvas) => {
 
     let gridInfo = [];
+    let settingsGridInfo = [];
 
     canvas.width = this.canvasWidth;
     canvas.height = this.canvasHeight;
@@ -11069,6 +11280,11 @@ class App extends Component {
           y: Math.round(iso.y - offset.y/2-this.cellCenterOffsetY),
         }
 
+        let settingsCenter = {
+          x: Math.round(iso.x - offset.x/2+this.cellCenterOffsetX),
+          y: Math.round(iso.y - offset.y/2-this.cellCenterOffsetY),
+        }
+
         gridInfo.push({
           number:{x:x,y:y},
           center:{x:center.x,y:center.y},
@@ -11101,9 +11317,45 @@ class App extends Component {
             state: false
           },
         })
+
+
+        settingsGridInfo.push({
+          number:{x:x,y:y},
+          center:{x:settingsCenter.x,y:settingsCenter.y},
+          drawCenter:{x:settingsCenter.x,y:settingsCenter.y},
+          vertices: [
+            {x:settingsCenter.x, y:settingsCenter.y+this.tileWidth/2},
+            {x:settingsCenter.x+this.tileWidth, y:center.y},
+            {x:settingsCenter.x, y:center.y-this.tileWidth/2},
+            {x:settingsCenter.x-this.tileWidth, y:settingsCenter.y},
+          ],
+          side: Math.sqrt((25)^2+(50)^2),
+          levelData: '',
+          edge: {
+            state: false,
+            side: ''
+          },
+          terrain: {
+            name: '',
+            type: '',
+            effect: ''
+          },
+          item: {
+            name: '',
+            type: '',
+            subType: '',
+            effect: '',
+            initDrawn: false
+          },
+          void: {
+            state: false
+          },
+        })
+
       }
     }
 
+    this.settingsGridInfo = settingsGridInfo;
     this.gridInfo = gridInfo;
 
   }
@@ -11214,6 +11466,116 @@ class App extends Component {
       }
       if (elem.number.y === 0) {
         elem.edge = {
+          state: true,
+          side: 'north'
+        }
+      }
+
+    }
+
+    for(const elem2 of this.settingsGridInfo) {
+
+      // SET LEVEL DTAT!
+      let levelData2Row = 'row'+elem2.number.x;
+      let elemLevelData = this.['levelData'+this.gridWidth][levelData2Row][elem2.number.y];
+      elem2.levelData = elemLevelData;
+
+      let terrainInfo = elem2.levelData.length-1;
+      switch(elem2.levelData.charAt(terrainInfo)) {
+        case 'a' :
+          elem2.terrain = {
+            name: 'grass',
+            type: 'grass',
+            effect: '',
+          }
+        break;
+        case 'b' :
+          elem2.terrain = {
+            name: 'stone',
+            type: 'road',
+            effect: '',
+          }
+        break;
+        case 'x' :
+          elem2.terrain = {
+            name: 'dirt',
+            type: 'road',
+            effect: '',
+          }
+        break;
+        case 'd' :
+          elem2.terrain = {
+            name: 'pond',
+            type: 'shallow',
+            effect: '',
+          }
+        break;
+        case 'e' :
+          elem2.terrain = {
+            name: 'mud',
+            type: 'sticky',
+            effect: '',
+          }
+        break;
+        case 'f' :
+          elem2.terrain = {
+            name: 'sand',
+            type: 'sticky',
+            effect: '',
+          }
+        break;
+        case 'g' :
+          elem2.terrain = {
+            name: 'ice',
+            type: 'slippery',
+            effect: '',
+          }
+        break;
+        case 'h' :
+          elem2.terrain = {
+            name: 'lava',
+            type: 'hazard',
+            effect: '',
+          }
+        break;
+        case 'i' :
+          elem2.terrain = {
+            name: 'bramble',
+            type: 'hazard',
+            effect: '',
+          }
+        break;
+        case 'j' :
+          elem2.terrain = {
+            name: 'river',
+            type: 'deep',
+            effect: '',
+          }
+        break;
+      }
+      // console.log('oo2',elem.levelData,elem.number,elem.terrain);
+
+      // SET EDGES!
+      if (elem2.number.x === 0) {
+        elem2.edge = {
+          state: true,
+          side: 'west'
+        }
+      }
+      if (elem2.number.x === this.gridWidth) {
+        elem2.edge = {
+          state: true,
+          side: 'east'
+        }
+      }
+      if (elem2.number.y === this.gridWidth) {
+        elem2.edge = {
+          state: true,
+          side: 'south'
+        }
+      }
+      if (elem2.number.y === 0) {
+        elem2.edge = {
           state: true,
           side: 'north'
         }
@@ -11996,6 +12358,7 @@ class App extends Component {
             count: 0,
             limit: 15,
           },
+          popups: [],
           itemDrop: {
             state: false,
             count: 0,
@@ -16826,6 +17189,7 @@ class App extends Component {
               canvasRef={this.canvasRef3}
               canvasHeight={this.settingsCanvasHeight}
               canvasWidth={this.settingsCanvasWidth}
+              gridInfo={this.settingsGridInfo}
             />
           )}
 
