@@ -142,9 +142,6 @@ class App extends Component {
     this.canvasWidth = 1300;
     this.canvasHeight = 800;
 
-    this.settingsCanvasHeight = 200;
-    this.settingsCanvasWidth = 200;
-
     this.floorImageWidth = 103;
     this.floorImageHeight = 53;
 
@@ -155,7 +152,13 @@ class App extends Component {
     this.tileWidth = 50;
     this.gridWidth = 9;
     this.cellCenterOffsetX = 23;
-    this.cellCenterOffsetY = 2
+    this.cellCenterOffsetY = 2;
+
+
+    this.settingsCanvasHeight = 300;
+    this.settingsCanvasWidth = 600;
+
+
 
     this.init = false;
     // this.openVoid = true;
@@ -1567,7 +1570,7 @@ class App extends Component {
     })
 
     this.refs.comBImgAttackSheet.onload = () => {
-      this.addListeners(canvas, canvas2);
+      this.addListeners(canvas, canvas2, canvas3);
 
       this.drawGridInit(this.state.canvas, this.state.context, this.state.canvas2, this.state.context2, this.state.canvas3, this.state.context3);
       this.getCustomPlyrStartPosList(
@@ -2252,11 +2255,15 @@ class App extends Component {
   // }
 
 }
-  addListeners = (canvas,canvas2) => {
+  addListeners = (canvas,canvas2,canvas3) => {
     // console.log('adding listeners');
 
     canvas2.addEventListener("click", e => {
       this.getCanvasClick(canvas2, e)
+    });
+
+    canvas3.addEventListener("click", e => {
+      this.getSettingsCanvasClick(canvas2, e)
     });
 
     document.addEventListener("keydown", e => {
@@ -2354,6 +2361,9 @@ class App extends Component {
       }
     }
 
+  }
+  getSettingsCanvasClick = (canvas, event) => {
+    console.log('getSettingsCanvasClick');
   }
   handleKeyPress = (event, state) => {
 
@@ -3076,7 +3086,7 @@ class App extends Component {
 
   }
   settingsFormGridWidthUpdate = (args) => {
-    // console.log('settingsFormGridWidthUpdate args',args);
+    console.log('settingsFormGridWidthUpdate args',args);
 
     let prevGridWidth = this.gridWidth;
     let canvas = this.state.canvas;
@@ -3100,6 +3110,83 @@ class App extends Component {
     // this.setState({
     //   stateUpdater: '..'
     // })
+
+    let canvas3 = this.canvasRef3.current;
+    let context3 = canvas3.getContext('2d');
+
+    let floorImageWidth = this.floorImageWidth;
+    let floorImageHeight = this.floorImageHeight;
+    let wallImageWidth = this.wallImageWidth;
+    let wallImageHeight = this.wallImageHeight;
+    let sceneX = this.canvasWidth/2;
+    let sceneY = this.sceneY;
+    let tileWidth = this.tileWidth;
+
+    let floorImgs = {
+      grass: this.refs.floorGrass,
+      stone: this.refs.floorStone,
+      dirt: this.refs.floorDirt,
+      pond: this.refs.floorPond,
+      mud: this.refs.floorMud,
+      sand: this.refs.floorSand,
+      ice: this.refs.floorIce,
+      lava: this.refs.floorLava,
+      bramble: this.refs.floorBramble,
+      river: this.refs.floorRiver,
+    }
+
+    class Point {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    context3.clearRect(0,0,this.settingsCanvasWidth,this.settingsCanvasHeight)
+
+    for (var x = 0; x < this.gridWidth+1; x++) {
+      for (var y = 0; y < this.gridWidth+1; y++) {
+
+        let p2 = new Point();
+        p2.x = x * (tileWidth/2);
+        p2.y = y * (tileWidth/2);
+
+        let iso2 = this.cartesianToIsometric(p2);
+        let offset2 = {x: (floorImageWidth/2)/2, y: (floorImageHeight/2)}
+
+        // apply offset to center scene for a better view
+        iso2.x += 300
+        iso2.y += 40
+
+
+        let center2 = {
+          x: iso2.x - offset2.x/2+(this.cellCenterOffsetX/2),
+          y: iso2.y - offset2.y/2-(this.cellCenterOffsetY/2),
+        }
+
+
+        let cell = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
+        let cellLevelData = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y).levelData;
+
+
+        let floor = floorImgs[cell.terrain.name]
+
+
+        context3.drawImage(floor, iso2.x - offset2.x, iso2.y - offset2.y, 50, 50);
+
+        context3.fillStyle = 'black';
+        context3.fillText(""+x+","+y+"",iso2.x - offset2.x/2 + 18,iso2.y - offset2.y/2 + 12)
+
+        context3.fillStyle = "black";
+        context3.fillRect(center2.x, center2.y,5,5);
+
+
+      }
+    }
+
+    this.setState({
+      stateUpdater: '..'
+    })
 
   }
   updateSettingsFormAiData = (args) => {
@@ -11268,21 +11355,31 @@ class App extends Component {
         let p = new Point();
         p.x = x * tileWidth;
         p.y = y * tileWidth;
+
+        let p2 = new Point();
+        p2.x = x * tileWidth/2;
+        p2.y = y * tileWidth/2;
+
         let iso = this.cartesianToIsometric(p);
+        let iso2 = this.cartesianToIsometric(p2);
         let offset = {x: floorImageWidth/2, y: floorImageHeight}
+        let offset2 = {x: (floorImageWidth/2)/2, y: (floorImageHeight/2)}
 
         // apply offset to center scene for a better view
         iso.x += sceneX
         iso.y += sceneY
+
+        iso2.x += 300
+        iso2.y += 40
 
         let center = {
           x: Math.round(iso.x - offset.x/2+this.cellCenterOffsetX),
           y: Math.round(iso.y - offset.y/2-this.cellCenterOffsetY),
         }
 
-        let settingsCenter = {
-          x: Math.round(iso.x - offset.x/2+this.cellCenterOffsetX),
-          y: Math.round(iso.y - offset.y/2-this.cellCenterOffsetY),
+        let center2 = {
+          x: Math.round(iso2.x - offset2.x/2+(this.cellCenterOffsetX/2)),
+          y: Math.round(iso2.y - offset2.y/2-(this.cellCenterOffsetY/2)),
         }
 
         gridInfo.push({
@@ -11295,7 +11392,7 @@ class App extends Component {
             {x:center.x, y:center.y-this.tileWidth/2},
             {x:center.x-this.tileWidth, y:center.y},
           ],
-          side: Math.sqrt((25)^2+(50)^2),
+          side: Math.sqrt((this.tileWidth/2)^2+(this.tileWidth)^2),
           levelData: '',
           edge: {
             state: false,
@@ -11321,15 +11418,15 @@ class App extends Component {
 
         settingsGridInfo.push({
           number:{x:x,y:y},
-          center:{x:settingsCenter.x,y:settingsCenter.y},
-          drawCenter:{x:settingsCenter.x,y:settingsCenter.y},
+          center:{x:center2.x,y:center2.y},
+          drawCenter:{x:center2.x,y:center2.y},
           vertices: [
-            {x:settingsCenter.x, y:settingsCenter.y+this.tileWidth/2},
-            {x:settingsCenter.x+this.tileWidth, y:center.y},
-            {x:settingsCenter.x, y:center.y-this.tileWidth/2},
-            {x:settingsCenter.x-this.tileWidth, y:settingsCenter.y},
+            {x:center2.x, y:center2.y+this.tileWidth/2},
+            {x:center2.x+this.tileWidth, y:center.y},
+            {x:center2.x, y:center.y-this.tileWidth/2},
+            {x:center2.x-this.tileWidth, y:center2.y},
           ],
-          side: Math.sqrt((25)^2+(50)^2),
+          side: Math.sqrt(((this.tileWidth/2)/2)^2+((this.tileWidth/2))^2),
           levelData: '',
           edge: {
             state: false,
@@ -11615,6 +11712,7 @@ class App extends Component {
 
     context.clearRect(0,0,this.canvasWidth,this.canvasHeight)
     context2.clearRect(0,0,this.canvasWidth,this.canvasHeight)
+    context3.clearRect(0,0,this.canvasWidth,this.canvasHeight)
 
     let gridInfo = [];
     class Point {
@@ -11708,6 +11806,25 @@ class App extends Component {
           y: iso.y - offset.y/2-this.cellCenterOffsetY,
         }
 
+
+        let p2 = new Point();
+        p2.x = x * (tileWidth/2);
+        p2.y = y * (tileWidth/2);
+
+        let iso2 = this.cartesianToIsometric(p2);
+        let offset2 = {x: (floorImageWidth/2)/2, y: (floorImageHeight/2)}
+
+        // apply offset to center scene for a better view
+        iso2.x += 300
+        iso2.y += 40
+
+
+        let center2 = {
+          x: iso2.x - offset2.x/2+(this.cellCenterOffsetX/2),
+          y: iso2.y - offset2.y/2-(this.cellCenterOffsetY/2),
+        }
+
+
         let cell = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
         let cellLevelData = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y).levelData;
 
@@ -11717,11 +11834,15 @@ class App extends Component {
 
         context.drawImage(floor, iso.x - offset.x, iso.y - offset.y, 100, 100);
 
+        context3.drawImage(floor, iso2.x - offset2.x, iso2.y - offset2.y, 50, 50);
+
         context.fillStyle = 'black';
         context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
+        context3.fillText(""+x+","+y+"",iso2.x - offset2.x/2 + 18,iso2.y - offset2.y/2 + 12)
 
         context.fillStyle = "black";
         context.fillRect(center.x, center.y,5,5);
+        context3.fillRect(center2.x, center2.y,5,5);
 
 
         // INITIAL ITEM DISTRIBUTION!!
@@ -11934,19 +12055,23 @@ class App extends Component {
         if (walledTiles.includes(''+x+','+y+'')) {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
           context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
+          context3.drawImage(wall3, iso2.x - (offset.x/2), iso2.y - (offset.y/2), 50,50);
         }
         if(cellLevelData.charAt(0) === 'y') {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
           context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
+          context3.drawImage(wall3, iso2.x - (offset.x/2), iso2.y - (offset.y/2), 50,50);
 
         }
         if(cellLevelData.charAt(0) === 'z') {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
           context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+          context3.drawImage(wall2, iso2.x - (offset.x/2), iso2.y - (offset.y/2), 50,50);
 
           let isoHeight = wallImageHeight - floorImageHeight
           offset.y += isoHeight
           context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+          context3.drawImage(wall2, iso2.x - (offset.x/2), iso2.y - (offset.y/2), 50,50);
 
         }
 

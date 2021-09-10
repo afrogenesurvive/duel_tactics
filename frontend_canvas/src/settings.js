@@ -557,144 +557,6 @@ const Settings = (props) => {
 
 
 
-  // let canvas = this.canvasRef.current;
-  // let context = canvas.getContext('2d');
-  // canvas2.addEventListener("click", e => {
-  //   this.getCanvasClick(canvas2, e)
-  // });
-  //
-  // context.clearRect(0,0,this.canvasWidth,this.canvasHeight)
-  // context2.clearRect(0,0,this.canvasWidth,this.canvasHeight)
-  //
-  // let gridInfo = [];
-  // class Point {
-  //     constructor(x, y) {
-  //         this.x = x;
-  //         this.y = y;
-  //     }
-  // }
-  //
-  // let floor;
-  // let wall = this.refs.wall;
-  // let wall2 = this.refs.wall2;
-  // let wall3 = this.refs.wall3;
-  //
-  // canvas.width = this.canvasWidth;
-  // canvas.height = this.canvasHeight;
-  //
-  // let floorImageWidth = this.floorImageWidth;
-  // let floorImageHeight = this.floorImageHeight;
-  // let wallImageWidth = this.wallImageWidth;
-  // let wallImageHeight = this.wallImageHeight;
-  // let sceneX = this.canvasWidth/2;
-  // let sceneY = this.sceneY;
-  // let tileWidth = this.tileWidth;
-  //
-  // let itemImgs = {
-  //   moveSpeedUp: this.refs.itemSpdUp,
-  //   moveSpeedDown: this.refs.itemSpdDown,
-  //   hpUp: this.refs.itemHpUp,
-  //   hpDown: this.refs.itemHpDown,
-  //   focusUp: this.refs.itemFocusUp,
-  //   focusDown: this.refs.itemFocusDown,
-  //   strengthUp: this.refs.itemStrUp,
-  //   strengthDown: this.refs.itemStrDown,
-  //   sword: this.refs.itemSword,
-  //   spear: this.refs.itemSpear,
-  //   crossbow: this.refs.itemBow,
-  //   helmet: this.refs.itemHelmet1,
-  //   ammo5: this.refs.itemAmmo,
-  //   ammo10: this.refs.itemAmmo,
-  //   mail: this.refs.itemMail1,
-  //   greaves: this.refs.itemGreaves1,
-  // };
-  // let floorImgs = {
-  //   grass: this.refs.floorGrass,
-  //   stone: this.refs.floorStone,
-  //   dirt: this.refs.floorDirt,
-  //   pond: this.refs.floorPond,
-  //   mud: this.refs.floorMud,
-  //   sand: this.refs.floorSand,
-  //   ice: this.refs.floorIce,
-  //   lava: this.refs.floorLava,
-  //   bramble: this.refs.floorBramble,
-  //   river: this.refs.floorRiver,
-  // }
-  //
-  // for (var x = 0; x < this.gridWidth+1; x++) {
-  //   for (var y = 0; y < this.gridWidth+1; y++) {
-  //     let p = new Point();
-  //     p.x = x * tileWidth;
-  //     p.y = y * tileWidth;
-  //
-  //     let iso = this.cartesianToIsometric(p);
-  //     let offset = {x: floorImageWidth/2, y: floorImageHeight}
-  //
-  //     // apply offset to center scene for a better view
-  //     iso.x += sceneX
-  //     iso.y += sceneY
-  //
-  //
-  //     let center = {
-  //       x: iso.x - offset.x/2+this.cellCenterOffsetX,
-  //       y: iso.y - offset.y/2-this.cellCenterOffsetY,
-  //     }
-  //
-  //     let cell = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
-  //     let cellLevelData = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y).levelData;
-  //
-  //
-  //     floor = floorImgs[cell.terrain.name]
-  //
-  //
-  //     context.drawImage(floor, iso.x - offset.x, iso.y - offset.y, 100, 100);
-  //
-  //     context.fillStyle = 'black';
-  //     context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
-  //
-  //     context.fillStyle = "black";
-  //     context.fillRect(center.x, center.y,5,5);
-  //
-  //
-  //
-  //     let vertices = [
-  //       {x:center.x, y:center.y+tileWidth/2},
-  //       {x:center.x+tileWidth, y:center.y},
-  //       {x:center.x, y:center.y-tileWidth/2},
-  //       {x:center.x-tileWidth, y:center.y},
-  //     ];
-  //
-  //     for (const vertex of vertices) {
-  //       context.fillStyle = "yellow";
-  //       context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
-  //     }
-  //
-  //
-  //     let walledTiles = []
-  //     if (walledTiles.includes(''+x+','+y+'')) {
-  //       offset = {x: wallImageWidth/2, y: wallImageHeight}
-  //       context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
-  //     }
-  //     if(cellLevelData.charAt(0) === 'y') {
-  //       offset = {x: wallImageWidth/2, y: wallImageHeight}
-  //       context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
-  //
-  //     }
-  //     if(cellLevelData.charAt(0) === 'z') {
-  //       offset = {x: wallImageWidth/2, y: wallImageHeight}
-  //       context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
-  //
-  //       let isoHeight = wallImageHeight - floorImageHeight
-  //       offset.y += isoHeight
-  //       context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
-  //
-  //     }
-  //
-  //   }
-  // }
-
-
-
   return (
     <div className="settingsOverlay">
       <div className="settingsContainer">
@@ -702,12 +564,19 @@ const Settings = (props) => {
         Settings :
       </h2>
 
-      <canvas
-        width={props.canvasWidth}
-        height={props.canvasHeight}
-        ref={props.canvasRef}
-        className="settingsCanvas"
-      />
+      <div class="settingsCanvasContainer">
+
+        <h3 className="settingsHeading">
+          Choose Position :
+        </h3>
+
+        <canvas
+          width={props.canvasWidth}
+          height={props.canvasHeight}
+          ref={props.canvasRef}
+          className="settingsCanvas"
+        />
+      </div>
 
       <Form onSubmit={props.onConfirm} className="form">
         <Form.Row>
