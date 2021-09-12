@@ -290,6 +290,10 @@ const Settings = (props) => {
 
     props.getCustomPlyrStartPosList(newArray2)
 
+    if (parseInt(args) === 0) {
+      props.updateSettingsCanvasData({type:'human_start',plyrNo:1})
+    }
+
 
   }
 
@@ -384,6 +388,10 @@ const Settings = (props) => {
       });
 
       props.getCustomPlyrStartPosList(newArray2)
+
+      if (x.length === 0) {
+        props.updateSettingsCanvasData({type:'human_start',plyrNo:1})
+      }
 
 
   }
@@ -598,11 +606,12 @@ const Settings = (props) => {
         </Form.Row>
 
 
-        {props.showCanvasData.state === true && props.showCanvasData.field === 'human_start' && (
+        {
+          props.showCanvasData.state === true &&  (
           <div class="settingsCanvasContainer">
 
             <h3 className="settingsHeading">
-              Choose Plyr {props.showCanvasData.plyrNo} {props.showCanvasData.type} Position :
+              Choose Plyr {props.showCanvasData.plyrNo} {props.showCanvasData.type} Position:
             </h3>
 
             <canvas
@@ -612,7 +621,9 @@ const Settings = (props) => {
               className="settingsCanvas"
             />
           </div>
-        )}
+        )
+      }
+
 
 
         {props.plyrStartPosList.length > 0 && (
@@ -739,21 +750,24 @@ const Settings = (props) => {
         )}
 
 
-        {props.showCanvasData.state === true && props.showCanvasData.field.split("_")[0] === 'ai' && (
+        {
+          props.showCanvasData.state === true && props.showCanvasData.field.split("_")[0] === 'ai' && (
           <div class="settingsCanvasContainer">
 
             <h3 className="settingsHeading">
-              Choose Plyr {props.showCanvasData.plyrNo} {props.showCanvasData.type} Position :
+              Choose Plyr {props.showCanvasData.plyrNo} {props.showCanvasData.type} Position:
             </h3>
 
             <canvas
               width={props.canvasWidth}
               height={props.canvasHeight}
-              ref={props.canvasRef}
+              ref={props.canvasRef2}
               className="settingsCanvas"
+              id="settingsCanvas2"
             />
           </div>
-        )}
+        )
+      }
 
 
         {props.aiStartPosList.length > 0 && (

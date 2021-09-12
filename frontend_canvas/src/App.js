@@ -110,6 +110,8 @@ class App extends Component {
     context2: undefined,
     canvas3: undefined,
     context3: undefined,
+    canvas4: undefined,
+    context4: undefined,
     containerInnerClass: 'containerInner',
     sceneY: {
       three: 400,
@@ -129,6 +131,7 @@ class App extends Component {
     this.canvasRef = React.createRef();
     this.canvasRef2 = React.createRef();
     this.canvasRef3 = React.createRef();
+    this.canvasRef4 = React.createRef();
 
     this.tileColumnOffset = 100; // pixels
     this.tileRowOffset = 50; // pixels
@@ -1624,14 +1627,14 @@ class App extends Component {
 
     let canvas3;
     let context3;
+    let canvas4;
+    let context4;
 
     canvas3 = this.canvasRef3.current;
     context3 = canvas3.getContext('2d');
+    // canvas4 = this.canvasRef4.current;
+    // context4 = canvas4.getContext('2d');
 
-    // if (this.showSettingsCanvasData.state === true) {
-    //   canvas3 = this.canvasRef3.current;
-    //   context3 = canvas3.getContext('2d');
-    // }
 
     this.setState({
       canvas: canvas,
@@ -1639,13 +1642,15 @@ class App extends Component {
       canvas2: canvas2,
       context2: context2,
       canvas3: canvas3,
-      context3: context3
+      context3: context3,
+      canvas4: canvas4,
+      context4: context4
     })
 
     this.refs.comBImgAttackSheet.onload = () => {
-      this.addListeners(canvas, canvas2, canvas3);
+      this.addListeners(canvas, canvas2);
 
-      this.drawGridInit(this.state.canvas, this.state.context, this.state.canvas2, this.state.context2, this.state.canvas3, this.state.context3);
+      this.drawGridInit(this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
       this.getCustomPlyrStartPosList(
         [
           {
@@ -2328,16 +2333,16 @@ class App extends Component {
   // }
 
 }
-  addListeners = (canvas,canvas2,canvas3) => {
+  addListeners = (canvas,canvas2) => {
     // console.log('adding listeners');
 
     canvas2.addEventListener("click", e => {
       this.getCanvasClick(canvas2, e)
     });
 
-    canvas3.addEventListener("click", e => {
-      this.getSettingsCanvasClick(canvas3, e)
-    });
+    // canvas3.addEventListener("click", e => {
+    //   this.getSettingsCanvasClick(canvas3, e)
+    // });
 
     // if (this.showSettingsCanvasData.state === true) {
     //   canvas3.addEventListener("click", e => {
@@ -3095,6 +3100,7 @@ class App extends Component {
     this.redrawSettingsGrid(this.state.canvas3,this.state.context3);
 
   }
+
   getCustomPlyrStartPosList = (args) => {
     this.settingsFormPlyrGridInfo = this.gridInfo;
 
@@ -3184,7 +3190,6 @@ class App extends Component {
     // console.log('this.settingsFormPlyrStartPosList',this.settingsFormPlyrStartPosList);
 
   }
-
   plyrStartPosCheckCell = (cell) => {
 
     let cellFree = true;
@@ -3396,13 +3401,27 @@ class App extends Component {
       let canvas3 = this.canvasRef3.current;
       let context3 = canvas3.getContext('2d');
 
+
       canvas3.addEventListener("click", e => {
         this.getSettingsCanvasClick(canvas3, e)
       });
 
+      let canvas4;
+      let context4;
+
+      if (this.showSettingsCanvasData.field.split("_")[0] === 'ai') {
+        canvas4 = this.canvasRef4.current;
+        context4 = canvas4.getContext('2d');
+        canvas4.addEventListener("click", e => {
+          this.getSettingsCanvasClick(canvas4, e)
+        });
+      }
+
+
+
       setTimeout(()=>{
-        this.redrawSettingsGrid(canvas3,context3);
-      }, 50);
+        this.redrawSettingsGrid(canvas3,context3,canvas4,context4);
+      }, 30);
     }
 
 
@@ -3439,8 +3458,9 @@ class App extends Component {
     this.settingsFormGridWidthUpdate(this.settingsGridWidth)
 
   }
-  redrawSettingsGrid = (canvas3,context3) => {
+  redrawSettingsGrid = (canvas3,context3,canvas4,context4) => {
     // console.log('redrawSettingsGrid');
+
 
     let takenSpaces = [];
     for (const elem of this.settingsFormPlyrStartPosList) {
@@ -3542,6 +3562,12 @@ class App extends Component {
         // context3.fillStyle = "black";
         // context3.fillRect(center2.x, center2.y,2.5,2.5);
 
+        if (context4) {
+          context4.drawImage(floor, iso2.x - offset2.x, iso2.y - offset2.y, 50, 50);
+          context4.fillStyle = 'black';
+          context4.fillText(""+x+","+y+"",iso2.x - offset2.x/2 + 5,iso2.y - offset2.y/2 + 2)
+        }
+
         let vertices = [
           {x:center2.x, y:center2.y+this.tileWidth/4},
           {x:center2.x+this.tileWidth/2, y:center2.y},
@@ -3552,6 +3578,10 @@ class App extends Component {
         for (const vertex of vertices) {
           context3.fillStyle = "yellow";
           context3.fillRect(vertex.x-1.5, vertex.y-1.5,2.5,2.5);
+          if (context4) {
+            context4.fillStyle = "yellow";
+            context4.fillRect(vertex.x-1.5, vertex.y-1.5,2.5,2.5);
+          }
         }
 
         // TAKEN POSITIONS HIGHLIGHT!!
@@ -3584,12 +3614,24 @@ class App extends Component {
             }
             context3.lineWidth = 5;
             context3.beginPath();
+            if (context4) {
+              context4.lineWidth = 5;
+              context4.beginPath();
+            }
             for (const vertex of vertices) {
               context3.strokeStyle = floorHighlight;
               context3.lineTo(vertex.x, vertex.y);
+              if (context4) {
+                context4.strokeStyle = floorHighlight;
+                context4.lineTo(vertex.x, vertex.y);
+              }
             }
             context3.closePath();
             context3.stroke();
+            if (context4) {
+              context4.closePath();
+              context4.stroke();
+            }
           }
         }
 
@@ -3597,18 +3639,30 @@ class App extends Component {
         let walledTiles = []
         if (walledTiles.includes(''+x+','+y+'')) {
           context3.drawImage(wall3, iso2.x - offset2.x, iso2.y - offset2.y, 50,50);
+          if (context4) {
+            context4.drawImage(wall3, iso2.x - offset2.x, iso2.y - offset2.y, 50,50);
+          }
         }
         if(cellLevelData.charAt(0) === 'y') {
           let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
           context3.drawImage(wall3, (iso2.x) - (offset.x), (iso2.y) - (offset.y), 50,50);
+          if (context4) {
+            context4.drawImage(wall3, (iso2.x) - (offset.x), (iso2.y) - (offset.y), 50,50);
+          }
         }
         if(cellLevelData.charAt(0) === 'z') {
           let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
           context3.drawImage(wall2, iso2.x - offset.x, iso2.y - offset.y, 50,50);
+          if (context4) {
+            context4.drawImage(wall2, iso2.x - offset.x, iso2.y - offset.y, 50,50);
+          }
 
           let isoHeight = (wallImageHeight/2) - (floorImageHeight/2)
           offset.y += isoHeight
           context3.drawImage(wall2, iso2.x - offset.x, iso2.y - offset.y, 50,50);
+          if (context4) {
+            context4.drawImage(wall2, iso2.x - offset.x, iso2.y - offset.y, 50,50);
+          }
 
         }
 
@@ -3637,8 +3691,15 @@ class App extends Component {
       type: args.type.split("_")[1],
     }
 
+    this.setState({
+      stateUpdater: '..'
+    })
 
-    this.settingsFormGridWidthUpdate(this.settingsGridWidth)
+    setTimeout(()=>{
+      // this.redrawSettingsGrid(canvas3,context3,canvas4,context4);
+      this.settingsFormGridWidthUpdate(this.settingsGridWidth)
+    }, 30);
+    // this.settingsFormGridWidthUpdate(this.settingsGridWidth)
 
 
     // this.setState({
@@ -3768,8 +3829,6 @@ class App extends Component {
 
       }
     }
-
-
 
 
     let nextPosition;
@@ -6878,11 +6937,11 @@ class App extends Component {
     }
 
 
-    this.drawPlayerStep(player.number, canvas, context, canvas2, context2, canvas3, context3);
+    this.drawPlayerStep(player.number, canvas, context, canvas2, context2);
 
   }
 
-  drawPlayerStep = (playerNumber, canvas, context, canvas2, context2, canvas3, context3) => {
+  drawPlayerStep = (playerNumber, canvas, context, canvas2, context2) => {
     // console.log('drawing player step',playerNumber);
 
     let gridInfo = [];
@@ -12162,12 +12221,11 @@ class App extends Component {
   }
 
 
-  drawGridInit = (canvas, context, canvas2, context2, canvas3, context3) => {
+  drawGridInit = (canvas, context, canvas2, context2) => {
     // console.log('drawing initial');
 
     context.clearRect(0,0,this.canvasWidth,this.canvasHeight)
     context2.clearRect(0,0,this.canvasWidth,this.canvasHeight)
-    // context3.clearRect(0,0,this.settingsCanvasWidth,this.settingsCanvasHeight)
 
     let gridInfo = [];
     class Point {
@@ -12262,24 +12320,6 @@ class App extends Component {
           x: iso.x - offset.x/2+this.cellCenterOffsetX,
           y: iso.y - offset.y/2-this.cellCenterOffsetY,
         }
-
-
-        // let p2 = new Point();
-        // p2.x = x * (tileWidth/2);
-        // p2.y = y * (tileWidth/2);
-        //
-        // let iso2 = this.cartesianToIsometric(p2);
-        // let offset2 = {x: (floorImageWidth/2)/2, y: (floorImageHeight/2)}
-        //
-        // // apply offset to center scene for a better view
-        // iso2.x += this.settingsSceneX;
-        // iso2.y += this.settingsSceneY;
-        //
-        //
-        // let center2 = {
-        //   x: iso2.x - offset2.x/2+(this.cellCenterOffsetX/2),
-        //   y: iso2.y - offset2.y/2-(this.cellCenterOffsetY/2),
-        // }
 
 
         let cell = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
@@ -17766,6 +17806,7 @@ class App extends Component {
               getCustomPlyrStartPosList={this.getCustomPlyrStartPosList}
               gamepad={this.gamepad}
               canvasRef={this.canvasRef3}
+              canvasRef2={this.canvasRef4}
               canvasHeight={this.settingsCanvasHeight}
               canvasWidth={this.settingsCanvasWidth}
               gridInfo={this.settingsGridInfo}
