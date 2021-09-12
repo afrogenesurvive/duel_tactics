@@ -93,4 +93,15 @@
 
 .settingsCanvas {
   margin: .5rem;
+  border: 1px solid #ffffff;
+  border-radius: 5px;
+  padding: .5rem;
+}
+.icon {
+  color: #ffffff;
+  margin: 0 .5rem;
+  /* margin: .5rem; */
+}
+.icon:hover {
+  color: green;
 }
