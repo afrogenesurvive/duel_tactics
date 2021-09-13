@@ -6583,7 +6583,7 @@ class App extends Component {
         {
           state: false,
           count: 0,
-          limit: 10,
+          limit: 60,
           type: '',
           position: 'north',
           msg: '',
@@ -6593,10 +6593,24 @@ class App extends Component {
       )
     }
 
+    if (this.time === 200) {
+      player.popups.push(
+        {
+          state: false,
+          count: 0,
+          limit: 60,
+          type: '',
+          position: 'south',
+          msg: '',
+          img: '',
+
+        }
+      )
+    }
 
 
     if (player.popups.length > 0) {
-      console.log('player.popups',player.popups);
+      // console.log('player.popups',player.popups);
 
       for (const popup of player.popups) {
         let indx = player.popups.findIndex(x=>x===popup);
@@ -6623,7 +6637,7 @@ class App extends Component {
 
       }
 
-      console.log('after remove popups',player.popups);
+      // console.log('after remove popups',player.popups);
       // all popups at the top of the array should be true and counting up
 
       let currentPopupCount = player.popups.filter(x=>x.state === true).length;
@@ -8992,17 +9006,17 @@ class App extends Component {
     // playerOrigin.x = playerOrigin.x-25;
     // playerOrigin.y = playerOrigin.y-25;
 
-    console.log('0',playerCorners[0]);
+    // console.log('0',playerCorners[0]);
     playerCorners[1] = {
       x: (playerCorners[0].x+this.playerDrawWidth),
       y: playerCorners[0].y
     }
-    console.log('1',playerCorners[1]);
+    // console.log('1',playerCorners[1]);
     playerCorners[2] = {
       x: playerCorners[1].x,
       y: (playerCorners[1].y-this.playerDrawHeight)
     }
-    console.log('2',playerCorners[2]);
+    // console.log('2',playerCorners[2]);
     playerCorners[3] = {
       x: playerCorners[0].x,
       y: (playerCorners[0].y-this.playerDrawHeight)
@@ -9016,13 +9030,15 @@ class App extends Component {
       pt3: {x:undefined,y:undefined},
       pt4: {x:undefined,y:undefined},
       anchor: {x:undefined,y:undefined},
+      midpoint: {x:undefined,y:undefined},
     }
+    let midpoint;
 
     switch (popup.position) {
       case 'north':
         popupCoords.origin = {
           x: playerCorners[0].x+offset,
-          y: playerCorners[0].y+(this.popupSize+offset2)
+          y: playerCorners[0].y-(this.popupSize+offset2)
         };
         popupCoords.pt2 = {
           x: popupCoords.origin.x+this.popupSize,
@@ -9030,21 +9046,54 @@ class App extends Component {
         }
         popupCoords.pt3 = {
           x: popupCoords.pt2.x,
-          y: popupCoords.pt2.y-this.popupSize,
+          y: popupCoords.pt2.y+this.popupSize,
         }
         popupCoords.pt4 = {
           x: popupCoords.origin.x,
-          y: popupCoords.origin.y-this.popupSize,
+          y: popupCoords.origin.y+this.popupSize,
         }
-        let midpoint = {
-          x: (popupCoords.pt3.x-popupCoords.pt4.x)/2,
-          y: (popupCoords.pt3.y-popupCoords.pt4.y)/2,
+        midpoint = {
+          x: popupCoords.pt3.x+(popupCoords.pt4.x-popupCoords.pt3.x)*0.50,
+          y: popupCoords.pt3.y+(popupCoords.pt4.y-popupCoords.pt3.y)*0.50,
+        }
+        popupCoords.anchor = {
+          x: midpoint.x,
+          y: midpoint.y+pointerLength,
+        }
+        popupCoords.midpoint = {
+          x: midpoint.x,
+          y: midpoint.y,
+        }
+      break;
+      case 'south':
+        popupCoords.origin = {
+          x: playerCorners[3].x+offset,
+          y: playerCorners[3].y+(this.playerDrawHeight+offset2)
+        };
+        popupCoords.pt2 = {
+          x: popupCoords.origin.x+this.popupSize,
+          y: popupCoords.origin.y,
+        }
+        popupCoords.pt3 = {
+          x: popupCoords.pt2.x,
+          y: popupCoords.pt2.y+this.popupSize,
+        }
+        popupCoords.pt4 = {
+          x: popupCoords.origin.x,
+          y: popupCoords.origin.y+this.popupSize,
+        }
+        midpoint = {
+          x: popupCoords.origin.x+(popupCoords.pt2.x-popupCoords.origin.x)*0.50,
+          y: popupCoords.origin.y+(popupCoords.pt2.y-popupCoords.origin.y)*0.50,
         }
         popupCoords.anchor = {
           x: midpoint.x,
           y: midpoint.y-pointerLength,
         }
-        console.log('popupCoords.anchor',popupCoords.anchor,midpoint);
+        popupCoords.midpoint = {
+          x: midpoint.x,
+          y: midpoint.y,
+        }
       break;
       default:
     }
