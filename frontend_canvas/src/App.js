@@ -495,8 +495,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 0,
-              y: 0,
+              x: 1,
+              y: 3,
             },
             center: {
               x: 0,
@@ -6580,132 +6580,83 @@ class App extends Component {
 
     // POPUPS
 
-    if (this.time === 50) {
-      player.popups.push(
-        {
-          state: false,
-          count: 0,
-          limit: 60,
-          type: '',
-          position: 'northWest',
-          msg: 'NW',
-          img: '',
+    if (player.number === 1) {
+      if (this.time === 50) {
+        player.popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 25,
+            type: '',
+            position: 'northWest',
+            msg: 'NW',
+            img: '',
 
-        }
-      )
-    }
-    if (this.time === 100) {
-      player.popups.push(
-        {
-          state: false,
-          count: 0,
-          limit: 0,
-          type: '',
-          position: 'west',
-          msg: 'W',
-          img: '',
+          }
+        )
+      }
+      if (this.time === 100) {
+        player.popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 25,
+            type: '',
+            position: 'west',
+            msg: 'W',
+            img: '',
 
-        }
-      )
-    }
-    if (this.time === 150) {
-      player.popups.push(
-        {
-          state: false,
-          count: 0,
-          limit: 60,
-          type: '',
-          position: 'northWest',
-          msg: 'NW',
-          img: '',
+          }
+        )
+      }
+      if (this.time === 150) {
+        player.popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 50,
+            type: '',
+            position: 'west',
+            msg: 'W',
+            img: '',
 
-        }
-      )
-    }
-    if (this.time === 200) {
-      player.popups.push(
-        {
-          state: false,
-          count: 0,
-          limit: 60,
-          type: '',
-          position: 'northWest',
-          msg: 'NW',
-          img: '',
+          }
+        )
+      }
+      if (this.time === 150) {
+        player.popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 100,
+            type: '',
+            position: 'northWest',
+            msg: 'NW',
+            img: '',
 
-        }
-      )
-    }
-    if (this.time === 250) {
-      player.popups.push(
-        {
-          state: false,
-          count: 0,
-          limit: 60,
-          type: '',
-          position: 'northWest',
-          msg: 'NW',
-          img: '',
+          }
+        )
+      }
+      // if (this.time === 170) {
+      //   player.popups.push(
+      //     {
+      //       state: false,
+      //       count: 0,
+      //       limit: 150,
+      //       type: '',
+      //       position: 'west',
+      //       msg: 'W',
+      //       img: '',
+      //
+      //     }
+      //   )
+      // }
 
-        }
-      )
     }
-    if (this.time === 300) {
-      player.popups.push(
-        {
-          state: false,
-          count: 0,
-          limit: 60,
-          type: '',
-          position: 'northWest',
-          msg: 'NW',
-          img: '',
 
-        }
-      )
-    }
-    if (this.time === 350) {
-      player.popups.push(
-        {
-          state: false,
-          count: 0,
-          limit: 60,
-          type: '',
-          position: 'west',
-          msg: 'W',
-          img: '',
 
-        }
-      )
-    }
-    // if (this.time === 150) {
-    //   player.popups.push(
-    //     {
-    //       state: false,
-    //       count: 0,
-    //       limit: 60,
-    //       type: '',
-    //       position: 'west',
-    //       msg: 'W',
-    //       img: '',
-    //
-    //     }
-    //   )
-    // }
-    // if (this.time === 150) {
-    //   player.popups.push(
-    //     {
-    //       state: false,
-    //       count: 0,
-    //       limit: 60,
-    //       type: '',
-    //       position: 'northWest',
-    //       msg: 'NW',
-    //       img: '',
-    //
-    //     }
-    //   )
-    // }
+
+
 
     // if (this.time === 300) {
     //   player.popups.push(
@@ -6803,9 +6754,7 @@ class App extends Component {
           if (popup.limit > 0) {
             if (popup.state === true && popup.count < popup.limit) {
               popup.count++
-            }
-            if (popup.state === true && popup.count < popup.limit) {
-              popup.count++
+              // console.log('count',popup.count);
             }
             if (popup.count >= popup.limit) {
               // console.log('removing popup');
@@ -9006,16 +8955,224 @@ class App extends Component {
           this.players[plyr.number-1] = plyr;
 
 
+          let drawBubble = (ctx,x,y,w,h,radius,px,py) => {
+
+             var r = x + w;
+             var b = y + h;
+             if(py<y || py>y+h){
+              var con1 = Math.min(Math.max(x+radius,px-10),r-radius-20);
+              var con2 = Math.min(Math.max(x+radius+20,px+10),r-radius);
+             }
+             else{
+              var con1 = Math.min(Math.max(y+radius,py-10),b-radius-20);
+              var con2 = Math.min(Math.max(y+radius+20,py+10),b-radius);
+             }
+             var dir;
+             if(py < y) dir = 2;
+             if(py > y) dir = 3;
+             if(px < x && py>=y && py<=b) dir = 0;
+             if(px > x && py>=y && py<=b) dir = 1;
+             if(px >= x && px <= r && py >= y && py <= b) dir = -1;
+             ctx.clearRect(x,y,this.popupSize,this.popupSize);
+             ctx.beginPath();
+             ctx.strokeStyle="black";
+             ctx.lineWidth="2";
+             ctx.moveTo(x+radius,y);
+             if(dir==2){
+              ctx.lineTo(con1,y);
+              ctx.lineTo(px,py);
+              ctx.lineTo(con2,y);
+              ctx.lineTo(r-radius,y);
+             }
+             else ctx.lineTo(r-radius,y);
+             ctx.quadraticCurveTo(r,y,r,y+radius);
+             if(dir==1){
+              ctx.lineTo(r,con1);
+              ctx.lineTo(px,py);
+              ctx.lineTo(r,con2);
+              ctx.lineTo(r,b-radius);
+             }
+             else ctx.lineTo(r,b-radius);
+             ctx.quadraticCurveTo(r, b, r-radius, b);
+             if(dir==3){
+              ctx.lineTo(con2,b);
+              ctx.lineTo(px,py);
+              ctx.lineTo(con1,b);
+              ctx.lineTo(x+radius,b);
+             }
+             else ctx.lineTo(x+radius,b);
+             ctx.quadraticCurveTo(x, b, x, b-radius);
+             if(dir==0){
+              ctx.lineTo(x,con2);
+              ctx.lineTo(px,py);
+              ctx.lineTo(x,con1);
+              ctx.lineTo(x,y+radius);
+             }
+             else ctx.lineTo(x,y+radius);
+             ctx.quadraticCurveTo(x, y, x+radius, y);
+             context.fillStyle = 'white';
+             ctx.fill();
+             ctx.stroke();
+             // ctx.globalCompositeOperation = "source-over";
+             ctx.closePath();
+          };
+          let drawBubble2 = (ctx, x, y, width, height, radius) => {
+            if (width < 2 * radius) radius = width / 2;
+            if (height < 2 * radius) radius = height / 2;
+            ctx.clearRect(x,y,this.popupSize,this.popupSize);
+            ctx.beginPath();
+            ctx.strokeStyle="black";
+            ctx.lineWidth="2";
+            ctx.moveTo(x + radius, y);
+            ctx.arcTo(x + width, y, x + width, y + height, radius);
+            ctx.arcTo(x + width, y + height, x, y + height, radius);
+            ctx.arcTo(x, y + height, x, y, radius);
+            ctx.arcTo(x, y, x + width, y, radius);
+            context.fillStyle = 'white';
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+          }
+
+          // if (plyr.dead.state !== true && plyr.popups.length > 0) {
+          //
+          //   for (const popup of plyr.popups) {
+          //     if (popup.state === true) {
+          //       // console.log('drawing a popup');
+          //       let popupDrawCoords;
+          //       let currentPopups = player.popups.filter(x=>x.state === true);
+          //       let indx2 = currentPopups.indexOf(popup);
+          //
+          //       if (popup.position === '' || !popup.position) {
+          //
+          //         let positions = ['north','east','south','west','northEast','northWest','southEast','southWest']
+          //
+          //         for (const popup2 of currentPopups) {
+          //           let indx = positions.indexOf(popup2.position);
+          //           positions.splice(indx,1)
+          //         }
+          //
+          //
+          //
+          //         let dir = undefined;
+          //         if (this.playerNumber === 2) {
+          //           let otherPlayer;
+          //           if (plyr.number === 1) {
+          //             otherPlayer = 2;
+          //           }
+          //           if (plyr.number === 2) {
+          //             otherPlayer = 1
+          //           }
+          //
+          //           let myPos = plyr.currentPosition.cell.number;
+          //           let invalidPos = this.players[otherPlayer-1].currentPosition.cell.number;
+          //
+          //           if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
+          //             dir = 'north';
+          //           }
+          //           if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y-1) {
+          //             dir = 'northWest';
+          //           }
+          //           if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y) {
+          //             dir = 'west';
+          //           }
+          //           if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y+1) {
+          //             dir = 'southWest';
+          //           }
+          //           if (invalidPos.x === myPos.x && invalidPos.y === myPos.y+1) {
+          //             dir = 'south';
+          //           }
+          //           if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y+1) {
+          //             dir = 'southEast';
+          //           }
+          //           if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y) {
+          //             dir = 'east';
+          //           }
+          //           if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y-1) {
+          //             dir = 'northEast';
+          //           }
+          //
+          //           if (dir && positions.includes(dir) === true) {
+          //             positions.splice(positions.findIndex(dir),1);
+          //           }
+          //
+          //         }
+          //
+          //         if (!positions[0]) {
+          //           popup.position = dir;
+          //         } else {
+          //           popup.position = positions[0];
+          //         }
+          //
+          //         popup.img = this.popupImageRef[popup.msg]
+          //
+          //         if (x === this.gridWidth-indx2 && y === this.gridWidth-indx2) {
+          //           // console.log('indx2',indx2);
+          //           popupDrawCoords = this.popupDrawCalc(popup,point,plyr.number);
+          //           // drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y)
+          //           drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
+          //           context.fillStyle = 'green';
+          //           context.fill();
+          //           context.fillStyle = 'black';
+          //           context.fillText(""+popup.msg+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+10);
+          //           context.fillStyle = "red";
+          //           context.fillRect(popupDrawCoords.origin.x, popupDrawCoords.origin.y,5,5);
+          //
+          //           // context.globalCompositeOperation = "source-over";
+          //           if (plyr.number === 1 && popup.position === 'northWest' && popup.count === 20) {
+          //             console.log('position',popup.position,'popupDrawCoords.origin1',popupDrawCoords.origin,'point',point,'indx2',indx2);
+          //           }
+          //           if (plyr.number === 1 && popup.position === 'west' && popup.count === 20) {
+          //             console.log('position',popup.position,'popupDrawCoords.origin1',popupDrawCoords.origin,'point',point,'indx2',indx2);
+          //           }
+          //         }
+          //
+          //       }
+          //       else {
+          //         popup.img = this.popupImageRef[popup.msg]
+          //
+          //         if (x === this.gridWidth-indx2 && y === this.gridWidth-indx2) {
+          //           // console.log('indx2',indx2);
+          //           popupDrawCoords = this.popupDrawCalc(popup,point,plyr.number);
+          //           // drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y)
+          //           drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
+          //           context.fillStyle = 'green';
+          //           context.fill();
+          //           context.fillStyle = 'black';
+          //           context.fillText(""+popup.msg+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+10);
+          //           context.fillStyle = "red";
+          //           context.fillRect(popupDrawCoords.origin.x, popupDrawCoords.origin.y,5,5);
+          //
+          //           // context.globalCompositeOperation = "source-over";
+          //           if (plyr.number === 1 && popup.position === 'northWest' && popup.count === 20) {
+          //           console.log('position',popup.position,'popupDrawCoords.origin2',popupDrawCoords.origin,'point',point,'indx2',indx2);
+          //           }
+          //           if (plyr.number === 1 && popup.position === 'west' && popup.count === 20) {
+          //           console.log('position',popup.position,'popupDrawCoords.origin2',popupDrawCoords.origin,'point',point,'indx2',indx2);
+          //           }
+          //         }
+          //
+          //       }
+          //     }
+          //   }
+          // }
+
+
           if (x === this.gridWidth && y === this.gridWidth) {
 
-            // context.beginPath();
-            // context.lineWidth = "2"
-            // context.rect(point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
-            // context.strokeStyle = 'white';
-            // context.stroke();
+            if (plyr.number === 1) {
+                // console.log('point',point);
+            }
 
 
-            function drawBubble(ctx,x,y,w,h,radius,px,py){
+            context.beginPath();
+            context.lineWidth = "2"
+            context.rect(point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
+            context.strokeStyle = 'white';
+            context.stroke();
+
+
+            let drawBubble = (ctx,x,y,w,h,radius,px,py) => {
 
                var r = x + w;
                var b = y + h;
@@ -9033,7 +9190,7 @@ class App extends Component {
                if(px < x && py>=y && py<=b) dir = 0;
                if(px > x && py>=y && py<=b) dir = 1;
                if(px >= x && px <= r && py >= y && py <= b) dir = -1;
-               // ctx.clearRect(0,0,400,400);
+               ctx.clearRect(x,y,this.popupSize,this.popupSize);
                ctx.beginPath();
                ctx.strokeStyle="black";
                ctx.lineWidth="2";
@@ -9073,12 +9230,26 @@ class App extends Component {
                context.fillStyle = 'white';
                ctx.fill();
                ctx.stroke();
+               // ctx.globalCompositeOperation = "source-over";
+               ctx.closePath();
+            }
+            let drawBubble2 = (ctx, x, y, width, height, radius) => {
+              if (width < 2 * radius) radius = width / 2;
+              if (height < 2 * radius) radius = height / 2;
+              ctx.beginPath();
+              ctx.moveTo(x + radius, y);
+              ctx.arcTo(x + width, y, x + width, y + height, radius);
+              ctx.arcTo(x + width, y + height, x, y + height, radius);
+              ctx.arcTo(x, y + height, x, y, radius);
+              ctx.arcTo(x, y, x + width, y, radius);
+              ctx.closePath();
             }
 
             if (plyr.dead.state !== true && plyr.popups.length > 0) {
               for (const popup of plyr.popups) {
                 if (popup.state === true) {
                   // console.log('drawing a popup');
+                  let popupDrawCoords;
                   if (popup.position === '' || !popup.position) {
                     let currentPopups = player.popups.filter(x=>x.state === true);
                     let positions = ['north','east','south','west','northEast','northWest','southEast','southWest']
@@ -9126,7 +9297,7 @@ class App extends Component {
                         dir = 'northEast';
                       }
 
-                      if (dir && positions.includes(dir)) {
+                      if (dir && positions.includes(dir) === true) {
                         positions.splice(positions.findIndex(dir),1);
                       }
 
@@ -9140,22 +9311,41 @@ class App extends Component {
 
                     popup.img = this.popupImageRef[popup.msg]
 
-                    let popupDrawCoords = this.popupDrawCalc(popup,point);
-                    drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y)
+                    popupDrawCoords = this.popupDrawCalc(popup,point,plyr.number);
+                    // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
+                    // drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y)
                     context.fillStyle = 'black';
                     context.fillText(""+popup.msg+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+10);
+                    context.fillStyle = "red";
+                    context.fillRect(popupDrawCoords.origin.x, popupDrawCoords.origin.y,this.popupSize,this.popupSize);
+                    // context.globalCompositeOperation = "source-over";
+                    if (plyr.number === 1 && popup.position === 'northWest' && popup.count === 20) {
+                    console.log('position',popup.position,'popupDrawCoords.origin1',popupDrawCoords.origin,'point',point);
+                  }
+                    if (plyr.number === 1 && popup.position === 'west' && popup.count === 20) {
+                    console.log('position',popup.position,'popupDrawCoords.origin1',popupDrawCoords.origin,'point',point);
+                  }
                   }
                   else {
                     popup.img = this.popupImageRef[popup.msg]
-                    let popupDrawCoords = this.popupDrawCalc(popup,point);
-                    drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y)
+                    popupDrawCoords = this.popupDrawCalc(popup,point,plyr.number);
+                    // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
+                    // drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y)
                     context.fillStyle = 'black';
                     context.fillText(""+popup.msg+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+10);
+                    context.fillStyle = "red";
+                    context.fillRect(popupDrawCoords.origin.x, popupDrawCoords.origin.y,this.popupSize,this.popupSize);
+                    // context.globalCompositeOperation = "source-over";
+                    if (plyr.number === 1 && popup.position === 'northWest' && popup.count === 20) {
+                    console.log('position',popup.position,'popupDrawCoords.origin2',popupDrawCoords.origin,'point',point);
+                    }
+                    if (plyr.number === 1 && popup.position === 'west' && popup.count === 20) {
+                    console.log('position',popup.position,'popupDrawCoords.origin2',popupDrawCoords.origin,'point',point);
+                    }
                   }
                 }
               }
             }
-
 
           }
 
@@ -9224,12 +9414,13 @@ class App extends Component {
     // }
 
   }
-  popupDrawCalc = (popup,playerOrigin) => {
+  popupDrawCalc = (popup,playerOrigin,plyrNo) => {
 
 
     let offset = (this.playerDrawWidth-this.popupSize)/2;
     let pointerLength = this.popupSize/3;
     let offset2 = pointerLength+offset;
+
     playerOrigin.x = playerOrigin.x-25;
     playerOrigin.y = playerOrigin.y-25;
 
@@ -9272,10 +9463,16 @@ class App extends Component {
 
     switch (popup.position) {
       case 'northWest':
-        popupCoords.origin = {
-          x: playerCorners[0].x+offset,
-          y: playerCorners[0].y-(this.popupSize+offset2)
-        };
+      popupCoords.origin = {
+        x: playerCorners[0].x+offset,
+        y: playerCorners[0].y-(this.popupSize+offset2)
+      };
+      if (popup.count === 5) {
+        if (plyrNo === 1) {
+            // console.log('north west: offset',offset,'offset2',offset2,'playerCorners[0]',playerCorners[0],'playerOrigin',playerOrigin,'popupCoords.origin',popupCoords.origin);
+        }
+      }
+
         popupCoords.pt2 = {
           x: popupCoords.origin.x+this.popupSize,
           y: popupCoords.origin.y,
@@ -9392,8 +9589,10 @@ class App extends Component {
         }
       break;
       case 'west':
+
         popupCoords.origin = {
           x: playerCorners[0].x-(offset2+this.popupSize),
+          // y: playerCorners[0].y,
           y: playerCorners[0].y-(this.popupSize),
         };
         popupCoords.pt2 = {
@@ -9511,7 +9710,6 @@ class App extends Component {
           y: midpoint.y,
         }
       break;
-      default:
     }
 
     return popupCoords;
