@@ -2863,6 +2863,10 @@ class App extends Component {
     // for (const player of this.players) {
     //   this.playerUpdate(player, this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
     // }
+    // this.time++
+    // this.setState({
+    //   stateUpdater: '..'
+    // })
 
   }
 
@@ -3765,10 +3769,6 @@ class App extends Component {
           stateUpdater: '..'
         })
 
-
-        // if (this.aiPlayers.length > 0) {
-        //   this.aiEvaluate()
-        // }
 
 
         if (this.gamepad === true) {
@@ -6580,33 +6580,104 @@ class App extends Component {
 
     // POPUPS
 
-    if (player.number === 1) {
+    // if (player.number === 1) {
+
       if (this.time === 50) {
         player.popups.push(
           {
             state: false,
             count: 0,
-            limit: 25,
+            limit: 400,
             type: '',
-            position: 'northWest',
-            msg: 'NW',
+            position: '',
+            msg: 'X-1',
             img: '',
 
-          }
+          },
+          {
+            state: false,
+            count: 0,
+            limit: 300,
+            type: '',
+            position: '',
+            msg: 'X-2',
+            img: '',
+
+          },
+          {
+            state: false,
+            count: 0,
+            limit: 300,
+            type: '',
+            position: '',
+            msg: 'X-3',
+            img: '',
+
+          },
+          {
+            state: false,
+            count: 0,
+            limit: 300,
+            type: '',
+            position: '',
+            msg: 'X-4',
+            img: '',
+
+          },
+          {
+            state: false,
+            count: 0,
+            limit: 300,
+            type: '',
+            position: '',
+            msg: 'X-5',
+            img: '',
+
+          },
+          {
+            state: false,
+            count: 0,
+            limit: 400,
+            type: '',
+            position: '',
+            msg: 'X-6',
+            img: '',
+
+          },
+          {
+            state: false,
+            count: 0,
+            limit:300,
+            type: '',
+            position: '',
+            msg: 'X-7',
+            img: '',
+
+          },
+          {
+            state: false,
+            count: 0,
+            limit: 200,
+            type: '',
+            position: '',
+            msg: 'X-8',
+            img: '',
+
+          },
         )
       }
-      if (this.time === 100) {
+      if (this.time === 125) {
         player.popups.push(
           {
             state: false,
             count: 0,
-            limit: 25,
+            limit: 250,
             type: '',
-            position: 'west',
-            msg: 'W',
+            position: '',
+            msg: 'X-9',
             img: '',
 
-          }
+          },
         )
       }
       if (this.time === 150) {
@@ -6614,150 +6685,49 @@ class App extends Component {
           {
             state: false,
             count: 0,
-            limit: 50,
+            limit: 150,
             type: '',
-            position: 'west',
-            msg: 'W',
+            position: '',
+            msg: 'X-10',
             img: '',
 
-          }
-        )
-      }
-      if (this.time === 150) {
-        player.popups.push(
+          },
           {
             state: false,
             count: 0,
-            limit: 100,
+            limit: 150,
             type: '',
-            position: 'northWest',
-            msg: 'NW',
+            position: '',
+            msg: 'X-11',
             img: '',
 
-          }
+          },
+          {
+            state: false,
+            count: 0,
+            limit: 150,
+            type: '',
+            position: '',
+            msg: 'X-12',
+            img: '',
+
+          },
         )
       }
-      // if (this.time === 170) {
-      //   player.popups.push(
-      //     {
-      //       state: false,
-      //       count: 0,
-      //       limit: 150,
-      //       type: '',
-      //       position: 'west',
-      //       msg: 'W',
-      //       img: '',
-      //
-      //     }
-      //   )
-      // }
 
-    }
-
-
-
-
-
-    // if (this.time === 300) {
-    //   player.popups.push(
-    //     {
-    //       state: false,
-    //       count: 0,
-    //       limit: 60,
-    //       type: '',
-    //       position: 'north',
-    //       msg: 'N',
-    //       img: '',
-    //
-    //     }
-    //   )
-    // }
-    // if (this.time === 320) {
-    //   player.popups.push(
-    //     {
-    //       state: false,
-    //       count: 0,
-    //       limit: 60,
-    //       type: '',
-    //       position: 'northEast',
-    //       msg: 'NE',
-    //       img: '',
-    //
-    //     }
-    //   )
-    // }
-    // if (this.time === 350) {
-    //   player.popups.push(
-    //     {
-    //       state: false,
-    //       count: 0,
-    //       limit: 60,
-    //       type: '',
-    //       position: 'east',
-    //       msg: 'E',
-    //       img: '',
-    //
-    //     }
-    //   )
-    // }
-    // if (this.time === 370) {
-    //   player.popups.push(
-    //     {
-    //       state: false,
-    //       count: 0,
-    //       limit: 60,
-    //       type: '',
-    //       position: 'southEast',
-    //       msg: 'SE',
-    //       img: '',
-    //
-    //     }
-    //   )
-    // }
-    // if (this.time === 390) {
-    //   player.popups.push(
-    //     {
-    //       state: false,
-    //       count: 0,
-    //       limit: 60,
-    //       type: '',
-    //       position: 'south',
-    //       msg: 'S',
-    //       img: '',
-    //
-    //     }
-    //   )
-    // }
-    // if (this.time === 410) {
-    //   player.popups.push(
-    //     {
-    //       state: false,
-    //       count: 0,
-    //       limit: 60,
-    //       type: '',
-    //       position: 'southWest',
-    //       msg: 'SW',
-    //       img: '',
-    //
-    //     }
-    //   )
     // }
 
 
     if (player.popups.length > 0) {
-      // console.log('player.popups',player.popups);
 
       for (const popup of player.popups) {
         let indx = player.popups.findIndex(x=>x===popup);
-        // console.log('indx',indx);
         if (popup.state === true) {
           if (popup.limit > 0) {
             if (popup.state === true && popup.count < popup.limit) {
               popup.count++
-              // console.log('count',popup.count);
             }
             if (popup.count >= popup.limit) {
-              // console.log('removing popup');
               player.popups.splice(indx,1)
             }
           }
@@ -6770,17 +6740,17 @@ class App extends Component {
 
       }
 
-      // console.log('after remove popups',player.popups);
-
       let currentPopupCount = player.popups.filter(x=>x.state === true).length;
       for (const popup2 of player.popups) {
         if (currentPopupCount < 8) {
           let indx = player.popups.findIndex(x=>x===popup2);
-          // console.log('indx',indx);
           if (popup2.state === false) {
             popup2.state = true;
-            // console.log('adding new popup');
+            currentPopupCount++;
+            // console.log('turn on new popup',popup2.msg);
           }
+        } else {
+          // console.log('currentPopup display full..',popup2.msg);
         }
       }
 
@@ -7554,13 +7524,13 @@ class App extends Component {
         context.fillStyle = "black";
         context.fillRect(center.x, center.y,5,5);
 
+
         let vertices = [
           {x:center.x, y:center.y+tileWidth/2},
           {x:center.x+tileWidth, y:center.y},
           {x:center.x, y:center.y-tileWidth/2},
           {x:center.x-tileWidth, y:center.y},
         ];
-
 
         for (const vertex of vertices) {
           context.fillStyle = "yellow";
@@ -8955,224 +8925,21 @@ class App extends Component {
           this.players[plyr.number-1] = plyr;
 
 
-          let drawBubble = (ctx,x,y,w,h,radius,px,py) => {
 
-             var r = x + w;
-             var b = y + h;
-             if(py<y || py>y+h){
-              var con1 = Math.min(Math.max(x+radius,px-10),r-radius-20);
-              var con2 = Math.min(Math.max(x+radius+20,px+10),r-radius);
-             }
-             else{
-              var con1 = Math.min(Math.max(y+radius,py-10),b-radius-20);
-              var con2 = Math.min(Math.max(y+radius+20,py+10),b-radius);
-             }
-             var dir;
-             if(py < y) dir = 2;
-             if(py > y) dir = 3;
-             if(px < x && py>=y && py<=b) dir = 0;
-             if(px > x && py>=y && py<=b) dir = 1;
-             if(px >= x && px <= r && py >= y && py <= b) dir = -1;
-             ctx.clearRect(x,y,this.popupSize,this.popupSize);
-             ctx.beginPath();
-             ctx.strokeStyle="black";
-             ctx.lineWidth="2";
-             ctx.moveTo(x+radius,y);
-             if(dir==2){
-              ctx.lineTo(con1,y);
-              ctx.lineTo(px,py);
-              ctx.lineTo(con2,y);
-              ctx.lineTo(r-radius,y);
-             }
-             else ctx.lineTo(r-radius,y);
-             ctx.quadraticCurveTo(r,y,r,y+radius);
-             if(dir==1){
-              ctx.lineTo(r,con1);
-              ctx.lineTo(px,py);
-              ctx.lineTo(r,con2);
-              ctx.lineTo(r,b-radius);
-             }
-             else ctx.lineTo(r,b-radius);
-             ctx.quadraticCurveTo(r, b, r-radius, b);
-             if(dir==3){
-              ctx.lineTo(con2,b);
-              ctx.lineTo(px,py);
-              ctx.lineTo(con1,b);
-              ctx.lineTo(x+radius,b);
-             }
-             else ctx.lineTo(x+radius,b);
-             ctx.quadraticCurveTo(x, b, x, b-radius);
-             if(dir==0){
-              ctx.lineTo(x,con2);
-              ctx.lineTo(px,py);
-              ctx.lineTo(x,con1);
-              ctx.lineTo(x,y+radius);
-             }
-             else ctx.lineTo(x,y+radius);
-             ctx.quadraticCurveTo(x, y, x+radius, y);
-             context.fillStyle = 'white';
-             ctx.fill();
-             ctx.stroke();
-             // ctx.globalCompositeOperation = "source-over";
-             ctx.closePath();
-          };
-          let drawBubble2 = (ctx, x, y, width, height, radius) => {
-            if (width < 2 * radius) radius = width / 2;
-            if (height < 2 * radius) radius = height / 2;
-            ctx.clearRect(x,y,this.popupSize,this.popupSize);
-            ctx.beginPath();
-            ctx.strokeStyle="black";
-            ctx.lineWidth="2";
-            ctx.moveTo(x + radius, y);
-            ctx.arcTo(x + width, y, x + width, y + height, radius);
-            ctx.arcTo(x + width, y + height, x, y + height, radius);
-            ctx.arcTo(x, y + height, x, y, radius);
-            ctx.arcTo(x, y, x + width, y, radius);
-            context.fillStyle = 'white';
-            ctx.fill();
-            ctx.stroke();
-            ctx.closePath();
-          }
+          // POPUPS
 
-          // if (plyr.dead.state !== true && plyr.popups.length > 0) {
-          //
-          //   for (const popup of plyr.popups) {
-          //     if (popup.state === true) {
-          //       // console.log('drawing a popup');
-          //       let popupDrawCoords;
-          //       let currentPopups = player.popups.filter(x=>x.state === true);
-          //       let indx2 = currentPopups.indexOf(popup);
-          //
-          //       if (popup.position === '' || !popup.position) {
-          //
-          //         let positions = ['north','east','south','west','northEast','northWest','southEast','southWest']
-          //
-          //         for (const popup2 of currentPopups) {
-          //           let indx = positions.indexOf(popup2.position);
-          //           positions.splice(indx,1)
-          //         }
-          //
-          //
-          //
-          //         let dir = undefined;
-          //         if (this.playerNumber === 2) {
-          //           let otherPlayer;
-          //           if (plyr.number === 1) {
-          //             otherPlayer = 2;
-          //           }
-          //           if (plyr.number === 2) {
-          //             otherPlayer = 1
-          //           }
-          //
-          //           let myPos = plyr.currentPosition.cell.number;
-          //           let invalidPos = this.players[otherPlayer-1].currentPosition.cell.number;
-          //
-          //           if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
-          //             dir = 'north';
-          //           }
-          //           if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y-1) {
-          //             dir = 'northWest';
-          //           }
-          //           if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y) {
-          //             dir = 'west';
-          //           }
-          //           if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y+1) {
-          //             dir = 'southWest';
-          //           }
-          //           if (invalidPos.x === myPos.x && invalidPos.y === myPos.y+1) {
-          //             dir = 'south';
-          //           }
-          //           if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y+1) {
-          //             dir = 'southEast';
-          //           }
-          //           if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y) {
-          //             dir = 'east';
-          //           }
-          //           if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y-1) {
-          //             dir = 'northEast';
-          //           }
-          //
-          //           if (dir && positions.includes(dir) === true) {
-          //             positions.splice(positions.findIndex(dir),1);
-          //           }
-          //
-          //         }
-          //
-          //         if (!positions[0]) {
-          //           popup.position = dir;
-          //         } else {
-          //           popup.position = positions[0];
-          //         }
-          //
-          //         popup.img = this.popupImageRef[popup.msg]
-          //
-          //         if (x === this.gridWidth-indx2 && y === this.gridWidth-indx2) {
-          //           // console.log('indx2',indx2);
-          //           popupDrawCoords = this.popupDrawCalc(popup,point,plyr.number);
-          //           // drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y)
-          //           drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
-          //           context.fillStyle = 'green';
-          //           context.fill();
-          //           context.fillStyle = 'black';
-          //           context.fillText(""+popup.msg+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+10);
-          //           context.fillStyle = "red";
-          //           context.fillRect(popupDrawCoords.origin.x, popupDrawCoords.origin.y,5,5);
-          //
-          //           // context.globalCompositeOperation = "source-over";
-          //           if (plyr.number === 1 && popup.position === 'northWest' && popup.count === 20) {
-          //             console.log('position',popup.position,'popupDrawCoords.origin1',popupDrawCoords.origin,'point',point,'indx2',indx2);
-          //           }
-          //           if (plyr.number === 1 && popup.position === 'west' && popup.count === 20) {
-          //             console.log('position',popup.position,'popupDrawCoords.origin1',popupDrawCoords.origin,'point',point,'indx2',indx2);
-          //           }
-          //         }
-          //
-          //       }
-          //       else {
-          //         popup.img = this.popupImageRef[popup.msg]
-          //
-          //         if (x === this.gridWidth-indx2 && y === this.gridWidth-indx2) {
-          //           // console.log('indx2',indx2);
-          //           popupDrawCoords = this.popupDrawCalc(popup,point,plyr.number);
-          //           // drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y)
-          //           drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
-          //           context.fillStyle = 'green';
-          //           context.fill();
-          //           context.fillStyle = 'black';
-          //           context.fillText(""+popup.msg+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+10);
-          //           context.fillStyle = "red";
-          //           context.fillRect(popupDrawCoords.origin.x, popupDrawCoords.origin.y,5,5);
-          //
-          //           // context.globalCompositeOperation = "source-over";
-          //           if (plyr.number === 1 && popup.position === 'northWest' && popup.count === 20) {
-          //           console.log('position',popup.position,'popupDrawCoords.origin2',popupDrawCoords.origin,'point',point,'indx2',indx2);
-          //           }
-          //           if (plyr.number === 1 && popup.position === 'west' && popup.count === 20) {
-          //           console.log('position',popup.position,'popupDrawCoords.origin2',popupDrawCoords.origin,'point',point,'indx2',indx2);
-          //           }
-          //         }
-          //
-          //       }
-          //     }
-          //   }
-          // }
+          if (x === this.gridWidth && y === this.gridWidth ) {
 
 
-          if (x === this.gridWidth && y === this.gridWidth) {
+            // context.beginPath();
+            // context.lineWidth = "2"
+            // context.rect(point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
+            // context.strokeStyle = 'white';
+            // context.stroke();
 
-            if (plyr.number === 1) {
-                // console.log('point',point);
-            }
+            let popupBorderColor = this.playerColourRef['player'+plyr.number+'']
 
-
-            context.beginPath();
-            context.lineWidth = "2"
-            context.rect(point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
-            context.strokeStyle = 'white';
-            context.stroke();
-
-
-            let drawBubble = (ctx,x,y,w,h,radius,px,py) => {
+            let drawBubble = (ctx,x,y,w,h,radius,px,py,color) => {
 
                var r = x + w;
                var b = y + h;
@@ -9192,7 +8959,7 @@ class App extends Component {
                if(px >= x && px <= r && py >= y && py <= b) dir = -1;
                ctx.clearRect(x,y,this.popupSize,this.popupSize);
                ctx.beginPath();
-               ctx.strokeStyle="black";
+               ctx.strokeStyle=color;
                ctx.lineWidth="2";
                ctx.moveTo(x+radius,y);
                if(dir==2){
@@ -9233,17 +9000,24 @@ class App extends Component {
                // ctx.globalCompositeOperation = "source-over";
                ctx.closePath();
             }
-            let drawBubble2 = (ctx, x, y, width, height, radius) => {
-              if (width < 2 * radius) radius = width / 2;
-              if (height < 2 * radius) radius = height / 2;
-              ctx.beginPath();
-              ctx.moveTo(x + radius, y);
-              ctx.arcTo(x + width, y, x + width, y + height, radius);
-              ctx.arcTo(x + width, y + height, x, y + height, radius);
-              ctx.arcTo(x, y + height, x, y, radius);
-              ctx.arcTo(x, y, x + width, y, radius);
-              ctx.closePath();
-            }
+            // let drawBubble2 = (ctx, x, y, width, height, radius) => {
+            //   if (width < 2 * radius) radius = width / 2;
+            //   if (height < 2 * radius) radius = height / 2;
+            //   ctx.clearRect(x,y,this.popupSize,this.popupSize);
+            //   ctx.beginPath();
+            //   ctx.strokeStyle="black";
+            //   ctx.lineWidth="2";
+            //   ctx.moveTo(x + radius, y);
+            //   ctx.arcTo(x + width, y, x + width, y + height, radius);
+            //   ctx.arcTo(x + width, y + height, x, y + height, radius);
+            //   ctx.arcTo(x, y + height, x, y, radius);
+            //   ctx.arcTo(x, y, x + width, y, radius);
+            //   // ctx.clip();
+            //   ctx.fillStyle = 'white';
+            //   ctx.fill();
+            //   ctx.stroke();
+            //   ctx.closePath();
+            // }
 
             if (plyr.dead.state !== true && plyr.popups.length > 0) {
               for (const popup of plyr.popups) {
@@ -9255,93 +9029,125 @@ class App extends Component {
                     let positions = ['north','east','south','west','northEast','northWest','southEast','southWest']
 
                     for (const popup2 of currentPopups) {
-                      let indx = positions.indexOf(popup2.position);
-                      positions.splice(indx,1)
+                      if (popup2.position && popup2.position !== '') {
+
+                        let indx = positions.indexOf(popup2.position);
+                        positions.splice(indx,1)
+                      }
+
                     }
 
                     let dir = undefined;
-                    if (this.playerNumber === 2) {
-                      let otherPlayer;
-                      if (plyr.number === 1) {
-                        otherPlayer = 2;
-                      }
-                      if (plyr.number === 2) {
-                        otherPlayer = 1
-                      }
 
-                      let myPos = plyr.currentPosition.cell.number;
-                      let invalidPos = this.players[otherPlayer-1].currentPosition.cell.number;
+                    for (const plyr2 of this.players) {
+                      if (plyr2.ai.state !== true) {
+                        let myPos = plyr.currentPosition.cell.number;
+                        let invalidPos = this.players[plyr2.number-1].currentPosition.cell.number;
 
-                      if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
-                        dir = 'north';
-                      }
-                      if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y-1) {
-                        dir = 'northWest';
-                      }
-                      if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y) {
-                        dir = 'west';
-                      }
-                      if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y+1) {
-                        dir = 'southWest';
-                      }
-                      if (invalidPos.x === myPos.x && invalidPos.y === myPos.y+1) {
-                        dir = 'south';
-                      }
-                      if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y+1) {
-                        dir = 'southEast';
-                      }
-                      if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y) {
-                        dir = 'east';
-                      }
-                      if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y-1) {
-                        dir = 'northEast';
-                      }
+                        if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
+                          dir = 'north';
+                        }
+                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y-1) {
+                          dir = 'northWest';
+                        }
+                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y) {
+                          dir = 'west';
+                        }
+                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y+1) {
+                          dir = 'southWest';
+                        }
+                        if (invalidPos.x === myPos.x && invalidPos.y === myPos.y+1) {
+                          dir = 'south';
+                        }
+                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y+1) {
+                          dir = 'southEast';
+                        }
+                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y) {
+                          dir = 'east';
+                        }
+                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y-1) {
+                          dir = 'northEast';
+                        }
 
-                      if (dir && positions.includes(dir) === true) {
-                        positions.splice(positions.findIndex(dir),1);
+                        if (dir && positions.includes(dir) === true) {
+                          positions.splice(positions.indexOf(dir),1);
+                          // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                        }
                       }
-
                     }
 
                     if (!positions[0]) {
-                      popup.position = dir;
+                      // console.log('no open positions for', popup.msg);
+                      popup.state = false;
+                      popup.count = 0;
                     } else {
                       popup.position = positions[0];
                     }
 
+
                     popup.img = this.popupImageRef[popup.msg]
 
-                    popupDrawCoords = this.popupDrawCalc(popup,point,plyr.number);
+                    popupDrawCoords = this.popupDrawCalc(popup,{x:point.x-25,y:point.y-25},plyr.number);
                     // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
-                    // drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y)
+                    drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor)
                     context.fillStyle = 'black';
                     context.fillText(""+popup.msg+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+10);
-                    context.fillStyle = "red";
-                    context.fillRect(popupDrawCoords.origin.x, popupDrawCoords.origin.y,this.popupSize,this.popupSize);
-                    // context.globalCompositeOperation = "source-over";
-                    if (plyr.number === 1 && popup.position === 'northWest' && popup.count === 20) {
-                    console.log('position',popup.position,'popupDrawCoords.origin1',popupDrawCoords.origin,'point',point);
-                  }
-                    if (plyr.number === 1 && popup.position === 'west' && popup.count === 20) {
-                    console.log('position',popup.position,'popupDrawCoords.origin1',popupDrawCoords.origin,'point',point);
-                  }
                   }
                   else {
-                    popup.img = this.popupImageRef[popup.msg]
-                    popupDrawCoords = this.popupDrawCalc(popup,point,plyr.number);
-                    // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
-                    // drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y)
-                    context.fillStyle = 'black';
-                    context.fillText(""+popup.msg+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+10);
-                    context.fillStyle = "red";
-                    context.fillRect(popupDrawCoords.origin.x, popupDrawCoords.origin.y,this.popupSize,this.popupSize);
-                    // context.globalCompositeOperation = "source-over";
-                    if (plyr.number === 1 && popup.position === 'northWest' && popup.count === 20) {
-                    console.log('position',popup.position,'popupDrawCoords.origin2',popupDrawCoords.origin,'point',point);
+
+                    let dir = undefined;
+
+                    for (const plyr2 of this.players) {
+                      if (plyr2.ai.state !== true) {
+                        let myPos = plyr.currentPosition.cell.number;
+                        let invalidPos = this.players[plyr2.number-1].currentPosition.cell.number;
+
+                        if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
+                          dir = 'north';
+                        }
+                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y-1) {
+                          dir = 'northWest';
+                        }
+                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y) {
+                          dir = 'west';
+                        }
+                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y+1) {
+                          dir = 'southWest';
+                        }
+                        if (invalidPos.x === myPos.x && invalidPos.y === myPos.y+1) {
+                          dir = 'south';
+                        }
+                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y+1) {
+                          dir = 'southEast';
+                        }
+                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y) {
+                          dir = 'east';
+                        }
+                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y-1) {
+                          dir = 'northEast';
+                        }
+
+                      }
                     }
-                    if (plyr.number === 1 && popup.position === 'west' && popup.count === 20) {
-                    console.log('position',popup.position,'popupDrawCoords.origin2',popupDrawCoords.origin,'point',point);
+
+                    if (popup.position === dir ) {
+                      for (const pop of plyr.popups) {
+                        pop.position = '';
+                        pop.state = false;
+                      }
+                      // console.log('reconsidering...',popup.msg);
                     }
+                    else {
+                      popup.img = this.popupImageRef[popup.msg]
+                      popupDrawCoords = this.popupDrawCalc(popup,{x:point.x-25,y:point.y-25},plyr.number);
+                      // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
+                      drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor)
+                      context.fillStyle = 'black';
+                      context.fillText(""+popup.msg+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+10);
+
+                    }
+
+
                   }
                 }
               }
@@ -9412,307 +9218,6 @@ class App extends Component {
     // if (player.ai.state === true ) {
     //   this.aiEvaluate(player)
     // }
-
-  }
-  popupDrawCalc = (popup,playerOrigin,plyrNo) => {
-
-
-    let offset = (this.playerDrawWidth-this.popupSize)/2;
-    let pointerLength = this.popupSize/3;
-    let offset2 = pointerLength+offset;
-
-    playerOrigin.x = playerOrigin.x-25;
-    playerOrigin.y = playerOrigin.y-25;
-
-    let playerCorners = [
-      {x:playerOrigin.x,y:playerOrigin.y},
-      {x:undefined,y:undefined},
-      {x:undefined,y:undefined},
-      {x:undefined,y:undefined},
-    ];
-
-    // playerOrigin.x = playerOrigin.x-25;
-    // playerOrigin.y = playerOrigin.y-25;
-
-    // console.log('0',playerCorners[0]);
-    playerCorners[1] = {
-      x: (playerCorners[0].x+this.playerDrawWidth),
-      y: playerCorners[0].y
-    }
-    // console.log('1',playerCorners[1]);
-    playerCorners[2] = {
-      x: playerCorners[1].x,
-      y: (playerCorners[1].y+this.playerDrawHeight)
-    }
-    // console.log('2',playerCorners[2]);
-    playerCorners[3] = {
-      x: playerCorners[0].x,
-      y: (playerCorners[0].y+this.playerDrawHeight)
-    }
-
-
-    let popupCoords = {
-      origin: {x:undefined,y:undefined},
-      pt2: {x:undefined,y:undefined},
-      pt3: {x:undefined,y:undefined},
-      pt4: {x:undefined,y:undefined},
-      anchor: {x:undefined,y:undefined},
-      midpoint: {x:undefined,y:undefined},
-    }
-    let midpoint;
-
-    switch (popup.position) {
-      case 'northWest':
-      popupCoords.origin = {
-        x: playerCorners[0].x+offset,
-        y: playerCorners[0].y-(this.popupSize+offset2)
-      };
-      if (popup.count === 5) {
-        if (plyrNo === 1) {
-            // console.log('north west: offset',offset,'offset2',offset2,'playerCorners[0]',playerCorners[0],'playerOrigin',playerOrigin,'popupCoords.origin',popupCoords.origin);
-        }
-      }
-
-        popupCoords.pt2 = {
-          x: popupCoords.origin.x+this.popupSize,
-          y: popupCoords.origin.y,
-        }
-        popupCoords.pt3 = {
-          x: popupCoords.pt2.x,
-          y: popupCoords.pt2.y+this.popupSize,
-        }
-        popupCoords.pt4 = {
-          x: popupCoords.origin.x,
-          y: popupCoords.origin.y+this.popupSize,
-        }
-        midpoint = {
-          x: popupCoords.pt3.x+(popupCoords.pt4.x-popupCoords.pt3.x)*0.50,
-          y: popupCoords.pt3.y+(popupCoords.pt4.y-popupCoords.pt3.y)*0.50,
-        }
-        popupCoords.anchor = {
-          x: midpoint.x,
-          y: midpoint.y+pointerLength,
-        }
-        popupCoords.midpoint = {
-          x: midpoint.x,
-          y: midpoint.y,
-        }
-      break;
-      case 'southEast':
-        popupCoords.origin = {
-          x: playerCorners[3].x+offset,
-          y: playerCorners[3].y+offset2,
-        };
-        popupCoords.pt2 = {
-          x: popupCoords.origin.x+this.popupSize,
-          y: popupCoords.origin.y,
-        }
-        popupCoords.pt3 = {
-          x: popupCoords.pt2.x,
-          y: popupCoords.pt2.y+this.popupSize,
-        }
-        popupCoords.pt4 = {
-          x: popupCoords.origin.x,
-          y: popupCoords.origin.y+this.popupSize,
-        }
-        midpoint = {
-          x: popupCoords.origin.x+(popupCoords.pt2.x-popupCoords.origin.x)*0.50,
-          y: popupCoords.origin.y+(popupCoords.pt2.y-popupCoords.origin.y)*0.50,
-        }
-        popupCoords.anchor = {
-          x: midpoint.x,
-          y: midpoint.y-pointerLength,
-        }
-        popupCoords.midpoint = {
-          x: midpoint.x,
-          y: midpoint.y,
-        }
-      break;
-      case 'northEast':
-        popupCoords.origin = {
-          x: playerCorners[1].x+offset2,
-          y: playerCorners[1].y+offset,
-        };
-        popupCoords.pt2 = {
-          x: popupCoords.origin.x+this.popupSize,
-          y: popupCoords.origin.y,
-        }
-        popupCoords.pt3 = {
-          x: popupCoords.pt2.x,
-          y: popupCoords.pt2.y+this.popupSize,
-        }
-        popupCoords.pt4 = {
-          x: popupCoords.origin.x,
-          y: popupCoords.origin.y+this.popupSize,
-        }
-        midpoint = {
-          x: popupCoords.origin.x+(popupCoords.pt4.x-popupCoords.origin.x)*0.50,
-          y: popupCoords.origin.y+(popupCoords.pt4.y-popupCoords.origin.y)*0.50,
-        }
-        popupCoords.anchor = {
-          x: midpoint.x-pointerLength,
-          y: midpoint.y,
-        }
-        popupCoords.midpoint = {
-          x: midpoint.x,
-          y: midpoint.y,
-        }
-      break;
-      case 'southWest':
-        popupCoords.origin = {
-          x: playerCorners[0].x-(offset2+this.popupSize),
-          y: playerCorners[0].y+offset,
-        };
-        popupCoords.pt2 = {
-          x: popupCoords.origin.x+this.popupSize,
-          y: popupCoords.origin.y,
-        }
-        popupCoords.pt3 = {
-          x: popupCoords.pt2.x,
-          y: popupCoords.pt2.y+this.popupSize,
-        }
-        popupCoords.pt4 = {
-          x: popupCoords.origin.x,
-          y: popupCoords.origin.y+this.popupSize,
-        }
-        midpoint = {
-          x: popupCoords.pt2.x+(popupCoords.pt3.x-popupCoords.pt2.x)*0.50,
-          y: popupCoords.pt2.y+(popupCoords.pt3.y-popupCoords.pt2.y)*0.50,
-        }
-        popupCoords.anchor = {
-          x: midpoint.x+pointerLength,
-          y: midpoint.y,
-        }
-        popupCoords.midpoint = {
-          x: midpoint.x,
-          y: midpoint.y,
-        }
-      break;
-      case 'west':
-
-        popupCoords.origin = {
-          x: playerCorners[0].x-(offset2+this.popupSize),
-          // y: playerCorners[0].y,
-          y: playerCorners[0].y-(this.popupSize),
-        };
-        popupCoords.pt2 = {
-          x: popupCoords.origin.x+this.popupSize,
-          y: popupCoords.origin.y,
-        }
-        popupCoords.pt3 = {
-          x: popupCoords.pt2.x,
-          y: popupCoords.pt2.y+this.popupSize,
-        }
-        popupCoords.pt4 = {
-          x: popupCoords.origin.x,
-          y: popupCoords.origin.y+this.popupSize,
-        }
-        midpoint = {
-          x: popupCoords.pt2.x+(popupCoords.pt3.x-popupCoords.pt2.x)*0.50,
-          y: popupCoords.pt2.y+(popupCoords.pt3.y-popupCoords.pt2.y)*0.50,
-        }
-        popupCoords.anchor = {
-          x: popupCoords.pt3.x+pointerLength,
-          y: popupCoords.pt3.y,
-        }
-        popupCoords.midpoint = {
-          x: midpoint.x,
-          y: midpoint.y,
-        }
-      break;
-      case 'north':
-        popupCoords.origin = {
-          x: playerCorners[1].x+offset2,
-          y: playerCorners[1].y-(this.popupSize),
-        };
-        popupCoords.pt2 = {
-          x: popupCoords.origin.x+this.popupSize,
-          y: popupCoords.origin.y,
-        }
-        popupCoords.pt3 = {
-          x: popupCoords.pt2.x,
-          y: popupCoords.pt2.y+this.popupSize,
-        }
-        popupCoords.pt4 = {
-          x: popupCoords.origin.x,
-          y: popupCoords.origin.y+this.popupSize,
-        }
-        midpoint = {
-          x: popupCoords.pt2.x+(popupCoords.pt3.x-popupCoords.pt2.x)*0.50,
-          y: popupCoords.pt2.y+(popupCoords.pt3.y-popupCoords.pt2.y)*0.50,
-        }
-        popupCoords.anchor = {
-          x: popupCoords.pt4.x-pointerLength,
-          y: popupCoords.pt4.y,
-        }
-        popupCoords.midpoint = {
-          x: midpoint.x,
-          y: midpoint.y,
-        }
-      break;
-      case 'south':
-        popupCoords.origin = {
-          x: playerCorners[3].x-(this.popupSize+offset2),
-          y: playerCorners[3].y,
-        };
-        popupCoords.pt2 = {
-          x: popupCoords.origin.x+this.popupSize,
-          y: popupCoords.origin.y,
-        }
-        popupCoords.pt3 = {
-          x: popupCoords.pt2.x,
-          y: popupCoords.pt2.y+this.popupSize,
-        }
-        popupCoords.pt4 = {
-          x: popupCoords.origin.x,
-          y: popupCoords.origin.y+this.popupSize,
-        }
-        midpoint = {
-          x: popupCoords.pt2.x+(popupCoords.pt3.x-popupCoords.pt2.x)*0.50,
-          y: popupCoords.pt2.y+(popupCoords.pt3.y-popupCoords.pt2.y)*0.50,
-        }
-        popupCoords.anchor = {
-          x: popupCoords.pt2.x+pointerLength,
-          y: popupCoords.pt2.y,
-        }
-        popupCoords.midpoint = {
-          x: midpoint.x,
-          y: midpoint.y,
-        }
-      break;
-      case 'east':
-        popupCoords.origin = {
-          x: playerCorners[2].x+offset2,
-          y: playerCorners[2].y,
-        };
-        popupCoords.pt2 = {
-          x: popupCoords.origin.x+this.popupSize,
-          y: popupCoords.origin.y,
-        }
-        popupCoords.pt3 = {
-          x: popupCoords.pt2.x,
-          y: popupCoords.pt2.y+this.popupSize,
-        }
-        popupCoords.pt4 = {
-          x: popupCoords.origin.x,
-          y: popupCoords.origin.y+this.popupSize,
-        }
-        midpoint = {
-          x: popupCoords.pt2.x+(popupCoords.pt3.x-popupCoords.pt2.x)*0.50,
-          y: popupCoords.pt2.y+(popupCoords.pt3.y-popupCoords.pt2.y)*0.50,
-        }
-        popupCoords.anchor = {
-          x: popupCoords.origin.x-pointerLength,
-          y: popupCoords.origin.y,
-        }
-        popupCoords.midpoint = {
-          x: midpoint.x,
-          y: midpoint.y,
-        }
-      break;
-    }
-
-    return popupCoords;
 
   }
 
@@ -11364,6 +10869,293 @@ class App extends Component {
         }
       break;
     }
+
+  }
+  popupDrawCalc = (popup,playerOrigin,plyrNo) => {
+
+    let offset = (this.playerDrawWidth-this.popupSize)/2;
+    let pointerLength = this.popupSize/3;
+    let offset2 = pointerLength+offset;
+
+
+    let playerCorners = [
+      {x:playerOrigin.x,y:playerOrigin.y},
+      {x:undefined,y:undefined},
+      {x:undefined,y:undefined},
+      {x:undefined,y:undefined},
+    ];
+
+    playerCorners[1] = {
+      x: (playerCorners[0].x+this.playerDrawWidth),
+      y: playerCorners[0].y
+    }
+    playerCorners[2] = {
+      x: playerCorners[1].x,
+      y: (playerCorners[1].y+this.playerDrawHeight)
+    }
+    playerCorners[3] = {
+      x: playerCorners[0].x,
+      y: (playerCorners[0].y+this.playerDrawHeight)
+    }
+
+
+    let popupCoords = {
+      playerOrigin: playerCorners[0],
+      origin: {x:undefined,y:undefined},
+      pt2: {x:undefined,y:undefined},
+      pt3: {x:undefined,y:undefined},
+      pt4: {x:undefined,y:undefined},
+      anchor: {x:undefined,y:undefined},
+      midpoint: {x:undefined,y:undefined},
+    }
+    let midpoint;
+
+    switch (popup.position) {
+      case 'northWest':
+        popupCoords.origin = {
+          x: playerCorners[0].x+offset,
+          y: playerCorners[0].y-(this.popupSize+offset2)
+        };
+        popupCoords.pt2 = {
+          x: popupCoords.origin.x+this.popupSize,
+          y: popupCoords.origin.y,
+        }
+        popupCoords.pt3 = {
+          x: popupCoords.pt2.x,
+          y: popupCoords.pt2.y+this.popupSize,
+        }
+        popupCoords.pt4 = {
+          x: popupCoords.origin.x,
+          y: popupCoords.origin.y+this.popupSize,
+        }
+        midpoint = {
+          x: popupCoords.pt3.x+(popupCoords.pt4.x-popupCoords.pt3.x)*0.50,
+          y: popupCoords.pt3.y+(popupCoords.pt4.y-popupCoords.pt3.y)*0.50,
+        }
+        popupCoords.anchor = {
+          x: midpoint.x,
+          y: midpoint.y+pointerLength,
+        }
+        popupCoords.midpoint = {
+          x: midpoint.x,
+          y: midpoint.y,
+        }
+      break;
+      case 'southEast':
+        popupCoords.origin = {
+          x: playerCorners[3].x+offset,
+          y: playerCorners[3].y+offset2,
+        };
+        popupCoords.pt2 = {
+          x: popupCoords.origin.x+this.popupSize,
+          y: popupCoords.origin.y,
+        }
+        popupCoords.pt3 = {
+          x: popupCoords.pt2.x,
+          y: popupCoords.pt2.y+this.popupSize,
+        }
+        popupCoords.pt4 = {
+          x: popupCoords.origin.x,
+          y: popupCoords.origin.y+this.popupSize,
+        }
+        midpoint = {
+          x: popupCoords.origin.x+(popupCoords.pt2.x-popupCoords.origin.x)*0.50,
+          y: popupCoords.origin.y+(popupCoords.pt2.y-popupCoords.origin.y)*0.50,
+        }
+        popupCoords.anchor = {
+          x: midpoint.x,
+          y: midpoint.y-pointerLength,
+        }
+        popupCoords.midpoint = {
+          x: midpoint.x,
+          y: midpoint.y,
+        }
+      break;
+      case 'northEast':
+        popupCoords.origin = {
+          x: playerCorners[1].x+offset2,
+          y: playerCorners[1].y+offset,
+        };
+        popupCoords.pt2 = {
+          x: popupCoords.origin.x+this.popupSize,
+          y: popupCoords.origin.y,
+        }
+        popupCoords.pt3 = {
+          x: popupCoords.pt2.x,
+          y: popupCoords.pt2.y+this.popupSize,
+        }
+        popupCoords.pt4 = {
+          x: popupCoords.origin.x,
+          y: popupCoords.origin.y+this.popupSize,
+        }
+        midpoint = {
+          x: popupCoords.origin.x+(popupCoords.pt4.x-popupCoords.origin.x)*0.50,
+          y: popupCoords.origin.y+(popupCoords.pt4.y-popupCoords.origin.y)*0.50,
+        }
+        popupCoords.anchor = {
+          x: midpoint.x-pointerLength,
+          y: midpoint.y,
+        }
+        popupCoords.midpoint = {
+          x: midpoint.x,
+          y: midpoint.y,
+        }
+      break;
+      case 'southWest':
+        popupCoords.origin = {
+          x: playerCorners[0].x-(offset2+this.popupSize),
+          y: playerCorners[0].y+offset,
+        };
+        popupCoords.pt2 = {
+          x: popupCoords.origin.x+this.popupSize,
+          y: popupCoords.origin.y,
+        }
+        popupCoords.pt3 = {
+          x: popupCoords.pt2.x,
+          y: popupCoords.pt2.y+this.popupSize,
+        }
+        popupCoords.pt4 = {
+          x: popupCoords.origin.x,
+          y: popupCoords.origin.y+this.popupSize,
+        }
+        midpoint = {
+          x: popupCoords.pt2.x+(popupCoords.pt3.x-popupCoords.pt2.x)*0.50,
+          y: popupCoords.pt2.y+(popupCoords.pt3.y-popupCoords.pt2.y)*0.50,
+        }
+        popupCoords.anchor = {
+          x: midpoint.x+pointerLength,
+          y: midpoint.y,
+        }
+        popupCoords.midpoint = {
+          x: midpoint.x,
+          y: midpoint.y,
+        }
+      break;
+      case 'west':
+
+        popupCoords.origin = {
+          x: playerCorners[0].x-(offset2+this.popupSize),
+          // y: playerCorners[0].y,
+          y: playerCorners[0].y-(this.popupSize),
+        };
+        popupCoords.pt2 = {
+          x: popupCoords.origin.x+this.popupSize,
+          y: popupCoords.origin.y,
+        }
+        popupCoords.pt3 = {
+          x: popupCoords.pt2.x,
+          y: popupCoords.pt2.y+this.popupSize,
+        }
+        popupCoords.pt4 = {
+          x: popupCoords.origin.x,
+          y: popupCoords.origin.y+this.popupSize,
+        }
+        midpoint = {
+          x: popupCoords.pt2.x+(popupCoords.pt3.x-popupCoords.pt2.x)*0.50,
+          y: popupCoords.pt2.y+(popupCoords.pt3.y-popupCoords.pt2.y)*0.50,
+        }
+        popupCoords.anchor = {
+          x: popupCoords.pt3.x+pointerLength,
+          y: popupCoords.pt3.y,
+        }
+        popupCoords.midpoint = {
+          x: midpoint.x,
+          y: midpoint.y,
+        }
+      break;
+      case 'north':
+        popupCoords.origin = {
+          x: playerCorners[1].x+offset2,
+          y: playerCorners[1].y-(this.popupSize),
+        };
+        popupCoords.pt2 = {
+          x: popupCoords.origin.x+this.popupSize,
+          y: popupCoords.origin.y,
+        }
+        popupCoords.pt3 = {
+          x: popupCoords.pt2.x,
+          y: popupCoords.pt2.y+this.popupSize,
+        }
+        popupCoords.pt4 = {
+          x: popupCoords.origin.x,
+          y: popupCoords.origin.y+this.popupSize,
+        }
+        midpoint = {
+          x: popupCoords.pt2.x+(popupCoords.pt3.x-popupCoords.pt2.x)*0.50,
+          y: popupCoords.pt2.y+(popupCoords.pt3.y-popupCoords.pt2.y)*0.50,
+        }
+        popupCoords.anchor = {
+          x: popupCoords.pt4.x-pointerLength,
+          y: popupCoords.pt4.y,
+        }
+        popupCoords.midpoint = {
+          x: midpoint.x,
+          y: midpoint.y,
+        }
+      break;
+      case 'south':
+        popupCoords.origin = {
+          x: playerCorners[3].x-(this.popupSize+offset2),
+          y: playerCorners[3].y,
+        };
+        popupCoords.pt2 = {
+          x: popupCoords.origin.x+this.popupSize,
+          y: popupCoords.origin.y,
+        }
+        popupCoords.pt3 = {
+          x: popupCoords.pt2.x,
+          y: popupCoords.pt2.y+this.popupSize,
+        }
+        popupCoords.pt4 = {
+          x: popupCoords.origin.x,
+          y: popupCoords.origin.y+this.popupSize,
+        }
+        midpoint = {
+          x: popupCoords.pt2.x+(popupCoords.pt3.x-popupCoords.pt2.x)*0.50,
+          y: popupCoords.pt2.y+(popupCoords.pt3.y-popupCoords.pt2.y)*0.50,
+        }
+        popupCoords.anchor = {
+          x: popupCoords.pt2.x+pointerLength,
+          y: popupCoords.pt2.y,
+        }
+        popupCoords.midpoint = {
+          x: midpoint.x,
+          y: midpoint.y,
+        }
+      break;
+      case 'east':
+        popupCoords.origin = {
+          x: playerCorners[2].x+offset2,
+          y: playerCorners[2].y,
+        };
+        popupCoords.pt2 = {
+          x: popupCoords.origin.x+this.popupSize,
+          y: popupCoords.origin.y,
+        }
+        popupCoords.pt3 = {
+          x: popupCoords.pt2.x,
+          y: popupCoords.pt2.y+this.popupSize,
+        }
+        popupCoords.pt4 = {
+          x: popupCoords.origin.x,
+          y: popupCoords.origin.y+this.popupSize,
+        }
+        midpoint = {
+          x: popupCoords.pt2.x+(popupCoords.pt3.x-popupCoords.pt2.x)*0.50,
+          y: popupCoords.pt2.y+(popupCoords.pt3.y-popupCoords.pt2.y)*0.50,
+        }
+        popupCoords.anchor = {
+          x: popupCoords.origin.x-pointerLength,
+          y: popupCoords.origin.y,
+        }
+        popupCoords.midpoint = {
+          x: midpoint.x,
+          y: midpoint.y,
+        }
+      break;
+    }
+
+    return popupCoords;
 
   }
 
