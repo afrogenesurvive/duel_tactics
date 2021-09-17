@@ -221,7 +221,7 @@ class App extends Component {
     };
     this.levelData9 = {
       row0: ['x00x','x01x','x02x','x03x','x04x','x05g','x06g','x07h','x08f','x09d'],
-      row1: ['x10a','x11a','x12a','x13a','x14x','x15x','x16x','x17x','x18f','x19d'],
+      row1: ['x10a','x11a','x12a','x13a','x14x','x15x','z16x','x17x','x18f','x19d'],
       row2: ['x20x','x21a','x22a','x23a','x24x','x25x','x26x','x27x','x28d','x29d'],
       row3: ['x30a','x31j','x32b','x33j','x34j','x35b','x36j','x37j','x38j','x39d'],
       row4: ['x40j','x41j','x42b','x43b','x44b','x45b','x46j','x47j','x48j','x49d'],
