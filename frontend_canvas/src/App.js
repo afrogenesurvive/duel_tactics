@@ -33,17 +33,50 @@ import attackBluntIndicate from './assets/indicators/blunt.png';
 import attackSuccessIndicate from './assets/indicators/attackSuccess.png';
 import defendIndicate from './assets/indicators/defend.png';
 import deflectIndicate from './assets/indicators/deflect.png';
+import deflectIndicate2 from './assets/indicators/deflect2.png';
 import deflectInjuredIndicate from './assets/indicators/deflectInjured2.png';
 import deflectBluntIndicate from './assets/indicators/death2.png';
 import pushbackIndicate from './assets/indicators/pushback.png';
 import ghostIndicate from './assets/indicators/ghost.png';
 import deathIndicate from './assets/indicators/death.png';
 import preAttackIndicate from './assets/indicators/preAttack.png';
+
 import preAttack2Indicate from './assets/indicators/preAttack2.png';
+import preAction1Indicate from './assets/indicators/preAction1.png';
+import preAction2Indicate from './assets/indicators/preAction2.png';
 import attackBreakIndicate from './assets/indicators/attackBreak.png';
 import defendBreakIndicate from './assets/indicators/defendBreak.png';
 import boltDefendIndicate from './assets/indicators/boltDefend.png';
 import dodgeIndicate from './assets/indicators/dodge.png';
+import fallingIndicate from './assets/indicators/falling.png';
+import completeMissionIndicate from './assets/indicators/complete.png';
+import flankIndicate from './assets/indicators/flank.png';
+import attackBluntIndicate2 from './assets/indicators/blunt2.png';
+import enrouteIndicate from './assets/indicators/enroute.png';
+import targetSwitchIndicate from './assets/indicators/targetSwitch.png';
+import pathSwitchIndicate from './assets/indicators/pathSwitch.svg';
+import retreatIndicate from './assets/indicators/retreat.png';
+import defendSuccessIndicate from './assets/indicators/defendSuccess.png';
+import aggressiveModeIndicate from './assets/indicators/angry.png';
+import passiveModeIndicate from './assets/indicators/meditation.png';
+import thinkingIndicate from './assets/indicators/mind.png';
+import defendMissionIndicate from './assets/indicators/police.png';
+import patrolMissionIndicate from './assets/indicators/location.png';
+import pursueMissionIndicate from './assets/indicators/treasure-map.png';
+import pursueMissionIndicate2 from './assets/indicators/missionPursue.png';
+import retrieveMissionIndicate from './assets/indicators/treasure.png';
+import drowningIndicate from './assets/indicators/drown.png';
+import destroyedItemIndicate from './assets/indicators/destroyedItem.png';
+import pickupBuffIndicate from './assets/indicators/pickupBuff.png';
+import pickupDebuffIndicate from './assets/indicators/pickupDebuff.png';
+import pickupWeaponIndicate from './assets/indicators/pickupWeapon.png';
+import dropWeaponIndicate from './assets/indicators/dropWeapon.png';
+import dropArmorIndicate from './assets/indicators/dropArmor.png';
+import pickupArmorIndicate from './assets/indicators/pickupArmor.png';
+import terrainSpeedupIndicate from './assets/indicators/terrainSpeedup.png';
+import terrainSlowdownIndicate from './assets/indicators/terrainSlowdown.png';
+import terrainInjuredIndicate from './assets/indicators/terrainInjured.png';
+
 
 import mail1 from './assets/items/mail1.png';
 import mail2 from './assets/items/mail2.png';
@@ -68,6 +101,7 @@ import boltEast from './assets/items/boltEast.png';
 import boltWest from './assets/items/boltWest.png';
 import spear from './assets/items/spear.png';
 import sword from './assets/items/sword.png';
+import crossbow from './assets/items/crossbow.png';
 
 import playerImgIdleSheet from './assets/sheet1.png';
 import player2ImgIdleSheet from './assets/sheet2.png';
@@ -1558,49 +1592,7 @@ class App extends Component {
       type: 'start',
     }
     this.popupSize = 35;
-    this.popupImageRef = {
-      attacking: '',
-      attacked: '',
-      attackDefended: '',
-      injured: '',
-      defending: '',
-      defendSuccess: '',
-      guardBroken: '',
-      deflected: '',
-      pushedBack: '',
-      falling: '',
-      pursuingEnroute: '',
-      retrievingEnroute: '',
-      retrieveSuccess: '',
-      defending: '',
-      defendingEnroute: '',
-      patrolling: '',
-      engaging: '',
-      retreatingEnroute: '',
-      retreatSuccess: '',
-      engaging: '',
-      alarmed: '',
-      pathSwitch: '',
-      targetSwitch: '',
-      aggressive: '',
-      passive: '',
-      pickupWeapon: '',
-      pickupArmor: '',
-      pickupBuff: '',
-      pickupDebuff: '',
-      dropWeapon: '',
-      dropArmor: '',
-      drowning: '',
-      terrainSlowdown: '',
-      terrainIjured: '',
-      destroyedItem: '',
-      sword: '',
-      spear: '',
-      crossbow: '',
-      helmet: '',
-      mail: '',
-      greaves: '',
-    };
+
 
   }
 
@@ -6580,142 +6572,85 @@ class App extends Component {
 
     // POPUPS
 
-    // if (player.number === 1) {
+    if (player.number === 1) {
 
-      if (this.time === 50) {
-        player.popups.push(
-          {
-            state: false,
-            count: 0,
-            limit: 400,
-            type: '',
-            position: '',
-            msg: 'X-1',
-            img: '',
+      let popupImageRef = {
+        attackStart: this.refs.preAttackIndicate,
+        attacking1: this.refs.attack1Indicate,
+        attacking2: this.refs.attack2Indicate,
+        attackingBlunt: this.attackBluntIndicate2,
+        attackingUnarmed: this.refs.attackUnarmedIndicate,
+        attacked1: this.refs.attack1Indicate,
+        attacked2: this.refs.attack2Indicate,
+        attackDefended: this.refs.attackBreakIndicate,
+        attackCancelled: this.refs.attackBreakIndicate,
+        injured: this.refs.deflectInjuredIndicate,
+        defending: this.refs.defendIndicate,
+        defendSuccess: this.refs.defendSuccessIndicate,
+        guardBroken: this.refs.defendBreakIndicate,
+        deflected: this.refs.deflectBluntIndicate,
+        dodgeStart: this.refs.preAction1Indicate,
+        dodgeSuccess: this.refs.dodgeIndicate,
+        flanking: this.refs.flankIndicate,
+        pushedBack: this.refs.pushbackIndicate,
+        falling: this.refs.fallingIndicate,
+        engaging: this.refs.deflectIndicate2,
+        pursuing: this.refs.pursueMissionIndicate2,
+        retrieving: this.refs.retrieveMissionIndicate,
+        defending: this.refs.defendMissionIndicate,
+        patrolling: this.refs.patrolMissionIndicate,
+        retreating: this.refs.retreatIndicate,
+        missionEnroute: this.refs.enrouteIndicate,
+        missionComplete: this.refs.completeMissionIndicate,
+        thinking: this.refs.thinkingIndicate,
+        alarmed: this.refs.preAttack2Indicate,
+        pathSwitch: this.refs.pathSwitchIndicate,
+        targetSwitch: this.refs.targetSwitchIndicate,
+        aggressiveMode: this.refs.aggressiveModeIndicate,
+        passiveMode: this.refs.passiveModeIndicate,
+        pickupWeapon: this.refs.pickupWeaponIndicate,
+        pickupArmor: this.refs.pickupArmorIndicate,
+        pickupBuff: this.refs.pickupBuffIndicate,
+        pickupDebuff: this.refs.pickupDebuffIndicate,
+        dropWeapon: this.refs.dropWeaponIndicate,
+        dropArmor: this.refs.dropArmorIndicate,
+        drowning: this.refs.drowningIndicate,
+        terrainSlowdown: this.refs.terrainSlowdownIndicate,
+        terrainSpeedup: this.refs.terrainSpeedupIndicate,
+        terrainIjured: this.refs.terrainInjuredIndicate,
+        destroyedItem: this.refs.destroyedItemIndicate,
+        sword: this.refs.itemSword,
+        spear: this.refs.itemSpear,
+        crossbow: this.refs.itemCrossbow,
+        longbow: this.refs.itemBow,
+        helmet: this.refs.itemHelmet1,
+        mail: this.refs.itemMail1,
+        greaves: this.refs.itemGreaves1,
+      };
 
-          },
-          {
-            state: false,
-            count: 0,
-            limit: 300,
-            type: '',
-            position: '',
-            msg: 'X-2',
-            img: '',
+      if (this.time === 100) {
+        let indx = 1;
+        for (const [key, value] of Object.entries(popupImageRef)) {
+          player.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: indx*10,
+              type: '',
+              position: '',
+              msg: key,
+              img: '',
 
-          },
-          {
-            state: false,
-            count: 0,
-            limit: 300,
-            type: '',
-            position: '',
-            msg: 'X-3',
-            img: '',
-
-          },
-          {
-            state: false,
-            count: 0,
-            limit: 300,
-            type: '',
-            position: '',
-            msg: 'X-4',
-            img: '',
-
-          },
-          {
-            state: false,
-            count: 0,
-            limit: 300,
-            type: '',
-            position: '',
-            msg: 'X-5',
-            img: '',
-
-          },
-          {
-            state: false,
-            count: 0,
-            limit: 400,
-            type: '',
-            position: '',
-            msg: 'X-6',
-            img: '',
-
-          },
-          {
-            state: false,
-            count: 0,
-            limit:300,
-            type: '',
-            position: '',
-            msg: 'X-7',
-            img: '',
-
-          },
-          {
-            state: false,
-            count: 0,
-            limit: 200,
-            type: '',
-            position: '',
-            msg: 'X-8',
-            img: '',
-
-          },
-        )
-      }
-      if (this.time === 125) {
-        player.popups.push(
-          {
-            state: false,
-            count: 0,
-            limit: 250,
-            type: '',
-            position: '',
-            msg: 'X-9',
-            img: '',
-
-          },
-        )
-      }
-      if (this.time === 150) {
-        player.popups.push(
-          {
-            state: false,
-            count: 0,
-            limit: 150,
-            type: '',
-            position: '',
-            msg: 'X-10',
-            img: '',
-
-          },
-          {
-            state: false,
-            count: 0,
-            limit: 150,
-            type: '',
-            position: '',
-            msg: 'X-11',
-            img: '',
-
-          },
-          {
-            state: false,
-            count: 0,
-            limit: 150,
-            type: '',
-            position: '',
-            msg: 'X-12',
-            img: '',
-
-          },
-        )
+            }
+          )
+          indx++
+        }
+        // console.log('player.popups',player.popups);
       }
 
-    // }
+    }
+
+
 
 
     if (player.popups.length > 0) {
@@ -8926,11 +8861,64 @@ class App extends Component {
 
 
 
+
           // POPUPS
 
           if (x === this.gridWidth && y === this.gridWidth ) {
 
-
+            let popupImageRef = {
+              attackStart: this.refs.preAttackIndicate,
+              attacking1: this.refs.attack1Indicate,
+              attacking2: this.refs.attack2Indicate,
+              attackingBlunt: this.refs.attackBluntIndicate2,
+              attackingUnarmed: this.refs.attackUnarmedIndicate,
+              attacked1: this.refs.attack1Indicate,
+              attacked2: this.refs.attack2Indicate,
+              attackDefended: this.refs.attackBreakIndicate,
+              attackCancelled: this.refs.attackBreakIndicate,
+              injured: this.refs.deflectInjuredIndicate,
+              defending: this.refs.defendIndicate,
+              defendSuccess: this.refs.defendSuccessIndicate,
+              guardBroken: this.refs.defendBreakIndicate,
+              deflected: this.refs.deflectBluntIndicate,
+              dodgeStart: this.refs.preAction1Indicate,
+              dodgeSuccess: this.refs.dodgeIndicate,
+              flanking: this.refs.flankIndicate,
+              pushedBack: this.refs.pushbackIndicate,
+              falling: this.refs.fallingIndicate,
+              engaging: this.refs.deflectIndicate2,
+              pursuing: this.refs.pursueMissionIndicate2,
+              retrieving: this.refs.retrieveMissionIndicate,
+              defending: this.refs.defendMissionIndicate,
+              patrolling: this.refs.patrolMissionIndicate,
+              retreating: this.refs.retreatIndicate,
+              missionEnroute: this.refs.enrouteIndicate,
+              missionComplete: this.refs.completeMissionIndicate,
+              thinking: this.refs.thinkingIndicate,
+              alarmed: this.refs.preAttack2Indicate,
+              pathSwitch: this.refs.pathSwitchIndicate,
+              targetSwitch: this.refs.targetSwitchIndicate,
+              aggressiveMode: this.refs.aggressiveModeIndicate,
+              passiveMode: this.refs.passiveModeIndicate,
+              pickupWeapon: this.refs.pickupWeaponIndicate,
+              pickupArmor: this.refs.pickupArmorIndicate,
+              pickupBuff: this.refs.pickupBuffIndicate,
+              pickupDebuff: this.refs.pickupDebuffIndicate,
+              dropWeapon: this.refs.dropWeaponIndicate,
+              dropArmor: this.refs.dropArmorIndicate,
+              drowning: this.refs.drowningIndicate,
+              terrainSlowdown: this.refs.terrainSlowdownIndicate,
+              terrainSpeedup: this.refs.terrainSpeedupIndicate,
+              terrainIjured: this.refs.terrainInjuredIndicate,
+              destroyedItem: this.refs.destroyedItemIndicate,
+              sword: this.refs.itemSword,
+              spear: this.refs.itemSpear,
+              crossbow: this.refs.itemCrossbow,
+              longbow: this.refs.itemBow,
+              helmet: this.refs.itemHelmet1,
+              mail: this.refs.itemMail1,
+              greaves: this.refs.itemGreaves1,
+            };
             // context.beginPath();
             // context.lineWidth = "2"
             // context.rect(point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
@@ -8960,7 +8948,7 @@ class App extends Component {
                ctx.clearRect(x,y,this.popupSize,this.popupSize);
                ctx.beginPath();
                ctx.strokeStyle=color;
-               ctx.lineWidth="2";
+               ctx.lineWidth="1";
                ctx.moveTo(x+radius,y);
                if(dir==2){
                 ctx.lineTo(con1,y);
@@ -9085,13 +9073,15 @@ class App extends Component {
                     }
 
 
-                    popup.img = this.popupImageRef[popup.msg]
+                    popup.img = popupImageRef[popup.msg]
 
                     popupDrawCoords = this.popupDrawCalc(popup,{x:point.x-25,y:point.y-25},plyr.number);
                     // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
-                    drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor)
-                    context.fillStyle = 'black';
-                    context.fillText(""+popup.msg+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+10);
+                    drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor)
+                    // context.fillStyle = 'black';
+                    // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
+                    console.log('popup.img',popup.img,'popup.msg',popup.msg);
+                    context.drawImage(popup.img, popupDrawCoords.origin.x+5,popupDrawCoords.origin.y+5,26,26);
                   }
                   else {
 
@@ -9138,13 +9128,14 @@ class App extends Component {
                       // console.log('reconsidering...',popup.msg);
                     }
                     else {
-                      popup.img = this.popupImageRef[popup.msg]
+                      popup.img = popupImageRef[popup.msg]
                       popupDrawCoords = this.popupDrawCalc(popup,{x:point.x-25,y:point.y-25},plyr.number);
                       // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
-                      drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor)
-                      context.fillStyle = 'black';
-                      context.fillText(""+popup.msg+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+10);
-
+                      drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor)
+                      // context.fillStyle = 'black';
+                      // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
+                      console.log('popup.img',popup.img,'popup.msg',popup.msg);
+                    context.drawImage(popup.img, popupDrawCoords.origin.x+5,popupDrawCoords.origin.y+5,26,26);
                     }
 
 
@@ -18375,75 +18366,124 @@ class App extends Component {
           <img src={floorLava} className='hidden' ref="floorLava" alt="logo" id="floor2"/>
           <img src={floorAttack} className='hidden' ref="floorAttack" alt="logo" id="floor3"/>
           <img src={floorVoid} className='hidden' ref="floorVoid" alt="logo" id="floor4"/>
-          <img src={wall} className='hidden' ref="wall" alt="logo" />
-          <img src={wall2} className='hidden' ref="wall2" alt="logo" />
-          <img src={wall3} className='hidden' ref="wall3" alt="logo" />
+          <img src={wall} className='hidden' ref="wall" id="wall" alt="logo" />
+          <img src={wall2} className='hidden' ref="wall2" id="wall2" alt="logo" />
+          <img src={wall3} className='hidden' ref="wall3" id="wall3" alt="logo" />
 
-          <img src={attack1Indicate} className='hidden playerImgs' ref="attack1Indicate" alt="logo" />
-          <img src={attack2Indicate} className='hidden playerImgs' ref="attack2Indicate" alt="logo" />
-          <img src={attack3Indicate} className='hidden playerImgs' ref="attack3Indicate" alt="logo" />
-          <img src={attackUnarmedIndicate} className='hidden playerImgs' ref="attackUnarmedIndicate" alt="logo" />
-          <img src={attackBluntIndicate} className='hidden playerImgs' ref="attackBluntIndicate" alt="logo" />
-          <img src={attackSuccessIndicate} className='hidden playerImgs' ref="attackSuccessIndicate" alt="logo" />
-          <img src={defendIndicate} className='hidden playerImgs' ref="defendIndicate" alt="logo" />
-          <img src={deflectIndicate} className='hidden playerImgs' ref="deflectIndicate" alt="logo" />
-          <img src={deflectInjuredIndicate} className='hidden playerImgs' ref="deflectInjuredIndicate" alt="logo" />
-          <img src={deflectBluntIndicate} className='hidden playerImgs' ref="deflectBluntIndicate" alt="logo" />
-          <img src={pushbackIndicate} className='hidden playerImgs' ref="pushbackIndicate" alt="logo" />
-          <img src={ghostIndicate} className='hidden playerImgs' ref="ghostIndicate" alt="logo" />
-          <img src={deathIndicate} className='hidden playerImgs' ref="deathIndicate" alt="logo" />
-          <img src={preAttackIndicate} className='hidden playerImgs' ref="preAttackIndicate" alt="logo" />
-          <img src={preAttack2Indicate} className='hidden playerImgs' ref="preAttack2Indicate" alt="logo" />
-          <img src={attackBreakIndicate} className='hidden playerImgs' ref="attackBreakIndicate" alt="logo" />
-          <img src={defendBreakIndicate} className='hidden playerImgs' ref="defendBreakIndicate" alt="logo" />
-          <img src={boltDefendIndicate} className='hidden playerImgs' ref="boltDefendIndicate" alt="logo" />
-          <img src={dodgeIndicate} className='hidden playerImgs' ref="dodgeIndicate" alt="logo" />
+          <img src={attack1Indicate} className='hidden playerImgs' ref="attack1Indicate" id="attack1Indicate" alt="logo" />
+          <img src={attack2Indicate} className='hidden playerImgs' ref="attack2Indicate" id="attack2Indicate" alt="logo" />
+          <img src={attack3Indicate} className='hidden playerImgs' ref="attack3Indicate" id="attack3Indicate" alt="logo" />
+          <img src={attackUnarmedIndicate} className='hidden playerImgs' ref="attackUnarmedIndicate" id="attackUnarmedIndicate" alt="logo" />
+          <img src={attackBluntIndicate} className='hidden playerImgs' ref="attackBluntIndicate" id="attackBluntIndicate" alt="logo" />
+          <img src={attackSuccessIndicate} className='hidden playerImgs' ref="attackSuccessIndicate" id="attackSuccessIndicate" alt="logo" />
+          <img src={defendIndicate} className='hidden playerImgs' ref="defendIndicate" id="defendIndicate" alt="logo" />
+          <img src={deflectIndicate} className='hidden playerImgs' ref="deflectIndicate" id="deflectIndicate" alt="logo" />
+          <img src={deflectIndicate2} className='hidden playerImgs' ref="deflectIndicate2" id="deflectIndicate2" alt="logo" />
+          <img src={deflectInjuredIndicate} className='hidden playerImgs' ref="deflectInjuredIndicate" id="deflectInjuredIndicate" alt="logo" />
+          <img src={deflectBluntIndicate} className='hidden playerImgs' ref="deflectBluntIndicate" id="deflectBluntIndicate" alt="logo" />
+          <img src={pushbackIndicate} className='hidden playerImgs' ref="pushbackIndicate" id="pushbackIndicate" alt="logo" />
+          <img src={ghostIndicate} className='hidden playerImgs' ref="ghostIndicate" id="ghostIndicate" alt="logo" />
+          <img src={deathIndicate} className='hidden playerImgs' ref="deathIndicate" id="deathIndicate" alt="logo" />
+          <img src={preAttackIndicate} className='hidden playerImgs' ref="preAttackIndicate" id="preAttackIndicate" alt="logo" />
+          <img src={preAttack2Indicate} className='hidden playerImgs' ref="preAttack2Indicate" id="preAttack2Indicate" alt="logo" />
+          <img src={attackBreakIndicate} className='hidden playerImgs' ref="attackBreakIndicate" id="attackBreakIndicate" alt="logo" />
+          <img src={defendBreakIndicate} className='hidden playerImgs' ref="defendBreakIndicate" id="defendBreakIndicate" alt="logo" />
+          <img src={defendSuccessIndicate} className='hidden playerImgs' ref="defendSuccessIndicate" id="defendBreakIndicate" alt="logo" />
+          <img src={boltDefendIndicate} className='hidden playerImgs' ref="boltDefendIndicate" id="boltDefendIndicate" alt="logo" />
+          <img src={dodgeIndicate} className='hidden playerImgs' ref="dodgeIndicate" id="dodgeIndicate" alt="logo" />
+          <img src={preAction1Indicate} className="hidden playerImgs" ref="preAction1Indicate" id="preAction1Indicate" alt="logo"/>
+          <img src={preAction2Indicate} className="hidden playerImgs" ref="preAction2Indicate" id="preAction2Indicate" alt="logo"/>
+          <img src={fallingIndicate} className="hidden playerImgs" ref="fallingIndicate" id="fallingIndicate" alt="logo"/>
+          <img src={completeMissionIndicate} className="hidden playerImgs" ref="completeMissionIndicate" id="completeMissionIndicate" alt="logo"/>
+          <img src={flankIndicate} className="hidden playerImgs" ref="flankIndicate" id="flankIndicate" alt="logo"/>
+          <img src={attackBluntIndicate2} className="hidden playerImgs" ref="attackBluntIndicate2" id="attackBluntIndicate2" alt="logo"/>
+          <img src={enrouteIndicate} className="hidden playerImgs" ref="enrouteIndicate" id="enrouteIndicate" alt="logo"/>
+          <img src={targetSwitchIndicate} className="hidden playerImgs" ref="targetSwitchIndicate" id="targetSwitchIndicate" alt="logo"/>
+          <img src={pathSwitchIndicate} className="hidden playerImgs" ref="pathSwitchIndicate" id="pathSwitchIndicate" alt="logo"/>
+          <img src={retreatIndicate} className="hidden playerImgs" ref="retreatIndicate" id="retreatIndicate" alt="logo"/>
+          <img src={defendSuccessIndicate} className="hidden playerImgs" ref="defendSuccessIndicate" id="defendSuccessIndicate" alt="logo"/>
+
+          <img src={preAttack2Indicate} className="hidden playerImgs" ref="preAttack2Indicate" id="preAttack2Indicate" alt="..." />
+          <img src={preAction1Indicate} className="hidden playerImgs" ref="preAction1Indicate" id="preAction1Indicate" alt="..." />
+          <img src={preAction2Indicate} className="hidden playerImgs" ref="preAction2Indicate" id="preAction2Indicate" alt="..." />
+          <img src={attackBreakIndicate} className="hidden playerImgs" ref="attackBreakIndicate" id="attackBreakIndicate" alt="..." />
+          <img src={defendBreakIndicate} className="hidden playerImgs" ref="defendBreakIndicate" id="defendBreakIndicate" alt="..." />
+          <img src={boltDefendIndicate} className="hidden playerImgs" ref="boltDefendIndicate" id="boltDefendIndicate" alt="..." />
+          <img src={dodgeIndicate} className="hidden playerImgs" ref="dodgeIndicate" id="dodgeIndicate" alt="..." />
+          <img src={fallingIndicate} className="hidden playerImgs" ref="fallingIndicate" id="fallingIndicate" alt="..." />
+          <img src={completeMissionIndicate} className="hidden playerImgs" ref="completeMissionIndicate" id="completeMissionIndicate" alt="..." />
+          <img src={flankIndicate} className="hidden playerImgs" ref="flankIndicate" id="flankIndicate" alt="..." />
+          <img src={attackBluntIndicate2} className="hidden playerImgs" ref="attackBluntIndicate2" id="attackBluntIndicate2" alt="..." />
+          <img src={enrouteIndicate} className="hidden playerImgs" ref="enrouteIndicate" id="enrouteIndicate" alt="..." />
+          <img src={targetSwitchIndicate} className="hidden playerImgs" ref="targetSwitchIndicate" id="targetSwitchIndicate" alt="..." />
+          <img src={pathSwitchIndicate} className="hidden playerImgs" ref="pathSwitchIndicate" id="pathSwitchIndicate" alt="..." />
+          <img src={retreatIndicate} className="hidden playerImgs" ref="retreatIndicate" id="retreatIndicate" alt="..." />
+          <img src={defendSuccessIndicate} className="hidden playerImgs" ref="defendSuccessIndicate" id="defendSuccessIndicate" alt="..." />
+          <img src={aggressiveModeIndicate} className="hidden playerImgs" ref="aggressiveModeIndicate" id="aggressiveModeIndicate" alt="..." />
+          <img src={passiveModeIndicate} className="hidden playerImgs" ref="passiveModeIndicate" id="passiveModeIndicate" alt="..." />
+          <img src={thinkingIndicate} className="hidden playerImgs" ref="thinkingIndicate" id="thinkingIndicate" alt="..." />
+          <img src={defendMissionIndicate} className="hidden playerImgs" ref="defendMissionIndicate" id="defendMissionIndicate" alt="..." />
+          <img src={patrolMissionIndicate} className="hidden playerImgs" ref="patrolMissionIndicate" id="patrolMissionIndicate" alt="..." />
+          <img src={pursueMissionIndicate} className="hidden playerImgs" ref="pursueMissionIndicate" id="pursueMissionIndicate" alt="..." />
+          <img src={pursueMissionIndicate2} className="hidden playerImgs" ref="pursueMissionIndicate2" id="pursueMissionIndicate2" alt="..." />
+          <img src={retrieveMissionIndicate} className="hidden playerImgs" ref="retrieveMissionIndicate" id="retrieveMissionIndicate" alt="..." />
+          <img src={drowningIndicate} className="hidden playerImgs" ref="drowningIndicate" id="drowningIndicate" alt="..." />
+          <img src={destroyedItemIndicate} className="hidden playerImgs" ref="destroyedItemIndicate" id="destroyedItemIndicate" alt="..." />
+          <img src={pickupBuffIndicate} className="hidden playerImgs" ref="pickupBuffIndicate" id="pickupBuffIndicate" alt="..." />
+          <img src={pickupDebuffIndicate} className="hidden playerImgs" ref="pickupDebuffIndicate" id="pickupDebuffIndicate" alt="..." />
+          <img src={pickupWeaponIndicate} className="hidden playerImgs" ref="pickupWeaponIndicate" id="pickupWeaponIndicate" alt="..." />
+          <img src={dropWeaponIndicate} className="hidden playerImgs" ref="dropWeaponIndicate" id="dropWeaponIndicate" alt="..." />
+          <img src={dropArmorIndicate} className="hidden playerImgs" ref="dropArmorIndicate" id="dropArmorIndicate" alt="..." />
+          <img src={pickupArmorIndicate} className="hidden playerImgs" ref="pickupArmorIndicate" id="pickupArmorIndicate" alt="..." />
+          <img src={terrainSpeedupIndicate} className="hidden playerImgs" ref="terrainSpeedupIndicate" id="terrainSpeedupIndicate" alt="..." />
+          <img src={terrainSlowdownIndicate} className="hidden playerImgs" ref="terrainSlowdownIndicate" id="terrainSlowdownIndicate" alt="..." />
+          <img src={terrainInjuredIndicate} className="hidden playerImgs" ref="terrainInjuredIndicate" id="terrainInjuredIndicate" alt="..." />
+
+          <img src={sword} className='hidden playerImgs' ref="itemSword" id="itemSword" alt="logo" />
+          <img src={spear} className='hidden playerImgs' ref="itemSpear" id="itemSpear" alt="logo" />
+          <img src={bow} className='hidden playerImgs' ref="itemBow" id="itemBow" alt="logo" />
+          <img src={crossbow} className='hidden playerImgs' ref="itemCrossbow" id="itemCrossbow" alt="logo" />
+          <img src={boltNorth} className='hidden playerImgs' ref="itemBoltNorth" id="itemBoltNorth" alt="logo" />
+          <img src={boltSouth} className='hidden playerImgs' ref="itemBoltSouth" id="itemBoltSouth" alt="logo" />
+          <img src={boltEast} className='hidden playerImgs' ref="itemBoltEast" id="itemBoltEast" alt="logo" />
+          <img src={boltWest} className='hidden playerImgs' ref="itemBoltWest" id="itemBoltWest" alt="logo" />
+          <img src={ammo} className='hidden playerImgs' ref="itemAmmo" id="itemAmmo" alt="logo" />
+          <img src={mail1} className='hidden playerImgs' ref="itemMail1" id="itemMail1" alt="logo" />
+          <img src={mail2} className='hidden playerImgs' ref="itemMail2" id="itemMail2" alt="logo" />
+          <img src={mail3} className='hidden playerImgs' ref="itemMail3" id="itemMail3" alt="logo" />
+          <img src={greaves1} className='hidden playerImgs' ref="itemGreaves1" id="itemGreaves1" alt="logo" />
+          <img src={greaves2} className='hidden playerImgs' ref="itemGreaves2" id="itemGreaves2" alt="logo" />
+          <img src={greaves3} className='hidden playerImgs' ref="itemGreaves3" id="itemGreaves3" alt="logo" />
+          <img src={helmet1} className='hidden playerImgs' ref="itemHelmet1" id="itemHelmet1" alt="logo" />
+          <img src={hpUp} className='hidden playerImgs' ref="itemHpUp" id="itemHpUp" alt="logo" />
+          <img src={hpDown} className='hidden playerImgs' ref="itemHpDown" id="itemHpDown" alt="logo" />
+          <img src={spdUp} className='hidden playerImgs' ref="itemSpdUp" id="itemSpdUp" alt="logo" />
+          <img src={spdDown} className='hidden playerImgs' ref="itemSpdDown" id="itemSpdDown" alt="logo" />
+          <img src={strUp} className='hidden playerImgs' ref="itemStrUp" id="itemStrUp" alt="logo" />
+          <img src={strDown} className='hidden playerImgs' ref="itemStrDown" id="itemStrDown" alt="logo" />
+          <img src={focusUp} className='hidden playerImgs' ref="itemFocusUp" id="itemFocusUp" alt="logo" />
+          <img src={focusDown} className='hidden playerImgs' ref="itemFocusDown" id="itemFocusDown" alt="logo" />
 
 
-          <img src={sword} className='hidden playerImgs' ref="itemSword" alt="logo" />
-          <img src={spear} className='hidden playerImgs' ref="itemSpear" alt="logo" />
-          <img src={bow} className='hidden playerImgs' ref="itemBow" alt="logo" />
-          <img src={boltNorth} className='hidden playerImgs' ref="itemBoltNorth" alt="logo" />
-          <img src={boltSouth} className='hidden playerImgs' ref="itemBoltSouth" alt="logo" />
-          <img src={boltEast} className='hidden playerImgs' ref="itemBoltEast" alt="logo" />
-          <img src={boltWest} className='hidden playerImgs' ref="itemBoltWest" alt="logo" />
-          <img src={ammo} className='hidden playerImgs' ref="itemAmmo" alt="logo" />
-          <img src={mail1} className='hidden playerImgs' ref="itemMail1" alt="logo" />
-          <img src={mail2} className='hidden playerImgs' ref="itemMail2" alt="logo" />
-          <img src={mail3} className='hidden playerImgs' ref="itemMail3" alt="logo" />
-          <img src={greaves1} className='hidden playerImgs' ref="itemGreaves1" alt="logo" />
-          <img src={greaves2} className='hidden playerImgs' ref="itemGreaves2" alt="logo" />
-          <img src={greaves3} className='hidden playerImgs' ref="itemGreaves3" alt="logo" />
-          <img src={helmet1} className='hidden playerImgs' ref="itemHelmet1" alt="logo" />
-          <img src={hpUp} className='hidden playerImgs' ref="itemHpUp" alt="logo" />
-          <img src={hpDown} className='hidden playerImgs' ref="itemHpDown" alt="logo" />
-          <img src={spdUp} className='hidden playerImgs' ref="itemSpdUp" alt="logo" />
-          <img src={spdDown} className='hidden playerImgs' ref="itemSpdDown" alt="logo" />
-          <img src={strUp} className='hidden playerImgs' ref="itemStrUp" alt="logo" />
-          <img src={strDown} className='hidden playerImgs' ref="itemStrDown" alt="logo" />
-          <img src={focusUp} className='hidden playerImgs' ref="itemFocusUp" alt="logo" />
-          <img src={focusDown} className='hidden playerImgs' ref="itemFocusDown" alt="logo" />
+          <img src={playerImgIdleSheet} className='hidden playerImgs' ref="playerImgIdleSheet" id="playerImgIdleSheet" alt="logo" />
+          <img src={player2ImgIdleSheet} className='hidden playerImgs' ref="player2ImgIdleSheet" id="player2ImgIdleSheet" alt="logo" />
+          <img src={playerComAImgIdleSheet} className='hidden playerImgs' ref="playerComAImgIdleSheet" id="playerComAImgIdleSheet" alt="logo" />
+          <img src={playerComBImgIdleSheet} className='hidden playerImgs' ref="playerComBImgIdleSheet" id="playerComBImgIdleSheet" alt="logo" />
 
+          <img src={playerImgMoveSheet} className='hidden playerImgs' ref="playerImgMoveSheet" id="playerImgMoveSheet" alt="logo" />
+          <img src={player2ImgMoveSheet} className='hidden playerImgs' ref="player2ImgMoveSheet" id="player2ImgMoveSheet" alt="logo" />
+          <img src={comAImgMoveSheet} className='hidden playerImgs' ref="comAImgMoveSheet" id="comAImgMoveSheet" alt="logo" />
+          <img src={comBImgMoveSheet} className='hidden playerImgs' ref="comBImgMoveSheet" id="comBImgMoveSheet" alt="logo" />
 
-          <img src={playerImgIdleSheet} className='hidden playerImgs' ref="playerImgIdleSheet" alt="logo" />
-          <img src={player2ImgIdleSheet} className='hidden playerImgs' ref="player2ImgIdleSheet" alt="logo" />
-          <img src={playerComAImgIdleSheet} className='hidden playerImgs' ref="playerComAImgIdleSheet" alt="logo" />
-          <img src={playerComBImgIdleSheet} className='hidden playerImgs' ref="playerComBImgIdleSheet" alt="logo" />
+          <img src={player1DefendSheet} className='hidden playerImgs' ref="player1ImgDefendSheet" id="player1ImgDefendSheet" alt="logo" />
+          <img src={player2DefendSheet} className='hidden playerImgs' ref="player2ImgDefendSheet" id="player2ImgDefendSheet" alt="logo" />
+          <img src={comADefendSheet} className='hidden playerImgs' ref="comAImgDefendSheet" id="comAImgDefendSheet" alt="logo" />
+          <img src={comBDefendSheet} className='hidden playerImgs' ref="comBImgDefendSheet" id="comBImgDefendSheet" alt="logo" />
 
-          <img src={playerImgMoveSheet} className='hidden playerImgs' ref="playerImgMoveSheet" alt="logo" />
-          <img src={player2ImgMoveSheet} className='hidden playerImgs' ref="player2ImgMoveSheet" alt="logo" />
-          <img src={comAImgMoveSheet} className='hidden playerImgs' ref="comAImgMoveSheet" alt="logo" />
-          <img src={comBImgMoveSheet} className='hidden playerImgs' ref="comBImgMoveSheet" alt="logo" />
-
-          <img src={player1DefendSheet} className='hidden playerImgs' ref="player1ImgDefendSheet" alt="logo" />
-          <img src={player2DefendSheet} className='hidden playerImgs' ref="player2ImgDefendSheet" alt="logo" />
-          <img src={comADefendSheet} className='hidden playerImgs' ref="comAImgDefendSheet" alt="logo" />
-          <img src={comBDefendSheet} className='hidden playerImgs' ref="comBImgDefendSheet" alt="logo" />
-
-          <img src={player1AttackSheet} className='hidden playerImgs' ref="player1ImgAttackSheet" alt="logo" />
-          <img src={player2AttackSheet} className='hidden playerImgs' ref="player2ImgAttackSheet" alt="logo" />
-          <img src={comAAttackSheet} className='hidden playerImgs' ref="comAImgAttackSheet" alt="logo" />
-          <img src={comBAttackSheet} className='hidden playerImgs' ref="comBImgAttackSheet" alt="logo" />
+          <img src={player1AttackSheet} className='hidden playerImgs' ref="player1ImgAttackSheet" id="player1ImgAttackSheet" alt="logo" />
+          <img src={player2AttackSheet} className='hidden playerImgs' ref="player2ImgAttackSheet" id="player2ImgAttackSheet" alt="logo" />
+          <img src={comAAttackSheet} className='hidden playerImgs' ref="comAImgAttackSheet" id="comAImgAttackSheet" alt="logo" />
+          <img src={comBAttackSheet} className='hidden playerImgs' ref="comBImgAttackSheet" id="comBImgAttackSheet" alt="logo" />
 
 
         </div>
