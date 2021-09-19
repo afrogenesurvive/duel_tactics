@@ -573,6 +573,14 @@ const Settings = (props) => {
 
 
       <Form onSubmit={props.onConfirm} className="form">
+
+      <Form.Row className="formBtnRow">
+        <div className="btnSubCont">
+          <Button variant="success" type="submit" className="formBtn">Submit</Button>
+          <Button variant="danger" className="formBtn" onClick={props.onCancel}>Cancel</Button>
+        </div>
+      </Form.Row>
+
         <Form.Row>
           <Form.Group as={Col} controlId="gridSize" className="formGroup">
             <Form.Label className="formLabel">Grid Size:</Form.Label>

@@ -32,6 +32,10 @@ import attackUnarmedIndicate from './assets/items/unarmed.png';
 import attackBluntIndicate from './assets/indicators/blunt.png';
 import attackSuccessIndicate from './assets/indicators/attackSuccess.png';
 import defendIndicate from './assets/indicators/defend.png';
+import defendIndicate1 from './assets/indicators/defend3.png';
+import defendIndicate2 from './assets/indicators/defend4.png';
+import defendIndicate3 from './assets/indicators/defend5.png';
+import defendIndicate4 from './assets/indicators/defend6.png';
 import deflectIndicate from './assets/indicators/deflect.png';
 import deflectIndicate2 from './assets/indicators/deflect2.png';
 import deflectInjuredIndicate from './assets/indicators/deflectInjured2.png';
@@ -73,9 +77,15 @@ import pickupWeaponIndicate from './assets/indicators/pickupWeapon.png';
 import dropWeaponIndicate from './assets/indicators/dropWeapon.png';
 import dropArmorIndicate from './assets/indicators/dropArmor.png';
 import pickupArmorIndicate from './assets/indicators/pickupArmor.png';
+import pickupAmmoIndicate from './assets/indicators/pickupAmmo.png';
 import terrainSpeedupIndicate from './assets/indicators/terrainSpeedup.png';
 import terrainSlowdownIndicate from './assets/indicators/terrainSlowdown.png';
 import terrainInjuredIndicate from './assets/indicators/terrainInjured.png';
+import outOfStaminaIndicate from './assets/indicators/outOfStamina.png';
+import boltKilledIndicate from './assets/indicators/boltKilled.png';
+import attackParriedIndicate from './assets/indicators/attackParried.png';
+import inventoryFullIndicate from './assets/indicators/inventoryFull.png';
+import outOfAmmoIndicate from './assets/indicators/outOfAmmo.png';
 
 
 import mail1 from './assets/items/mail1.png';
@@ -426,7 +436,7 @@ class App extends Component {
         effect: '',
       },
     ];
-    this.disableInitItems = true;
+    this.disableInitItems = false;
     this.initItemList = [
       {
         name: 'moveSpeedUp',
@@ -508,7 +518,7 @@ class App extends Component {
       // },
     ];
     this.customItemPlacement = {
-      state: false,
+      state: true,
       cells: [
         {x:0 ,y:0 },
         {x:1 ,y:0 },
@@ -2909,6 +2919,8 @@ class App extends Component {
 
     this.restartGame();
 
+    this.placeItems({init: true, items: ''});
+
     if (aiPlayerNumber > 0) {
 
       this.loadAiSettings()
@@ -3980,6 +3992,10 @@ class App extends Component {
       player.action = 'deflected';
       player.success.deflected.count++
 
+      if (player.success.deflected.count <= 1 ) {
+        console.log('set popup here based on deflection type if count is @ 1 or 0');
+      }
+
 
       // if (player.ai.state === true) {
       //   player.ai.instructions = []
@@ -4200,6 +4216,19 @@ class App extends Component {
             ) {
               player.falling.state = true;
               player.action = 'falling';
+
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 15,
+                  type: '',
+                  position: '',
+                  msg: 'falling',
+                  img: '',
+
+                }
+              )
             }
 
           }
@@ -4341,6 +4370,19 @@ class App extends Component {
             ) {
               player.falling.state = true;
               player.action = 'falling';
+
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 15,
+                  type: '',
+                  position: '',
+                  msg: 'falling',
+                  img: '',
+
+                }
+              )
             }
 
           }
@@ -4504,6 +4546,11 @@ class App extends Component {
             count: 0,
             limit: player.defending.limit
           }
+
+          let defendPopup = player.popups.find(x=>x.msg.split("_")[0] === 'defending')
+          if (defendPopup) {
+            player.popups.splice(player.popups.findIndex(x=>x.msg === 'defending'),1)
+          }
           if (player.falling.state !== true && player.moving.state !== true) {
             player.action = 'idle';
           }
@@ -4572,6 +4619,7 @@ class App extends Component {
         }
 
 
+
         // CELL BY CELL MOVEMENT DELAY!
         if (player.newMoveDelay.state === true) {
           if (player.newMoveDelay.count < player.newMoveDelay.limit) {
@@ -4609,12 +4657,29 @@ class App extends Component {
             // console.log('attack wind up',player.attacking.count,'player',player.number);
             player.action = 'attacking';
             player.attacking.count++;
+
+            if (player.attacking.count === 2) {
+              player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 5,
+                    type: '',
+                    position: '',
+                    msg: 'attackStart',
+                    img: '',
+
+                  }
+                )
+            }
+
           }
 
 
           // TIME TO ATTACK IS NOW!
           if (player.attacking.count === attackPeak) {
             console.log('attack peak',player.attacking.count,'plyr',player.number);
+
 
 
             if (player.currentWeapon.type === 'crossbow' && player.items.ammo > 0) {
@@ -4688,6 +4753,19 @@ class App extends Component {
               }
               player.currentWeapon.effect = 'ammo+0'
 
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 15,
+                  type: '',
+                  position: '',
+                  msg: 'outOfAmmo',
+                  img: '',
+
+                }
+              )
+
             }
             else if (player.currentWeapon.type !== 'crossbow' ) {
 
@@ -4743,6 +4821,7 @@ class App extends Component {
               }
 
 
+
               // ATTACK PROJECTILES!!
               for (const bolt of this.projectiles) {
                 if (player.currentWeapon.type === 'spear') {
@@ -4751,6 +4830,19 @@ class App extends Component {
                     cellUnderAttack2.number.y === bolt.currentPosition.number.y
                   ) {
                     bolt.kill = true;
+
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 15,
+                        type: '',
+                        position: '',
+                        msg: 'boltKilled',
+                        img: '',
+
+                      }
+                    )
                   }
                 }
                 if (player.currentWeapon.type === 'sword') {
@@ -4759,6 +4851,19 @@ class App extends Component {
                     cellUnderAttack1.number.y === bolt.currentPosition.number.y
                   ) {
                     bolt.kill = true;
+
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 15,
+                        type: '',
+                        position: '',
+                        msg: 'boltKilled',
+                        img: '',
+
+                      }
+                    )
                   }
                 }
               }
@@ -4835,6 +4940,19 @@ class App extends Component {
                     if (singleHitChance === 1) {
                       let singleHit = this.rnJesus(1,2);
                     }
+
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: (this.attackAnimRef.limit.unarmed-this.attackAnimRef.peak.unarmed),
+                        type: '',
+                        position: '',
+                        msg: 'attackingUnarmed',
+                        img: '',
+
+                      }
+                    )
                   }
 
 
@@ -4852,6 +4970,19 @@ class App extends Component {
                       count: 1,
                       limit: this.players[player.number-1].statusDisplay.limit,
                     }
+
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
+                        type: '',
+                        position: '',
+                        msg: 'attackingBlunt',
+                        img: '',
+
+                      }
+                    )
                   }
                   else {
 
@@ -4877,6 +5008,8 @@ class App extends Component {
                       console.log('opponent has dodged you');
                       singleHit = 2;
                       doubleHit = 2;
+
+
                     }
                   }
 
@@ -4887,12 +5020,69 @@ class App extends Component {
                     this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 2;
                     player.attackStrength = 2;
                     this.attackedCancel(this.players[player.target.occupant.player-1])
+
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
+                        type: '',
+                        position: '',
+                        msg: 'attacking2',
+                        img: '',
+
+                      }
+                    )
+
+                    if (this.players[player.target.occupant.player-1].hp === 1) {
+                      this.players[player.target.occupant.player-1].popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 15,
+                          type: '',
+                          position: '',
+                          msg: 'injured',
+                          img: '',
+
+                        }
+                      )
+                    }
+
                   }
                   else if (singleHit === 1) {
                     console.log('single hit attack plyr ',player.number,'against plyr ',player.target.occupant.player);
                     this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
                     player.attackStrength = 1;
                     this.attackedCancel(this.players[player.target.occupant.player-1])
+
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
+                        type: '',
+                        position: '',
+                        msg: 'attacking1',
+                        img: '',
+
+                      }
+                    )
+
+                    if (this.players[player.target.occupant.player-1].hp === 1) {
+                      this.players[player.target.occupant.player-1].popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 15,
+                          type: '',
+                          position: '',
+                          msg: 'injured',
+                          img: '',
+
+                        }
+                      )
+                    }
                   }
 
 
@@ -4907,6 +5097,19 @@ class App extends Component {
                       count: 1,
                       limit: this.players[player.number-1].statusDisplay.limit,
                     }
+
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
+                        type: '',
+                        position: '',
+                        msg: 'missedAttack',
+                        img: '',
+
+                      }
+                    )
                   }
 
 
@@ -4961,6 +5164,19 @@ class App extends Component {
                       type: 'blunt attacked',
                     };
 
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 15,
+                        type: '',
+                        position: '',
+                        msg: 'attackingBlunt',
+                        img: '',
+
+                      }
+                    )
+
 
                     if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
                       this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
@@ -4975,6 +5191,18 @@ class App extends Component {
                 else {
                   console.log('attack defended by ',player.target.occupant.player,'against plyr ',player.number);
 
+                  player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 15,
+                      type: '',
+                      position: '',
+                      msg: 'attackDefended',
+                      img: '',
+
+                    }
+                  )
                   // if (this.players.[player.target.occupant.player-1].direction === player.direction) {
                   //   console.log('defend the rear!!');
                   // }
@@ -4988,6 +5216,19 @@ class App extends Component {
                     count: 1,
                     limit: this.players[player.target.occupant.player-1].success.defendSuccess.limit
                   }
+
+                  this.players[player.target.occupant.player-1].popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 15,
+                      type: '',
+                      position: '',
+                      msg: 'defendSuccess',
+                      img: '',
+
+                    }
+                  )
 
 
                   // UNARMED DAMAGE!
@@ -5053,6 +5294,18 @@ class App extends Component {
                       };
                       this.players[player.target.occupant.player-1].stamina.current = this.players[player.target.occupant.player-1].stamina.current - 3;
 
+                      this.players[player.target.occupant.player-1].popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 15,
+                          type: '',
+                          position: '',
+                          msg: 'guardBroken',
+                          img: '',
+
+                        }
+                      )
 
                       if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
                         this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
@@ -5091,6 +5344,19 @@ class App extends Component {
                       count: 1,
                       limit: this.players[player.number-1].statusDisplay.limit,
                     }
+
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 10,
+                        type: '',
+                        position: '',
+                        msg: 'attackParried',
+                        img: '',
+
+                      }
+                    )
                   }
                   else {
                     // console.log('off peak defend');
@@ -5103,6 +5369,19 @@ class App extends Component {
                       count: 1,
                       limit: this.players[player.number-1].statusDisplay.limit,
                     }
+
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 10,
+                        type: '',
+                        position: '',
+                        msg: 'attackDefended',
+                        img: '',
+
+                      }
+                    )
                   }
 
                   shouldDeflectPushBack = 1;
@@ -5222,16 +5501,62 @@ class App extends Component {
 
               // EMPTY TARGET STAMINA COST!
               else {
+
+                let weapon = player.currentWeapon.type
                 if (player.bluntAttack === true) {
+
                   player.stamina.current = player.stamina.current - this.staminaCostRef.attack.blunt;
+
+                  player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
+                      type: '',
+                      position: '',
+                      msg: 'attackingBlunt',
+                      img: '',
+
+                    }
+                  )
                 } else {
-                  let weapon = player.currentWeapon.type
+
                   if (weapon === '') {
-                    weapon = 'unarmed'
+                    weapon = 'unarmed';
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
+                        type: '',
+                        position: '',
+                        msg: 'attackingUnarmed',
+                        img: '',
+
+                      }
+                    )
+                  } else {
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
+                        type: '',
+                        position: '',
+                        msg: 'missedAttack',
+                        img: '',
+
+                      }
+                    )
                   }
                   player.stamina.current = player.stamina.current - this.staminaCostRef.attack[weapon];
+
+
                 }
-              }
+                }
+
+
+
 
 
               // DESTROY ITEMS!
@@ -5246,6 +5571,20 @@ class App extends Component {
                       count: 1,
                       limit: this.players[player.number-1].statusDisplay.limit,
                     }
+
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 15,
+                        type: '',
+                        position: '',
+                        msg: 'destroyedItem',
+                        img: '',
+
+                      }
+                    )
+
                     cell.item = {
                       name: '',
                       type: '',
@@ -5322,6 +5661,19 @@ class App extends Component {
               limit: player.defendDecay.limit,
             }
 
+            player.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: player.defendDecay.limit,
+                type: '',
+                position: '',
+                msg: 'defending_1',
+                img: '',
+
+              }
+            )
+
           } else {
             player.statusDisplay = {
               state: true,
@@ -5329,6 +5681,19 @@ class App extends Component {
               count: 1,
               limit: player.statusDisplay.limit,
             }
+
+            player.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: 15,
+                type: '',
+                position: '',
+                msg: 'outOfStamina',
+                img: '',
+
+              }
+            )
           }
 
         }
@@ -5338,6 +5703,20 @@ class App extends Component {
           if (player.defendDecay.state === true) {
             if (player.defendDecay.count < player.defendDecay.limit) {
               player.defendDecay.count++;
+
+              if (player.popups.find(x=>x.msg.split("_")[0] === 'defending')) {
+
+                if (player.defendDecay.count > 4 && player.defendDecay.count < 15) {
+                  player.popups.find(x=>x.msg.split("_")[0] === 'defending').msg = 'defending_2'
+                }
+                if (player.defendDecay.count > 14 && player.defendDecay.count < 20) {
+                  player.popups.find(x=>x.msg.split("_")[0] === 'defending').msg = 'defending_3'
+                }
+                if (player.defendDecay.count > 19 && player.defendDecay.count < player.defendDecay.limit) {
+                  player.popups.find(x=>x.msg.split("_")[0] === 'defending').msg = 'defending_4'
+                }
+
+              }
               // console.log('defend decay1',player.defendDecay.count);
             }
             if (player.defendDecay.count === player.defendDecay.limit-5) {
@@ -5354,7 +5733,9 @@ class App extends Component {
         if (player.defending.state !== true && player.defendDecay.state === true) {
           if (player.defendDecay.count < player.defendDecay.limit) {
             player.defendDecay.count++;
+
             // console.log('defend decay2',player.defendDecay.count);
+            // console.log('defend decay3',player.defendDecay.limit);
           }
           if (player.defendDecay.count >= player.defendDecay.limit) {
 
@@ -5546,6 +5927,19 @@ class App extends Component {
               }
               player.items.weaponIndex = newIndex;
               player.currentWeapon = player.items.weapons[newIndex]
+
+              player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 15,
+                    type: '',
+                    position: '',
+                    msg: player.items.weapons[newIndex].type,
+                    img: '',
+
+                  }
+                )
               // console.log(player.items.weapons,player.currentWeapon,newIndex,player.items.weapons[newIndex]);
 
             }
@@ -5561,6 +5955,19 @@ class App extends Component {
                 count: 1,
                 limit: this.players[player.number-1].statusDisplay.limit,
               }
+
+              player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 15,
+                    type: '',
+                    position: '',
+                    msg: 'stop',
+                    img: '',
+
+                  }
+                )
             }
 
             player.cycleWeapon = {
@@ -5657,6 +6064,19 @@ class App extends Component {
               player.items.armorIndex = newIndex;
               player.currentArmor = player.items.armor[newIndex]
 
+              player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 15,
+                    type: '',
+                    position: '',
+                    msg: player.items.armor[newIndex].type,
+                    img: '',
+
+                  }
+                )
+
             }
             if (
               this.keyPressed[player.number-1].cycleArmor === true &&
@@ -5669,6 +6089,19 @@ class App extends Component {
                 count: 1,
                 limit: this.players[player.number-1].statusDisplay.limit,
               }
+
+              player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 15,
+                    type: '',
+                    position: '',
+                    msg: 'stop',
+                    img: '',
+
+                  }
+                )
             }
 
             player.cycleArmor = {
@@ -6472,6 +6905,8 @@ class App extends Component {
 
                 }
 
+
+
               }
               else {
                 player.statusDisplay = {
@@ -6495,13 +6930,41 @@ class App extends Component {
                     count: 1,
                     limit: player.statusDisplay.limit,
                   }
+
+                  player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 15,
+                        type: '',
+                        position: '',
+                        msg: 'stop',
+                        img: '',
+
+                      }
+                    )
+
+
                 } else {
-                  if (player.defending.count === 0) {
+                  if (player.defending.count === 0 && player.defendDecay.state !== true) {
                     player.defending = {
                       state: false,
                       count: 1,
                       limit: player.defending.limit,
                     }
+
+                    player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 5,
+                          type: '',
+                          position: '',
+                          msg: 'preAction1',
+                          img: '',
+
+                        }
+                      )
                   } else {
                     // console.log('cant start defend. might already be in progress');
                   }
@@ -6576,16 +7039,24 @@ class App extends Component {
 
       let popupImageRef = {
         attackStart: this.refs.preAttackIndicate,
+        preAction1: this.refs.preAction1Indicate,
+        preAction2: this.refs.preAction2Indicate,
         attacking1: this.refs.attack1Indicate,
         attacking2: this.refs.attack2Indicate,
-        attackingBlunt: this.attackBluntIndicate2,
+        missedAttack: this.refs.attack3Indicate,
+        attackingBlunt: this.refs.attackBluntIndicate2,
         attackingUnarmed: this.refs.attackUnarmedIndicate,
         attacked1: this.refs.attack1Indicate,
         attacked2: this.refs.attack2Indicate,
         attackDefended: this.refs.attackBreakIndicate,
+        attackParried: this.refs.attackParriedIndicate,
+        boltKilled: this.refs.boltKilledIndicate,
         attackCancelled: this.refs.attackBreakIndicate,
         injured: this.refs.deflectInjuredIndicate,
-        defending: this.refs.defendIndicate,
+        defending_1: this.refs.defendIndicate1,
+        defending_2: this.refs.defendIndicate2,
+        defending_3: this.refs.defendIndicate3,
+        defending_4: this.refs.defendIndicate4,
         defendSuccess: this.refs.defendSuccessIndicate,
         guardBroken: this.refs.defendBreakIndicate,
         deflected: this.refs.deflectBluntIndicate,
@@ -6594,12 +7065,14 @@ class App extends Component {
         flanking: this.refs.flankIndicate,
         pushedBack: this.refs.pushbackIndicate,
         falling: this.refs.fallingIndicate,
-        engaging: this.refs.deflectIndicate2,
-        pursuing: this.refs.pursueMissionIndicate2,
-        retrieving: this.refs.retrieveMissionIndicate,
-        defending: this.refs.defendMissionIndicate,
-        patrolling: this.refs.patrolMissionIndicate,
-        retreating: this.refs.retreatIndicate,
+        outOfStamina: this.refs.outOfStaminaIndicate,
+        outOfAmmo: this.refs.outOfAmmoIndicate,
+        missionEngage: this.refs.deflectIndicate2,
+        missionPursue: this.refs.pursueMissionIndicate2,
+        missionRetrieve: this.refs.retrieveMissionIndicate,
+        missionDefend: this.refs.defendMissionIndicate,
+        missionPatrol: this.refs.patrolMissionIndicate,
+        missionRetreat: this.refs.retreatIndicate,
         missionEnroute: this.refs.enrouteIndicate,
         missionComplete: this.refs.completeMissionIndicate,
         thinking: this.refs.thinkingIndicate,
@@ -6610,14 +7083,19 @@ class App extends Component {
         passiveMode: this.refs.passiveModeIndicate,
         pickupWeapon: this.refs.pickupWeaponIndicate,
         pickupArmor: this.refs.pickupArmorIndicate,
+        dropWeapon: this.refs.dropWeaponIndicate,
+        dropArmor: this.refs.dropArmorIndicate,
         pickupBuff: this.refs.pickupBuffIndicate,
         pickupDebuff: this.refs.pickupDebuffIndicate,
+        pickupAmmo: this.refs.pickupAmmoIndicate,
+        inventoryFull: this.refs.inventoryFullIndicate,
+        stop: this.refs.boltDefendIndicate,
         dropWeapon: this.refs.dropWeaponIndicate,
         dropArmor: this.refs.dropArmorIndicate,
         drowning: this.refs.drowningIndicate,
         terrainSlowdown: this.refs.terrainSlowdownIndicate,
         terrainSpeedup: this.refs.terrainSpeedupIndicate,
-        terrainIjured: this.refs.terrainInjuredIndicate,
+        terrainInjured: this.refs.terrainInjuredIndicate,
         destroyedItem: this.refs.destroyedItemIndicate,
         sword: this.refs.itemSword,
         spear: this.refs.itemSpear,
@@ -6629,29 +7107,40 @@ class App extends Component {
       };
 
       if (this.time === 100) {
-        let indx = 1;
-        for (const [key, value] of Object.entries(popupImageRef)) {
-          player.popups.push(
-            {
-              state: false,
-              count: 0,
-              limit: indx*10,
-              type: '',
-              position: '',
-              msg: key,
-              img: '',
 
-            }
-          )
-          indx++
-        }
+        // let indx = 1;
+        // for (const [key, value] of Object.entries(popupImageRef)) {
+        //   player.popups.push(
+        //     {
+        //       state: false,
+        //       count: 0,
+        //       limit: 100,
+        //       type: '',
+        //       position: '',
+        //       msg: 'outOfStamina',
+        //       img: '',
+        //
+        //     }
+        //   )
+        //   indx++
+        // }
         // console.log('player.popups',player.popups);
+
+        player.popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 100,
+            type: '',
+            position: '',
+            msg: 'outOfStamina',
+            img: '',
+
+          }
+        )
       }
 
     }
-
-
-
 
     if (player.popups.length > 0) {
 
@@ -6941,7 +7430,6 @@ class App extends Component {
         }
       }
     }
-
     if (this.boltDeflectAnim.state === true) {
       if (this.boltDeflectAnim.count < this.boltDeflectAnim.limit) {
         this.boltDeflectAnim.count++;
@@ -7984,7 +8472,7 @@ class App extends Component {
 
             if (plyr.pushBack.state === true) {
 
-              context.drawImage(indicatorImgs.pushback, point.x-20, point.y-20, 35,35);
+              // context.drawImage(indicatorImgs.pushback, point.x-20, point.y-20, 35,35);
             }
 
           }
@@ -7999,10 +8487,10 @@ class App extends Component {
               if (plyr.attacking.state === true) {
                 // console.log('ff atk',plyr.action ,finalAnimIndex,'plyr #', player.number);
 
-                if (plyr.attacking.count > 0 && plyr.attacking.count < 3) {
-                  // console.log('ff atk pre',plyr.action ,finalAnimIndex,'plyr #', player.number,'time',this.time);
-                  context.drawImage(indicatorImgs.preAttack, point.x-35, point.y-35, 35,35);
-                }
+                // if (plyr.attacking.count > 0 && plyr.attacking.count < 3) {
+                //   // console.log('ff atk pre',plyr.action ,finalAnimIndex,'plyr #', player.number,'time',this.time);
+                //   context.drawImage(indicatorImgs.preAttack, point.x-35, point.y-35, 35,35);
+                // }
 
                 let attackPeak = this.attackAnimRef.peak.sword;
                 if (player.currentWeapon.type === 'spear') {
@@ -8030,20 +8518,20 @@ class App extends Component {
                     // context.rect(20, 20, 150, 100);
                     // context.stroke();
 
-                    context.drawImage(indicatorImgs.attack1, point.x-35, point.y-35, 35,35);
+                    // context.drawImage(indicatorImgs.attack1, point.x-35, point.y-35, 35,35);
                   }
                   if (plyr.attackStrength === 2) {
-                    context.drawImage(indicatorImgs.attack2, point.x-35, point.y-35, 35,35);
+                    // context.drawImage(indicatorImgs.attack2, point.x-35, point.y-35, 35,35);
                   }
                   if (plyr.bluntAttack === true) {
-                    context.drawImage(indicatorImgs.attackBlunt, point.x-35, point.y-35, 35,35);
+                    // context.drawImage(indicatorImgs.attackBlunt, point.x-35, point.y-35, 35,35);
                   }
                   if (plyr.currentWeapon.type === '') {
-                    context.drawImage(indicatorImgs.attackUnarmed, point.x-35, point.y-35, 35,35);
+                    // context.drawImage(indicatorImgs.attackUnarmed, point.x-35, point.y-35, 35,35);
                   }
 
                   else if (plyr.currentWeapon.type !== '') {
-                    context.drawImage(indicatorImgs.attack3, point.x-35, point.y-35, 35,35);
+                    // context.drawImage(indicatorImgs.attack3, point.x-35, point.y-35, 35,35);
                   }
                 }
 
@@ -8060,7 +8548,7 @@ class App extends Component {
               }
 
               if (plyr.defending.count > 0 && plyr.defending.count < plyr.defending.limit ) {
-                context2.drawImage(indicatorImgs.preAttack, point.x-35, point.y-35, 35,35);
+                // context2.drawImage(indicatorImgs.preAttack, point.x-35, point.y-35, 35,35);
               }
               // context.fillStyle = 'white';
               // context.beginPath();
@@ -8649,213 +9137,213 @@ class App extends Component {
               context.drawImage(indicatorImgs.ghost, plyr.ghost.position.cell.center.x-20, plyr.ghost.position.cell.center.y-20, 25,25);
             }
           }
-          if (plyr.itemDrop.state === true && plyr.dead.state !== true) {
-            if (plyr.itemDrop.gear.type === '' && plyr.itemDrop.item.name === '') {
-              // console.log('nothing to drop');
-            }
-            else {
-              let itemImg2;
-              let fillClr2;
-              if (plyr.itemDrop.item.name === '' && plyr.itemDrop.gear.type !== '') {
-                // console.log('drop a weapon or armor',plyr.itemDrop.gear.type);
-                switch(plyr.itemDrop.gear.type) {
-                  case 'sword' :
-                    fillClr2 = "orange";
-                    itemImg2 = itemImgs[plyr.itemDrop.gear.type];
-                  break;
-                  case 'spear' :
-                    fillClr2 = "maroon";
-                    itemImg2 = itemImgs[plyr.itemDrop.gear.type];
-                  break;
-                  case 'crossbow' :
-                    fillClr2 = "navy";
-                    itemImg2 = itemImgs[plyr.itemDrop.gear.type];
-                  break;
-                  case 'helmet' :
-                    fillClr2 = "grey";
-                    itemImg2 = itemImgs[plyr.itemDrop.gear.type];
-                  break;
-                  case 'mail' :
-                    fillClr2 = "olive";
-                    itemImg2 = itemImgs[plyr.itemDrop.gear.type];
-                  break;
-                  case 'greaves' :
-                    fillClr2 = "#b5179e";
-                    itemImg2 = itemImgs[plyr.itemDrop.gear.type];
-                  break;
-                }
-              }
-              else if (plyr.itemDrop.gear.type === '' && plyr.itemDrop.item.name !== '') {
-                // console.log('drop an item',plyr.itemDrop.item.name);
-                switch(plyr.itemDrop.item.name) {
-                  case 'moveSpeedUp' :
-                    fillClr2 = "purple";
-                    itemImg2 = itemImgs[plyr.itemDrop.item.name];
-                  break;
-                  case 'moveSpeedDown' :
-                    fillClr2 = "blue";
-                    itemImg2 = itemImgs[plyr.itemDrop.item.name];
-                  break;
-                  case 'hpUp' :
-                    fillClr2 = "yellow";
-                    itemImg2 = itemImgs[plyr.itemDrop.item.name];
-                  break;
-                  case 'hpDown' :
-                    fillClr2 = "brown";
-                    itemImg2 = itemImgs[plyr.itemDrop.item.name];
-                  break;
-                  case 'focusUp' :
-                    fillClr2 = "white";
-                    itemImg2 = itemImgs[plyr.itemDrop.item.name];
-                  break;
-                  case 'focusDown' :
-                    fillClr2 = "black";
-                    itemImg2 = itemImgs[plyr.itemDrop.item.name];
-                  break;
-                  case 'strengthUp' :
-                    fillClr2 = "green";
-                    itemImg2 = itemImgs[plyr.itemDrop.item.name];
-                  break;
-                  case 'strengthDown' :
-                    fillClr2 = "red";
-                    itemImg2 = itemImgs[plyr.itemDrop.item.name];
-                  break;
-                  case 'ammo5' :
-                    fillClr2 = "#283618";
-                    itemImg2 = itemImgs[plyr.itemDrop.item.name];
-                  break;
-                  case 'ammo10' :
-                    fillClr2 = "#283618";
-                    itemImg2 = itemImgs[plyr.itemDrop.item.name];
-                  break;
-                }
-              }
-
-              if (plyr.itemDrop.count < 4) {
-
-                let pos = plyr.currentPosition.cell.center;
-                // console.log('drawing item drop',itemImg2);
-                // context.fillStyle = fillClr2;
-                // context.beginPath();
-                // context.arc(pos.x-10, pos.y, 10, 0, 2 * Math.PI);
-                // context.fill();
-
-                // context.drawImage(itemImg2, pos.x-10, pos.y);
-              }
-              if (plyr.itemDrop.count > 3) {
-
-                let pos = plyr.currentPosition.cell.center;
-                // console.log('drawing item drop',itemImg2,'pos',pos);
-                // context.fillStyle = fillClr2;
-                // context.beginPath();
-                // context.arc(pos.x-10, pos.y+(plyr.itemDrop.count*2), 10, 0, 2 * Math.PI);
-                // context.fill();
-
-                context.drawImage(itemImg2, pos.x-10, pos.y+(plyr.itemDrop.count*2));
-              }
-            }
-
-          }
-          if (plyr.itemPickup.state === true) {
-            let itemImg3;
-            let fillClr3;
-            if (plyr.itemPickup.item.name === '') {
-              // console.log('Pickup a weapon or armor',plyr.itemPickup.gear.type);
-              switch(plyr.itemPickup.gear.type) {
-                case 'sword' :
-                  fillClr3 = "orange";
-                  itemImg3 = itemImgs[plyr.itemPickup.gear.type];
-                break;
-                case 'spear' :
-                  fillClr3 = "maroon";
-                  itemImg3 = itemImgs[plyr.itemPickup.gear.type];
-                break;
-                case 'crossbow' :
-                  fillClr3 = "navy";
-                  itemImg3 = itemImgs[plyr.itemPickup.gear.type];
-                break;
-                case 'helmet' :
-                  fillClr3 = "grey";
-                  itemImg3 = itemImgs[plyr.itemPickup.gear.type];
-                break;
-                case 'mail' :
-                  fillClr3 = "olive";
-                  itemImg3 = itemImgs[plyr.itemPickup.gear.type];
-                break;
-                case 'greaves' :
-                  fillClr3 = "#b5179e";
-                  itemImg3 = itemImgs[plyr.itemPickup.gear.type];
-                break;
-              }
-            }
-            else if (plyr.itemPickup.gear.type === '') {
-              // console.log('Pickup an item');
-              switch(plyr.itemPickup.item.name) {
-                case 'moveSpeedUp' :
-                  fillClr3 = "purple";
-                  itemImg3 = itemImgs[plyr.itemPickup.item.name];
-                break;
-                case 'moveSpeedDown' :
-                  fillClr3 = "blue";
-                  itemImg3 = itemImgs[plyr.itemPickup.item.name];
-                break;
-                case 'hpUp' :
-                  fillClr3 = "yellow";
-                  itemImg3 = itemImgs[plyr.itemPickup.item.name];
-                break;
-                case 'hpDown' :
-                  fillClr3 = "brown";
-                  itemImg3 = itemImgs[plyr.itemPickup.item.name];
-                break;
-                case 'focusUp' :
-                  fillClr3 = "white";
-                  itemImg3 = itemImgs[plyr.itemPickup.item.name];
-                break;
-                case 'focusDown' :
-                  fillClr3 = "black";
-                  itemImg3 = itemImgs[plyr.itemPickup.item.name];
-                break;
-                case 'strengthUp' :
-                  fillClr3 = "green";
-                  itemImg3 = itemImgs[plyr.itemPickup.item.name];
-                break;
-                case 'strengthDown' :
-                  fillClr3 = "red";
-                  itemImg3 = itemImgs[plyr.itemPickup.item.name];
-                break;
-                case 'ammo5' :
-                  fillClr3 = "#283618";
-                  itemImg3 = itemImgs[plyr.itemPickup.item.name];
-                break;
-                case 'ammo10' :
-                  fillClr3 = "#283618";
-                  itemImg3 = itemImgs[plyr.itemPickup.item.name];
-                break;
-              }
-            }
-            if (plyr.itemPickup.count < 4) {
-
-              let pos = plyr.currentPosition.cell.center;
-              // console.log('drawing item pickup',itemImg3,gridInfoCell.item.subType,gridInfoCell.item.name);
-              // context.fillStyle = fillClr3;
-              // context.beginPath();
-              // context.arc(pos.x-10, pos.y, 10, 0, 2 * Math.PI);
-              // context.fill();
-
-              context.drawImage(itemImg3, pos.x-10, pos.y);
-            }
-            if (plyr.itemPickup.count > 3) {
-
-              let pos = plyr.currentPosition.cell.center;
-              // console.log('drawing item pickup',itemImg3,gridInfoCell.item.subType,gridInfoCell.item.name);
-              // context.fillStyle = fillClr3;
-              // context.beginPath();
-              // context.arc(pos.x-10, pos.y-(plyr.itemPickup.count*2), 10, 0, 2 * Math.PI);
-              // context.fill();
-
-              context.drawImage(itemImg3, pos.x-10, pos.y-(plyr.itemPickup.count*2));
-            }
-          }
+          // if (plyr.itemDrop.state === true && plyr.dead.state !== true) {
+          //   if (plyr.itemDrop.gear.type === '' && plyr.itemDrop.item.name === '') {
+          //     // console.log('nothing to drop');
+          //   }
+          //   else {
+          //     let itemImg2;
+          //     let fillClr2;
+          //     if (plyr.itemDrop.item.name === '' && plyr.itemDrop.gear.type !== '') {
+          //       // console.log('drop a weapon or armor',plyr.itemDrop.gear.type);
+          //       switch(plyr.itemDrop.gear.type) {
+          //         case 'sword' :
+          //           fillClr2 = "orange";
+          //           itemImg2 = itemImgs[plyr.itemDrop.gear.type];
+          //         break;
+          //         case 'spear' :
+          //           fillClr2 = "maroon";
+          //           itemImg2 = itemImgs[plyr.itemDrop.gear.type];
+          //         break;
+          //         case 'crossbow' :
+          //           fillClr2 = "navy";
+          //           itemImg2 = itemImgs[plyr.itemDrop.gear.type];
+          //         break;
+          //         case 'helmet' :
+          //           fillClr2 = "grey";
+          //           itemImg2 = itemImgs[plyr.itemDrop.gear.type];
+          //         break;
+          //         case 'mail' :
+          //           fillClr2 = "olive";
+          //           itemImg2 = itemImgs[plyr.itemDrop.gear.type];
+          //         break;
+          //         case 'greaves' :
+          //           fillClr2 = "#b5179e";
+          //           itemImg2 = itemImgs[plyr.itemDrop.gear.type];
+          //         break;
+          //       }
+          //     }
+          //     else if (plyr.itemDrop.gear.type === '' && plyr.itemDrop.item.name !== '') {
+          //       // console.log('drop an item',plyr.itemDrop.item.name);
+          //       switch(plyr.itemDrop.item.name) {
+          //         case 'moveSpeedUp' :
+          //           fillClr2 = "purple";
+          //           itemImg2 = itemImgs[plyr.itemDrop.item.name];
+          //         break;
+          //         case 'moveSpeedDown' :
+          //           fillClr2 = "blue";
+          //           itemImg2 = itemImgs[plyr.itemDrop.item.name];
+          //         break;
+          //         case 'hpUp' :
+          //           fillClr2 = "yellow";
+          //           itemImg2 = itemImgs[plyr.itemDrop.item.name];
+          //         break;
+          //         case 'hpDown' :
+          //           fillClr2 = "brown";
+          //           itemImg2 = itemImgs[plyr.itemDrop.item.name];
+          //         break;
+          //         case 'focusUp' :
+          //           fillClr2 = "white";
+          //           itemImg2 = itemImgs[plyr.itemDrop.item.name];
+          //         break;
+          //         case 'focusDown' :
+          //           fillClr2 = "black";
+          //           itemImg2 = itemImgs[plyr.itemDrop.item.name];
+          //         break;
+          //         case 'strengthUp' :
+          //           fillClr2 = "green";
+          //           itemImg2 = itemImgs[plyr.itemDrop.item.name];
+          //         break;
+          //         case 'strengthDown' :
+          //           fillClr2 = "red";
+          //           itemImg2 = itemImgs[plyr.itemDrop.item.name];
+          //         break;
+          //         case 'ammo5' :
+          //           fillClr2 = "#283618";
+          //           itemImg2 = itemImgs[plyr.itemDrop.item.name];
+          //         break;
+          //         case 'ammo10' :
+          //           fillClr2 = "#283618";
+          //           itemImg2 = itemImgs[plyr.itemDrop.item.name];
+          //         break;
+          //       }
+          //     }
+          //
+          //     if (plyr.itemDrop.count < 4) {
+          //
+          //       let pos = plyr.currentPosition.cell.center;
+          //       // console.log('drawing item drop',itemImg2);
+          //       // context.fillStyle = fillClr2;
+          //       // context.beginPath();
+          //       // context.arc(pos.x-10, pos.y, 10, 0, 2 * Math.PI);
+          //       // context.fill();
+          //
+          //       // context.drawImage(itemImg2, pos.x-10, pos.y);
+          //     }
+          //     if (plyr.itemDrop.count > 3) {
+          //
+          //       let pos = plyr.currentPosition.cell.center;
+          //       // console.log('drawing item drop',itemImg2,'pos',pos);
+          //       // context.fillStyle = fillClr2;
+          //       // context.beginPath();
+          //       // context.arc(pos.x-10, pos.y+(plyr.itemDrop.count*2), 10, 0, 2 * Math.PI);
+          //       // context.fill();
+          //
+          //       context.drawImage(itemImg2, pos.x-10, pos.y+(plyr.itemDrop.count*2));
+          //     }
+          //   }
+          //
+          // }
+          // if (plyr.itemPickup.state === true) {
+          //   let itemImg3;
+          //   let fillClr3;
+          //   if (plyr.itemPickup.item.name === '') {
+          //     // console.log('Pickup a weapon or armor',plyr.itemPickup.gear.type);
+          //     switch(plyr.itemPickup.gear.type) {
+          //       case 'sword' :
+          //         fillClr3 = "orange";
+          //         itemImg3 = itemImgs[plyr.itemPickup.gear.type];
+          //       break;
+          //       case 'spear' :
+          //         fillClr3 = "maroon";
+          //         itemImg3 = itemImgs[plyr.itemPickup.gear.type];
+          //       break;
+          //       case 'crossbow' :
+          //         fillClr3 = "navy";
+          //         itemImg3 = itemImgs[plyr.itemPickup.gear.type];
+          //       break;
+          //       case 'helmet' :
+          //         fillClr3 = "grey";
+          //         itemImg3 = itemImgs[plyr.itemPickup.gear.type];
+          //       break;
+          //       case 'mail' :
+          //         fillClr3 = "olive";
+          //         itemImg3 = itemImgs[plyr.itemPickup.gear.type];
+          //       break;
+          //       case 'greaves' :
+          //         fillClr3 = "#b5179e";
+          //         itemImg3 = itemImgs[plyr.itemPickup.gear.type];
+          //       break;
+          //     }
+          //   }
+          //   else if (plyr.itemPickup.gear.type === '') {
+          //     // console.log('Pickup an item');
+          //     switch(plyr.itemPickup.item.name) {
+          //       case 'moveSpeedUp' :
+          //         fillClr3 = "purple";
+          //         itemImg3 = itemImgs[plyr.itemPickup.item.name];
+          //       break;
+          //       case 'moveSpeedDown' :
+          //         fillClr3 = "blue";
+          //         itemImg3 = itemImgs[plyr.itemPickup.item.name];
+          //       break;
+          //       case 'hpUp' :
+          //         fillClr3 = "yellow";
+          //         itemImg3 = itemImgs[plyr.itemPickup.item.name];
+          //       break;
+          //       case 'hpDown' :
+          //         fillClr3 = "brown";
+          //         itemImg3 = itemImgs[plyr.itemPickup.item.name];
+          //       break;
+          //       case 'focusUp' :
+          //         fillClr3 = "white";
+          //         itemImg3 = itemImgs[plyr.itemPickup.item.name];
+          //       break;
+          //       case 'focusDown' :
+          //         fillClr3 = "black";
+          //         itemImg3 = itemImgs[plyr.itemPickup.item.name];
+          //       break;
+          //       case 'strengthUp' :
+          //         fillClr3 = "green";
+          //         itemImg3 = itemImgs[plyr.itemPickup.item.name];
+          //       break;
+          //       case 'strengthDown' :
+          //         fillClr3 = "red";
+          //         itemImg3 = itemImgs[plyr.itemPickup.item.name];
+          //       break;
+          //       case 'ammo5' :
+          //         fillClr3 = "#283618";
+          //         itemImg3 = itemImgs[plyr.itemPickup.item.name];
+          //       break;
+          //       case 'ammo10' :
+          //         fillClr3 = "#283618";
+          //         itemImg3 = itemImgs[plyr.itemPickup.item.name];
+          //       break;
+          //     }
+          //   }
+          //   if (plyr.itemPickup.count < 4) {
+          //
+          //     let pos = plyr.currentPosition.cell.center;
+          //     // console.log('drawing item pickup',itemImg3,gridInfoCell.item.subType,gridInfoCell.item.name);
+          //     // context.fillStyle = fillClr3;
+          //     // context.beginPath();
+          //     // context.arc(pos.x-10, pos.y, 10, 0, 2 * Math.PI);
+          //     // context.fill();
+          //
+          //     context.drawImage(itemImg3, pos.x-10, pos.y);
+          //   }
+          //   if (plyr.itemPickup.count > 3) {
+          //
+          //     let pos = plyr.currentPosition.cell.center;
+          //     // console.log('drawing item pickup',itemImg3,gridInfoCell.item.subType,gridInfoCell.item.name);
+          //     // context.fillStyle = fillClr3;
+          //     // context.beginPath();
+          //     // context.arc(pos.x-10, pos.y-(plyr.itemPickup.count*2), 10, 0, 2 * Math.PI);
+          //     // context.fill();
+          //
+          //     context.drawImage(itemImg3, pos.x-10, pos.y-(plyr.itemPickup.count*2));
+          //   }
+          // }
 
           this.players[plyr.number-1] = plyr;
 
@@ -8865,19 +9353,28 @@ class App extends Component {
           // POPUPS
 
           if (x === this.gridWidth && y === this.gridWidth ) {
+            // console.log(this.refs.pickupAmmo);
 
             let popupImageRef = {
               attackStart: this.refs.preAttackIndicate,
+              preAction1: this.refs.preAction1Indicate,
+              preAction2: this.refs.preAction2Indicate,
               attacking1: this.refs.attack1Indicate,
               attacking2: this.refs.attack2Indicate,
+              missedAttack: this.refs.attack3Indicate,
               attackingBlunt: this.refs.attackBluntIndicate2,
               attackingUnarmed: this.refs.attackUnarmedIndicate,
               attacked1: this.refs.attack1Indicate,
               attacked2: this.refs.attack2Indicate,
               attackDefended: this.refs.attackBreakIndicate,
+              attackParried: this.refs.attackParriedIndicate,
+              boltKilled: this.refs.boltKilledIndicate,
               attackCancelled: this.refs.attackBreakIndicate,
               injured: this.refs.deflectInjuredIndicate,
-              defending: this.refs.defendIndicate,
+              defending_1: this.refs.defendIndicate1,
+              defending_2: this.refs.defendIndicate2,
+              defending_3: this.refs.defendIndicate3,
+              defending_4: this.refs.defendIndicate4,
               defendSuccess: this.refs.defendSuccessIndicate,
               guardBroken: this.refs.defendBreakIndicate,
               deflected: this.refs.deflectBluntIndicate,
@@ -8886,12 +9383,14 @@ class App extends Component {
               flanking: this.refs.flankIndicate,
               pushedBack: this.refs.pushbackIndicate,
               falling: this.refs.fallingIndicate,
-              engaging: this.refs.deflectIndicate2,
-              pursuing: this.refs.pursueMissionIndicate2,
-              retrieving: this.refs.retrieveMissionIndicate,
-              defending: this.refs.defendMissionIndicate,
-              patrolling: this.refs.patrolMissionIndicate,
-              retreating: this.refs.retreatIndicate,
+              outOfStamina: this.refs.outOfStaminaIndicate,
+              outOfAmmo: this.refs.outOfAmmoIndicate,
+              missionEngage: this.refs.deflectIndicate2,
+              missionPursue: this.refs.pursueMissionIndicate2,
+              missionRetrieve: this.refs.retrieveMissionIndicate,
+              missionDefend: this.refs.defendMissionIndicate,
+              missionPatrol: this.refs.patrolMissionIndicate,
+              missionRetreat: this.refs.retreatIndicate,
               missionEnroute: this.refs.enrouteIndicate,
               missionComplete: this.refs.completeMissionIndicate,
               thinking: this.refs.thinkingIndicate,
@@ -8902,14 +9401,19 @@ class App extends Component {
               passiveMode: this.refs.passiveModeIndicate,
               pickupWeapon: this.refs.pickupWeaponIndicate,
               pickupArmor: this.refs.pickupArmorIndicate,
+              dropWeapon: this.refs.dropWeaponIndicate,
+              dropArmor: this.refs.dropArmorIndicate,
               pickupBuff: this.refs.pickupBuffIndicate,
               pickupDebuff: this.refs.pickupDebuffIndicate,
+              pickupAmmo: this.refs.pickupAmmoIndicate,
+              inventoryFull: this.refs.inventoryFullIndicate,
+              stop: this.refs.boltDefendIndicate,
               dropWeapon: this.refs.dropWeaponIndicate,
               dropArmor: this.refs.dropArmorIndicate,
               drowning: this.refs.drowningIndicate,
               terrainSlowdown: this.refs.terrainSlowdownIndicate,
               terrainSpeedup: this.refs.terrainSpeedupIndicate,
-              terrainIjured: this.refs.terrainInjuredIndicate,
+              terrainInjured: this.refs.terrainInjuredIndicate,
               destroyedItem: this.refs.destroyedItemIndicate,
               sword: this.refs.itemSword,
               spear: this.refs.itemSpear,
@@ -9080,7 +9584,7 @@ class App extends Component {
                     drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor)
                     // context.fillStyle = 'black';
                     // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
-                    console.log('popup.img',popup.img,'popup.msg',popup.msg);
+                    // console.log('popup.msg',popup.msg);
                     context.drawImage(popup.img, popupDrawCoords.origin.x+5,popupDrawCoords.origin.y+5,26,26);
                   }
                   else {
@@ -9134,7 +9638,7 @@ class App extends Component {
                       drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor)
                       // context.fillStyle = 'black';
                       // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
-                      console.log('popup.img',popup.img,'popup.msg',popup.msg);
+                      // console.log('popup.msg',popup.msg);
                     context.drawImage(popup.img, popupDrawCoords.origin.x+5,popupDrawCoords.origin.y+5,26,26);
                     }
 
@@ -10349,6 +10853,19 @@ class App extends Component {
               if (cell.item.subType === 'crossbow') {
                 let ammo = parseInt(cell.item.effect.split('+')[1])
                 // console.log('picked up a crossbow checking ammo',ammo);
+                this.players[player.number-1].popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:15,
+                    type: '',
+                    position: '',
+                    msg: 'crossbow',
+                    img: '',
+
+                  }
+                )
+
                 this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
                 // console.log('new ammo amt',this.players[player.number-1].items.ammo);
               }
@@ -10364,6 +10881,18 @@ class App extends Component {
                 if (cell.item.subType === 'crossbow') {
                   let ammo = parseInt(cell.item.effect.split('+')[1])
                   // console.log('picked up a crossbow checking ammo',ammo);
+                  this.players[player.number-1].popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit:15,
+                      type: '',
+                      position: '',
+                      msg: 'crossbow',
+                      img: '',
+
+                    }
+                  )
                   this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
                   // console.log('new ammo amt',this.players[player.number-1].items.ammo);
                 }
@@ -10375,6 +10904,19 @@ class App extends Component {
                   count: 1,
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
+                this.players[player.number-1].popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:15,
+                    type: '',
+                    position: '',
+                    msg: 'pickupWeapon',
+                    img: '',
+
+                  }
+                )
+
               }
               else {
 
@@ -10383,6 +10925,31 @@ class App extends Component {
                   this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
                   console.log('you already have a crossbow but take the ammo',ammo);
                   cell.item.effect = 'ammo+0';
+                  this.players[player.number-1].popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit:15,
+                      type: '',
+                      position: '',
+                      msg: 'pickupAmmo',
+                      img: '',
+
+                    }
+                  )
+
+                  this.players[player.number-1].popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit:15,
+                      type: '',
+                      position: '',
+                      msg: 'pickupAmmo',
+                      img: '',
+
+                    }
+                  )
                 }
                 else {
                   console.log('you already have this weapon');
@@ -10392,6 +10959,18 @@ class App extends Component {
                     count: 1,
                     limit: this.players[player.number-1].statusDisplay.limit,
                   }
+                  this.players[player.number-1].popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit:15,
+                      type: '',
+                      position: '',
+                      msg: 'stop',
+                      img: '',
+
+                    }
+                  )
                 }
               }
             }
@@ -10406,6 +10985,18 @@ class App extends Component {
               count: 1,
               limit: this.players[player.number-1].statusDisplay.limit,
             }
+            this.players[player.number-1].popups.push(
+              {
+                state: false,
+                count: 0,
+                limit:15,
+                type: '',
+                position: '',
+                msg: 'inventoryFull',
+                img: '',
+
+              }
+            )
           }
 
         }
@@ -10441,6 +11032,19 @@ class App extends Component {
                     count: 1,
                     limit: this.players[player.number-1].statusDisplay.limit,
                   }
+
+                  this.players[player.number-1].popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit:15,
+                      type: '',
+                      position: '',
+                      msg: 'pickupBuff',
+                      img: '',
+
+                    }
+                  )
                 }
               break;
               case 'speedUp' :
@@ -10458,6 +11062,19 @@ class App extends Component {
                     count: 1,
                     limit: this.players[player.number-1].statusDisplay.limit,
                   }
+
+                  this.players[player.number-1].popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit:15,
+                      type: '',
+                      position: '',
+                      msg: 'pickupBuff',
+                      img: '',
+
+                    }
+                  )
                 }
               break;
             }
@@ -10479,6 +11096,19 @@ class App extends Component {
                 count: 1,
                 limit: this.players[player.number-1].statusDisplay.limit,
               }
+
+              this.players[player.number-1].popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit:15,
+                  type: '',
+                  position: '',
+                  msg: 'pickupArmor',
+                  img: '',
+
+                }
+              )
             }
             else {
               console.log('you already have this armor');
@@ -10488,6 +11118,19 @@ class App extends Component {
                 count: 1,
                 limit: this.players[player.number-1].statusDisplay.limit,
               }
+
+              this.players[player.number-1].popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit:15,
+                  type: '',
+                  position: '',
+                  msg: 'stop',
+                  img: '',
+
+                }
+              )
 
             }
           }
@@ -10502,6 +11145,19 @@ class App extends Component {
               count: 1,
               limit: this.players[player.number-1].statusDisplay.limit,
             }
+
+            this.players[player.number-1].popups.push(
+              {
+                state: false,
+                count: 0,
+                limit:15,
+                type: '',
+                position: '',
+                msg: 'inventoryFull',
+                img: '',
+
+              }
+            )
           }
 
         }
@@ -10524,6 +11180,19 @@ class App extends Component {
                   count: 1,
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
+
+                this.players[player.number-1].popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:15,
+                    type: '',
+                    position: '',
+                    msg: 'pickupBuff',
+                    img: '',
+
+                  }
+                )
                 pickUp = true;
               }
               else {
@@ -10535,6 +11204,19 @@ class App extends Component {
                   count: 1,
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
+
+                this.players[player.number-1].popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:15,
+                    type: '',
+                    position: '',
+                    msg: 'stop',
+                    img: '',
+
+                  }
+                )
               }
             break;
             case 'moveSpeedDown' :
@@ -10552,6 +11234,20 @@ class App extends Component {
                   count: 1,
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
+
+                this.players[player.number-1].popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:15,
+                    type: '',
+                    position: '',
+                    msg: 'pickupDebuff',
+                    img: '',
+
+                  }
+                )
+
                 pickUp = true;
               }
             break;
@@ -10569,6 +11265,20 @@ class App extends Component {
                     count: 1,
                     limit: this.players[player.number-1].statusDisplay.limit,
                   }
+
+                  this.players[player.number-1].popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit:15,
+                      type: '',
+                      position: '',
+                      msg: 'pickupBuff',
+                      img: '',
+
+                    }
+                  )
+
                   pickUp = true;
               }
               else {
@@ -10580,6 +11290,19 @@ class App extends Component {
                   count: 1,
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
+
+                this.players[player.number-1].popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:15,
+                    type: '',
+                    position: '',
+                    msg: 'stop',
+                    img: '',
+
+                  }
+                )
               }
             break;
             case 'hpDown' :
@@ -10593,6 +11316,19 @@ class App extends Component {
                   count: 1,
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
+
+                this.players[player.number-1].popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:15,
+                    type: '',
+                    position: '',
+                    msg: 'pickupDebuff',
+                    img: '',
+
+                  }
+                )
                 pickUp = true;
               }
             break;
@@ -10608,6 +11344,19 @@ class App extends Component {
                   count: 1,
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
+
+                this.players[player.number-1].popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:15,
+                    type: '',
+                    position: '',
+                    msg: 'pickupBuff',
+                    img: '',
+
+                  }
+                )
 
               }
               this.players[player.number-1].crits.guardBreak = this.players[player.number-1].crits.guardBreak + 1;
@@ -10627,6 +11376,19 @@ class App extends Component {
                 limit: this.players[player.number-1].statusDisplay.limit,
               }
 
+              this.players[player.number-1].popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit:15,
+                  type: '',
+                  position: '',
+                  msg: 'pickupDebuff',
+                  img: '',
+
+                }
+              )
+
               pickUp = true;
             break;
             case 'strengthUp' :
@@ -10640,6 +11402,19 @@ class App extends Component {
                 count: 1,
                 limit: this.players[player.number-1].statusDisplay.limit,
               }
+
+              this.players[player.number-1].popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit:15,
+                  type: '',
+                  position: '',
+                  msg: 'pickupBuff',
+                  img: '',
+
+                }
+              )
 
               pickUp = true;
             break;
@@ -10655,6 +11430,19 @@ class App extends Component {
                   count: 1,
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
+
+                this.players[player.number-1].popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:15,
+                    type: '',
+                    position: '',
+                    msg: 'pickupDebuff',
+                    img: '',
+
+                  }
+                )
 
                 pickUp = true;
               }
@@ -10682,6 +11470,19 @@ class App extends Component {
                 limit: this.players[player.number-1].statusDisplay.limit,
               }
 
+              this.players[player.number-1].popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit:15,
+                  type: '',
+                  position: '',
+                  msg: 'pickupAmmo',
+                  img: '',
+
+                }
+              )
+
               pickUp = true;
             break;
             case 'ammo10' :
@@ -10695,6 +11496,19 @@ class App extends Component {
                 limit: this.players[player.number-1].statusDisplay.limit,
               }
 
+              this.players[player.number-1].popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit:15,
+                  type: '',
+                  position: '',
+                  msg: 'pickupAmmo',
+                  img: '',
+
+                }
+              )
+
               pickUp = true;
             break;
           }
@@ -10702,32 +11516,32 @@ class App extends Component {
         }
         if (pickUp === true) {
           // PICKUP ANIM!!
-          if (cell.item.type === 'item') {
-            this.players[player.number-1].itemPickup = {
-              state: true,
-              count: 0,
-              limit: 10,
-              item: {
-                name: cell.item.name,
-              },
-              gear: {
-                type: '',
-              }
-            }
-          }
-          else if (cell.item.type === 'weapon' || cell.item.type === 'armor') {
-            this.players[player.number-1].itemPickup = {
-              state: true,
-              count: 0,
-              limit: 10,
-              item: {
-                name: '',
-              },
-              gear: {
-                type: cell.item.subType,
-              }
-            }
-          }
+          // if (cell.item.type === 'item') {
+          //   this.players[player.number-1].itemPickup = {
+          //     state: true,
+          //     count: 0,
+          //     limit: 10,
+          //     item: {
+          //       name: cell.item.name,
+          //     },
+          //     gear: {
+          //       type: '',
+          //     }
+          //   }
+          // }
+          // else if (cell.item.type === 'weapon' || cell.item.type === 'armor') {
+          //   this.players[player.number-1].itemPickup = {
+          //     state: true,
+          //     count: 0,
+          //     limit: 10,
+          //     item: {
+          //       name: '',
+          //     },
+          //     gear: {
+          //       type: cell.item.subType,
+          //     }
+          //   }
+          // }
 
           cell.item = {
             name: '',
@@ -10763,6 +11577,19 @@ class App extends Component {
         this.players[player.number-1].falling.state = true;
         this.players[player.number-1].action = 'falling';
         this.players[player.number-1].drowning = true;
+
+        this.players[player.number-1].popups.push(
+          {
+            state: false,
+            count: 0,
+            limit:15,
+            type: '',
+            position: '',
+            msg: 'drowning',
+            img: '',
+
+          }
+        )
 
         // this.moveSpeed = plyr.speed.move;
         this.players[player.number-1].target = {
@@ -10815,11 +11642,37 @@ class App extends Component {
         // console.log('player',player.number,' stepped in',cell.terrain.name,'type',cell.terrain.type);
         this.players[player.number-1].terrainMoveSpeed.state = true;
         this.players[player.number-1].terrainMoveSpeed.speed = .05;
+
+        this.players[player.number-1].popups.push(
+          {
+            state: false,
+            count: 0,
+            limit:15,
+            type: '',
+            position: '',
+            msg: 'terrainSlowdown',
+            img: '',
+
+          }
+        )
       break;
       case 'slippery' :
         // console.log('player',player.number,' stepped in',cell.terrain.name,'type',cell.terrain.type);
         this.players[player.number-1].terrainMoveSpeed.state = true;
         this.players[player.number-1].terrainMoveSpeed.speed = .2;
+
+        this.players[player.number-1].popups.push(
+          {
+            state: false,
+            count: 0,
+            limit:15,
+            type: '',
+            position: '',
+            msg: 'terrainSpeedup',
+            img: '',
+
+          }
+        )
       break;
       case 'hazard' :
         // console.log('player',player.number,' stepped in',cell.terrain.name,'type',cell.terrain.type);
@@ -10849,6 +11702,19 @@ class App extends Component {
               predeflect: this.players[player.number-1].success.deflected.predeflect,
               type: 'attacked',
             };
+
+            this.players[player.number-1].popups.push(
+              {
+                state: false,
+                count: 0,
+                limit:15,
+                type: '',
+                position: '',
+                msg: 'terrainInjured',
+                img: '',
+
+              }
+            )
 
 
             if (this.aiDeflectedCheck.includes(this.players[player.number-1].number) !== true) {
@@ -11198,6 +12064,19 @@ class App extends Component {
           count: 1,
           limit: this.players[player.number-1].statusDisplay.limit,
         }
+
+        player.popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 15,
+            type: '',
+            position: '',
+            msg: 'attackCancelled',
+            img: '',
+
+          }
+        )
         break;
       case 'defending':
         player.action = 'idle';
@@ -11222,6 +12101,19 @@ class App extends Component {
           count: 1,
           limit: this.players[player.number-1].statusDisplay.limit,
         };
+
+        player.popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 15,
+            type: '',
+            position: '',
+            msg: 'attackCancelled',
+            img: '',
+
+          }
+        )
         break;
     }
 
@@ -11300,6 +12192,20 @@ class App extends Component {
 
     if (target.free === true) {
       player.pushBack.state = true;
+
+      player.popups.push(
+        {
+          state: false,
+          count: 0,
+          limit: 15,
+          type: '',
+          position: '',
+          msg: 'pushedBack',
+          img: '',
+
+        }
+      )
+
       this.players[player.number-1] = player;
       return true
     } else {
@@ -11934,6 +12840,18 @@ class App extends Component {
             }
           }
 
+          this.players[player.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit:15,
+              type: '',
+              position: '',
+              msg: 'dropWeapon',
+              img: '',
+
+            }
+          )
 
           this.players[player.number-1].items.weapons.splice(index,1);
           this.players[player.number-1].items.weaponIndex = 0;
@@ -11961,6 +12879,7 @@ class App extends Component {
             count: 1,
             limit: this.players[player.number-1].statusDisplay.limit,
           }
+
         }
 
       }
@@ -11986,6 +12905,19 @@ class App extends Component {
               type: this.players[player.number-1].items.armor[index].type,
             }
           }
+
+          this.players[player.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit:15,
+              type: '',
+              position: '',
+              msg: 'dropArmor',
+              img: '',
+
+            }
+          )
 
 
           switch(item.effect) {
@@ -12119,6 +13051,19 @@ class App extends Component {
           limit: this.players[player.number-1].statusDisplay.limit,
         }
 
+        this.players[player.number-1].popups.push(
+          {
+            state: false,
+            count: 0,
+            limit:15,
+            type: '',
+            position: '',
+            msg: 'dropWeapon',
+            img: '',
+
+          }
+        )
+
         this.players[player.number-1].items.weapons.splice(index,1);
         this.players[player.number-1].currentWeapon = {
           name: "",
@@ -12170,6 +13115,19 @@ class App extends Component {
           limit: this.players[player.number-1].statusDisplay.limit,
         }
 
+        this.players[player.number-1].popups.push(
+          {
+            state: false,
+            count: 0,
+            limit:15,
+            type: '',
+            position: '',
+            msg: 'dropArmor',
+            img: '',
+
+          }
+        )
+
         this.players[player.number-1].items.armor.splice(index2,1);
         this.players[player.number-1].currentArmor = {
           name: "",
@@ -12198,6 +13156,19 @@ class App extends Component {
         count: 1,
         limit: this.players[player.number-1].statusDisplay.limit,
       }
+
+      this.players[player.number-1].popups.push(
+        {
+          state: false,
+          count: 0,
+          limit:15,
+          type: '',
+          position: '',
+          msg: 'stop',
+          img: '',
+
+        }
+      )
     }
 
   }
@@ -12266,6 +13237,19 @@ class App extends Component {
           foundPlayer = true;
           this.players[plyr.number-1].falling.state = true;
           this.players[plyr.number-1].action = 'falling';
+
+          this.players[plyr.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 15,
+              type: '',
+              position: '',
+              msg: 'falling',
+              img: '',
+
+            }
+          )
 
           this.moveSpeed = plyr.speed.move;
           this.players[plyr.number-1].target = {
@@ -18377,6 +19361,10 @@ class App extends Component {
           <img src={attackBluntIndicate} className='hidden playerImgs' ref="attackBluntIndicate" id="attackBluntIndicate" alt="logo" />
           <img src={attackSuccessIndicate} className='hidden playerImgs' ref="attackSuccessIndicate" id="attackSuccessIndicate" alt="logo" />
           <img src={defendIndicate} className='hidden playerImgs' ref="defendIndicate" id="defendIndicate" alt="logo" />
+          <img src={defendIndicate1} className='hidden playerImgs' ref="defendIndicate1" id="defendIndicate1" alt="logo" />
+          <img src={defendIndicate2} className='hidden playerImgs' ref="defendIndicate2" id="defendIndicate2" alt="logo" />
+          <img src={defendIndicate3} className='hidden playerImgs' ref="defendIndicate3" id="defendIndicate3" alt="logo" />
+          <img src={defendIndicate4} className='hidden playerImgs' ref="defendIndicate4" id="defendIndicate4" alt="logo" />
           <img src={deflectIndicate} className='hidden playerImgs' ref="deflectIndicate" id="deflectIndicate" alt="logo" />
           <img src={deflectIndicate2} className='hidden playerImgs' ref="deflectIndicate2" id="deflectIndicate2" alt="logo" />
           <img src={deflectInjuredIndicate} className='hidden playerImgs' ref="deflectInjuredIndicate" id="deflectInjuredIndicate" alt="logo" />
@@ -18435,9 +19423,15 @@ class App extends Component {
           <img src={dropWeaponIndicate} className="hidden playerImgs" ref="dropWeaponIndicate" id="dropWeaponIndicate" alt="..." />
           <img src={dropArmorIndicate} className="hidden playerImgs" ref="dropArmorIndicate" id="dropArmorIndicate" alt="..." />
           <img src={pickupArmorIndicate} className="hidden playerImgs" ref="pickupArmorIndicate" id="pickupArmorIndicate" alt="..." />
+          <img src={pickupAmmoIndicate} className="hidden playerImgs" ref="pickupAmmoIndicate" id="pickupAmmoIndicate" alt="..." />
           <img src={terrainSpeedupIndicate} className="hidden playerImgs" ref="terrainSpeedupIndicate" id="terrainSpeedupIndicate" alt="..." />
           <img src={terrainSlowdownIndicate} className="hidden playerImgs" ref="terrainSlowdownIndicate" id="terrainSlowdownIndicate" alt="..." />
           <img src={terrainInjuredIndicate} className="hidden playerImgs" ref="terrainInjuredIndicate" id="terrainInjuredIndicate" alt="..." />
+          <img src={outOfStaminaIndicate} className="hidden playerImgs" ref="outOfStaminaIndicate" id="outOfStaminaIndicate" alt="..." />
+          <img src={boltKilledIndicate} className="hidden playerImgs" ref="boltKilledIndicate" id="boltKilledIndicate" alt="..." />
+          <img src={attackParriedIndicate} className="hidden playerImgs" ref="attackParriedIndicate" id="attackParriedIndicate" alt="..." />
+          <img src={inventoryFullIndicate} className="hidden playerImgs" ref="inventoryFullIndicate" id="inventoryFullIndicate" alt="..." />
+          <img src={outOfAmmoIndicate} className="hidden playerImgs" ref="outOfAmmoIndicate" id="outOfAmmoIndicate" alt="..." />
 
           <img src={sword} className='hidden playerImgs' ref="itemSword" id="itemSword" alt="logo" />
           <img src={spear} className='hidden playerImgs' ref="itemSpear" id="itemSpear" alt="logo" />
