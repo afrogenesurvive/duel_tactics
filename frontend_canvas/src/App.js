@@ -4062,7 +4062,6 @@ class App extends Component {
           )
         }
         if (player.success.deflected.type === 'outOfStamina') {
-          console.log('player.action',player.action,'limit',player.success.deflected.limit);
           player.popups.push(
             {
               state: false,
@@ -8877,7 +8876,7 @@ class App extends Component {
                 x === plyr.moving.origin.number.x &&
                 y === plyr.moving.origin.number.y+1
               ) {
-                console.log('updatedPlayerImg, sx, sy', sx, sy,'points',point.x-35, point.y-20,'dodge',plyr.dodging.state,'plyr dir',plyr.direction,'sheight',sHeight,'width',sWidth,'final indx',finalAnimIndex - 1,'action',plyr.action,'plyNo',plyr.number,plyr.attacking.count,plyr.success.deflected.state);
+
                 context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  point.x-35, point.y-20, this.playerDrawWidth, this.playerDrawHeight)
 
                 if (plyr.success.deflected.type === 'attack') {
@@ -8896,7 +8895,7 @@ class App extends Component {
                 x === plyr.currentPosition.cell.number.x &&
                 y === plyr.currentPosition.cell.number.y
               ) {
-                console.log('updatedPlayerImg, sx, sy', sx, sy,'points',point.x-35, point.y-20,'dodge',plyr.dodging.state,'plyr dir',plyr.direction,'sheight',sHeight,'width',sWidth,'final indx',finalAnimIndex - 1,'action',plyr.action,'plyNo',plyr.number,plyr.attacking.count,plyr.success.deflected.state);
+
                 context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-35, point.y-30, this.playerDrawWidth,this.playerDrawHeight);
 
                 if (plyr.success.deflected.type === 'attack') {
@@ -8915,7 +8914,7 @@ class App extends Component {
                 x === plyr.currentPosition.cell.number.x+1 &&
                 y === plyr.currentPosition.cell.number.y
               ) {
-                console.log('updatedPlayerImg, sx, sy', sx, sy,'points',point.x-35, point.y-20,'dodge',plyr.dodging.state,'plyr dir',plyr.direction,'sheight',sHeight,'width',sWidth,'final indx',finalAnimIndex - 1,'action',plyr.action,'plyNo',plyr.number,plyr.attacking.count,plyr.success.deflected.state);
+
                 context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-15, point.y-20, this.playerDrawWidth,this.playerDrawHeight);
 
                 if (plyr.success.deflected.type === 'attack') {
@@ -8934,7 +8933,7 @@ class App extends Component {
                 x === plyr.currentPosition.cell.number.x+1 &&
                 y === plyr.currentPosition.cell.number.y
               ) {
-                console.log('updatedPlayerImg, sx, sy', sx, sy,'points',point.x-35, point.y-20,'dodge',plyr.dodging.state,'plyr dir',plyr.direction,'sheight',sHeight,'width',sWidth,'final indx',finalAnimIndex - 1,'action',plyr.action,'plyNo',plyr.number,plyr.attacking.count,plyr.success.deflected.state);
+
                 context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-15, point.y-30, this.playerDrawWidth,this.playerDrawHeight);
 
                 if (plyr.success.deflected.type === 'attack') {
