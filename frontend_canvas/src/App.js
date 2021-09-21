@@ -2930,7 +2930,11 @@ class App extends Component {
 
     } else {
 
-      this.updateSettingsFormAiDataData = {};
+      this.updateSettingsFormAiDataData = {
+        // count: {
+        //   count: '0'
+        // }
+      };
       this.settingsFormAiStartPosList = [];
       this.setState({
         showSettings: false,
@@ -3991,20 +3995,23 @@ class App extends Component {
       if (player.stamina.current <= 4) {
         if (player.ai.state === true) {
           console.log('ai player',player.number,' almost out of stamina. Retreat');
-          player.ai.mission = 'retreat'
+          player.ai.mission = 'retreat';
 
-          player.popups.push(
-            {
-              state: false,
-              count: 0,
-              limit: 25,
-              type: '',
-              position: '',
-              msg: 'missionRetreat',
-              img: '',
+          if (!player.popups.find(x=>x.msg === 'missionRetreat')) {
+            player.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: 25,
+                type: '',
+                position: '',
+                msg: 'missionRetreat',
+                img: '',
 
-            }
-          )
+              }
+            )
+          }
+
         }
       }
     }
@@ -4170,8 +4177,10 @@ class App extends Component {
       }
 
 
+      if (player.dead.state !== true && player.falling.state !== true) {
+        this.deflectDrop(player)
+      }
 
-      this.deflectDrop(player)
 
     }
 
@@ -7126,7 +7135,7 @@ class App extends Component {
                         {
                           state: false,
                           count: 0,
-                          limit: 3,
+                          limit: 5,
                           type: '',
                           position: '',
                           msg: 'preAction1',
@@ -10930,10 +10939,11 @@ class App extends Component {
       if (cell.item.name !== '') {
         // console.log('picked up an item');
         if (cell.item.type === 'weapon') {
-          // console.log('weapon',cell.item);
+
           if (haveSpace === true ) {
 
             if (player.currentWeapon.name === '' || !player.currentWeapon.name) {
+
               this.players[player.number-1].currentWeapon = {
                 name: cell.item.name,
                 type: cell.item.subType,
@@ -10951,7 +10961,7 @@ class App extends Component {
                   {
                     state: false,
                     count: 0,
-                    limit:15,
+                    limit:25,
                     type: '',
                     position: '',
                     msg: 'crossbow',
@@ -10963,6 +10973,20 @@ class App extends Component {
                 this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
                 // console.log('new ammo amt',this.players[player.number-1].items.ammo);
               }
+
+              this.players[player.number-1].popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit:25,
+                  type: '',
+                  position: '',
+                  msg: 'pickupWeapon',
+                  img: '',
+
+                }
+              )
+
               pickUp = true;
             }
             else {
@@ -10979,7 +11003,7 @@ class App extends Component {
                     {
                       state: false,
                       count: 0,
-                      limit:15,
+                      limit:25,
                       type: '',
                       position: '',
                       msg: 'crossbow',
@@ -11002,7 +11026,7 @@ class App extends Component {
                   {
                     state: false,
                     count: 0,
-                    limit:15,
+                    limit:25,
                     type: '',
                     position: '',
                     msg: 'pickupWeapon',
@@ -11023,7 +11047,7 @@ class App extends Component {
                     {
                       state: false,
                       count: 0,
-                      limit:15,
+                      limit:25,
                       type: '',
                       position: '',
                       msg: 'pickupAmmo',
@@ -11036,7 +11060,7 @@ class App extends Component {
                     {
                       state: false,
                       count: 0,
-                      limit:15,
+                      limit:25,
                       type: '',
                       position: '',
                       msg: 'pickupAmmo',
@@ -11057,7 +11081,7 @@ class App extends Component {
                     {
                       state: false,
                       count: 0,
-                      limit:15,
+                      limit:25,
                       type: '',
                       position: '',
                       msg: 'stop',
@@ -11083,7 +11107,7 @@ class App extends Component {
               {
                 state: false,
                 count: 0,
-                limit:15,
+                limit:25,
                 type: '',
                 position: '',
                 msg: 'inventoryFull',
@@ -11131,7 +11155,7 @@ class App extends Component {
                     {
                       state: false,
                       count: 0,
-                      limit:15,
+                      limit:25,
                       type: '',
                       position: '',
                       msg: 'pickupBuff',
@@ -11161,7 +11185,7 @@ class App extends Component {
                     {
                       state: false,
                       count: 0,
-                      limit:15,
+                      limit: 25,
                       type: '',
                       position: '',
                       msg: 'pickupBuff',
@@ -11195,7 +11219,7 @@ class App extends Component {
                 {
                   state: false,
                   count: 0,
-                  limit:15,
+                  limit:25,
                   type: '',
                   position: '',
                   msg: 'pickupArmor',
@@ -11217,7 +11241,7 @@ class App extends Component {
                 {
                   state: false,
                   count: 0,
-                  limit:15,
+                  limit:25,
                   type: '',
                   position: '',
                   msg: 'stop',
@@ -11244,7 +11268,7 @@ class App extends Component {
               {
                 state: false,
                 count: 0,
-                limit:15,
+                limit:25,
                 type: '',
                 position: '',
                 msg: 'inventoryFull',
@@ -11279,7 +11303,7 @@ class App extends Component {
                   {
                     state: false,
                     count: 0,
-                    limit:15,
+                    limit:25,
                     type: '',
                     position: '',
                     msg: 'pickupBuff',
@@ -11303,7 +11327,7 @@ class App extends Component {
                   {
                     state: false,
                     count: 0,
-                    limit:15,
+                    limit:25,
                     type: '',
                     position: '',
                     msg: 'stop',
@@ -11333,7 +11357,7 @@ class App extends Component {
                   {
                     state: false,
                     count: 0,
-                    limit:15,
+                    limit:25,
                     type: '',
                     position: '',
                     msg: 'pickupDebuff',
@@ -11364,7 +11388,7 @@ class App extends Component {
                     {
                       state: false,
                       count: 0,
-                      limit:15,
+                      limit:25,
                       type: '',
                       position: '',
                       msg: 'pickupBuff',
@@ -11389,7 +11413,7 @@ class App extends Component {
                   {
                     state: false,
                     count: 0,
-                    limit:15,
+                    limit:25,
                     type: '',
                     position: '',
                     msg: 'stop',
@@ -11415,7 +11439,7 @@ class App extends Component {
                   {
                     state: false,
                     count: 0,
-                    limit:15,
+                    limit:25,
                     type: '',
                     position: '',
                     msg: 'pickupDebuff',
@@ -11443,7 +11467,7 @@ class App extends Component {
                   {
                     state: false,
                     count: 0,
-                    limit:15,
+                    limit:25,
                     type: '',
                     position: '',
                     msg: 'pickupBuff',
@@ -11474,7 +11498,7 @@ class App extends Component {
                 {
                   state: false,
                   count: 0,
-                  limit:15,
+                  limit:25,
                   type: '',
                   position: '',
                   msg: 'pickupDebuff',
@@ -11501,7 +11525,7 @@ class App extends Component {
                 {
                   state: false,
                   count: 0,
-                  limit:15,
+                  limit:25,
                   type: '',
                   position: '',
                   msg: 'pickupBuff',
@@ -11529,7 +11553,7 @@ class App extends Component {
                   {
                     state: false,
                     count: 0,
-                    limit:15,
+                    limit:25,
                     type: '',
                     position: '',
                     msg: 'pickupDebuff',
@@ -11568,7 +11592,7 @@ class App extends Component {
                 {
                   state: false,
                   count: 0,
-                  limit:15,
+                  limit:25,
                   type: '',
                   position: '',
                   msg: 'pickupAmmo',
@@ -11594,7 +11618,7 @@ class App extends Component {
                 {
                   state: false,
                   count: 0,
-                  limit:15,
+                  limit:25,
                   type: '',
                   position: '',
                   msg: 'pickupAmmo',
@@ -11676,7 +11700,7 @@ class App extends Component {
           {
             state: false,
             count: 0,
-            limit:15,
+            limit: 25,
             type: '',
             position: '',
             msg: 'drowning',
@@ -11741,7 +11765,7 @@ class App extends Component {
           {
             state: false,
             count: 0,
-            limit:15,
+            limit: 25,
             type: '',
             position: '',
             msg: 'terrainSlowdown',
@@ -11759,7 +11783,7 @@ class App extends Component {
           {
             state: false,
             count: 0,
-            limit:15,
+            limit: 25,
             type: '',
             position: '',
             msg: 'terrainSpeedup',
@@ -11801,7 +11825,7 @@ class App extends Component {
               {
                 state: false,
                 count: 0,
-                limit:15,
+                limit: 25,
                 type: '',
                 position: '',
                 msg: 'terrainInjured',
@@ -12940,7 +12964,7 @@ class App extends Component {
             {
               state: false,
               count: 0,
-              limit:15,
+              limit: 25,
               type: '',
               position: '',
               msg: 'dropWeapon',
@@ -13006,7 +13030,7 @@ class App extends Component {
             {
               state: false,
               count: 0,
-              limit:15,
+              limit: 25,
               type: '',
               position: '',
               msg: 'dropArmor',
@@ -13151,7 +13175,7 @@ class App extends Component {
           {
             state: false,
             count: 0,
-            limit:15,
+            limit: 25,
             type: '',
             position: '',
             msg: 'dropWeapon',
@@ -13215,7 +13239,7 @@ class App extends Component {
           {
             state: false,
             count: 0,
-            limit:15,
+            limit: 25,
             type: '',
             position: '',
             msg: 'dropArmor',
@@ -13257,7 +13281,7 @@ class App extends Component {
         {
           state: false,
           count: 0,
-          limit:15,
+          limit: 25,
           type: '',
           position: '',
           msg: 'stop',
@@ -13338,7 +13362,7 @@ class App extends Component {
             {
               state: false,
               count: 0,
-              limit: 15,
+              limit: 25,
               type: '',
               position: '',
               msg: 'falling',
@@ -15309,7 +15333,6 @@ class App extends Component {
         armorInTheField = fieldItemScan.find(gear => gear.effect === 'hpUp')[0]
         if (armorInTheField) {
 
-          console.log('found hpup gear in the field. retrieve!');
 
           let targetSafeData2 = this.scanTargetAreaThreat({
             player: plyr.number,
@@ -15337,9 +15360,11 @@ class App extends Component {
             plyr.ai.upgradeArmor = false;
           }
 
+          console.log('found hpup gear in the field. retrieve! @',plyr.ai.retrieving.point);
+
         }
         else {
-          console.log('no hp up gear found in the field');
+          console.log('no hp up gear found in the field',fieldItemScan.find(gear => gear.effect === 'hpUp'));
         }
       }
 
@@ -15349,7 +15374,6 @@ class App extends Component {
 
         if (armorInTheField) {
 
-          console.log('found speedUp gear in the field. retrieve!');
 
           let targetSafeData2 = this.scanTargetAreaThreat({
             player: plyr.number,
@@ -15377,9 +15401,11 @@ class App extends Component {
             plyr.ai.upgradeArmor = false;
           }
 
+          console.log('found speedUp gear in the field. retrieve! @',plyr.ai.retrieving.point);
+
         }
         else {
-          console.log('no spped up gear found in the field');
+          console.log('no spped up gear found in the field',fieldItemScan.find(gear => gear.effect === 'speedUp'));
         }
 
       }
@@ -15503,7 +15529,7 @@ class App extends Component {
             },
             range: 3,
           })
-          console.log('found hpup item in the field. retrieve @ ',itemToRetrieve.location);
+
 
           if (targetSafeData2.isSafe === true) {
 
@@ -15520,9 +15546,12 @@ class App extends Component {
             };
             plyr.ai.retrieving.safe = true;
 
+            console.log('found hpup item in the field. retrieve @ ',itemToRetrieve.location);
 
           } else {
+
             console.log('no heal item/gear found.');
+
           }
 
         }
@@ -16314,6 +16343,19 @@ class App extends Component {
          if (plyr.ai.mode === 'careful' && plyr.ai.retrieving.checkin === 'enroute') {
            console.log('was enroute, now retreating');
           plyr.ai.mission = 'retreat';
+
+          plyr.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 25,
+              type: '',
+              position: '',
+              msg: 'missionRetreat',
+              img: '',
+
+            }
+          )
          }
 
        }
@@ -16671,6 +16713,19 @@ class App extends Component {
               aiPlayer.ai.retreating.checkin = undefined;
               aiPlayer.ai.mission = 'retreat';
               aiPlayer.ai.retreating.safe = false;
+
+              aiPlayer.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 25,
+                  type: '',
+                  position: '',
+                  msg: 'missionRetreat',
+                  img: '',
+
+                }
+              )
               // aiPlayer.ai.currentInstruction = 0;
             }
             else if (aiPlayer.items.ammo > 0) {
@@ -19415,6 +19470,7 @@ class App extends Component {
               getCustomAiStartPosList={this.getCustomAiStartPosList}
               aiStartPosList={this.settingsFormAiStartPosList}
               aiSettingsFormHandler={this.aiSettingsFormHandler}
+              updateSettingsFormAiDataData={this.updateSettingsFormAiDataData}
               updateSettingsFormAiData={this.updateSettingsFormAiData}
               rnJesus={this.rnJesus}
               settingsFormGridWidthUpdate={this.settingsFormGridWidthUpdate}

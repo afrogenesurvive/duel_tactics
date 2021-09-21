@@ -591,9 +591,7 @@ const Settings = (props) => {
               <option value={12} >13 x 13</option>
             </Form.Control>
           </Form.Group>
-        </Form.Row>
 
-        <Form.Row>
           <Form.Group as={Col} controlId="input" className="formGroup">
             <Form.Label className="formLabel">Input Source</Form.Label>
             <Form.Control value={input} onChange={e=>handleInputChange(e.target.value)} as="select">
@@ -601,9 +599,7 @@ const Settings = (props) => {
               <option>Gamepad</option>
             </Form.Control>
           </Form.Group>
-        </Form.Row>
 
-        <Form.Row>
           <Form.Group as={Col} controlId="humanPlayers" className="formGroup">
             <Form.Label className="formLabel">Players</Form.Label>
             <Form.Control as="select" value={props.plyrStartPosList.length.toString()} onChange={e=>handlePlyrCountStateChange(e.target.value)}>
