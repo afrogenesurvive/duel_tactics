@@ -12,6 +12,7 @@ import {
   faFistRaised,
   faMapMarked,
   faTh,
+  faDice,
 } from '@fortawesome/free-solid-svg-icons';
 import controls from './assets/controls.png'
 
@@ -636,8 +637,10 @@ const Settings = (props) => {
             return<Col className="multiAiFormAi" sm={plyrStartPosWidth}>
               <Form.Row>
                 <Form.Group as={Col} controlId="plyrStartPos" className="formGroup">
-                  <Form.Label className="formLabel">P{posArray.plyrNo} Start Position <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'human_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/></Form.Label>
-
+                  <Form.Label className="formLabel">P{posArray.plyrNo} Start Position
+                  </Form.Label>
+                  <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'human_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                  <FontAwesomeIcon onClick={e=>handlePlyrStartPosStateChange(posArray.plyrNo,'random')} icon={faDice} size="sm" className="icon"/>
                   <Form.Control as="select" value={posArray.selected} onChange={e=>handlePlyrStartPosStateChange(posArray.plyrNo,e.target.value)}>
                     <option selected >{posArray.selected.x},{posArray.selected.y}</option>
                     {posArray.posArray.map((pos) => {
@@ -784,10 +787,16 @@ const Settings = (props) => {
                     <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
                       {posArray.selected.map((selected) => {
                         if (selected.type === 'start') {
-                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/></Form.Label>
+                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position
+                          <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start','random')} icon={faDice} size="sm" className="icon"/>
+                          </Form.Label>
                         }
                         else {
-                          return <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/></Form.Label>
+                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position
+                          <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start','random')} icon={faDice} size="sm" className="icon"/>
+                          </Form.Label>
                         }
                       })}
                       <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='start')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start',e.target.value)}>
@@ -815,10 +824,16 @@ const Settings = (props) => {
                     <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
                       {posArray.selected.map((selected) => {
                         if (selected.type === 'start') {
-                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/></Form.Label>
+                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position
+                          <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start','random')} icon={faDice} size="sm" className="icon"/>
+                          </Form.Label>
                         }
                         else {
-                          <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/></Form.Label>
+                          <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position
+                          <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start','random')} icon={faDice} size="sm" className="icon"/>
+                          </Form.Label>
                         }
                       })}
                       <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='start')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start',e.target.value)}>
@@ -841,10 +856,16 @@ const Settings = (props) => {
                     <Form.Group as={Col} controlId="aiDefendPos" className="formGroup">
                       {posArray.selected.map((selected) => {
                         if (selected.type === 'defend') {
-                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_defend',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/></Form.Label>
+                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position
+                          <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_defend',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'defend','random')} icon={faDice} size="sm" className="icon"/>
+                          </Form.Label>
                         }
                         else {
-                          <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_defend',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/></Form.Label>
+                          <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position
+                          <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_defend',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'defend','random')} icon={faDice} size="sm" className="icon"/>
+                          </Form.Label>
                         }
                       })}
                       <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='defend')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'defend',e.target.value)}>
@@ -872,10 +893,16 @@ const Settings = (props) => {
                     <Form.Group as={Col} controlId="aiStartPos1" className="formGroup">
                       {posArray.selected.map((selected) => {
                         if (selected.type === 'start') {
-                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/></Form.Label>
+                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position
+                          <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start','random')} icon={faTh} size="sm" className="icon"/>
+                          </Form.Label>
                         }
                         else {
-                          <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/></Form.Label>
+                          <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position
+                          <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start','random')} icon={faTh} size="sm" className="icon"/>
+                          </Form.Label>
                         }
                       })}
                       <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='start')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start',e.target.value)}>
@@ -896,10 +923,16 @@ const Settings = (props) => {
                     <Form.Group as={Col} controlId="aiPatrolPos1" className="formGroup">
                       {posArray.selected.map((selected) => {
                         if (selected.type === 'patrol1') {
-                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 1  <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_patrol1',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/></Form.Label>
+                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 1
+                          <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_patrol1',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol1','random')} icon={faTh} size="sm" className="icon"/>
+                          </Form.Label>
                         }
                         else {
-                          <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 1 <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_patrol1',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/></Form.Label>
+                          <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 1
+                            <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_patrol1',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                            <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol1','random')} icon={faTh} size="sm" className="icon"/>
+                          </Form.Label>
                         }
                       })}
                       <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='patrol1')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol1',e.target.value)}>
@@ -920,10 +953,16 @@ const Settings = (props) => {
                     <Form.Group as={Col} controlId="aiPatrolPos2" className="formGroup">
                       {posArray.selected.map((selected) => {
                         if (selected.type === 'patrol2') {
-                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 2 <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_patrol2',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/></Form.Label>
+                          return<Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 2
+                          <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_patrol2',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol2','random')} icon={faTh} size="sm" className="icon"/>
+                          </Form.Label>
                         }
                         else {
-                          <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 2 <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_patrol2',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/></Form.Label>
+                          <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 2
+                          <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_patrol2',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol2','random')} icon={faTh} size="sm" className="icon"/>
+                          </Form.Label>
                         }
                       })}
                       <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='patrol2')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol2',e.target.value)}>
