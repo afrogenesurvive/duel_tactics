@@ -106,10 +106,11 @@ const Settings = (props) => {
 
     if (value === 'random') {
 
-      let whichCell = props.rnJesus(1,props.plyrStartPosList.length)
+
       let posList = props.plyrStartPosList.find(j=>j.plyrNo === plyrNo).posArray;
+      let whichCell = props.rnJesus(1,posList.length)
       let randomPos = posList[whichCell-1]
-      // console.log('randomPos',randomPos);
+      // console.log('randomPos',randomPos,posList.length);
       value = ''+randomPos.x+','+randomPos.y+''
 
     }
@@ -507,8 +508,8 @@ const Settings = (props) => {
 
     if (value === 'random') {
 
-      let whichCell = props.rnJesus(1,props.aiStartPosList.length)
       let posList = props.aiStartPosList.find(j=>j.plyrNo === plyrNo).posArray;
+      let whichCell = props.rnJesus(1,posList.length)
       let randomPos = posList[whichCell-1]
       // console.log('randomPos',randomPos);
       value = ''+randomPos.x+','+randomPos.y+''
@@ -571,7 +572,6 @@ const Settings = (props) => {
       <h2 className="settingsHeading">
         Settings :
       </h2>
-
 
       <Form onSubmit={props.onConfirm} className="form">
 
@@ -996,13 +996,12 @@ const Settings = (props) => {
             <Button variant="danger" className="formBtn" onClick={props.onCancel}>Cancel</Button>
           </div>
         </Form.Row>
-        </Form>
+      </Form>
 
-        <h2 className="settingsHeading">
-          Controls :
-        </h2>
-        <img src={controls} className="controlsImg"></img>
-
+      <h2 className="settingsHeading">
+        Controls :
+      </h2>
+      <img src={controls} className="controlsImg"></img>
 
       </div>
     </div>

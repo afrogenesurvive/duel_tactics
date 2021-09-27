@@ -1632,26 +1632,12 @@ class App extends Component {
     let canvas2 = this.canvasRef2.current;
     let context2 = canvas2.getContext('2d');
 
-    let canvas3;
-    let context3;
-    let canvas4;
-    let context4;
-
-    canvas3 = this.canvasRef3.current;
-    context3 = canvas3.getContext('2d');
-    // canvas4 = this.canvasRef4.current;
-    // context4 = canvas4.getContext('2d');
-
 
     this.setState({
       canvas: canvas,
       context: context,
       canvas2: canvas2,
       context2: context2,
-      canvas3: canvas3,
-      context3: context3,
-      canvas4: canvas4,
-      context4: context4
     })
 
     this.refs.comBImgAttackSheet.onload = () => {
@@ -3100,6 +3086,8 @@ class App extends Component {
     })
     this.showSettingsCanvasData.state = false;
 
+    
+
   }
   openSettings = () => {
     this.setState({
@@ -3124,6 +3112,14 @@ class App extends Component {
     )
 
     this.redrawSettingsGrid(this.state.canvas3,this.state.context3);
+
+    // console.log('this.gamepad',this.gamepad);
+    // console.log('this.gridWidth',this.gridWidth);
+    // console.log('this.playerNumber',this.playerNumber);
+    // console.log('this.aiPlayers',this.aiPlayers);
+    // console.log('this.settingsFormPlyrStartPosList',this.settingsFormPlyrStartPosList);
+    // console.log('this.updateSettingsFormAiData',this.updateSettingsFormAiDataData);
+    // console.log('this.settingsFormAiStartPosList',this.settingsFormAiStartPosList);
 
   }
 
@@ -3459,13 +3455,18 @@ class App extends Component {
     gridInfo = this.gridInfo;
     this.processLevelData(gridInfo);
 
-    // this.redrawSettingsGrid();
-    // console.log('settingsFormAiGridInfo',this.settingsFormAiGridInfo);
-    // console.log('gridInfo',this.gridInfo);
     // this.setState({
     //   stateUpdater: '..'
     // })
 
+    console.log('-----------xx----------');
+    console.log('this.gamepad',this.gamepad);
+    console.log('this.gridWidth',this.settingsGridWidth);
+    console.log('this.playerNumber',this.playerNumber);
+    console.log('this.aiPlayers',this.aiPlayers);
+    console.log('this.settingsFormPlyrStartPosList',this.settingsFormPlyrStartPosList);
+    console.log('this.updateSettingsFormAiData',this.updateSettingsFormAiDataData);
+    console.log('this.settingsFormAiStartPosList',this.settingsFormAiStartPosList);
 
   }
   updateSettingsFormAiData = (args) => {
@@ -3702,6 +3703,11 @@ class App extends Component {
   }
   updateSettingsCanvasData = (args) => {
     // console.log('updateSettingsCanvasData',args);
+
+    let el = document.getElementsByClassName('settingsOverlay')[0];
+    let el2 = document.getElementsByClassName('settingsContainer')[0];
+    // console.log('xx',el.scrollLeft, el.scrollTop);
+    console.log('xx',el2.scrollLeft, el2.scrollTop);
 
     let humanPlyrCount = this.settingsFormPlyrStartPosList.length;
     let plyrNo = args.plyrNo;
@@ -13860,7 +13866,6 @@ class App extends Component {
 
   }
 
-
   drawGridInit = (canvas, context, canvas2, context2) => {
     // console.log('drawing initial');
 
@@ -14217,7 +14222,6 @@ class App extends Component {
     }
 
   }
-
 
   addAiPlayer = () => {
 
@@ -19425,7 +19429,6 @@ class App extends Component {
               ref={this.canvasRef2}
               className="canvas2"
             />
-
             <div className="debugDisplay">
               <DebugBox
                 player={this.players[0]}
@@ -19438,7 +19441,6 @@ class App extends Component {
                 />
               </div>
             )}
-
 
             <div className="settingsSwitch">
               <a href="javascript:" className="setSwitchLink" onClick={this.openSettings}>
