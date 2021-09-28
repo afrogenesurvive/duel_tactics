@@ -35,6 +35,86 @@ const Settings = (props) => {
   } else {
     preInput = "Gamepad"
   }
+  let preAiCount;
+  if (!props.updateSettingsFormAiDataData.random) {
+    preAiCount = {
+      count: 0,
+      playerNumbers: [],
+    }
+  } else {
+    switch(props.updateSettingsFormAiDataData.random.length) {
+      case 0:
+        preAiCount = {
+          count: 0,
+          playerNumbers: [],
+        }
+      break;
+      case 1:
+        preAiCount = {
+          count: 1,
+          playerNumbers: [1],
+        }
+      break;
+      case 2:
+        preAiCount = {
+          count: 2,
+          playerNumbers: [1,2],
+        }
+      break;
+      case 3:
+        preAiCount = {
+          count: 3,
+          playerNumbers: [1,2,3],
+        }
+      break;
+      case 4:
+        preAiCount = {
+          count: 4,
+          playerNumbers: [1,2,3,4],
+        }
+      break;
+    }
+  }
+  let preAiRandom;
+  console.log('rops.updateSettingsFormAiDataData.random',props.updateSettingsFormAiDataData.random);
+  if (!props.updateSettingsFormAiDataData.random) {
+    preAiRandom = []
+  } else {
+    preAiRandom = props.updateSettingsFormAiDataData.random;
+  }
+  let preAiMode = [];
+  console.log('props.updateSettingsFormAiDataData.mode',props.updateSettingsFormAiDataData.mode);
+  if (!props.updateSettingsFormAiDataData.mode) {
+    preAiMode = []
+    // setAiMode([])
+  } else {
+    preAiMode = props.updateSettingsFormAiDataData.mode;
+    // setAiMode(props.updateSettingsFormAiDataData.mode);
+  }
+  let preAiWeapon = [];
+  console.log('props.updateSettingsFormAiDataData.weapon',props.updateSettingsFormAiDataData.weapon);
+  if (!props.updateSettingsFormAiDataData.weapon) {
+    preAiWeapon = []
+    // setAiWeapon([])
+  } else {
+    preAiWeapon = props.updateSettingsFormAiDataData.weapon;
+    // setAiWeapon(props.updateSettingsFormAiDataData.weapon);
+  }
+  let preAiMission = [];
+  console.log('props.updateSettingsFormAiDataData.mission',props.updateSettingsFormAiDataData.mission);
+  if (!props.updateSettingsFormAiDataData.mission) {
+    preAiMission = []
+    // setAiMission([])
+  } else {
+    preAiMission = props.updateSettingsFormAiDataData.mission;
+    // setAiMission(props.updateSettingsFormAiDataData.mission);
+  }
+
+
+  // console.log('1',props.plyrStartPosList);
+  // console.log('2',props.aiStartPosList);
+  console.log('3',props.updateSettingsFormAiDataData);
+
 
   const [input, setInput] = useState(preInput);
   const handleInputChange = (args) => {
@@ -177,10 +257,7 @@ const Settings = (props) => {
   }
 
 
-  const [aiCount, setAiCount] = useState({
-    count: 0,
-    playerNumbers: [],
-  });
+  const [aiCount, setAiCount] = useState(preAiCount);
   const handleAiCountStateChange = (args) => {
 
     let plyrNumbers = [];
@@ -300,7 +377,7 @@ const Settings = (props) => {
   }
 
 
-  const [aiRandom, setAiRandom] = useState([]);
+  const [aiRandom, setAiRandom] = useState(preAiRandom);
   const handleAiRandomStateChange = (plyrNumber,value) => {
 
     let array = aiRandom;
@@ -399,7 +476,7 @@ const Settings = (props) => {
   }
 
 
-  const [aiMode, setAiMode] = useState([]);
+  const [aiMode, setAiMode] = useState(preAiMode);
   const handleAiModeStateChange = (plyrNo,value) => {
 
 
@@ -423,7 +500,7 @@ const Settings = (props) => {
   }
 
 
-  const [aiWeapon, setAiWeapon] = useState([]);
+  const [aiWeapon, setAiWeapon] = useState(preAiWeapon);
   const handleAiWeaponStateChange = (plyrNo,value) => {
 
 
@@ -448,7 +525,7 @@ const Settings = (props) => {
   }
 
 
-  const [aiMission, setAiMission] = useState([]);
+  const [aiMission, setAiMission] = useState(preAiMission);
   const handleAiMissionStateChange = (plyrNo,value) => {
 
     if (value === 'random') {
@@ -720,7 +797,7 @@ const Settings = (props) => {
                 <Form.Row>
                   <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
                     <Form.Label className="formLabel">Ai {plyr.plyrNo} Weapon</Form.Label>
-                    <Form.Control as="select" onChange={e=>handleAiWeaponStateChange(plyr.plyrNo,e.target.value)}>
+                    <Form.Control as="select" value={plyr.weapon} onChange={e=>handleAiWeaponStateChange(plyr.plyrNo,e.target.value)}>
                       <option>sword</option>
                       <option>spear</option>
                       <option>crossbow</option>
@@ -742,7 +819,7 @@ const Settings = (props) => {
                 <Form.Row>
                   <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
                     <Form.Label className="formLabel">Ai {plyr.plyrNo} Mission</Form.Label>
-                    <Form.Control as="select" onChange={e=>handleAiMissionStateChange(plyr.plyrNo,e.target.value)}>
+                    <Form.Control as="select" value={plyr.mission} onChange={e=>handleAiMissionStateChange(plyr.plyrNo,e.target.value)}>
                       <option>pursue</option>
                       <option>patrol</option>
                       <option>defend</option>
@@ -895,13 +972,13 @@ const Settings = (props) => {
                         if (selected.type === 'start') {
                           return<Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position
                           <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
-                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start','random')} icon={faTh} size="sm" className="icon"/>
+                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start','random')} icon={faDice} size="sm" className="icon"/>
                           </Form.Label>
                         }
                         else {
                           <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position
                           <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
-                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start','random')} icon={faTh} size="sm" className="icon"/>
+                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start','random')} icon={faDice} size="sm" className="icon"/>
                           </Form.Label>
                         }
                       })}
@@ -925,13 +1002,13 @@ const Settings = (props) => {
                         if (selected.type === 'patrol1') {
                           return<Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 1
                           <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_patrol1',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
-                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol1','random')} icon={faTh} size="sm" className="icon"/>
+                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol1','random')} icon={faDice} size="sm" className="icon"/>
                           </Form.Label>
                         }
                         else {
                           <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 1
                             <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_patrol1',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
-                            <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol1','random')} icon={faTh} size="sm" className="icon"/>
+                            <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol1','random')} icon={faDice} size="sm" className="icon"/>
                           </Form.Label>
                         }
                       })}
@@ -955,13 +1032,13 @@ const Settings = (props) => {
                         if (selected.type === 'patrol2') {
                           return<Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 2
                           <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_patrol2',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
-                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol2','random')} icon={faTh} size="sm" className="icon"/>
+                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol2','random')} icon={faDice} size="sm" className="icon"/>
                           </Form.Label>
                         }
                         else {
                           <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 2
                           <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_patrol2',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
-                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol2','random')} icon={faTh} size="sm" className="icon"/>
+                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol2','random')} icon={faDice} size="sm" className="icon"/>
                           </Form.Label>
                         }
                       })}

@@ -3079,14 +3079,14 @@ class App extends Component {
 
   cancelSettings = () => {
 
-    this.updateSettingsFormAiDataData = {};
+    // this.updateSettingsFormAiDataData = {};
     this.settingsFormAiStartPosList = [];
     this.setState({
       showSettings: false,
     })
     this.showSettingsCanvasData.state = false;
 
-    
+
 
   }
   openSettings = () => {
@@ -3459,14 +3459,10 @@ class App extends Component {
     //   stateUpdater: '..'
     // })
 
-    console.log('-----------xx----------');
-    console.log('this.gamepad',this.gamepad);
-    console.log('this.gridWidth',this.settingsGridWidth);
-    console.log('this.playerNumber',this.playerNumber);
-    console.log('this.aiPlayers',this.aiPlayers);
-    console.log('this.settingsFormPlyrStartPosList',this.settingsFormPlyrStartPosList);
-    console.log('this.updateSettingsFormAiData',this.updateSettingsFormAiDataData);
-    console.log('this.settingsFormAiStartPosList',this.settingsFormAiStartPosList);
+    // console.log('-----------xx----------');
+    // console.log('this.settingsFormPlyrStartPosList',this.settingsFormPlyrStartPosList);
+    // console.log('this.updateSettingsFormAiData',this.updateSettingsFormAiDataData);
+    // console.log('this.settingsFormAiStartPosList',this.settingsFormAiStartPosList);
 
   }
   updateSettingsFormAiData = (args) => {
@@ -3759,11 +3755,12 @@ class App extends Component {
           // this.redrawSettingsGrid();
         } else {
 
-          this.updateSettingsFormAiDataData = {};
+          // this.updateSettingsFormAiDataData = {};
           this.settingsFormAiStartPosList = [];
           this.setState({
             showSettings: false
           })
+          // this.cancelSettings();
         }
         this.showSettingsKeyPress = {
           state: false,
