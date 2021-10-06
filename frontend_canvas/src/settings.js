@@ -76,14 +76,12 @@ const Settings = (props) => {
     }
   }
   let preAiRandom;
-  console.log('rops.updateSettingsFormAiDataData.random',props.updateSettingsFormAiDataData.random);
   if (!props.updateSettingsFormAiDataData.random) {
     preAiRandom = []
   } else {
     preAiRandom = props.updateSettingsFormAiDataData.random;
   }
   let preAiMode = [];
-  console.log('props.updateSettingsFormAiDataData.mode',props.updateSettingsFormAiDataData.mode);
   if (!props.updateSettingsFormAiDataData.mode) {
     preAiMode = []
     // setAiMode([])
@@ -92,7 +90,6 @@ const Settings = (props) => {
     // setAiMode(props.updateSettingsFormAiDataData.mode);
   }
   let preAiWeapon = [];
-  console.log('props.updateSettingsFormAiDataData.weapon',props.updateSettingsFormAiDataData.weapon);
   if (!props.updateSettingsFormAiDataData.weapon) {
     preAiWeapon = []
     // setAiWeapon([])
@@ -101,7 +98,6 @@ const Settings = (props) => {
     // setAiWeapon(props.updateSettingsFormAiDataData.weapon);
   }
   let preAiMission = [];
-  console.log('props.updateSettingsFormAiDataData.mission',props.updateSettingsFormAiDataData.mission);
   if (!props.updateSettingsFormAiDataData.mission) {
     preAiMission = []
     // setAiMission([])
@@ -109,12 +105,30 @@ const Settings = (props) => {
     preAiMission = props.updateSettingsFormAiDataData.mission;
     // setAiMission(props.updateSettingsFormAiDataData.mission);
   }
+  let preStartItems = false;
+  if (props.disableInitItems !== true ) {
+    preStartItems = true;
+  }
 
 
   // console.log('1',props.plyrStartPosList);
   // console.log('2',props.aiStartPosList);
-  console.log('3',props.updateSettingsFormAiDataData);
+  // console.log('3',props.updateSettingsFormAiDataData);
 
+  const [startItems, setStartItems] = useState(preStartItems);
+  const handleStartItemsChange = (args) => {
+    // console.log('args',args);
+    setStartItems(args);
+
+    props.updateSettingsFormAiData({
+      startItems: args,
+      count: aiCount,
+      random: aiRandom,
+      mode: aiMode,
+      weapon: aiWeapon,
+      mission: aiMission,
+    })
+  }
 
   const [input, setInput] = useState(preInput);
   const handleInputChange = (args) => {
@@ -354,6 +368,7 @@ const Settings = (props) => {
     }
 
     props.updateSettingsFormAiData({
+      startItems: startItems,
       count: aiCount,
       random: initArray,
       mode: aiMode,
@@ -453,6 +468,7 @@ const Settings = (props) => {
       // console.log('aiCount',aiCount,'aiRandom',aiRandom,'aiMode',aiMode,'aiWeapon',aiWeapon,'aiMission',aiMission);
 
       props.updateSettingsFormAiData({
+        startItems: startItems,
         count: aiCount,
         random: aiRandom,
         mode: array2,
@@ -490,6 +506,7 @@ const Settings = (props) => {
 
 
     props.updateSettingsFormAiData({
+        startItems: startItems,
         count: aiCount,
         random: aiRandom,
         mode: aiMode,
@@ -515,6 +532,7 @@ const Settings = (props) => {
 
 
     props.updateSettingsFormAiData({
+        startItems: startItems,
         count: aiCount,
         random: aiRandom,
         mode: aiMode,
@@ -560,13 +578,13 @@ const Settings = (props) => {
     props.getCustomAiStartPosList(newArray)
 
     props.updateSettingsFormAiData({
+        startItems: startItems,
         count: aiCount,
         random: aiRandom,
         mode: aiMode,
         weapon: aiWeapon,
         mission: aiMission,
       })
-
 
 
   }
@@ -616,6 +634,7 @@ const Settings = (props) => {
 
     // console.log('val',value,'newArray',newArray,'plyrChange2',plyrChange,'type',type);
     props.updateSettingsFormAiData({
+      startItems: startItems,
       count: aiCount,
       random: aiRandom,
       mode: aiMode,
@@ -681,10 +700,20 @@ const Settings = (props) => {
           <Form.Group as={Col} controlId="humanPlayers" className="formGroup">
             <Form.Label className="formLabel">Players</Form.Label>
             <Form.Control as="select" value={props.plyrStartPosList.length.toString()} onChange={e=>handlePlyrCountStateChange(e.target.value)}>
-              <option >2</option>
-              <option >1</option>
+              <option>2</option>
+              <option>1</option>
             </Form.Control>
           </Form.Group>
+
+        </Form.Row>
+
+        <Form.Row>
+
+          <Form.Group as={Col} className="formGroup" controlId="startItems">
+            <Form.Label className="formLabel">Start Items</Form.Label>
+            <Form.Check type="checkbox" checked={startItems} onChange={e=>handleStartItemsChange(e.target.checked)}/>
+          </Form.Group>
+
         </Form.Row>
 
 

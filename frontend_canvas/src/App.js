@@ -271,9 +271,9 @@ class App extends Component {
       row3: ['x30a','x31j','x32b','x33j','x34j','x35b','x36j','x37j','x38j','x39d'],
       row4: ['x40j','x41j','x42b','x43b','x44b','x45b','x46j','x47j','x48j','x49d'],
       row5: ['x50j','x51j','x52b','x53j','x54j','x55b','x56j','x57j','x58j','x59d'],
-      row6: ['y60x','x61x','x62x','x63i','x64x','x65x','x66x','x67x','x68f','x69f'],
-      row7: ['x70x','x71x','x72x','x73i','x74x','x75x','x76x','x77x','x78f','x79f'],
-      row8: ['x80x','x81x','x82x','x83x','x84x','x85x','x86x','z87x','x88x','x89x'],
+      row6: ['z60x','x61x','x62x','x63i','x64x','x65x','x66x','x67x','x68f','x69f'],
+      row7: ['x70x','x71x','y72x','x73i','x74x','x75x','x76x','x77x','x78f','x79f'],
+      row8: ['x80x','x81x','x82x','x83x','x84x','x85x','x86x','x87x','x88x','x89x'],
       row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
     };
     this.levelData6 = {
@@ -283,7 +283,7 @@ class App extends Component {
       row3: ['x30x','x31x','x32x','x33x','x34x','x35x','x36x','x37x','x38x','x39x'],
       row4: ['x40x','x41x','x42x','x43x','x44x','x45x','x46x','x47x','x48x','z49x'],
       row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58x','x59x'],
-      row6: ['x60x','y61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
+      row6: ['x60x','x61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
     };
     this.levelData3 = {
       row0: ['x00x','x01x','x02x','x03x'],
@@ -437,7 +437,7 @@ class App extends Component {
         effect: '',
       },
     ];
-    this.disableInitItems = false;
+    this.disableInitItems = true;
     this.initItemList = [
       {
         name: 'moveSpeedUp',
@@ -1516,6 +1516,7 @@ class App extends Component {
       limit: 10,
     };
     this.cellsUnderAttack = [];
+    this.cellsToHighlight = [];
     this.gamepadPollCounter = {
       count1: 0,
       count2: 0,
@@ -2906,6 +2907,12 @@ class App extends Component {
       this.players[plyr.plyrNo-1].startPosition.cell.number = plyr.selected
     }
 
+    if (this.updateSettingsFormAiDataData.startItems === true) {
+      this.disableInitItems = false;
+    } else {
+      this.disableInitItems = true;
+    }
+
     this.restartGame();
 
     this.placeItems({init: true, items: ''});
@@ -3019,6 +3026,12 @@ class App extends Component {
 
       }
 
+      if (this.updateSettingsFormAiDataData.startItems === true) {
+        this.disableInitItems = false;
+      } else {
+        this.disableInitItems = true;
+      }
+
       // console.log('initArray',initArray);
 
 
@@ -3112,14 +3125,6 @@ class App extends Component {
     )
 
     this.redrawSettingsGrid(this.state.canvas3,this.state.context3);
-
-    // console.log('this.gamepad',this.gamepad);
-    // console.log('this.gridWidth',this.gridWidth);
-    // console.log('this.playerNumber',this.playerNumber);
-    // console.log('this.aiPlayers',this.aiPlayers);
-    // console.log('this.settingsFormPlyrStartPosList',this.settingsFormPlyrStartPosList);
-    // console.log('this.updateSettingsFormAiData',this.updateSettingsFormAiDataData);
-    // console.log('this.settingsFormAiStartPosList',this.settingsFormAiStartPosList);
 
   }
 
@@ -3468,6 +3473,7 @@ class App extends Component {
   updateSettingsFormAiData = (args) => {
 
     this.updateSettingsFormAiDataData = {
+      startItems: args.startItems,
       count: args.count,
       random: args.random,
       mode: args.mode,
@@ -3760,7 +3766,6 @@ class App extends Component {
           this.setState({
             showSettings: false
           })
-          // this.cancelSettings();
         }
         this.showSettingsKeyPress = {
           state: false,
@@ -4845,18 +4850,20 @@ class App extends Component {
               }
               player.currentWeapon.effect = 'ammo+0'
 
-              player.popups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit: 25,
-                  type: '',
-                  position: '',
-                  msg: 'outOfAmmo',
-                  img: '',
+              if (!player.popups.find(x=>x.msg === 'outOfAmmo')) {
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 25,
+                    type: '',
+                    position: '',
+                    msg: 'outOfAmmo',
+                    img: '',
 
-                }
-              )
+                  }
+                )
+              }
 
             }
             else if (player.currentWeapon.type !== 'crossbow' ) {
@@ -4965,7 +4972,7 @@ class App extends Component {
 
                 // ATTACK SUCCESS!!
                 if (this.players.[player.target.occupant.player-1].defending.state === false || this.players.[player.target.occupant.player-1].direction === player.direction) {
-                  // console.log('attack success');
+                  console.log('attack success');
 
                   player.success.attackSuccess = {
                     state: true,
@@ -6077,6 +6084,17 @@ class App extends Component {
               this.keyPressed[player.number-1].cycleWeapon === true &&
               player.items.weapons.length === 1
             ) {
+
+              if (player.currentWeapon.type === 'crossbow' && player.items.ammo === 0) {
+                player.currentWeapon = {
+                  name: '',
+                  type: '',
+                  effect: ''
+                }
+                console.log('only have empty crossbow left, switching to unarmed');
+              } else {
+
+
               player.currentWeapon = player.items.weapons[0];
               // console.log('nothing to cycle through');
               this.players[player.number-1].statusDisplay = {
@@ -6099,6 +6117,8 @@ class App extends Component {
 
                     }
                   )
+              }
+
               }
 
 
@@ -8021,6 +8041,17 @@ class App extends Component {
               cll.number.y === y
             ) {
               floor = this.refs.floorAttack;
+            }
+          }
+        }
+
+        if (this.cellsToHighlight.length > 0) {
+          for (const cll2 of this.cellsToHighlight) {
+            if (
+              cll2.x === x &&
+              cll2.y === y
+            ) {
+              floor = this.refs.floorVoid;
             }
           }
         }
@@ -10348,6 +10379,8 @@ class App extends Component {
     };
 
     let obstacleObstructFound = false;
+    let playerObstructFound = false;
+    let spearCellObstacle = false;
     let spearCell2Obstacle = false;
     for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
       for (const cell of row) {
@@ -10372,11 +10405,16 @@ class App extends Component {
             obstacleObstructFound = true;
           }
           if (player.currentWeapon.type === 'spear' && player.attacking.state === true && player.strafing.state !== true) {
+
             if (
               target.cell2.number.x === obstaclePosition.x &&
               target.cell2.number.y === obstaclePosition.y
             ) {
               spearCell2Obstacle = true;
+
+              target.free = false;
+              target.occupant.type = 'obstacle';
+              obstacleObstructFound = true;
             }
           }
           // if (
@@ -10396,8 +10434,8 @@ class App extends Component {
           targetCellNumber.y === plyr2.currentPosition.cell.number.y
         ) {
           // console.log('opposing player is in your way');
+          playerObstructFound = true;
           target.free = false;
-          obstacleObstructFound = true;
           target.occupant = {
             type: 'player',
             player: plyr2.number
@@ -10410,11 +10448,16 @@ class App extends Component {
           ) {
             // console.log('opposing player is in your way',plyr2,target.cell2.number.x === plyr2.currentPosition.cell.number.x && target.cell2.number.y === plyr2.currentPosition.cell.number.y,plyr2.currentPosition.cell.number.x,plyr2.currentPosition.cell.number.y);
             target.free = false;
-            obstacleObstructFound = true;
+            playerObstructFound = true;
             target.occupant = {
               type: 'player',
               player: plyr2.number
             };
+          }
+
+          if (obstacleObstructFound === true) {
+            target.free = false;
+            target.occupant.type = 'obstacle';
           }
         }
 
@@ -10655,7 +10698,7 @@ class App extends Component {
     }
 
 
-    if (obstacleObstructFound !== true && spearCell2Obstacle !== true) {
+    if (obstacleObstructFound !== true && spearCellObstacle !== true && spearCell2Obstacle !== true && playerObstructFound !== true) {
       target.free = true;
       target.occupant = {
         type: '',
@@ -10750,6 +10793,195 @@ class App extends Component {
 
   }
 
+  aiBoltPathCheck = (aiPlayer) => {
+
+    // let path = [];
+    // let originCell = {
+    //   x: aiPlayer.currentPosition.cell.number.x,
+    //   y: aiPlayer.currentPosition.cell.number.y,
+    // };
+    // let nextCell = {
+    //   number: {
+    //     x: 0,
+    //     y: 0,
+    //   },
+    //   center: {
+    //     x: 0,
+    //     y: 0,
+    //   },
+    //   vertices: [],
+    // };
+    //
+    // while (
+    //   nextCell.number.x >= 0 &&
+    //   nextCell.number.y >= 0 &&
+    //   nextCell.number.x <= this.gridWidth &&
+    //   nextCell.number.y <= this.gridWidth
+    // ) {
+    //   // console.log(originCell.x,originCell.y);
+    //   let cell = {
+    //     number: {
+    //       x: 0,
+    //       y: 0,
+    //     },
+    //     center: {
+    //       x: 0,
+    //       y: 0,
+    //     },
+    //     vertices: [],
+    //   }
+    //
+    //   switch(direction) {
+    //     case 'north' :
+    //       cell.number = {
+    //         x: originCell.x,
+    //         y: originCell.y-1,
+    //       }
+    //     break;
+    //     case 'northEast' :
+    //       cell.number = {
+    //         x: originCell.x+1,
+    //         y: originCell.y-1,
+    //       }
+    //     break;
+    //     case 'northWest' :
+    //       cell.number = {
+    //         x: originCell.x-1,
+    //         y: originCell.y-1,
+    //       }
+    //     break;
+    //     case 'south' :
+    //       cell.number = {
+    //         x: originCell.x,
+    //         y: originCell.y+1,
+    //       }
+    //     break;
+    //     case 'southEast' :
+    //       cell.number = {
+    //         x: originCell.x+1,
+    //         y: originCell.y+1,
+    //       }
+    //     break;
+    //     case 'southWest' :
+    //       cell.number = {
+    //         x: originCell.x-1,
+    //         y: originCell.y+1,
+    //       }
+    //     break;
+    //     case 'west' :
+    //       cell.number = {
+    //         x: originCell.x-1,
+    //         y: originCell.y,
+    //       }
+    //     break;
+    //     case 'east' :
+    //       cell.number = {
+    //         x: originCell.x+1,
+    //         y: originCell.y,
+    //       }
+    //     break;
+    //   };
+    //
+    //   nextCell = cell;
+    //   originCell = nextCell.number;
+    //   path.push(cell);
+    // }
+    // if (path.length > 1) {
+    //   path.splice(path.length-1,1)
+    // }
+    //
+    // console.log('bolt path',path);
+    // let clearToShoot = true;
+    //
+    // for (const cell of path) {
+    //   let cellRef = this.gridInfo.find(x=>x.number.x === cell.number.x && x.number.y === cell.number.y)
+    //   if (
+    //     cellRef &&
+    //     cellRef.levelData.charAt(0) ===  'z' ||
+    //     cellRef.levelData.charAt(0) ===  'y'
+    //   ) {
+    //     clearToShoot = false;
+    //   }
+    //
+    // }
+    //
+    // return clearToShoot;
+
+
+
+    // console.log('aiPlayer.ai.targetPlayer',aiPlayer.ai.targetPlayer);
+    let rangeElemCells2 = [];
+    let rangeElem = aiPlayer.currentPosition.cell.number;
+    let targetPos = aiPlayer.ai.targetPlayer.currentPosition;
+
+    let dirToFire;
+    let diff = 0;
+    if (rangeElem.x === targetPos.x && rangeElem.y > targetPos.y) {
+     dirToFire = 'north';
+     diff = rangeElem.y - targetPos.y;
+     for (var i = 0; i < diff; i++) {
+       rangeElemCells2.push({x:rangeElem.x, y: rangeElem.y - i})
+       // this.cellsToHighlight.push({x:rangeElem.x, y: rangeElem.y - i})
+     }
+    }
+    if (rangeElem.x > targetPos.x && rangeElem.y === targetPos.y) {
+     dirToFire = 'west';
+     diff = rangeElem.x - targetPos.x;
+     for (var i = 0; i < diff; i++) {
+       rangeElemCells2.push({x:rangeElem.x - i, y: rangeElem.y})
+       // this.cellsToHighlight.push({x:rangeElem.x - i, y: rangeElem.y})
+     }
+    }
+    if (rangeElem.x === targetPos.x && rangeElem.y < targetPos.y) {
+     dirToFire = 'south';
+     diff = targetPos.y - rangeElem.y;
+     for (var i = 0; i < diff; i++) {
+       rangeElemCells2.push({x:rangeElem.x, y: rangeElem.y + i})
+       // this.cellsToHighlight.push({x:rangeElem.x, y: rangeElem.y + i})
+     }
+    }
+    if (rangeElem.x < targetPos.x && rangeElem.y === targetPos.y) {
+     dirToFire = 'east';
+     diff = targetPos.x - rangeElem.x;
+     for (var i = 0; i < diff; i++) {
+       rangeElemCells2.push({x:rangeElem.x + i, y: rangeElem.y})
+       // this.cellsToHighlight.push({x:rangeElem.x + i, y: rangeElem.y})
+     }
+    }
+
+
+    // IS SIGHT OBSTRUCTED?
+    // let clearToShoot = true;
+    let obstructions = [];
+    for (const cellx of rangeElemCells2) {
+      // console.log('cellx',cellx);
+      let cellRef4 = this.gridInfo.find(elemb => elemb.number.x === cellx.x && elemb.number.y === cellx.y)
+      if (
+        cellRef4.levelData.charAt(0) ===  'z' ||
+        cellRef4.levelData.charAt(0) ===  'y'
+      ) {
+        // clearToShoot = false;
+        obstructions.push(cellx)
+      }
+      if (
+        cellRef4.levelData.charAt(0) !==  'y' &&
+        cellRef4.levelData.charAt(0) !==  'z'
+      ) {
+        // clearToShoot = true;
+        // obstructions.push(cellx)
+      }
+    }
+
+    if (obstructions.length === 0) {
+      return true;
+    } else {
+      return false;
+      // console.log('obstructions',obstructions);
+    }
+
+    // return clearToShoot
+
+  }
   getBoltTarget = (bolt) => {
     // console.log('get bolt target');
 
@@ -10960,6 +11192,26 @@ class App extends Component {
               if (cell.item.subType === 'crossbow') {
                 let ammo = parseInt(cell.item.effect.split('+')[1])
                 // console.log('picked up a crossbow checking ammo',ammo);
+                if (!this.players[player.number-1].popups.find(x=>x.msg === 'crossbow')) {
+                  this.players[player.number-1].popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit:25,
+                      type: '',
+                      position: '',
+                      msg: 'crossbow',
+                      img: '',
+
+                    }
+                  )
+                }
+
+                this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
+                // console.log('new ammo amt',this.players[player.number-1].items.ammo);
+              }
+
+              if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupWeapon')) {
                 this.players[player.number-1].popups.push(
                   {
                     state: false,
@@ -10967,28 +11219,12 @@ class App extends Component {
                     limit:25,
                     type: '',
                     position: '',
-                    msg: 'crossbow',
+                    msg: 'pickupWeapon',
                     img: '',
 
                   }
                 )
-
-                this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
-                // console.log('new ammo amt',this.players[player.number-1].items.ammo);
               }
-
-              this.players[player.number-1].popups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit:25,
-                  type: '',
-                  position: '',
-                  msg: 'pickupWeapon',
-                  img: '',
-
-                }
-              )
 
               pickUp = true;
             }
@@ -11002,18 +11238,20 @@ class App extends Component {
                 if (cell.item.subType === 'crossbow') {
                   let ammo = parseInt(cell.item.effect.split('+')[1])
                   // console.log('picked up a crossbow checking ammo',ammo);
-                  this.players[player.number-1].popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit:25,
-                      type: '',
-                      position: '',
-                      msg: 'crossbow',
-                      img: '',
+                  if (!this.players[player.number-1].popups.find(x=>x.msg === 'crossbow')) {
+                    this.players[player.number-1].popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit:25,
+                        type: '',
+                        position: '',
+                        msg: 'crossbow',
+                        img: '',
 
-                    }
-                  )
+                      }
+                    )
+                  }
                   this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
                   // console.log('new ammo amt',this.players[player.number-1].items.ammo);
                 }
@@ -11025,18 +11263,20 @@ class App extends Component {
                   count: 1,
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
-                this.players[player.number-1].popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit:25,
-                    type: '',
-                    position: '',
-                    msg: 'pickupWeapon',
-                    img: '',
+                if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupWeapon')) {
+                  this.players[player.number-1].popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit:25,
+                      type: '',
+                      position: '',
+                      msg: 'pickupWeapon',
+                      img: '',
 
-                  }
-                )
+                    }
+                  )
+                }
 
               }
               else {
@@ -11046,31 +11286,21 @@ class App extends Component {
                   this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
                   console.log('you already have a crossbow but take the ammo',ammo);
                   cell.item.effect = 'ammo+0';
-                  this.players[player.number-1].popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit:25,
-                      type: '',
-                      position: '',
-                      msg: 'pickupAmmo',
-                      img: '',
 
-                    }
-                  )
+                  if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupAmmo')) {
+                    this.players[player.number-1].popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit:25,
+                        type: '',
+                        position: '',
+                        msg: 'pickupAmmo',
+                        img: '',
 
-                  this.players[player.number-1].popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit:25,
-                      type: '',
-                      position: '',
-                      msg: 'pickupAmmo',
-                      img: '',
-
-                    }
-                  )
+                      }
+                    )
+                  }
                 }
                 else {
                   console.log('you already have this weapon');
@@ -11080,18 +11310,21 @@ class App extends Component {
                     count: 1,
                     limit: this.players[player.number-1].statusDisplay.limit,
                   }
-                  this.players[player.number-1].popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit:25,
-                      type: '',
-                      position: '',
-                      msg: 'stop',
-                      img: '',
 
-                    }
-                  )
+                  if (!this.players[player.number-1].popups.find(x=>x.msg === 'stop')) {
+                    this.players[player.number-1].popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit:25,
+                        type: '',
+                        position: '',
+                        msg: 'stop',
+                        img: '',
+
+                      }
+                    )
+                  }
                 }
               }
             }
@@ -11106,18 +11339,22 @@ class App extends Component {
               count: 1,
               limit: this.players[player.number-1].statusDisplay.limit,
             }
-            this.players[player.number-1].popups.push(
-              {
-                state: false,
-                count: 0,
-                limit:25,
-                type: '',
-                position: '',
-                msg: 'inventoryFull',
-                img: '',
 
-              }
-            )
+            if (!this.players[player.number-1].popups.find(x=>x.msg === 'inventoryFull')) {
+              this.players[player.number-1].popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit:25,
+                  type: '',
+                  position: '',
+                  msg: 'inventoryFull',
+                  img: '',
+
+                }
+              )
+            }
+
           }
 
         }
@@ -11154,18 +11391,21 @@ class App extends Component {
                     limit: this.players[player.number-1].statusDisplay.limit,
                   }
 
-                  this.players[player.number-1].popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit:25,
-                      type: '',
-                      position: '',
-                      msg: 'pickupBuff',
-                      img: '',
+                  if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupBuff')) {
+                    this.players[player.number-1].popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit:25,
+                        type: '',
+                        position: '',
+                        msg: 'pickupBuff',
+                        img: '',
 
-                    }
-                  )
+                      }
+                    )
+                  }
+
                 }
               break;
               case 'speedUp' :
@@ -11184,18 +11424,21 @@ class App extends Component {
                     limit: this.players[player.number-1].statusDisplay.limit,
                   }
 
-                  this.players[player.number-1].popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit: 25,
-                      type: '',
-                      position: '',
-                      msg: 'pickupBuff',
-                      img: '',
+                  if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupBuff')) {
+                    this.players[player.number-1].popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 25,
+                        type: '',
+                        position: '',
+                        msg: 'pickupBuff',
+                        img: '',
 
-                    }
-                  )
+                      }
+                    )
+                  }
+
                 }
               break;
             }
@@ -11218,18 +11461,21 @@ class App extends Component {
                 limit: this.players[player.number-1].statusDisplay.limit,
               }
 
-              this.players[player.number-1].popups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit:25,
-                  type: '',
-                  position: '',
-                  msg: 'pickupArmor',
-                  img: '',
+              if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupArmor')) {
+                this.players[player.number-1].popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:25,
+                    type: '',
+                    position: '',
+                    msg: 'pickupArmor',
+                    img: '',
 
-                }
-              )
+                  }
+                )
+              }
+
             }
             else {
               console.log('you already have this armor');
@@ -11240,18 +11486,21 @@ class App extends Component {
                 limit: this.players[player.number-1].statusDisplay.limit,
               }
 
-              this.players[player.number-1].popups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit:25,
-                  type: '',
-                  position: '',
-                  msg: 'stop',
-                  img: '',
+              if (!this.players[player.number-1].popups.find(x=>x.msg === 'stop')) {
+                this.players[player.number-1].popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:25,
+                    type: '',
+                    position: '',
+                    msg: 'stop',
+                    img: '',
 
-                }
-              )
+                  }
+                )
+              }
+
 
             }
           }
@@ -11267,18 +11516,21 @@ class App extends Component {
               limit: this.players[player.number-1].statusDisplay.limit,
             }
 
-            this.players[player.number-1].popups.push(
-              {
-                state: false,
-                count: 0,
-                limit:25,
-                type: '',
-                position: '',
-                msg: 'inventoryFull',
-                img: '',
+            if (!this.players[player.number-1].popups.find(x=>x.msg === 'inventoryFull')) {
+              this.players[player.number-1].popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit:25,
+                  type: '',
+                  position: '',
+                  msg: 'inventoryFull',
+                  img: '',
 
-              }
-            )
+                }
+              )
+            }
+
           }
 
         }
@@ -11302,18 +11554,21 @@ class App extends Component {
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
 
-                this.players[player.number-1].popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit:25,
-                    type: '',
-                    position: '',
-                    msg: 'pickupBuff',
-                    img: '',
+                if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupBuff')) {
+                  this.players[player.number-1].popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit:25,
+                      type: '',
+                      position: '',
+                      msg: 'pickupBuff',
+                      img: '',
 
-                  }
-                )
+                    }
+                  )
+                }
+
                 pickUp = true;
               }
               else {
@@ -11326,18 +11581,20 @@ class App extends Component {
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
 
-                this.players[player.number-1].popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit:25,
-                    type: '',
-                    position: '',
-                    msg: 'stop',
-                    img: '',
+                if (!this.players[player.number-1].popups.find(x=>x.msg === 'stop')) {
+                  this.players[player.number-1].popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit:25,
+                      type: '',
+                      position: '',
+                      msg: 'stop',
+                      img: '',
 
-                  }
-                )
+                    }
+                  )
+                }
               }
             break;
             case 'moveSpeedDown' :
@@ -11356,18 +11613,20 @@ class App extends Component {
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
 
-                this.players[player.number-1].popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit:25,
-                    type: '',
-                    position: '',
-                    msg: 'pickupDebuff',
-                    img: '',
+                if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupDebuff')) {
+                  this.players[player.number-1].popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit:25,
+                      type: '',
+                      position: '',
+                      msg: 'pickupDebuff',
+                      img: '',
 
-                  }
-                )
+                    }
+                  )
+                }
 
                 pickUp = true;
               }
@@ -11387,18 +11646,20 @@ class App extends Component {
                     limit: this.players[player.number-1].statusDisplay.limit,
                   }
 
-                  this.players[player.number-1].popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit:25,
-                      type: '',
-                      position: '',
-                      msg: 'pickupBuff',
-                      img: '',
+                  if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupBuff')) {
+                    this.players[player.number-1].popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit:25,
+                        type: '',
+                        position: '',
+                        msg: 'pickupBuff',
+                        img: '',
 
-                    }
-                  )
+                      }
+                    )
+                  }
 
                   pickUp = true;
               }
@@ -11412,18 +11673,20 @@ class App extends Component {
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
 
-                this.players[player.number-1].popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit:25,
-                    type: '',
-                    position: '',
-                    msg: 'stop',
-                    img: '',
+                if (!this.players[player.number-1].popups.find(x=>x.msg === 'stop')) {
+                  this.players[player.number-1].popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit:25,
+                      type: '',
+                      position: '',
+                      msg: 'stop',
+                      img: '',
 
-                  }
-                )
+                    }
+                  )
+                }
               }
             break;
             case 'hpDown' :
@@ -11438,18 +11701,20 @@ class App extends Component {
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
 
-                this.players[player.number-1].popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit:25,
-                    type: '',
-                    position: '',
-                    msg: 'pickupDebuff',
-                    img: '',
+                if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupDebuff')) {
+                  this.players[player.number-1].popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit:25,
+                      type: '',
+                      position: '',
+                      msg: 'pickupDebuff',
+                      img: '',
 
-                  }
-                )
+                    }
+                  )
+                }
                 pickUp = true;
               }
             break;
@@ -11466,18 +11731,20 @@ class App extends Component {
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
 
-                this.players[player.number-1].popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit:25,
-                    type: '',
-                    position: '',
-                    msg: 'pickupBuff',
-                    img: '',
+                if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupBuff')) {
+                  this.players[player.number-1].popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit:25,
+                      type: '',
+                      position: '',
+                      msg: 'pickupBuff',
+                      img: '',
 
-                  }
-                )
+                    }
+                  )
+                }
 
               }
               this.players[player.number-1].crits.guardBreak = this.players[player.number-1].crits.guardBreak + 1;
@@ -11497,18 +11764,20 @@ class App extends Component {
                 limit: this.players[player.number-1].statusDisplay.limit,
               }
 
-              this.players[player.number-1].popups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit:25,
-                  type: '',
-                  position: '',
-                  msg: 'pickupDebuff',
-                  img: '',
+              if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupDebuff')) {
+                this.players[player.number-1].popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:25,
+                    type: '',
+                    position: '',
+                    msg: 'pickupDebuff',
+                    img: '',
 
-                }
-              )
+                  }
+                )
+              }
 
               pickUp = true;
             break;
@@ -11524,18 +11793,20 @@ class App extends Component {
                 limit: this.players[player.number-1].statusDisplay.limit,
               }
 
-              this.players[player.number-1].popups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit:25,
-                  type: '',
-                  position: '',
-                  msg: 'pickupBuff',
-                  img: '',
+              if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupBuff')) {
+                this.players[player.number-1].popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:25,
+                    type: '',
+                    position: '',
+                    msg: 'pickupBuff',
+                    img: '',
 
-                }
-              )
+                  }
+                )
+              }
 
               pickUp = true;
             break;
@@ -11552,18 +11823,20 @@ class App extends Component {
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
 
-                this.players[player.number-1].popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit:25,
-                    type: '',
-                    position: '',
-                    msg: 'pickupDebuff',
-                    img: '',
+                if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupDebuff')) {
+                  this.players[player.number-1].popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit:25,
+                      type: '',
+                      position: '',
+                      msg: 'pickupDebuff',
+                      img: '',
 
-                  }
-                )
+                    }
+                  )
+                }
 
                 pickUp = true;
               }
@@ -11591,18 +11864,20 @@ class App extends Component {
                 limit: this.players[player.number-1].statusDisplay.limit,
               }
 
-              this.players[player.number-1].popups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit:25,
-                  type: '',
-                  position: '',
-                  msg: 'pickupAmmo',
-                  img: '',
+              if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupAmmo')) {
+                this.players[player.number-1].popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:25,
+                    type: '',
+                    position: '',
+                    msg: 'pickupAmmo',
+                    img: '',
 
-                }
-              )
+                  }
+                )
+              }
 
               pickUp = true;
             break;
@@ -11617,18 +11892,20 @@ class App extends Component {
                 limit: this.players[player.number-1].statusDisplay.limit,
               }
 
-              this.players[player.number-1].popups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit:25,
-                  type: '',
-                  position: '',
-                  msg: 'pickupAmmo',
-                  img: '',
+              if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupAmmo')) {
+                this.players[player.number-1].popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:25,
+                    type: '',
+                    position: '',
+                    msg: 'pickupAmmo',
+                    img: '',
 
-                }
-              )
+                  }
+                )
+              }
 
               pickUp = true;
             break;
@@ -11699,18 +11976,20 @@ class App extends Component {
         this.players[player.number-1].action = 'falling';
         this.players[player.number-1].drowning = true;
 
-        this.players[player.number-1].popups.push(
-          {
-            state: false,
-            count: 0,
-            limit: 25,
-            type: '',
-            position: '',
-            msg: 'drowning',
-            img: '',
+        if (!this.players[player.number-1].popups.find(x=>x.msg === 'drowning')) {
+          this.players[player.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit:25,
+              type: '',
+              position: '',
+              msg: 'drowning',
+              img: '',
 
-          }
-        )
+            }
+          )
+        }
 
         // this.moveSpeed = plyr.speed.move;
         this.players[player.number-1].target = {
@@ -11764,36 +12043,42 @@ class App extends Component {
         this.players[player.number-1].terrainMoveSpeed.state = true;
         this.players[player.number-1].terrainMoveSpeed.speed = .05;
 
-        this.players[player.number-1].popups.push(
-          {
-            state: false,
-            count: 0,
-            limit: 25,
-            type: '',
-            position: '',
-            msg: 'terrainSlowdown',
-            img: '',
+        if (!player.popups.find(x=>x.msg === 'terrainSlowdown')) {
+          this.players[player.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 25,
+              type: '',
+              position: '',
+              msg: 'terrainSlowdown',
+              img: '',
 
-          }
-        )
+            }
+          )
+        }
+
       break;
       case 'slippery' :
         // console.log('player',player.number,' stepped in',cell.terrain.name,'type',cell.terrain.type);
         this.players[player.number-1].terrainMoveSpeed.state = true;
         this.players[player.number-1].terrainMoveSpeed.speed = .2;
 
-        this.players[player.number-1].popups.push(
-          {
-            state: false,
-            count: 0,
-            limit: 25,
-            type: '',
-            position: '',
-            msg: 'terrainSpeedup',
-            img: '',
+        if (!player.popups.find(x=>x.msg === 'terrainSpeedup')) {
+          this.players[player.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 25,
+              type: '',
+              position: '',
+              msg: 'terrainSpeedup',
+              img: '',
 
-          }
-        )
+            }
+          )
+        }
+
       break;
       case 'hazard' :
         // console.log('player',player.number,' stepped in',cell.terrain.name,'type',cell.terrain.type);
@@ -11824,18 +12109,21 @@ class App extends Component {
               type: 'attacked',
             };
 
-            this.players[player.number-1].popups.push(
-              {
-                state: false,
-                count: 0,
-                limit: 25,
-                type: '',
-                position: '',
-                msg: 'terrainInjured',
-                img: '',
+            if (!player.popups.find(x=>x.msg === 'terrainInjured')) {
+              this.players[player.number-1].popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 25,
+                  type: '',
+                  position: '',
+                  msg: 'terrainInjured',
+                  img: '',
 
-              }
-            )
+                }
+              )
+            }
+
 
 
             if (this.aiDeflectedCheck.includes(this.players[player.number-1].number) !== true) {
@@ -14755,6 +15043,8 @@ class App extends Component {
           },
         }
 
+
+
         this.players.push(newPlayer);
         this.keyPressed.push(
           {
@@ -14815,7 +15105,10 @@ class App extends Component {
             ]
           }
         }
-
+        if (this.aiInitSettings.weapon.type === 'crossbow') {
+          this.players[newPlayerNumber-1].currentWeapon.effect = 'ammo+5';
+          this.players[newPlayerNumber-1].items.ammo = 5;
+        }
 
 
       }
@@ -15178,20 +15471,56 @@ class App extends Component {
 
       if (plyr.currentWeapon.type === weaponUpgradePriority[weaponPriorityIndex]) {
         console.log('priority weapon is my current');
-        havePriorityWeapon = true;
-        plyr.ai.upgradeWeapon = false
+
+        if (plyr.currentWeapon.type === 'crossbow' && plyr.items.ammo === 0 && plyr.items.weapons.length < 2) {
+
+          console.log('priority weapon is crossbow but out of ammo!');
+          if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
+            plyr.ai.upgradeWeapon = false;
+            console.log('priority index max w/ nothing to retrieve');
+          }
+          else {
+            console.log('check next priority weapon');
+            plyr.ai.organizing.weaponPriorityIndex++;
+          }
+        } else {
+          havePriorityWeapon = true;
+          plyr.ai.upgradeWeapon = false
+        }
+
+
       } else {
         havePriorityWeapon = false;
       }
 
       if (inMyInventory && plyr.currentWeapon.type !== weaponUpgradePriority[weaponPriorityIndex]) {
-        console.log('priority weapon is in my inventory. Switching to it');
-        plyr.currentWeapon.name = inMyInventory.name;
-        plyr.currentWeapon.type = inMyInventory.type;
-        plyr.currentWeapon.effect = inMyInventory.effect;
+        console.log('priority weapon is in my inventory. Switching to it',plyr.currentWeapon,plyr.items.ammo,plyr.items.weapons);
 
-        havePriorityWeapon = true;
-        plyr.ai.upgradeWeapon = false
+        if (plyr.currentWeapon.type === 'crossbow' && plyr.items.ammo === 0 && plyr.items.weapons.length === 1) {
+
+          console.log('priority weapon is crossbow but out of ammo!');
+          if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
+            plyr.ai.upgradeWeapon = false;
+            console.log('priority index max w/ nothing to retrieve');
+          }
+          else {
+            console.log('check next priority weapon');
+            plyr.ai.organizing.weaponPriorityIndex++;
+          }
+        } else {
+          havePriorityWeapon = true;
+          plyr.ai.upgradeWeapon = false;
+
+          plyr.currentWeapon.name = inMyInventory.name;
+          plyr.currentWeapon.type = inMyInventory.type;
+          plyr.currentWeapon.effect = inMyInventory.effect;
+        }
+        // plyr.currentWeapon.name = inMyInventory.name;
+        // plyr.currentWeapon.type = inMyInventory.type;
+        // plyr.currentWeapon.effect = inMyInventory.effect;
+
+        // havePriorityWeapon = true;
+        // plyr.ai.upgradeWeapon = false
       } else if (plyr.currentWeapon.type !== weaponUpgradePriority[weaponPriorityIndex]) {
         havePriorityWeapon = false;
       }
@@ -15243,7 +15572,7 @@ class App extends Component {
                 console.log('priority weapon target is unsafe.');
 
                 if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
-                  plyr.ai.upgradeWeapon = false;
+                  // plyr.ai.upgradeWeapon = false;
                   console.log('priority index max w/ nothing to retrieve');
                 }
                 else {
@@ -15257,10 +15586,11 @@ class App extends Component {
             else if (inTheField.effect.split('+')[1] === 0 || inTheField.effect.split('+')[1] === '0') {
               console.log('bow in the field but has no ammo');
               if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
-                plyr.ai.upgradeWeapon = false;
+                // plyr.ai.upgradeWeapon = false;
                 console.log('priority index max w/ nothing to retrieve');
               }
               else {
+                console.log('check next priority weapon');
                 plyr.ai.organizing.weaponPriorityIndex++;
               }
             }
@@ -15298,7 +15628,7 @@ class App extends Component {
               console.log('priority weapon is not in the field');
 
               if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
-                plyr.ai.upgradeWeapon = false;
+                // plyr.ai.upgradeWeapon = false;
                 console.log('priority index max w/ nothing to retrieve');
               }
               else {
@@ -15311,12 +15641,13 @@ class App extends Component {
           }
 
         } else {
-
+          console.log('priority weapon is not in the field, nor current nor inventory');
           if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
-            plyr.ai.upgradeWeapon = false;
+            // plyr.ai.upgradeWeapon = false;
             console.log('priority index max w/ nothing to retrieve');
           }
           else {
+            console.log('check next priority weapon');
             plyr.ai.organizing.weaponPriorityIndex++;
           }
 
@@ -15453,7 +15784,7 @@ class App extends Component {
               console.log('unsafe to retrieve. Choose from inventory');
 
               if (plyr.items.weapons.length > 1) {
-                console.log('fallback to other weapon');
+                console.log('fallback to other weapon1',plyr.items.weapons);
                 plyr.currentWeapon = {
                   name: plyr.items.weapons[1].name,
                   type: plyr.items.weapons[1].type,
@@ -15462,7 +15793,7 @@ class App extends Component {
 
                 plyr.ai.targetAcquired = false;
               } else {
-                console.log('nothing else in inventory. find other in the field');
+                console.log('nothing else in inventory. find other in the field1');
                 plyr.ai.upgradeWeapon = true
               }
 
@@ -15472,7 +15803,7 @@ class App extends Component {
             console.log('bow in the field but no ammo');
 
             if (plyr.items.weapons.length > 1) {
-              console.log('fallback to other weapon');
+              console.log('fallback to other weapon2',plyr.items.weapons);
               plyr.currentWeapon = {
                 name: plyr.items.weapons[1].name,
                 type: plyr.items.weapons[1].type,
@@ -15481,7 +15812,7 @@ class App extends Component {
 
               plyr.ai.targetAcquired = false;
             } else {
-              console.log('nothing else in inventory. find other in the field');
+              console.log('nothing else in inventory. find other in the field2');
               plyr.ai.upgradeWeapon = true
             }
 
@@ -15490,7 +15821,7 @@ class App extends Component {
           console.log('no bow or ammo in the field');
 
           if (plyr.items.weapons.length > 1) {
-            console.log('fallback to other weapon');
+            console.log('fallback to other weapon3',plyr.items.weapons);
             plyr.currentWeapon = {
               name: plyr.items.weapons[0].name,
               type: plyr.items.weapons[0].type,
@@ -15499,8 +15830,19 @@ class App extends Component {
 
             plyr.ai.targetAcquired = false;
           } else {
-            console.log('nothing else in inventory. find other in the field');
-            plyr.ai.upgradeWeapon = true
+            console.log('nothing else in inventory. find other in the field3');
+            plyr.ai.upgradeWeapon = true;
+
+            if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
+              console.log('no ammo for bow or alternative weapons to upgrade to. Switch to unarmed');
+              plyr.currentWeapon = {
+                name: '',
+                type: '',
+                effect: ''
+              }
+            }
+
+
           }
 
         }
@@ -15883,6 +16225,8 @@ class App extends Component {
     // TARGET AQUISITION & RANGE FINDING!!
     let targetInRange = false;
 
+
+
     if (plyr.ai.targetSet === true) {
       for (const plyr2 of this.players) {
         if (plyr2.ai.state !== true) {
@@ -15896,7 +16240,9 @@ class App extends Component {
                 plyr2.currentPosition.cell.number.y > plyr.currentPosition.cell.number.y - 7 &&
                 plyr2.currentPosition.cell.number.y < plyr.currentPosition.cell.number.y
               ) {
-                if (plyr.ai.targetPlayer.number === plyr2.number && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
+
+                let clearToShoot = this.aiBoltPathCheck(plyr)
+                if (clearToShoot === true && plyr.ai.targetPlayer.number === plyr2.number && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                   targetInRange = true;
                   // console.log('target in bow range for player',plyr.number,'@',plyr.currentPosition.cell.number);
                   plyr.ai.currentInstruction = 0;
@@ -15934,12 +16280,14 @@ class App extends Component {
                  plyr2.currentPosition.cell.number.x > plyr.currentPosition.cell.number.x - 7 &&
                  plyr2.currentPosition.cell.number.x < plyr.currentPosition.cell.number.x
               ) {
-                  if (plyr.ai.targetPlayer.number === plyr2.number && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
-                    targetInRange = true;
-                    // console.log('target in bow range for player',plyr.number,'@',plyr.currentPosition.cell.number);
-                    plyr.ai.currentInstruction = 0;
-                  }
-                  else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
+
+                let clearToShoot = this.aiBoltPathCheck(plyr)
+                if (clearToShoot === true && plyr.ai.targetPlayer.number === plyr2.number && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
+                  targetInRange = true;
+                  // console.log('target in bow range for player',plyr.number,'@',plyr.currentPosition.cell.number);
+                  plyr.ai.currentInstruction = 0;
+                }
+                else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     plyr.ai.currentInstruction = 0;
                     // console.log('alternative target in range. Switching');
                     plyr.ai.targetPlayer = {
@@ -16283,7 +16631,9 @@ class App extends Component {
       plyr.ai.prevMission = plyr.ai.mission;
       if (plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
         // console.log('player',plyr.number,'target in range. Engage!');
+
         plyr.ai.mission = 'engage';
+
       }
 
       if (plyr.ai.mission === 'retrieve' || plyr.ai.mission === 'retreat') {
@@ -16689,7 +17039,7 @@ class App extends Component {
       // if (aiPlayer.ai.engaging.state === true) {
       // if (aiPlayer.ai.engaging.state !== true) {
 
-        if (aiPlayer.currentWeapon.type === 'crossbow' && aiPlayer.action === 'idle' && aiPlayer.success.deflected.state !== true ) {
+        if (aiPlayer.currentWeapon.type === 'crossbow' && aiPlayer.action === 'idle' && aiPlayer.success.deflected.state !== true) {
           let instructions3 = [];
           // ENGAGED TARGET IS OPEN TO ATTACK!
           if (targetPlayer.defending.state !== true && targetPlayer.attacking.state !== true && targetPlayer.defendDecay.state !== true && targetPlayer.dodging.state !== true) {
@@ -16730,6 +17080,8 @@ class App extends Component {
               // aiPlayer.ai.currentInstruction = 0;
             }
             else if (aiPlayer.items.ammo > 0) {
+
+
               instructions3.push(
                 {
                   keyword: 'attack',
@@ -16737,6 +17089,8 @@ class App extends Component {
                   limit: 1,
                 },
               )
+
+
             }
             if (aiPlayer.items.ammo === 0) {
               console.log('no ammo!!!');
@@ -18141,95 +18495,185 @@ class App extends Component {
                  {x: targetPos.x, y: targetPos.y-5},
                ]
 
+               // console.log('candidateTargets',candidateTargets);
+
+               let freeSpaces = [];
+
                for (const rangeElem of candidateTargets)  {
                  let indx = candidateTargets.findIndex(rng => rng.x === rangeElem.x && rng.y === rangeElem.y)
 
                  let pursuitTargetRef = this.gridInfo.find(elem => elem.number.x === rangeElem.x && elem.number.y === rangeElem.y)
 
                  if (!pursuitTargetRef) {
-                  // console.log('range element is out of bounds');
+                  // console.log('range element is  out of bounds',rangeElem,'indx',indx);
                  } else {
-                   let rangeElemCells;
 
-                   switch(indx) {
-                     case 0:
-                       rangeElemCells = [
-                         // {x:rangeElem - 5, y: rangeElem.y },
-                         {x:rangeElem - 4, y: rangeElem.y },
-                         {x:rangeElem - 3, y: rangeElem.y },
-                         {x:rangeElem - 2, y: rangeElem.y },
-                         {x:rangeElem - 1, y: rangeElem.y },
-                       ]
-                     break;
-                     case 1:
-                       rangeElemCells = [
-                         // {x:rangeElem + 5, y: rangeElem.y },
-                         {x:rangeElem + 4, y: rangeElem.y },
-                         {x:rangeElem + 3, y: rangeElem.y },
-                         {x:rangeElem + 2, y: rangeElem.y },
-                         {x:rangeElem + 1, y: rangeElem.y },
-                       ]
-                     break;
-                     case 2:
-                       rangeElemCells = [
-                         // {x:rangeElem, y: rangeElem.y + 5},
-                         {x:rangeElem, y: rangeElem.y + 4},
-                         {x:rangeElem, y: rangeElem.y + 3},
-                         {x:rangeElem, y: rangeElem.y + 2},
-                         {x:rangeElem, y: rangeElem.y + 1},
-                       ]
-                     break;
-                     case 3:
-                       rangeElemCells = [
-                         // {x:rangeElem, y: rangeElem.y - 5},
-                         {x:rangeElem, y: rangeElem.y - 4},
-                         {x:rangeElem, y: rangeElem.y - 3},
-                         {x:rangeElem, y: rangeElem.y - 2},
-                         {x:rangeElem, y: rangeElem.y - 1},
-                       ]
-                     break;
-                     // case 4:
-                     //   rangeElemCells = [
-                     //     {x:rangeElem, y: rangeElem.y - 5},
-                     //     {x:rangeElem, y: rangeElem.y - 4},
-                     //     {x:rangeElem, y: rangeElem.y - 3},
-                     //     {x:rangeElem, y: rangeElem.y - 2},
-                     //     {x:rangeElem, y: rangeElem.y - 1},
-                     //   ]
-                     // break;
+                   let rangeElemCells2 = [];
+
+                   // DON'T fire from obstructed position
+                   // this.cellsToHighlight.push(rangeElem)
+
+
+                   let dirToFire;
+                   let diff = 0;
+                   if (rangeElem.x === targetPos.x && rangeElem.y > targetPos.y) {
+                    dirToFire = 'north';
+                    diff = rangeElem.y - targetPos.y;
+                    for (var i = 0; i < diff; i++) {
+                      rangeElemCells2.push({x:rangeElem.x, y: rangeElem.y - i})
+                      // this.cellsToHighlight.push({x:rangeElem.x, y: rangeElem.y - i})
+                    }
+                   }
+                   if (rangeElem.x > targetPos.x && rangeElem.y === targetPos.y) {
+                    dirToFire = 'west';
+                    diff = rangeElem.x - targetPos.x;
+                    for (var i = 0; i < diff; i++) {
+                      rangeElemCells2.push({x:rangeElem.x - i, y: rangeElem.y})
+                      // this.cellsToHighlight.push({x:rangeElem.x - i, y: rangeElem.y})
+                    }
+                   }
+                   if (rangeElem.x === targetPos.x && rangeElem.y < targetPos.y) {
+                    dirToFire = 'south';
+                    diff = targetPos.y - rangeElem.y;
+                    for (var i = 0; i < diff; i++) {
+                      rangeElemCells2.push({x:rangeElem.x, y: rangeElem.y + i})
+                      // this.cellsToHighlight.push({x:rangeElem.x, y: rangeElem.y + i})
+                    }
+                   }
+                   if (rangeElem.x < targetPos.x && rangeElem.y === targetPos.y) {
+                    dirToFire = 'east';
+                    diff = targetPos.x - rangeElem.x;
+                    for (var i = 0; i < diff; i++) {
+                      rangeElemCells2.push({x:rangeElem.x + i, y: rangeElem.y})
+                      // this.cellsToHighlight.push({x:rangeElem.x + i, y: rangeElem.y})
+                    }
+                   }
+                   else {
+                     // console.log('exception! rangeElem,targetPos',rangeElem,targetPos);
                    }
 
-                   let rngElCellFree = true;
-                   for (const rngElCell of rangeElemCells) {
 
-                     for (const plyr of this.players) {
-                       if (plyr.currentPosition.cell.number.x === rngElCell.x && plyr.currentPosition.cell.number.y === rngElCell.y) {
-                         rngElCellFree = false;
-                       }
-                       let cellRef3 = this.gridInfo.find(elema => elema.number.x === rngElCell.x && elema.number.y === rngElCell.y)
-                       if (cellRef3) {
-                         if (
-                           cellRef3.levelData.charAt(0) ===  'z' ||
-                           cellRef3.levelData.charAt(0) ===  'y' ||
-                           cellRef3.terrain.type ===  'deep' ||
-                           cellRef3.terrain.type ===  'hazard'
-                         ) {
-                           rngElCellFree = false;
-                         }
-                       }
+                   // let rangeElemCells = [];
+                   // switch(indx) {
+                   //   case 0:
+                   //     rangeElemCells = [
+                   //       // {x:rangeElem - 5, y: rangeElem.y },
+                   //       {x:rangeElem.x - 4, y: rangeElem.y },
+                   //       {x:rangeElem.x - 3, y: rangeElem.y },
+                   //       {x:rangeElem.x - 2, y: rangeElem.y },
+                   //       {x:rangeElem.x - 1, y: rangeElem.y },
+                   //     ]
+                   //   break;
+                   //   case 1:
+                   //     rangeElemCells = [
+                   //       // {x:rangeElem + 5, y: rangeElem.y },
+                   //       {x:rangeElem.x + 4, y: rangeElem.y },
+                   //       {x:rangeElem.x + 3, y: rangeElem.y },
+                   //       {x:rangeElem.x + 2, y: rangeElem.y },
+                   //       {x:rangeElem.x + 1, y: rangeElem.y },
+                   //     ]
+                   //   break;
+                   //   case 2:
+                   //     rangeElemCells = [
+                   //       // {x:rangeElem, y: rangeElem.y + 5},
+                   //       {x:rangeElem.x, y: rangeElem.y + 4},
+                   //       {x:rangeElem.x, y: rangeElem.y + 3},
+                   //       {x:rangeElem.x, y: rangeElem.y + 2},
+                   //       {x:rangeElem.x, y: rangeElem.y + 1},
+                   //     ]
+                   //   break;
+                   //   case 3:
+                   //     rangeElemCells = [
+                   //       // {x:rangeElem, y: rangeElem.y - 5},
+                   //       {x:rangeElem.x, y: rangeElem.y - 4},
+                   //       {x:rangeElem.x, y: rangeElem.y - 3},
+                   //       {x:rangeElem.x, y: rangeElem.y - 2},
+                   //       {x:rangeElem.x, y: rangeElem.y - 1},
+                   //     ]
+                   //   break;
+                   //   // case 4:
+                   //   //   rangeElemCells = [
+                   //   //     {x:rangeElem, y: rangeElem.y - 5},
+                   //   //     {x:rangeElem, y: rangeElem.y - 4},
+                   //   //     {x:rangeElem, y: rangeElem.y - 3},
+                   //   //     {x:rangeElem, y: rangeElem.y - 2},
+                   //   //     {x:rangeElem, y: rangeElem.y - 1},
+                   //   //   ]
+                   //   // break;
+                   // }
+
+                   // IS FIRE POSITION FREE?
+                   let rngElCellFree = true;
+                   let cellRef3 = this.gridInfo.find(elema => elema.number.x === rangeElem.x && elema.number.y === rangeElem.y)
+                   if (cellRef3) {
+                     if (
+                       cellRef3.levelData.charAt(0) ===  'z' ||
+                       cellRef3.levelData.charAt(0) ===  'y' ||
+                       cellRef3.terrain.type ===  'deep' ||
+                       cellRef3.terrain.type ===  'hazard'
+                     ) {
+                       rngElCellFree = false;
+                     } else {
 
                      }
+                   } else if (!cellRef3) {
+                     rngElCellFree = false;
                    }
+
+
+                   let clearToShoot = false;
+                   // IS SIGHT OBSTRUCTED?
                    if (rngElCellFree === true) {
-                     targetPos = rangeElem;
-                     // console.log('found path to safe bow range',targetPos);
+
+
+                     let obstructions = [];
+                     for (const cellx of rangeElemCells2) {
+
+                       let cellRef4 = this.gridInfo.find(elemb => elemb.number.x === cellx.x && elemb.number.y === cellx.y)
+
+                       if (
+                         cellRef4.levelData.charAt(0) ===  'y' ||
+                         cellRef4.levelData.charAt(0) ===  'z'
+                       ) {
+                         // clearToShoot = false;
+                         obstructions.push(cellx)
+                       }
+                       if (
+                         cellRef4.levelData.charAt(0) !==  'y' &&
+                         cellRef4.levelData.charAt(0) !==  'z'
+                       ) {
+                         // clearToShoot = true;
+                         // obstructions.push(cellx)
+                       }
+                     }
+
+                     // if (clearToShoot === true) {
+                     if (obstructions.length === 0) {
+
+                       freeSpaces.push(rangeElem)
+                       // this.cellsToHighlight = rangeElemCells2;
+                       // console.log('rangeElemCells2',rangeElemCells2);
+                       // console.log('found path to safe bow range',targetPos);
+                     } else {
+                       console.log('target obstructed @',obstructions);
+                     }
                    } else {
                      console.log('your safe path is blocked');
                    }
+
                  }
                }
 
+               if (freeSpaces[0]) {
+                 console.log('freeSpaces',freeSpaces);
+                 targetPos = freeSpaces[0];
+                 console.log('found path to safe bow range',targetPos);
+               } else {
+                 console.log('No free or unobstructed firing positions at this distance');
+               }
+
             }
+
             if (aiPlayer.currentWeapon.type === "spear") {
               candidateTargets = [
                 {x: targetPos.x-3, y: targetPos.y},
@@ -18238,71 +18682,196 @@ class App extends Component {
                 {x: targetPos.x, y: targetPos.y-3},
               ]
 
+              // for (const rangeElem of candidateTargets)  {
+              //   let indx = candidateTargets.findIndex(rng => rng.x === rangeElem.x && rng.y === rangeElem.y)
+              //
+              //   let pursuitTargetRef = this.gridInfo.find(elem => elem.number.x === rangeElem.x && elem.number.y === rangeElem.y)
+              //
+              //   if (!pursuitTargetRef) {
+              //    // console.log('range element is out of bounds');
+              //   } else {
+              //
+              //
+              //     let rangeElemCells;
+              //
+              //     switch(indx) {
+              //       case 0:
+              //         rangeElemCells = [
+              //           {x:rangeElem - 2, y: rangeElem.y },
+              //           {x:rangeElem - 1, y: rangeElem.y },
+              //         ]
+              //       break;
+              //       case 1:
+              //         rangeElemCells = [
+              //           {x:rangeElem + 2, y: rangeElem.y },
+              //           {x:rangeElem + 1, y: rangeElem.y },
+              //         ]
+              //       break;
+              //       case 2:
+              //         rangeElemCells = [
+              //           {x:rangeElem, y: rangeElem.y + 2},
+              //           {x:rangeElem, y: rangeElem.y + 1},
+              //         ]
+              //       break;
+              //       case 3:
+              //         rangeElemCells = [
+              //           {x:rangeElem, y: rangeElem.y - 2},
+              //           {x:rangeElem, y: rangeElem.y - 1},
+              //         ]
+              //       break;
+              //     }
+              //
+              //     let rngElCellFree = true;
+              //     for (const rngElCell of rangeElemCells) {
+              //
+              //       for (const plyr of this.players) {
+              //         if (plyr.currentPosition.cell.number.x === rngElCell.x && plyr.currentPosition.cell.number.y === rngElCell.y) {
+              //           rngElCellFree = false;
+              //         }
+              //         let cellRef3 = this.gridInfo.find(elema => elema.number.x === rngElCell.x && elema.number.y === rngElCell.y)
+              //         if (cellRef3) {
+              //           if (
+              //             cellRef3.levelData.charAt(0) ===  'z' ||
+              //             cellRef3.levelData.charAt(0) ===  'y' ||
+              //             cellRef3.terrain.type ===  'deep' ||
+              //             cellRef3.terrain.type ===  'hazard'
+              //           ) {
+              //             rngElCellFree = false;
+              //           }
+              //         }
+              //
+              //       }
+              //     }
+              //     if (rngElCellFree === true) {
+              //       targetPos = rangeElem;
+              //       // console.log('found path to safe spear range');
+              //     } else {
+              //       console.log('your safe path is blocked');
+              //     }
+              //   }
+              // }
+
+              let freeSpaces = [];
+
               for (const rangeElem of candidateTargets)  {
+                // this.cellsToHighlight.push({x:rangeElem.x, y: rangeElem.y})
                 let indx = candidateTargets.findIndex(rng => rng.x === rangeElem.x && rng.y === rangeElem.y)
 
                 let pursuitTargetRef = this.gridInfo.find(elem => elem.number.x === rangeElem.x && elem.number.y === rangeElem.y)
 
                 if (!pursuitTargetRef) {
-                 // console.log('range element is out of bounds');
+                 // console.log('range element is  out of bounds',rangeElem,'indx',indx);
                 } else {
-                  let rangeElemCells;
 
-                  switch(indx) {
-                    case 0:
-                      rangeElemCells = [
-                        {x:rangeElem - 2, y: rangeElem.y },
-                        {x:rangeElem - 1, y: rangeElem.y },
-                      ]
-                    break;
-                    case 1:
-                      rangeElemCells = [
-                        {x:rangeElem + 2, y: rangeElem.y },
-                        {x:rangeElem + 1, y: rangeElem.y },
-                      ]
-                    break;
-                    case 2:
-                      rangeElemCells = [
-                        {x:rangeElem, y: rangeElem.y + 2},
-                        {x:rangeElem, y: rangeElem.y + 1},
-                      ]
-                    break;
-                    case 3:
-                      rangeElemCells = [
-                        {x:rangeElem, y: rangeElem.y - 2},
-                        {x:rangeElem, y: rangeElem.y - 1},
-                      ]
-                    break;
+                  let rangeElemCells2 = [];
+
+
+                  let dirToFire;
+                  let diff = 0;
+                  if (rangeElem.x === targetPos.x && rangeElem.y > targetPos.y) {
+                   dirToFire = 'north';
+                   diff = rangeElem.y - targetPos.y;
+                   for (var i = 0; i < diff; i++) {
+                     rangeElemCells2.push({x:rangeElem.x, y: rangeElem.y - i})
+                     // this.cellsToHighlight.push({x:rangeElem.x, y: rangeElem.y - i})
+                   }
+                  }
+                  if (rangeElem.x > targetPos.x && rangeElem.y === targetPos.y) {
+                   dirToFire = 'west';
+                   diff = rangeElem.x - targetPos.x;
+                   for (var i = 0; i < diff; i++) {
+                     rangeElemCells2.push({x:rangeElem.x - i, y: rangeElem.y})
+                     // this.cellsToHighlight.push({x:rangeElem.x - i, y: rangeElem.y})
+                   }
+                  }
+                  if (rangeElem.x === targetPos.x && rangeElem.y < targetPos.y) {
+                   dirToFire = 'south';
+                   diff = targetPos.y - rangeElem.y;
+                   for (var i = 0; i < diff; i++) {
+                     rangeElemCells2.push({x:rangeElem.x, y: rangeElem.y + i})
+                     // this.cellsToHighlight.push({x:rangeElem.x, y: rangeElem.y + i})
+                   }
+                  }
+                  if (rangeElem.x < targetPos.x && rangeElem.y === targetPos.y) {
+                   dirToFire = 'east';
+                   diff = targetPos.x - rangeElem.x;
+                   for (var i = 0; i < diff; i++) {
+                     rangeElemCells2.push({x:rangeElem.x + i, y: rangeElem.y})
+                     // this.cellsToHighlight.push({x:rangeElem.x + i, y: rangeElem.y})
+                   }
+                  }
+                  else {
+                    // console.log('exception! rangeElem,targetPos',rangeElem,targetPos);
                   }
 
+                  // IS attack POSITION FREE?
                   let rngElCellFree = true;
-                  for (const rngElCell of rangeElemCells) {
-
-                    for (const plyr of this.players) {
-                      if (plyr.currentPosition.cell.number.x === rngElCell.x && plyr.currentPosition.cell.number.y === rngElCell.y) {
-                        rngElCellFree = false;
-                      }
-                      let cellRef3 = this.gridInfo.find(elema => elema.number.x === rngElCell.x && elema.number.y === rngElCell.y)
-                      if (cellRef3) {
-                        if (
-                          cellRef3.levelData.charAt(0) ===  'z' ||
-                          cellRef3.levelData.charAt(0) ===  'y' ||
-                          cellRef3.terrain.type ===  'deep' ||
-                          cellRef3.terrain.type ===  'hazard'
-                        ) {
-                          rngElCellFree = false;
-                        }
-                      }
+                  let cellRef3 = this.gridInfo.find(elema => elema.number.x === rangeElem.x && elema.number.y === rangeElem.y)
+                  if (cellRef3) {
+                    if (
+                      cellRef3.levelData.charAt(0) ===  'z' ||
+                      cellRef3.levelData.charAt(0) ===  'y' ||
+                      cellRef3.terrain.type ===  'deep' ||
+                      cellRef3.terrain.type ===  'hazard'
+                    ) {
+                      rngElCellFree = false;
+                    } else {
 
                     }
+                  } else if (!cellRef3) {
+                    rngElCellFree = false;
                   }
+
+
+                  let clearToShoot = false;
+                  // IS SIGHT OBSTRUCTED?
                   if (rngElCellFree === true) {
-                    targetPos = rangeElem;
-                    // console.log('found path to safe spear range');
+
+
+                    let obstructions = [];
+                    for (const cellx of rangeElemCells2) {
+
+                      let cellRef4 = this.gridInfo.find(elemb => elemb.number.x === cellx.x && elemb.number.y === cellx.y)
+
+                      if (
+                        cellRef4.levelData.charAt(0) ===  'y' ||
+                        cellRef4.levelData.charAt(0) ===  'z'
+                      ) {
+                        // clearToShoot = false;
+                        obstructions.push(cellx)
+                      }
+                      if (
+                        cellRef4.levelData.charAt(0) !==  'y' &&
+                        cellRef4.levelData.charAt(0) !==  'z'
+                      ) {
+                        // clearToShoot = true;
+                        // obstructions.push(cellx)
+                      }
+                    }
+
+                    // if (clearToShoot === true) {
+                    if (obstructions.length === 0) {
+
+                      freeSpaces.push(rangeElem)
+                      // this.cellsToHighlight = rangeElemCells2;
+                      // console.log('rangeElemCells2',rangeElemCells2);
+                      // console.log('found path to safe bow range',targetPos);
+                    } else {
+                      console.log('target obstructed @',obstructions);
+                    }
                   } else {
                     console.log('your safe path is blocked');
                   }
+
                 }
+              }
+
+              if (freeSpaces[0]) {
+                console.log('freeSpaces',freeSpaces);
+                targetPos = freeSpaces[0];
+                console.log('found path to safe spear range',targetPos);
+              } else {
+                console.log('No free or unobstructed firing positions at this distance');
               }
 
             }
@@ -19484,6 +20053,7 @@ class App extends Component {
               clickedCell={this.settingsClicked}
               showCanvasData={this.showSettingsCanvasData}
               updateSettingsCanvasData={this.updateSettingsCanvasData}
+              disableInitItems={this.disableInitItems}
             />
           )}
 
