@@ -1615,7 +1615,6 @@ class App extends Component {
     }
     this.popupSize = 35;
 
-
   }
 
 
@@ -3557,6 +3556,7 @@ class App extends Component {
       lava: this.refs.floorLava,
       bramble: this.refs.floorBramble,
       river: this.refs.floorRiver,
+      void: this.refs.floorVoid,
     }
 
     class Point {
@@ -3592,6 +3592,13 @@ class App extends Component {
 
 
         let floor = floorImgs[cell.terrain.name]
+
+        if (x === 9 && y === 9) {
+          floor = floorImgs.void;
+        }
+        if (x === 9 && y === 0) {
+          floor = floorImgs.void;
+        }
 
         context3.drawImage(floor, iso2.x - offset2.x, iso2.y - offset2.y, 50, 50);
 
@@ -5135,18 +5142,36 @@ class App extends Component {
                     player.attackStrength = 2;
                     this.attackedCancel(this.players[player.target.occupant.player-1])
 
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
-                        type: '',
-                        position: '',
-                        msg: 'attacking2',
-                        img: '',
+                    if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'alarmed')) {
+                      this.players[player.target.occupant.player-1].popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit:25,
+                          type: '',
+                          position: '',
+                          msg: 'alarmed',
+                          img: '',
 
-                      }
-                    )
+                        }
+                      )
+                    }
+
+                    if (!player.popups.find(x=>x.msg === 'attacking2')) {
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
+                          type: '',
+                          position: '',
+                          msg: 'attacking2',
+                          img: '',
+
+                        }
+                      )
+                    }
+
 
                   }
                   else if (singleHit === 1) {
@@ -5159,18 +5184,36 @@ class App extends Component {
                     if (weapon === '') {
                       weapon = 'unarmed'
                     }
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
-                        type: '',
-                        position: '',
-                        msg: 'attacking1',
-                        img: '',
 
-                      }
-                    )
+                    if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'alarmed')) {
+                      this.players[player.target.occupant.player-1].popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit:25,
+                          type: '',
+                          position: '',
+                          msg: 'alarmed',
+                          img: '',
+
+                        }
+                      )
+                    }
+
+                    if (!player.popups.find(x=>x.msg === 'attacking1')) {
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
+                          type: '',
+                          position: '',
+                          msg: 'attacking1',
+                          img: '',
+
+                        }
+                      )
+                    }
 
                   }
 
@@ -5228,6 +5271,21 @@ class App extends Component {
                       if (player.ai.retrieving.checkin) {
 
                         player.ai.mission = 'retrieve';
+
+                        if (!player.popups.find(x=>x.msg === 'missionRetrieve')) {
+                          player.popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit: 25,
+                              type: '',
+                              position: '',
+                              msg: 'missionRetrieve',
+                              img: '',
+
+                            }
+                          )
+                        }
 
                         let targetSafeData = this.scanTargetAreaThreat({
                           player: player.number,
@@ -7411,11 +7469,43 @@ class App extends Component {
                     console.log('bolt double hit attack');
                     this.players[plyr.number-1].hp = this.players[plyr.number-1].hp - 2;
                     this.attackedCancel(this.players[plyr.number-1]);
+
+                    if (!this.players[plyr.number-1].popups.find(x=>x.msg === 'alarmed')) {
+                      this.players[plyr.number-1].popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit:25,
+                          type: '',
+                          position: '',
+                          msg: 'alarmed',
+                          img: '',
+
+                        }
+                      )
+                    }
+
                   }
                   else if (singleHit === 1) {
                     console.log('bolt single hit attack');
                     this.players[plyr.number-1].hp = this.players[plyr.number-1].hp - 1;
                     this.attackedCancel(this.players[plyr.number-1]);
+
+                    if (!this.players[plyr.number-1].popups.find(x=>x.msg === 'alarmed')) {
+                      this.players[plyr.number-1].popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit:25,
+                          type: '',
+                          position: '',
+                          msg: 'alarmed',
+                          img: '',
+
+                        }
+                      )
+                    }
+
                   }
                   else if (doubleHit !== 1 && singleHit !== 1) {
                     console.log('bolt attack but no damage');
@@ -11740,6 +11830,20 @@ class App extends Component {
                     }
                   )
                 }
+                if (!this.players[player.number-1].popups.find(x=>x.msg === 'alarmed')) {
+                  this.players[player.number-1].popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit:25,
+                      type: '',
+                      position: '',
+                      msg: 'alarmed',
+                      img: '',
+
+                    }
+                  )
+                }
                 pickUp = true;
               }
             break;
@@ -12116,6 +12220,21 @@ class App extends Component {
         }
         if (applyHazard === 1) {
           this.players[player.number-1].hp = this.players[player.number-1].hp -1;
+
+          if (!this.players[player.number-1].popups.find(x=>x.msg === 'alarmed')) {
+            this.players[player.number-1].popups.push(
+              {
+                state: false,
+                count: 0,
+                limit:25,
+                type: '',
+                position: '',
+                msg: 'alarmed',
+                img: '',
+
+              }
+            )
+          }
 
           if (this.players[player.number-1].hp <= 0) {
             this.killPlayer(this.players[player.number-1]);
@@ -15060,7 +15179,7 @@ class App extends Component {
               },
             },
             mode: this.aiInitSettings.mode,
-            upgradeWeapon: true,
+            upgradeWeapon: false,
             upgradeArmor: false,
             pathfindingRanges: {
               spear: 3,
@@ -15365,7 +15484,20 @@ class App extends Component {
 
     if (this.resetAiTarget.state === true) {
       console.log('someone died. reset ai targets');
+      if (!plyr.popups.find(x=>x.msg === 'thinking')) {
+        plyr.popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 25,
+            type: '',
+            position: '',
+            msg: 'thinking',
+            img: '',
 
+          }
+        )
+      }
       for (const plyr of this.players) {
 
         if (plyr.ai.state === true && plyr.ai.targetSet === true && plyr.ai.targetPlayer.number === this.resetAiTarget.player) {
@@ -15382,6 +15514,21 @@ class App extends Component {
             plyr.ai.currentInstruction = 0;
             plyr.ai.pathArray = [];
             plyr.ai.instructions = [];
+
+            // if (!plyr.popups.find(x=>x.msg === 'mission'+plyr.ai.mission 1st char upper+'')) {
+            //   plyr.popups.push(
+            //     {
+            //       state: false,
+            //       count: 0,
+            //       limit: 25,
+            //       type: '',
+            //       position: '',
+            //       msg: 'mission'+plyr.ai.mission 1st char upper+'',
+            //       img: '',
+            //
+            //     }
+            //   )
+            // }
 
           }
 
@@ -15413,6 +15560,21 @@ class App extends Component {
             plyr.ai.currentInstruction = 0;
             plyr.ai.pathArray = [];
             plyr.ai.instructions = [];
+
+            // if (!plyr.popups.find(x=>x.msg === 'mission'+plyr.ai.mission 1st char upper+'')) {
+            //   plyr.popups.push(
+            //     {
+            //       state: false,
+            //       count: 0,
+            //       limit: 25,
+            //       type: '',
+            //       position: '',
+            //       msg: 'mission'+plyr.ai.mission 1st char upper+'',
+            //       img: '',
+            //
+            //     }
+            //   )
+            // }
           }
 
         }
@@ -15451,6 +15613,21 @@ class App extends Component {
           this.aiTarget = plyr2.number;
           this.allPlayersDead = false;
           this.resetAiTarget.player = 0;
+
+          if (!plyr2.popups.find(x=>x.msg === 'thinking')) {
+            plyr2.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: 25,
+                type: '',
+                position: '',
+                msg: 'thinking',
+                img: '',
+
+              }
+            )
+          }
         }
       }
     }
@@ -15607,7 +15784,20 @@ class App extends Component {
                 plyr.ai.retrieving.safe = true;
                 plyr.ai.upgradeWeapon = false;
 
+                if (!plyr.popups.find(x=>x.msg === 'missionRetrieve')) {
+                  plyr.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 25,
+                      type: '',
+                      position: '',
+                      msg: 'missionRetrieve',
+                      img: '',
 
+                    }
+                  )
+                }
               }
               else {
                 console.log('priority weapon target is unsafe.');
@@ -15663,6 +15853,21 @@ class App extends Component {
               };
               plyr.ai.retrieving.safe = true;
               plyr.ai.upgradeWeapon = false;
+
+              if (!plyr.popups.find(x=>x.msg === 'missionRetrieve')) {
+                plyr.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 25,
+                    type: '',
+                    position: '',
+                    msg: 'missionRetrieve',
+                    img: '',
+
+                  }
+                )
+              }
 
             }
             else {
@@ -15731,6 +15936,21 @@ class App extends Component {
             };
             plyr.ai.retrieving.safe = true;
             plyr.ai.upgradeArmor = false;
+
+            if (!plyr.popups.find(x=>x.msg === 'missionRetrieve')) {
+              plyr.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 25,
+                  type: '',
+                  position: '',
+                  msg: 'missionRetrieve',
+                  img: '',
+
+                }
+              )
+            }
           }
 
           console.log('found hpup gear in the field. retrieve! @',plyr.ai.retrieving.point);
@@ -15772,6 +15992,21 @@ class App extends Component {
             };
             plyr.ai.retrieving.safe = true;
             plyr.ai.upgradeArmor = false;
+
+            if (!plyr.popups.find(x=>x.msg === 'missionRetrieve')) {
+              plyr.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 25,
+                  type: '',
+                  position: '',
+                  msg: 'missionRetrieve',
+                  img: '',
+
+                }
+              )
+            }
           }
 
           console.log('found speedUp gear in the field. retrieve! @',plyr.ai.retrieving.point);
@@ -15819,6 +16054,21 @@ class App extends Component {
               };
               plyr.ai.retrieving.safe = true;
               plyr.ai.upgradeWeapon = false;
+
+              if (!plyr.popups.find(x=>x.msg === 'missionRetrieve')) {
+                plyr.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 25,
+                    type: '',
+                    position: '',
+                    msg: 'missionRetrieve',
+                    img: '',
+
+                  }
+                )
+              }
 
             }
             else {
@@ -15930,6 +16180,21 @@ class App extends Component {
             };
             plyr.ai.retrieving.safe = true;
 
+            if (!plyr.popups.find(x=>x.msg === 'missionRetrieve')) {
+              plyr.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 25,
+                  type: '',
+                  position: '',
+                  msg: 'missionRetrieve',
+                  img: '',
+
+                }
+              )
+            }
+
             console.log('found hpup item in the field. retrieve @ ',itemToRetrieve.location);
 
           } else {
@@ -15980,6 +16245,21 @@ class App extends Component {
             };
             plyr.ai.retrieving.safe = true;
             plyr.ai.upgradeWeapon = false;
+
+            if (!plyr.popups.find(x=>x.msg === 'missionRetrieve')) {
+              plyr.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 25,
+                  type: '',
+                  position: '',
+                  msg: 'missionRetrieve',
+                  img: '',
+
+                }
+              )
+            }
 
           } else {
             console.log('no speedup item/gear found. Check for armor');
@@ -16089,6 +16369,21 @@ class App extends Component {
           //   }
           // }
 
+          if (!plyr.popups.find(x=>x.msg === 'missionRetrieve')) {
+            plyr.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: 25,
+                type: '',
+                position: '',
+                msg: 'missionRetrieve',
+                img: '',
+
+              }
+            )
+          }
+
         }
 
       }
@@ -16180,6 +16475,21 @@ class App extends Component {
             //
             // }
 
+            if (!plyr.popups.find(x=>x.msg === 'missionRetrieve')) {
+              plyr.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 25,
+                  type: '',
+                  position: '',
+                  msg: 'missionRetrieve',
+                  img: '',
+
+                }
+              )
+            }
+
           }
 
         }
@@ -16194,6 +16504,34 @@ class App extends Component {
     // PATHFIND ERROR/ PREVENT SUICIDE!
     if (plyr.ai.resetInstructions === true ) {
       console.log('pathfinding reset');
+      if (!plyr.popups.find(x=>x.msg === 'thinking')) {
+        plyr.popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 25,
+            type: '',
+            position: '',
+            msg: 'thinking',
+            img: '',
+
+          }
+        )
+      }
+      if (!plyr.popups.find(x=>x.msg === 'pathSwitch')) {
+        plyr.popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 25,
+            type: '',
+            position: '',
+            msg: 'pathSwitch',
+            img: '',
+
+          }
+        )
+      }
       // console.log('reset instructions','set',plyr.ai.targetSet,'acquired',plyr.ai.targetAcquired,'mission',plyr.ai.mission);
       plyr.ai.currentInstruction = 0;
       plyr.ai.instructions = [];
@@ -16296,6 +16634,22 @@ class App extends Component {
                 else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                   plyr.ai.currentInstruction = 0;
                   // console.log('alternative target in range. Switching');
+
+                  if (!plyr.popups.find(x=>x.msg === 'alarmed')) {
+                    plyr.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 25,
+                        type: '',
+                        position: '',
+                        msg: 'alarmed',
+                        img: '',
+
+                      }
+                    )
+                  }
+
                   plyr.ai.targetPlayer = {
                     number: plyr2.number,
                     currentPosition: {
@@ -16339,6 +16693,22 @@ class App extends Component {
                 else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     plyr.ai.currentInstruction = 0;
                     // console.log('alternative target in range. Switching');
+
+                    if (!plyr.popups.find(x=>x.msg === 'alarmed')) {
+                      plyr.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 25,
+                          type: '',
+                          position: '',
+                          msg: 'alarmed',
+                          img: '',
+
+                        }
+                      )
+                    }
+
                     plyr.ai.targetPlayer = {
                       number: plyr2.number,
                       currentPosition: {
@@ -16392,6 +16762,22 @@ class App extends Component {
                   }
                   else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     // console.log('alternative target in range. Switching');
+
+                    if (!plyr.popups.find(x=>x.msg === 'alarmed')) {
+                      plyr.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 25,
+                          type: '',
+                          position: '',
+                          msg: 'alarmed',
+                          img: '',
+
+                        }
+                      )
+                    }
+
                     plyr.ai.targetPlayer = {
                       number: plyr2.number,
                       currentPosition: {
@@ -16429,6 +16815,22 @@ class App extends Component {
                   }
                   else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     // console.log('alternative target in range. Switching');
+
+                    if (!plyr.popups.find(x=>x.msg === 'alarmed')) {
+                      plyr.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 25,
+                          type: '',
+                          position: '',
+                          msg: 'alarmed',
+                          img: '',
+
+                        }
+                      )
+                    }
+
                     plyr.ai.targetPlayer = {
                       number: plyr2.number,
                       currentPosition: {
@@ -16474,6 +16876,22 @@ class App extends Component {
                   }
                   else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     // console.log('alternative target in range. Switching');
+
+                    if (!plyr.popups.find(x=>x.msg === 'alarmed')) {
+                      plyr.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 25,
+                          type: '',
+                          position: '',
+                          msg: 'alarmed',
+                          img: '',
+
+                        }
+                      )
+                    }
+
                     plyr.ai.targetPlayer = {
                       number: plyr2.number,
                       currentPosition: {
@@ -16515,6 +16933,22 @@ class App extends Component {
                   }
                   else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     // console.log('alternative target in range. Switching');
+
+                    if (!plyr.popups.find(x=>x.msg === 'alarmed')) {
+                      plyr.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 25,
+                          type: '',
+                          position: '',
+                          msg: 'alarmed',
+                          img: '',
+
+                        }
+                      )
+                    }
+
                     plyr.ai.targetPlayer = {
                       number: plyr2.number,
                       currentPosition: {
@@ -16563,6 +16997,22 @@ class App extends Component {
                   }
                   else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     // console.log('alternative target in range. Switching');
+
+                    if (!plyr.popups.find(x=>x.msg === 'alarmed')) {
+                      plyr.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 25,
+                          type: '',
+                          position: '',
+                          msg: 'alarmed',
+                          img: '',
+
+                        }
+                      )
+                    }
+
                     plyr.ai.targetPlayer = {
                       number: plyr2.number,
                       currentPosition: {
@@ -16595,6 +17045,22 @@ class App extends Component {
                   }
                   else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     // console.log('alternative target in range. Switching');
+
+                    if (!plyr.popups.find(x=>x.msg === 'alarmed')) {
+                      plyr.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 25,
+                          type: '',
+                          position: '',
+                          msg: 'alarmed',
+                          img: '',
+
+                        }
+                      )
+                    }
+
                     plyr.ai.targetPlayer = {
                       number: plyr2.number,
                       currentPosition: {
@@ -16632,6 +17098,22 @@ class App extends Component {
                   }
                   else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     // console.log('alternative target in range. Switching');
+
+                    if (!plyr.popups.find(x=>x.msg === 'alarmed')) {
+                      plyr.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 25,
+                          type: '',
+                          position: '',
+                          msg: 'alarmed',
+                          img: '',
+
+                        }
+                      )
+                    }
+
                     plyr.ai.targetPlayer = {
                       number: plyr2.number,
                       currentPosition: {
@@ -16663,6 +17145,22 @@ class App extends Component {
                   }
                   else if (plyr.ai.mission !== 'pursue' && plyr.ai.mission !== 'engage' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
                     // console.log('alternative target in range. Switching');
+
+                    if (!plyr.popups.find(x=>x.msg === 'alarmed')) {
+                      plyr.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 25,
+                          type: '',
+                          position: '',
+                          msg: 'alarmed',
+                          img: '',
+
+                        }
+                      )
+                    }
+
                     plyr.ai.targetPlayer = {
                       number: plyr2.number,
                       currentPosition: {
@@ -16707,6 +17205,21 @@ class App extends Component {
 
         plyr.ai.mission = 'engage';
 
+        if (!plyr.popups.find(x=>x.msg === 'engage')) {
+          plyr.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 25,
+              type: '',
+              position: '',
+              msg: 'engage',
+              img: '',
+
+            }
+          )
+        }
+
 
       }
 
@@ -16721,6 +17234,37 @@ class App extends Component {
       // console.log('target out of range. reverting to primary mission',plyr.ai.primaryMission);
 
       plyr.ai.mission = plyr.ai.primaryMission;
+
+      if (!plyr.popups.find(x=>x.msg === 'thinking')) {
+        plyr.popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 25,
+            type: '',
+            position: '',
+            msg: 'thinking',
+            img: '',
+
+          }
+        )
+      }
+
+      // if (!plyr.popups.find(x=>x.msg === 'mission'+plyr.ai.mission 1st char upper+'')) {
+      //   plyr.popups.push(
+      //     {
+      //       state: false,
+      //       count: 0,
+      //       limit: 25,
+      //       type: '',
+      //       position: '',
+      //       msg: 'mission'+plyr.ai.mission 1st char upper+'',
+      //       img: '',
+      //
+      //     }
+      //   )
+      // }
+
       this.aiResetRanges(plyr)
       if (plyr.ai.primaryMission === 'defend') {
         // console.log('defend',plyr.ai.defending.checkin);
@@ -16766,6 +17310,35 @@ class App extends Component {
            // console.log('threats',targetSafeData.threats);
            plyr.ai.mission = 'pursue';
 
+           if (!plyr.popups.find(x=>x.msg === 'missionPursue')) {
+             plyr.popups.push(
+               {
+                 state: false,
+                 count: 0,
+                 limit: 25,
+                 type: '',
+                 position: '',
+                 msg: 'missionPursue',
+                 img: '',
+
+               }
+             )
+           }
+           if (!plyr.popups.find(x=>x.msg === 'aggressiveMode')) {
+             plyr.popups.push(
+               {
+                 state: false,
+                 count: 0,
+                 limit: 25,
+                 type: '',
+                 position: '',
+                 msg: 'aggressiveMode',
+                 img: '',
+
+               }
+             )
+           }
+
            for (const threat of targetSafeData.threats) {
              console.log('threat',threat);
              if (threat.distVal === 0) {
@@ -16800,20 +17373,38 @@ class App extends Component {
          }
          if (plyr.ai.mode === 'careful' && plyr.ai.retrieving.checkin === 'enroute') {
            console.log('was enroute, now retreating');
+
+           if (!plyr.popups.find(x=>x.msg === 'passiveMode')) {
+             plyr.popups.push(
+               {
+                 state: false,
+                 count: 0,
+                 limit: 25,
+                 type: '',
+                 position: '',
+                 msg: 'passiveMode',
+                 img: '',
+
+               }
+             )
+           }
+
           plyr.ai.mission = 'retreat';
 
-          plyr.popups.push(
-            {
-              state: false,
-              count: 0,
-              limit: 25,
-              type: '',
-              position: '',
-              msg: 'missionRetreat',
-              img: '',
+          if (!plyr.popups.find(x=>x.msg === 'missionRetreat')) {
+            plyr.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: 25,
+                type: '',
+                position: '',
+                msg: 'missionRetreat',
+                img: '',
 
-            }
-          )
+              }
+            )
+          }
          }
 
        }
@@ -16826,6 +17417,36 @@ class App extends Component {
 
          plyr.ai.mission = plyr.ai.primaryMission;
          this.aiResetRanges(plyr)
+
+         if (!plyr.popups.find(x=>x.msg === 'missionComplete')) {
+           plyr.popups.push(
+             {
+               state: false,
+               count: 0,
+               limit: 25,
+               type: '',
+               position: '',
+               msg: 'missionComplete',
+               img: '',
+
+             }
+           )
+         }
+
+         // if (!plyr.popups.find(x=>x.msg === 'mission'+plyr.ai.mission 1st char upper+'')) {
+         //   plyr.popups.push(
+         //     {
+         //       state: false,
+         //       count: 0,
+         //       limit: 25,
+         //       type: '',
+         //       position: '',
+         //       msg: 'mission'+plyr.ai.mission 1st char upper+'',
+         //       img: '',
+         //
+         //     }
+         //   )
+         // }
 
          plyr.ai.retrieving.checkin = undefined;
          plyr.ai.retrieving.safe = false;
@@ -16973,6 +17594,36 @@ class App extends Component {
           plyr.ai.mission = plyr.ai.primaryMission;
           this.aiResetRanges(plyr)
 
+          if (!plyr.popups.find(x=>x.msg === 'missionComplete')) {
+            plyr.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: 25,
+                type: '',
+                position: '',
+                msg: 'missionComplete',
+                img: '',
+
+              }
+            )
+          }
+
+          // if (!plyr.popups.find(x=>x.msg === 'mission'+plyr.ai.mission 1st char upper+'')) {
+          //   plyr.popups.push(
+          //     {
+          //       state: false,
+          //       count: 0,
+          //       limit: 25,
+          //       type: '',
+          //       position: '',
+          //       msg: 'mission'+plyr.ai.mission 1st char upper+'',
+          //       img: '',
+          //
+          //     }
+          //   )
+          // }
+
           plyr.ai.targetSet = false
           plyr.ai.targetAcquired = false
         }
@@ -17070,6 +17721,22 @@ class App extends Component {
 
 
         aiPlayer.ai.patrolling.checkin = 'enroute';
+
+        if (!aiPlayer.popups.find(x=>x.msg === 'missionEnroute')) {
+          aiPlayer.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 25,
+              type: '',
+              position: '',
+              msg: 'missionEnroute',
+              img: '',
+
+            }
+          )
+        }
+
         patrolDest = aiPlayer.ai.patrolling.area[0]
         getPath = true;
       }
@@ -17133,6 +17800,21 @@ class App extends Component {
         if (aiPlayer.ai.primaryMission === 'pursue') {
           aiPlayer.ai.mission = 'pursue';
           this.aiResetRanges(aiPlayer)
+
+          if (!aiPlayer.popups.find(x=>x.msg === 'missionPursue')) {
+            aiPlayer.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: 25,
+                type: '',
+                position: '',
+                msg: 'missionPursue',
+                img: '',
+
+              }
+            )
+          }
         }
 
         aiPlayer.ai.targetAcquired = false;
@@ -17206,18 +17888,20 @@ class App extends Component {
               aiPlayer.ai.mission = 'retreat';
               aiPlayer.ai.retreating.safe = false;
 
-              aiPlayer.popups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit: 25,
-                  type: '',
-                  position: '',
-                  msg: 'missionRetreat',
-                  img: '',
+              if (!aiPlayer.popups.find(x=>x.msg === 'missionRetreat')) {
+                aiPlayer.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 25,
+                    type: '',
+                    position: '',
+                    msg: 'missionRetreat',
+                    img: '',
 
-                }
-              )
+                  }
+                )
+              }
               // aiPlayer.ai.currentInstruction = 0;
             }
             else if (aiPlayer.items.ammo > 0) {
@@ -18360,6 +19044,21 @@ class App extends Component {
         // console.log('start out to defend location',aiPlayer.ai.defending.area[0]);
         aiPlayer.ai.defending.checkin = 'enroute';
 
+        if (!aiPlayer.popups.find(x=>x.msg === 'missionEnroute')) {
+          aiPlayer.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 25,
+              type: '',
+              position: '',
+              msg: 'missionEnroute',
+              img: '',
+
+            }
+          )
+        }
+
         let cellsToConsider2 = [
           {x: aiPlayer.ai.defending.area[0].x+1 ,y: aiPlayer.ai.defending.area[0].y},
           {x: aiPlayer.ai.defending.area[0].x-1 ,y: aiPlayer.ai.defending.area[0].y},
@@ -18523,6 +19222,20 @@ class App extends Component {
         aiPlayer.ai.retrieving.checkin = 'enroute';
         getPath = true;
 
+        if (!aiPlayer.popups.find(x=>x.msg === 'missionEnroute')) {
+          aiPlayer.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 25,
+              type: '',
+              position: '',
+              msg: 'missionEnroute',
+              img: '',
+
+            }
+          )
+        }
       }
 
       // EN ROUTE
@@ -18559,6 +19272,21 @@ class App extends Component {
         aiPlayer.ai.retreating.state = true;
         aiPlayer.ai.retreating.checkin = 'enroute';
         getPath = true;
+
+        if (!aiPlayer.popups.find(x=>x.msg === 'missionEnroute')) {
+          aiPlayer.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 25,
+              type: '',
+              position: '',
+              msg: 'missionEnroute',
+              img: '',
+
+            }
+          )
+        }
       }
 
       // EN ROUTE
