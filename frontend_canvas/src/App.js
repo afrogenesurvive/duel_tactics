@@ -21,6 +21,8 @@ import floorBramble from './assets/floorBramble.png'
 import floorLava from './assets/floorLava.png'
 import floorAttack from './assets/floorAttacked.png'
 import floorVoid from './assets/floorVoid.png'
+import floorVoid2 from './assets/floorVoid2.png'
+import floorVoid3 from './assets/floorVoid3.png'
 import wall from './assets/wall.png'
 import wall2 from './assets/wall2.png'
 import wall3 from './assets/wall3.png'
@@ -273,8 +275,8 @@ class App extends Component {
       row5: ['x50j','x51j','x52b','x53j','x54j','x55b','x56j','x57j','x58j','x59d'],
       row6: ['z60x','x61x','x62x','x63i','x64x','x65x','x66x','x67x','x68f','x69f'],
       row7: ['x70x','x71x','y72x','x73i','x74x','x75x','x76x','x77x','x78f','x79f'],
-      row8: ['x80x','x81x','x82x','x83x','x84x','x85x','x86x','x87x','x88x','x89x'],
-      row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
+      row8: ['x80x','x81x','x82k','x83x','x84x','x85x','x86x','x87x','x88x','x89x'],
+      row9: ['x90x','x91x','x92k','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
     };
     this.levelData6 = {
       row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
@@ -291,6 +293,63 @@ class App extends Component {
       row2: ['x20x','x21x','x22x','y23x'],
       row3: ['z30x','x31x','x32x','x33x'],
     };
+    this.terrainLevelDataRef = {
+      a:{
+        name: 'grass',
+        type: 'grass',
+        effect: '',
+      },
+      b:{
+        name: 'stone',
+        type: 'road',
+        effect: '',
+      },
+      x:{
+        name: 'dirt',
+        type: 'road',
+        effect: '',
+      },
+      d:{
+        name: 'pond',
+        type: 'shallow',
+        effect: '',
+      },
+      e:{
+        name: 'mud',
+        type: 'sticky',
+        effect: '',
+      },
+      f:{
+        name: 'sand',
+        type: 'sticky',
+        effect: '',
+      },
+      g:{
+        name: 'ice',
+        type: 'slippery',
+        effect: '',
+      },
+      h:{
+        name: 'lava',
+        type: 'hazard',
+        effect: '',
+      },
+      i:{
+        name: 'bramble',
+        type: 'hazard',
+        effect: '',
+      },
+      j:{
+        name: 'river',
+        type: 'deep',
+        effect: '',
+      },
+      k:{
+        name: 'void',
+        type: 'void',
+        effect: 'void',
+      },
+    }
     this.pathArray = [];
 
     this.itemList = [
@@ -3557,6 +3616,8 @@ class App extends Component {
       bramble: this.refs.floorBramble,
       river: this.refs.floorRiver,
       void: this.refs.floorVoid,
+      void2: this.refs.floorVoid2,
+      void3: this.refs.floorVoid3,
     }
 
     class Point {
@@ -3593,11 +3654,16 @@ class App extends Component {
 
         let floor = floorImgs[cell.terrain.name]
 
+        if (cell.void.state === true) {
+          // drawFloor = false;
+          floor = floorImgs.void3
+        }
+
         if (x === 9 && y === 9) {
-          floor = floorImgs.void;
+          floor = floorImgs.void2;
         }
         if (x === 9 && y === 0) {
-          floor = floorImgs.void;
+          floor = floorImgs.void2;
         }
 
         context3.drawImage(floor, iso2.x - offset2.x, iso2.y - offset2.y, 50, 50);
@@ -8071,6 +8137,9 @@ class App extends Component {
       lava: this.refs.floorLava,
       bramble: this.refs.floorBramble,
       river: this.refs.floorRiver,
+      void: this.refs.floorVoid,
+      void2: this.refs.floorVoid2,
+      void3: this.refs.floorVoid3,
     }
 
     let updatedPlayerImg;
@@ -8110,13 +8179,13 @@ class App extends Component {
 
         let gridInfoCell = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
 
-        if (gridInfoCell.void.state === true) {
-          drawFloor = false;
-        }
-
 
         floor = floorImgs[gridInfoCell.terrain.name]
 
+        if (gridInfoCell.void.state === true) {
+          // drawFloor = false;
+          floor = floorImgs.void3
+        }
 
         // VOID BLINKER!!
         if (
@@ -8125,10 +8194,11 @@ class App extends Component {
           this.cellToVoid.y === y
         ) {
           if(this.cellToVoid.count % 5 === 0) {
-            drawFloor = false;
+            floor = floorImgs.void3;
+            // drawFloor = false;
           } else {
-            floor = this.refs.floorVoid;
-            drawFloor = true;
+            floor = floorImgs.void2;
+            // drawFloor = true;
           }
         }
 
@@ -8138,9 +8208,11 @@ class App extends Component {
               plyrb.currentPosition.cell.number.x === x &&
               plyrb.currentPosition.cell.number.y === y
             ) {
-              if(plyrb.falling.count % 3 === 0) {
-                drawFloor = false;
+              if(plyrb.falling.count % 2 === 0) {
+                // drawFloor = false;
+                floor = floorImgs.void3;
               } else {
+                // floor = floorImgs.stone
                 floor = floorImgs[gridInfoCell.terrain.name]
               }
             }
@@ -9835,7 +9907,7 @@ class App extends Component {
                     drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor)
                     // context.fillStyle = 'black';
                     // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
-                    // console.log('popup.msg',popup.msg);
+                    // console.log('popup.msg',popup.msg,popup.img);
                     context.drawImage(popup.img, popupDrawCoords.origin.x+5,popupDrawCoords.origin.y+5,26,26);
                   }
                   else {
@@ -14051,84 +14123,17 @@ class App extends Component {
 
     for(const elem of allCells) {
 
-      // SET LEVEL DTAT!
+      // APPLY LEVEL DATA TO GRID INFO CELLS!
       let levelData2Row = 'row'+elem.number.x;
       let elemLevelData = this.['levelData'+this.gridWidth][levelData2Row][elem.number.y];
       elem.levelData = elemLevelData;
 
       let terrainInfo = elem.levelData.length-1;
-      switch(elem.levelData.charAt(terrainInfo)) {
-        case 'a' :
-          elem.terrain = {
-            name: 'grass',
-            type: 'grass',
-            effect: '',
-          }
-        break;
-        case 'b' :
-          elem.terrain = {
-            name: 'stone',
-            type: 'road',
-            effect: '',
-          }
-        break;
-        case 'x' :
-          elem.terrain = {
-            name: 'dirt',
-            type: 'road',
-            effect: '',
-          }
-        break;
-        case 'd' :
-          elem.terrain = {
-            name: 'pond',
-            type: 'shallow',
-            effect: '',
-          }
-        break;
-        case 'e' :
-          elem.terrain = {
-            name: 'mud',
-            type: 'sticky',
-            effect: '',
-          }
-        break;
-        case 'f' :
-          elem.terrain = {
-            name: 'sand',
-            type: 'sticky',
-            effect: '',
-          }
-        break;
-        case 'g' :
-          elem.terrain = {
-            name: 'ice',
-            type: 'slippery',
-            effect: '',
-          }
-        break;
-        case 'h' :
-          elem.terrain = {
-            name: 'lava',
-            type: 'hazard',
-            effect: '',
-          }
-        break;
-        case 'i' :
-          elem.terrain = {
-            name: 'bramble',
-            type: 'hazard',
-            effect: '',
-          }
-        break;
-        case 'j' :
-          elem.terrain = {
-            name: 'river',
-            type: 'deep',
-            effect: '',
-          }
-        break;
+      elem.terrain = this.terrainLevelDataRef[elem.levelData.charAt(terrainInfo)]
+      if (elem.terrain.name === 'void') {
+        elem.void.state = true
       }
+
       // console.log('oo2',elem.levelData,elem.number,elem.terrain);
 
       // SET EDGES!
@@ -14159,86 +14164,20 @@ class App extends Component {
 
     }
 
+
     for(const elem2 of this.settingsGridInfo) {
 
-      // SET LEVEL DTAT!
+      // SET LEVEL DATA!
       let levelData2Row = 'row'+elem2.number.x;
       let elemLevelData = this.['levelData'+this.settingsGridWidth][levelData2Row][elem2.number.y];
       elem2.levelData = elemLevelData;
 
       let terrainInfo = elem2.levelData.length-1;
-      switch(elem2.levelData.charAt(terrainInfo)) {
-        case 'a' :
-          elem2.terrain = {
-            name: 'grass',
-            type: 'grass',
-            effect: '',
-          }
-        break;
-        case 'b' :
-          elem2.terrain = {
-            name: 'stone',
-            type: 'road',
-            effect: '',
-          }
-        break;
-        case 'x' :
-          elem2.terrain = {
-            name: 'dirt',
-            type: 'road',
-            effect: '',
-          }
-        break;
-        case 'd' :
-          elem2.terrain = {
-            name: 'pond',
-            type: 'shallow',
-            effect: '',
-          }
-        break;
-        case 'e' :
-          elem2.terrain = {
-            name: 'mud',
-            type: 'sticky',
-            effect: '',
-          }
-        break;
-        case 'f' :
-          elem2.terrain = {
-            name: 'sand',
-            type: 'sticky',
-            effect: '',
-          }
-        break;
-        case 'g' :
-          elem2.terrain = {
-            name: 'ice',
-            type: 'slippery',
-            effect: '',
-          }
-        break;
-        case 'h' :
-          elem2.terrain = {
-            name: 'lava',
-            type: 'hazard',
-            effect: '',
-          }
-        break;
-        case 'i' :
-          elem2.terrain = {
-            name: 'bramble',
-            type: 'hazard',
-            effect: '',
-          }
-        break;
-        case 'j' :
-          elem2.terrain = {
-            name: 'river',
-            type: 'deep',
-            effect: '',
-          }
-        break;
+      elem2.terrain = this.terrainLevelDataRef[elem2.levelData.charAt(terrainInfo)]
+      if (elem2.terrain.name === 'void') {
+        elem2.void.state = true
       }
+
       // console.log('oo2',elem.levelData,elem.number,elem.terrain);
 
       // SET EDGES!
@@ -14372,6 +14311,9 @@ class App extends Component {
       lava: this.refs.floorLava,
       bramble: this.refs.floorBramble,
       river: this.refs.floorRiver,
+      void: this.refs.floorVoid,
+      void2: this.refs.floorVoid2,
+      void3: this.refs.floorVoid3,
     }
 
     this.placeItems({init: true, items: ''});
@@ -14401,6 +14343,11 @@ class App extends Component {
 
 
         floor = floorImgs[cell.terrain.name]
+
+        if (cell.void.state === true) {
+          // drawFloor = false;
+          floor = floorImgs.void3
+        }
 
 
         context.drawImage(floor, iso.x - offset.x, iso.y - offset.y, 100, 100);
@@ -17205,7 +17152,7 @@ class App extends Component {
 
         plyr.ai.mission = 'engage';
 
-        if (!plyr.popups.find(x=>x.msg === 'engage')) {
+        if (!plyr.popups.find(x=>x.msg === 'missionEngage')) {
           plyr.popups.push(
             {
               state: false,
@@ -17213,7 +17160,7 @@ class App extends Component {
               limit: 25,
               type: '',
               position: '',
-              msg: 'engage',
+              msg: 'missionEngage',
               img: '',
 
             }
@@ -19327,7 +19274,7 @@ class App extends Component {
 
     if (targetPlayer) {
       if (getPath === true && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
-        console.log('pathfinding...');
+        // console.log('pathfinding...');
         this.updatePathArray();
         this.easyStar = new Easystar.js();
 
@@ -20981,6 +20928,8 @@ class App extends Component {
           <img src={floorLava} className='hidden' ref="floorLava" alt="logo" id="floor2"/>
           <img src={floorAttack} className='hidden' ref="floorAttack" alt="logo" id="floor3"/>
           <img src={floorVoid} className='hidden' ref="floorVoid" alt="logo" id="floor4"/>
+          <img src={floorVoid2} className='hidden' ref="floorVoid2" alt="logo" id="floor4"/>
+          <img src={floorVoid3} className='hidden' ref="floorVoid3" alt="logo" id="floor4"/>
           <img src={wall} className='hidden' ref="wall" id="wall" alt="logo" />
           <img src={wall2} className='hidden' ref="wall2" id="wall2" alt="logo" />
           <img src={wall3} className='hidden' ref="wall3" id="wall3" alt="logo" />
