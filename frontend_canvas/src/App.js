@@ -4886,7 +4886,6 @@ class App extends Component {
               if (player.currentWeapon.type === 'spear') {
                 cellUnderAttack2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y)
               }
-
               if (player.currentWeapon.type === 'spear') {
                 // console.log('spear target',player.target);
                 if (cellUnderAttack1 && cellUnderAttack1.terrain.type !== 'deep') {
@@ -5223,8 +5222,29 @@ class App extends Component {
 
                     player.points++;
 
-                  }
+                    if (player.ai.state === true && player.ai.mode === 'aggressive') {
+                      console.log('check for evidence of retrieval here and resume retrieve if so',player.ai.retrieving,player.ai.mission);
 
+                      if (player.ai.retrieving.checkin) {
+
+                        player.ai.mission = 'retrieve';
+
+                        let targetSafeData = this.scanTargetAreaThreat({
+                          player: player.number,
+                          point: {
+                            x: player.ai.retrieving.point.x,
+                            y: player.ai.retrieving.point.y,
+                          },
+                          range: 3,
+                        })
+
+                        player.ai.retrieving.safe = targetSafeData.isSafe;
+
+                      }
+
+                    }
+
+                  }
 
                   // ATTACK -> DEFLECT OPPONENT!
                   else if (missed !== true && player.bluntAttack !== true) {
@@ -5244,7 +5264,6 @@ class App extends Component {
 
 
                   }
-
 
                   // BLUNT ATTACK -> DEFLECT -!
                   else if (player.bluntAttack === true) {
@@ -5272,11 +5291,9 @@ class App extends Component {
                       }
                     )
 
-
                     if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
                       this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
                     }
-
 
                   }
 
@@ -5658,9 +5675,6 @@ class App extends Component {
 
                 }
                 }
-
-
-
 
 
               // DESTROY ITEMS!
@@ -15046,7 +15060,7 @@ class App extends Component {
               },
             },
             mode: this.aiInitSettings.mode,
-            upgradeWeapon: false,
+            upgradeWeapon: true,
             upgradeArmor: false,
             pathfindingRanges: {
               spear: 3,
@@ -15345,7 +15359,7 @@ class App extends Component {
     this.players[plyr.number-1].ai.safeRange = true;
   }
   aiEvaluate = (plyr) => {
-    // console.log('aiEvaluate',plyr);
+    // console.log('aiEvaluate',plyr.ai.upgradeWeapon);
     // console.log('aiEvaluate',plyr.ai.organizing.dropped.state);
 
 
@@ -16749,8 +16763,40 @@ class App extends Component {
        if (targetSafeData.isSafe !== true) {
          // console.log('target area is under threat');
          if (plyr.ai.mode === 'aggressive') {
-           // switch  mission to pursue set target to targetSafeData.threats closest to me
-           //  find a way switch back to retrieve after disengage
+           // console.log('threats',targetSafeData.threats);
+           plyr.ai.mission = 'pursue';
+
+           for (const threat of targetSafeData.threats) {
+             console.log('threat',threat);
+             if (threat.distVal === 0) {
+
+               console.log('threats',targetSafeData.threats);
+
+               plyr.ai.targetSet = true;
+               plyr.ai.targetAquired = false;
+               let threat2 = this.players[threat.player-1];
+               plyr.ai.targetPlayer = {
+                 number: 1,
+                 currentPosition: {
+                   x: threat2.currentPosition.cell.number.x,
+                   y: threat2.currentPosition.cell.number.y,
+                 },
+                 target: {
+                   number1: {
+                     x: threat2.target.cell.x,
+                     y: threat2.target.cell.y,
+                   },
+                   number2: {
+                     x: threat2.target.cell2.x,
+                     y: threat2.target.cell2.y,
+                   },
+                 },
+                 action: threat.action,
+               };
+             }
+
+           }
+
          }
          if (plyr.ai.mode === 'careful' && plyr.ai.retrieving.checkin === 'enroute') {
            console.log('was enroute, now retreating');
@@ -16784,7 +16830,7 @@ class App extends Component {
          plyr.ai.retrieving.checkin = undefined;
          plyr.ai.retrieving.safe = false;
          plyr.ai.targetAcquired = false;
-         console.log('retrieval complete. revert mission',plyr.ai.mission,plyr.ai.targetSet,plyr.ai.targetPlayer.currentPosition,plyr.ai.targetAcquired,plyr.ai.targetPlayer);
+         // console.log('retrieval complete. revert mission',plyr.ai.mission,plyr.ai.targetSet,plyr.ai.targetPlayer.currentPosition,plyr.ai.targetAcquired,plyr.ai.targetPlayer);
 
          let itemRetrieved;
 
@@ -16821,9 +16867,39 @@ class App extends Component {
            }
          }
 
+         if (itemRetrieved === true) {
+           plyr.ai.retrieving = {
+             checkin: undefined,
+             state: false,
+             point: {x: undefined, y: undefined},
+             targetItem: {
+               name: '',
+               type: '',
+               subType: '',
+               effect: '',
+             },
+             safe: false,
+           };
+         }
+
          if (plyr.ai.organizing.dropped.state === true) {
            plyr.ai.organizing.dropped.state = false;
          }
+       }
+
+       if (plyr.ai.retrieving.checkin === 'abort') {
+         plyr.ai.retrieving = {
+           checkin: undefined,
+           state: false,
+           point: {x: undefined, y: undefined},
+           targetItem: {
+             name: '',
+             type: '',
+             subType: '',
+             effect: '',
+           },
+           safe: false,
+         };
        }
 
     }
@@ -18523,7 +18599,7 @@ class App extends Component {
 
     if (targetPlayer) {
       if (getPath === true && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
-        // console.log('pathfinding...');
+        console.log('pathfinding...');
         this.updatePathArray();
         this.easyStar = new Easystar.js();
 
@@ -18533,7 +18609,7 @@ class App extends Component {
         if (aiPlayer.ai.mission === 'pursue') {
           aiPos = aiPlayer.currentPosition.cell.number;
           targetPos = this.players[aiPlayer.ai.targetPlayer.number-1].currentPosition.cell.number;
-          // console.log('pursuit target ',targetPos);
+          console.log('pursuit target ',targetPos);
 
           if (aiPlayer.ai.safeRange === true) {
 
@@ -18730,9 +18806,9 @@ class App extends Component {
                }
 
                if (freeSpaces[0]) {
-                 console.log('freeSpaces',freeSpaces);
+                 // console.log('freeSpaces',freeSpaces);
                  targetPos = freeSpaces[0];
-                 console.log('found path to safe bow range',targetPos);
+                 // console.log('found path to safe bow range',targetPos);
                } else {
                  console.log('No free or unobstructed firing positions at this distance for crossbow');
                  if (aiPlayer.ai.pathfindingRanges.crossbow > 1) {
@@ -18968,9 +19044,9 @@ class App extends Component {
               }
 
               if (freeSpaces[0]) {
-                console.log('freeSpaces',freeSpaces);
+                // console.log('freeSpaces',freeSpaces);
                 targetPos = freeSpaces[0];
-                console.log('found path to safe spear range',targetPos);
+                // console.log('found path to safe spear range',targetPos);
               } else {
                 console.log('No free or unobstructed firing positions at this distance for spear');
                 if (aiPlayer.ai.pathfindingRanges.spear > 1) {
