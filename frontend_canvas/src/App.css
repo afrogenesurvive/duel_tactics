@@ -139,7 +139,7 @@
   /* display: none; */
 }
 .settingsSwitch {
-  border: 1px solid green;
+  border: 2px solid green;
   border-radius: 5px;
   padding: .5rem;
   background-color: #ffffff;
@@ -161,6 +161,31 @@
   top: 0;
   width: 100%;
   z-index: 4;
+}
+
+.cameraBox {
+  border: 2px solid red;
+  border-radius: 5px;
+  padding: .5rem;
+  background-color: #ffffff;
+  position: absolute;
+  bottom: 0;
+  left: 7rem;
+  z-index: 3;
+  width: 9.5rem;
+  display: flex;
+}
+.cameraBoxMode {
+
+}
+.cameraModeHighlighted {
+  border: 2px solid purple;
+  border-radius: 5px;
+}
+
+.cameraUIIcon {
+  margin: 0 .3rem;
+  color: #000000;
 }
 
 @keyframes rotation {

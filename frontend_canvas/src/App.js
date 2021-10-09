@@ -6,6 +6,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCogs,
   faRobot,
+  faVideo,
+  faSearchPlus,
+  faExpandAlt,
+  faUndo,
 } from '@fortawesome/free-solid-svg-icons';
 
 import logo from './logo.svg';
@@ -1412,6 +1416,7 @@ class App extends Component {
         cycleWeapon: false,
         cycleArmor: false,
         dodge: false,
+        menu: false,
       },
       {
         north: false,
@@ -1428,6 +1433,7 @@ class App extends Component {
         cycleWeapon: false,
         cycleArmor: false,
         dodge: false,
+        menu: false,
       },
     ]
     this.attackAnimRef = {
@@ -1674,6 +1680,51 @@ class App extends Component {
     }
     this.popupSize = 35;
 
+    this.toggleCameraMode = false;
+    this.camera = {
+      state: false,
+      startCount: 0,
+      startLimit: 4,
+      mode: 'zoom',
+      target: {
+        type: 'player',
+        plyrNo: 1,
+        cell: {
+          x: undefined,
+          y: undefined,
+        }
+      },
+      focus: {
+        x: undefined,
+        y: undefined,
+      },
+      zoom: {
+        x: 1.0,
+        y: 1.0,
+      },
+      pan: {
+        x: 0,
+        y: -90,
+      },
+      limits: {
+        zoom: {
+          min: .5,
+          max: 1.8,
+        },
+        pan: {
+          x: {
+            min: -400,
+            max: 300,
+          },
+          y: {
+            min: -400,
+            max: 300,
+          }
+        },
+      },
+      instructions: [],
+    };
+
   }
 
 
@@ -1779,6 +1830,7 @@ class App extends Component {
       cycleWeapon: false,
       cycleArmor: false,
       dodge: false,
+      menu: false,
     },
     {
       north: false,
@@ -1795,6 +1847,7 @@ class App extends Component {
       cycleWeapon: false,
       cycleArmor: false,
       dodge: false,
+      menu: false,
     },
   ]
   let showSettingsKeyPressState = false;
@@ -2791,6 +2844,10 @@ class App extends Component {
       //  this.openVoid = !this.openVoid;
       // break;
 
+      case '4' :
+       // this.toggleCameraMode(state);
+       this.toggleCameraMode = state ;
+      break;
       case '5' :
        this.addAiPlayerKeyPress = state;
       break;
@@ -4277,7 +4334,7 @@ class App extends Component {
 
 
     // DEFLECTED PLAYER CAN'T DO ANYTHING!!
-    if (player.success.deflected.state === false && player.dead.state !== true) {
+    if (player.success.deflected.state === false && player.dead.state !== true && this.camera.state !== true) {
 
 
       // AI STRAFE SWITCH ON!!
@@ -4647,7 +4704,7 @@ class App extends Component {
         }
 
 
-        // IDLE ANIM STEPPER!
+        // // IDLE ANIM STEPPER!
         if (player.action === 'idle') {
           // player.idleAnim.state = true
           if (player.idleAnim.count < player.idleAnim.limit+1) {
@@ -4664,6 +4721,7 @@ class App extends Component {
           // player.idleAnim.state = false;
           player.idleAnim.count = 0;
         }
+
         // BREAK ANIM STEPPERS!
         if (player.breakAnim.attack.state === true) {
           if (player.breakAnim.attack.count > 0 && player.breakAnim.attack.count < player.breakAnim.attack.limit) {
@@ -6366,25 +6424,42 @@ class App extends Component {
               player.items.armorIndex = newIndex;
               player.currentArmor = player.items.armor[newIndex]
 
-              player.popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit: 25,
-                    type: '',
-                    position: '',
-                    msg: player.items.armor[newIndex].type,
-                    img: '',
+              if (player.items.armor[newIndex].type !== '' && !player.popups.find(x=>x.msg === player.items.armor[newIndex].type)) {
+                player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 25,
+                      type: '',
+                      position: '',
+                      msg: player.items.armor[newIndex].type,
+                      img: '',
 
-                  }
-                )
+                    }
+                  )
+              }
+              if (player.items.armor[newIndex].type === '' && !player.popups.find(x=>x.msg === 'stop')) {
+                player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 25,
+                      type: '',
+                      position: '',
+                      msg: 'stop',
+                      img: '',
+
+                    }
+                  )
+              }
+
 
             }
             if (
               this.keyPressed[player.number-1].cycleArmor === true &&
               player.items.armor.length === 0
             ) {
-              // console.log('nothing to cycle through');
+              console.log('no armor to cycle through');
               this.players[player.number-1].statusDisplay = {
                 state: true,
                 status: 'no armor to cycle!',
@@ -6392,7 +6467,8 @@ class App extends Component {
                 limit: this.players[player.number-1].statusDisplay.limit,
               }
 
-              player.popups.push(
+              if (!player.popups.find(x=>x.msg === 'stop')) {
+                player.popups.push(
                   {
                     state: false,
                     count: 0,
@@ -6404,6 +6480,8 @@ class App extends Component {
 
                   }
                 )
+              }
+
             }
 
             player.cycleArmor = {
@@ -7366,6 +7444,8 @@ class App extends Component {
     }
 
 
+
+
     // STATUS DISPLAY STEPPER!!
     if (player.statusDisplay.state === true && player.statusDisplay.count < player.statusDisplay.limit) {
       // console.log('stepping status display');
@@ -7420,6 +7500,148 @@ class App extends Component {
         }
       }
 
+    }
+
+
+    //CAMERA INPUT
+    if (this.toggleCameraMode === false && this.camera.state === true ) {
+      this.camera.startCount = 0;
+    }
+    // if (this.toggleCameraMode === false && this.camera.state === false && this.camera.startCount < this.camera.startLimit) {
+    //   this.camera.startCount = 0;
+    // }
+    if (this.camera.state === false && this.toggleCameraMode === false && this.camera.startCount >= this.camera.startLimit) {
+      // console.log('welcome to camera mode');
+      this.camera.startCount = 0;
+      this.camera.state = true;
+    }
+    if (this.toggleCameraMode === true) {
+
+      let state = this.toggleCameraMode;
+      if (this.camera.state === false && state === true && this.camera.startCount < this.camera.startLimit) {
+
+        this.camera.startCount++;
+      }
+      if (this.camera.state === true && state === true && this.camera.startCount < this.camera.startLimit) {
+        // console.log('leaving camera mode ...');
+        this.camera.startCount++;
+      }
+      if (this.camera.state === true && state === true && this.camera.startCount >= this.camera.startLimit) {
+        // console.log('thank you for using the camera');
+        this.camera.startCount = 0;
+        this.camera.state = false;
+      }
+
+
+    }
+    if (this.camera.state === true) {
+
+      // IDLE ANIM STEPPER!
+      if (player.action === 'idle') {
+        // player.idleAnim.state = true
+        if (player.idleAnim.count < player.idleAnim.limit+1) {
+          // console.log('player.idleAnim.count',player.idleAnim.count);
+          player.idleAnim.count++
+
+        }
+        if (player.idleAnim.count >= player.idleAnim.limit+1) {
+          player.idleAnim.count = 0;
+          player.idleAnim.state = false;
+        }
+      }
+      else if (player.action !== 'idle') {
+        // player.idleAnim.state = false;
+        player.idleAnim.count = 0;
+      }
+
+
+      if (this.keyPressed[player.number-1].attack === true) {
+        this.camera.mode = 'zoom';
+      }
+      if (this.keyPressed[player.number-1].defend === true) {
+        this.camera.mode = 'pan';
+      }
+      if (this.camera.mode === 'zoom') {
+        if (this.keyPressed[player.number-1].north === true && this.camera.zoom.x < this.camera.limits.zoom.max) {
+        // if (this.keyPressed[player.number-1].north === true) {
+          this.camera.zoom.x += .02 ;
+          this.camera.zoom.y += .02 ;
+          // console.log('zoom',this.camera.zoom.x.toFixed(2),'pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2),'limits min',this.camera.limits.zoom.min,'max',this.camera.limits.zoom.max);
+          // console.log('zooming in');
+        }
+        if (this.keyPressed[player.number-1].north === true && this.camera.zoom.x >= this.camera.limits.zoom.max) {
+          console.log('zoom in limit');
+        }
+        if (this.keyPressed[player.number-1].south === true && this.camera.zoom.x > this.camera.limits.zoom.min) {
+        // if (this.keyPressed[player.number-1].south === true) {
+          this.camera.zoom.x -= .02 ;
+          this.camera.zoom.y -= .02 ;
+          // console.log('zoom',this.camera.zoom.x.toFixed(2),'pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2),'limits min',this.camera.limits.zoom.min,'max',this.camera.limits.zoom.max);
+          // console.log('zooming out');
+        }
+        if (this.keyPressed[player.number-1].south === true && this.camera.zoom.x <= this.camera.limits.zoom.min) {
+          console.log('zoom out limit');
+        }
+      }
+
+      if (this.camera.mode === 'pan') {
+
+        // switch based zoom ranges, modulo etc
+
+        if (this.keyPressed[player.number-1].north === true && this.camera.pan.y < this.camera.limits.pan.y.max) {
+          this.camera.pan.y += 10;
+          // console.log('panning direction north');
+          console.log('zoom',this.camera.zoom.x.toFixed(2),'pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
+        }
+        if (this.keyPressed[player.number-1].north === true && this.camera.pan.y >= this.camera.limits.pan.y.max) {
+          console.log('pan limit north');
+        }
+        if (this.keyPressed[player.number-1].south === true && this.camera.pan.y > this.camera.limits.pan.y.min) {
+          this.camera.pan.y -= 10;
+          // console.log('panning direction south');
+          console.log('zoom',this.camera.zoom.x.toFixed(2),'pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
+        }
+        if (this.keyPressed[player.number-1].south === true && this.camera.pan.y <= this.camera.limits.pan.y.min) {
+          console.log('pan limit south');
+        }
+        if (this.keyPressed[player.number-1].east === true && this.camera.pan.x > this.camera.limits.pan.x.min) {
+          this.camera.pan.x -= 10;
+          // console.log('panning direction east');
+          console.log('zoom',this.camera.zoom.x.toFixed(2),'pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
+        }
+        if (this.keyPressed[player.number-1].east === true && this.camera.pan.x <= this.camera.limits.pan.x.min) {
+          console.log('pan limit east');
+        }
+        if (this.keyPressed[player.number-1].west === true && this.camera.pan.x < this.camera.limits.pan.x.max) {
+          this.camera.pan.x += 10;
+          // console.log('panning direction west');
+          console.log('zoom',this.camera.zoom.x.toFixed(2),'pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
+        }
+        if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
+          console.log('pan limit south');
+        }
+      }
+
+
+    }
+
+    // AUTO CAMERA
+    // modify camera values based on number of human players and grid size
+    // also check for camera command to set camera with, some commands are executed over time
+    // how to get camera focus and set based target?
+
+     // if 2 humans only slight adjustments...
+     // If 2 players only adjust for grids over x size.
+     // If 1 player zoom when engaging based on ranged weapon or not
+     // and if, vary zoom based on target distance zoom out and or pan when new ai enters,
+     // when human player respawns...
+
+     // camera commands eg. FollowPlayer2, centerOnCell21
+
+
+    // MENU
+    if (this.keyPressed[player.number-1].cycleWeapon === true && this.keyPressed[player.number-1].cycleArmor === true) {
+      // toggle the menu here
     }
 
 
@@ -8154,6 +8376,11 @@ class App extends Component {
     context.clearRect(0,0,this.canvasWidth,this.canvasHeight)
     context2.clearRect(0,0,this.canvasWidth,this.canvasHeight)
 
+    context.translate(this.camera.pan.x,this.camera.pan.y);
+    context2.translate(this.camera.pan.x,this.camera.pan.y);
+    context.scale(this.camera.zoom.x,this.camera.zoom.y);
+    context2.scale(this.camera.zoom.x,this.camera.zoom.y);
+
     for (var x = 0; x < this.gridWidth+1; x++) {
       for (var y = 0; y < this.gridWidth+1; y++) {
 
@@ -8202,6 +8429,7 @@ class App extends Component {
           }
         }
 
+        // DORWNING
         for (const plyrb of this.players) {
           if (plyrb.drowning === true) {
             if (
@@ -8255,13 +8483,13 @@ class App extends Component {
         context.fillRect(center.x, center.y,5,5);
 
 
+        // CELL VERTICES
         let vertices = [
           {x:center.x, y:center.y+tileWidth/2},
           {x:center.x+tileWidth, y:center.y},
           {x:center.x, y:center.y-tileWidth/2},
           {x:center.x-tileWidth, y:center.y},
         ];
-
         for (const vertex of vertices) {
           context.fillStyle = "yellow";
           context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
@@ -13784,18 +14012,21 @@ class App extends Component {
         limit: this.players[player.number-1].statusDisplay.limit,
       }
 
-      this.players[player.number-1].popups.push(
-        {
-          state: false,
-          count: 0,
-          limit: 25,
-          type: '',
-          position: '',
-          msg: 'stop',
-          img: '',
+      if (!this.players[player.number-1].popups.find(x=>x.msg === 'stop')) {
+        this.players[player.number-1].popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 25,
+            type: '',
+            position: '',
+            msg: 'stop',
+            img: '',
 
-        }
-      )
+          }
+        )
+      }
+
     }
 
   }
@@ -20279,6 +20510,7 @@ class App extends Component {
         cycleWeapon: false,
         cycleArmor: false,
         dodge: false,
+        menu: false,
       };
 
       switch(currentInstruction.keyword) {
@@ -20817,11 +21049,65 @@ class App extends Component {
         cycleWeapon: false,
         cycleArmor: false,
         dodge: false,
+        menu: false,
       }
     }
 
   }
 
+  toggleCameraModeUI = (mode) => {
+
+    this.camera.mode = mode;
+  }
+  closeCamera = () => {
+    this.camera.state = false;
+  }
+  resetCamera = () => {
+    this.camera = {
+      state: true,
+      startCount: 0,
+      startLimit: 4,
+      mode: 'zoom',
+      target: {
+        type: 'player',
+        plyrNo: 1,
+        cell: {
+          x: undefined,
+          y: undefined,
+        }
+      },
+      focus: {
+        x: undefined,
+        y: undefined,
+      },
+      zoom: {
+        x: 1.0,
+        y: 1.0,
+      },
+      pan: {
+        x: 0,
+        y: -90,
+      },
+      limits: {
+        zoom: {
+          min: .1,
+          max: 1.2,
+        },
+        pan: {
+          x: {
+            min: undefined,
+            max: undefined,
+          },
+          y: {
+            min: undefined,
+            max: undefined,
+          }
+        },
+      },
+      instructions: [],
+    };
+
+  }
 
 
   render() {
@@ -20873,6 +21159,38 @@ class App extends Component {
                 <FontAwesomeIcon icon={faRobot} size="sm" className="setSwitchIcon"/>
               </a>
             </div>
+
+            {this.camera.state === true && (
+              <div className="cameraBox">
+                <a href="javascript:"  onClick={this.closeCamera}>
+                  <FontAwesomeIcon icon={faVideo} size="sm" className="cameraUIIcon"/>
+                </a>
+                {this.camera.mode === 'zoom' && (
+                  <div className="cameraBoxMode">
+                  <a href="javascript:" className="cameraModeHighlighted" onClick={this.toggleCameraModeUI.bind(this, 'zoom')}>
+                    <FontAwesomeIcon icon={faSearchPlus} size="sm" className="cameraUIIcon"/>
+                  </a>
+                  <a href="javascript:" className="" onClick={this.toggleCameraModeUI.bind(this, 'pan')}>
+                    <FontAwesomeIcon icon={faExpandAlt} size="sm" className="cameraUIIcon"/>
+                  </a>
+                  </div>
+                )}
+                {this.camera.mode === 'pan' && (
+                  <div className="cameraBoxMode">
+                  <a href="javascript:" onClick={this.toggleCameraModeUI.bind(this, 'zoom')}>
+                    <FontAwesomeIcon icon={faSearchPlus} size="sm" className="cameraUIIcon"/>
+                  </a>
+                  <a href="javascript:" className=" cameraModeHighlighted" onClick={this.toggleCameraModeUI.bind(this, 'pan')}>
+                    <FontAwesomeIcon icon={faExpandAlt} size="sm" className="cameraUIIcon"/>
+                  </a>
+                  </div>
+                )}
+                <a href="javascript:"  onClick={this.resetCamera}>
+                  <FontAwesomeIcon icon={faUndo} size="sm" className="cameraUIIcon"/>
+                </a>
+
+              </div>
+            )}
 
             <CellInfo
               cell={this.clicked}
