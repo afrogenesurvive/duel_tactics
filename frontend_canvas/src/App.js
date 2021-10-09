@@ -687,7 +687,7 @@ class App extends Component {
         newMoveDelay: {
           state: false,
           count: 0,
-          limit: 5,
+          limit: 7,
         },
         strafing: {
           state: false,
@@ -1078,7 +1078,7 @@ class App extends Component {
         newMoveDelay: {
           state: false,
           count: 0,
-          limit: 5,
+          limit: 7,
         },
         strafing: {
           state: false,
@@ -1686,6 +1686,7 @@ class App extends Component {
       startCount: 0,
       startLimit: 4,
       mode: 'zoom',
+      fixed: false,
       target: {
         type: 'player',
         plyrNo: 1,
@@ -1699,12 +1700,12 @@ class App extends Component {
         y: undefined,
       },
       zoom: {
-        x: 1.0,
-        y: 1.0,
+        x: 1,
+        y: 1,
       },
       pan: {
         x: 0,
-        y: -90,
+        y: 0,
       },
       limits: {
         zoom: {
@@ -1722,8 +1723,15 @@ class App extends Component {
           }
         },
       },
+      instructionType: 'default',
       instructions: [],
     };
+    this.cameraInstructionRef = {
+      default: {},
+      story: {},
+      // FollowPlayer2, centerOnCell21 etc
+    };
+
 
   }
 
@@ -2485,6 +2493,7 @@ class App extends Component {
 
     const x = (event.clientX - rect.left);
     const y = (event.clientY - rect.top);
+    console.log("clicked the canvas", 'x: ',x,'y: ',y,'zoom',this.camera.zoom.x,'pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
 
     let insideGrid = false;
 
@@ -4352,6 +4361,7 @@ class App extends Component {
         nextPosition = this.lineCrementer(player);
         // player.currentPosition.cell = player.target.cell;
         player.nextPosition = nextPosition;
+        // console.log('nextPosition',nextPosition,player.direction);
 
         if (player.target.void === true) {
           if (player.falling.state === true) {
@@ -4401,6 +4411,7 @@ class App extends Component {
               if (player.strafing.state === true) {
                 player.strafing.state = false;
               }
+
 
               this.checkDestination(player);
               if (player.drowning !== true && player.pushBack.state !== true) {
@@ -4858,10 +4869,11 @@ class App extends Component {
 
 
 
-        // CELL BY CELL MOVEMENT DELAY!
+        // CELL BY CELL MOVEMENT DELAY COUNTER!
         if (player.newMoveDelay.state === true) {
           if (player.newMoveDelay.count < player.newMoveDelay.limit) {
             player.newMoveDelay.count++;
+            // console.log('newMoveDelay.count',player.newMoveDelay.count);
           }
           if (player.newMoveDelay.count >= player.newMoveDelay.limit) {
             player.newMoveDelay = {
@@ -6762,6 +6774,7 @@ class App extends Component {
 
 
         if (player.newMoveDelay.state !== true) {
+
           // CAN READ MOVE INPUTS!!
           if (
             player.attacking.state === false &&
@@ -6783,7 +6796,6 @@ class App extends Component {
 
               // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
               if (keyPressedDirection === player.direction && player.strafing.state === false) {
-
 
                 let target = this.getTarget(player)
 
@@ -6998,243 +7010,6 @@ class App extends Component {
                 }
 
               }
-            }
-          }
-        }
-
-        // // CAN READ MOVE INPUTS!!
-        if (
-          player.attacking.state === false &&
-          player.defending.state === false &&
-          player.dodging.state === false &&
-          player.dodging.countState === false
-        ) {
-          // CONFIRM MOVE KEYPRESS!!
-          if (
-            this.keyPressed[player.number-1].north === true ||
-            this.keyPressed[player.number-1].south === true ||
-            this.keyPressed[player.number-1].east === true ||
-            this.keyPressed[player.number-1].west === true ||
-            this.keyPressed[player.number-1].northEast === true ||
-            this.keyPressed[player.number-1].northWest === true ||
-            this.keyPressed[player.number-1].southEast === true ||
-            this.keyPressed[player.number-1].southWest === true
-          ) {
-            // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
-            if (keyPressedDirection === player.direction && player.strafing.state === false) {
-
-              let target = this.getTarget(player)
-
-              if (target.free === true && player.target.void === false) {
-
-                if (player.dead.state === true && player.dead.count === 0) {
-
-                  player.nextPosition = {x: -30,y: -30}
-
-                }
-                else if (player.turning.delayCount === 0) {
-
-                  player.action = 'moving';
-                  player.moving = {
-                    state: true,
-                    step: 0,
-                    course: '',
-                    origin: {
-                      number: {
-                        x: player.currentPosition.cell.number.x,
-                        y: player.currentPosition.cell.number.y
-                      },
-                      center: {
-                        x: player.currentPosition.cell.center,
-                        y: player.currentPosition.cell.center
-                      },
-                    },
-                    destination: target.cell.center
-                  }
-
-
-                  nextPosition = this.lineCrementer(player);
-                  player.nextPosition = nextPosition;
-
-                }
-
-              }
-
-              if (target.free === false) {
-                // console.log('target is NOT free');
-              }
-              if (player.target.void === true) {
-                // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
-
-                this.moveSpeed = player.speed.move;
-
-                player.moving = {
-                  state: true,
-                  step: 0,
-                  course: '',
-                  origin: {
-                    number: player.currentPosition.cell.number,
-                    center: player.currentPosition.cell.center,
-                  },
-                  destination: target.cell.center
-                }
-
-                nextPosition = this.lineCrementer(player);
-                player.nextPosition = nextPosition;
-              }
-
-            }
-
-            // CHANGE DIRECTION IF NOT STRAFING!!
-            else if (keyPressedDirection !== player.direction && player.strafing.state === false) {
-
-              // console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
-              player.turning.state = true;
-              player.turning.toDirection = keyPressedDirection;
-
-            }
-
-            // MOVE WHILE STRAFING!!
-            else if (keyPressedDirection !== player.direction && player.strafing.state === true) {
-
-              player.strafing.direction = keyPressedDirection;
-              let target = this.getTarget(player);
-
-              if (target.free === true) {
-
-                this.moveSpeed = player.speed.move;
-
-                // console.log('start strafing');
-                player.action = 'strafe moving';
-                player.moving = {
-                  state: true,
-                  step: 0,
-                  course: '',
-                  origin: {
-                    number: {
-                      x: player.currentPosition.cell.number.x,
-                      y: player.currentPosition.cell.number.y
-                    },
-                    center: {
-                      x: player.currentPosition.cell.center.x,
-                      y: player.currentPosition.cell.center.y
-                    },
-                  },
-                  destination: target.cell.center
-                }
-                nextPosition = this.lineCrementer(player);
-                player.nextPosition = nextPosition;
-              }
-            }
-
-            // JUMPING!!
-            else if (keyPressedDirection === player.direction && player.strafing.state === true && player.jumping.checking !== true && player.jumping.state !== true) {
-
-              this.players[player.number-1].jumping.checking = true;
-              let target = this.getTarget(player);
-
-              let cell1 = this.gridInfo.find(elem => elem.number.x === target.cell.number.x && elem.number.y === target.cell.number.y)
-              let cell2 = this.gridInfo.find(elem => elem.number.x === target.cell2.number.x && elem.number.y === target.cell2.number.y)
-              // console.log('cell1',cell1);
-              // console.log('cell2',cell2);
-
-              let cellsWithinBounds = true;
-              if (!cell1 || !cell2) {
-                cellsWithinBounds = false;
-              } else {
-                if (cell1.number.x < 0 || cell1.number.x > this.gridWidth) {
-                  cellsWithinBounds = false;
-                }
-                if (cell1.number.y < 0 || cell1.number.y > this.gridWidth) {
-                  cellsWithinBounds = false;
-                }
-              }
-
-              if (player.stamina.current - 6 >= 0) {
-
-                if (cellsWithinBounds === true) {
-                  if (
-                    cell1.void.state === true ||
-                    cell1.terrain.type === 'deep'
-                  ) {
-                    // console.log('a');
-                    if (
-                      cell2.levelData.charAt(0) !==  'z' ||
-                      cell2.levelData.charAt(0) !==  'y'
-                    ) {
-                      // console.log('b');
-
-                      let targetOccupied = false;
-                      for (const plyr of this.players) {
-                        if (
-                          plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
-                          plyr.currentPosition.cell.number.y === player.target.cell2.number.y
-                        ) {
-                          // console.log('c');
-                          targetOccupied = true
-                        }
-
-                      }
-
-                      if (targetOccupied !== true) {
-                        if (
-                          cell2.void.state !== true &&
-                          cell2.terrain.type !== 'deep'
-                        ) {
-                          // console.log('can jump');
-                          this.players[player.number-1].jumping.checking = false;
-                          this.players[player.number-1].jumping.state = true;
-                          player.action = 'jumping'
-                          player.stamina.current = player.stamina.current - this.staminaCostRef.jump;
-
-                          player.moving = {
-                            state: true,
-                            step: 0,
-                            course: '',
-                            origin: {
-                              number: player.currentPosition.cell.number,
-                              center: player.currentPosition.cell.center,
-                            },
-                            destination: target.cell2.center
-                          }
-
-                          nextPosition = this.lineCrementer(player);
-                          // nextPosition = this.jumpCrementer(player);
-                          player.nextPosition = nextPosition;
-                        } else {
-                          // console.log('can only jump over voids or deep water cell 2');
-                          this.players[player.number-1].jumping.checking = false;
-                        }
-                      }
-                      else {
-                        // console.log('jump destination occupied');
-                        this.players[player.number-1].jumping.checking = false;
-                      }
-
-                    } else {
-                      // console.log('jump obstacle detected');
-                      this.players[player.number-1].jumping.checking = false;
-                    }
-                  } else {
-                    // console.log('can only jump over voids or deep water cell 2');
-                    this.players[player.number-1].jumping.checking = false;
-                  }
-                } else {
-                  // console.log('cell out of bounds');
-                  this.players[player.number-1].jumping.checking = false;
-                }
-
-              }
-              else {
-                console.log('out of stamina');
-                player.statusDisplay = {
-                  state: true,
-                  status: 'Out of Stamina',
-                  count: 0,
-                  limit: player.statusDisplay.limit,
-                }
-              }
-
             }
           }
         }
@@ -7503,17 +7278,19 @@ class App extends Component {
     }
 
 
-    //CAMERA INPUT
-    if (this.toggleCameraMode === false && this.camera.state === true ) {
+
+    //CAMERA INPUT SWITCH
+    if (this.toggleCameraMode === false && this.camera.state === true) {
       this.camera.startCount = 0;
     }
     // if (this.toggleCameraMode === false && this.camera.state === false && this.camera.startCount < this.camera.startLimit) {
     //   this.camera.startCount = 0;
     // }
-    if (this.camera.state === false && this.toggleCameraMode === false && this.camera.startCount >= this.camera.startLimit) {
+    if (this.camera.state === false && this.toggleCameraMode === false && this.camera.startCount >= this.camera.startLimit  && this.camera.instructionType === 'default') {
       // console.log('welcome to camera mode');
       this.camera.startCount = 0;
       this.camera.state = true;
+      this.camera.fixed = true;
     }
     if (this.toggleCameraMode === true) {
 
@@ -7534,7 +7311,7 @@ class App extends Component {
 
 
     }
-    if (this.camera.state === true) {
+    if (this.camera.state === true && this.camera.instructionType === 'default') {
 
       // IDLE ANIM STEPPER!
       if (player.action === 'idle') {
@@ -7566,8 +7343,12 @@ class App extends Component {
         // if (this.keyPressed[player.number-1].north === true) {
           this.camera.zoom.x += .02 ;
           this.camera.zoom.y += .02 ;
-          // console.log('zoom',this.camera.zoom.x.toFixed(2),'pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2),'limits min',this.camera.limits.zoom.min,'max',this.camera.limits.zoom.max);
-          // console.log('zooming in');
+
+          console.log('zooming in');
+          console.log('zoom',this.camera.zoom.x.toFixed(2));
+          console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
+          console.log('zoom limit mix',this.camera.limits.zoom.min,'max',this.camera.limits.zoom.max);
+          console.log('player 1 pos',this.players[0].currentPosition.cell.center.x,this.players[0].currentPosition.cell.center.y);
         }
         if (this.keyPressed[player.number-1].north === true && this.camera.zoom.x >= this.camera.limits.zoom.max) {
           console.log('zoom in limit');
@@ -7576,8 +7357,12 @@ class App extends Component {
         // if (this.keyPressed[player.number-1].south === true) {
           this.camera.zoom.x -= .02 ;
           this.camera.zoom.y -= .02 ;
-          // console.log('zoom',this.camera.zoom.x.toFixed(2),'pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2),'limits min',this.camera.limits.zoom.min,'max',this.camera.limits.zoom.max);
-          // console.log('zooming out');
+
+          console.log('zooming out');
+          console.log('zoom',this.camera.zoom.x.toFixed(2));
+          console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
+          console.log('zoom limit min',this.camera.limits.zoom.min,'max',this.camera.limits.zoom.max);
+          console.log('player 1 pos',this.players[0].currentPosition.cell.center.x,this.players[0].currentPosition.cell.center.y);
         }
         if (this.keyPressed[player.number-1].south === true && this.camera.zoom.x <= this.camera.limits.zoom.min) {
           console.log('zoom out limit');
@@ -7590,32 +7375,44 @@ class App extends Component {
 
         if (this.keyPressed[player.number-1].north === true && this.camera.pan.y < this.camera.limits.pan.y.max) {
           this.camera.pan.y += 10;
-          // console.log('panning direction north');
-          console.log('zoom',this.camera.zoom.x.toFixed(2),'pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
+          console.log('panning direction north');
+          console.log('zoom',this.camera.zoom.x.toFixed(2));
+          console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
+          console.log('pan limit min x',this.camera.limits.pan.x.min,'y',this.camera.limits.pan.y.min,'max x',this.camera.limits.pan.x.max,'y',this.camera.limits.pan.y.max);
+          console.log('player 1 pos',this.players[0].currentPosition.cell.center.x,this.players[0].currentPosition.cell.center.y);
         }
         if (this.keyPressed[player.number-1].north === true && this.camera.pan.y >= this.camera.limits.pan.y.max) {
           console.log('pan limit north');
         }
         if (this.keyPressed[player.number-1].south === true && this.camera.pan.y > this.camera.limits.pan.y.min) {
           this.camera.pan.y -= 10;
-          // console.log('panning direction south');
-          console.log('zoom',this.camera.zoom.x.toFixed(2),'pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
+          console.log('panning direction south');
+          console.log('zoom',this.camera.zoom.x.toFixed(2));
+          console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
+          console.log('pan limit min x',this.camera.limits.pan.x.min,'y',this.camera.limits.pan.y.min,'max x',this.camera.limits.pan.x.max,'y',this.camera.limits.pan.y.max);
+          console.log('player 1 pos',this.players[0].currentPosition.cell.center.x,this.players[0].currentPosition.cell.center.y);
         }
         if (this.keyPressed[player.number-1].south === true && this.camera.pan.y <= this.camera.limits.pan.y.min) {
           console.log('pan limit south');
         }
         if (this.keyPressed[player.number-1].east === true && this.camera.pan.x > this.camera.limits.pan.x.min) {
           this.camera.pan.x -= 10;
-          // console.log('panning direction east');
-          console.log('zoom',this.camera.zoom.x.toFixed(2),'pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
+          console.log('panning direction east');
+          console.log('zoom',this.camera.zoom.x.toFixed(2));
+          console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
+          console.log('pan limit min x',this.camera.limits.pan.x.min,'y',this.camera.limits.pan.y.min,'max x',this.camera.limits.pan.x.max,'y',this.camera.limits.pan.y.max);
+          console.log('player 1 pos',this.players[0].currentPosition.cell.center.x,this.players[0].currentPosition.cell.center.y);
         }
         if (this.keyPressed[player.number-1].east === true && this.camera.pan.x <= this.camera.limits.pan.x.min) {
           console.log('pan limit east');
         }
         if (this.keyPressed[player.number-1].west === true && this.camera.pan.x < this.camera.limits.pan.x.max) {
           this.camera.pan.x += 10;
-          // console.log('panning direction west');
-          console.log('zoom',this.camera.zoom.x.toFixed(2),'pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
+          console.log('panning direction west');
+          console.log('zoom',this.camera.zoom.x.toFixed(2));
+          console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
+          console.log('pan limit min x',this.camera.limits.pan.x.min,'y',this.camera.limits.pan.y.min,'max x',this.camera.limits.pan.x.max,'y',this.camera.limits.pan.y.max);
+          console.log('player 1 pos',this.players[0].currentPosition.cell.center.x,this.players[0].currentPosition.cell.center.y);
         }
         if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
           console.log('pan limit south');
@@ -7625,18 +7422,48 @@ class App extends Component {
 
     }
 
+
     // AUTO CAMERA
-    // modify camera values based on number of human players and grid size
-    // also check for camera command to set camera with, some commands are executed over time
-    // how to get camera focus and set based target?
+    if (this.camera.state !== true && this.camera.fixed !== true) {
 
-     // if 2 humans only slight adjustments...
-     // If 2 players only adjust for grids over x size.
-     // If 1 player zoom when engaging based on ranged weapon or not
-     // and if, vary zoom based on target distance zoom out and or pan when new ai enters,
-     // when human player respawns...
+      if (this.camera.instructionType === 'default') {
 
-     // camera commands eg. FollowPlayer2, centerOnCell21
+        // if there are instructions, execute and step instruction.count, remove from array
+        //
+        // push to instructions set based on conditions
+        //
+        // If 1 player zoom when engaging based on ranged weapon or not
+        //
+        // if 2 players and they are in range, zoom if even are engaging
+        //
+        // if at engage zoom level but not engaged, zoom back out
+        //
+        // if board is under a certain size, zoom appropriately
+        //
+        // if board is over a certain size
+        //   if 1 player and positions changes x amount of times within a this.time interval (use modulo), pan hard to follow
+        //   if 2 players only follow if both positions change x amount of times within a this.time interval (use modulo) and they are in range (use targetArea scan func), pan soft to follow
+        //   else, zoom and pan to get them both as centered and close zoomed as possible
+        //
+        // if 1 player and player respawns, pan to spawn location and zoom in then out
+        //
+        // when a new ai enters pan to it, then back player(s)
+        //
+        // use a cameraInstructionRef to adjust the camera values accordingly, and push to this.camera.instructions
+
+
+      }
+      if (this.camera.instructionType === 'story') {
+
+        // if there are nstructions, execute and step instructions.count, remove from array
+        //
+        // use a cameraInstructionRef to adjust the camera values accordingly, and push to this.camera.instructions
+        //
+        // if this is the last instruction, set the instructionType back to default
+
+      }
+
+    }
 
 
     // MENU
@@ -8982,12 +8809,11 @@ class App extends Component {
             if (plyr.direction === 'east' || plyr.direction === 'south' || plyr.direction === 'southEast') {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
-
                 if (plyr.jumping.state === true) {
 
-                  context2.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
                 } else {
-                  context2.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
                 }
                 // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
                 // playerDrawLog(x,y,plyr)
@@ -10257,6 +10083,7 @@ class App extends Component {
         }
       }
     }
+
 
     this.players[player.number-1] = player;
 
@@ -11555,6 +11382,9 @@ class App extends Component {
 
     // this.projectiles[index] = bolt;
     return newPosition;
+
+  }
+  arcBoltCrementer = () => {
 
   }
   checkDestination = (player,checkTerrain) => {
@@ -15068,7 +14898,7 @@ class App extends Component {
           newMoveDelay: {
             state: false,
             count: 0,
-            limit: 5,
+            limit: 7,
           },
           strafing: {
             state: false,
@@ -21064,10 +20894,11 @@ class App extends Component {
   }
   resetCamera = () => {
     this.camera = {
-      state: true,
+      state: false,
       startCount: 0,
       startLimit: 4,
       mode: 'zoom',
+      fixed: false,
       target: {
         type: 'player',
         plyrNo: 1,
@@ -21081,29 +20912,30 @@ class App extends Component {
         y: undefined,
       },
       zoom: {
-        x: 1.0,
-        y: 1.0,
+        x: 1,
+        y: 1,
       },
       pan: {
         x: 0,
-        y: -90,
+        y: 0,
       },
       limits: {
         zoom: {
-          min: .1,
-          max: 1.2,
+          min: .5,
+          max: 1.8,
         },
         pan: {
           x: {
-            min: undefined,
-            max: undefined,
+            min: -400,
+            max: 300,
           },
           y: {
-            min: undefined,
-            max: undefined,
+            min: -400,
+            max: 300,
           }
         },
       },
+      instructionType: 'default',
       instructions: [],
     };
 
