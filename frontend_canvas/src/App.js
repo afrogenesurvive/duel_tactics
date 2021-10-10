@@ -7444,8 +7444,8 @@ class App extends Component {
             //   y: (this.canvas.height/2)-(this.camera.pan.y),
             // }
           } else {
-            isox -= 1*(this.camera.zoom.x*10)
-            isox -= 2*(this.camera.zoom.y*10)
+            // isox -= 2*(this.camera.zoom.x*10);
+            // isox -= 1*(this.camera.zoom.y*10);
           }
 
           console.log('zooming in');
@@ -7479,8 +7479,8 @@ class App extends Component {
             //   y: (this.canvas.height/2)-(this.camera.pan.y),
             // }
           } else {
-            isoy += 1*(this.camera.zoom.x*10)
-            isoy += 2*(this.camera.zoom.y*10)
+            // isoy += 2*(this.camera.zoom.x*10);
+            // isoy += 1*(this.camera.zoom.y*10);
           }
 
 
@@ -10405,11 +10405,11 @@ class App extends Component {
           }
 
 
-          // let p4 = new Point();
-          // p4.x = this.camera.focus.x -= 1*(this.camera.zoom.x*10);
-          // p4.y = this.camera.focus.y -= 2*(this.camera.zoom.y*10);
+          // let p2 = new Point();
+          // p.x = this.camera.focus.x -= 1*(this.camera.zoom.x*10);
+          // p.y = this.camera.focus.y -= 2*(this.camera.zoom.y*10);
           //
-          // let isoz = this.cartesianToIsometric(p4);
+          // let isox = this.cartesianToIsometric(p2);
 
           // console.log('camera focus coords',focus,this.camera.pan,this.camera.zoom);
           // context.fillStyle = "purple";
