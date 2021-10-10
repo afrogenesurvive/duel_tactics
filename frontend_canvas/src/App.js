@@ -1795,6 +1795,11 @@ class App extends Component {
           this.camera.pan.y = 20;
         break;
       }
+
+      // this.camera.pan = {
+      //   x: (this.canvas.width/2),
+      //   y: (this.canvas.height/2)-(this.camera.pan.y),
+      // }
     }
 
 
@@ -6001,7 +6006,6 @@ class App extends Component {
             player.bluntAttack = false;
             player.action = 'idle';
             console.log('attack end');
-            console.log('!!',this.aiPlayers);
 
           }
 
@@ -7409,12 +7413,41 @@ class App extends Component {
       if (this.keyPressed[player.number-1].defend === true) {
         this.camera.mode = 'pan';
       }
+
       if (this.camera.mode === 'zoom') {
+
+        class Point {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+            }
+        }
+
         if (this.keyPressed[player.number-1].north === true && this.camera.zoom.x < this.camera.limits.zoom.max) {
         // if (this.keyPressed[player.number-1].north === true) {
           this.camera.zoom.x += .02 ;
           this.camera.zoom.y += .02 ;
           this.camera.zoomDirection = 'in';
+
+          let p2 = new Point();
+          p2.x = this.camera.focus.x -= 2*(this.camera.zoom.x*10);
+          p2.y = this.camera.focus.y -= 1*(this.camera.zoom.y*10);
+
+          let isox = this.cartesianToIsometric(p2);
+
+          if (
+            !this.camera.focus.x &&
+            !this.camera.focus.y
+          ) {
+            // this.camera.pan = {
+            //   x: (this.canvas.width/2),
+            //   y: (this.canvas.height/2)-(this.camera.pan.y),
+            // }
+          } else {
+            isox -= 1*(this.camera.zoom.x*10)
+            isox -= 2*(this.camera.zoom.y*10)
+          }
+
           console.log('zooming in');
           console.log('zoom',this.camera.zoom.x.toFixed(2));
           console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
@@ -7429,6 +7462,28 @@ class App extends Component {
           this.camera.zoom.x -= .02 ;
           this.camera.zoom.y -= .02 ;
           this.camera.zoomDirection = 'out';
+
+
+          let p3 = new Point();
+          p3.x = this.camera.focus.x += 2*(this.camera.zoom.x*10);
+          p3.y = this.camera.focus.y += 1*(this.camera.zoom.y*10);
+
+          let isoy = this.cartesianToIsometric(p3);
+
+          if (
+            !this.camera.focus.x &&
+            !this.camera.focus.y
+          ) {
+            // this.camera.pan = {
+            //   x: (this.canvas.width/2),
+            //   y: (this.canvas.height/2)-(this.camera.pan.y),
+            // }
+          } else {
+            isoy += 1*(this.camera.zoom.x*10)
+            isoy += 2*(this.camera.zoom.y*10)
+          }
+
+
           console.log('zooming out');
           console.log('zoom',this.camera.zoom.x.toFixed(2));
           console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
@@ -7442,11 +7497,16 @@ class App extends Component {
 
       if (this.camera.mode === 'pan') {
 
+
         // switch based zoom ranges, modulo etc
 
         if (this.keyPressed[player.number-1].north === true && this.camera.pan.y < this.camera.limits.pan.y.max) {
           this.camera.pan.y += 10;
           this.camera.panDirection = 'north';
+
+          // this.camera.focus.x = (this.canvas.width/2)-(this.camera.pan.x)
+          // this.camera.focus.y = (this.canvas.height/2)-(this.camera.pan.y)
+
           console.log('panning direction north');
           console.log('zoom',this.camera.zoom.x.toFixed(2));
           console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
@@ -7459,6 +7519,10 @@ class App extends Component {
         if (this.keyPressed[player.number-1].south === true && this.camera.pan.y > this.camera.limits.pan.y.min) {
           this.camera.pan.y -= 10;
           this.camera.panDirection = 'south';
+
+          // this.camera.focus.x = (this.canvas.width/2)-(this.camera.pan.x)
+          // this.camera.focus.y = (this.canvas.height/2)-(this.camera.pan.y)
+
           console.log('panning direction south');
           console.log('zoom',this.camera.zoom.x.toFixed(2));
           console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
@@ -7471,6 +7535,10 @@ class App extends Component {
         if (this.keyPressed[player.number-1].east === true && this.camera.pan.x > this.camera.limits.pan.x.min) {
           this.camera.pan.x -= 10;
           this.camera.panDirection = 'east';
+
+          // this.camera.focus.x = (this.canvas.width/2)-(this.camera.pan.x)
+          // this.camera.focus.y = (this.canvas.height/2)-(this.camera.pan.y)
+
           console.log('panning direction east');
           console.log('zoom',this.camera.zoom.x.toFixed(2));
           console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
@@ -7483,6 +7551,10 @@ class App extends Component {
         if (this.keyPressed[player.number-1].west === true && this.camera.pan.x < this.camera.limits.pan.x.max) {
           this.camera.pan.x += 10;
           this.camera.panDirection = 'west';
+
+          // this.camera.focus.x = (this.canvas.width/2)-(this.camera.pan.x)
+          // this.camera.focus.y = (this.canvas.height/2)-(this.camera.pan.y)
+
           console.log('panning direction west');
           console.log('zoom',this.camera.zoom.x.toFixed(2));
           console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
@@ -10239,56 +10311,112 @@ class App extends Component {
           let focus;
 
           if (this.camera.mode === 'pan') {
-            focus = {
-              x: (canvas.width/2)-(this.camera.pan.x),
-              y: (canvas.height/2)-(this.camera.pan.y),
-            }
+            this.camera.focus.x = (canvas.width/2)-(this.camera.pan.x)
+            this.camera.focus.y = (canvas.height/2)-(this.camera.pan.y)
+            // focus = {
+            //   x: (canvas.width/2)-(this.camera.pan.x),
+            //   y: (canvas.height/2)-(this.camera.pan.y),
+            // }
           }
           if (this.camera.mode === 'zoom') {
             if (this.camera.zoomDirection === 'out') {
-              focus = {
-                x: (canvas.width/2)-(this.camera.pan.x),
-                y: (canvas.height/2)-(this.camera.pan.y),
-                // x: ((canvas.width/2)+(-this.camera.pan.x*(this.camera.zoom.x*10))),
-                // y: ((canvas.height/2)+(-this.camera.pan.y*(this.camera.zoom.x*10))),
+              // console.log('!!',this.camera.pan,this.camera.zoom.x);
 
-                // x: ((canvas.width/2)+(-this.camera.zoom.x*(canvas.width/10))),
-                // y: ((canvas.height/2)+(-this.camera.zoom.x*(canvas.height/10))),
+          if (
+            !this.camera.focus.x &&
+            !this.camera.focus.y
+          ) {
+            this.camera.pan = {
+              x: (this.canvas.width/2),
+              y: (this.canvas.height/2)-(this.camera.pan.y),
+            }
+          } else {
+            // this.camera.focus.x += 1*(this.camera.zoom.x*10)
+            // this.camera.focus.y += 2*(this.camera.zoom.y*10)
+          }
 
-                // x: ((canvas.width/2)-(this.camera.pan.x))+(-this.camera.zoom.x*(canvas.width/10)),
-                // y: ((canvas.height/2)-(this.camera.pan.y))+(-this.camera.zoom.x*(canvas.height/10)),
 
-                // x: ((canvas.width/2)-(this.camera.pan.x))+(this.camera.zoom.x+130)/2,
-                // y: ((canvas.height/2)-(this.camera.pan.y))+(this.camera.zoom.x+8)/2,
-              }
+
+              // this.camera.focus = {
+              //
+              //   x: this.camera.focus += (2*(this.camera.zoom.x*10)),
+              //   y: this.camera.focus += (1*(this.camera.zoom.x*10)),
+              //
+              //   // x: (canvas.width/2)-((this.camera.zoom.x*10)*(1*10)),
+              //   // y: (canvas.height/2)-((this.camera.zoom.x*10)/(2*10)),
+              //
+              //   // x: (canvas.width/2)-((this.camera.zoom.x*10)*(13)),
+              //   // y: (canvas.height/2)-((this.camera.zoom.x*10)*(8)),
+              //
+              //   // x: (canvas.width/2)+((canvas.width/2)/this.camera.zoom.x/10),
+              //   // y: (canvas.height/2)+((canvas.height/2)/this.camera.zoom.x/10),
+              //
+              //   // x: (canvas.width/2)+((canvas.height)*this.camera.zoom.x/10),
+              //   // y: (canvas.height/2)+((canvas.width)*this.camera.zoom.x/10),
+              //
+              //   // x: (canvas.width/2)+((canvas.height)*this.camera.zoom.x),
+              //   // y: (canvas.height/2)+((canvas.width)*this.camera.zoom.x),
+              //
+              //   // ------------
+              //
+              // }
             }
             if (this.camera.zoomDirection === 'in') {
-              focus = {
-                x: (canvas.width/2)-(this.camera.pan.x),
-                y: (canvas.height/2)-(this.camera.pan.y),
-                // x: ((canvas.width/2)-(+this.camera.pan.x*(this.camera.zoom.x*10))),
-                // y: ((canvas.height/2)-(+this.camera.pan.y*(this.camera.zoom.x*10))),
+              // console.log('!!',this.camera.pan,this.camera.zoom.x);
 
-                // x: ((canvas.width/2)-(+this.camera.zoom.x*(canvas.width/10))),
-                // y: ((canvas.height/2)-(+this.camera.zoom.x*(canvas.height/10))),
-
-                // x: ((canvas.width/2)-(this.camera.pan.x))-(+this.camera.zoom.x*(canvas.width/10)),
-                // y: ((canvas.height/2)-(this.camera.pan.y))-(+this.camera.zoom.x*(canvas.height/10)),
-
-                // x: ((canvas.width/2)-(this.camera.pan.x))-(this.camera.zoom.x+130)/2,
-                // y: ((canvas.height/2)-(this.camera.pan.y))-(this.camera.zoom.x+8)/2,
+              if (
+                !this.camera.focus.x &&
+                !this.camera.focus.y
+              ) {
+                this.camera.pan = {
+                  x: (this.canvas.width/2),
+                  y: (this.canvas.height/2)-(this.camera.pan.y),
+                }
+              } else {
+                // this.camera.focus.x -= 1*(this.camera.zoom.x*10)
+                // this.camera.focus.y -= 2*(this.camera.zoom.y*10)
               }
+
+              // this.camera.focus = {
+              //
+              //   x: this.camera.focus -= (2*(this.camera.zoom.x*10)),
+              //   y: this.camera.focus -= (1*(this.camera.zoom.x*10)),
+              //
+              //   // x: (canvas.width/2)-((this.camera.zoom.x*10)*(1*10)),
+              //   // y: (canvas.height/2)-((this.camera.zoom.x*10)/(2*10)),
+              //
+              //   // x: (canvas.width/2)-((this.camera.zoom.x*10)*(13)),
+              //   // y: (canvas.height/2)-((this.camera.zoom.x*10)*(8)),
+              //
+              //   // x: (canvas.width/2)+((canvas.width/2)/this.camera.zoom.x/10),
+              //   // y: (canvas.height/2)+((canvas.height/2)/this.camera.zoom.x/10),
+              //
+              //   // x: (canvas.width/2)+((canvas.height)*this.camera.zoom.x/10),
+              //   // y: (canvas.height/2)+((canvas.width)*this.camera.zoom.x/10),
+              //
+              //   // x: (canvas.width/2)+((canvas.height)*this.camera.zoom.x),
+              //   // y: (canvas.height/2)+((canvas.width)*this.camera.zoom.x),
+              //
+              //   // ------------
+              //
+              // }
             }
 
           }
 
+
+          // let p4 = new Point();
+          // p4.x = this.camera.focus.x -= 1*(this.camera.zoom.x*10);
+          // p4.y = this.camera.focus.y -= 2*(this.camera.zoom.y*10);
+          //
+          // let isoz = this.cartesianToIsometric(p4);
 
           // console.log('camera focus coords',focus,this.camera.pan,this.camera.zoom);
           // context.fillStyle = "purple";
           // context.fillRect(focus.x, focus.y,15,15);
           context.fillStyle = 'purple';
           context.beginPath();
-          context.arc(focus.x, focus.y, 10, 0, 2 * Math.PI);
+          context.arc(this.camera.focus.x, this.camera.focus.y, 10, 0, 2 * Math.PI);
           context.fill();
 
         }
@@ -15589,8 +15717,6 @@ class App extends Component {
     this.removeAi = playerNumber;
 
     this.addAiCount.state = true;
-
-    console.log('!!',this.aiPlayers);
 
 
     // REMOVE DEAD AI FINAL POSITION
