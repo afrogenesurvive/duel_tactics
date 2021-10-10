@@ -1685,7 +1685,7 @@ class App extends Component {
       state: false,
       startCount: 0,
       startLimit: 4,
-      mode: 'zoom',
+      mode: 'pan',
       fixed: false,
       target: {
         type: 'player',
@@ -1703,10 +1703,12 @@ class App extends Component {
         x: 1,
         y: 1,
       },
+      zoomDirection: 'in',
       pan: {
-        x: 0,
-        y: 0,
+        x: 1,
+        y: 1,
       },
+      panDirection: 'east',
       limits: {
         zoom: {
           min: .5,
@@ -1752,7 +1754,50 @@ class App extends Component {
       })
       this.canvasWidth = 1000;
       this.canvasHeight = 600;
+
+      // PRESET ZOOM & PAN
+      switch(this.gridWidth) {
+        case 3 :
+          this.camera.pan.x = 1;
+          this.camera.pan.y = -50;
+        break;
+        case 6 :
+          this.camera.pan.x = 1;
+          this.camera.pan.y = -20;
+        break;
+        case 9 :
+          this.camera.pan.x = 1;
+          this.camera.pan.y = -90;
+        break;
+        case 12 :
+          this.camera.pan.x = 1;
+          this.camera.pan.y = 30;
+        break;
+      }
+    } else {
+
+      // PRESET ZOOM & PAN
+      switch(this.gridWidth) {
+        case 3 :
+          this.camera.pan.x = 1;
+          this.camera.pan.y = -50;
+        break;
+        case 6 :
+          this.camera.pan.x = 1;
+          this.camera.pan.y = -20;
+        break;
+        case 9 :
+          this.camera.pan.x = 1;
+          this.camera.pan.y = 10;
+        break;
+        case 12 :
+          this.camera.pan.x = 70;
+          this.camera.pan.y = 20;
+        break;
+      }
     }
+
+
 
     let canvas = this.canvasRef.current;
     let context = canvas.getContext('2d');
@@ -3007,18 +3052,46 @@ class App extends Component {
       case '3' :
         this.gridWidth = 3;
         this.sceneY = this.state.sceneY.three;
+        if (window.innerWidth < 1100) {
+          this.camera.pan.x = 1;
+          this.camera.pan.y = -50;
+        } else {
+          this.camera.pan.x = 1;
+          this.camera.pan.y = -50;
+        }
       break;
       case '6' :
         this.gridWidth = 6;
         this.sceneY = this.state.sceneY.six;
+        if (window.innerWidth < 1100) {
+          this.camera.pan.x = 1;
+          this.camera.pan.y = -20;
+        } else {
+          this.camera.pan.x = 1;
+          this.camera.pan.y = -20;
+        }
       break;
       case '9' :
         this.gridWidth = 9;
         this.sceneY = this.state.sceneY.nine;
+        if (window.innerWidth < 1100) {
+          this.camera.pan.x = 1;
+          this.camera.pan.y = 10;
+        } else {
+          this.camera.pan.x = 1;
+          this.camera.pan.y = 10;
+        }
       break;
       case '12' :
         this.gridWidth = 12;
         this.sceneY = this.state.sceneY.twelve;
+        if (window.innerWidth < 1100) {
+          this.camera.pan.x = 1;
+          this.camera.pan.y = 30;
+        } else {
+          this.camera.pan.x = 70;
+          this.camera.pan.y = 20;
+        }
       break;
     }
 
@@ -5928,6 +6001,7 @@ class App extends Component {
             player.bluntAttack = false;
             player.action = 'idle';
             console.log('attack end');
+            console.log('!!',this.aiPlayers);
 
           }
 
@@ -7219,8 +7293,6 @@ class App extends Component {
     }
 
 
-
-
     // STATUS DISPLAY STEPPER!!
     if (player.statusDisplay.state === true && player.statusDisplay.count < player.statusDisplay.limit) {
       // console.log('stepping status display');
@@ -7278,14 +7350,10 @@ class App extends Component {
     }
 
 
-
-    //CAMERA INPUT SWITCH
+    //CAMERA INPUT MODE SWITCH
     if (this.toggleCameraMode === false && this.camera.state === true) {
       this.camera.startCount = 0;
     }
-    // if (this.toggleCameraMode === false && this.camera.state === false && this.camera.startCount < this.camera.startLimit) {
-    //   this.camera.startCount = 0;
-    // }
     if (this.camera.state === false && this.toggleCameraMode === false && this.camera.startCount >= this.camera.startLimit  && this.camera.instructionType === 'default') {
       // console.log('welcome to camera mode');
       this.camera.startCount = 0;
@@ -7311,6 +7379,9 @@ class App extends Component {
 
 
     }
+
+
+    //CAMERA INPUT MODE CONTROLS
     if (this.camera.state === true && this.camera.instructionType === 'default') {
 
       // IDLE ANIM STEPPER!
@@ -7343,7 +7414,7 @@ class App extends Component {
         // if (this.keyPressed[player.number-1].north === true) {
           this.camera.zoom.x += .02 ;
           this.camera.zoom.y += .02 ;
-
+          this.camera.zoomDirection = 'in';
           console.log('zooming in');
           console.log('zoom',this.camera.zoom.x.toFixed(2));
           console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
@@ -7357,7 +7428,7 @@ class App extends Component {
         // if (this.keyPressed[player.number-1].south === true) {
           this.camera.zoom.x -= .02 ;
           this.camera.zoom.y -= .02 ;
-
+          this.camera.zoomDirection = 'out';
           console.log('zooming out');
           console.log('zoom',this.camera.zoom.x.toFixed(2));
           console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
@@ -7375,6 +7446,7 @@ class App extends Component {
 
         if (this.keyPressed[player.number-1].north === true && this.camera.pan.y < this.camera.limits.pan.y.max) {
           this.camera.pan.y += 10;
+          this.camera.panDirection = 'north';
           console.log('panning direction north');
           console.log('zoom',this.camera.zoom.x.toFixed(2));
           console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
@@ -7386,6 +7458,7 @@ class App extends Component {
         }
         if (this.keyPressed[player.number-1].south === true && this.camera.pan.y > this.camera.limits.pan.y.min) {
           this.camera.pan.y -= 10;
+          this.camera.panDirection = 'south';
           console.log('panning direction south');
           console.log('zoom',this.camera.zoom.x.toFixed(2));
           console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
@@ -7397,6 +7470,7 @@ class App extends Component {
         }
         if (this.keyPressed[player.number-1].east === true && this.camera.pan.x > this.camera.limits.pan.x.min) {
           this.camera.pan.x -= 10;
+          this.camera.panDirection = 'east';
           console.log('panning direction east');
           console.log('zoom',this.camera.zoom.x.toFixed(2));
           console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
@@ -7408,6 +7482,7 @@ class App extends Component {
         }
         if (this.keyPressed[player.number-1].west === true && this.camera.pan.x < this.camera.limits.pan.x.max) {
           this.camera.pan.x += 10;
+          this.camera.panDirection = 'west';
           console.log('panning direction west');
           console.log('zoom',this.camera.zoom.x.toFixed(2));
           console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
@@ -7467,7 +7542,7 @@ class App extends Component {
 
 
     // MENU
-    if (this.keyPressed[player.number-1].cycleWeapon === true && this.keyPressed[player.number-1].cycleArmor === true) {
+    if (player.ai.state !== true && this.keyPressed[player.number-1].cycleWeapon === true && this.keyPressed[player.number-1].cycleArmor === true) {
       // toggle the menu here
     }
 
@@ -7811,7 +7886,6 @@ class App extends Component {
 
     // SYNC W/ GLOBAL PLAYER DATA
     this.players[player.number-1] = player;
-
     if (player.ai.state === true ) {
       this.aiEvaluate(player)
     }
@@ -7840,6 +7914,7 @@ class App extends Component {
     canvas.width = this.canvasWidth;
     canvas.height = this.canvasHeight;
 
+
     let floorImageWidth = this.floorImageWidth;
     let floorImageHeight = this.floorImageHeight;
     let wallImageWidth = this.wallImageWidth;
@@ -7847,6 +7922,8 @@ class App extends Component {
     let sceneX = this.canvasWidth/2;
     let sceneY = this.sceneY;
     let tileWidth = this.tileWidth;
+
+
 
     gridInfo = this.gridInfo;
 
@@ -8208,6 +8285,7 @@ class App extends Component {
     context.scale(this.camera.zoom.x,this.camera.zoom.y);
     context2.scale(this.camera.zoom.x,this.camera.zoom.y);
 
+
     for (var x = 0; x < this.gridWidth+1; x++) {
       for (var y = 0; y < this.gridWidth+1; y++) {
 
@@ -8241,6 +8319,7 @@ class App extends Component {
           floor = floorImgs.void3
         }
 
+
         // VOID BLINKER!!
         if (
           this.cellToVoid.state === true &&
@@ -8255,6 +8334,7 @@ class App extends Component {
             // drawFloor = true;
           }
         }
+
 
         // DORWNING
         for (const plyrb of this.players) {
@@ -8274,6 +8354,7 @@ class App extends Component {
           }
         }
 
+
         // CELLS UNDER ATTACK!
         if (this.cellsUnderAttack.length > 0) {
           for (const cll of this.cellsUnderAttack) {
@@ -8286,6 +8367,8 @@ class App extends Component {
           }
         }
 
+
+        // CELLS TO HIGHLIGHT
         if (this.cellsToHighlight.length > 0) {
           for (const cll2 of this.cellsToHighlight) {
             if (
@@ -8792,7 +8875,21 @@ class App extends Component {
           if (plyr.target.void === false && plyr.moving.state === true && plyr.falling.state !== true) {
             let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
             // console.log('move',finalAnimIndex);
-            if (plyr.direction === 'north' || plyr.direction === 'northWest' || plyr.direction === 'west') {
+            // if (plyr.direction === 'north' || plyr.direction === 'northWest' || plyr.direction === 'west') {
+            //   if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+            //     // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
+            //
+            //     if (plyr.jumping.state === true) {
+            //       context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
+            //     } else {
+            //       context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
+            //     }
+            //
+            //     // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
+            //
+            //   }
+            // }
+            if (plyr.direction === 'north') {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
 
@@ -8806,14 +8903,64 @@ class App extends Component {
 
               }
             }
-            if (plyr.direction === 'east' || plyr.direction === 'south' || plyr.direction === 'southEast') {
+            if (plyr.direction === 'west') {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
-                if (plyr.jumping.state === true) {
 
+                if (plyr.jumping.state === true) {
                   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
                 } else {
                   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
+                }
+
+                // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
+
+              }
+            }
+            // if (plyr.direction === 'east' || plyr.direction === 'south' || plyr.direction === 'southEast') {
+            //   if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+            //     // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
+            //     console.log('here',x,y);
+            //     if (plyr.jumping.state === true) {
+            //       context2.translate(this.camera.pan.x,this.camera.pan.y);
+            //       context2.scale(this.camera.zoom.x,this.camera.zoom.y);
+            //       context2.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
+            //
+            //     } else {
+            //       context2.translate(this.camera.pan.x,this.camera.pan.y);
+            //       context2.scale(this.camera.zoom.x,this.camera.zoom.y);
+            //       context2.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
+            //
+            //     }
+            //     // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
+            //     // playerDrawLog(x,y,plyr)
+            //   }
+            // }
+            if (plyr.direction === 'east') {
+              if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
+                // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
+                // console.log('here',x,y);
+                if (plyr.jumping.state === true) {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
+
+                } else {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
+
+                }
+                // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
+                // playerDrawLog(x,y,plyr)
+              }
+            }
+            if (plyr.direction === 'south') {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
+                // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
+                // console.log('here',x,y);
+                if (plyr.jumping.state === true) {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
+
+                } else {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
+
                 }
                 // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
                 // playerDrawLog(x,y,plyr)
@@ -10030,7 +10177,7 @@ class App extends Component {
         }
 
 
-
+        // PROJECTILES
         for (const bolt of this.projectiles) {
           if (
             bolt.currentPosition.number.x === x &&
@@ -10059,11 +10206,14 @@ class App extends Component {
              context.drawImage(boltImg, bolt.currentPosition.center.x, bolt.currentPosition.center.y-15, 35,35);
           }
         }
+
         if (this.boltDeflectAnim.state === true) {
           let boltDeflectImg = this.refs.boltDefendIndicate;
           context.drawImage(boltDeflectImg, this.boltDeflectAnim.position.x+35, this.boltDeflectAnim.position.y-35, 35, 35);
         }
 
+
+        // OBSTACLES
         let walledTiles = []
         if (walledTiles.includes(''+x+','+y+'')) {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
@@ -10081,6 +10231,69 @@ class App extends Component {
           offset.y += isoHeight
           context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
         }
+
+
+        // CAMERA FOCUS INDICATOR
+        if (x === this.gridWidth && y === this.gridWidth ) {
+
+          let focus;
+
+          if (this.camera.mode === 'pan') {
+            focus = {
+              x: (canvas.width/2)-(this.camera.pan.x),
+              y: (canvas.height/2)-(this.camera.pan.y),
+            }
+          }
+          if (this.camera.mode === 'zoom') {
+            if (this.camera.zoomDirection === 'out') {
+              focus = {
+                x: (canvas.width/2)-(this.camera.pan.x),
+                y: (canvas.height/2)-(this.camera.pan.y),
+                // x: ((canvas.width/2)+(-this.camera.pan.x*(this.camera.zoom.x*10))),
+                // y: ((canvas.height/2)+(-this.camera.pan.y*(this.camera.zoom.x*10))),
+
+                // x: ((canvas.width/2)+(-this.camera.zoom.x*(canvas.width/10))),
+                // y: ((canvas.height/2)+(-this.camera.zoom.x*(canvas.height/10))),
+
+                // x: ((canvas.width/2)-(this.camera.pan.x))+(-this.camera.zoom.x*(canvas.width/10)),
+                // y: ((canvas.height/2)-(this.camera.pan.y))+(-this.camera.zoom.x*(canvas.height/10)),
+
+                // x: ((canvas.width/2)-(this.camera.pan.x))+(this.camera.zoom.x+130)/2,
+                // y: ((canvas.height/2)-(this.camera.pan.y))+(this.camera.zoom.x+8)/2,
+              }
+            }
+            if (this.camera.zoomDirection === 'in') {
+              focus = {
+                x: (canvas.width/2)-(this.camera.pan.x),
+                y: (canvas.height/2)-(this.camera.pan.y),
+                // x: ((canvas.width/2)-(+this.camera.pan.x*(this.camera.zoom.x*10))),
+                // y: ((canvas.height/2)-(+this.camera.pan.y*(this.camera.zoom.x*10))),
+
+                // x: ((canvas.width/2)-(+this.camera.zoom.x*(canvas.width/10))),
+                // y: ((canvas.height/2)-(+this.camera.zoom.x*(canvas.height/10))),
+
+                // x: ((canvas.width/2)-(this.camera.pan.x))-(+this.camera.zoom.x*(canvas.width/10)),
+                // y: ((canvas.height/2)-(this.camera.pan.y))-(+this.camera.zoom.x*(canvas.height/10)),
+
+                // x: ((canvas.width/2)-(this.camera.pan.x))-(this.camera.zoom.x+130)/2,
+                // y: ((canvas.height/2)-(this.camera.pan.y))-(this.camera.zoom.x+8)/2,
+              }
+            }
+
+          }
+
+
+          // console.log('camera focus coords',focus,this.camera.pan,this.camera.zoom);
+          // context.fillStyle = "purple";
+          // context.fillRect(focus.x, focus.y,15,15);
+          context.fillStyle = 'purple';
+          context.beginPath();
+          context.arc(focus.x, focus.y, 10, 0, 2 * Math.PI);
+          context.fill();
+
+        }
+
+
       }
     }
 
@@ -15376,6 +15589,8 @@ class App extends Component {
     this.removeAi = playerNumber;
 
     this.addAiCount.state = true;
+
+    console.log('!!',this.aiPlayers);
 
 
     // REMOVE DEAD AI FINAL POSITION
@@ -20915,10 +21130,12 @@ class App extends Component {
         x: 1,
         y: 1,
       },
+      zoomDirection: '',
       pan: {
-        x: 0,
-        y: 0,
+        x: 1,
+        y: 1,
       },
+      panDirection: '',
       limits: {
         zoom: {
           min: .5,
@@ -20987,9 +21204,19 @@ class App extends Component {
               <a href="javascript:" className="setSwitchLink" onClick={this.openSettings}>
                 <FontAwesomeIcon icon={faCogs} size="sm" className="setSwitchIcon"/>
               </a>
-              <a href="javascript:" className="setSwitchLink" onClick={this.toggleAiDisplay}>
-                <FontAwesomeIcon icon={faRobot} size="sm" className="setSwitchIcon"/>
-              </a>
+              {this.aiPlayers[0] &&(
+              // {this.updateSettingsFormAiDataData.random &&(
+                <a href="javascript:" className="setSwitchLink cameraModeHighlighted" onClick={this.toggleAiDisplay}>
+                  <FontAwesomeIcon icon={faRobot} size="sm" className="setSwitchIcon"/>
+                </a>
+              )}
+              {!this.aiPlayers[0] &&(
+              // {!this.updateSettingsFormAiDataData.random &&(
+                <a href="javascript:" className="setSwitchLink" onClick={this.toggleAiDisplay}>
+                  <FontAwesomeIcon icon={faRobot} size="sm" className="setSwitchIcon"/>
+                </a>
+              )}
+
             </div>
 
             {this.camera.state === true && (

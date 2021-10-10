@@ -147,10 +147,11 @@
   bottom: 0;
   left: .1rem;
   z-index: 3;
+  display: flex;
 }
 .setSwitchIcon {
   color: #000000;
-  margin-right: 1rem;
+  margin: 0 .3rem;
 }
 .setSwitchLink {
 
