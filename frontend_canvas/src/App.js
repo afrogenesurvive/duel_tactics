@@ -12,6 +12,7 @@ import {
   faUndo,
 } from '@fortawesome/free-solid-svg-icons';
 
+
 import logo from './logo.svg';
 import floorDirt from './assets/floorDirt.png'
 import floorGrass from './assets/floorGrass.png'
@@ -30,6 +31,7 @@ import floorVoid3 from './assets/floorVoid3.png'
 import wall from './assets/wall.png'
 import wall2 from './assets/wall2.png'
 import wall3 from './assets/wall3.png'
+
 
 import attack1Indicate from './assets/indicators/attack1.png';
 import attack2Indicate from './assets/indicators/attack2.png';
@@ -51,6 +53,7 @@ import pushbackIndicate from './assets/indicators/pushback.png';
 import ghostIndicate from './assets/indicators/ghost.png';
 import deathIndicate from './assets/indicators/death.png';
 import preAttackIndicate from './assets/indicators/preAttack.png';
+
 
 import preAttack2Indicate from './assets/indicators/preAttack2.png';
 import preAction1Indicate from './assets/indicators/preAction1.png';
@@ -120,21 +123,19 @@ import spear from './assets/items/spear.png';
 import sword from './assets/items/sword.png';
 import crossbow from './assets/items/crossbow.png';
 
+
 import playerImgIdleSheet from './assets/sheet1.png';
 import player2ImgIdleSheet from './assets/sheet2.png';
 import playerComAImgIdleSheet from './assets/sheetComA.png';
 import playerComBImgIdleSheet from './assets/sheetComB.png';
-
 import playerImgMoveSheet from './assets/sheetMoving1.png';
 import player2ImgMoveSheet from './assets/sheetMoving2.png';
 import comAImgMoveSheet from './assets/sheetMovingComA.png';
 import comBImgMoveSheet from './assets/sheetMovingComB.png';
-
 import player1DefendSheet from './assets/sheetDefend1.png';
 import player2DefendSheet from './assets/sheetDefend2.png';
 import comADefendSheet from './assets/sheetDefendComA.png';
 import comBDefendSheet from './assets/sheetDefendComB.png';
-
 import player1AttackSheet from './assets/sheetAttack1.png';
 import player2AttackSheet from './assets/sheetAttack2.png';
 import comAAttackSheet from './assets/sheetAttackComA.png';
@@ -181,12 +182,15 @@ class App extends Component {
 
     this.canvasRef = React.createRef();
     this.canvasRef2 = React.createRef();
+
+    // SETTINGS CANVASES
     this.canvasRef3 = React.createRef();
     this.canvasRef4 = React.createRef();
 
+
+    // LEVEL DRAW SETUP
     this.tileColumnOffset = 100; // pixels
     this.tileRowOffset = 50; // pixels
-
     this.originX = 0; // offset from left
     this.originY = 0; // offset from top
     this.Xtiles = 10;
@@ -207,19 +211,12 @@ class App extends Component {
     this.sceneY = 220;
     this.tileWidth = 50;
     this.gridWidth = 9;
-    this.settingsGridWidth = 9;
+
     this.cellCenterOffsetX = 23;
     this.cellCenterOffsetY = 2;
 
 
-    this.settingsCanvasHeight = 500;
-    this.settingsCanvasWidth = 700;
-
-    this.settingsSceneX = 250;
-    this.settingsSceneY = 40;
-
-
-
+    // GRIND INFO, LEVEL DATA & MAPPING
     this.init = false;
     // this.openVoid = true;
     this.openVoid = false;
@@ -235,9 +232,6 @@ class App extends Component {
       limit: 10000,
     }
     this.voidCustomCell = false;
-
-    this.gamepad = false;
-
     this.gridInfo = [];
     this.settingsGridInfo = [];
     this.gridInfo2D = [];
@@ -356,6 +350,8 @@ class App extends Component {
     }
     this.pathArray = [];
 
+
+    // ITEMS
     this.itemList = [
       {
         name: 'moveSpeedUp',
@@ -594,7 +590,10 @@ class App extends Component {
         {x:4 ,y:3 },
         {x:4 ,y:4 },
       ]
-    }
+    };
+
+
+    // PLAYER
     this.playerNumber = 2;
     this.currentPlayer = 1;
     this.players = [
@@ -1375,31 +1374,10 @@ class App extends Component {
         },
       }
     ];
-    this.stepper = {
-      now: 0,
-      dt: 0,
-      last: 0,
-      step: 1 / 60,
-      fps: 0,
 
-      secondsPassed: 0,
-      oldTimeStamp: 0,
-      movingSpeed: 30,
-      frameCount: 0,
 
-      fps2: 30,
-      interval: 1000/30,
-      lastTime: 0,
-      currentTime: (new Date()).getTime(),
-      deltaTime: 0,
-
-    };
-    this.moveStepRef = [
-      [.05,.1,.15,.2,.25,.3,.35,.4,.45,.5,.55,.6,.65,.7,.75,.8,.85,.9,.95,1],
-      [.1,.2,.3,.4,.5,.6,.7,.8,.9,1],
-      [.125,.25,.375,.5,.625,.75,.875,1],
-      [.2,.4,.6,.8,1],
-    ]
+    // INPUT
+    this.gamepad = false;
     this.keyPressed = [
       {
         north: false,
@@ -1436,42 +1414,6 @@ class App extends Component {
         menu: false,
       },
     ]
-    this.attackAnimRef = {
-      limit: {
-        unarmed: 18,
-        sword: 22,
-        spear: 25,
-        crossbow: 25,
-      },
-      peak: {
-        unarmed: 6,
-        sword: 12,
-        spear: 18,
-        crossbow: 18,
-      },
-    };
-    this.staminaCostRef = {
-      attack: {
-        blunt: 2,
-        unarmed: 2,
-        sword: 3,
-        spear: 4,
-        crossbow: 3,
-      },
-      deflected: 3,
-      defend: 1.5,
-      dodge: 4,
-      flank: 5,
-      jump: 6,
-      pushBack: 7,
-    }
-    this.deflectedLengthRef = {
-      outOfStamina: 50,
-      attacked: 20,
-      bluntAttacked: 25,
-      defended: 10,
-      attack: 15
-    };
     this.clicked = {
       number:{
         x:0,
@@ -1525,6 +1467,15 @@ class App extends Component {
         state: false
       },
     };
+    this.turnCheckerDirection = '';
+
+
+    // SETTINGS
+    this.settingsGridWidth = 9;
+    this.settingsCanvasHeight = 500;
+    this.settingsCanvasWidth = 700;
+    this.settingsSceneX = 250;
+    this.settingsSceneY = 40;
     this.settingsClicked = {
       number:{
         x:0,
@@ -1578,7 +1529,86 @@ class App extends Component {
         state: false
       },
     };
-    this.turnCheckerDirection = '';
+    this.settingsFormAiGridInfo = [] ;
+    this.settingsFormAiStartPosList = [];
+    this.updateSettingsFormAiDataData = {};
+    this.settingsFormPlyrGridInfo = [];
+    this.settingsFormPlyrStartPosList = [];
+    this.showSettingsKeyPress = {
+      state: false,
+      count: 0,
+      limit: 4,
+    }
+    this.showSettingsCanvasData = {
+      state: true,
+      field: 'human_start',
+      plyrNo: 1,
+      type: 'start',
+    }
+
+
+    //LOOP & ANIMATION
+    this.stepper = {
+      now: 0,
+      dt: 0,
+      last: 0,
+      step: 1 / 60,
+      fps: 0,
+
+      secondsPassed: 0,
+      oldTimeStamp: 0,
+      movingSpeed: 30,
+      frameCount: 0,
+
+      fps2: 30,
+      interval: 1000/30,
+      lastTime: 0,
+      currentTime: (new Date()).getTime(),
+      deltaTime: 0,
+
+    };
+    this.moveStepRef = [
+      [.05,.1,.15,.2,.25,.3,.35,.4,.45,.5,.55,.6,.65,.7,.75,.8,.85,.9,.95,1],
+      [.1,.2,.3,.4,.5,.6,.7,.8,.9,1],
+      [.125,.25,.375,.5,.625,.75,.875,1],
+      [.2,.4,.6,.8,1],
+    ]
+    this.attackAnimRef = {
+      limit: {
+        unarmed: 18,
+        sword: 22,
+        spear: 25,
+        crossbow: 25,
+      },
+      peak: {
+        unarmed: 6,
+        sword: 12,
+        spear: 18,
+        crossbow: 18,
+      },
+    };
+    this.staminaCostRef = {
+      attack: {
+        blunt: 2,
+        unarmed: 2,
+        sword: 3,
+        spear: 4,
+        crossbow: 3,
+      },
+      deflected: 3,
+      defend: 1.5,
+      dodge: 4,
+      flank: 5,
+      jump: 6,
+      pushBack: 7,
+    }
+    this.deflectedLengthRef = {
+      outOfStamina: 50,
+      attacked: 20,
+      bluntAttacked: 25,
+      defended: 10,
+      attack: 15
+    };
     this.projectiles = [];
     this.projectileSpeed = .1;
     this.boltDeflectAnim = {
@@ -1612,7 +1642,10 @@ class App extends Component {
     };
     this.playerDrawWidth = 40;
     this.playerDrawHeight = 40;
+    this.popupSize = 35;
 
+
+    // AI
     this.aiInitSettings = {
       randomStart: false,
       startPosition: {
@@ -1643,7 +1676,6 @@ class App extends Component {
       limit: 10,
     };
     this.aiPlayers = [];
-
     this.aiTarget =  1;
     this.resetAiTarget = {
       state: false,
@@ -1656,30 +1688,11 @@ class App extends Component {
     this.removeAi = undefined;
     this.easyStar = undefined;
     this.getPath = false;
-    // this.aiCarefulRange = true;
     this.aiDeflectCheck = false;
     this.aiDeflectedCheck = [];
 
-    this.settingsFormAiGridInfo = [] ;
-    this.settingsFormAiStartPosList = [];
-    this.updateSettingsFormAiDataData = {};
 
-    this.settingsFormPlyrGridInfo = [];
-    this.settingsFormPlyrStartPosList = [];
-
-    this.showSettingsKeyPress = {
-      state: false,
-      count: 0,
-      limit: 4,
-    }
-    this.showSettingsCanvasData = {
-      state: true,
-      field: 'human_start',
-      plyrNo: 1,
-      type: 'start',
-    }
-    this.popupSize = 35;
-
+    // CAMERA
     this.toggleCameraMode = false;
     this.camera = {
       state: false,
@@ -1734,7 +1747,6 @@ class App extends Component {
       // FollowPlayer2, centerOnCell21 etc
     };
 
-
   }
 
 
@@ -1755,52 +1767,50 @@ class App extends Component {
       this.canvasWidth = 1000;
       this.canvasHeight = 600;
 
-      // PRESET ZOOM & PAN
-      switch(this.gridWidth) {
-        case 3 :
-          this.camera.pan.x = 1;
-          this.camera.pan.y = -50;
-        break;
-        case 6 :
-          this.camera.pan.x = 1;
-          this.camera.pan.y = -20;
-        break;
-        case 9 :
-          this.camera.pan.x = 1;
-          this.camera.pan.y = -90;
-        break;
-        case 12 :
-          this.camera.pan.x = 1;
-          this.camera.pan.y = 30;
-        break;
-      }
-    } else {
-
-      // PRESET ZOOM & PAN
-      switch(this.gridWidth) {
-        case 3 :
-          this.camera.pan.x = 1;
-          this.camera.pan.y = -50;
-        break;
-        case 6 :
-          this.camera.pan.x = 1;
-          this.camera.pan.y = -20;
-        break;
-        case 9 :
-          this.camera.pan.x = 1;
-          this.camera.pan.y = 10;
-        break;
-        case 12 :
-          this.camera.pan.x = 70;
-          this.camera.pan.y = 20;
-        break;
-      }
-
-      // this.camera.pan = {
-      //   x: (this.canvas.width/2),
-      //   y: (this.canvas.height/2)-(this.camera.pan.y),
-      // }
     }
+
+
+    // if (window.innerWidth < 1100) {
+    //
+    //   switch(this.gridWidth) {
+    //     case 3 :
+    //       this.camera.pan.x = 1;
+    //       this.camera.pan.y = -50;
+    //     break;
+    //     case 6 :
+    //       this.camera.pan.x = 1;
+    //       this.camera.pan.y = -20;
+    //     break;
+    //     case 9 :
+    //       this.camera.pan.x = 1;
+    //       this.camera.pan.y = -90;
+    //     break;
+    //     case 12 :
+    //       this.camera.pan.x = 1;
+    //       this.camera.pan.y = 30;
+    //     break;
+    //   }
+    // } else {
+    //
+    //   switch(this.gridWidth) {
+    //     case 3 :
+    //       this.camera.pan.x = 1;
+    //       this.camera.pan.y = -50;
+    //     break;
+    //     case 6 :
+    //       this.camera.pan.x = 1;
+    //       this.camera.pan.y = -20;
+    //     break;
+    //     case 9 :
+    //       this.camera.pan.x = 1;
+    //       this.camera.pan.y = 10;
+    //     break;
+    //     case 12 :
+    //       this.camera.pan.x = 70;
+    //       this.camera.pan.y = 20;
+    //     break;
+    //   }
+    // }
 
 
 
@@ -1835,7 +1845,8 @@ class App extends Component {
             posArray: []
           }
         ]
-      )
+      );
+
 
       window.requestAnimationFrame(this.gameLoop);
 
@@ -3046,6 +3057,7 @@ class App extends Component {
 
   }
 
+
   loadSettings = (event) => {
     event.preventDefault();
 
@@ -3301,7 +3313,6 @@ class App extends Component {
     // }
 
   }
-
   cancelSettings = () => {
 
     // this.updateSettingsFormAiDataData = {};
@@ -3339,6 +3350,7 @@ class App extends Component {
     this.redrawSettingsGrid(this.state.canvas3,this.state.context3);
 
   }
+
 
   getCustomPlyrStartPosList = (args) => {
     this.settingsFormPlyrGridInfo = this.gridInfo;
@@ -3969,6 +3981,7 @@ class App extends Component {
 
   }
 
+
   gameLoop = () => {
 
     // SETTINGS KEYPRESS
@@ -4054,13 +4067,10 @@ class App extends Component {
     requestAnimationFrame(this.gameLoop);
 
   }
-
   playerUpdate = (player, canvas, context, canvas2, context2, canvas3, context3) => {
     // console.log('updating player',player.number);
 
     let keyPressedDirection;
-
-
     if (player.ai.state === true && player.dead.state === true) {
 
     }
@@ -4811,6 +4821,7 @@ class App extends Component {
           player.idleAnim.count = 0;
         }
 
+
         // BREAK ANIM STEPPERS!
         if (player.breakAnim.attack.state === true) {
           if (player.breakAnim.attack.count > 0 && player.breakAnim.attack.count < player.breakAnim.attack.limit) {
@@ -4944,7 +4955,6 @@ class App extends Component {
             };
           }
         }
-
 
 
         // CELL BY CELL MOVEMENT DELAY COUNTER!
@@ -6088,6 +6098,7 @@ class App extends Component {
 
         }
 
+
         // DEFENSE DECAY!!
         if (player.defending.state === true && player.defending.count === 0) {
           if (player.defendDecay.state === true) {
@@ -6320,6 +6331,7 @@ class App extends Component {
             this.discardGear(player,"armor")
             player.discardGear.state = true;
         }
+
         // DISCARD GEAR STEPPER!!
         if (player.discardGear.state === true) {
           if (player.discardGear.count < player.discardGear.limit) {
@@ -7314,7 +7326,6 @@ class App extends Component {
 
 
     // POPUPS
-
     if (player.popups.length > 0) {
 
       for (const popup of player.popups) {
@@ -7388,6 +7399,8 @@ class App extends Component {
     //CAMERA INPUT MODE CONTROLS
     if (this.camera.state === true && this.camera.instructionType === 'default') {
 
+      let setFocus = false;
+
       // IDLE ANIM STEPPER!
       if (player.action === 'idle') {
         // player.idleAnim.state = true
@@ -7414,45 +7427,21 @@ class App extends Component {
         this.camera.mode = 'pan';
       }
 
+
       if (this.camera.mode === 'zoom') {
 
-        class Point {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-            }
-        }
 
         if (this.keyPressed[player.number-1].north === true && this.camera.zoom.x < this.camera.limits.zoom.max) {
         // if (this.keyPressed[player.number-1].north === true) {
           this.camera.zoom.x += .02 ;
           this.camera.zoom.y += .02 ;
           this.camera.zoomDirection = 'in';
-
-          let p2 = new Point();
-          p2.x = this.camera.focus.x -= 2*(this.camera.zoom.x*10);
-          p2.y = this.camera.focus.y -= 1*(this.camera.zoom.y*10);
-
-          let isox = this.cartesianToIsometric(p2);
-
-          if (
-            !this.camera.focus.x &&
-            !this.camera.focus.y
-          ) {
-            // this.camera.pan = {
-            //   x: (this.canvas.width/2),
-            //   y: (this.canvas.height/2)-(this.camera.pan.y),
-            // }
-          } else {
-            // isox -= 2*(this.camera.zoom.x*10);
-            // isox -= 1*(this.camera.zoom.y*10);
-          }
+          setFocus = true;
 
           console.log('zooming in');
           console.log('zoom',this.camera.zoom.x.toFixed(2));
           console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
           console.log('zoom limit mix',this.camera.limits.zoom.min,'max',this.camera.limits.zoom.max);
-          console.log('player 1 pos',this.players[0].currentPosition.cell.center.x,this.players[0].currentPosition.cell.center.y);
         }
         if (this.keyPressed[player.number-1].north === true && this.camera.zoom.x >= this.camera.limits.zoom.max) {
           console.log('zoom in limit');
@@ -7462,39 +7451,18 @@ class App extends Component {
           this.camera.zoom.x -= .02 ;
           this.camera.zoom.y -= .02 ;
           this.camera.zoomDirection = 'out';
-
-
-          let p3 = new Point();
-          p3.x = this.camera.focus.x += 2*(this.camera.zoom.x*10);
-          p3.y = this.camera.focus.y += 1*(this.camera.zoom.y*10);
-
-          let isoy = this.cartesianToIsometric(p3);
-
-          if (
-            !this.camera.focus.x &&
-            !this.camera.focus.y
-          ) {
-            // this.camera.pan = {
-            //   x: (this.canvas.width/2),
-            //   y: (this.canvas.height/2)-(this.camera.pan.y),
-            // }
-          } else {
-            // isoy += 2*(this.camera.zoom.x*10);
-            // isoy += 1*(this.camera.zoom.y*10);
-          }
-
+          setFocus = true;
 
           console.log('zooming out');
           console.log('zoom',this.camera.zoom.x.toFixed(2));
           console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
           console.log('zoom limit min',this.camera.limits.zoom.min,'max',this.camera.limits.zoom.max);
-          console.log('player 1 pos',this.players[0].currentPosition.cell.center.x,this.players[0].currentPosition.cell.center.y);
         }
         if (this.keyPressed[player.number-1].south === true && this.camera.zoom.x <= this.camera.limits.zoom.min) {
           console.log('zoom out limit');
         }
-      }
 
+      }
       if (this.camera.mode === 'pan') {
 
 
@@ -7503,15 +7471,12 @@ class App extends Component {
         if (this.keyPressed[player.number-1].north === true && this.camera.pan.y < this.camera.limits.pan.y.max) {
           this.camera.pan.y += 10;
           this.camera.panDirection = 'north';
-
-          // this.camera.focus.x = (this.canvas.width/2)-(this.camera.pan.x)
-          // this.camera.focus.y = (this.canvas.height/2)-(this.camera.pan.y)
+          setFocus = true;
 
           console.log('panning direction north');
           console.log('zoom',this.camera.zoom.x.toFixed(2));
           console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
           console.log('pan limit min x',this.camera.limits.pan.x.min,'y',this.camera.limits.pan.y.min,'max x',this.camera.limits.pan.x.max,'y',this.camera.limits.pan.y.max);
-          console.log('player 1 pos',this.players[0].currentPosition.cell.center.x,this.players[0].currentPosition.cell.center.y);
         }
         if (this.keyPressed[player.number-1].north === true && this.camera.pan.y >= this.camera.limits.pan.y.max) {
           console.log('pan limit north');
@@ -7519,15 +7484,12 @@ class App extends Component {
         if (this.keyPressed[player.number-1].south === true && this.camera.pan.y > this.camera.limits.pan.y.min) {
           this.camera.pan.y -= 10;
           this.camera.panDirection = 'south';
-
-          // this.camera.focus.x = (this.canvas.width/2)-(this.camera.pan.x)
-          // this.camera.focus.y = (this.canvas.height/2)-(this.camera.pan.y)
+          setFocus = true;
 
           console.log('panning direction south');
           console.log('zoom',this.camera.zoom.x.toFixed(2));
           console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
           console.log('pan limit min x',this.camera.limits.pan.x.min,'y',this.camera.limits.pan.y.min,'max x',this.camera.limits.pan.x.max,'y',this.camera.limits.pan.y.max);
-          console.log('player 1 pos',this.players[0].currentPosition.cell.center.x,this.players[0].currentPosition.cell.center.y);
         }
         if (this.keyPressed[player.number-1].south === true && this.camera.pan.y <= this.camera.limits.pan.y.min) {
           console.log('pan limit south');
@@ -7535,15 +7497,12 @@ class App extends Component {
         if (this.keyPressed[player.number-1].east === true && this.camera.pan.x > this.camera.limits.pan.x.min) {
           this.camera.pan.x -= 10;
           this.camera.panDirection = 'east';
-
-          // this.camera.focus.x = (this.canvas.width/2)-(this.camera.pan.x)
-          // this.camera.focus.y = (this.canvas.height/2)-(this.camera.pan.y)
+          setFocus = true;
 
           console.log('panning direction east');
           console.log('zoom',this.camera.zoom.x.toFixed(2));
           console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
           console.log('pan limit min x',this.camera.limits.pan.x.min,'y',this.camera.limits.pan.y.min,'max x',this.camera.limits.pan.x.max,'y',this.camera.limits.pan.y.max);
-          console.log('player 1 pos',this.players[0].currentPosition.cell.center.x,this.players[0].currentPosition.cell.center.y);
         }
         if (this.keyPressed[player.number-1].east === true && this.camera.pan.x <= this.camera.limits.pan.x.min) {
           console.log('pan limit east');
@@ -7551,19 +7510,22 @@ class App extends Component {
         if (this.keyPressed[player.number-1].west === true && this.camera.pan.x < this.camera.limits.pan.x.max) {
           this.camera.pan.x += 10;
           this.camera.panDirection = 'west';
-
-          // this.camera.focus.x = (this.canvas.width/2)-(this.camera.pan.x)
-          // this.camera.focus.y = (this.canvas.height/2)-(this.camera.pan.y)
+          setFocus = true;
 
           console.log('panning direction west');
           console.log('zoom',this.camera.zoom.x.toFixed(2));
           console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
           console.log('pan limit min x',this.camera.limits.pan.x.min,'y',this.camera.limits.pan.y.min,'max x',this.camera.limits.pan.x.max,'y',this.camera.limits.pan.y.max);
-          console.log('player 1 pos',this.players[0].currentPosition.cell.center.x,this.players[0].currentPosition.cell.center.y);
         }
         if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
           console.log('pan limit south');
         }
+      }
+
+
+      //SET CAMERA FOCUS
+      if (setFocus === true) {
+        this.setCameraFocus(canvas, context, canvas2, context2);
       }
 
 
@@ -7958,16 +7920,19 @@ class App extends Component {
 
     // SYNC W/ GLOBAL PLAYER DATA
     this.players[player.number-1] = player;
+
+
+    // AI EVALUATE
     if (player.ai.state === true ) {
       this.aiEvaluate(player)
     }
 
 
+    // DRAW EVERYTHING
     this.drawPlayerStep(player.number, canvas, context, canvas2, context2);
 
 
   }
-
   drawPlayerStep = (playerNumber, canvas, context, canvas2, context2) => {
     // console.log('drawing player step',playerNumber);
 
@@ -7994,7 +7959,6 @@ class App extends Component {
     let sceneX = this.canvasWidth/2;
     let sceneY = this.sceneY;
     let tileWidth = this.tileWidth;
-
 
 
     gridInfo = this.gridInfo;
@@ -8361,37 +8325,28 @@ class App extends Component {
     for (var x = 0; x < this.gridWidth+1; x++) {
       for (var y = 0; y < this.gridWidth+1; y++) {
 
-        let floor;
-
         let p = new Point();
         p.x = x * tileWidth;
         p.y = y * tileWidth;
-
         let iso = this.cartesianToIsometric(p);
         let offset = {x: floorImageWidth/2, y: floorImageHeight}
-
         iso.x += sceneX
         iso.y += sceneY
-
         let center = {
           x: iso.x - offset.x/2+23,
           y: iso.y - offset.y/2-2,
         }
 
+        let floor;
         let drawFloor = true;
-
-
         let gridInfoCell = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
-
-
         floor = floorImgs[gridInfoCell.terrain.name]
+
 
         if (gridInfoCell.void.state === true) {
           // drawFloor = false;
           floor = floorImgs.void3
         }
-
-
         // VOID BLINKER!!
         if (
           this.cellToVoid.state === true &&
@@ -8438,8 +8393,6 @@ class App extends Component {
             }
           }
         }
-
-
         // CELLS TO HIGHLIGHT
         if (this.cellsToHighlight.length > 0) {
           for (const cll2 of this.cellsToHighlight) {
@@ -8458,12 +8411,11 @@ class App extends Component {
         }
 
 
+        // CELL COORD LABEL
         context.fillStyle = 'black';
         context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
-
         context.fillStyle = "black";
         context.fillRect(center.x, center.y,5,5);
-
 
         // CELL VERTICES
         let vertices = [
@@ -8941,8 +8893,6 @@ class App extends Component {
           let sx = (finalAnimIndex - 1)* sWidth;
 
 
-
-
           //PLAYER DEPTH SORTING!!
           if (plyr.target.void === false && plyr.moving.state === true && plyr.falling.state !== true) {
             let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
@@ -9222,14 +9172,25 @@ class App extends Component {
                 context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
                 // playerDrawLog(x,y,plyr)
               }
+
             }
-            if (plyr.strafing.direction === 'east' || plyr.strafing.direction === 'south' || plyr.strafing.direction === 'southEast') {
-              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+            if (plyr.strafing.direction === 'east') {
+              if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
               // if (x === plyr.target.cell.number.x && y === plyr.target.cell.number.y) {
                 // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                context2.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
                 // playerDrawLog(x,y)
               }
+
+            }
+            if (plyr.strafing.direction === 'south') {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
+              // if (x === plyr.target.cell.number.x && y === plyr.target.cell.number.y) {
+                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
+                // playerDrawLog(x,y)
+              }
+
             }
             if (plyr.strafing.direction === 'northEast') {
               if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
@@ -10278,7 +10239,6 @@ class App extends Component {
              context.drawImage(boltImg, bolt.currentPosition.center.x, bolt.currentPosition.center.y-15, 35,35);
           }
         }
-
         if (this.boltDeflectAnim.state === true) {
           let boltDeflectImg = this.refs.boltDefendIndicate;
           context.drawImage(boltDeflectImg, this.boltDeflectAnim.position.x+35, this.boltDeflectAnim.position.y-35, 35, 35);
@@ -10305,122 +10265,15 @@ class App extends Component {
         }
 
 
-        // CAMERA FOCUS INDICATOR
+        // CAMERA FOCUS POINT
         if (x === this.gridWidth && y === this.gridWidth ) {
 
-          let focus;
-
-          if (this.camera.mode === 'pan') {
-            this.camera.focus.x = (canvas.width/2)-(this.camera.pan.x)
-            this.camera.focus.y = (canvas.height/2)-(this.camera.pan.y)
-            // focus = {
-            //   x: (canvas.width/2)-(this.camera.pan.x),
-            //   y: (canvas.height/2)-(this.camera.pan.y),
-            // }
-          }
-          if (this.camera.mode === 'zoom') {
-            if (this.camera.zoomDirection === 'out') {
-              // console.log('!!',this.camera.pan,this.camera.zoom.x);
-
-          if (
-            !this.camera.focus.x &&
-            !this.camera.focus.y
-          ) {
-            this.camera.pan = {
-              x: (this.canvas.width/2),
-              y: (this.canvas.height/2)-(this.camera.pan.y),
-            }
-          } else {
-            // this.camera.focus.x += 1*(this.camera.zoom.x*10)
-            // this.camera.focus.y += 2*(this.camera.zoom.y*10)
-          }
-
-
-
-              // this.camera.focus = {
-              //
-              //   x: this.camera.focus += (2*(this.camera.zoom.x*10)),
-              //   y: this.camera.focus += (1*(this.camera.zoom.x*10)),
-              //
-              //   // x: (canvas.width/2)-((this.camera.zoom.x*10)*(1*10)),
-              //   // y: (canvas.height/2)-((this.camera.zoom.x*10)/(2*10)),
-              //
-              //   // x: (canvas.width/2)-((this.camera.zoom.x*10)*(13)),
-              //   // y: (canvas.height/2)-((this.camera.zoom.x*10)*(8)),
-              //
-              //   // x: (canvas.width/2)+((canvas.width/2)/this.camera.zoom.x/10),
-              //   // y: (canvas.height/2)+((canvas.height/2)/this.camera.zoom.x/10),
-              //
-              //   // x: (canvas.width/2)+((canvas.height)*this.camera.zoom.x/10),
-              //   // y: (canvas.height/2)+((canvas.width)*this.camera.zoom.x/10),
-              //
-              //   // x: (canvas.width/2)+((canvas.height)*this.camera.zoom.x),
-              //   // y: (canvas.height/2)+((canvas.width)*this.camera.zoom.x),
-              //
-              //   // ------------
-              //
-              // }
-            }
-            if (this.camera.zoomDirection === 'in') {
-              // console.log('!!',this.camera.pan,this.camera.zoom.x);
-
-              if (
-                !this.camera.focus.x &&
-                !this.camera.focus.y
-              ) {
-                this.camera.pan = {
-                  x: (this.canvas.width/2),
-                  y: (this.canvas.height/2)-(this.camera.pan.y),
-                }
-              } else {
-                // this.camera.focus.x -= 1*(this.camera.zoom.x*10)
-                // this.camera.focus.y -= 2*(this.camera.zoom.y*10)
-              }
-
-              // this.camera.focus = {
-              //
-              //   x: this.camera.focus -= (2*(this.camera.zoom.x*10)),
-              //   y: this.camera.focus -= (1*(this.camera.zoom.x*10)),
-              //
-              //   // x: (canvas.width/2)-((this.camera.zoom.x*10)*(1*10)),
-              //   // y: (canvas.height/2)-((this.camera.zoom.x*10)/(2*10)),
-              //
-              //   // x: (canvas.width/2)-((this.camera.zoom.x*10)*(13)),
-              //   // y: (canvas.height/2)-((this.camera.zoom.x*10)*(8)),
-              //
-              //   // x: (canvas.width/2)+((canvas.width/2)/this.camera.zoom.x/10),
-              //   // y: (canvas.height/2)+((canvas.height/2)/this.camera.zoom.x/10),
-              //
-              //   // x: (canvas.width/2)+((canvas.height)*this.camera.zoom.x/10),
-              //   // y: (canvas.height/2)+((canvas.width)*this.camera.zoom.x/10),
-              //
-              //   // x: (canvas.width/2)+((canvas.height)*this.camera.zoom.x),
-              //   // y: (canvas.height/2)+((canvas.width)*this.camera.zoom.x),
-              //
-              //   // ------------
-              //
-              // }
-            }
-
-          }
-
-
-          // let p2 = new Point();
-          // p.x = this.camera.focus.x -= 1*(this.camera.zoom.x*10);
-          // p.y = this.camera.focus.y -= 2*(this.camera.zoom.y*10);
-          //
-          // let isox = this.cartesianToIsometric(p2);
-
-          // console.log('camera focus coords',focus,this.camera.pan,this.camera.zoom);
-          // context.fillStyle = "purple";
-          // context.fillRect(focus.x, focus.y,15,15);
           context.fillStyle = 'purple';
           context.beginPath();
           context.arc(this.camera.focus.x, this.camera.focus.y, 10, 0, 2 * Math.PI);
           context.fill();
 
         }
-
 
       }
     }
@@ -10434,6 +10287,7 @@ class App extends Component {
     // }
 
   }
+
 
   getTarget = (player) => {
     // console.log('checking target',player.number,'dir',player.direction);
@@ -11374,7 +11228,6 @@ class App extends Component {
     return newPosition;
 
   }
-
   aiBoltPathCheck = (aiPlayer) => {
 
     // let path = [];
@@ -13039,7 +12892,6 @@ class App extends Component {
     return popupCoords;
 
   }
-
   cartesianToIsometric = (cartPt) => {
 
     class Point {
@@ -13060,6 +12912,7 @@ class App extends Component {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
+
 
   attackedCancel = (player) => {
     // console.log('player', player.number,' attacked. Cancel action!',player.action);
@@ -13513,7 +13366,6 @@ class App extends Component {
     }
 
   }
-
   restartGame = () => {
     // console.log('resetting');
 
@@ -13649,6 +13501,7 @@ class App extends Component {
 
 
   }
+
 
   checkCell = (cell) => {
     // console.log('check cell');
@@ -14201,6 +14054,72 @@ class App extends Component {
     }
 
   }
+  scanTargetAreaThreat = (args) => {
+    // console.log('scanning area for threats');
+
+    let point = args.point;
+    let range = args.range;
+    let playerPositions = [];
+    let isSafe = true;
+    let threats = []
+     for (const player of this.players) {
+       if (player.ai.state !== true && player.number !== args.player) {
+         playerPositions.push({
+           player: player.number,
+           position: player.currentPosition.cell.number,
+         })
+       }
+     }
+     for (const playerPos of playerPositions) {
+
+       let xDiff;
+       let yDiff;
+       let largerx = Math.max(point.x, playerPos.position.x);
+       // console.log('playerPos.position.x',playerPos.position.x,'point.x',point.x,'largerx',largerx);
+       if (largerx === point.x) {
+         xDiff = point.x - playerPos.position.x;
+       } else {
+         xDiff = playerPos.position.x - point.x;
+       }
+       let largery = Math.max(point.y, playerPos.position.y);
+       // console.log('playerPos.position.y',playerPos.position.y,'point.y',point.y,'largery',largery);
+       if (largery === point.y) {
+         yDiff = point.y - playerPos.position.y;
+       } else {
+         yDiff = playerPos.position.y - point.y;
+       }
+       let diffSum = xDiff + yDiff;
+       // console.log('vv',playerPos.player,diffSum);
+
+       if (diffSum <= range) {
+         threats.push({
+           player: playerPos.player,
+           position: playerPos.position,
+           distValue: diffSum,
+           distIndex: undefined,
+         })
+       }
+
+     }
+
+     if (threats.length > 0) {
+       isSafe = false;
+     }
+
+     threats.sort((a, b) => (a.distValue > b.distValue) ? 1 : -1);
+     for (const threat of threats) {
+       let threatIndex = threats.findIndex(x => x.player === threat.player)
+       threat.distIndex = threatIndex;
+     }
+     // console.log('threats',threats);
+
+     return {
+       isSafe: isSafe,
+       threats: threats
+     }
+
+  }
+
 
   customCellToVoid = (cell) => {
     console.log('void specific cell');
@@ -14331,6 +14250,7 @@ class App extends Component {
     }
 
   }
+
 
   updatePathArray = () => {
     // console.log('updating pathArray');
@@ -14674,10 +14594,59 @@ class App extends Component {
     let tileWidth = this.tileWidth;
 
     this.startProcessLevelData(canvas);
-
     gridInfo = this.gridInfo;
 
-    this.processLevelData(gridInfo)
+    this.processLevelData(gridInfo);
+
+    if (this.camera.fixed !== true) {
+      // this.resetCamera();
+      // PRESET ZOOM & PAN
+      if (window.innerWidth < 1100) {
+
+        switch(this.gridWidth) {
+          case 3 :
+            this.camera.pan.x = 1;
+            this.camera.pan.y = -50;
+          break;
+          case 6 :
+            this.camera.pan.x = 1;
+            this.camera.pan.y = -20;
+          break;
+          case 9 :
+            this.camera.pan.x = 1;
+            this.camera.pan.y = -90;
+          break;
+          case 12 :
+            this.camera.pan.x = 1;
+            this.camera.pan.y = 30;
+          break;
+        }
+      } else {
+
+        switch(this.gridWidth) {
+          case 3 :
+            this.camera.pan.x = 1;
+            this.camera.pan.y = -50;
+          break;
+          case 6 :
+            this.camera.pan.x = 1;
+            this.camera.pan.y = -20;
+          break;
+          case 9 :
+            this.camera.pan.x = 1;
+            this.camera.pan.y = 10;
+          break;
+          case 12 :
+            this.camera.pan.x = 70;
+            this.camera.pan.y = 20;
+          break;
+        }
+      }
+
+      this.setCameraFocus(canvas, context, canvas2, context2);
+    }
+
+
 
     if (this.showSettingsCanvasData.state === true) {
       this.settingsFormGridWidthUpdate(this.settingsGridWidth)
@@ -15000,6 +14969,7 @@ class App extends Component {
     }
 
   }
+
 
   addAiPlayer = () => {
 
@@ -15729,78 +15699,11 @@ class App extends Component {
     // this.additionalAvoidArray.splice(indx3,1)
 
   }
-
   toggleAiDisplay = () => {
     let newState = !this.state.showAiStatus;
     this.setState({
       showAiStatus: newState,
     })
-  }
-
-  scanTargetAreaThreat = (args) => {
-    // console.log('scanning area for threats');
-
-    let point = args.point;
-    let range = args.range;
-    let playerPositions = [];
-    let isSafe = true;
-    let threats = []
-     for (const player of this.players) {
-       if (player.ai.state !== true && player.number !== args.player) {
-         playerPositions.push({
-           player: player.number,
-           position: player.currentPosition.cell.number,
-         })
-       }
-     }
-     for (const playerPos of playerPositions) {
-
-       let xDiff;
-       let yDiff;
-       let largerx = Math.max(point.x, playerPos.position.x);
-       // console.log('playerPos.position.x',playerPos.position.x,'point.x',point.x,'largerx',largerx);
-       if (largerx === point.x) {
-         xDiff = point.x - playerPos.position.x;
-       } else {
-         xDiff = playerPos.position.x - point.x;
-       }
-       let largery = Math.max(point.y, playerPos.position.y);
-       // console.log('playerPos.position.y',playerPos.position.y,'point.y',point.y,'largery',largery);
-       if (largery === point.y) {
-         yDiff = point.y - playerPos.position.y;
-       } else {
-         yDiff = playerPos.position.y - point.y;
-       }
-       let diffSum = xDiff + yDiff;
-       // console.log('vv',playerPos.player,diffSum);
-
-       if (diffSum <= range) {
-         threats.push({
-           player: playerPos.player,
-           position: playerPos.position,
-           distValue: diffSum,
-           distIndex: undefined,
-         })
-       }
-
-     }
-
-     if (threats.length > 0) {
-       isSafe = false;
-     }
-
-     threats.sort((a, b) => (a.distValue > b.distValue) ? 1 : -1);
-     for (const threat of threats) {
-       let threatIndex = threats.findIndex(x => x.player === threat.player)
-       threat.distIndex = threatIndex;
-     }
-     // console.log('threats',threats);
-
-     return {
-       isSafe: isSafe,
-       threats: threats
-     }
-
   }
   safeDistanceRetreat = (plyr,cell) => {
 
@@ -15818,7 +15721,6 @@ class App extends Component {
     }
     return isSafeDistance;
   }
-
   aiResetRanges = (plyr) => {
     this.players[plyr.number-1].ai.pathfindingRanges = {
       spear: 3,
@@ -21234,11 +21136,19 @@ class App extends Component {
     this.camera.state = false;
   }
   resetCamera = () => {
+
+    let canvas = this.canvasRef.current;
+    let context = canvas.getContext('2d');
+
+    let canvas2 = this.canvasRef2.current;
+    let context2 = canvas2.getContext('2d');
+
+
     this.camera = {
-      state: false,
+      state: true,
       startCount: 0,
       startLimit: 4,
-      mode: 'zoom',
+      mode: 'pan',
       fixed: false,
       target: {
         type: 'player',
@@ -21256,12 +21166,12 @@ class App extends Component {
         x: 1,
         y: 1,
       },
-      zoomDirection: '',
+      zoomDirection: 'in',
       pan: {
         x: 1,
         y: 1,
       },
-      panDirection: '',
+      panDirection: 'east',
       limits: {
         zoom: {
           min: .5,
@@ -21282,6 +21192,131 @@ class App extends Component {
       instructions: [],
     };
 
+    // PRESET ZOOM & PAN
+    if (window.innerWidth < 1100) {
+
+      switch(this.gridWidth) {
+        case 3 :
+          this.camera.pan.x = 1;
+          this.camera.pan.y = -50;
+        break;
+        case 6 :
+          this.camera.pan.x = 1;
+          this.camera.pan.y = -20;
+        break;
+        case 9 :
+          this.camera.pan.x = 1;
+          this.camera.pan.y = -90;
+        break;
+        case 12 :
+          this.camera.pan.x = 1;
+          this.camera.pan.y = 30;
+        break;
+      }
+    } else {
+
+      switch(this.gridWidth) {
+        case 3 :
+          this.camera.pan.x = 1;
+          this.camera.pan.y = -50;
+        break;
+        case 6 :
+          this.camera.pan.x = 1;
+          this.camera.pan.y = -20;
+        break;
+        case 9 :
+          this.camera.pan.x = 1;
+          this.camera.pan.y = 10;
+        break;
+        case 12 :
+          this.camera.pan.x = 70;
+          this.camera.pan.y = 20;
+        break;
+      }
+    }
+
+    this.setCameraFocus(canvas, context, canvas2, context2);
+
+  }
+  setCameraFocus = (canvas, context, canvas2, context2) => {
+    // console.log('setting camera focus');
+
+    if (this.camera.mode === 'pan') {
+
+      this.camera.focus.x = (canvas.width/2)-(this.camera.pan.x)
+      this.camera.focus.y = (canvas.height/2)-(this.camera.pan.y)
+      // if (!this.camera.focus.x && !this.camera.focus.y) {
+      //   // console.log('initalize camera focus point: pan ',this.camera.panDirection);
+      //   this.camera.focus.x = (canvas.width/2)-(this.camera.pan.x)
+      //   this.camera.focus.y = (canvas.height/2)-(this.camera.pan.y)
+      // } else {
+      //
+      // }
+
+    }
+
+    class Point {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    if (this.camera.mode === 'zoom') {
+      if (this.camera.zoomDirection === 'out') {
+        // console.log('!!',this.camera.pan,this.camera.zoom.x);
+
+
+        if (!this.camera.focus.x && !this.camera.focus.y) {
+          // console.log('initalize camera focus point: zoom out');
+          // this.camera.focus = {
+          //   x: (canvas.width/2),
+          //   y: (canvas.height/2)-(this.camera.pan.y),
+          // }
+          this.camera.focus.x = (canvas.width/2)-(this.camera.pan.x)
+          this.camera.focus.y = (canvas.height/2)-(this.camera.pan.y)
+        } else {
+
+          let p3 = new Point();
+          p3.x = this.camera.focus.x += 2*(this.camera.zoom.x*10);
+          p3.y = this.camera.focus.y += 1*(this.camera.zoom.y*10);
+
+          let isoy = this.cartesianToIsometric(p3);
+
+          // isoy += 2*(this.camera.zoom.x*10);
+          // isoy += 1*(this.camera.zoom.y*10);
+
+        }
+      }
+      if (this.camera.zoomDirection === 'in') {
+        // console.log('!!',this.camera.pan,this.camera.zoom.x);
+
+
+        if (!this.camera.focus.x && !this.camera.focus.y) {
+          // console.log('initalize camera focus point: zoom in');
+          // this.camera.focus = {
+          //   x: (canvas.width/2),
+          //   y: (canvas.height/2)-(this.camera.pan.y),
+          // }
+          this.camera.focus.x = (canvas.width/2)-(this.camera.pan.x)
+          this.camera.focus.y = (canvas.height/2)-(this.camera.pan.y)
+
+        } else {
+
+          let p2 = new Point();
+          p2.x = this.camera.focus.x -= 2*(this.camera.zoom.x*10);
+          p2.y = this.camera.focus.y -= 1*(this.camera.zoom.y*10);
+
+          let isox = this.cartesianToIsometric(p2);
+
+          // isox -= 2*(this.camera.zoom.x*10);
+          // isox -= 1*(this.camera.zoom.y*10);
+        }
+
+
+      }
+    }
+    console.log('camera focus set',this.camera);
+
   }
 
 
@@ -21289,9 +21324,9 @@ class App extends Component {
     return (
       <React.Fragment>
 
-      {this.state.loading === true && (
-        <Loading />
-      )}
+        {this.state.loading === true && (
+          <Loading />
+        )}
 
         <div className="containerTop">
           <div className="timer">
@@ -21301,6 +21336,7 @@ class App extends Component {
           </div>
 
           <div className={this.state.containerInnerClass}>
+
             <canvas
               width={this.canvasWidth}
               height={this.canvasHeight}
@@ -21313,6 +21349,7 @@ class App extends Component {
               ref={this.canvasRef2}
               className="canvas2"
             />
+
             <div className="debugDisplay">
               <DebugBox
                 player={this.players[0]}
@@ -21388,6 +21425,7 @@ class App extends Component {
                 onAiAdd={this.addAiRandomPlayer}
               />
             )}
+
           </div>
 
           {this.state.showSettings === true && (
@@ -21418,7 +21456,6 @@ class App extends Component {
           )}
 
 
-
           <img src={floorGrass} className='hidden' ref="floorGrass" alt="logo" id="floor1"/>
           <img src={floorDirt} className='hidden' ref="floorDirt" alt="logo" id="floor2"/>
           <img src={floorIce} className='hidden' ref="floorIce" alt="logo" id="floor2"/>
@@ -21436,6 +21473,7 @@ class App extends Component {
           <img src={wall} className='hidden' ref="wall" id="wall" alt="logo" />
           <img src={wall2} className='hidden' ref="wall2" id="wall2" alt="logo" />
           <img src={wall3} className='hidden' ref="wall3" id="wall3" alt="logo" />
+
 
           <img src={attack1Indicate} className='hidden playerImgs' ref="attack1Indicate" id="attack1Indicate" alt="logo" />
           <img src={attack2Indicate} className='hidden playerImgs' ref="attack2Indicate" id="attack2Indicate" alt="logo" />
@@ -21473,6 +21511,7 @@ class App extends Component {
           <img src={pathSwitchIndicate} className="hidden playerImgs" ref="pathSwitchIndicate" id="pathSwitchIndicate" alt="logo"/>
           <img src={retreatIndicate} className="hidden playerImgs" ref="retreatIndicate" id="retreatIndicate" alt="logo"/>
           <img src={defendSuccessIndicate} className="hidden playerImgs" ref="defendSuccessIndicate" id="defendSuccessIndicate" alt="logo"/>
+
 
           <img src={preAttack2Indicate} className="hidden playerImgs" ref="preAttack2Indicate" id="preAttack2Indicate" alt="..." />
           <img src={preAction1Indicate} className="hidden playerImgs" ref="preAction1Indicate" id="preAction1Indicate" alt="..." />
@@ -21517,6 +21556,7 @@ class App extends Component {
           <img src={inventoryFullIndicate} className="hidden playerImgs" ref="inventoryFullIndicate" id="inventoryFullIndicate" alt="..." />
           <img src={outOfAmmoIndicate} className="hidden playerImgs" ref="outOfAmmoIndicate" id="outOfAmmoIndicate" alt="..." />
 
+
           <img src={sword} className='hidden playerImgs' ref="itemSword" id="itemSword" alt="logo" />
           <img src={spear} className='hidden playerImgs' ref="itemSpear" id="itemSpear" alt="logo" />
           <img src={bow} className='hidden playerImgs' ref="itemBow" id="itemBow" alt="logo" />
@@ -21548,10 +21588,12 @@ class App extends Component {
           <img src={playerComAImgIdleSheet} className='hidden playerImgs' ref="playerComAImgIdleSheet" id="playerComAImgIdleSheet" alt="logo" />
           <img src={playerComBImgIdleSheet} className='hidden playerImgs' ref="playerComBImgIdleSheet" id="playerComBImgIdleSheet" alt="logo" />
 
+
           <img src={playerImgMoveSheet} className='hidden playerImgs' ref="playerImgMoveSheet" id="playerImgMoveSheet" alt="logo" />
           <img src={player2ImgMoveSheet} className='hidden playerImgs' ref="player2ImgMoveSheet" id="player2ImgMoveSheet" alt="logo" />
           <img src={comAImgMoveSheet} className='hidden playerImgs' ref="comAImgMoveSheet" id="comAImgMoveSheet" alt="logo" />
           <img src={comBImgMoveSheet} className='hidden playerImgs' ref="comBImgMoveSheet" id="comBImgMoveSheet" alt="logo" />
+
 
           <img src={player1DefendSheet} className='hidden playerImgs' ref="player1ImgDefendSheet" id="player1ImgDefendSheet" alt="logo" />
           <img src={player2DefendSheet} className='hidden playerImgs' ref="player2ImgDefendSheet" id="player2ImgDefendSheet" alt="logo" />
