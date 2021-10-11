@@ -21243,15 +21243,30 @@ class App extends Component {
 
     if (this.camera.mode === 'pan') {
 
-      this.camera.focus.x = (canvas.width/2)-(this.camera.pan.x)
-      this.camera.focus.y = (canvas.height/2)-(this.camera.pan.y)
-      // if (!this.camera.focus.x && !this.camera.focus.y) {
-      //   // console.log('initalize camera focus point: pan ',this.camera.panDirection);
-      //   this.camera.focus.x = (canvas.width/2)-(this.camera.pan.x)
-      //   this.camera.focus.y = (canvas.height/2)-(this.camera.pan.y)
-      // } else {
-      //
-      // }
+      // this.camera.focus.x = (canvas.width/2)-(this.camera.pan.x)
+      // this.camera.focus.y = (canvas.height/2)-(this.camera.pan.y)
+      if (!this.camera.focus.x && !this.camera.focus.y) {
+        // console.log('initalize camera focus point: pan ',this.camera.panDirection);
+        this.camera.focus.x = (canvas.width/2)-(this.camera.pan.x)
+        this.camera.focus.y = (canvas.height/2)-(this.camera.pan.y)
+      } else {
+        switch (this.camera.panDirection) {
+          case 'north':
+            this.camera.focus.y -= 10;
+          break;
+          case 'south':
+            this.camera.focus.y += 10;
+          break;
+          case 'east':
+            this.camera.focus.x += 10;
+          break;
+          case 'west':
+            this.camera.focus.x -= 10;
+          break;
+          default:
+
+        }
+      }
 
     }
 
