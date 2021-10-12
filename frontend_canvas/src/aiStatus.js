@@ -20,6 +20,7 @@ import {
   faRobot,
   faPlus,
   faBullseye,
+  faLungs,
 } from '@fortawesome/free-solid-svg-icons';
 
 import deflectInjuredInidcate from './assets/indicators/deflectInjured.png';
@@ -141,23 +142,23 @@ const AiStatus = props => {
           // )}
         }
           <li className="debugBoxListItem">
-            <FontAwesomeIcon icon={faBullseye} size="sm" className="debugBoxIcon"/> :
+            <FontAwesomeIcon icon={faBullseye} size="sm" className="aiStatusIcon"/> :
             <p className="debugBoxText">
               {aiPlayers[state].ai.mission}
             </p>
           </li>
           <li className="debugBoxListItem">
-            <FontAwesomeIcon icon={faSkullCrossbones} size="sm" className="debugBoxIcon"/> :
+            <FontAwesomeIcon icon={faSkullCrossbones} size="sm" className="aiStatusIcon"/> :
             <p className="debugBoxText">
               {aiPlayers[state].points}
             </p>
           </li>
           <li className="debugBoxListItem3">
-            <p className="debugBoxText debugBoxTextAlt">Stamina</p>
+            <FontAwesomeIcon icon={faLungs} size="sm" className="aiStatusIcon"/> :
             <ProgressBar className="staminaProgress" now={staminaPercent} variant={staminaColor}/>
           </li>
           <li className="debugBoxListItem">
-            <FontAwesomeIcon icon={faHeartbeat} size="sm" className="debugBoxIcon"/> :
+            <FontAwesomeIcon icon={faHeartbeat} size="sm" className="aiStatusIcon"/> :
             <p className="debugBoxText">
               {aiPlayers[state].hp}
             </p>

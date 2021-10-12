@@ -110,8 +110,8 @@
 }
 
 .debugDisplay {
-  height: 130px;
-  width: 480px;
+  /* height: 80px; */
+  width: 500px;
   position: absolute;
   top: 0;
   /* bottom: 15px; */
@@ -125,8 +125,8 @@
   /* display: none; */
 }
 .debugDisplay2 {
-  height: 130px;
-  width: 450px;
+  /* height: 80px; */
+  width: 500px;
   position: absolute;
   top: 0;
   left: 5px;
@@ -137,6 +137,12 @@
   overflow-y: scroll;
 
   /* display: none; */
+}
+.openDebug {
+  height: 150px;
+}
+.closedDebug {
+  height: 80px;
 }
 .settingsSwitch {
   border: 2px solid green;

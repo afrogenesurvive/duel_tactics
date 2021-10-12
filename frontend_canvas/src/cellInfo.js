@@ -2,9 +2,10 @@ import React, {useState} from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import {
-// } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faTimesCircle,
+} from '@fortawesome/free-solid-svg-icons';
 
 
 import './debugBox.css';
@@ -30,7 +31,13 @@ const CellInfo = props => {
         <strong>
           Cell Info:
         </strong>
+        <span>
+
+        </span>
       </p>
+
+      <FontAwesomeIcon icon={faTimesCircle} size="sm" className="cellInfoClose" onClick={props.close}/>
+
       <ul className="cellInfoList">
         <li className="cellInfoListItem">
           <p className="cellInfoText">

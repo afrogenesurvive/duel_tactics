@@ -19,9 +19,10 @@
 .debugBoxListItem > * {
   display: inline-block;
 }
-/* .debugBoxListItem3 > * {
-  display: flex;
-} */
+.debugBoxListItem3 > * {
+  display: inline-block;
+  padding-bottom: .5rem;
+}
 
 .debugBoxText {
   color: #000000;
@@ -58,6 +59,7 @@
   border: 1px solid green;
   border-radius: 5px;
   padding: .5rem;
+  margin-top: .5rem;
 }
 
 .cellInfoSwitch {
@@ -83,7 +85,7 @@
   max-width: 18rem;
 }
 .cellInfoBox2 {
-  border: 1px solid blue;
+  border: 2px solid blue;
   border-radius: 5px;
   padding: 1rem;
   background-color: #ffffff;
@@ -117,7 +119,7 @@
 }
 
 .showCritsBtn {
-  width: 4rem;
+  width: 3rem;
 }
 .btnIcon {
   color: #ffffff;
@@ -143,7 +145,7 @@
 }
 
 .aiStatusBox {
-  text-align: center;
+  text-align: left;
 }
 .aiStatusBoxSwitch {
   margin: .1rem 0 0 1rem;
@@ -151,6 +153,7 @@
 
 .aiStatHeadBox {
   margin: 0 auto;
+  text-align: left;
 }
 
 .aiStatHeadBox > * {
@@ -158,8 +161,19 @@
 }
 
 .staminaProgress {
-  margin: 0.2rem 1rem 0 2rem;
+  margin: 0.5rem .2rem 0 0;
   /* margin: .2rem .5rem 0 .5rem; */
   width: 3rem;
   /* display: inline; */
+}
+
+.cellInfoClose {
+  position: absolute;
+  right: 9px;
+  top: 9px;
+  color: #000000;
+}
+
+.aiStatusIcon {
+  color: #000000;
 }

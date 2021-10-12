@@ -10,6 +10,8 @@ import {
   faSearchPlus,
   faExpandAlt,
   faUndo,
+  faQuestionCircle,
+  faBorderAll,
 } from '@fortawesome/free-solid-svg-icons';
 
 
@@ -187,6 +189,8 @@ class App extends Component {
     this.canvasRef3 = React.createRef();
     this.canvasRef4 = React.createRef();
 
+    this.debugBoxStyle = "debugDisplay closedDebug";
+    this.debugBoxStyle2 = "debugDisplay2 closedDebug";
 
     // LEVEL DRAW SETUP
     this.tileColumnOffset = 100; // pixels
@@ -1764,7 +1768,23 @@ class App extends Component {
           twelve: 50,
         }
       })
-      this.sceneY = 120;
+
+
+      switch(this.gridWidth) {
+        case 3 :
+          this.sceneY = 300;
+        break;
+        case 6 :
+          this.sceneY = 200;
+        break;
+        case 9 :
+          this.sceneY = 120;
+        break;
+        case 12 :
+          this.sceneY = 50;
+        break;
+      }
+
       this.canvasWidth = 1000;
       this.canvasHeight = 600;
 
@@ -3044,7 +3064,6 @@ class App extends Component {
         this.sceneY = this.state.sceneY.twelve;
       break;
     }
-    console.log('seceny2',this.sceneY,this.state.sceneY);
 
     let gamepad = false;
     if (event.target.input.value === 'Gamepad') {
@@ -3282,7 +3301,22 @@ class App extends Component {
     this.redrawSettingsGrid(this.state.canvas3,this.state.context3);
 
   }
-
+  expandDebugBox = (plyrNo) => {
+    if (plyrNo === 1) {
+      this.debugBoxStyle = "debugDisplay openDebug"
+    }
+    if (plyrNo === 2) {
+      this.debugBoxStyle2 = "debugDisplay2 openDebug"
+    }
+  }
+  minimizeDebugBox = (plyrNo) => {
+    if (plyrNo === 1) {
+      this.debugBoxStyle = "debugDisplay closedDebug"
+    }
+    if (plyrNo === 2) {
+      this.debugBoxStyle2 = "debugDisplay2 closedDebug"
+    }
+  }
 
   getCustomPlyrStartPosList = (args) => {
     this.settingsFormPlyrGridInfo = this.gridInfo;
@@ -7362,8 +7396,10 @@ class App extends Component {
 
       if (this.camera.mode === 'zoom') {
 
-
-        if (this.keyPressed[player.number-1].north === true && this.camera.zoom.x < this.camera.limits.zoom.max) {
+        if (
+          this.keyPressed[player.number-1].north === true &&
+          this.keyPressed[player.number-1].south !== true &&
+          this.camera.zoom.x < this.camera.limits.zoom.max) {
         // if (this.keyPressed[player.number-1].north === true) {
           this.camera.zoom.x += .02 ;
           this.camera.zoom.y += .02 ;
@@ -7378,7 +7414,10 @@ class App extends Component {
         if (this.keyPressed[player.number-1].north === true && this.camera.zoom.x >= this.camera.limits.zoom.max) {
           console.log('zoom in limit');
         }
-        if (this.keyPressed[player.number-1].south === true && this.camera.zoom.x > this.camera.limits.zoom.min) {
+        if (
+          this.keyPressed[player.number-1].south === true &&
+          this.keyPressed[player.number-1].north !== true &&
+          this.camera.zoom.x > this.camera.limits.zoom.min) {
         // if (this.keyPressed[player.number-1].south === true) {
           this.camera.zoom.x -= .02 ;
           this.camera.zoom.y -= .02 ;
@@ -7398,10 +7437,16 @@ class App extends Component {
 
       if (this.camera.mode === 'pan') {
 
-
+        console.log('ll',[player.number-1].north,[player.number-1].south,[player.number-1].east);
         // switch based zoom ranges, modulo etc
 
-        if (this.keyPressed[player.number-1].north === true && this.camera.pan.y < this.camera.limits.pan.y.max) {
+        if (
+          this.keyPressed[player.number-1].north === true &&
+          this.keyPressed[player.number-1].south !== true &&
+          this.keyPressed[player.number-1].east !== true &&
+          this.keyPressed[player.number-1].west !== true &&
+          this.camera.pan.y < this.camera.limits.pan.y.max
+        ) {
           this.camera.pan.y += 10;
           this.camera.panDirection = 'north';
           setFocus = true;
@@ -7410,11 +7455,18 @@ class App extends Component {
           console.log('zoom',this.camera.zoom.x.toFixed(2));
           console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
           console.log('pan limit min x',this.camera.limits.pan.x.min,'y',this.camera.limits.pan.y.min,'max x',this.camera.limits.pan.x.max,'y',this.camera.limits.pan.y.max);
+
         }
         if (this.keyPressed[player.number-1].north === true && this.camera.pan.y >= this.camera.limits.pan.y.max) {
           console.log('pan limit north');
         }
-        if (this.keyPressed[player.number-1].south === true && this.camera.pan.y > this.camera.limits.pan.y.min) {
+        if (
+          this.keyPressed[player.number-1].south === true &&
+          this.keyPressed[player.number-1].north !== true &&
+          this.keyPressed[player.number-1].west !== true &&
+          this.keyPressed[player.number-1].east !== true &&
+          this.camera.pan.y > this.camera.limits.pan.y.min
+        ) {
           this.camera.pan.y -= 10;
           this.camera.panDirection = 'south';
           setFocus = true;
@@ -7423,11 +7475,18 @@ class App extends Component {
           console.log('zoom',this.camera.zoom.x.toFixed(2));
           console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
           console.log('pan limit min x',this.camera.limits.pan.x.min,'y',this.camera.limits.pan.y.min,'max x',this.camera.limits.pan.x.max,'y',this.camera.limits.pan.y.max);
+
         }
         if (this.keyPressed[player.number-1].south === true && this.camera.pan.y <= this.camera.limits.pan.y.min) {
           console.log('pan limit south');
         }
-        if (this.keyPressed[player.number-1].east === true && this.camera.pan.x > this.camera.limits.pan.x.min) {
+        if (
+          this.keyPressed[player.number-1].east === true &&
+          this.keyPressed[player.number-1].west !== true &&
+          this.keyPressed[player.number-1].north !== true &&
+          this.keyPressed[player.number-1].south !== true &&
+          this.camera.pan.x > this.camera.limits.pan.x.min
+        ) {
           this.camera.pan.x -= 10;
           this.camera.panDirection = 'east';
           setFocus = true;
@@ -7450,7 +7509,12 @@ class App extends Component {
           console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
           console.log('pan limit min x',this.camera.limits.pan.x.min,'y',this.camera.limits.pan.y.min,'max x',this.camera.limits.pan.x.max,'y',this.camera.limits.pan.y.max);
         }
-        if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
+        if (
+          this.keyPressed[player.number-1].west === true &&
+          this.keyPressed[player.number-1].east !== true &&
+          this.keyPressed[player.number-1].north !== true &&
+          this.keyPressed[player.number-1].south !== true &&
+          this.camera.pan.x >= this.camera.limits.pan.x.max) {
           console.log('pan limit south');
         }
       }
@@ -7458,7 +7522,7 @@ class App extends Component {
 
       //SET CAMERA FOCUS
       if (setFocus === true) {
-        this.setCameraFocus(canvas, context, canvas2, context2);
+        this.setCameraFocus('input',canvas, context, canvas2, context2);
       }
 
 
@@ -14576,14 +14640,13 @@ class App extends Component {
       //   }
       // }
 
-      this.setCameraFocus(canvas, context, canvas2, context2);
+      this.setCameraFocus('init', canvas, context, canvas2, context2);
     }
 
 
     if (this.showSettingsCanvasData.state === true) {
       this.settingsFormGridWidthUpdate(this.settingsGridWidth)
     }
-    console.log('sceney',sceneY,this.sceneY);
 
     let itemImgs = {
       moveSpeedUp: this.refs.itemSpdUp,
@@ -14633,7 +14696,6 @@ class App extends Component {
         // apply offset to center scene for a better view
         iso.x += sceneX
         iso.y += sceneY
-        console.log('sceney3',sceneY);
 
 
         let center = {
@@ -21163,21 +21225,37 @@ class App extends Component {
     //   }
     // }
 
-    this.setCameraFocus(canvas, context, canvas2, context2);
+    this.setCameraFocus('reset', canvas, context, canvas2, context2);
 
   }
-  setCameraFocus = (canvas, context, canvas2, context2) => {
+  setCameraFocus = (focusType, canvas, context, canvas2, context2) => {
     // console.log('setting camera focus');
 
-    if (this.camera.mode === 'pan') {
+    if (focusType === 'init' || focusType === 'reset') {
 
-      // this.camera.focus.x = (canvas.width/2)-(this.camera.pan.x)
-      // this.camera.focus.y = (canvas.height/2)-(this.camera.pan.y)
-      if (!this.camera.focus.x && !this.camera.focus.y) {
-        // console.log('initalize camera focus point: pan ',this.camera.panDirection);
+      if (this.camera.mode === 'pan') {
         this.camera.focus.x = (canvas.width/2)-(this.camera.pan.x)
         this.camera.focus.y = (canvas.height/2)-(this.camera.pan.y)
-      } else {
+      }
+
+      if (this.camera.mode === 'zoom') {
+        this.camera.focus.x = (canvas.width/2)-(this.camera.pan.x)
+        this.camera.focus.y = (canvas.height/2)-(this.camera.pan.y)
+      }
+
+    }
+
+    if (focusType === 'input') {
+
+      class Point {
+          constructor(x, y) {
+              this.x = x;
+              this.y = y;
+          }
+      }
+
+      if (this.camera.mode === 'pan') {
+
         switch (this.camera.panDirection) {
           case 'north':
             this.camera.focus.y -= 10;
@@ -21194,31 +21272,13 @@ class App extends Component {
           default:
 
         }
+
       }
 
-    }
+      if (this.camera.mode === 'zoom') {
 
-    class Point {
-        constructor(x, y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-    if (this.camera.mode === 'zoom') {
-      if (this.camera.zoomDirection === 'out') {
-        // console.log('!!',this.camera.pan,this.camera.zoom.x);
-
-
-        if (!this.camera.focus.x && !this.camera.focus.y) {
-          // console.log('initalize camera focus point: zoom out');
-          // this.camera.focus = {
-          //   x: (canvas.width/2),
-          //   y: (canvas.height/2)-(this.camera.pan.y),
-          // }
-          this.camera.focus.x = (canvas.width/2)-(this.camera.pan.x)
-          this.camera.focus.y = (canvas.height/2)-(this.camera.pan.y)
-        } else {
-
+        if (this.camera.zoomDirection === 'out') {
+          // console.log('!!',this.camera.pan,this.camera.zoom.x);
           let p3 = new Point();
           p3.x = this.camera.focus.x += 2*(this.camera.zoom.x*1);
           p3.y = this.camera.focus.y += 1*(this.camera.zoom.y*1);
@@ -21230,24 +21290,9 @@ class App extends Component {
 
           this.camera.focus.x += 2*(10)
           this.camera.focus.y += 1*(10)
-
         }
-      }
-      if (this.camera.zoomDirection === 'in') {
-        // console.log('!!',this.camera.pan,this.camera.zoom.x);
-
-
-        if (!this.camera.focus.x && !this.camera.focus.y) {
-          // console.log('initalize camera focus point: zoom in');
-          // this.camera.focus = {
-          //   x: (canvas.width/2),
-          //   y: (canvas.height/2)-(this.camera.pan.y),
-          // }
-          this.camera.focus.x = (canvas.width/2)-(this.camera.pan.x)
-          this.camera.focus.y = (canvas.height/2)-(this.camera.pan.y)
-
-        } else {
-
+        if (this.camera.zoomDirection === 'in') {
+          // console.log('!!',this.camera.pan,this.camera.zoom.x);
           let p2 = new Point();
           p2.x = this.camera.focus.x -= 2*(this.camera.zoom.x*1);
           p2.y = this.camera.focus.y -= 1*(this.camera.zoom.y*1);
@@ -21262,9 +21307,10 @@ class App extends Component {
 
         }
 
-
       }
+
     }
+
     console.log('camera focus set',this.camera.focus);
 
   }
@@ -21300,15 +21346,20 @@ class App extends Component {
               className="canvas2"
             />
 
-            <div className="debugDisplay">
+            <div className={this.debugBoxStyle}>
               <DebugBox
                 player={this.players[0]}
+                expand={this.expandDebugBox}
+                minimize={this.minimizeDebugBox}
               />
             </div>
+
             {this.players.length > 1 &&(
-              <div className="debugDisplay2">
+              <div className={this.debugBoxStyle2}>
                 <DebugBox
                   player={this.players[1]}
+                  expand={this.expandDebugBox}
+                  minimize={this.minimizeDebugBox}
                 />
               </div>
             )}
@@ -21367,7 +21418,7 @@ class App extends Component {
 
             {this.showCellInfoBox !== true && (
               <div className="cellInfoSwitch">
-                  <FontAwesomeIcon icon={faCogs} size="sm" className="setSwitchIcon"/>
+                  <FontAwesomeIcon icon={faBorderAll} size="sm" className="setSwitchIcon"/>
               </div>
             )}
             {this.showCellInfoBox === true && (
