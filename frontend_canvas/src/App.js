@@ -6832,8 +6832,6 @@ class App extends Component {
         }
 
 
-
-
           // CAN READ MOVE INPUTS!!
           if (
             player.attacking.state === false &&
@@ -7080,7 +7078,6 @@ class App extends Component {
 
             }
           }
-
 
 
         // CAN READ NON-MOVE INPUTS!!
@@ -7508,7 +7505,13 @@ class App extends Component {
         if (this.keyPressed[player.number-1].east === true && this.camera.pan.x <= this.camera.limits.pan.x.min) {
           console.log('pan limit east');
         }
-        if (this.keyPressed[player.number-1].west === true && this.camera.pan.x < this.camera.limits.pan.x.max) {
+        if (
+          this.keyPressed[player.number-1].west === true &&
+          this.keyPressed[player.number-1].east !== true &&
+          this.keyPressed[player.number-1].north !== true &&
+          this.keyPressed[player.number-1].south !== true &&
+          this.camera.pan.x < this.camera.limits.pan.x.max
+        ) {
           this.camera.pan.x += 10;
           this.camera.panDirection = 'west';
           setFocus = true;
@@ -7519,11 +7522,7 @@ class App extends Component {
           console.log('pan limit min x',this.camera.limits.pan.x.min,'y',this.camera.limits.pan.y.min,'max x',this.camera.limits.pan.x.max,'y',this.camera.limits.pan.y.max);
         }
         if (
-          this.keyPressed[player.number-1].west === true &&
-          this.keyPressed[player.number-1].east !== true &&
-          this.keyPressed[player.number-1].north !== true &&
-          this.keyPressed[player.number-1].south !== true &&
-          this.camera.pan.x >= this.camera.limits.pan.x.max) {
+          this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
           console.log('pan limit south');
         }
       }
@@ -21243,13 +21242,13 @@ class App extends Component {
     if (focusType === 'init' || focusType === 'reset') {
 
       if (this.camera.mode === 'pan') {
-        this.camera.focus.x = (canvas.width/2)-(this.camera.pan.x)
-        this.camera.focus.y = (canvas.height/2)-(this.camera.pan.y)
+        this.camera.focus.x = ((canvas.width/2)*this.camera.zoom.x)-(this.camera.pan.x)
+        this.camera.focus.y = ((canvas.height/2)*this.camera.zoom.x)-(this.camera.pan.y)
       }
 
       if (this.camera.mode === 'zoom') {
-        this.camera.focus.x = (canvas.width/2)-(this.camera.pan.x)
-        this.camera.focus.y = (canvas.height/2)-(this.camera.pan.y)
+        this.camera.focus.x = ((canvas.width/2)*this.camera.zoom.x)-(this.camera.pan.x)
+        this.camera.focus.y = ((canvas.height/2)*this.camera.zoom.x)-(this.camera.pan.y)
       }
 
     }
@@ -21286,39 +21285,72 @@ class App extends Component {
 
       if (this.camera.mode === 'zoom') {
 
+        let diff;
+        if (this.camera.zoom.x === 1) {
+          this.camera.pan.x = -1;
+          this.camera.pan.y = -1;
+        }
+
+        let zoom = this.camera.zoom.x;
+
+        if (zoom < 1) {
+          diff = 1 - zoom;
+          if (window.innerWidth < 1100) {
+            this.camera.pan.x = (diff*500);
+            this.camera.pan.y = (diff*500)-(diff*100);
+          } else {
+            this.camera.pan.x = (diff*600);
+            this.camera.pan.y = (diff*600)-(diff*100);
+          }
+
+        }
+        if (zoom > 1) {
+          diff = zoom - 1;
+          if (window.innerWidth < 1100) {
+            this.camera.pan.x = -(diff*500);
+            this.camera.pan.y = -(diff*500)+(diff*100);
+          } else {
+            this.camera.pan.x = -(diff*600);
+            this.camera.pan.y = -(diff*600)-(diff*100);
+          }
+
+        }
+
+
+
+
         if (this.camera.zoomDirection === 'out') {
-          // console.log('!!',this.camera.pan,this.camera.zoom.x);
-          let p3 = new Point();
-          p3.x = this.camera.focus.x += 2*(this.camera.zoom.x*1);
-          p3.y = this.camera.focus.y += 1*(this.camera.zoom.y*1);
 
-          let isoy = this.cartesianToIsometric(p3);
-          console.log('isoy',isoy);
+          // this.camera.focus.x += 2*(this.camera.zoom.x*1);
+          // this.camera.focus.y += 1*(this.camera.zoom.y*1);
 
-          // isoy += 2*(this.camera.zoom.x*10);
-          // isoy += 1*(this.camera.zoom.y*10);
+          // this.camera.pan.x
+          // this.camera.pan.y
+          //
+          // this.camera.pan.y += 10;
+          // this.camera.panDirection = 'north';
+          // this.camera.pan.y -= 10;
+          // this.camera.panDirection = 'south';
+          // this.camera.pan.x -= 10;
+          // this.camera.panDirection = 'east';
+          // this.camera.pan.x += 10;
+          // this.camera.panDirection = 'west';
 
-          this.camera.focus.x += 2*(10)
-          this.camera.focus.y += 1*(10)
         }
         if (this.camera.zoomDirection === 'in') {
-          // console.log('!!',this.camera.pan,this.camera.zoom.x);
-          let p2 = new Point();
-          p2.x = this.camera.focus.x -= 2*(this.camera.zoom.x*1);
-          p2.y = this.camera.focus.y -= 1*(this.camera.zoom.y*1);
 
-          let isox = this.cartesianToIsometric(p2);
-          console.log('isox',isox);
+          // this.camera.focus.x -= 2*(this.camera.zoom.x*1);
+          // this.camera.focus.y -= 1*(this.camera.zoom.y*1);
 
-          // isox -= 2*(this.camera.zoom.x*10);
-          // isox -= 1*(this.camera.zoom.y*10);
+          // this.camera.pan.x
+          // this.camera.pan.y
 
-          this.camera.focus.x -= 2*(10)
-          this.camera.focus.y -= 1*(10)
 
         }
 
       }
+
+
 
     }
 
