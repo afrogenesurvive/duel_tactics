@@ -43,6 +43,8 @@ import './debugBox.css';
 
 const DebugBox = props => {
 
+
+
   let singleHitCrit = Math.round((1/(props.player.crits.singleHit+0))*100)
   let singleHitCritSpecialArmorMin = Math.round((1/(props.player.crits.singleHit+5))*100)
   let singleHitCritSpecialArmorMax = Math.round((1/(props.player.crits.singleHit+10))*100)
@@ -64,6 +66,7 @@ const DebugBox = props => {
   if (staminaPercent > 20 && staminaPercent < 60) {
     staminaColor = "warning";
   }
+
 
   const [state, setState] = useState("player");
   const handleStateChange = (type,plyrNo) => {
@@ -91,7 +94,7 @@ const DebugBox = props => {
           </p>
         </li>
         <li className="debugBoxListItem3">
-          <FontAwesomeIcon icon={faLungs} size="lg" className="debugBoxIcon"/>
+          <FontAwesomeIcon icon={faLungs} size="sm" className="debugBoxIcon"/>
           <ProgressBar className="staminaProgress" now={staminaPercent} variant={staminaColor}/>
         </li>
 
@@ -193,7 +196,7 @@ const DebugBox = props => {
 
         <li className="debugBoxListItem">
           <a href="javascript:" onClick={()=>handleStateChange('gear',props.player.number)}>
-            <Button variant="primary" type="button" className="showCritsBtn">
+            <Button variant="outline-secondary" type="button" className="showCritsBtn">
               <FontAwesomeIcon icon={faBriefcase} size="lg" className="debugBoxIcon btnIcon" />
             </Button>
           </a>
@@ -201,7 +204,7 @@ const DebugBox = props => {
 
         <li className="debugBoxListItem">
         <a href="javascript:" onClick={()=>handleStateChange("crits",props.player.number)}>
-          <Button variant="primary" type="button" className="showCritsBtn">
+          <Button variant="outline-secondary" type="button" className="showCritsBtn">
             <FontAwesomeIcon icon={faDice} size="lg" className="debugBoxIcon btnIcon" />
           </Button>
         </a>
@@ -408,7 +411,7 @@ const DebugBox = props => {
       <ul className="debugBoxList">
       <li className="debugBoxListItem">
         <a href="javascript:" onClick={()=>handleStateChange("player",props.player.number)}>
-        <Button variant="primary" type="button" className="showCritsBtn">
+        <Button variant="outline-secondary" type="button" className="showCritsBtn">
           <FontAwesomeIcon icon={faUser} size="lg" className="debugBoxIcon btnIcon" />
         </Button>
         </a>
@@ -480,7 +483,7 @@ const DebugBox = props => {
         <ul className="debugBoxList">
           <li className="debugBoxListItem">
           <a href="javascript:" onClick={()=>handleStateChange("player",props.player.number)}>
-          <Button variant="primary" type="button" className="showCritsBtn">
+          <Button variant="outline-secondary" type="button" className="showCritsBtn">
             <FontAwesomeIcon icon={faUser} size="lg" className="debugBoxIcon btnIcon" />
           </Button>
           </a>

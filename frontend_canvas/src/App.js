@@ -12,6 +12,7 @@ import {
   faUndo,
   faQuestionCircle,
   faBorderAll,
+  faChessBoard,
 } from '@fortawesome/free-solid-svg-icons';
 
 
@@ -3281,6 +3282,10 @@ class App extends Component {
       showSettings: true,
     })
 
+    if (this.showSettingsCanvasData.state === true) {
+      this.settingsFormGridWidthUpdate(this.settingsGridWidth)
+    }
+
     this.settingsFormAiGridInfo = this.gridInfo;
 
     this.getCustomPlyrStartPosList(
@@ -3297,8 +3302,6 @@ class App extends Component {
         }
       ]
     )
-
-    this.redrawSettingsGrid(this.state.canvas3,this.state.context3);
 
   }
   expandDebugBox = (plyrNo) => {
@@ -6829,7 +6832,7 @@ class App extends Component {
         }
 
 
-        if (player.newMoveDelay.state !== true) {
+
 
           // CAN READ MOVE INPUTS!!
           if (
@@ -6850,8 +6853,10 @@ class App extends Component {
               this.keyPressed[player.number-1].southWest === true
             ) {
 
-              // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
-              if (keyPressedDirection === player.direction && player.strafing.state === false) {
+              if (player.newMoveDelay.state !== true) {
+
+                // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
+                if (keyPressedDirection === player.direction && player.strafing.state === false) {
 
                 let target = this.getTarget(player)
 
@@ -6914,8 +6919,10 @@ class App extends Component {
 
               }
 
+              }
+
               // CHANGE DIRECTION IF NOT STRAFING!!
-              else if (keyPressedDirection !== player.direction && player.strafing.state === false) {
+              if (keyPressedDirection !== player.direction && player.strafing.state === false) {
 
                 // console.log('change player direction to',keyPressedDirection);
                 // console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
@@ -6924,151 +6931,156 @@ class App extends Component {
 
               }
 
-              // MOVE WHILE STRAFING!!
-              else if (keyPressedDirection !== player.direction && player.strafing.state === true) {
+              if (player.newMoveDelay.state !== true) {
 
-                player.strafing.direction = keyPressedDirection;
-                let target = this.getTarget(player);
+                // MOVE WHILE STRAFING!!
+                if (keyPressedDirection !== player.direction && player.strafing.state === true) {
 
-                if (target.free === true) {
+                  player.strafing.direction = keyPressedDirection;
+                  let target = this.getTarget(player);
 
-                  this.moveSpeed = player.speed.move;
+                  if (target.free === true) {
 
-                  // console.log('start strafing');
-                  player.action = 'strafe moving';
-                  player.moving = {
-                    state: true,
-                    step: 0,
-                    course: '',
-                    origin: {
-                      number: {
-                        x: player.currentPosition.cell.number.x,
-                        y: player.currentPosition.cell.number.y
+                    this.moveSpeed = player.speed.move;
+
+                    // console.log('start strafing');
+                    player.action = 'strafe moving';
+                    player.moving = {
+                      state: true,
+                      step: 0,
+                      course: '',
+                      origin: {
+                        number: {
+                          x: player.currentPosition.cell.number.x,
+                          y: player.currentPosition.cell.number.y
+                        },
+                        center: {
+                          x: player.currentPosition.cell.center.x,
+                          y: player.currentPosition.cell.center.y
+                        },
                       },
-                      center: {
-                        x: player.currentPosition.cell.center.x,
-                        y: player.currentPosition.cell.center.y
-                      },
-                    },
-                    destination: target.cell.center
-                  }
-                  nextPosition = this.lineCrementer(player);
-                  player.nextPosition = nextPosition;
-                }
-              }
-
-              // JUMPING!!
-              else if (keyPressedDirection === player.direction && player.strafing.state === true && player.jumping.checking !== true && player.jumping.state !== true) {
-
-                this.players[player.number-1].jumping.checking = true;
-                let target = this.getTarget(player);
-
-                let cell1 = this.gridInfo.find(elem => elem.number.x === target.cell.number.x && elem.number.y === target.cell.number.y)
-                let cell2 = this.gridInfo.find(elem => elem.number.x === target.cell2.number.x && elem.number.y === target.cell2.number.y)
-                // console.log('cell1',cell1);
-                // console.log('cell2',cell2);
-
-                let cellsWithinBounds = true;
-                if (!cell1 || !cell2) {
-                  cellsWithinBounds = false;
-                } else {
-                  if (cell1.number.x < 0 || cell1.number.x > this.gridWidth) {
-                    cellsWithinBounds = false;
-                  }
-                  if (cell1.number.y < 0 || cell1.number.y > this.gridWidth) {
-                    cellsWithinBounds = false;
+                      destination: target.cell.center
+                    }
+                    nextPosition = this.lineCrementer(player);
+                    player.nextPosition = nextPosition;
                   }
                 }
 
-                if (player.stamina.current - 6 >= 0) {
+                // JUMPING!!
+                if (keyPressedDirection === player.direction && player.strafing.state === true && player.jumping.checking !== true && player.jumping.state !== true) {
 
-                  if (cellsWithinBounds === true) {
-                    if (
-                      cell1.void.state === true ||
-                      cell1.terrain.type === 'deep'
-                    ) {
-                      // console.log('a');
+                  this.players[player.number-1].jumping.checking = true;
+                  let target = this.getTarget(player);
+
+                  let cell1 = this.gridInfo.find(elem => elem.number.x === target.cell.number.x && elem.number.y === target.cell.number.y)
+                  let cell2 = this.gridInfo.find(elem => elem.number.x === target.cell2.number.x && elem.number.y === target.cell2.number.y)
+                  // console.log('cell1',cell1);
+                  // console.log('cell2',cell2);
+
+                  let cellsWithinBounds = true;
+                  if (!cell1 || !cell2) {
+                    cellsWithinBounds = false;
+                  } else {
+                    if (cell1.number.x < 0 || cell1.number.x > this.gridWidth) {
+                      cellsWithinBounds = false;
+                    }
+                    if (cell1.number.y < 0 || cell1.number.y > this.gridWidth) {
+                      cellsWithinBounds = false;
+                    }
+                  }
+
+                  if (player.stamina.current - 6 >= 0) {
+
+                    if (cellsWithinBounds === true) {
                       if (
-                        cell2.levelData.charAt(0) !==  'z' ||
-                        cell2.levelData.charAt(0) !==  'y'
+                        cell1.void.state === true ||
+                        cell1.terrain.type === 'deep'
                       ) {
-                        // console.log('b');
+                        // console.log('a');
+                        if (
+                          cell2.levelData.charAt(0) !==  'z' ||
+                          cell2.levelData.charAt(0) !==  'y'
+                        ) {
+                          // console.log('b');
 
-                        let targetOccupied = false;
-                        for (const plyr of this.players) {
-                          if (
-                            plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
-                            plyr.currentPosition.cell.number.y === player.target.cell2.number.y
-                          ) {
-                            // console.log('c');
-                            targetOccupied = true
-                          }
-
-                        }
-
-                        if (targetOccupied !== true) {
-                          if (
-                            cell2.void.state !== true &&
-                            cell2.terrain.type !== 'deep'
-                          ) {
-                            // console.log('can jump');
-                            this.players[player.number-1].jumping.checking = false;
-                            this.players[player.number-1].jumping.state = true;
-                            player.action = 'jumping'
-                            player.stamina.current = player.stamina.current - this.staminaCostRef.jump;
-
-                            player.moving = {
-                              state: true,
-                              step: 0,
-                              course: '',
-                              origin: {
-                                number: player.currentPosition.cell.number,
-                                center: player.currentPosition.cell.center,
-                              },
-                              destination: target.cell2.center
+                          let targetOccupied = false;
+                          for (const plyr of this.players) {
+                            if (
+                              plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
+                              plyr.currentPosition.cell.number.y === player.target.cell2.number.y
+                            ) {
+                              // console.log('c');
+                              targetOccupied = true
                             }
 
-                            nextPosition = this.lineCrementer(player);
-                            // nextPosition = this.jumpCrementer(player);
-                            player.nextPosition = nextPosition;
-                          } else {
-                            // console.log('can only jump over voids or deep water cell 2');
+                          }
+
+                          if (targetOccupied !== true) {
+                            if (
+                              cell2.void.state !== true &&
+                              cell2.terrain.type !== 'deep'
+                            ) {
+                              // console.log('can jump');
+                              this.players[player.number-1].jumping.checking = false;
+                              this.players[player.number-1].jumping.state = true;
+                              player.action = 'jumping'
+                              player.stamina.current = player.stamina.current - this.staminaCostRef.jump;
+
+                              player.moving = {
+                                state: true,
+                                step: 0,
+                                course: '',
+                                origin: {
+                                  number: player.currentPosition.cell.number,
+                                  center: player.currentPosition.cell.center,
+                                },
+                                destination: target.cell2.center
+                              }
+
+                              nextPosition = this.lineCrementer(player);
+                              // nextPosition = this.jumpCrementer(player);
+                              player.nextPosition = nextPosition;
+                            } else {
+                              // console.log('can only jump over voids or deep water cell 2');
+                              this.players[player.number-1].jumping.checking = false;
+                            }
+                          }
+                          else {
+                            // console.log('jump destination occupied');
                             this.players[player.number-1].jumping.checking = false;
                           }
-                        }
-                        else {
-                          // console.log('jump destination occupied');
+
+                        } else {
+                          // console.log('jump obstacle detected');
                           this.players[player.number-1].jumping.checking = false;
                         }
-
                       } else {
-                        // console.log('jump obstacle detected');
+                        // console.log('can only jump over voids or deep water cell 2');
                         this.players[player.number-1].jumping.checking = false;
                       }
                     } else {
-                      // console.log('can only jump over voids or deep water cell 2');
+                      // console.log('cell out of bounds');
                       this.players[player.number-1].jumping.checking = false;
                     }
-                  } else {
-                    // console.log('cell out of bounds');
-                    this.players[player.number-1].jumping.checking = false;
+
+                  }
+                  else {
+                    console.log('out of stamina');
+                    player.statusDisplay = {
+                      state: true,
+                      status: 'Out of Stamina',
+                      count: 0,
+                      limit: player.statusDisplay.limit,
+                    }
                   }
 
-                }
-                else {
-                  console.log('out of stamina');
-                  player.statusDisplay = {
-                    state: true,
-                    status: 'Out of Stamina',
-                    count: 0,
-                    limit: player.statusDisplay.limit,
-                  }
                 }
 
               }
+
             }
           }
-        }
+
 
 
         // CAN READ NON-MOVE INPUTS!!
@@ -7436,9 +7448,6 @@ class App extends Component {
       }
 
       if (this.camera.mode === 'pan') {
-
-        console.log('ll',[player.number-1].north,[player.number-1].south,[player.number-1].east);
-        // switch based zoom ranges, modulo etc
 
         if (
           this.keyPressed[player.number-1].north === true &&
@@ -16791,8 +16800,8 @@ class App extends Component {
       }
       if (plyr.ai.mission === 'patrol') {
 
-        plyr.ai.patrolilng.checkin = undefined
-        plyr.ai.patrolilng.state = false
+        plyr.ai.patrolling.checkin = undefined
+        plyr.ai.patrolling.state = false
       }
     }
 
@@ -21284,6 +21293,7 @@ class App extends Component {
           p3.y = this.camera.focus.y += 1*(this.camera.zoom.y*1);
 
           let isoy = this.cartesianToIsometric(p3);
+          console.log('isoy',isoy);
 
           // isoy += 2*(this.camera.zoom.x*10);
           // isoy += 1*(this.camera.zoom.y*10);
@@ -21298,6 +21308,7 @@ class App extends Component {
           p2.y = this.camera.focus.y -= 1*(this.camera.zoom.y*1);
 
           let isox = this.cartesianToIsometric(p2);
+          console.log('isox',isox);
 
           // isox -= 2*(this.camera.zoom.x*10);
           // isox -= 1*(this.camera.zoom.y*10);
@@ -21418,7 +21429,7 @@ class App extends Component {
 
             {this.showCellInfoBox !== true && (
               <div className="cellInfoSwitch">
-                  <FontAwesomeIcon icon={faBorderAll} size="sm" className="setSwitchIcon"/>
+                  <FontAwesomeIcon icon={faChessBoard} size="sm" className="setSwitchIcon"/>
               </div>
             )}
             {this.showCellInfoBox === true && (

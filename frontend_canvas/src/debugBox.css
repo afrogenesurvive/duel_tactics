@@ -20,8 +20,8 @@
   display: inline-block;
 }
 .debugBoxListItem3 > * {
-  display: inline-block;
-  padding-bottom: .5rem;
+  display: inline-flex;
+  /* padding-bottom: .5rem; */
 }
 
 .debugBoxText {
@@ -122,7 +122,7 @@
   width: 3rem;
 }
 .btnIcon {
-  color: #ffffff;
+  color: #000000;
 }
 
 .critList {
