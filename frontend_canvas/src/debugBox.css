@@ -60,7 +60,16 @@
   padding: .5rem;
 }
 
-
+.cellInfoSwitch {
+  border: 3px solid blue;
+  border-radius: 5px;
+  padding: .5rem;
+  background-color: #ffffff;
+  position: absolute;
+  bottom: 0;
+  right: .1rem;
+  z-index: 3;
+}
 .cellInfoBox {
   border: 3px solid blue;
   border-radius: 5px;

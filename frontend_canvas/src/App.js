@@ -207,7 +207,6 @@ class App extends Component {
 
     this.wallImageWidth = 103;
     this.wallImageHeight = 98;
-    this.sceneX = 1100/2;
     this.sceneY = 220;
     this.tileWidth = 50;
     this.gridWidth = 9;
@@ -1545,6 +1544,7 @@ class App extends Component {
       plyrNo: 1,
       type: 'start',
     }
+    this.showCellInfoBox = false;
 
 
     //LOOP & ANIMATION
@@ -1718,8 +1718,8 @@ class App extends Component {
       },
       zoomDirection: 'in',
       pan: {
-        x: 1,
-        y: 1,
+        x: -1,
+        y: -1,
       },
       panDirection: 'east',
       limits: {
@@ -1764,54 +1764,11 @@ class App extends Component {
           twelve: 50,
         }
       })
+      this.sceneY = 120;
       this.canvasWidth = 1000;
       this.canvasHeight = 600;
 
     }
-
-
-    // if (window.innerWidth < 1100) {
-    //
-    //   switch(this.gridWidth) {
-    //     case 3 :
-    //       this.camera.pan.x = 1;
-    //       this.camera.pan.y = -50;
-    //     break;
-    //     case 6 :
-    //       this.camera.pan.x = 1;
-    //       this.camera.pan.y = -20;
-    //     break;
-    //     case 9 :
-    //       this.camera.pan.x = 1;
-    //       this.camera.pan.y = -90;
-    //     break;
-    //     case 12 :
-    //       this.camera.pan.x = 1;
-    //       this.camera.pan.y = 30;
-    //     break;
-    //   }
-    // } else {
-    //
-    //   switch(this.gridWidth) {
-    //     case 3 :
-    //       this.camera.pan.x = 1;
-    //       this.camera.pan.y = -50;
-    //     break;
-    //     case 6 :
-    //       this.camera.pan.x = 1;
-    //       this.camera.pan.y = -20;
-    //     break;
-    //     case 9 :
-    //       this.camera.pan.x = 1;
-    //       this.camera.pan.y = 10;
-    //     break;
-    //     case 12 :
-    //       this.camera.pan.x = 70;
-    //       this.camera.pan.y = 20;
-    //     break;
-    //   }
-    // }
-
 
 
     let canvas = this.canvasRef.current;
@@ -1846,7 +1803,6 @@ class App extends Component {
           }
         ]
       );
-
 
       window.requestAnimationFrame(this.gameLoop);
 
@@ -2571,11 +2527,12 @@ class App extends Component {
         insideGrid = true;
         // console.log("clicked a cell",cell.number,"x: " + x + " y: " + y);
         this.clicked = cell;
+        this.showCellInfoBox = true;
       }
     }
     if ( insideGrid === false ) {
       // console.log("clicked the canvas", 'x: ',x,'y: ',y);
-
+      this.showCellInfoBox = false;
       this.clicked = {
         number:{
           x:0,
@@ -3057,7 +3014,11 @@ class App extends Component {
 
   }
 
+  toggleCellInfoBox = () => {
 
+    this.showCellInfoBox = !this.showCellInfoBox;
+
+  }
   loadSettings = (event) => {
     event.preventDefault();
 
@@ -3069,56 +3030,27 @@ class App extends Component {
       case '3' :
         this.gridWidth = 3;
         this.sceneY = this.state.sceneY.three;
-        if (window.innerWidth < 1100) {
-          this.camera.pan.x = 1;
-          this.camera.pan.y = -50;
-        } else {
-          this.camera.pan.x = 1;
-          this.camera.pan.y = -50;
-        }
       break;
       case '6' :
         this.gridWidth = 6;
         this.sceneY = this.state.sceneY.six;
-        if (window.innerWidth < 1100) {
-          this.camera.pan.x = 1;
-          this.camera.pan.y = -20;
-        } else {
-          this.camera.pan.x = 1;
-          this.camera.pan.y = -20;
-        }
       break;
       case '9' :
         this.gridWidth = 9;
         this.sceneY = this.state.sceneY.nine;
-        if (window.innerWidth < 1100) {
-          this.camera.pan.x = 1;
-          this.camera.pan.y = 10;
-        } else {
-          this.camera.pan.x = 1;
-          this.camera.pan.y = 10;
-        }
       break;
       case '12' :
         this.gridWidth = 12;
         this.sceneY = this.state.sceneY.twelve;
-        if (window.innerWidth < 1100) {
-          this.camera.pan.x = 1;
-          this.camera.pan.y = 30;
-        } else {
-          this.camera.pan.x = 70;
-          this.camera.pan.y = 20;
-        }
       break;
     }
+    console.log('seceny2',this.sceneY,this.state.sceneY);
 
     let gamepad = false;
     if (event.target.input.value === 'Gamepad') {
       gamepad = true;
     }
     this.gamepad = gamepad;
-
-    // window.requestAnimationFrame(this.gameLoop);
 
 
     if (playerNumber < 2) {
@@ -7463,6 +7395,7 @@ class App extends Component {
         }
 
       }
+
       if (this.camera.mode === 'pan') {
 
 
@@ -7956,7 +7889,7 @@ class App extends Component {
     let floorImageHeight = this.floorImageHeight;
     let wallImageWidth = this.wallImageWidth;
     let wallImageHeight = this.wallImageHeight;
-    let sceneX = this.canvasWidth/2;
+    let sceneX = (this.canvasWidth/2);
     let sceneY = this.sceneY;
     let tileWidth = this.tileWidth;
 
@@ -14599,59 +14532,58 @@ class App extends Component {
     this.processLevelData(gridInfo);
 
     if (this.camera.fixed !== true) {
-      // this.resetCamera();
+
       // PRESET ZOOM & PAN
-      if (window.innerWidth < 1100) {
-
-        switch(this.gridWidth) {
-          case 3 :
-            this.camera.pan.x = 1;
-            this.camera.pan.y = -50;
-          break;
-          case 6 :
-            this.camera.pan.x = 1;
-            this.camera.pan.y = -20;
-          break;
-          case 9 :
-            this.camera.pan.x = 1;
-            this.camera.pan.y = -90;
-          break;
-          case 12 :
-            this.camera.pan.x = 1;
-            this.camera.pan.y = 30;
-          break;
-        }
-      } else {
-
-        switch(this.gridWidth) {
-          case 3 :
-            this.camera.pan.x = 1;
-            this.camera.pan.y = -50;
-          break;
-          case 6 :
-            this.camera.pan.x = 1;
-            this.camera.pan.y = -20;
-          break;
-          case 9 :
-            this.camera.pan.x = 1;
-            this.camera.pan.y = 10;
-          break;
-          case 12 :
-            this.camera.pan.x = 70;
-            this.camera.pan.y = 20;
-          break;
-        }
-      }
+      // if (window.innerWidth < 1100) {
+      //   console.log('here');
+      //   switch(this.gridWidth) {
+      //     case 3 :
+      //       this.camera.pan.x = -9;
+      //       this.camera.pan.y = -10;
+      //     break;
+      //     case 6 :
+      //       this.camera.pan.x = -9;
+      //       this.camera.pan.y = 10;
+      //     break;
+      //     case 9 :
+      //       this.camera.pan.x = 1;
+      //       this.camera.pan.y = 10;
+      //     break;
+      //     case 12 :
+      //       this.camera.pan.x = -9;
+      //       this.camera.pan.y = 120;
+      //     break;
+      //   }
+      // } else {
+      //   console.log('there');
+      //   switch(this.gridWidth) {
+      //     case 3 :
+      //       this.camera.pan.x = 1;
+      //       this.camera.pan.y = -50;
+      //     break;
+      //     case 6 :
+      //       this.camera.pan.x = 1;
+      //       this.camera.pan.y = -20;
+      //     break;
+      //     case 9 :
+      //       this.camera.pan.x = 11;
+      //       this.camera.pan.y = 10;
+      //     break;
+      //     case 12 :
+      //       this.camera.pan.x = 70;
+      //       this.camera.pan.y = 20;
+      //     break;
+      //   }
+      // }
 
       this.setCameraFocus(canvas, context, canvas2, context2);
     }
 
 
-
     if (this.showSettingsCanvasData.state === true) {
       this.settingsFormGridWidthUpdate(this.settingsGridWidth)
     }
-
+    console.log('sceney',sceneY,this.sceneY);
 
     let itemImgs = {
       moveSpeedUp: this.refs.itemSpdUp,
@@ -14701,6 +14633,7 @@ class App extends Component {
         // apply offset to center scene for a better view
         iso.x += sceneX
         iso.y += sceneY
+        console.log('sceney3',sceneY);
 
 
         let center = {
@@ -14723,15 +14656,11 @@ class App extends Component {
 
         context.drawImage(floor, iso.x - offset.x, iso.y - offset.y, 100, 100);
 
-        // context3.drawImage(floor, iso2.x - offset2.x, iso2.y - offset2.y, 50, 50);
-
         context.fillStyle = 'black';
-        context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
-        // context3.fillText(""+x+","+y+"",iso2.x - offset2.x/2 + 5,iso2.y - offset2.y/2 + 2)
+        context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12);
 
         context.fillStyle = "black";
         context.fillRect(center.x, center.y,5,5);
-        // context3.fillRect(center2.x, center2.y,2.5,2.5);
 
 
         // INITIAL ITEM DISTRIBUTION!!
@@ -14836,11 +14765,11 @@ class App extends Component {
           {x:center.x, y:center.y-tileWidth/2},
           {x:center.x-tileWidth, y:center.y},
         ];
-
         for (const vertex of vertices) {
           context.fillStyle = "yellow";
           context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
         }
+
 
         let playerImgs = [
           this.refs.playerImgIdleSheet,
@@ -14848,7 +14777,6 @@ class App extends Component {
           this.refs.playerComAImgIdleSheet,
           this.refs.playerComBImgIdleSheet,
         ]
-
 
         for (const player of this.players) {
 
@@ -21193,47 +21121,47 @@ class App extends Component {
     };
 
     // PRESET ZOOM & PAN
-    if (window.innerWidth < 1100) {
-
-      switch(this.gridWidth) {
-        case 3 :
-          this.camera.pan.x = 1;
-          this.camera.pan.y = -50;
-        break;
-        case 6 :
-          this.camera.pan.x = 1;
-          this.camera.pan.y = -20;
-        break;
-        case 9 :
-          this.camera.pan.x = 1;
-          this.camera.pan.y = -90;
-        break;
-        case 12 :
-          this.camera.pan.x = 1;
-          this.camera.pan.y = 30;
-        break;
-      }
-    } else {
-
-      switch(this.gridWidth) {
-        case 3 :
-          this.camera.pan.x = 1;
-          this.camera.pan.y = -50;
-        break;
-        case 6 :
-          this.camera.pan.x = 1;
-          this.camera.pan.y = -20;
-        break;
-        case 9 :
-          this.camera.pan.x = 1;
-          this.camera.pan.y = 10;
-        break;
-        case 12 :
-          this.camera.pan.x = 70;
-          this.camera.pan.y = 20;
-        break;
-      }
-    }
+    // if (window.innerWidth < 1100) {
+    //
+    //   switch(this.gridWidth) {
+    //     case 3 :
+    //       this.camera.pan.x = 1;
+    //       this.camera.pan.y = -50;
+    //     break;
+    //     case 6 :
+    //       this.camera.pan.x = 1;
+    //       this.camera.pan.y = -20;
+    //     break;
+    //     case 9 :
+    //       this.camera.pan.x = 1;
+    //       this.camera.pan.y = -90;
+    //     break;
+    //     case 12 :
+    //       this.camera.pan.x = 1;
+    //       this.camera.pan.y = 30;
+    //     break;
+    //   }
+    // } else {
+    //
+    //   switch(this.gridWidth) {
+    //     case 3 :
+    //       this.camera.pan.x = 1;
+    //       this.camera.pan.y = -50;
+    //     break;
+    //     case 6 :
+    //       this.camera.pan.x = 1;
+    //       this.camera.pan.y = -20;
+    //     break;
+    //     case 9 :
+    //       this.camera.pan.x = 1;
+    //       this.camera.pan.y = 10;
+    //     break;
+    //     case 12 :
+    //       this.camera.pan.x = 70;
+    //       this.camera.pan.y = 20;
+    //     break;
+    //   }
+    // }
 
     this.setCameraFocus(canvas, context, canvas2, context2);
 
@@ -21292,13 +21220,16 @@ class App extends Component {
         } else {
 
           let p3 = new Point();
-          p3.x = this.camera.focus.x += 2*(this.camera.zoom.x*10);
-          p3.y = this.camera.focus.y += 1*(this.camera.zoom.y*10);
+          p3.x = this.camera.focus.x += 2*(this.camera.zoom.x*1);
+          p3.y = this.camera.focus.y += 1*(this.camera.zoom.y*1);
 
           let isoy = this.cartesianToIsometric(p3);
 
           // isoy += 2*(this.camera.zoom.x*10);
           // isoy += 1*(this.camera.zoom.y*10);
+
+          this.camera.focus.x += 2*(10)
+          this.camera.focus.y += 1*(10)
 
         }
       }
@@ -21318,19 +21249,23 @@ class App extends Component {
         } else {
 
           let p2 = new Point();
-          p2.x = this.camera.focus.x -= 2*(this.camera.zoom.x*10);
-          p2.y = this.camera.focus.y -= 1*(this.camera.zoom.y*10);
+          p2.x = this.camera.focus.x -= 2*(this.camera.zoom.x*1);
+          p2.y = this.camera.focus.y -= 1*(this.camera.zoom.y*1);
 
           let isox = this.cartesianToIsometric(p2);
 
           // isox -= 2*(this.camera.zoom.x*10);
           // isox -= 1*(this.camera.zoom.y*10);
+
+          this.camera.focus.x -= 2*(10)
+          this.camera.focus.y -= 1*(10)
+
         }
 
 
       }
     }
-    console.log('camera focus set',this.camera);
+    console.log('camera focus set',this.camera.focus);
 
   }
 
@@ -21429,9 +21364,19 @@ class App extends Component {
               </div>
             )}
 
-            <CellInfo
-              cell={this.clicked}
-            />
+
+            {this.showCellInfoBox !== true && (
+              <div className="cellInfoSwitch">
+                  <FontAwesomeIcon icon={faCogs} size="sm" className="setSwitchIcon"/>
+              </div>
+            )}
+            {this.showCellInfoBox === true && (
+              <CellInfo
+                cell={this.clicked}
+                close={this.toggleCellInfoBox}
+              />
+            )}
+
 
             {this.state.showAiStatus === true && (
               <AiStatus
