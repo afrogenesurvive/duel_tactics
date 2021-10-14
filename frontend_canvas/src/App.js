@@ -241,8 +241,7 @@ class App extends Component {
     this.gridInfo2D = [];
     this.gridInfo2 = [];
     this.gridInfo2D2 = [];
-    this.levelData =
-    [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    this.levelData = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -606,8 +605,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 1,
-              y: 3,
+              x: 8,
+              y: 5,
             },
             center: {
               x: 0,
@@ -1650,6 +1649,67 @@ class App extends Component {
     this.popupSize = 35;
 
 
+    // CAMERA
+    this.toggleCameraMode = false;
+    this.camera = {
+      state: false,
+      startCount: 0,
+      startLimit: 4,
+      mode: 'pan',
+      fixed: false,
+      target: {
+        type: 'player',
+        plyrNo: 1,
+        cell: {
+          x: undefined,
+          y: undefined,
+        }
+      },
+      focus: {
+        x: undefined,
+        y: undefined,
+      },
+      focusOrigin: {
+        x: 0,
+        y: 0,
+      },
+      zoom: {
+        x: 1,
+        y: 1,
+      },
+      zoomDirection: 'in',
+      pan: {
+        x: 1,
+        y: 1,
+      },
+      panDirection: 'east',
+      limits: {
+        zoom: {
+          min: .5,
+          max: 1.8,
+        },
+        pan: {
+          x: {
+            min: -400,
+            max: 300,
+          },
+          y: {
+            min: -400,
+            max: 300,
+          }
+        },
+      },
+      instructionType: 'default',
+      instructions: [],
+    };
+    this.cameraInstructionRef = {
+      default: {},
+      story: {},
+      // FollowPlayer2, centerOnCell21 etc
+    };
+    this.resetCameraSwitch = false;
+
+
     // AI
     this.aiInitSettings = {
       randomStart: false,
@@ -1695,62 +1755,6 @@ class App extends Component {
     this.getPath = false;
     this.aiDeflectCheck = false;
     this.aiDeflectedCheck = [];
-
-
-    // CAMERA
-    this.toggleCameraMode = false;
-    this.camera = {
-      state: false,
-      startCount: 0,
-      startLimit: 4,
-      mode: 'pan',
-      fixed: false,
-      target: {
-        type: 'player',
-        plyrNo: 1,
-        cell: {
-          x: undefined,
-          y: undefined,
-        }
-      },
-      focus: {
-        x: undefined,
-        y: undefined,
-      },
-      zoom: {
-        x: 1,
-        y: 1,
-      },
-      zoomDirection: 'in',
-      pan: {
-        x: -1,
-        y: -1,
-      },
-      panDirection: 'east',
-      limits: {
-        zoom: {
-          min: .5,
-          max: 1.8,
-        },
-        pan: {
-          x: {
-            min: -400,
-            max: 300,
-          },
-          y: {
-            min: -400,
-            max: 300,
-          }
-        },
-      },
-      instructionType: 'default',
-      instructions: [],
-    };
-    this.cameraInstructionRef = {
-      default: {},
-      story: {},
-      // FollowPlayer2, centerOnCell21 etc
-    };
 
   }
 
@@ -2528,10 +2532,12 @@ class App extends Component {
   }
   getCanvasClick = (canvas, event) => {
     const rect = canvas.getBoundingClientRect()
+    const scale = rect.width / canvas.offsetWidth;
+    const x = (event.clientX - rect.left)*scale;
+    const y = (event.clientY - rect.top)*scale;
 
-    const x = (event.clientX - rect.left);
-    const y = (event.clientY - rect.top);
-    console.log("clicked the canvas", 'x: ',x,'y: ',y,'zoom',this.camera.zoom.x,'pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
+
+    console.log("clicked the canvas", 'x: ',x,'y: ',y,'zoom',this.camera.zoom.x,'pan',this.camera.pan.x,this.camera.pan.y);
 
     let insideGrid = false;
 
@@ -3580,6 +3586,7 @@ class App extends Component {
     let canvas = this.state.canvas;
 
     this.gridWidth = args;
+
 
     let gridInfo;
     this.startProcessLevelData(this.state.canvas);
@@ -7375,6 +7382,8 @@ class App extends Component {
     if (this.camera.state === true && this.camera.instructionType === 'default') {
 
       let setFocus = false;
+      let setZoomPan = false;
+      let centeredZoom = true;
 
       // IDLE ANIM STEPPER!
       if (player.action === 'idle') {
@@ -7402,23 +7411,23 @@ class App extends Component {
         this.camera.mode = 'pan';
       }
 
+      let oldscale = this.camera.zoom.x;
 
       if (this.camera.mode === 'zoom') {
 
         if (
           this.keyPressed[player.number-1].north === true &&
           this.keyPressed[player.number-1].south !== true &&
-          this.camera.zoom.x < this.camera.limits.zoom.max) {
-        // if (this.keyPressed[player.number-1].north === true) {
+          this.camera.zoom.x < this.camera.limits.zoom.max
+        ) {
+
           this.camera.zoom.x += .02 ;
           this.camera.zoom.y += .02 ;
           this.camera.zoomDirection = 'in';
           setFocus = true;
+          setZoomPan = true;
 
-          console.log('zooming in');
-          console.log('zoom',this.camera.zoom.x.toFixed(2));
-          console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
-          console.log('zoom limit mix',this.camera.limits.zoom.min,'max',this.camera.limits.zoom.max);
+          console.log('zooming in: ',this.camera.zoom,'pan: ',this.camera.pan);
         }
         if (this.keyPressed[player.number-1].north === true && this.camera.zoom.x >= this.camera.limits.zoom.max) {
           console.log('zoom in limit');
@@ -7426,107 +7435,292 @@ class App extends Component {
         if (
           this.keyPressed[player.number-1].south === true &&
           this.keyPressed[player.number-1].north !== true &&
-          this.camera.zoom.x > this.camera.limits.zoom.min) {
-        // if (this.keyPressed[player.number-1].south === true) {
+          this.camera.zoom.x > this.camera.limits.zoom.min
+        ) {
+
           this.camera.zoom.x -= .02 ;
           this.camera.zoom.y -= .02 ;
           this.camera.zoomDirection = 'out';
           setFocus = true;
+          setZoomPan = true;
 
-          console.log('zooming out');
-          console.log('zoom',this.camera.zoom.x.toFixed(2));
-          console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
-          console.log('zoom limit min',this.camera.limits.zoom.min,'max',this.camera.limits.zoom.max);
+          console.log('zooming out: ',this.camera.zoom,'pan: ',this.camera.pan);
         }
         if (this.keyPressed[player.number-1].south === true && this.camera.zoom.x <= this.camera.limits.zoom.min) {
           console.log('zoom out limit');
         }
 
       }
-
       if (this.camera.mode === 'pan') {
 
-        if (
-          this.keyPressed[player.number-1].north === true &&
-          this.keyPressed[player.number-1].south !== true &&
-          this.keyPressed[player.number-1].east !== true &&
-          this.keyPressed[player.number-1].west !== true &&
-          this.camera.pan.y < this.camera.limits.pan.y.max
-        ) {
-          this.camera.pan.y += 10;
-          this.camera.panDirection = 'north';
-          setFocus = true;
-
-          console.log('panning direction north');
-          console.log('zoom',this.camera.zoom.x.toFixed(2));
-          console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
-          console.log('pan limit min x',this.camera.limits.pan.x.min,'y',this.camera.limits.pan.y.min,'max x',this.camera.limits.pan.x.max,'y',this.camera.limits.pan.y.max);
-
+        // ONLY PAN IF CANT SEE WHOLE MAP
+        let canPan = false;
+        if (window.innerWidth < 1100) {
+          if (this.gridWidth >= 12) {
+            if (this.camera.zoom.x > .7) {
+              canPan = true;
+            }
+          } else {
+            if (this.camera.zoom.x > 1) {
+              canPan = true;
+            }
+          }
+        } else {
+          if (this.camera.zoom.x > 1) {
+            canPan = true;
+          }
         }
-        if (this.keyPressed[player.number-1].north === true && this.camera.pan.y >= this.camera.limits.pan.y.max) {
-          console.log('pan limit north');
-        }
-        if (
-          this.keyPressed[player.number-1].south === true &&
-          this.keyPressed[player.number-1].north !== true &&
-          this.keyPressed[player.number-1].west !== true &&
-          this.keyPressed[player.number-1].east !== true &&
-          this.camera.pan.y > this.camera.limits.pan.y.min
-        ) {
-          this.camera.pan.y -= 10;
-          this.camera.panDirection = 'south';
-          setFocus = true;
 
-          console.log('panning direction south');
-          console.log('zoom',this.camera.zoom.x.toFixed(2));
-          console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
-          console.log('pan limit min x',this.camera.limits.pan.x.min,'y',this.camera.limits.pan.y.min,'max x',this.camera.limits.pan.x.max,'y',this.camera.limits.pan.y.max);
+        if (canPan === true) {
 
-        }
-        if (this.keyPressed[player.number-1].south === true && this.camera.pan.y <= this.camera.limits.pan.y.min) {
+          if (
+            this.keyPressed[player.number-1].north === true &&
+            this.keyPressed[player.number-1].south !== true &&
+            this.keyPressed[player.number-1].east !== true &&
+            this.keyPressed[player.number-1].west !== true &&
+            this.camera.pan.y < this.camera.limits.pan.y.max
+          ) {
+            this.camera.pan.y += 10;
+            this.camera.panDirection = 'north';
+            setFocus = true;
+
+            console.log('panning north',this.camera.pan,'zoom: ',this.camera.zoom);
+
+          }
+          if (this.keyPressed[player.number-1].north === true && this.camera.pan.y >= this.camera.limits.pan.y.max) {
+            console.log('pan limit north');
+          }
+          if (
+            this.keyPressed[player.number-1].south === true &&
+            this.keyPressed[player.number-1].north !== true &&
+            this.keyPressed[player.number-1].west !== true &&
+            this.keyPressed[player.number-1].east !== true &&
+            this.camera.pan.y > this.camera.limits.pan.y.min
+          ) {
+            this.camera.pan.y -= 10;
+            this.camera.panDirection = 'south';
+            setFocus = true;
+
+            console.log('panning south',this.camera.pan,'zoom: ',this.camera.zoom);
+
+          }
+          if (this.keyPressed[player.number-1].south === true && this.camera.pan.y <= this.camera.limits.pan.y.min) {
+            console.log('pan limit south');
+          }
+          if (
+            this.keyPressed[player.number-1].east === true &&
+            this.keyPressed[player.number-1].west !== true &&
+            this.keyPressed[player.number-1].north !== true &&
+            this.keyPressed[player.number-1].south !== true &&
+            this.camera.pan.x > this.camera.limits.pan.x.min
+          ) {
+            this.camera.pan.x -= 10;
+            this.camera.panDirection = 'east';
+            setFocus = true;
+
+            console.log('panning east',this.camera.pan,'zoom: ',this.camera.zoom);
+          }
+          if (this.keyPressed[player.number-1].east === true && this.camera.pan.x <= this.camera.limits.pan.x.min) {
+            console.log('pan limit east');
+          }
+          if (
+            this.keyPressed[player.number-1].west === true &&
+            this.keyPressed[player.number-1].east !== true &&
+            this.keyPressed[player.number-1].north !== true &&
+            this.keyPressed[player.number-1].south !== true &&
+            this.camera.pan.x < this.camera.limits.pan.x.max
+          ) {
+            this.camera.pan.x += 10;
+            this.camera.panDirection = 'west';
+            setFocus = true;
+
+            console.log('panning west',this.camera.pan,'zoom: ',this.camera.zoom);
+          }
+          if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
           console.log('pan limit south');
         }
-        if (
-          this.keyPressed[player.number-1].east === true &&
-          this.keyPressed[player.number-1].west !== true &&
-          this.keyPressed[player.number-1].north !== true &&
-          this.keyPressed[player.number-1].south !== true &&
-          this.camera.pan.x > this.camera.limits.pan.x.min
-        ) {
-          this.camera.pan.x -= 10;
-          this.camera.panDirection = 'east';
-          setFocus = true;
 
-          console.log('panning direction east');
-          console.log('zoom',this.camera.zoom.x.toFixed(2));
-          console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
-          console.log('pan limit min x',this.camera.limits.pan.x.min,'y',this.camera.limits.pan.y.min,'max x',this.camera.limits.pan.x.max,'y',this.camera.limits.pan.y.max);
-        }
-        if (this.keyPressed[player.number-1].east === true && this.camera.pan.x <= this.camera.limits.pan.x.min) {
-          console.log('pan limit east');
-        }
-        if (
-          this.keyPressed[player.number-1].west === true &&
-          this.keyPressed[player.number-1].east !== true &&
-          this.keyPressed[player.number-1].north !== true &&
-          this.keyPressed[player.number-1].south !== true &&
-          this.camera.pan.x < this.camera.limits.pan.x.max
-        ) {
-          this.camera.pan.x += 10;
-          this.camera.panDirection = 'west';
-          setFocus = true;
-
-          console.log('panning direction west');
-          console.log('zoom',this.camera.zoom.x.toFixed(2));
-          console.log('pan',this.camera.pan.x.toFixed(2),this.camera.pan.y.toFixed(2));
-          console.log('pan limit min x',this.camera.limits.pan.x.min,'y',this.camera.limits.pan.y.min,'max x',this.camera.limits.pan.x.max,'y',this.camera.limits.pan.y.max);
-        }
-        if (
-          this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
-          console.log('pan limit south');
+        } else {
+          // console.log('cant pat at this zoom');
         }
       }
 
+
+      // ADJUST PAN WHEN ZOOMING TO KEEP CENTERED
+      if (setZoomPan === true && centeredZoom === true) {
+
+
+
+
+        // adjust focus on zoom by canvas h/w*zoom/2
+        // should I pan to move the center cursor then zoom into to the area at cursor
+        // when pan after zoom, factor new scale on said pan
+
+        // draw step by step what happens when scale and translate and how to offset those changes
+
+
+
+        // const mousex = this.camera.focus.x;
+        // const mousey = this.camera.focus.y;
+        //
+        // // Compute zoom factor.
+        // const zoom = this.camera.zoom.x;
+
+        // Translate so the visible origin is at the context's origin.
+
+
+        // Compute the new visible origin. Originally the mouse is at a
+        // distance mouse/scale from the corner, we want the point under
+        // the mouse to remain in the same place after the zoom, but this
+        // is at mouse/new_scale away from the corner. Therefore we need to
+        // shift the origin (coordinates of the corner) to account for this.
+
+        // this.camera.focusOrigin.x -= mousex/(scale*zoom) - mousex/scale;
+        // this.camera.focusOrigin.y -= mousey/(scale*zoom) - mousey/scale;
+
+        // Scale it (centered around the origin due to the trasnslate above).
+        // context.scale(zoom, zoom);
+        // Offset the visible origin to it's proper position.
+        // context.translate(-originx, -originy);
+
+        // this.camera.pan = {
+        //   x: -this.camera.focusOrigin.x,
+        //   y: -this.camera.focusOrigin.y,
+        // }
+
+
+        let diff;
+        if (this.camera.zoom.x === 1) {
+          this.camera.pan.x = -1;
+          this.camera.pan.y = -1;
+        }
+        let zoom = this.camera.zoom.x;
+
+        // ZOOMING OUT
+        if (zoom < 1) {
+
+          diff = 1 - zoom;
+          if (window.innerWidth < 1100) {
+            // centered v&h
+            this.camera.pan.x = (diff*500);
+            this.camera.pan.y = (diff*500)-(diff*150);
+
+            // centered v right h
+            // this.camera.pan.x = (diff*1000)-(diff*100);
+            // this.camera.pan.y = (diff*500)-(diff*250);
+            // centered v left h
+            // this.camera.pan.x = (diff*5)-(diff*100);
+            // this.camera.pan.y = (diff*500)-(diff*250);
+            // centered h top v
+            // this.camera.pan.x = (diff*500);
+            // this.camera.pan.y = (diff*5)-(diff*2.5);
+            // centered h bottom v
+            // this.camera.pan.x = (diff*500);
+            // this.camera.pan.y = (diff*1000)-(diff*250);
+
+
+          } else {
+            this.camera.pan.x = (diff*600);
+            this.camera.pan.y = (diff*600)-(diff*200);
+          }
+        }
+
+        // ZOOMING IN
+        if (zoom > 1) {
+
+          let cellToFocusZoom = this.gridInfo.find(x=>x.number.x === 4 && x.number.x === 4)
+          // let cellToFocusZoom = this.gridInfo.find(x=>x.number.x === this.players[0].currentPosition.cell.number.x && x.number.y === this.players[0].currentPosition.cell.number.y)
+          console.log('focused zoom in test @ 4,4: pan',this.camera.pan,'zoom',this.camera.zoom,'cell center',cellToFocusZoom.center);
+          diff = zoom - 1;
+          if (window.innerWidth < 1100) {
+
+            let newPan = {x:undefined,y:undefined};
+            // this.camera.focus.x = this.camera.pan.x + canvas.width/2;
+            // this.camera.focus.y = this.camera.pan.y + canvas.height/2;
+
+            // this.camera.pan.x = newPan.x;
+            // this.camera.pan.y = newPan.y;
+
+
+            // when camera zooms out enough to see the whole grid, it can't pan
+            // if you continue to zoom out the grid will continue to stay centered
+            // when you zoom in past that threshold , the zoom is focused to the centre of your current frame
+            // when below the threshold and zooming out, camera must stay focused as well
+
+            // as i zoom > 1 in, i have compansate by panning to the right(pan-x) and down(pan-y)
+
+            // panning east {x: -21, y: -11} zoom:  {x: 1.04, y: 1.04} 10--
+            // panning east {x: -21, y: -11} zoom:  {x: 1.04, y: 1.04} 10
+            // panning west {x: -31, y: -21} zoom:  {x: 1.06, y: 1.06} 10
+            // panning west {x: -51, y: -31} zoom:  {x: 1.1, y: 1.1} 20
+            // panning south {x: -81, y: -51} zoom:  {x: 1.16, y: 1.16} 30
+            // panning east {x: -111, y: -71} zoom:  {x: 1.22, y: 1.22} 40
+            // panning east {x: -161, y: -91} zoom:  {x: 1.32, y: 1.32} 70
+            // panning west {x: -211, y: -121} zoom:  {x: 1.42, y: 1.42} 90
+            // panning west {x: -251, y: -161} zoom:  {x: 1.52, y: 1.52} 90
+            // panning east {x: -321, y: -191} zoom:  {x: 1.64, y: 1.64} 130
+            // panning east {x: -361, y: -211} zoom:  {x: 1.72, y: 1.72} 150
+            // panning east {x: -401, y: -231} zoom:  {x: 1.8, y: 1.8} 170
+
+            console.log('1',21/1.04,11/1.04);
+            console.log('2',31/1.06,21/1.06);
+            console.log('3',51/1.1,31/1.1);
+            console.log('4',81/1.16,51/1.16);
+            console.log('5',111/1.22,71/1.22);
+            console.log('6',161/1.32,91/1.32);
+            console.log('7',211/1.42,121/1.42);
+            console.log('8',251/1.52,161/1.52);
+            console.log('9',321/1.64,191/1.64);
+            console.log('10',361/1.72,211/1.72);
+            console.log('11',401/1.8,231/1.8);
+
+
+
+            // get zoom into current ceter to work, then out
+            // when zooming set a zoom-panning value and ctx translate with it, reset non-zoom pan value
+            // when panning, use the non zoom pan value to translate
+            // check whether zooming or panning @ draw step canvas translate w/ camera.mode
+
+
+            // next: try to fix click cell at scale w/ and w/o focused zoom
+            // next: set zoom-in, sub threshhold pan limits
+
+            // this.camera.pan.x -= .02;
+            // this.camera.pan.y -= .02;
+
+
+            // this.camera.pan.x = -(diff*((canvas.width*this.camera.zoom.x)/2));
+            // this.camera.pan.y = (diff*((canvas.width*this.camera.zoom.x)/2))-(diff*((canvas.width*this.camera.zoom.x)/4));
+            // this.camera.pan.x = -(diff*((canvas.width*this.camera.zoom.x)/2))+(diff*((canvas.width*this.camera.zoom.x)/4));
+            // this.camera.pan.y = (diff*((canvas.width*this.camera.zoom.x)/2));
+            // ------------------
+
+            // centered v&h
+            // this.camera.pan.x = -(diff*500);
+            // this.camera.pan.y = -(diff*500)+(diff*250);
+
+
+            // centered v right h
+            // this.camera.pan.x = -(diff*1000)+(diff*100);
+            // this.camera.pan.y = -(diff*500)+(diff*250);
+            // centered v left h
+            // this.camera.pan.x = -(diff*5)+(diff*100);
+            // this.camera.pan.y = -(diff*500)+(diff*250);
+            // centered h top v
+            // this.camera.pan.x = -(diff*500);
+            // this.camera.pan.y = -(diff*5)+(diff*2.5);
+            // centered h bottom v
+            // this.camera.pan.x = -(diff*500);
+            // this.camera.pan.y = -(diff*1000)+(diff*250);
+
+
+          } else {
+            // this.camera.pan.x = -(diff*600);
+            // this.camera.pan.y = -(diff*600)-(diff*300);
+          }
+        }
+
+      }
 
       //SET CAMERA FOCUS
       if (setFocus === true) {
@@ -7536,6 +7730,109 @@ class App extends Component {
 
     }
 
+
+    // RESET CAMERA
+    if (this.resetCameraSwitch === true) {
+
+      this.resetCameraSwitch = false;
+      this.camera = {
+        state: false,
+        startCount: 0,
+        startLimit: 4,
+        mode: 'pan',
+        fixed: false,
+        target: {
+          type: 'player',
+          plyrNo: 1,
+          cell: {
+            x: undefined,
+            y: undefined,
+          }
+        },
+        focus: {
+          x: undefined,
+          y: undefined,
+        },
+        focusOrigin: {
+          x: 0,
+          y: 0,
+        },
+        zoom: {
+          x: 1,
+          y: 1,
+        },
+        zoomDirection: 'in',
+        pan: {
+          x: 1,
+          y: 1,
+        },
+        panDirection: 'east',
+        limits: {
+          zoom: {
+            min: .5,
+            max: 1.8,
+          },
+          pan: {
+            x: {
+              min: -400,
+              max: 300,
+            },
+            y: {
+              min: -400,
+              max: 300,
+            }
+          },
+        },
+        instructionType: 'default',
+        instructions: [],
+      };
+
+      // PRESET ZOOM & PAN
+      // if (window.innerWidth < 1100) {
+      //
+      //   switch(this.gridWidth) {
+      //     case 3 :
+      //       this.camera.pan.x = 1;
+      //       this.camera.pan.y = -50;
+      //     break;
+      //     case 6 :
+      //       this.camera.pan.x = 1;
+      //       this.camera.pan.y = -20;
+      //     break;
+      //     case 9 :
+      //       this.camera.pan.x = 1;
+      //       this.camera.pan.y = -90;
+      //     break;
+      //     case 12 :
+      //       this.camera.pan.x = 1;
+      //       this.camera.pan.y = 30;
+      //     break;
+      //   }
+      // } else {
+      //
+      //   switch(this.gridWidth) {
+      //     case 3 :
+      //       this.camera.pan.x = 1;
+      //       this.camera.pan.y = -50;
+      //     break;
+      //     case 6 :
+      //       this.camera.pan.x = 1;
+      //       this.camera.pan.y = -20;
+      //     break;
+      //     case 9 :
+      //       this.camera.pan.x = 1;
+      //       this.camera.pan.y = 10;
+      //     break;
+      //     case 12 :
+      //       this.camera.pan.x = 70;
+      //       this.camera.pan.y = 20;
+      //     break;
+      //   }
+      // }
+
+      this.setCameraFocus('reset', canvas, context, canvas2, context2);
+
+    }
 
     // AUTO CAMERA
     if (this.camera.state !== true && this.camera.fixed !== true) {
@@ -7578,6 +7875,7 @@ class App extends Component {
       }
 
     }
+
 
 
     // MENU
@@ -7948,7 +8246,6 @@ class App extends Component {
             this.y = y;
         }
     }
-    // let floor = this.refs.floor2;
     let wall = this.refs.wall;
     let wall2 = this.refs.wall2;
     let wall3 = this.refs.wall3;
@@ -8318,13 +8615,19 @@ class App extends Component {
       }
     }
 
-    context.clearRect(0,0,this.canvasWidth,this.canvasHeight)
-    context2.clearRect(0,0,this.canvasWidth,this.canvasHeight)
+    context.clearRect(0,0,this.canvasWidth,this.canvasHeight);
+    context2.clearRect(0,0,this.canvasWidth,this.canvasHeight);
+
+    // context.translate(this.camera.focusOrigin.x, this.camera.focusOrigin.y);
+    // context.scale(this.camera.zoom.x,this.camera.zoom.y);
+    // context.translate(-originx, -originy);
 
     context.translate(this.camera.pan.x,this.camera.pan.y);
     context2.translate(this.camera.pan.x,this.camera.pan.y);
+
     context.scale(this.camera.zoom.x,this.camera.zoom.y);
     context2.scale(this.camera.zoom.x,this.camera.zoom.y);
+    // console.log('zoom',this.camera.zoom,'pan',this.camera.pan);
 
 
     for (var x = 0; x < this.gridWidth+1; x++) {
@@ -8345,6 +8648,8 @@ class App extends Component {
         let floor;
         let drawFloor = true;
         let gridInfoCell = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
+        gridInfoCell.center = center;
+        gridInfoCell.drawCenter = center;
         floor = floorImgs[gridInfoCell.terrain.name]
 
 
@@ -8368,7 +8673,7 @@ class App extends Component {
         }
 
 
-        // DORWNING
+        // DROWNING
         for (const plyrb of this.players) {
           if (plyrb.drowning === true) {
             if (
@@ -8434,6 +8739,7 @@ class App extends Component {
           context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
 
         }
+        gridInfoCell.vertices = vertices;
 
 
         // TARGET HIGHLIGHT!!
@@ -10271,7 +10577,8 @@ class App extends Component {
 
 
         // CAMERA FOCUS POINT
-        if (x === this.gridWidth && y === this.gridWidth ) {
+        if (x === this.gridWidth && y === this.gridWidth-1 ) {
+
 
           context.fillStyle = 'purple';
           context.beginPath();
@@ -14605,51 +14912,28 @@ class App extends Component {
 
     if (this.camera.fixed !== true) {
 
-      // PRESET ZOOM & PAN
-      // if (window.innerWidth < 1100) {
-      //   console.log('here');
-      //   switch(this.gridWidth) {
-      //     case 3 :
-      //       this.camera.pan.x = -9;
-      //       this.camera.pan.y = -10;
-      //     break;
-      //     case 6 :
-      //       this.camera.pan.x = -9;
-      //       this.camera.pan.y = 10;
-      //     break;
-      //     case 9 :
-      //       this.camera.pan.x = 1;
-      //       this.camera.pan.y = 10;
-      //     break;
-      //     case 12 :
-      //       this.camera.pan.x = -9;
-      //       this.camera.pan.y = 120;
-      //     break;
-      //   }
-      // } else {
-      //   console.log('there');
-      //   switch(this.gridWidth) {
-      //     case 3 :
-      //       this.camera.pan.x = 1;
-      //       this.camera.pan.y = -50;
-      //     break;
-      //     case 6 :
-      //       this.camera.pan.x = 1;
-      //       this.camera.pan.y = -20;
-      //     break;
-      //     case 9 :
-      //       this.camera.pan.x = 11;
-      //       this.camera.pan.y = 10;
-      //     break;
-      //     case 12 :
-      //       this.camera.pan.x = 70;
-      //       this.camera.pan.y = 20;
-      //     break;
-      //   }
-      // }
-
       this.setCameraFocus('init', canvas, context, canvas2, context2);
     }
+
+
+    // CENTER LARGER GRIDS GRID
+    if (window.innerWidth < 1100 && this.gridWidth >= 12) {
+      this.camera.zoom.x = 0.7;
+      this.camera.zoom.y = 0.7;
+    } else {
+      this.camera.zoom.x = 1;
+      this.camera.zoom.y = 1;
+    }
+    let diff = 1 - this.camera.zoom.x;
+
+    this.camera.pan.x = (diff*this.canvasWidth/2);
+    this.camera.pan.y = (diff*this.canvasWidth/2)-(diff*150);
+    // FOR FOCUSED ZOOMING
+    if (this.camera.pan.x === 0) {
+      this.camera.pan.x = -1
+      this.camera.pan.y = -1
+    }
+
 
 
     if (this.showSettingsCanvasData.state === true) {
@@ -14967,7 +15251,6 @@ class App extends Component {
     }
 
   }
-
 
   addAiPlayer = () => {
 
@@ -21133,107 +21416,9 @@ class App extends Component {
   closeCamera = () => {
     this.camera.state = false;
   }
-  resetCamera = () => {
+  preResetCamera = () => {
 
-    let canvas = this.canvasRef.current;
-    let context = canvas.getContext('2d');
-
-    let canvas2 = this.canvasRef2.current;
-    let context2 = canvas2.getContext('2d');
-
-
-    this.camera = {
-      state: true,
-      startCount: 0,
-      startLimit: 4,
-      mode: 'pan',
-      fixed: false,
-      target: {
-        type: 'player',
-        plyrNo: 1,
-        cell: {
-          x: undefined,
-          y: undefined,
-        }
-      },
-      focus: {
-        x: undefined,
-        y: undefined,
-      },
-      zoom: {
-        x: 1,
-        y: 1,
-      },
-      zoomDirection: 'in',
-      pan: {
-        x: 1,
-        y: 1,
-      },
-      panDirection: 'east',
-      limits: {
-        zoom: {
-          min: .5,
-          max: 1.8,
-        },
-        pan: {
-          x: {
-            min: -400,
-            max: 300,
-          },
-          y: {
-            min: -400,
-            max: 300,
-          }
-        },
-      },
-      instructionType: 'default',
-      instructions: [],
-    };
-
-    // PRESET ZOOM & PAN
-    // if (window.innerWidth < 1100) {
-    //
-    //   switch(this.gridWidth) {
-    //     case 3 :
-    //       this.camera.pan.x = 1;
-    //       this.camera.pan.y = -50;
-    //     break;
-    //     case 6 :
-    //       this.camera.pan.x = 1;
-    //       this.camera.pan.y = -20;
-    //     break;
-    //     case 9 :
-    //       this.camera.pan.x = 1;
-    //       this.camera.pan.y = -90;
-    //     break;
-    //     case 12 :
-    //       this.camera.pan.x = 1;
-    //       this.camera.pan.y = 30;
-    //     break;
-    //   }
-    // } else {
-    //
-    //   switch(this.gridWidth) {
-    //     case 3 :
-    //       this.camera.pan.x = 1;
-    //       this.camera.pan.y = -50;
-    //     break;
-    //     case 6 :
-    //       this.camera.pan.x = 1;
-    //       this.camera.pan.y = -20;
-    //     break;
-    //     case 9 :
-    //       this.camera.pan.x = 1;
-    //       this.camera.pan.y = 10;
-    //     break;
-    //     case 12 :
-    //       this.camera.pan.x = 70;
-    //       this.camera.pan.y = 20;
-    //     break;
-    //   }
-    // }
-
-    this.setCameraFocus('reset', canvas, context, canvas2, context2);
+    this.resetCameraSwitch = true;
 
   }
   setCameraFocus = (focusType, canvas, context, canvas2, context2) => {
@@ -21242,13 +21427,13 @@ class App extends Component {
     if (focusType === 'init' || focusType === 'reset') {
 
       if (this.camera.mode === 'pan') {
-        this.camera.focus.x = ((canvas.width/2)*this.camera.zoom.x)-(this.camera.pan.x)
-        this.camera.focus.y = ((canvas.height/2)*this.camera.zoom.x)-(this.camera.pan.y)
+        this.camera.focus.x = (canvas.width/2)
+        this.camera.focus.y = (canvas.height/2)
       }
 
       if (this.camera.mode === 'zoom') {
-        this.camera.focus.x = ((canvas.width/2)*this.camera.zoom.x)-(this.camera.pan.x)
-        this.camera.focus.y = ((canvas.height/2)*this.camera.zoom.x)-(this.camera.pan.y)
+        this.camera.focus.x = (canvas.width/2)
+        this.camera.focus.y = (canvas.height/2)
       }
 
     }
@@ -21284,39 +21469,6 @@ class App extends Component {
       }
 
       if (this.camera.mode === 'zoom') {
-
-        let diff;
-        if (this.camera.zoom.x === 1) {
-          this.camera.pan.x = -1;
-          this.camera.pan.y = -1;
-        }
-
-        let zoom = this.camera.zoom.x;
-
-        if (zoom < 1) {
-          diff = 1 - zoom;
-          if (window.innerWidth < 1100) {
-            this.camera.pan.x = (diff*500);
-            this.camera.pan.y = (diff*500)-(diff*100);
-          } else {
-            this.camera.pan.x = (diff*600);
-            this.camera.pan.y = (diff*600)-(diff*100);
-          }
-
-        }
-        if (zoom > 1) {
-          diff = zoom - 1;
-          if (window.innerWidth < 1100) {
-            this.camera.pan.x = -(diff*500);
-            this.camera.pan.y = -(diff*500)+(diff*100);
-          } else {
-            this.camera.pan.x = -(diff*600);
-            this.camera.pan.y = -(diff*600)-(diff*100);
-          }
-
-        }
-
-
 
 
         if (this.camera.zoomDirection === 'out') {
@@ -21354,7 +21506,7 @@ class App extends Component {
 
     }
 
-    console.log('camera focus set',this.camera.focus);
+    // console.log('camera focus set',this.camera.focus,focusType,'zoom',this.camera.zoom,'pan',this.camera.pan);
 
   }
 
@@ -21451,7 +21603,7 @@ class App extends Component {
                   </a>
                   </div>
                 )}
-                <a href="javascript:"  onClick={this.resetCamera}>
+                <a href="javascript:"  onClick={this.preResetCamera}>
                   <FontAwesomeIcon icon={faUndo} size="sm" className="cameraUIIcon"/>
                 </a>
 

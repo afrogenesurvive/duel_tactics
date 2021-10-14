@@ -168,7 +168,7 @@ const DebugBox = props => {
           )}
           {props.player.currentWeapon.type === 'crossbow' && (
             <p className="debugBoxText">
-              - {props.player.items.ammo}
+              {props.player.items.ammo}
             </p>
           )}
           {
