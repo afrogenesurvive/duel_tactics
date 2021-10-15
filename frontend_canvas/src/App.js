@@ -1669,10 +1669,6 @@ class App extends Component {
         x: undefined,
         y: undefined,
       },
-      focusOrigin: {
-        x: 0,
-        y: 0,
-      },
       zoom: {
         x: 1,
         y: 1,
@@ -1683,19 +1679,23 @@ class App extends Component {
         y: 1,
       },
       panDirection: 'east',
+      zoomFocusPan: {
+        x: 1,
+        y: 1,
+      },
       limits: {
         zoom: {
           min: .5,
-          max: 1.8,
+          max: 2.2,
         },
         pan: {
           x: {
-            min: -400,
-            max: 300,
+            min: -700,
+            max: 600,
           },
           y: {
-            min: -400,
-            max: 300,
+            min: -700,
+            max: 600,
           }
         },
       },
@@ -7383,7 +7383,6 @@ class App extends Component {
 
       let setFocus = false;
       let setZoomPan = false;
-      let centeredZoom = true;
 
       // IDLE ANIM STEPPER!
       if (player.action === 'idle') {
@@ -7451,6 +7450,11 @@ class App extends Component {
         }
 
       }
+
+      // let cellToFocusZoom = this.gridInfo.find(x=>x.number.x === 0 && x.number.y === 0)
+      // let cellToFocusZoom = this.gridInfo.find(x=>x.number.x === this.players[0].currentPosition.cell.number.x && x.number.y === this.players[0].currentPosition.cell.number.y)
+      // pan to this cell when focus on target, then zoom if necessary
+
       if (this.camera.mode === 'pan') {
 
         // ONLY PAN IF CANT SEE WHOLE MAP
@@ -7481,6 +7485,7 @@ class App extends Component {
             this.camera.pan.y < this.camera.limits.pan.y.max
           ) {
             this.camera.pan.y += 10;
+            this.camera.zoomFocusPan.y += 10;
             this.camera.panDirection = 'north';
             setFocus = true;
 
@@ -7498,6 +7503,7 @@ class App extends Component {
             this.camera.pan.y > this.camera.limits.pan.y.min
           ) {
             this.camera.pan.y -= 10;
+            this.camera.zoomFocusPan.y -= 10;
             this.camera.panDirection = 'south';
             setFocus = true;
 
@@ -7515,6 +7521,7 @@ class App extends Component {
             this.camera.pan.x > this.camera.limits.pan.x.min
           ) {
             this.camera.pan.x -= 10;
+            this.camera.zoomFocusPan.x -= 10;
             this.camera.panDirection = 'east';
             setFocus = true;
 
@@ -7531,6 +7538,7 @@ class App extends Component {
             this.camera.pan.x < this.camera.limits.pan.x.max
           ) {
             this.camera.pan.x += 10;
+            this.camera.zoomFocusPan.x += 10;
             this.camera.panDirection = 'west';
             setFocus = true;
 
@@ -7547,46 +7555,7 @@ class App extends Component {
 
 
       // ADJUST PAN WHEN ZOOMING TO KEEP CENTERED
-      if (setZoomPan === true && centeredZoom === true) {
-
-
-
-
-        // adjust focus on zoom by canvas h/w*zoom/2
-        // should I pan to move the center cursor then zoom into to the area at cursor
-        // when pan after zoom, factor new scale on said pan
-
-        // draw step by step what happens when scale and translate and how to offset those changes
-
-
-
-        // const mousex = this.camera.focus.x;
-        // const mousey = this.camera.focus.y;
-        //
-        // // Compute zoom factor.
-        // const zoom = this.camera.zoom.x;
-
-        // Translate so the visible origin is at the context's origin.
-
-
-        // Compute the new visible origin. Originally the mouse is at a
-        // distance mouse/scale from the corner, we want the point under
-        // the mouse to remain in the same place after the zoom, but this
-        // is at mouse/new_scale away from the corner. Therefore we need to
-        // shift the origin (coordinates of the corner) to account for this.
-
-        // this.camera.focusOrigin.x -= mousex/(scale*zoom) - mousex/scale;
-        // this.camera.focusOrigin.y -= mousey/(scale*zoom) - mousey/scale;
-
-        // Scale it (centered around the origin due to the trasnslate above).
-        // context.scale(zoom, zoom);
-        // Offset the visible origin to it's proper position.
-        // context.translate(-originx, -originy);
-
-        // this.camera.pan = {
-        //   x: -this.camera.focusOrigin.x,
-        //   y: -this.camera.focusOrigin.y,
-        // }
+      if (setZoomPan === true) {
 
 
         let diff;
@@ -7600,131 +7569,47 @@ class App extends Component {
         if (zoom < 1) {
 
           diff = 1 - zoom;
-          if (window.innerWidth < 1100) {
-            // centered v&h
-            this.camera.pan.x = (diff*500);
-            this.camera.pan.y = (diff*500)-(diff*150);
+          // this.camera.pan.x = (diff*(canvas.width/2));
+          // this.camera.pan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
 
-            // centered v right h
-            // this.camera.pan.x = (diff*1000)-(diff*100);
-            // this.camera.pan.y = (diff*500)-(diff*250);
-            // centered v left h
-            // this.camera.pan.x = (diff*5)-(diff*100);
-            // this.camera.pan.y = (diff*500)-(diff*250);
-            // centered h top v
-            // this.camera.pan.x = (diff*500);
-            // this.camera.pan.y = (diff*5)-(diff*2.5);
-            // centered h bottom v
-            // this.camera.pan.x = (diff*500);
-            // this.camera.pan.y = (diff*1000)-(diff*250);
+          this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
+          this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
 
-
-          } else {
-            this.camera.pan.x = (diff*600);
-            this.camera.pan.y = (diff*600)-(diff*200);
-          }
         }
 
         // ZOOMING IN
         if (zoom > 1) {
 
-          let cellToFocusZoom = this.gridInfo.find(x=>x.number.x === 4 && x.number.x === 4)
-          // let cellToFocusZoom = this.gridInfo.find(x=>x.number.x === this.players[0].currentPosition.cell.number.x && x.number.y === this.players[0].currentPosition.cell.number.y)
-          console.log('focused zoom in test @ 4,4: pan',this.camera.pan,'zoom',this.camera.zoom,'cell center',cellToFocusZoom.center);
           diff = zoom - 1;
-          if (window.innerWidth < 1100) {
-
-            let newPan = {x:undefined,y:undefined};
-            // this.camera.focus.x = this.camera.pan.x + canvas.width/2;
-            // this.camera.focus.y = this.camera.pan.y + canvas.height/2;
-
-            // this.camera.pan.x = newPan.x;
-            // this.camera.pan.y = newPan.y;
 
 
-            // when camera zooms out enough to see the whole grid, it can't pan
-            // if you continue to zoom out the grid will continue to stay centered
-            // when you zoom in past that threshold , the zoom is focused to the centre of your current frame
-            // when below the threshold and zooming out, camera must stay focused as well
-
-            // as i zoom > 1 in, i have compansate by panning to the right(pan-x) and down(pan-y)
-
-            // panning east {x: -21, y: -11} zoom:  {x: 1.04, y: 1.04} 10--
-            // panning east {x: -21, y: -11} zoom:  {x: 1.04, y: 1.04} 10
-            // panning west {x: -31, y: -21} zoom:  {x: 1.06, y: 1.06} 10
-            // panning west {x: -51, y: -31} zoom:  {x: 1.1, y: 1.1} 20
-            // panning south {x: -81, y: -51} zoom:  {x: 1.16, y: 1.16} 30
-            // panning east {x: -111, y: -71} zoom:  {x: 1.22, y: 1.22} 40
-            // panning east {x: -161, y: -91} zoom:  {x: 1.32, y: 1.32} 70
-            // panning west {x: -211, y: -121} zoom:  {x: 1.42, y: 1.42} 90
-            // panning west {x: -251, y: -161} zoom:  {x: 1.52, y: 1.52} 90
-            // panning east {x: -321, y: -191} zoom:  {x: 1.64, y: 1.64} 130
-            // panning east {x: -361, y: -211} zoom:  {x: 1.72, y: 1.72} 150
-            // panning east {x: -401, y: -231} zoom:  {x: 1.8, y: 1.8} 170
-
-            console.log('1',21/1.04,11/1.04);
-            console.log('2',31/1.06,21/1.06);
-            console.log('3',51/1.1,31/1.1);
-            console.log('4',81/1.16,51/1.16);
-            console.log('5',111/1.22,71/1.22);
-            console.log('6',161/1.32,91/1.32);
-            console.log('7',211/1.42,121/1.42);
-            console.log('8',251/1.52,161/1.52);
-            console.log('9',321/1.64,191/1.64);
-            console.log('10',361/1.72,211/1.72);
-            console.log('11',401/1.8,231/1.8);
+          this.camera.zoomFocusPan.x = (((canvas.width/2)+0)*(1-this.camera.zoom.x)+1)+(this.camera.pan.x*this.camera.zoom.x);
+          this.camera.zoomFocusPan.y = (((canvas.height/2)+0)*(1-this.camera.zoom.x)+1)+(this.camera.pan.y*this.camera.zoom.x);
 
 
+          // when camera zooms out enough to see the whole grid, it can't pan
+          // if you continue to zoom out the grid will continue to stay centered
+          // when you zoom in past that threshold , the zoom is focused to the centre of your current frame
+          // when below the threshold and zooming out, camera must stay focused as well
 
-            // get zoom into current ceter to work, then out
-            // when zooming set a zoom-panning value and ctx translate with it, reset non-zoom pan value
-            // when panning, use the non zoom pan value to translate
-            // check whether zooming or panning @ draw step canvas translate w/ camera.mode
+          // as i zoom > 1 in, i have compansate by panning to the right(pan-x) and down(pan-y)
 
-
-            // next: try to fix click cell at scale w/ and w/o focused zoom
-            // next: set zoom-in, sub threshhold pan limits
-
-            // this.camera.pan.x -= .02;
-            // this.camera.pan.y -= .02;
-
-
-            // this.camera.pan.x = -(diff*((canvas.width*this.camera.zoom.x)/2));
-            // this.camera.pan.y = (diff*((canvas.width*this.camera.zoom.x)/2))-(diff*((canvas.width*this.camera.zoom.x)/4));
-            // this.camera.pan.x = -(diff*((canvas.width*this.camera.zoom.x)/2))+(diff*((canvas.width*this.camera.zoom.x)/4));
-            // this.camera.pan.y = (diff*((canvas.width*this.camera.zoom.x)/2));
-            // ------------------
-
-            // centered v&h
-            // this.camera.pan.x = -(diff*500);
-            // this.camera.pan.y = -(diff*500)+(diff*250);
+          // get zoom into current ceter to work, then out
+          // when zooming set a zoom-panning value and ctx translate with it, reset non-zoom pan value
+          // when panning, use the non zoom pan value to translate
+          // check whether zooming or panning @ draw step canvas translate w/ camera.mode
 
 
-            // centered v right h
-            // this.camera.pan.x = -(diff*1000)+(diff*100);
-            // this.camera.pan.y = -(diff*500)+(diff*250);
-            // centered v left h
-            // this.camera.pan.x = -(diff*5)+(diff*100);
-            // this.camera.pan.y = -(diff*500)+(diff*250);
-            // centered h top v
-            // this.camera.pan.x = -(diff*500);
-            // this.camera.pan.y = -(diff*5)+(diff*2.5);
-            // centered h bottom v
-            // this.camera.pan.x = -(diff*500);
-            // this.camera.pan.y = -(diff*1000)+(diff*250);
+          // next: try to fix click cell at scale w/ and w/o focused zoom
+          // next: set zoom-in, sub threshhold pan limits
 
-
-          } else {
-            // this.camera.pan.x = -(diff*600);
-            // this.camera.pan.y = -(diff*600)-(diff*300);
-          }
         }
 
       }
 
       //SET CAMERA FOCUS
       if (setFocus === true) {
-        this.setCameraFocus('input',canvas, context, canvas2, context2);
+        // this.setCameraFocus('input',canvas, context, canvas2, context2);
       }
 
 
@@ -7753,10 +7638,6 @@ class App extends Component {
           x: undefined,
           y: undefined,
         },
-        focusOrigin: {
-          x: 0,
-          y: 0,
-        },
         zoom: {
           x: 1,
           y: 1,
@@ -7767,6 +7648,10 @@ class App extends Component {
           y: 1,
         },
         panDirection: 'east',
+        zoomFocusPan: {
+          x: 1,
+          y: 1,
+        },
         limits: {
           zoom: {
             min: .5,
@@ -7774,12 +7659,12 @@ class App extends Component {
           },
           pan: {
             x: {
-              min: -400,
-              max: 300,
+              min: -700,
+              max: 600,
             },
             y: {
-              min: -400,
-              max: 300,
+              min: -700,
+              max: 600,
             }
           },
         },
@@ -8618,16 +8503,27 @@ class App extends Component {
     context.clearRect(0,0,this.canvasWidth,this.canvasHeight);
     context2.clearRect(0,0,this.canvasWidth,this.canvasHeight);
 
-    // context.translate(this.camera.focusOrigin.x, this.camera.focusOrigin.y);
-    // context.scale(this.camera.zoom.x,this.camera.zoom.y);
-    // context.translate(-originx, -originy);
 
-    context.translate(this.camera.pan.x,this.camera.pan.y);
-    context2.translate(this.camera.pan.x,this.camera.pan.y);
+
+    // context.translate(this.camera.pan.x,this.camera.pan.y);
+    // context2.translate(this.camera.pan.x,this.camera.pan.y);
+
+
+    // if (this.camera.mode === 'zoom') {
+    //   context.translate(this.camera.zoomFocusPan.x,this.camera.zoomFocusPan.y);
+    //   context2.translate(this.camera.zoomFocusPan.x,this.camera.zoomFocusPan.y);
+    // }
+    // if (this.camera.mode === 'pan') {
+    //   context.translate(this.camera.pan.x,this.camera.pan.y);
+    //   context2.translate(this.camera.pan.x,this.camera.pan.y);
+    // }
+
+    context.translate(this.camera.zoomFocusPan.x,this.camera.zoomFocusPan.y);
+    context2.translate(this.camera.zoomFocusPan.x,this.camera.zoomFocusPan.y);
+
 
     context.scale(this.camera.zoom.x,this.camera.zoom.y);
     context2.scale(this.camera.zoom.x,this.camera.zoom.y);
-    // console.log('zoom',this.camera.zoom,'pan',this.camera.pan);
 
 
     for (var x = 0; x < this.gridWidth+1; x++) {
@@ -10577,8 +10473,7 @@ class App extends Component {
 
 
         // CAMERA FOCUS POINT
-        if (x === this.gridWidth && y === this.gridWidth-1 ) {
-
+        if (x === this.gridWidth && y === this.gridWidth ) {
 
           context.fillStyle = 'purple';
           context.beginPath();
@@ -10586,6 +10481,7 @@ class App extends Component {
           context.fill();
 
         }
+
 
       }
     }
