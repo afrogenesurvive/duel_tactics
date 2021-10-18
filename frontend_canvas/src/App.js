@@ -1760,6 +1760,7 @@ class App extends Component {
     this.aiDeflectCheck = false;
     this.aiDeflectedCheck = [];
 
+
   }
 
 
@@ -1922,21 +1923,24 @@ class App extends Component {
 
           if (connectedGamepads === 1) {
 
-            // if (
-            //   gp.buttons.indexOf(btn) === 0 ||
-            //   gp.buttons.indexOf(btn) === 1 ||
-            //   gp.buttons.indexOf(btn) === 2 ||
-            //   gp.buttons.indexOf(btn) === 3 ||
-            //   gp.buttons.indexOf(btn) === 4 ||
-            //   gp.buttons.indexOf(btn) === 5 ||
-            //   gp.buttons.indexOf(btn) === 6 ||
-            //   gp.buttons.indexOf(btn) === 7 ||
-            //   gp.buttons.indexOf(btn) === 8 ||
-            //   gp.buttons.indexOf(btn) === 9
-            // ) {
-            //   console.log('1 player btn',gp.buttons.indexOf(btn));
-            //   // console.log('gamepads', gp.id.substr(0,7));
-            // }
+            if (
+              gp.buttons.indexOf(btn) === 0 ||
+              gp.buttons.indexOf(btn) === 1 ||
+              gp.buttons.indexOf(btn) === 2 ||
+              gp.buttons.indexOf(btn) === 3 ||
+              gp.buttons.indexOf(btn) === 4 ||
+              gp.buttons.indexOf(btn) === 5 ||
+              gp.buttons.indexOf(btn) === 6 ||
+              gp.buttons.indexOf(btn) === 7 ||
+              gp.buttons.indexOf(btn) === 8 ||
+              gp.buttons.indexOf(btn) === 9 ||
+              gp.buttons.indexOf(btn) === 10 ||
+              gp.buttons.indexOf(btn) === 11 ||
+              gp.buttons.indexOf(btn) === 12
+            ) {
+              console.log('1 player btn',gp.buttons.indexOf(btn));
+              // console.log('gamepads', gp.id.substr(0,7));
+            }
 
             // DOWN BTN
             if (gp.buttons.indexOf(btn) === 0) {
@@ -1996,6 +2000,11 @@ class App extends Component {
               showSettingsKeyPressState = true;
             }
 
+            // ANALOG STICK BTN (L)
+            if (gp.buttons.indexOf(btn) === 10) {
+              // console.log('1 player defend held',gp.buttons.indexOf(btn));
+            }
+
           }
 
           if (connectedGamepads === 2) {
@@ -2009,7 +2018,8 @@ class App extends Component {
               gp.buttons.indexOf(btn) === 14 ||
               gp.buttons.indexOf(btn) === 15 ||
               gp.buttons.indexOf(btn) === 18 ||
-              gp.buttons.indexOf(btn) === 19
+              gp.buttons.indexOf(btn) === 19 ||
+              gp.buttons.indexOf(btn) === 10
             ) {
               // console.log('2 players btn player 1',gp.buttons.indexOf(btn));
             }
@@ -2065,6 +2075,11 @@ class App extends Component {
               showSettingsKeyPressState = true;
             }
 
+            // ANALOG STICK BTN (L)
+            if (gp.buttons.indexOf(btn) === 10) {
+
+            }
+
 
 
             if (
@@ -2076,7 +2091,8 @@ class App extends Component {
               gp.buttons.indexOf(btn) === 20 ||
               gp.buttons.indexOf(btn) === 21 ||
               gp.buttons.indexOf(btn) === 7 ||
-              gp.buttons.indexOf(btn) === 9
+              gp.buttons.indexOf(btn) === 9 ||
+              gp.buttons.indexOf(btn) === 11
             ) {
               // console.log('2 players btn player 2',gp.buttons.indexOf(btn));
             }
@@ -2134,6 +2150,12 @@ class App extends Component {
                 }
                 this.gamepadPollCounter.store2 = []
               }
+            }
+
+
+            // ANALOG STICK BTN (R)
+            if (gp.buttons.indexOf(btn) === 11) {
+
             }
 
 
@@ -2306,7 +2328,6 @@ class App extends Component {
           }
         }
       }
-
       if (connectedGamepads === 2) {
 
         if (gp.axes[0]!== 0 && gp.axes[1] !== 0) {
@@ -2478,6 +2499,7 @@ class App extends Component {
           }
         }
       }
+
     }
   }
 
@@ -4429,7 +4451,11 @@ class App extends Component {
         nextPosition = this.lineCrementer(player);
         // player.currentPosition.cell = player.target.cell;
         player.nextPosition = nextPosition;
-        // console.log('nextPosition',nextPosition,player.direction);
+        // console.log('nextPosition',nextPosition,'dest',player.target.cell.center,'zoom',this.camera.zoom,'pan',this.camera.pan);
+
+
+        let atDestRanges = [false,false,false,false];
+
 
         if (player.target.void === true) {
           if (player.falling.state === true) {
@@ -4443,111 +4469,143 @@ class App extends Component {
 
         if (player.jumping.state !== true) {
 
+
+          if (
+            nextPosition.x >= player.target.cell.center.x-1 &&
+            nextPosition.x <= player.target.cell.center.x+1 &&
+            nextPosition.y >= player.target.cell.center.y-1 &&
+            nextPosition.y <= player.target.cell.center.y+1
+          ) {
+            atDestRanges[0] = true;
+          }
+
+          if (
+            nextPosition.x === player.target.cell.center.x-0.25 &&
+            nextPosition.y === player.target.cell.center.y+0.5
+          ) {
+            atDestRanges[1] = true;
+          }
+
           if (
             nextPosition.x === player.target.cell.center.x &&
-            nextPosition.y === player.target.cell.center.y ||
-            nextPosition.x === player.target.cell.center.x+5 &&
-            nextPosition.y === player.target.cell.center.y+5
+            nextPosition.y === player.target.cell.center.y
           ) {
-            // console.log('next position is destination a',player.number);
+            atDestRanges[2] = true;
+          }
 
-            player.newMoveDelay.state = true;
+          if (
+            nextPosition.x === player.target.cell.center.x-5 &&
+            nextPosition.y === player.target.cell.center.y-5
+          ) {
+            atDestRanges[3] = true;
+          }
 
 
-            if (player.target.void === false) {
-              player.currentPosition.cell = player.target.cell;
-              player.action = 'idle';
-              player.moving = {
-                state: false,
-                step: 0,
-                course: '',
-                origin: {
-                  number: {
-                    x: player.target.cell.number.x,
-                    y: player.target.cell.number.y
+          for (const el of atDestRanges) {
+            if (el === true) {
+
+              // console.log('next position is destination a',player.number);
+
+              player.newMoveDelay.state = true;
+
+              if (player.target.void === false) {
+                player.currentPosition.cell = player.target.cell;
+                player.action = 'idle';
+                player.moving = {
+                  state: false,
+                  step: 0,
+                  course: '',
+                  origin: {
+                    number: {
+                      x: player.target.cell.number.x,
+                      y: player.target.cell.number.y
+                    },
+                    center: {
+                      x: player.target.cell.center.x,
+                      y: player.target.cell.center.y
+                    },
                   },
-                  center: {
-                    x: player.target.cell.center.x,
-                    y: player.target.cell.center.y
-                  },
-                },
-                destination: {
-                  x: 0,
-                  y: 0,
+                  destination: {
+                    x: 0,
+                    y: 0,
+                  }
                 }
-              }
-              if (player.strafing.state === true) {
-                player.strafing.state = false;
-              }
+                if (player.strafing.state === true) {
+                  player.strafing.state = false;
+                }
 
 
-              this.checkDestination(player);
-              if (player.drowning !== true && player.pushBack.state !== true) {
+                this.checkDestination(player);
+                if (player.drowning !== true && player.pushBack.state !== true) {
+                  this.getTarget(player);
+                }
+
+
+
+              }
+
+              // PUSHBACK MOVEMENT
+              if (player.pushBack.state === true && player.target.void !== true) {
+
+
+                // CANCEL AI ATTACK, DEFEND!!
+                if (player.ai.state === true) {
+                  if (player.ai.state === true) {
+                    player.attacking = {
+                      state: false,
+                      count: 0,
+                      limit: 15,
+                    };
+                  }
+
+                  player.defending = {
+                    state: false,
+                    count: 0,
+                    limit: player.defending.limit,
+                  }
+
+                  player.ai.targetAqcuiredReset = true
+                }
+
+
+                player.pushBack.state = false;
+                player.strafing = {
+                  state: false,
+                  direction: ''
+                }
+                player.moving.state = false;
+                player.speed.move = player.pushBack.prePushMoveSpeed;
                 this.getTarget(player);
               }
 
 
+              // TARGET IS VOID, START FALLING!
+              if (
+                nextPosition.x === player.target.cell.center.x &&
+                nextPosition.y === player.target.cell.center.y &&
+                player.target.void === true
+              ) {
+                player.falling.state = true;
+                player.action = 'falling';
 
-            }
-
-            if (player.pushBack.state === true && player.target.void !== true) {
-
-
-              // CANCEL AI ATTACK, DEFEND!!
-              if (player.ai.state === true) {
-                if (player.ai.state === true) {
-                  player.attacking = {
+                player.popups.push(
+                  {
                     state: false,
                     count: 0,
-                    limit: 15,
-                  };
-                }
+                    limit: 25,
+                    type: '',
+                    position: '',
+                    msg: 'falling',
+                    img: '',
 
-                player.defending = {
-                  state: false,
-                  count: 0,
-                  limit: player.defending.limit,
-                }
-
-                player.ai.targetAqcuiredReset = true
+                  }
+                )
               }
+              break;
 
-
-              player.pushBack.state = false;
-              player.strafing = {
-                state: false,
-                direction: ''
-              }
-              player.moving.state = false;
-              player.speed.move = player.pushBack.prePushMoveSpeed;
-              this.getTarget(player);
             }
-
-
-            // TARGET IS VOID, START FALLING!
-            if (
-              nextPosition.x === player.target.cell.center.x &&
-              nextPosition.y === player.target.cell.center.y &&
-              player.target.void === true
-            ) {
-              player.falling.state = true;
-              player.action = 'falling';
-
-              player.popups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit: 25,
-                  type: '',
-                  position: '',
-                  msg: 'falling',
-                  img: '',
-
-                }
-              )
-            }
-
           }
+
         }
 
         if (player.jumping.state === true) {
@@ -4555,152 +4613,183 @@ class App extends Component {
 
 
           if (
-            nextPosition.x === player.target.cell2.center.x &&
-            nextPosition.y === player.target.cell2.center.y ||
-            nextPosition.x === player.target.cell2.center.x+5 &&
-            nextPosition.y === player.target.cell2.center.y+5
+            nextPosition.x >= player.target.cell2.center.x-1 &&
+            nextPosition.x <= player.target.cell2.center.x+1 &&
+            nextPosition.y >= player.target.cell2.center.y-1 &&
+            nextPosition.y <= player.target.cell2.center.y+1
           ) {
-            // console.log('at jump destination',player.target.cell2.number);
-            // console.log('next position is destination a',player.number);
-            player.newMoveDelay.state = true;
+            atDestRanges[0] = true;
+          }
+
+          if (
+            nextPosition.x === player.target.cell2.center.x-0.25 &&
+            nextPosition.y === player.target.cell2.center.y+0.5
+          ) {
+            atDestRanges[1] = true;
+          }
+
+          if (
+            nextPosition.x === player.target.cell2.center.x &&
+            nextPosition.y === player.target.cell2.center.y
+          ) {
+            atDestRanges[2] = true;
+          }
+
+          if (
+            nextPosition.x === player.target.cell2.center.x-5 &&
+            nextPosition.y === player.target.cell2.center.y-5
+          ) {
+            atDestRanges[3] = true;
+          }
 
 
-            let pushBack = false;
-            let opp;
+          for (const el of atDestRanges) {
+            if (el === true) {
 
-            for (const plyr of this.players) {
-              if (
-                // plyr.currentPosition.cell.number.x === player.currentPosition.cell.number.x &&
-                // plyr.currentPosition.cell.number.y === player.currentPosition.cell.number.y
-                // plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
-                // plyr.currentPosition.cell.number.y === player.target.cell2.number.y
-                plyr.target.cell.number.x === player.target.cell2.number.x &&
-                plyr.target.cell.number.y === player.target.cell2.number.y &&
-                plyr.moving.state === true
-              ) {
+              // console.log('at jump destination',player.target.cell2.number);
+              // console.log('next position is destination a',player.number);
+              player.newMoveDelay.state = true;
 
-                // console.log('jump destination occupied, fall into target 1',player.direction);
 
-                pushBack = true;
-                opp = plyr;
-              }
-            }
+              let pushBack = false;
+              let opp;
 
-            if (player.target.void === false) {
+              for (const plyr of this.players) {
+                if (
+                  // plyr.currentPosition.cell.number.x === player.currentPosition.cell.number.x &&
+                  // plyr.currentPosition.cell.number.y === player.currentPosition.cell.number.y
+                  // plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
+                  // plyr.currentPosition.cell.number.y === player.target.cell2.number.y
+                  plyr.target.cell.number.x === player.target.cell2.number.x &&
+                  plyr.target.cell.number.y === player.target.cell2.number.y &&
+                  plyr.moving.state === true
+                ) {
 
-              player.jumping.state = false;
-              player.currentPosition.cell = player.target.cell2;
-              player.strafing.state = false;
-              player.action = 'idle';
-              player.moving = {
-                state: false,
-                step: 0,
-                course: '',
-                origin: {
-                  number: {
-                    x: player.target.cell2.number.x,
-                    y: player.target.cell2.number.y
-                  },
-                  center: {
-                    x: player.target.cell2.center.x,
-                    y: player.target.cell2.center.y
-                  },
-                },
-                destination: {
-                  x: 0,
-                  y: 0,
+                  // console.log('jump destination occupied, fall into target 1',player.direction);
+
+                  pushBack = true;
+                  opp = plyr;
                 }
               }
 
-              this.checkDestination(player);
-              let trgt = this.getTarget(player);
+              if (player.target.void === false) {
 
-              if (pushBack === true ) {
-
-                let playerAPushDir;
-                let playerBPushDir;
-                switch(opp.direction) {
-                  case 'north' :
-                    playerAPushDir = 'south';
-                  break;
-                  case 'south' :
-                    playerAPushDir = 'north';
-                  break;
-                  case 'east' :
-                    playerAPushDir = 'west';
-                  break;
-                  case 'west' :
-                    playerAPushDir = 'east';
-                  break;
-                }
-                switch(player.direction) {
-                  case 'north' :
-                    playerBPushDir = 'south';
-                  break;
-                  case 'south' :
-                    playerBPushDir = 'north';
-                  break;
-                  case 'east' :
-                    playerBPushDir = 'west';
-                  break;
-                  case 'west' :
-                    playerBPushDir = 'east';
-                  break;
-                }
-
-
-                player.strafing = {
-                  state: true,
-                  direction: playerAPushDir
-                }
-                player.action = 'strafe moving';
+                player.jumping.state = false;
+                player.currentPosition.cell = player.target.cell2;
+                player.strafing.state = false;
+                player.action = 'idle';
                 player.moving = {
-                  state: true,
+                  state: false,
                   step: 0,
                   course: '',
                   origin: {
                     number: {
-                      x: player.currentPosition.cell.number.x,
-                      y: player.currentPosition.cell.number.y
+                      x: player.target.cell2.number.x,
+                      y: player.target.cell2.number.y
                     },
                     center: {
-                      x: player.currentPosition.cell.center,
-                      y: player.currentPosition.cell.center
+                      x: player.target.cell2.center.x,
+                      y: player.target.cell2.center.y
                     },
                   },
-                  destination: player.target.cell2.center
+                  destination: {
+                    x: 0,
+                    y: 0,
+                  }
                 }
-                player.target.void = true;
-                let nextPosition = this.lineCrementer(player);
-                player.nextPosition = nextPosition;
+
+                this.checkDestination(player);
+                let trgt = this.getTarget(player);
+
+                if (pushBack === true ) {
+
+                  let playerAPushDir;
+                  let playerBPushDir;
+                  switch(opp.direction) {
+                    case 'north' :
+                      playerAPushDir = 'south';
+                    break;
+                    case 'south' :
+                      playerAPushDir = 'north';
+                    break;
+                    case 'east' :
+                      playerAPushDir = 'west';
+                    break;
+                    case 'west' :
+                      playerAPushDir = 'east';
+                    break;
+                  }
+                  switch(player.direction) {
+                    case 'north' :
+                      playerBPushDir = 'south';
+                    break;
+                    case 'south' :
+                      playerBPushDir = 'north';
+                    break;
+                    case 'east' :
+                      playerBPushDir = 'west';
+                    break;
+                    case 'west' :
+                      playerBPushDir = 'east';
+                    break;
+                  }
 
 
+                  player.strafing = {
+                    state: true,
+                    direction: playerAPushDir
+                  }
+                  player.action = 'strafe moving';
+                  player.moving = {
+                    state: true,
+                    step: 0,
+                    course: '',
+                    origin: {
+                      number: {
+                        x: player.currentPosition.cell.number.x,
+                        y: player.currentPosition.cell.number.y
+                      },
+                      center: {
+                        x: player.currentPosition.cell.center,
+                        y: player.currentPosition.cell.center
+                      },
+                    },
+                    destination: player.target.cell2.center
+                  }
+                  player.target.void = true;
+                  let nextPosition = this.lineCrementer(player);
+                  player.nextPosition = nextPosition;
+
+
+
+                }
 
               }
 
+              let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y)
+              if (
+                targetCell.void.state === true
+              ) {
+                player.falling.state = true;
+                player.action = 'falling';
+
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 25,
+                    type: '',
+                    position: '',
+                    msg: 'falling',
+                    img: '',
+
+                  }
+                )
+              }
+
+              break;
+
             }
-
-            let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y)
-            if (
-              targetCell.void.state === true
-            ) {
-              player.falling.state = true;
-              player.action = 'falling';
-
-              player.popups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit: 25,
-                  type: '',
-                  position: '',
-                  msg: 'falling',
-                  img: '',
-
-                }
-              )
-            }
-
           }
 
         }
@@ -7570,6 +7659,9 @@ class App extends Component {
           this.camera.adjustedPan.x = -1;
           this.camera.adjustedPan.y = -1;
 
+          this.camera.focus.x = (canvas.width/2);
+          this.camera.focus.y = (canvas.height/2);
+
         }
         let zoom = this.camera.zoom.x;
 
@@ -7600,6 +7692,8 @@ class App extends Component {
           // WHEN ZOOMING OUT INSIDE THRESHOLD, TEND TOWARDS A CENTER ALIGNMENT
           if (this.camera.zoomDirection === "out") {
 
+
+            // problem might be here, try w/o using pandirection
             switch (this.camera.panDirection) {
               case 'north':
                 this.camera.adjustedPan.y -= 10;
@@ -7616,6 +7710,15 @@ class App extends Component {
               default:
 
             }
+
+
+
+            // if (this.camera.pan.x >= 1) {
+            //   this.camera.adjustedPan.x -= 10;
+            // }
+            // if (this.camera.pan.x < 0) {
+            //   this.camera.adjustedPan.x += 10;
+            // }
 
 
             this.camera.zoomFocusPan.x = (((canvas.width/2)+0)*(1-this.camera.zoom.x)+1)-((this.camera.adjustedPan.x+this.camera.pan.x)*(1-this.camera.zoom.x));
@@ -21284,7 +21387,7 @@ class App extends Component {
 
   }
   setCameraFocus = (focusType, canvas, context, canvas2, context2) => {
-    // console.log('setting camera focus');
+    // console.log('setting camera focus','zoom',this.camera.zoom.x,'pan',this.camera.pan);
 
     if (focusType === 'init' || focusType === 'reset') {
 
@@ -21350,25 +21453,37 @@ class App extends Component {
         // }
 
 
-        if (this.camera.zoomDirection === 'out') {
+        if (this.camera.zoomDirection === 'out' && this.camera.zoom.x > 1) {
 
 
-          switch (this.camera.panDirection) {
-            case 'north':
-              this.camera.focus.y += 10;
-            break;
-            case 'south':
-              this.camera.focus.y -= 10;
-            break;
-            case 'east':
-              this.camera.focus.x -= 10;
-            break;
-            case 'west':
-              this.camera.focus.x += 10;
-            break;
-            default:
+          if (
+            this.camera.pan.x > 1 !== 0
+          ) {
+            switch (this.camera.panDirection) {
+              case 'north':
+                this.camera.focus.y += 10;
+              break;
+              case 'south':
+                this.camera.focus.y -= 10;
+              break;
+              case 'east':
+                this.camera.focus.x -= 10;
+              break;
+              case 'west':
+                this.camera.focus.x += 10;
+              break;
+              default:
+            }
 
+            // if (this.camera.pan.x >= 1) {
+            //   this.camera.adjustedPan.x -= 10;
+            // }
+            // if (this.camera.pan.x < 0) {
+            //   this.camera.adjustedPan.x += 10;
+            // }
           }
+
+
 
           // this.camera.focus.x = (((canvas.width/2)+0)*(1-this.camera.zoom.x)+1)-((this.camera.adjustedPan.x+this.camera.pan.x)*(1-this.camera.zoom.x));
           // this.camera.focus.y = (((canvas.height/2)+0)*(1-this.camera.zoom.x)+1)-((this.camera.adjustedPan.y+this.camera.pan.y)*(1-this.camera.zoom.x));
@@ -21376,6 +21491,22 @@ class App extends Component {
         }
 
         if (this.camera.zoomDirection === 'in') {
+
+          // switch (this.camera.panDirection) {
+          //   case 'north':
+          //     this.camera.focus.y -= 10;
+          //   break;
+          //   case 'south':
+          //     this.camera.focus.y += 10;
+          //   break;
+          //   case 'east':
+          //     this.camera.focus.x += 10;
+          //   break;
+          //   case 'west':
+          //     this.camera.focus.x -= 10;
+          //   break;
+          //   default:
+          // }
 
           // this.camera.zoomFocusPan.x = (((canvas.width/2)+0)*(1-this.camera.zoom.x)+1)+(this.camera.pan.x*this.camera.zoom.x);
           // this.camera.zoomFocusPan.y = (((canvas.height/2)+0)*(1-this.camera.zoom.x)+1)+(this.camera.pan.y*this.camera.zoom.x);
