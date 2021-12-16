@@ -3950,7 +3950,7 @@ class App extends Component {
     let el = document.getElementsByClassName('settingsOverlay')[0];
     let el2 = document.getElementsByClassName('settingsContainer')[0];
     // console.log('xx',el.scrollLeft, el.scrollTop);
-    console.log('xx',el2.scrollLeft, el2.scrollTop);
+    // console.log('xx',el2.scrollLeft, el2.scrollTop);
 
     let humanPlyrCount = this.settingsFormPlyrStartPosList.length;
     let plyrNo = args.plyrNo;
@@ -4469,7 +4469,7 @@ class App extends Component {
 
         if (player.jumping.state !== true) {
 
-
+          let destRngIndx = undefined;
           if (
             nextPosition.x >= player.target.cell.center.x-1 &&
             nextPosition.x <= player.target.cell.center.x+1 &&
@@ -4477,6 +4477,7 @@ class App extends Component {
             nextPosition.y <= player.target.cell.center.y+1
           ) {
             atDestRanges[0] = true;
+            destRngIndx = 0;
           }
 
           if (
@@ -4484,6 +4485,7 @@ class App extends Component {
             nextPosition.y === player.target.cell.center.y+0.5
           ) {
             atDestRanges[1] = true;
+            destRngIndx = 1;
           }
 
           if (
@@ -4491,6 +4493,7 @@ class App extends Component {
             nextPosition.y === player.target.cell.center.y
           ) {
             atDestRanges[2] = true;
+            destRngIndx = 2;
           }
 
           if (
@@ -4498,13 +4501,16 @@ class App extends Component {
             nextPosition.y === player.target.cell.center.y-5
           ) {
             atDestRanges[3] = true;
+            destRngIndx = 3;
           }
+
 
 
           for (const el of atDestRanges) {
             if (el === true) {
 
-              // console.log('next position is destination a',player.number);
+              let indx = atDestRanges.indexOf(el);
+              // console.log('indx',atDestRanges.indexOf(el),'next position is destination ',player.number,player.target,nextPosition.x === player.target.cell.center.x,nextPosition.x === player.target.cell.center.y);
 
               player.newMoveDelay.state = true;
 
@@ -4539,7 +4545,6 @@ class App extends Component {
                 if (player.drowning !== true && player.pushBack.state !== true) {
                   this.getTarget(player);
                 }
-
 
 
               }
@@ -4581,10 +4586,22 @@ class App extends Component {
 
               // TARGET IS VOID, START FALLING!
               if (
+
+                // nextPosition.x === player.target.cell.center.x &&
+                // nextPosition.y === player.target.cell.center.y &&
                 nextPosition.x === player.target.cell.center.x &&
-                nextPosition.y === player.target.cell.center.y &&
+                nextPosition.y === player.target.cell.center.y ||
+                nextPosition.x === player.target.cell.center.x-5 &&
+                nextPosition.y === player.target.cell.center.y-5 ||
+                nextPosition.x === player.target.cell.center.x-0.25 &&
+                nextPosition.y === player.target.cell.center.y+0.5 ||
+                nextPosition.x >= player.target.cell.center.x-1 &&
+                nextPosition.x <= player.target.cell.center.x+1 &&
+                nextPosition.y >= player.target.cell.center.y-1 &&
+                nextPosition.y <= player.target.cell.center.y+1 &&
                 player.target.void === true
               ) {
+                // console.log('falling....');
                 player.falling.state = true;
                 player.action = 'falling';
 
@@ -7486,6 +7503,7 @@ class App extends Component {
         y: this.camera.zoomFocusPan.y,
       }
       let zfpDiff;
+      let preZpfPostPanAdjust = false;
 
       // IDLE ANIM STEPPER!
       if (player.action === 'idle') {
@@ -7527,7 +7545,7 @@ class App extends Component {
           setFocus = true;
           setZoomPan = true;
 
-          // console.log('zooming in: ',this.camera.zoom,'adjustedPan',this.camera.adjustedPan,'zoomFocusPan: ',this.camera.zoomFocusPan,'pan: ',this.camera.pan);
+          // console.log('zooming in');
         }
         if (this.keyPressed[player.number-1].north === true && this.camera.zoom.x >= this.camera.limits.zoom.max) {
           console.log('zoom in limit');
@@ -7544,7 +7562,7 @@ class App extends Component {
           setFocus = true;
           setZoomPan = true;
 
-          // console.log('zooming out: ',this.camera.zoom,'adjustedPan',this.camera.adjustedPan,'zoomFocusPan: ',this.camera.zoomFocusPan,'pan: ',this.camera.pan);
+          // console.log('zooming out');
         }
         if (this.keyPressed[player.number-1].south === true && this.camera.zoom.x <= this.camera.limits.zoom.min) {
           console.log('zoom out limit');
@@ -7582,12 +7600,12 @@ class App extends Component {
             this.camera.pan.y < this.camera.limits.pan.y.max
           ) {
             this.camera.pan.y += 10;
-            this.camera.adjustedPan.y += 10;
+            this.camera.adjustedPan.y += (10*this.camera.zoom.x);
             this.camera.panDirection = 'north';
             setFocus = true;
             setZoomPan = true;
 
-            // console.log('panning north: ',this.camera.pan,'adjustedPan',this.camera.adjustedPan,'zoomFocusPan: ',this.camera.zoomFocusPan,'zoom: ',this.camera.zoom);
+            // console.log('panning north');
 
           }
           if (this.keyPressed[player.number-1].north === true && this.camera.pan.y >= this.camera.limits.pan.y.max) {
@@ -7601,12 +7619,12 @@ class App extends Component {
             this.camera.pan.y > this.camera.limits.pan.y.min
           ) {
             this.camera.pan.y -= 10;
-            this.camera.adjustedPan.y -= 10;
+            this.camera.adjustedPan.y -= (10*this.camera.zoom.x);
             this.camera.panDirection = 'south';
             setFocus = true;
             setZoomPan = true;
 
-            // console.log('panning south: ',this.camera.pan,'adjustedPan',this.camera.adjustedPan,'zoomFocusPan: ',this.camera.zoomFocusPan,'zoom: ',this.camera.zoom);
+            // console.log('panning south');
 
           }
           if (this.keyPressed[player.number-1].south === true && this.camera.pan.y <= this.camera.limits.pan.y.min) {
@@ -7620,12 +7638,12 @@ class App extends Component {
             this.camera.pan.x > this.camera.limits.pan.x.min
           ) {
             this.camera.pan.x -= 10;
-            this.camera.adjustedPan.x -= 10;
+            this.camera.adjustedPan.x -= (10*this.camera.zoom.x);
             this.camera.panDirection = 'east';
             setFocus = true;
             setZoomPan = true;
 
-            // console.log('panning east: ',this.camera.pan,'adjustedPan',this.camera.adjustedPan,'zoomFocusPan: ',this.camera.zoomFocusPan,'zoom: ',this.camera.zoom);
+            // console.log('panning east');
           }
           if (this.keyPressed[player.number-1].east === true && this.camera.pan.x <= this.camera.limits.pan.x.min) {
             console.log('pan limit east');
@@ -7638,19 +7656,19 @@ class App extends Component {
             this.camera.pan.x < this.camera.limits.pan.x.max
           ) {
             this.camera.pan.x += 10;
-            this.camera.adjustedPan.x += 10;
+            this.camera.adjustedPan.x += (10*this.camera.zoom.x);
             this.camera.panDirection = 'west';
             setFocus = true;
             setZoomPan = true;
 
-            // console.log('panning west: ',this.camera.pan,'adjustedPan',this.camera.adjustedPan,'zoomFocusPan: ',this.camera.zoomFocusPan,'zoom: ',this.camera.zoom);
+            // console.log('panning west');
           }
           if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
           console.log('pan limit west');
         }
 
         } else {
-          // console.log('cant pat at this zoom');
+          // console.log('cant pan at this zoom');
         }
       }
 
@@ -7686,16 +7704,15 @@ class App extends Component {
 
         }
 
-        // ZOOMING BELOWTHRESHOLD
+        // ZOOMING BELOW THRESHOLD
         if (zoom > 1) {
 
           diff = zoom - 1;
           let diffx;
           let diffy;
 
+          // ZOOM INTO WHAT CAMERA IS CENTERED ON (MAGIC FORMULA!!!)
           if (this.camera.zoomDirection === "in") {
-
-            // ZOOM INTO WHAT CAMERA IS CENTERED ON (MAGIC FORMULA!!!)
 
             this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
             this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
@@ -7705,36 +7722,19 @@ class App extends Component {
           // WHEN ZOOMING OUT INSIDE THRESHOLD, TEND TOWARDS A CENTER ALIGNMENT
           if (this.camera.zoomDirection === "out") {
 
-            diffx = (1-this.camera.pan.x)/((1-zoom)/0.02);
-            diffy = (1-this.camera.pan.y)/((1-zoom)/0.02);
+            // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)-((this.camera.adjustedPan.x+this.camera.pan.x)*(1-zoom));
+            // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)-((this.camera.adjustedPan.y+this.camera.pan.y)*(1-zoom));
 
-            // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-this.camera.zoom.x)+1)-((this.camera.adjustedPan.x)*(1-this.camera.zoom.x));
-            // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-this.camera.zoom.x)+1)-((this.camera.adjustedPan.y)*(1-this.camera.zoom.x));
-
-            this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)-((this.camera.adjustedPan.x+this.camera.pan.x)*(1-zoom));
-            this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)-((this.camera.adjustedPan.y+this.camera.pan.y)*(1-zoom));
-
-
-
-
-            // console.log('variable: x:',(this.camera.adjustedPan.x+this.camera.pan.x)*(1-this.camera.zoom.x),'y:',(this.camera.adjustedPan.y+this.camera.pan.y)*(1-this.camera.zoom.x),'diffx',diffx,'diffy',diffy,'otherx',(this.camera.adjustedPan.x+this.camera.pan.x)*(1-this.camera.zoom.x),'othery',(this.camera.adjustedPan.y+this.camera.pan.y)*(1-this.camera.zoom.x));
+            this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+            this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
           }
 
 
-
-          // next: fix zoom-out focus marker
-          // next: try to fix click cell at scale w/ and w/o focused zoom
-          // next: test pan, zoom, pan -> zoom, zoom -> pan -> zoom to location/player
-          // next: add limit, mode/direction and threshold indicators
-
         }
-
-        post.x = this.camera.zoomFocusPan.x;
-        post.y = this.camera.zoomFocusPan.y;
-        console.log('pre/post',pre,post,'true diffx',post.x-pre.x,'y',post.y-pre.y);
-        console.log('x1',((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom),'y1',((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom));
-        console.log('pan',this.camera.pan,'zoom',this.camera.zoom);
+        console.log('combined pan x:',this.camera.adjustedPan.x+this.camera.pan.x,'y:',this.camera.adjustedPan.y+this.camera.pan.y);
+        // console.log('adjustedPan',this.camera.adjustedPan);
+        // console.log('zoom',this.camera.zoom,'pan',this.camera.pan);
 
       }
 
@@ -8588,6 +8588,7 @@ class App extends Component {
     let newDirection;
 
     if (player.falling.state === true) {
+
       if (player.falling.count === player.falling.limit) {
         this.killPlayer(player)
       }
@@ -21413,6 +21414,7 @@ class App extends Component {
           }
       }
 
+      let zoom = this.camera.zoom.x;
       if (this.camera.mode === 'pan') {
 
         switch (this.camera.panDirection) {
