@@ -7525,6 +7525,7 @@ class App extends Component {
 
 
       if (this.keyPressed[player.number-1].attack === true) {
+        // if mode is pan and x or y are outside threshold +/- 2, log pan value, special value = true
         this.camera.mode = 'zoom';
       }
       if (this.keyPressed[player.number-1].defend === true) {
@@ -7678,6 +7679,9 @@ class App extends Component {
         let zoom = this.camera.zoom.x;
 
 
+        // if mode is zoom
+
+
         let diff;
         if (zoom === 1) {
 
@@ -7694,7 +7698,7 @@ class App extends Component {
         }
 
 
-        // ZOOMING OUT ABOVE THRESHOLD
+        // ZOOMING IN & OUT ABOVE THRESHOLD
         if (zoom < 1) {
 
           diff = 1 - zoom;
@@ -7704,6 +7708,7 @@ class App extends Component {
 
         }
 
+
         // ZOOMING BELOW THRESHOLD
         if (zoom > 1) {
 
@@ -7711,30 +7716,66 @@ class App extends Component {
           let diffx;
           let diffy;
 
-          // ZOOM INTO WHAT CAMERA IS CENTERED ON (MAGIC FORMULA!!!)
-          if (this.camera.zoomDirection === "in") {
+          if (this.camera.mode === 'pan') {
 
             this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
             this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
           }
+          if (this.camera.mode === 'zoom') {
 
-          // WHEN ZOOMING OUT INSIDE THRESHOLD, TEND TOWARDS A CENTER ALIGNMENT
-          if (this.camera.zoomDirection === "out") {
+            // ZOOM INTO WHAT CAMERA IS CENTERED ON (MAGIC FORMULA!!!)
+            if (this.camera.zoomDirection === "in") {
 
-            // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)-((this.camera.adjustedPan.x+this.camera.pan.x)*(1-zoom));
-            // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)-((this.camera.adjustedPan.y+this.camera.pan.y)*(1-zoom));
+              this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+              this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
-            this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
-            this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+            }
+
+            // WHEN ZOOMING OUT INSIDE THRESHOLD, TEND TOWARDS A CENTER ALIGNMENT
+            if (this.camera.zoomDirection === "out") {
+
+                 // --- This is CLOSE!!
+
+
+
+              if (this.camera.zoomFocusPan.x > 0) {
+                console.log('1');
+                this.camera.zoomFocusPan.x -= 12;
+              }
+              if (this.camera.zoomFocusPan.x < 0) {
+                console.log('2');
+                this.camera.zoomFocusPan.x += 12;
+              }
+              if (this.camera.zoomFocusPan.y > 0) {
+                console.log('3');
+                this.camera.zoomFocusPan.y -= 12;
+              }
+              if (this.camera.zoomFocusPan.y < 0) {
+                console.log('4');
+                this.camera.zoomFocusPan.y += 12;
+              }
+
+              // if this doesn't work when tweaked, capture how much zfp jumps when change from pan o xoom out and step between that and zero???
+
+              // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)-((this.camera.pan.x)*(1-zoom));
+              // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)-((this.camera.pan.y)*(1-zoom));
+
+              // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)-((this.camera.adjustedPan.x+this.camera.pan.x)*(1-zoom));
+              // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)-((this.camera.adjustedPan.y+this.camera.pan.y)*(1-zoom));
+
+            }
 
           }
+
+
 
 
         }
-        console.log('combined pan x:',this.camera.adjustedPan.x+this.camera.pan.x,'y:',this.camera.adjustedPan.y+this.camera.pan.y);
+        // console.log('combined pan x:',this.camera.adjustedPan.x+this.camera.pan.x,'y:',this.camera.adjustedPan.y+this.camera.pan.y);
         // console.log('adjustedPan',this.camera.adjustedPan);
         // console.log('zoom',this.camera.zoom,'pan',this.camera.pan);
+        console.log('ZFP!',this.camera.zoomFocusPan);
 
       }
 
