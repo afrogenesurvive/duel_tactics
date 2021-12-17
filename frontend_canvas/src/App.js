@@ -153,6 +153,7 @@ import Settings from './settings'
 import CellInfo from './cellInfo'
 import Loading from './loading'
 import AiStatus from './aiStatus'
+import CameraControl from './cameraControl'
 
 import pointInPolygon from 'point-in-polygon';
 
@@ -1704,6 +1705,8 @@ class App extends Component {
           }
         },
         state: {
+          count: 0,
+          limit: 10,
           zoom: false,
           pan: false,
         }
@@ -7494,6 +7497,25 @@ class App extends Component {
     }
 
 
+    // CAMERA INDICATORS COUNTER
+    if (this.camera.limits.state.zoom === true || this.camera.limits.state.pan === true) {
+      if (this.camera.limits.state.count < this.camera.limits.state.limit) {
+        this.camera.limits.state.count++
+        console.log('this.camera.limits.state.count',this.camera.limits.state.count);
+      }
+
+    }
+    if (this.camera.limits.state.zoom === true || this.camera.limits.state.pan === true) {
+      if (this.camera.limits.state.count >= this.camera.limits.state.limit) {
+        this.camera.limits.state.count = 0;
+        this.camera.limits.state.zoom = false;
+        this.camera.limits.state.pan = false;
+        console.log('camera limit indicator switch off');
+      }
+
+    }
+
+
     //CAMERA INPUT MODE CONTROLS
     if (this.camera.state === true && this.camera.instructionType === 'default') {
 
@@ -7687,6 +7709,16 @@ class App extends Component {
 
         } else {
           // console.log('cant pan at this zoom');
+          // this.camera.limits.state.pan = true;
+
+          if (
+            this.keyPressed[player.number-1].north === true ||
+            this.keyPressed[player.number-1].south === true ||
+            this.keyPressed[player.number-1].east === true ||
+            this.keyPressed[player.number-1].west === true
+          ) {
+            this.camera.limits.state.pan = true;
+          }
         }
       }
 
@@ -7753,27 +7785,29 @@ class App extends Component {
             if (this.camera.zoomDirection === "out") {
 
 
+              // ADJUST PAN INCREMENT FOR ZOOM OUT CENTERING
+
               if (this.camera.pan.x > -1) {
-                this.camera.pan.x -= 10;
-                this.camera.adjustedPan.x -= (10*this.camera.zoom.x);
+                this.camera.pan.x -= 7;
+                this.camera.adjustedPan.x -= (7*this.camera.zoom.x);
                 this.camera.panDirection = 'east';
                 setFocus = true;
               }
               if (this.camera.pan.x < -1) {
-                this.camera.pan.x += 10;
-                this.camera.adjustedPan.x += (10*this.camera.zoom.x);
+                this.camera.pan.x += 7;
+                this.camera.adjustedPan.x += (7*this.camera.zoom.x);
                 this.camera.panDirection = 'west';
                 setFocus = true;
               }
               if (this.camera.pan.y < -1) {
-                this.camera.pan.y += 10;
-                this.camera.adjustedPan.y += (10*this.camera.zoom.x);
+                this.camera.pan.y += 3.5;
+                this.camera.adjustedPan.y += (3.5*this.camera.zoom.x);
                 this.camera.panDirection = 'north';
                 setFocus = true;
               }
               if (this.camera.pan.y > -1) {
-                this.camera.pan.y -= 10;
-                this.camera.adjustedPan.y -= (10*this.camera.zoom.x);
+                this.camera.pan.y -= 3.5;
+                this.camera.adjustedPan.y -= (3.5*this.camera.zoom.x);
                 this.camera.panDirection = 'south';
                 setFocus = true;
               }
@@ -7864,6 +7898,8 @@ class App extends Component {
             }
           },
           state: {
+            count: 0,
+            limit: 10,
             zoom: false,
             pan: false,
           }
@@ -21597,6 +21633,7 @@ class App extends Component {
               </div>
             )}
 
+            // SETTINGS BOX
             <div className="settingsSwitch">
               <a href="javascript:" className="setSwitchLink" onClick={this.openSettings}>
                 <FontAwesomeIcon icon={faCogs} size="sm" className="setSwitchIcon"/>
@@ -21616,48 +21653,23 @@ class App extends Component {
 
             </div>
 
+
+            // CAMERA BOX
+
+
             {this.camera.state === true && (
               <div className="cameraBox">
-                <a href="javascript:"  onClick={this.closeCamera}>
-                  <FontAwesomeIcon icon={faVideo} size="sm" className="cameraUIIcon"/>
-                </a>
-                {this.camera.mode === 'zoom' && (
-                  <div className="cameraBoxMode">
-                  <a href="javascript:" className="cameraModeHighlighted" onClick={this.toggleCameraModeUI.bind(this, 'zoom')}>
-                    <FontAwesomeIcon icon={faSearchPlus} size="sm" className="cameraUIIcon"/>: {(this.camera.zoom.x-1).toFixed(2)}
-                  </a>
-                  {this.camera.limits.state.zoom === true && (
-                    <a href="javascript:">DDD
-                    <FontAwesomeIcon icon={faExclamationTriangle} size="sm" className="cameraUIIcon"/>
-                    </a>
-                  )}
-
-                  <a href="javascript:" className="" onClick={this.toggleCameraModeUI.bind(this, 'pan')}>
-                    <FontAwesomeIcon icon={faExpandAlt} size="sm" className="cameraUIIcon"/>: {this.camera.pan.x},{this.camera.pan.y}
-                  </a>
-                  {this.camera.limits.state.pan === true && (
-                    <FontAwesomeIcon icon={faExclamationTriangle} size="sm" className="cameraUIIcon"/>
-                  )}
-                  </div>
-                )}
-                {this.camera.mode === 'pan' && (
-                  <div className="cameraBoxMode">
-                  <a href="javascript:" onClick={this.toggleCameraModeUI.bind(this, 'zoom')}>
-                    <FontAwesomeIcon icon={faSearchPlus} size="sm" className="cameraUIIcon"/>: {(this.camera.zoom.x-1).toFixed(2)}
-                  </a>
-                  <a href="javascript:" className=" cameraModeHighlighted" onClick={this.toggleCameraModeUI.bind(this, 'pan')}>
-                    <FontAwesomeIcon icon={faExpandAlt} size="sm" className="cameraUIIcon"/>: {this.camera.panDirection}, {this.camera.pan.x},{this.camera.pan.y}
-                  </a>
-                  </div>
-                )}
-                <a href="javascript:"  onClick={this.preResetCamera}>
-                  <FontAwesomeIcon icon={faUndo} size="sm" className="cameraUIIcon"/>
-                </a>
-
+                <CameraControl
+                  camera={this.camera}
+                  close={this.closeCamera}
+                  toggleMode={this.toggleCameraModeUI}
+                  preReset={this.preResetCamera}
+                />
               </div>
             )}
 
 
+            // CELL INFO
             {this.showCellInfoBox !== true && (
               <div className="cellInfoSwitch">
                   <FontAwesomeIcon icon={faChessBoard} size="sm" className="setSwitchIcon"/>
