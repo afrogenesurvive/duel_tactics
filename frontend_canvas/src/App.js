@@ -13,6 +13,7 @@ import {
   faQuestionCircle,
   faBorderAll,
   faChessBoard,
+  faExclamationTriangle,
 } from '@fortawesome/free-solid-svg-icons';
 
 
@@ -1702,9 +1703,14 @@ class App extends Component {
             max: 200,
           }
         },
+        state: {
+          zoom: false,
+          pan: false,
+        }
       },
       instructionType: 'default',
       instructions: [],
+
     };
     this.cameraInstructionRef = {
       default: {},
@@ -7523,6 +7529,10 @@ class App extends Component {
         player.idleAnim.count = 0;
       }
 
+      // this.camera.limits.state = {
+      //   zoom: false,
+      //   pan: false,
+      // }
 
       if (this.keyPressed[player.number-1].attack === true) {
         // if mode is pan and x or y are outside threshold +/- 2, log pan value, special value = true
@@ -7549,7 +7559,9 @@ class App extends Component {
           // console.log('zooming in');
         }
         if (this.keyPressed[player.number-1].north === true && this.camera.zoom.x >= this.camera.limits.zoom.max) {
-          console.log('zoom in limit');
+          this.camera.limits.state.zoom = true;
+          console.log('zoom in limit',this.camera.limits.state.zoom);
+
         }
         if (
           this.keyPressed[player.number-1].south === true &&
@@ -7567,6 +7579,7 @@ class App extends Component {
         }
         if (this.keyPressed[player.number-1].south === true && this.camera.zoom.x <= this.camera.limits.zoom.min) {
           console.log('zoom out limit');
+          this.camera.limits.state.zoom = true;
         }
 
       }
@@ -7611,6 +7624,7 @@ class App extends Component {
           }
           if (this.keyPressed[player.number-1].north === true && this.camera.pan.y >= this.camera.limits.pan.y.max) {
             console.log('pan limit north');
+            this.camera.limits.state.pan = true;
           }
           if (
             this.keyPressed[player.number-1].south === true &&
@@ -7630,6 +7644,7 @@ class App extends Component {
           }
           if (this.keyPressed[player.number-1].south === true && this.camera.pan.y <= this.camera.limits.pan.y.min) {
             console.log('pan limit south');
+            this.camera.limits.state.pan = true;
           }
           if (
             this.keyPressed[player.number-1].east === true &&
@@ -7648,6 +7663,7 @@ class App extends Component {
           }
           if (this.keyPressed[player.number-1].east === true && this.camera.pan.x <= this.camera.limits.pan.x.min) {
             console.log('pan limit east');
+            this.camera.limits.state.pan = true;
           }
           if (
             this.keyPressed[player.number-1].west === true &&
@@ -7666,6 +7682,7 @@ class App extends Component {
           }
           if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
           console.log('pan limit west');
+          this.camera.limits.state.pan = true;
         }
 
         } else {
@@ -7735,117 +7752,38 @@ class App extends Component {
             // WHEN ZOOMING OUT INSIDE THRESHOLD, TEND TOWARDS A CENTER ALIGNMENT
             if (this.camera.zoomDirection === "out") {
 
-                 // --- This is CLOSE!!
-
-              // if (this.camera.zoomFocusPan.x > 0) { determine at which vales x & y tend towards the center
-
-              // if (this.camera.zoomFocusPan.x > 0) {
-              //   console.log('1');
-              //   this.camera.zoomFocusPan.x -= 12;
-              // }
-              // if (this.camera.zoomFocusPan.x < 0) {
-              //   console.log('2');
-              //   this.camera.zoomFocusPan.x += 12;
-              // }
-              // if (this.camera.zoomFocusPan.y > 0) {
-              //   console.log('3');
-              //   this.camera.zoomFocusPan.y -= 6;
-              // }
-              // if (this.camera.zoomFocusPan.y < 0) {
-              //   console.log('4');
-              //   this.camera.zoomFocusPan.y += 6;
-              // }
-
-              // if (this.camera.pan.y === -1 && this.camera.pan.x === -1) {
-              //   this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)-((this.camera.adjustedPan.x+this.camera.pan.x)*(1-zoom));
-              //   this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)-((this.camera.adjustedPan.y+this.camera.pan.y)*(1-zoom));
-              // }
-
-              // ------------
-
-
-              // if (this.camera.pan.x > -1) {
-              //   console.log('1');
-              //   // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)-((this.camera.adjustedPan.x+this.camera.pan.x)*(1-zoom));
-              //   this.camera.zoomFocusPan.x -= 20;
-              //   this.camera.zoomFocusPan.y += 10;
-              // }
-              // if (this.camera.pan.x < -1) {
-              //   console.log('2');
-              //   this.camera.zoomFocusPan.x += 20;
-              //   // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)-((this.camera.adjustedPan.x+this.camera.pan.x)*(1-zoom));
-              //   this.camera.zoomFocusPan.y += 10;
-              // }
-              // if (this.camera.pan.y < -1) {
-              //   console.log('3');
-              //   this.camera.zoomFocusPan.y += 10;
-              //   this.camera.zoomFocusPan.x += 20;
-              //   // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)-((this.camera.adjustedPan.y+this.camera.pan.y)*(1-zoom));
-              // }
-              // if (this.camera.pan.y > -1) {
-              //   console.log('4');
-              //   // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)-((this.camera.adjustedPan.y+this.camera.pan.y)*(1-zoom));
-              //   this.camera.zoomFocusPan.y -= 10;
-              //   this.camera.zoomFocusPan.x += 20;
-              // }
-              //
-              // if (this.camera.pan.y === -1 && this.camera.pan.x === -1) {
-              //   this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)-((this.camera.adjustedPan.x+this.camera.pan.x)*(1-zoom));
-              //   this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)-((this.camera.adjustedPan.y+this.camera.pan.y)*(1-zoom));
-              // }
-
-              // ------------
-
 
               if (this.camera.pan.x > -1) {
                 this.camera.pan.x -= 10;
-                // this.camera.adjustedPan.x -= 10;
-                // this.camera.adjustedPan.x -= (10*(1-this.camera.zoom.x));
                 this.camera.adjustedPan.x -= (10*this.camera.zoom.x);
                 this.camera.panDirection = 'east';
                 setFocus = true;
               }
               if (this.camera.pan.x < -1) {
                 this.camera.pan.x += 10;
-                // this.camera.adjustedPan.x += 10;
-                // this.camera.adjustedPan.x += (10*(1-this.camera.zoom.x));
                 this.camera.adjustedPan.x += (10*this.camera.zoom.x);
                 this.camera.panDirection = 'west';
                 setFocus = true;
               }
               if (this.camera.pan.y < -1) {
                 this.camera.pan.y += 10;
-                // this.camera.adjustedPan.y += 10;
-                // this.camera.adjustedPan.y += (10*(1-this.camera.zoom.x));
                 this.camera.adjustedPan.y += (10*this.camera.zoom.x);
                 this.camera.panDirection = 'north';
                 setFocus = true;
               }
               if (this.camera.pan.y > -1) {
                 this.camera.pan.y -= 10;
-                // this.camera.adjustedPan.y -= 10;
-                // this.camera.adjustedPan.y -= (10*(1-this.camera.zoom.x));
                 this.camera.adjustedPan.y -= (10*this.camera.zoom.x);
                 this.camera.panDirection = 'south';
                 setFocus = true;
               }
 
-
-
-              // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)-((this.camera.pan.x)*(1-zoom));
-              // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)-((this.camera.pan.y)*(1-zoom));
-
-              this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)-((this.camera.adjustedPan.x+this.camera.pan.x)*(1-zoom));
-              this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)-((this.camera.adjustedPan.y+this.camera.pan.y)*(1-zoom));
-
-
-              // ------------
-
-              // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)-((this.camera.pan.x)*(1-zoom));
-              // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)-((this.camera.pan.y)*(1-zoom));
-
               // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)-((this.camera.adjustedPan.x+this.camera.pan.x)*(1-zoom));
               // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)-((this.camera.adjustedPan.y+this.camera.pan.y)*(1-zoom));
+
+
+              this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+              this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
             }
 
@@ -7855,10 +7793,8 @@ class App extends Component {
 
 
         }
-        // console.log('combined pan x:',this.camera.adjustedPan.x+this.camera.pan.x,'y:',this.camera.adjustedPan.y+this.camera.pan.y);
-        // console.log('pan',this.camera.pan);
-        // console.log('zoom',this.camera.zoom);
-        console.log('ZFP!',this.camera.zoomFocusPan.x.toFixed(2),',',this.camera.zoomFocusPan.y.toFixed(2));
+
+        // console.log('ZFP!',this.camera.zoomFocusPan.x.toFixed(2),',',this.camera.zoomFocusPan.y.toFixed(2));
 
       }
 
@@ -7927,6 +7863,10 @@ class App extends Component {
               max: 600,
             }
           },
+          state: {
+            zoom: false,
+            pan: false,
+          }
         },
         instructionType: 'default',
         instructions: [],
@@ -13892,7 +13832,7 @@ class App extends Component {
     this.aiTarget = 1;
 
     this.resetCameraSwitch = true;
-    
+
     let plyrz = this.players
     for (const plyr of plyrz) {
       if (plyr.ai.state === true ) {
@@ -21686,9 +21626,18 @@ class App extends Component {
                   <a href="javascript:" className="cameraModeHighlighted" onClick={this.toggleCameraModeUI.bind(this, 'zoom')}>
                     <FontAwesomeIcon icon={faSearchPlus} size="sm" className="cameraUIIcon"/>: {(this.camera.zoom.x-1).toFixed(2)}
                   </a>
+                  {this.camera.limits.state.zoom === true && (
+                    <a href="javascript:">DDD
+                    <FontAwesomeIcon icon={faExclamationTriangle} size="sm" className="cameraUIIcon"/>
+                    </a>
+                  )}
+
                   <a href="javascript:" className="" onClick={this.toggleCameraModeUI.bind(this, 'pan')}>
                     <FontAwesomeIcon icon={faExpandAlt} size="sm" className="cameraUIIcon"/>: {this.camera.pan.x},{this.camera.pan.y}
                   </a>
+                  {this.camera.limits.state.pan === true && (
+                    <FontAwesomeIcon icon={faExclamationTriangle} size="sm" className="cameraUIIcon"/>
+                  )}
                   </div>
                 )}
                 {this.camera.mode === 'pan' && (
