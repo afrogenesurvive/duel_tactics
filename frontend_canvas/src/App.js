@@ -7800,32 +7800,32 @@ class App extends Component {
               if (this.camera.pan.x > -1) {
                 this.camera.pan.x -= 10;
                 // this.camera.adjustedPan.x -= 10;
-                this.camera.adjustedPan.x -= (10*(1-this.camera.zoom.x));
-                // this.camera.adjustedPan.x -= (10*this.camera.zoom.x);
+                // this.camera.adjustedPan.x -= (10*(1-this.camera.zoom.x));
+                this.camera.adjustedPan.x -= (10*this.camera.zoom.x);
                 this.camera.panDirection = 'east';
                 setFocus = true;
               }
               if (this.camera.pan.x < -1) {
                 this.camera.pan.x += 10;
                 // this.camera.adjustedPan.x += 10;
-                this.camera.adjustedPan.x += (10*(1-this.camera.zoom.x));
-                // this.camera.adjustedPan.x += (10*this.camera.zoom.x);
+                // this.camera.adjustedPan.x += (10*(1-this.camera.zoom.x));
+                this.camera.adjustedPan.x += (10*this.camera.zoom.x);
                 this.camera.panDirection = 'west';
                 setFocus = true;
               }
               if (this.camera.pan.y < -1) {
                 this.camera.pan.y += 10;
                 // this.camera.adjustedPan.y += 10;
-                this.camera.adjustedPan.y += (10*(1-this.camera.zoom.x));
-                // this.camera.adjustedPan.y += (10*this.camera.zoom.x);
+                // this.camera.adjustedPan.y += (10*(1-this.camera.zoom.x));
+                this.camera.adjustedPan.y += (10*this.camera.zoom.x);
                 this.camera.panDirection = 'north';
                 setFocus = true;
               }
               if (this.camera.pan.y > -1) {
                 this.camera.pan.y -= 10;
                 // this.camera.adjustedPan.y -= 10;
-                this.camera.adjustedPan.y -= (10*(1-this.camera.zoom.x));
-                // this.camera.adjustedPan.y -= (10*this.camera.zoom.x);
+                // this.camera.adjustedPan.y -= (10*(1-this.camera.zoom.x));
+                this.camera.adjustedPan.y -= (10*this.camera.zoom.x);
                 this.camera.panDirection = 'south';
                 setFocus = true;
               }
@@ -13891,6 +13891,8 @@ class App extends Component {
     }
     this.aiTarget = 1;
 
+    this.resetCameraSwitch = true;
+    
     let plyrz = this.players
     for (const plyr of plyrz) {
       if (plyr.ai.state === true ) {
@@ -21682,20 +21684,20 @@ class App extends Component {
                 {this.camera.mode === 'zoom' && (
                   <div className="cameraBoxMode">
                   <a href="javascript:" className="cameraModeHighlighted" onClick={this.toggleCameraModeUI.bind(this, 'zoom')}>
-                    <FontAwesomeIcon icon={faSearchPlus} size="sm" className="cameraUIIcon"/>
+                    <FontAwesomeIcon icon={faSearchPlus} size="sm" className="cameraUIIcon"/>: {(this.camera.zoom.x-1).toFixed(2)}
                   </a>
                   <a href="javascript:" className="" onClick={this.toggleCameraModeUI.bind(this, 'pan')}>
-                    <FontAwesomeIcon icon={faExpandAlt} size="sm" className="cameraUIIcon"/>
+                    <FontAwesomeIcon icon={faExpandAlt} size="sm" className="cameraUIIcon"/>: {this.camera.pan.x},{this.camera.pan.y}
                   </a>
                   </div>
                 )}
                 {this.camera.mode === 'pan' && (
                   <div className="cameraBoxMode">
                   <a href="javascript:" onClick={this.toggleCameraModeUI.bind(this, 'zoom')}>
-                    <FontAwesomeIcon icon={faSearchPlus} size="sm" className="cameraUIIcon"/>
+                    <FontAwesomeIcon icon={faSearchPlus} size="sm" className="cameraUIIcon"/>: {(this.camera.zoom.x-1).toFixed(2)}
                   </a>
                   <a href="javascript:" className=" cameraModeHighlighted" onClick={this.toggleCameraModeUI.bind(this, 'pan')}>
-                    <FontAwesomeIcon icon={faExpandAlt} size="sm" className="cameraUIIcon"/>
+                    <FontAwesomeIcon icon={faExpandAlt} size="sm" className="cameraUIIcon"/>: {this.camera.panDirection}, {this.camera.pan.x},{this.camera.pan.y}
                   </a>
                   </div>
                 )}
