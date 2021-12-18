@@ -1770,6 +1770,14 @@ class App extends Component {
     this.aiDeflectedCheck = [];
 
 
+    this.bloodSacrificeEvent = {
+      state: false,
+      count: 0,
+      limit: 100,
+      restore: false,
+    }
+    this.bloodSacrificeVoidedCells = [];
+
   }
 
 
@@ -2568,67 +2576,6 @@ class App extends Component {
   getCanvasClick = (canvas, event) => {
 
 
-    // this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
-    // this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
-    // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
-    // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
-    //
-    // context.translate(this.camera.zoomFocusPan.x,this.camera.zoomFocusPan.y);
-    // context2.translate(this.camera.zoomFocusPan.x,this.camera.zoomFocusPan.y);
-    //
-    // context.scale(this.camera.zoom.x,this.camera.zoom.y);
-    // context2.scale(this.camera.zoom.x,this.camera.zoom.y);
-
-
-    // this.canvasWidth = 1300;
-    // this.canvasHeight = 800;
-
-    // window < 1100
-    // this.canvasWidth = 1000;
-    // this.canvasHeight = 600;
-
-
-
-    // CENTER
-    // cell: 4,4 ; zoom: 1 ; pan: -1, -1 ; x: 504  ,y: 300 ; height/2*zoom: 300
-    // cell: 4,4 ; zoom: 1.10 ; pan: -1, -1 ; x: 504  ,y: 299
-    // cell: 4,4 ; zoom: 1.30 ; pan: -1, -1 ; x: 504  ,y: 299
-    // cell: 4,4 ; zoom: 1.80 ; pan: -1, -1 ; x: 504  ,y: 295
-    // cell: 4,4 ; zoom: 2.40 ; pan: -1, -1 ; x: 504  ,y: 291
-
-    // NORTH
-    // cell: 3,3 ; zoom: 1 ; pan: -1, -1 ; x: 504  ,y: 242
-    // cell: 3,3 ; zoom: 1.10 ; pan: -1, -1 ; x: 504  ,y: 252
-    // cell: 3,3 ; zoom: 1.20 ; pan: -1, -1 ; x: 506  ,y: 241
-    // cell: 3,3 ; zoom: 1.30 ; pan: -1, -1 ; x: 505  ,y: 237
-    // cell: 3,3 ; zoom: 1.40 ; pan: -1, -1 ; x: 505  ,y: 229
-
-    // cell: 3,3 ; zoom: 1.20 ; pan: -1, 39 ; x: 505  ,y: 287 ;
-    // cell: 3,3 ; zoom: 1.20 ; pan: -1, 99 ; x: 505  ,y: 362
-    // cell: 3,3 ; zoom: 1.20 ; pan: -1, 169 ; x: 505  ,y: 445
-
-    // SOUTH
-    // cell: 5,5 ; zoom: 1 ; pan: -1, -1 ; x: 504  ,y: 350
-    // cell: 5,5 ; zoom: 1.20 ; pan: -1, -1 ; x: 504  ,y: 359
-    // cell: 5,5 ; zoom: 1.50 ; pan: -1, -1 ; x: 505  ,y: 374
-    // cell: 5,5 ; zoom: 2.00 ; pan: -1, -1 ; x: 505  ,y: 395
-    // cell: 5,5 ; zoom: 2.20 ; pan: -1, -1 ; x: 505  ,y: 401
-
-    // cell: 6,6 ; zoom: 1 ; pan: -1, -1 ; x: 504  ,y: 398
-    // cell: 6,6 ; zoom: 1.06 ; pan: -1, -1 ; x: 504  ,y: 405
-    // cell: 6,6 ; zoom: 1.22 ; pan: -1, -1 ; x: 504  ,y: 420
-    // cell: 6,6 ; zoom: 1.36 ; pan: -1, -1 ; x: 504  ,y: 435
-    // cell: 6,6 ; zoom: 1.68 ; pan: -1, -1 ; x: 505  ,y: 462
-
-
-
-
-    //
-    // if pan is -1,-1, increase y
-
-
-
-
     const rect = canvas.getBoundingClientRect()
     const scale = rect.width / canvas.offsetWidth;
     // const scale = (rect.width / canvas.offsetWidth)*this.camera.zoom.x;
@@ -2641,7 +2588,7 @@ class App extends Component {
     let newY = (y-this.camera.zoomFocusPan.y)/this.camera.zoom.y;
 
 
-    console.log("clicked the canvas", 'x: ',newX,'y: ',newY,'zoom',this.camera.zoom.x.toFixed(2),'pan',this.camera.pan.x,this.camera.pan.y,'rect width',rect.width);
+    // console.log("clicked the canvas", 'x: ',newX,'y: ',newY,'zoom',this.camera.zoom.x.toFixed(2),'pan',this.camera.pan.x,this.camera.pan.y,'rect width',rect.width);
 
     let insideGrid = false;
 
@@ -2662,7 +2609,7 @@ class App extends Component {
     }
     if ( insideGrid === false ) {
       // console.log("clicked the canvas", 'x: ',x,'y: ',y);
-      console.log('clicked outside the grid');
+      // console.log('clicked outside the grid');
       this.showCellInfoBox = false;
       this.clicked = {
         number:{
@@ -4271,6 +4218,28 @@ class App extends Component {
       // console.log('void off');
     }
 
+    if (this.bloodSacrificeEvent.state === true) {
+      if (this.bloodSacrificeEvent.count < this.bloodSacrificeEvent.limit) {
+        this.bloodSacrificeEvent.count++;
+      } else if (this.bloodSacrificeEvent.count >= this.bloodSacrificeEvent.limit) {
+        if (this.cellToVoid.state !== true) {
+          this.bloodSacrificeEvent.state = false;
+          this.openVoid = false;
+          console.log('Blood Sacrifice event is now over.');
+          if (this.bloodSacrificeEvent.restore === true) {
+
+            for (const cell of this.bloodSacrificeVoidedCells) {
+              cell.void.state = false;
+            }
+
+            this.bloodSacrificeVoidedCells = [];
+            this.bloodSacrificeEvent.restore = false;
+          }
+        }
+
+      }
+    }
+
 
     // STAMINA!!
     if (player.stamina.current < player.stamina.max) {
@@ -5652,6 +5621,8 @@ class App extends Component {
                     this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
 
                     player.points++;
+
+                    this.pointChecker(player)
 
                     if (player.ai.state === true && player.ai.mode === 'aggressive') {
                       console.log('check for evidence of retrieval here and resume retrieve if so',player.ai.retrieving,player.ai.mission);
@@ -8189,6 +8160,7 @@ class App extends Component {
                     this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
 
                     this.players[bolt.owner-1].points++;
+                    this.pointChecker(this.players[bolt.owner])
 
                   }
                   else if (miss !== true) {
@@ -10699,10 +10671,10 @@ class App extends Component {
         // CAMERA FOCUS POINT
         if (x === this.gridWidth && y === this.gridWidth ) {
 
-          // context.fillStyle = 'purple';
-          // context.beginPath();
-          // context.arc(this.camera.focus.x, this.camera.focus.y, 10, 0, 2 * Math.PI);
-          // context.fill();
+          context.fillStyle = 'purple';
+          context.beginPath();
+          context.arc(this.camera.focus.x, this.camera.focus.y, 10, 0, 2 * Math.PI);
+          context.fill();
 
         }
 
@@ -13344,6 +13316,20 @@ class App extends Component {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
+  pointChecker = (player) => {
+
+    // console.log('point checker player',player);
+
+    let points = player.points;
+    if (points %1 === 0) {
+      this.bloodSacrificeEvent.state = true;
+      this.bloodSacrificeEvent.limit = 1000;
+      this.bloodSacrificeEvent.restore = true;
+      this.openVoid = true;
+      console.log('the gods have accepted a blood sacrifice. Standby for void tiles');
+    }
+
+  }
 
 
   attackedCancel = (player) => {
@@ -13770,6 +13756,7 @@ class App extends Component {
     // player.hp = 2;
     player.points--;
     player.drowning = false;
+    this.pointChecker(player)
 
 
     // RESET TARGETTING FOR AI TARGETTING ME!!
@@ -14594,6 +14581,10 @@ class App extends Component {
           initDrawn: false
         };
         cl.void.state = true;
+
+        if (this.bloodSacrificeEvent.state === true) {
+          this.bloodSacrificeVoidedCells.push(cl)
+        }
         // console.log('voiding',cl.number.x,cl.number.y);
 
         if (
