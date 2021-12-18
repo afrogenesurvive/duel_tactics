@@ -196,3 +196,7 @@
   margin: 0 .3rem;
   color: #000000;
 }
+.cameraUIIconAlert {
+  margin: 0 .3rem;
+  color: red;
+}

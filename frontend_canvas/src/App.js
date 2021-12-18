@@ -2566,22 +2566,90 @@ class App extends Component {
 
   }
   getCanvasClick = (canvas, event) => {
+
+
+    // this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
+    // this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
+    // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+    // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+    //
+    // context.translate(this.camera.zoomFocusPan.x,this.camera.zoomFocusPan.y);
+    // context2.translate(this.camera.zoomFocusPan.x,this.camera.zoomFocusPan.y);
+    //
+    // context.scale(this.camera.zoom.x,this.camera.zoom.y);
+    // context2.scale(this.camera.zoom.x,this.camera.zoom.y);
+
+
+    // this.canvasWidth = 1300;
+    // this.canvasHeight = 800;
+
+    // window < 1100
+    // this.canvasWidth = 1000;
+    // this.canvasHeight = 600;
+
+
+
+    // CENTER
+    // cell: 4,4 ; zoom: 1 ; pan: -1, -1 ; x: 504  ,y: 300 ; height/2*zoom: 300
+    // cell: 4,4 ; zoom: 1.10 ; pan: -1, -1 ; x: 504  ,y: 299
+    // cell: 4,4 ; zoom: 1.30 ; pan: -1, -1 ; x: 504  ,y: 299
+    // cell: 4,4 ; zoom: 1.80 ; pan: -1, -1 ; x: 504  ,y: 295
+    // cell: 4,4 ; zoom: 2.40 ; pan: -1, -1 ; x: 504  ,y: 291
+
+    // NORTH
+    // cell: 3,3 ; zoom: 1 ; pan: -1, -1 ; x: 504  ,y: 242
+    // cell: 3,3 ; zoom: 1.10 ; pan: -1, -1 ; x: 504  ,y: 252
+    // cell: 3,3 ; zoom: 1.20 ; pan: -1, -1 ; x: 506  ,y: 241
+    // cell: 3,3 ; zoom: 1.30 ; pan: -1, -1 ; x: 505  ,y: 237
+    // cell: 3,3 ; zoom: 1.40 ; pan: -1, -1 ; x: 505  ,y: 229
+
+    // cell: 3,3 ; zoom: 1.20 ; pan: -1, 39 ; x: 505  ,y: 287 ;
+    // cell: 3,3 ; zoom: 1.20 ; pan: -1, 99 ; x: 505  ,y: 362
+    // cell: 3,3 ; zoom: 1.20 ; pan: -1, 169 ; x: 505  ,y: 445
+
+    // SOUTH
+    // cell: 5,5 ; zoom: 1 ; pan: -1, -1 ; x: 504  ,y: 350
+    // cell: 5,5 ; zoom: 1.20 ; pan: -1, -1 ; x: 504  ,y: 359
+    // cell: 5,5 ; zoom: 1.50 ; pan: -1, -1 ; x: 505  ,y: 374
+    // cell: 5,5 ; zoom: 2.00 ; pan: -1, -1 ; x: 505  ,y: 395
+    // cell: 5,5 ; zoom: 2.20 ; pan: -1, -1 ; x: 505  ,y: 401
+
+    // cell: 6,6 ; zoom: 1 ; pan: -1, -1 ; x: 504  ,y: 398
+    // cell: 6,6 ; zoom: 1.06 ; pan: -1, -1 ; x: 504  ,y: 405
+    // cell: 6,6 ; zoom: 1.22 ; pan: -1, -1 ; x: 504  ,y: 420
+    // cell: 6,6 ; zoom: 1.36 ; pan: -1, -1 ; x: 504  ,y: 435
+    // cell: 6,6 ; zoom: 1.68 ; pan: -1, -1 ; x: 505  ,y: 462
+
+
+
+
+    //
+    // if pan is -1,-1, increase y
+
+
+
+
     const rect = canvas.getBoundingClientRect()
     const scale = rect.width / canvas.offsetWidth;
+    // const scale = (rect.width / canvas.offsetWidth)*this.camera.zoom.x;
+    // const scale = (rect.width / canvas.offsetWidth)*(this.camera.zoom.x-1);
     const x = (event.clientX - rect.left)*scale;
     const y = (event.clientY - rect.top)*scale;
 
+    // ADJUSTED FOR CANVAS SCALE & TRANSFORM
+    let newX = (x-this.camera.zoomFocusPan.x)/this.camera.zoom.x;
+    let newY = (y-this.camera.zoomFocusPan.y)/this.camera.zoom.y;
 
-    console.log("clicked the canvas", 'x: ',x,'y: ',y,'zoom',this.camera.zoom.x,'pan',this.camera.pan.x,this.camera.pan.y);
+
+    console.log("clicked the canvas", 'x: ',newX,'y: ',newY,'zoom',this.camera.zoom.x.toFixed(2),'pan',this.camera.pan.x,this.camera.pan.y,'rect width',rect.width);
 
     let insideGrid = false;
 
     for(const cell of this.gridInfo) {
-      let point = [x,y];
+      let point = [newX,newY];
       let polygon = [];
       for (const vertex of cell.vertices) {
         let vertexPoint = [vertex.x+10,vertex.y+5];
-
         polygon.push(vertexPoint)
       }
       let pip = pointInPolygon(point, polygon)
@@ -2594,6 +2662,7 @@ class App extends Component {
     }
     if ( insideGrid === false ) {
       // console.log("clicked the canvas", 'x: ',x,'y: ',y);
+      console.log('clicked outside the grid');
       this.showCellInfoBox = false;
       this.clicked = {
         number:{
@@ -7497,11 +7566,10 @@ class App extends Component {
     }
 
 
-    // CAMERA INDICATORS COUNTER
+    // CAMERA INDICATOR COUNTER
     if (this.camera.limits.state.zoom === true || this.camera.limits.state.pan === true) {
       if (this.camera.limits.state.count < this.camera.limits.state.limit) {
         this.camera.limits.state.count++
-        console.log('this.camera.limits.state.count',this.camera.limits.state.count);
       }
 
     }
@@ -7510,7 +7578,6 @@ class App extends Component {
         this.camera.limits.state.count = 0;
         this.camera.limits.state.zoom = false;
         this.camera.limits.state.pan = false;
-        console.log('camera limit indicator switch off');
       }
 
     }
@@ -7522,16 +7589,6 @@ class App extends Component {
       let setFocus = false;
       let setZoomPan = false;
 
-      let pre = {
-        x: this.camera.zoomFocusPan.x,
-        y: this.camera.zoomFocusPan.y,
-      }
-      let post = {
-        x: this.camera.zoomFocusPan.x,
-        y: this.camera.zoomFocusPan.y,
-      }
-      let zfpDiff;
-      let preZpfPostPanAdjust = false;
 
       // IDLE ANIM STEPPER!
       if (player.action === 'idle') {
@@ -7551,10 +7608,6 @@ class App extends Component {
         player.idleAnim.count = 0;
       }
 
-      // this.camera.limits.state = {
-      //   zoom: false,
-      //   pan: false,
-      // }
 
       if (this.keyPressed[player.number-1].attack === true) {
         // if mode is pan and x or y are outside threshold +/- 2, log pan value, special value = true
@@ -10646,10 +10699,10 @@ class App extends Component {
         // CAMERA FOCUS POINT
         if (x === this.gridWidth && y === this.gridWidth ) {
 
-          context.fillStyle = 'purple';
-          context.beginPath();
-          context.arc(this.camera.focus.x, this.camera.focus.y, 10, 0, 2 * Math.PI);
-          context.fill();
+          // context.fillStyle = 'purple';
+          // context.beginPath();
+          // context.arc(this.camera.focus.x, this.camera.focus.y, 10, 0, 2 * Math.PI);
+          // context.fill();
 
         }
 

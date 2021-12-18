@@ -26,9 +26,9 @@ const CameraControl = (props) => {
       {props.camera.mode === 'zoom' && (
         <div className="cameraBoxMode">
         <a href="javascript:" className="cameraModeHighlighted" onClick={props.toggleMode.bind(this, 'zoom')}>
-          <FontAwesomeIcon icon={faSearchPlus} size="sm" className="cameraUIIcon"/>: {((props.camera.zoom.x-1).toFixed(2))*100}%
+          <FontAwesomeIcon icon={faSearchPlus} size="sm" className="cameraUIIcon"/>: {(props.camera.zoom.x-1).toFixed(2)}
           {props.camera.limits.state.zoom === true && (
-            <FontAwesomeIcon icon={faExclamationTriangle} size="sm" className="cameraUIIcon"/>
+            <FontAwesomeIcon icon={faExclamationTriangle} size="sm" className="cameraUIIconAlert"/>
           )}
         </a>
 
@@ -36,7 +36,7 @@ const CameraControl = (props) => {
         <a href="javascript:" className="" onClick={props.toggleMode.bind(this, 'pan')}>
           <FontAwesomeIcon icon={faExpandAlt} size="sm" className="cameraUIIcon"/>: {props.camera.pan.x},{props.camera.pan.y}
           {props.camera.limits.state.pan === true && (
-            <FontAwesomeIcon icon={faExclamationTriangle} size="sm" className="cameraUIIcon"/>
+            <FontAwesomeIcon icon={faExclamationTriangle} size="sm" className="cameraUIIconAlert"/>
           )}
         </a>
 
@@ -45,16 +45,16 @@ const CameraControl = (props) => {
       {props.camera.mode === 'pan' && (
         <div className="cameraBoxMode">
         <a href="javascript:" onClick={props.toggleMode.bind(this, 'zoom')}>
-          <FontAwesomeIcon icon={faSearchPlus} size="sm" className="cameraUIIcon"/>: {((props.camera.zoom.x-1).toFixed(2))*100}%
+          <FontAwesomeIcon icon={faSearchPlus} size="sm" className="cameraUIIcon"/>: {(props.camera.zoom.x-1).toFixed(2)}
           {props.camera.limits.state.zoom === true && (
-            <FontAwesomeIcon icon={faExclamationTriangle} size="sm" className="cameraUIIcon"/>
+            <FontAwesomeIcon icon={faExclamationTriangle} size="sm" className="cameraUIIconAlert"/>
           )}
         </a>
 
         <a href="javascript:" className=" cameraModeHighlighted" onClick={props.toggleMode.bind(this, 'pan')}>
           <FontAwesomeIcon icon={faExpandAlt} size="sm" className="cameraUIIcon"/>: {props.camera.panDirection}, {props.camera.pan.x},{props.camera.pan.y}
           {props.camera.limits.state.pan === true && (
-            <FontAwesomeIcon icon={faExclamationTriangle} size="sm" className="cameraUIIcon"/>
+            <FontAwesomeIcon icon={faExclamationTriangle} size="sm" className="cameraUIIconAlert"/>
           )}
         </a>
 
