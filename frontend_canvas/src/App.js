@@ -1671,6 +1671,10 @@ class App extends Component {
         x: undefined,
         y: undefined,
       },
+      focusCell: {
+        x: 4,
+        y: 4,
+      },
       zoom: {
         x: 1,
         y: 1,
@@ -2588,7 +2592,7 @@ class App extends Component {
     let newY = (y-this.camera.zoomFocusPan.y)/this.camera.zoom.y;
 
 
-    // console.log("clicked the canvas", 'x: ',newX,'y: ',newY,'zoom',this.camera.zoom.x.toFixed(2),'pan',this.camera.pan.x,this.camera.pan.y,'rect width',rect.width);
+    console.log("clicked the canvas", 'x: ',x,'y: ',y,'newX',newX,'newY',newY,'zoom',this.camera.zoom.x.toFixed(2),'pan',this.camera.pan.x,this.camera.pan.y);
 
     let insideGrid = false;
 
@@ -4218,6 +4222,7 @@ class App extends Component {
       // console.log('void off');
     }
 
+    // BLOOD SACRIFICE!!
     if (this.bloodSacrificeEvent.state === true) {
       if (this.bloodSacrificeEvent.count < this.bloodSacrificeEvent.limit) {
         this.bloodSacrificeEvent.count++;
@@ -7888,6 +7893,10 @@ class App extends Component {
           x: undefined,
           y: undefined,
         },
+        focusCell: {
+          x: undefined,
+          y: undefined,
+        },
         zoom: {
           x: 1,
           y: 1,
@@ -7943,6 +7952,8 @@ class App extends Component {
     if (this.camera.state !== true && this.camera.fixed !== true) {
 
       if (this.camera.instructionType === 'default') {
+
+
 
         // if there are instructions, execute and step instruction.count, remove from array
         //
@@ -8160,7 +8171,7 @@ class App extends Component {
                     this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
 
                     this.players[bolt.owner-1].points++;
-                    this.pointChecker(this.players[bolt.owner])
+                    this.pointChecker(this.players[bolt.owner-1])
 
                   }
                   else if (miss !== true) {
@@ -15976,9 +15987,11 @@ class App extends Component {
       }
 
     }
+
     else if (this.addAiCount.state === true) {
       // console.log('already adding an ai player');
     }
+    // console.log('new ai player: settings',this.aiInitSettings);
 
   }
   addAiRandomPlayer = (mission) => {
@@ -16050,6 +16063,7 @@ class App extends Component {
       },
     }
     this.addAiPlayer();
+
   }
   removeAiPlayer = (playerNumber) => {
     console.log('removing ai player',playerNumber);
@@ -16199,6 +16213,7 @@ class App extends Component {
           };
 
           if (plyr.ai.mission === 'pursue') {
+
             plyr.ai.targetSet = false;
             plyr.ai.targetAcquired = false;
             plyr.ai.mission = plyr.ai.primaryMission;
@@ -17148,7 +17163,7 @@ class App extends Component {
 
     // PATHFIND ERROR/ PREVENT SUICIDE!
     if (plyr.ai.resetInstructions === true ) {
-      console.log('pathfinding reset');
+      console.log('pathfinding reset',plyr.ai);
       if (!plyr.popups.find(x=>x.msg === 'thinking')) {
         plyr.popups.push(
           {
@@ -17250,11 +17265,11 @@ class App extends Component {
     let targetInRange = false;
 
 
-
     if (plyr.ai.targetSet === true) {
       for (const plyr2 of this.players) {
         if (plyr2.ai.state !== true) {
 
+          // CHECK FOR IN WEAPON RANGE!!
           if (plyr.currentWeapon.type === 'crossbow') {
 
             let range = plyr.ai.pathfindingRanges.crossbow+2;
@@ -17912,7 +17927,7 @@ class App extends Component {
 
       this.aiResetRanges(plyr)
       if (plyr.ai.primaryMission === 'defend') {
-        // console.log('defend',plyr.ai.defending.checkin);
+        console.log('defend',plyr.ai.defending.checkin);
         plyr.ai.patrolling.checkin = undefined;
         plyr.ai.defending.state = true;
       }
@@ -19673,8 +19688,9 @@ class App extends Component {
     let defendDest;
     if (aiPlayer.ai.mission === 'defend') {
       // console.log('defending',aiPlayer.ai.defending);
+      // console.log('prevTargetPos',prevTargetPos,'currentTargetPos',currentTargetPos);
 
-
+      // TARGET LOCATION CHANGED!!
       if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
         // console.log('defending but target location changed! Dont update path. Just track target',aiPlayer.number);
 
@@ -19686,7 +19702,7 @@ class App extends Component {
 
       // SET OUT TO DEFEND POINT
       if (!aiPlayer.ai.defending.checkin) {
-        // console.log('start out to defend location',aiPlayer.ai.defending.area[0]);
+        console.log('start out to defend location',aiPlayer.ai.defending.area[0]);
         aiPlayer.ai.defending.checkin = 'enroute';
 
         if (!aiPlayer.popups.find(x=>x.msg === 'missionEnroute')) {
@@ -19747,7 +19763,7 @@ class App extends Component {
 
 
         defendDest = freeCells[whatCell-1]
-        // console.log('defendDest',defendDest);
+        console.log('defendDest',defendDest);
         if (aiPlayer.ai.defending.area.length > 1) {
           aiPlayer.ai.defending.area[1] = defendDest
         }
@@ -19761,6 +19777,7 @@ class App extends Component {
 
       // EN ROUTE TO DEFEND POINT
       if (aiPlayer.ai.defending.checkin === 'enroute') {
+        console.log('en route to defend point');
 
         if (aiPlayer.attacking.state === true) {
           aiPlayer.attacking.state = false;
