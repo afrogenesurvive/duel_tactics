@@ -7817,14 +7817,14 @@ class App extends Component {
               // ADJUST PAN INCREMENT FOR ZOOM OUT CENTERING
 
               if (this.camera.pan.x > -1) {
-                this.camera.pan.x -= 7;
-                this.camera.adjustedPan.x -= (7*this.camera.zoom.x);
+                this.camera.pan.x -= 6;
+                this.camera.adjustedPan.x -= (6*this.camera.zoom.x);
                 this.camera.panDirection = 'east';
                 setFocus = true;
               }
               if (this.camera.pan.x < -1) {
-                this.camera.pan.x += 7;
-                this.camera.adjustedPan.x += (7*this.camera.zoom.x);
+                this.camera.pan.x += 6;
+                this.camera.adjustedPan.x += (6*this.camera.zoom.x);
                 this.camera.panDirection = 'west';
                 setFocus = true;
               }
@@ -13332,7 +13332,7 @@ class App extends Component {
     // console.log('point checker player',player);
 
     let points = player.points;
-    if (points %1 === 0) {
+    if (points %5 === 0) {
       this.bloodSacrificeEvent.state = true;
       this.bloodSacrificeEvent.limit = 1000;
       this.bloodSacrificeEvent.restore = true;
@@ -16142,7 +16142,7 @@ class App extends Component {
 
 
     if (this.resetAiTarget.state === true) {
-      console.log('someone died. reset ai targets');
+      console.log('someone died. reset ai targets','this.playerNumber',this.playerNumber);
       if (!plyr.popups.find(x=>x.msg === 'thinking')) {
         plyr.popups.push(
           {
@@ -16242,9 +16242,12 @@ class App extends Component {
 
 
       if (this.playerNumber > 1) {
+        console.log('here there everywhere');
+
 
         if (this.resetAiTarget.player === 1) {
           if (this.players[1].dead.state !== true && this.players[1].falling.state !== true && this.players[1].respawn !== true) {
+            console.log('1');
             this.aiTarget = 2;
             this.resetAiTarget.player = 0;
           } else {
@@ -16254,6 +16257,7 @@ class App extends Component {
 
         if (this.resetAiTarget.player === 2) {
           if (this.players[0].dead.state !== true && this.players[0].falling.state !== true && this.players[0].respawn !== true) {
+            console.log('2');
             this.aiTarget = 1;
             this.resetAiTarget.player = 0;
           } else {
@@ -16261,7 +16265,11 @@ class App extends Component {
           }
         }
 
+
+      } else {
+        this.allPlayersDead = true;
       }
+
       // this.resetAiTarget.state2 = true;
       this.resetAiTarget.state = false;
 
@@ -16290,6 +16298,10 @@ class App extends Component {
           }
         }
       }
+    }
+
+    if (this.allPlayersDead === true) {
+      console.log('still no targets availible for ai!!');
     }
 
 
@@ -17163,7 +17175,7 @@ class App extends Component {
 
     // PATHFIND ERROR/ PREVENT SUICIDE!
     if (plyr.ai.resetInstructions === true ) {
-      console.log('pathfinding reset',plyr.ai);
+      console.log('pathfinding reset');
       if (!plyr.popups.find(x=>x.msg === 'thinking')) {
         plyr.popups.push(
           {
@@ -17232,6 +17244,8 @@ class App extends Component {
 
 
       if (targetAlive === true) {
+        console.log('setting ai target... ','this.aiTarget',this.aiTarget);
+
         plyr.ai.targetPlayer = {
           number: targetPlayer.number,
           currentPosition: {
@@ -17255,7 +17269,7 @@ class App extends Component {
         // this.getTarget(plyr)
       }
       else {
-        // console.log('no targets availible');
+        console.log('no targets availible for ai');
       }
 
     }
@@ -19688,17 +19702,20 @@ class App extends Component {
     let defendDest;
     if (aiPlayer.ai.mission === 'defend') {
       // console.log('defending',aiPlayer.ai.defending);
-      // console.log('prevTargetPos',prevTargetPos,'currentTargetPos',currentTargetPos);
+      // console.log('aiDecide mission: defend - prevTargetPos',prevTargetPos,'currentTargetPos',currentTargetPos);
 
       // TARGET LOCATION CHANGED!!
-      if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
-        // console.log('defending but target location changed! Dont update path. Just track target',aiPlayer.number);
+      if (prevTargetPos.x && currentTargetPos.x) {
+        if (prevTargetPos.x !== currentTargetPos.x || prevTargetPos.y !== currentTargetPos.y && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
+          // console.log('defending but target location changed! Dont update path. Just track target',aiPlayer.number);
 
-        aiPlayer.ai.targetPlayer.currentPosition = {
-          x: targetPlayer.currentPosition.cell.number.x,
-          y: targetPlayer.currentPosition.cell.number.y,
+          aiPlayer.ai.targetPlayer.currentPosition = {
+            x: targetPlayer.currentPosition.cell.number.x,
+            y: targetPlayer.currentPosition.cell.number.y,
+          }
         }
       }
+
 
       // SET OUT TO DEFEND POINT
       if (!aiPlayer.ai.defending.checkin) {
@@ -19777,7 +19794,7 @@ class App extends Component {
 
       // EN ROUTE TO DEFEND POINT
       if (aiPlayer.ai.defending.checkin === 'enroute') {
-        console.log('en route to defend point');
+        // console.log('en route to defend point');
 
         if (aiPlayer.attacking.state === true) {
           aiPlayer.attacking.state = false;
@@ -19989,7 +20006,7 @@ class App extends Component {
 
     if (targetPlayer) {
       if (getPath === true && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
-        // console.log('pathfinding...');
+        console.log('pathfinding...');
         this.updatePathArray();
         this.easyStar = new Easystar.js();
 
@@ -20540,7 +20557,7 @@ class App extends Component {
           aiPos = aiPlayer.currentPosition.cell.number;
           targetPos = defendDest;
 
-          // console.log('targetPos',targetPos);
+          console.log('pathfinding targetPos',targetPos);
           // this.pathArray[targetPos.x][targetPos.y] = 0;
         }
         if (aiPlayer.ai.mission === 'retreat') {
@@ -20942,8 +20959,8 @@ class App extends Component {
     // instructions.pop();
 
     // console.log('this.pathArray',this.pathArray);
-    // console.log('path',path,'player',aiPlayer);
-    // console.log('instructions',instructions);
+    console.log('path',path,'player',aiPlayer);
+    console.log('parse path instructions',instructions);
 
     // console.log('player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction,'mission',this.players[aiPlayer-1].ai.mission,'instructions',instructions);
     // if (this.players[aiPlayer-1].ai.mission === 'retreat') {
