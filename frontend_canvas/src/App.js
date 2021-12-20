@@ -5969,7 +5969,6 @@ class App extends Component {
                       }
 
                       if (player.hp <= 0) {
-                        this.killPlayer(player);
 
                         let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
                         this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
@@ -6014,6 +6013,8 @@ class App extends Component {
                           }
 
                         }
+
+                        this.killPlayer(player);
 
                       }
 
