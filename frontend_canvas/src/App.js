@@ -8152,25 +8152,39 @@ class App extends Component {
 
               if (this.camera.pan.x > -1) {
                 this.camera.pan.x -= 6;
-                this.camera.adjustedPan.x -= (6*this.camera.zoom.x);
+                // this.camera.adjustedPan.x -= (this.camera.pan.x*(this.camera.zoom.x-1));
+                // this.camera.adjustedPan.x -= (6*(this.camera.zoom.x-1));
+                this.camera.adjustedPan.x -= (3*(this.camera.zoom.x-1));
+                // this.camera.adjustedPan.x -= (6*this.camera.zoom.x);
                 this.camera.panDirection = 'east';
                 setFocus = true;
               }
               if (this.camera.pan.x < -1) {
                 this.camera.pan.x += 6;
-                this.camera.adjustedPan.x += (6*this.camera.zoom.x);
+                // this.camera.adjustedPan.x += (this.camera.pan.x*(this.camera.zoom.x-1));
+                // this.camera.adjustedPan.x += (6*(this.camera.zoom.x-1));
+                this.camera.adjustedPan.x += (3*(this.camera.zoom.x-1));
+                // this.camera.adjustedPan.x += (6*this.camera.zoom.x);
                 this.camera.panDirection = 'west';
                 setFocus = true;
               }
               if (this.camera.pan.y < -1) {
                 this.camera.pan.y += 3.5;
-                this.camera.adjustedPan.y += (3.5*this.camera.zoom.x);
+                // this.camera.adjustedPan.y += (this.camera.pan.y*(this.camera.zoom.x-1));
+                // this.camera.adjustedPan.y += (3.5*(this.camera.zoom.x-1));
+                // this.camera.adjustedPan.y += (1.5*this.camera.zoom.x);
+                this.camera.adjustedPan.y += (1.5*(this.camera.zoom.x-1));
+                // this.camera.adjustedPan.y += (3.5*this.camera.zoom.x);
                 this.camera.panDirection = 'north';
                 setFocus = true;
               }
               if (this.camera.pan.y > -1) {
                 this.camera.pan.y -= 3.5;
-                this.camera.adjustedPan.y -= (3.5*this.camera.zoom.x);
+                // this.camera.adjustedPan.y -= (this.camera.pan.y*(this.camera.zoom.x-1));
+                // this.camera.adjustedPan.y -= (3.5*(this.camera.zoom.x-1));
+                // this.camera.adjustedPan.y -= (1.5*this.camera.zoom.x);
+                this.camera.adjustedPan.y -= (1.5*(this.camera.zoom.x-1));
+                // this.camera.adjustedPan.y -= (3.5*this.camera.zoom.x);
                 this.camera.panDirection = 'south';
                 setFocus = true;
               }
@@ -9136,7 +9150,7 @@ class App extends Component {
         }
 
 
-        // CELLS UNDER ATTACK!
+        // CELLS UNDER ATTACK & PREATTACK!!
         if (this.cellsUnderAttack.length > 0) {
           for (const cll of this.cellsUnderAttack) {
             if (
@@ -21972,31 +21986,37 @@ class App extends Component {
         if (this.camera.zoomDirection === 'out' && this.camera.zoom.x > 1) {
 
 
-          // write a formula for a line/curve from the current pan point to the center!!
-
 
             if (this.camera.pan.x !== -1) {
 
               if (this.camera.pan.x < 1) {
-                this.camera.focus.x -= 10;
+                // this.camera.focus.x -= 10;
+                this.camera.focus.x -= (10*this.camera.zoom.x);
               }
               if (this.camera.pan.x > 1) {
-                this.camera.focus.x += 10;
+                // this.camera.focus.x += 10;
+                this.camera.focus.x += (10*this.camera.zoom.x);
               }
 
             }
-
-
             if (this.camera.pan.y !== -1) {
 
               if (this.camera.pan.y < 1) {
-                this.camera.focus.y -= 10;
+                // this.camera.focus.y -= 10;
+                this.camera.focus.y -= (5*this.camera.zoom.x);
               }
               if (this.camera.pan.y > 1) {
-                this.camera.focus.y += 10;
+                // this.camera.focus.y += 10;
+                this.camera.focus.y += (5*this.camera.zoom.x);
               }
 
             }
+
+
+            this.camera.focus.x = ((canvas.width/2)-this.camera.zoomFocusPan.x)/this.camera.zoom.x;
+            this.camera.focus.y = ((canvas.height/2)-this.camera.zoomFocusPan.y)/this.camera.zoom.y;
+
+
 
         }
 
