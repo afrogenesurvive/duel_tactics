@@ -29,6 +29,7 @@ import floorStone from './assets/floorStone.png'
 import floorBramble from './assets/floorBramble.png'
 import floorLava from './assets/floorLava.png'
 import floorAttack from './assets/floorAttacked.png'
+import floorAttack2 from './assets/floorAttacked2.png'
 import floorVoid from './assets/floorVoid.png'
 import floorVoid2 from './assets/floorVoid2.png'
 import floorVoid3 from './assets/floorVoid3.png'
@@ -1627,6 +1628,7 @@ class App extends Component {
       limit: 10,
     };
     this.cellsUnderAttack = [];
+    this.cellsUnderPreAttack = [];
     this.cellsToHighlight = [];
     this.gamepadPollCounter = {
       count1: 0,
@@ -4928,7 +4930,7 @@ class App extends Component {
         }
 
 
-        // CHECK CELL UNDER ATTACK!!
+        // CHECK CELL UNDER ATTACK & PRE ATTACK!!
         for (const cell of this.cellsUnderAttack) {
           if (cell.count < cell.limit) {
             cell.count++
@@ -4936,6 +4938,16 @@ class App extends Component {
           else if (cell.count >= cell.limit) {
             let index = this.cellsUnderAttack.indexOf(cell)
             this.cellsUnderAttack.splice(index,1)
+          }
+
+        }
+        for (const cell2 of this.cellsUnderPreAttack) {
+          if (cell2.count < cell2.limit) {
+            cell2.count++
+          }
+          else if (cell2.count >= cell2.limit) {
+            let index = this.cellsUnderPreAttack.indexOf(cell2)
+            this.cellsUnderPreAttack.splice(index,1)
           }
 
         }
@@ -5147,6 +5159,58 @@ class App extends Component {
 
                   }
                 )
+
+                this.getTarget(player)
+                // CELLS UNDER PRE ATTACK!
+                let cellUnderPreAttack1 = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y)
+                let cellUnderPreAttack2;
+                if (player.currentWeapon.type === 'spear') {
+                  cellUnderPreAttack2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y)
+                }
+                if (player.currentWeapon.type === 'spear') {
+                  // console.log('spear target',player.target);
+                  if (cellUnderPreAttack1 && cellUnderPreAttack1.terrain.type !== 'deep') {
+                    this.cellsUnderPreAttack.push(
+                      {
+                        number: {
+                          x: player.target.cell.number.x,
+                          y: player.target.cell.number.y,
+                        },
+                        count: 1,
+                        limit: 8,
+                      },
+                    )
+                  }
+                  if (cellUnderPreAttack2 && cellUnderPreAttack2.terrain.type !== 'deep') {
+                    this.cellsUnderPreAttack.push(
+                      {
+                        number: {
+                          x: player.target.cell2.number.x,
+                          y: player.target.cell2.number.y,
+                        },
+                        count: 1,
+                        limit: 8,
+                      },
+                    )
+
+                  }
+                }
+                else if (player.currentWeapon.type === 'sword' || player.currentWeapon.type === '') {
+                  // console.log('sword target',player.target);
+                  if (cellUnderPreAttack1 && cellUnderPreAttack1.terrain.type !== 'deep') {
+                    this.cellsUnderPreAttack.push({
+                      number: {
+                        x: player.target.cell.number.x,
+                        y: player.target.cell.number.y,
+                      },
+                      count: 1,
+                      limit: 8,
+                    })
+                  }
+                }
+
+                // console.log('this.cellsUnderPreAttack',this.cellsUnderPreAttack[0],this.cellsUnderPreAttack[1]);
+
             }
 
           }
@@ -5157,7 +5221,7 @@ class App extends Component {
             console.log('attack peak',player.attacking.count,'plyr',player.number);
 
 
-
+            // CREATE NEW PROJECTILE
             if (player.currentWeapon.type === 'crossbow' && player.items.ammo > 0) {
               // console.log('firing crossbow');
 
@@ -5245,6 +5309,8 @@ class App extends Component {
               }
 
             }
+
+            // MELEE ATTACK!!
             else if (player.currentWeapon.type !== 'crossbow' ) {
 
               this.getTarget(player)
@@ -5346,9 +5412,11 @@ class App extends Component {
               }
 
 
+              // ATTACK TARGET IS OCCUPIED!!
               if (player.target.occupant.type === 'player') {
 
-                // ATTACK SUCCESS!!
+
+                // TARGET PLAYER ISN'T DEFENDING, ATTACK SUCCESS!!
                 if (this.players.[player.target.occupant.player-1].defending.state === false || this.players.[player.target.occupant.player-1].direction === player.direction) {
                   console.log('attack success');
 
@@ -5467,9 +5535,11 @@ class App extends Component {
                       }
                     )
                   }
+
+                  // WEAPON STAMINA COST!!
                   else {
 
-                    // WEAPON STAMINA COST!!
+
                     let weapon = player.currentWeapon.type
                     if (weapon === '') {
                       weapon = 'unarmed'
@@ -5723,175 +5793,238 @@ class App extends Component {
 
                 // ATTACK DEFENDED!!
                 else {
-                  console.log('attack defended by ',player.target.occupant.player,'against plyr ',player.number);
+                  console.log('attack defended by ',player.target.occupant.player,'target defending?',this.players.[player.target.occupant.player-1].defending.state,'against plyr ',player.number);
 
-                  player.popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit: 25,
-                      type: '',
-                      position: '',
-                      msg: 'attackDefended',
-                      img: '',
+                  let shouldDefend = false;
+                  if (this.players[player.target.occupant.player-1].currentWeapon.name === "" && this.players[player.target.occupant.player-1].currentWeapon.type === "") {
 
-                    }
-                  )
-                  // if (this.players.[player.target.occupant.player-1].direction === player.direction) {
-                  //   console.log('defend the rear!!');
-                  // }
+                    // console.log('target is unarmed');
+                    if (player.currentWeapon.name === "" && player.currentWeapon.type === "") {
+                      console.log('target and attacker unarmed. target defend');
+                      shouldDefend = true;
+                    } else {
+                      console.log('armed player attacked unarmed target defense: cancel target defend and attack them');
+                      shouldDefend = false;
 
-                  this.moveSpeed = .1;
-
-
-                  // DEFENDED STATUS DISPLAY!
-                  this.players[player.target.occupant.player-1].success.defendSuccess = {
-                    state: true,
-                    count: 1,
-                    limit: this.players[player.target.occupant.player-1].success.defendSuccess.limit
-                  }
-
-                  this.players[player.target.occupant.player-1].popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit: 25,
-                      type: '',
-                      position: '',
-                      msg: 'defendSuccess',
-                      img: '',
-
-                    }
-                  )
-
-
-                  // UNARMED DAMAGE!
-                  // if ( player.currentWeapon.type === '') {
-                  //
-                  //   let shouldDamageFist = this.rnJesus(1,3);
-                  //   if (shouldDamageFist === 1) {
-                  //     console.log('unarmed attack defended damaged fist');
-                  //     if (player.hp > 1) {
-                  //       player.hp = player.hp - 1;
-                  //       player.speed.move = .05;
-                  //     }
-                  //   }
-                  // }
-
-
-                  // PUSHBACK OPPONENT!
-                  // let shouldPushBackOpponent = 2;
-                  let shouldPushBackOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.pushBack*2);
-                  // shouldPushBackOpponent = 1;
-                  if (shouldPushBackOpponent === 1) {
-                    // console.log('pushback opponent');
-                    let canPushback = this.pushBack(this.players[player.target.occupant.player-1],player.direction);
-
-
-                  }
-                  else {
-
-
-                    // OPPONENT GUARD BREAK ROLL!
-                    // let deflectOpponent = this.rnJesus(1,1);
-                    let deflectOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.guardBreak);
-                    if (player.bluntAttack === true) {
-                      deflectOpponent = 1;
-                    }
-                    // deflectOpponent = 1
-
-                    // DEFLECT OPPONENT!
-                    if (deflectOpponent === 1) {
-                      console.log('opponent guard break player',player.target.occupant.player);
-                      this.players[player.target.occupant.player-1].breakAnim.defend = {
-                        state: true,
-                        count: 1,
-                        limit: player.breakAnim.defend.limit,
-                      };
-
-                      this.players[player.target.occupant.player-1].defending = {
-                        state: false,
-                        count: 0,
-                        limit: this.players[player.target.occupant.player-1].defending.limit,
-                      }
-                      this.players[player.target.occupant.player-1].attacking = {
-                        state: false,
-                        count: 0,
-                        limit: this.players[player.target.occupant.player-1].attacking.limit,
-                      }
+                      // console.log('single hit attack plyr ',player.number,'against plyr ',player.target.occupant.player);
+                      this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
+                      player.attackStrength = 1;
+                      this.attackedCancel(this.players[player.target.occupant.player-1])
 
                       this.players[player.target.occupant.player-1].success.deflected = {
                         state: true,
                         count: 1,
-                        limit: this.deflectedLengthRef.defended,
+                        limit: this.deflectedLengthRef.attack,
                         predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
-                        type: 'defended',
-                      };
-                      this.players[player.target.occupant.player-1].stamina.current = this.players[player.target.occupant.player-1].stamina.current - 3;
-
+                        type: 'attack'
+                      }
 
                       if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
                         this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
                       }
 
+                      if (this.players[player.target.occupant.player-1].hp === 1) {
+                        this.players[player.target.occupant.player-1].speed.move = .05;
+                      }
 
-                    }
+                      if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'alarmed')) {
+                        this.players[player.target.occupant.player-1].popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit:25,
+                            type: '',
+                            position: '',
+                            msg: 'alarmed',
+                            img: '',
 
-                  }
+                          }
+                        )
+                      }
 
-                  // ATTACKER PUSHBACK DEFLECT!!
+                      if (!player.popups.find(x=>x.msg === 'attacking1')) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
+                            type: '',
+                            position: '',
+                            msg: 'attacking1',
+                            img: '',
 
-                  let shouldDeflectAttacker;
+                          }
+                        )
+                      }
 
-                  // let shouldDeflectAttacker = this.rnJesus(1,2);
+                      if (this.players[player.target.occupant.player-1].hp <= 0) {
+                        this.killPlayer(this.players[player.target.occupant.player-1]);
 
-                  let shouldDeflectPushBack;
+                        let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+                        this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
 
-                  shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
-                  shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack);
+                        player.points++;
 
+                        this.pointChecker(player)
 
-                  if (
-                    this.players[player.target.occupant.player-1].defending.state === true &&
-                    player.defendDecay.state !== true ||
-                    player.defendDecay.state === true &&
-                    player.defendDecay.count < 4
-                  ) {
-                    console.log('peak defend/parry');
-                    shouldDeflectAttacker = this.rnJesus(1,1);
-                    shouldDeflectPushBack = this.rnJesus(1,1);
+                        if (player.ai.state === true && player.ai.mode === 'aggressive') {
+                          console.log('check for evidence of retrieval here and resume retrieve if so',player.ai.retrieving,player.ai.mission);
 
-                    player.statusDisplay = {
-                      state: true,
-                      status: 'Parry!',
-                      count: 1,
-                      limit: this.players[player.number-1].statusDisplay.limit,
-                    }
+                          if (player.ai.retrieving.checkin) {
 
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: '',
-                        position: '',
-                        msg: 'attackParried',
-                        img: '',
+                            player.ai.mission = 'retrieve';
+
+                            if (!player.popups.find(x=>x.msg === 'missionRetrieve')) {
+                              player.popups.push(
+                                {
+                                  state: false,
+                                  count: 0,
+                                  limit: 25,
+                                  type: '',
+                                  position: '',
+                                  msg: 'missionRetrieve',
+                                  img: '',
+
+                                }
+                              )
+                            }
+
+                            let targetSafeData = this.scanTargetAreaThreat({
+                              player: player.number,
+                              point: {
+                                x: player.ai.retrieving.point.x,
+                                y: player.ai.retrieving.point.y,
+                              },
+                              range: 3,
+                            })
+
+                            player.ai.retrieving.safe = targetSafeData.isSafe;
+
+                          }
+
+                        }
 
                       }
-                    )
-                  }
-                  else {
-                    // console.log('off peak defend');
-                    shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
-                    shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack);
 
-                    player.statusDisplay = {
-                      state: true,
-                      status: 'Defend',
-                      count: 1,
-                      limit: this.players[player.number-1].statusDisplay.limit,
+
                     }
+                  } else {
+                    // console.log('target is armed');
+                    if (player.currentWeapon.name === "" && player.currentWeapon.type === "") {
+                      console.log('player unarmed attacked armed target defense: cancel player attack and check crits or otherwise roll for attacker damage');
+                      shouldDefend = false;
+
+                      // console.log('single hit attack plyr ',player.target.occupant.player,'against plyr ',player.number,);
+
+                      player.hp--;
+                      this.players[player.target.occupant.player-1].attackStrength = 1;
+                      this.attackedCancel(player)
+
+                      player.success.deflected = {
+                        state: true,
+                        count: 1,
+                        limit: this.deflectedLengthRef.attack,
+                        predeflect: player.success.deflected.predeflect,
+                        type: 'attack'
+                      }
+
+                      if (this.aiDeflectedCheck.includes(player.number) !== true) {
+                        this.aiDeflectedCheck.push(player.number)
+                      }
+
+
+                      if (player.hp === 1) {
+                        player.speed.move = .05;
+                      }
+
+
+                      if (!player.popups.find(x=>x.msg === 'alarmed')) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit:25,
+                            type: '',
+                            position: '',
+                            msg: 'alarmed',
+                            img: '',
+
+                          }
+                        )
+                      }
+
+                      if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'attacking1')) {
+                        this.players[player.target.occupant.player-1].popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: (this.attackAnimRef.limit[this.players[player.target.occupant.player-1].currentWeapon.type]-this.attackAnimRef.peak[this.players[player.target.occupant.player-1].currentWeapon.type]),
+                            type: '',
+                            position: '',
+                            msg: 'attacking1',
+                            img: '',
+
+                          }
+                        )
+                      }
+
+                      if (player.hp <= 0) {
+                        this.killPlayer(player);
+
+                        let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+                        this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+                        this.players[player.target.occupant.player-1].points++;
+
+                        this.pointChecker(this.players[player.target.occupant.player-1])
+
+                        if (this.players[player.target.occupant.player-1].ai.state === true && this.players[player.target.occupant.player-1].ai.mode === 'aggressive') {
+                          console.log('check for evidence of retrieval here and resume retrieve if so',player.ai.retrieving,player.ai.mission);
+
+                          if (this.players[player.target.occupant.player-1].ai.retrieving.checkin) {
+
+                            this.players[player.target.occupant.player-1].ai.mission = 'retrieve';
+
+                            if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'missionRetrieve')) {
+                              this.players[player.target.occupant.player-1].popups.push(
+                                {
+                                  state: false,
+                                  count: 0,
+                                  limit: 25,
+                                  type: '',
+                                  position: '',
+                                  msg: 'missionRetrieve',
+                                  img: '',
+
+                                }
+                              )
+                            }
+
+                            let targetSafeData = this.scanTargetAreaThreat({
+                              player: this.players[player.target.occupant.player-1].number,
+                              point: {
+                                x: this.players[player.target.occupant.player-1].ai.retrieving.point.x,
+                                y: this.players[player.target.occupant.player-1].ai.retrieving.point.y,
+                              },
+                              range: 3,
+                            })
+
+                            this.players[player.target.occupant.player-1].ai.retrieving.safe = targetSafeData.isSafe;
+
+                          }
+
+                        }
+
+                      }
+
+                    } else {
+                      console.log('target and attacker are armed. target defend');
+                      shouldDefend = true;
+                    }
+                  }
+
+
+                  if (shouldDefend === true) {
 
                     player.popups.push(
                       {
@@ -5905,49 +6038,252 @@ class App extends Component {
 
                       }
                     )
-                  }
+                    // if (this.players.[player.target.occupant.player-1].direction === player.direction) {
+                    //   console.log('defend the rear!!');
+                    // }
 
-                  shouldDeflectPushBack = 1;
-                  shouldDeflectAttacker = 1;
+                    this.moveSpeed = .1;
 
 
-                  if (shouldDeflectPushBack === 1) {
-                    let pushBackDirection;
-                    switch(player.direction) {
-                      case 'north' :
-                        pushBackDirection = 'south';
-                      break;
-                      case 'south' :
-                        pushBackDirection = 'north';
-                      break;
-                      case 'east' :
-                        pushBackDirection = 'west';
-                      break;
-                      case 'west' :
-                        pushBackDirection = 'east';
-                      break;
-                      case 'northEast' :
-                        pushBackDirection = 'southWest';
-                      break;
-                      case 'northWest' :
-                        pushBackDirection = 'southEast';
-                      break;
-                      case 'southWest' :
-                        pushBackDirection = 'northEast';
-                      break;
-                      case 'southEast' :
-                        pushBackDirection = 'northWest';
-                      break;
+                    // DEFENDED STATUS DISPLAY!
+                    this.players[player.target.occupant.player-1].success.defendSuccess = {
+                      state: true,
+                      count: 1,
+                      limit: this.players[player.target.occupant.player-1].success.defendSuccess.limit
                     }
 
-                    let canPushback = this.pushBack(player,pushBackDirection);
+                    this.players[player.target.occupant.player-1].popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 25,
+                        type: '',
+                        position: '',
+                        msg: 'defendSuccess',
+                        img: '',
 
-                    if (canPushback === true && shouldDeflectAttacker === 1) {
-                      // console.log('predeflect --> pushback');
-                      player.success.deflected.predeflect = true;
+                      }
+                    )
+
+
+                    // UNARMED DAMAGE!
+                    // if ( player.currentWeapon.type === '') {
+                    //
+                    //   let shouldDamageFist = this.rnJesus(1,3);
+                    //   if (shouldDamageFist === 1) {
+                    //     console.log('unarmed attack defended damaged fist');
+                    //     if (player.hp > 1) {
+                    //       player.hp = player.hp - 1;
+                    //       player.speed.move = .05;
+                    //     }
+                    //   }
+                    // }
+
+
+                    // PUSHBACK OPPONENT!
+                    // let shouldPushBackOpponent = 2;
+                    let shouldPushBackOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.pushBack*2);
+                    // shouldPushBackOpponent = 1;
+                    if (shouldPushBackOpponent === 1) {
+                      // console.log('pushback opponent');
+                      let canPushback = this.pushBack(this.players[player.target.occupant.player-1],player.direction);
+
+
                     }
-                    else if (canPushback === false && shouldDeflectAttacker === 1) {
-                      // console.log('no pushback ---> just deflect');
+                    else {
+
+
+                      // OPPONENT GUARD BREAK ROLL!
+                      // let deflectOpponent = this.rnJesus(1,1);
+                      let deflectOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.guardBreak);
+                      if (player.bluntAttack === true) {
+                        deflectOpponent = 1;
+                      }
+                      // deflectOpponent = 1
+
+                      // DEFLECT OPPONENT!
+                      if (deflectOpponent === 1) {
+                        console.log('opponent guard break player',player.target.occupant.player);
+                        this.players[player.target.occupant.player-1].breakAnim.defend = {
+                          state: true,
+                          count: 1,
+                          limit: player.breakAnim.defend.limit,
+                        };
+
+                        this.players[player.target.occupant.player-1].defending = {
+                          state: false,
+                          count: 0,
+                          limit: this.players[player.target.occupant.player-1].defending.limit,
+                        }
+                        this.players[player.target.occupant.player-1].attacking = {
+                          state: false,
+                          count: 0,
+                          limit: this.players[player.target.occupant.player-1].attacking.limit,
+                        }
+
+                        this.players[player.target.occupant.player-1].success.deflected = {
+                          state: true,
+                          count: 1,
+                          limit: this.deflectedLengthRef.defended,
+                          predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
+                          type: 'defended',
+                        };
+                        this.players[player.target.occupant.player-1].stamina.current = this.players[player.target.occupant.player-1].stamina.current - 3;
+
+
+                        if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
+                          this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
+                        }
+
+
+                      }
+
+                    }
+
+                    // ATTACKER PUSHBACK DEFLECT!!
+
+                    let shouldDeflectAttacker;
+
+                    // let shouldDeflectAttacker = this.rnJesus(1,2);
+
+                    let shouldDeflectPushBack;
+
+                    shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
+                    shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack);
+
+                    if (
+                      this.players[player.target.occupant.player-1].defending.state === true &&
+                      player.defendDecay.state !== true ||
+                      player.defendDecay.state === true &&
+                      player.defendDecay.count < 4
+                    ) {
+                      console.log('peak defend/parry');
+                      shouldDeflectAttacker = this.rnJesus(1,1);
+                      shouldDeflectPushBack = this.rnJesus(1,1);
+
+                      player.statusDisplay = {
+                        state: true,
+                        status: 'Parry!',
+                        count: 1,
+                        limit: this.players[player.number-1].statusDisplay.limit,
+                      }
+
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 25,
+                          type: '',
+                          position: '',
+                          msg: 'attackParried',
+                          img: '',
+
+                        }
+                      )
+                    }
+                    else {
+                      // console.log('off peak defend');
+                      shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
+                      shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack);
+
+                      player.statusDisplay = {
+                        state: true,
+                        status: 'Defend',
+                        count: 1,
+                        limit: this.players[player.number-1].statusDisplay.limit,
+                      }
+
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 25,
+                          type: '',
+                          position: '',
+                          msg: 'attackDefended',
+                          img: '',
+
+                        }
+                      )
+                    }
+
+                    shouldDeflectPushBack = 1;
+                    shouldDeflectAttacker = 1;
+
+                    if (shouldDeflectPushBack === 1) {
+                      let pushBackDirection;
+                      switch(player.direction) {
+                        case 'north' :
+                          pushBackDirection = 'south';
+                        break;
+                        case 'south' :
+                          pushBackDirection = 'north';
+                        break;
+                        case 'east' :
+                          pushBackDirection = 'west';
+                        break;
+                        case 'west' :
+                          pushBackDirection = 'east';
+                        break;
+                        case 'northEast' :
+                          pushBackDirection = 'southWest';
+                        break;
+                        case 'northWest' :
+                          pushBackDirection = 'southEast';
+                        break;
+                        case 'southWest' :
+                          pushBackDirection = 'northEast';
+                        break;
+                        case 'southEast' :
+                          pushBackDirection = 'northWest';
+                        break;
+                      }
+
+                      let canPushback = this.pushBack(player,pushBackDirection);
+
+                      if (canPushback === true && shouldDeflectAttacker === 1) {
+                        // console.log('predeflect --> pushback');
+                        player.success.deflected.predeflect = true;
+                      }
+                      else if (canPushback === false && shouldDeflectAttacker === 1) {
+                        // console.log('no pushback ---> just deflect');
+
+                        player.defending = {
+                          state: false,
+                          count: 0,
+                          limit: this.players[player.target.occupant.player-1].defending.limit,
+                        }
+                        player.attacking = {
+                          state: false,
+                          count: 0,
+                          limit: this.players[player.target.occupant.player-1].attacking.limit,
+                        }
+
+                        player.success.deflected = {
+                          state: true,
+                          count: 1,
+                          limit: this.deflectedLengthRef.attack,
+                          predeflect: player.success.deflected.predeflect,
+                          type: 'attack'
+                        }
+
+
+                        if (this.aiDeflectedCheck.includes(player.number) !== true) {
+                          this.aiDeflectedCheck.push(player.number)
+                        }
+
+                      }
+
+
+                      if (this.aiDeflectedCheck.includes(player.number) !== true) {
+                        this.aiDeflectedCheck.push(player.number)
+                      }
+
+                    }
+
+                    // ATTACKER NO PUSHBACK, JUST DEFLECT!
+                    else if (shouldDeflectPushBack !== 1 && shouldDeflectAttacker === 1) {
+                      console.log('no pushback ---> just deflect');
 
                       player.defending = {
                         state: false,
@@ -5967,6 +6303,7 @@ class App extends Component {
                         predeflect: player.success.deflected.predeflect,
                         type: 'attack'
                       }
+                      player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
 
 
                       if (this.aiDeflectedCheck.includes(player.number) !== true) {
@@ -5975,48 +6312,11 @@ class App extends Component {
 
                     }
 
-
-                    if (this.aiDeflectedCheck.includes(player.number) !== true) {
-                      this.aiDeflectedCheck.push(player.number)
+                    // ATTACKER NO DEFLECT NO PUSHBACK!
+                    else if (shouldDeflectPushBack !== 1 && shouldDeflectAttacker !== 1) {
+                      // console.log('attacker not deflected or pushed back');
                     }
 
-                  }
-
-                  // ATTACKER NO PUSHBACK, JUST DEFLECT!
-                  else if (shouldDeflectPushBack !== 1 && shouldDeflectAttacker === 1) {
-                    console.log('no pushback ---> just deflect');
-
-                    player.defending = {
-                      state: false,
-                      count: 0,
-                      limit: this.players[player.target.occupant.player-1].defending.limit,
-                    }
-                    player.attacking = {
-                      state: false,
-                      count: 0,
-                      limit: this.players[player.target.occupant.player-1].attacking.limit,
-                    }
-
-                    player.success.deflected = {
-                      state: true,
-                      count: 1,
-                      limit: this.deflectedLengthRef.attack,
-                      predeflect: player.success.deflected.predeflect,
-                      type: 'attack'
-                    }
-                    player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
-
-
-                    if (this.aiDeflectedCheck.includes(player.number) !== true) {
-                      this.aiDeflectedCheck.push(player.number)
-                    }
-
-                  }
-
-
-                  // ATTACKER NO DEFLECT NO PUSHBACK!
-                  else if (shouldDeflectPushBack !== 1 && shouldDeflectAttacker !== 1) {
-                    // console.log('attacker not deflected or pushed back');
                   }
 
                 }
@@ -7089,15 +7389,25 @@ class App extends Component {
               }
 
 
-                // CHANGE DIRECTION IF NOT STRAFING!!
-                if (keyPressedDirection !== player.direction && player.strafing.state === false) {
+                // // CHANGE DIRECTION IF NOT STRAFING!!
+                // if (keyPressedDirection !== player.direction && player.strafing.state === false) {
+                //
+                //   // console.log('change player direction to',keyPressedDirection);
+                //   // console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
+                //   player.turning.state = true;
+                //   player.turning.toDirection = keyPressedDirection;
+                //
+                // }
 
-                  // console.log('change player direction to',keyPressedDirection);
-                  // console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
-                  player.turning.state = true;
-                  player.turning.toDirection = keyPressedDirection;
+              }
 
-                }
+              // CHANGE DIRECTION IF NOT STRAFING!!
+              if (keyPressedDirection !== player.direction && player.strafing.state === false) {
+
+                // console.log('change player direction to',keyPressedDirection);
+                // console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
+                player.turning.state = true;
+                player.turning.toDirection = keyPressedDirection;
 
               }
 
@@ -7356,58 +7666,79 @@ class App extends Component {
               if (this.keyPressed[player.number-1].defend === true) {
                 // console.log('start defending',player.number);
 
-                if (
-                  !player.currentWeapon.name &&
-                  !player.currentArmor.name
-                ) {
-                  player.statusDisplay = {
-                    state: true,
-                    status: "No weapon or armor. Can't defend",
+                // if (
+                //   !player.currentWeapon.name &&
+                //   !player.currentArmor.name
+                // ) {
+                //   player.statusDisplay = {
+                //     state: true,
+                //     status: "No weapon or armor. Can't defend",
+                //     count: 1,
+                //     limit: player.statusDisplay.limit,
+                //   }
+                //
+                //   if (!player.popups.find(x=>x.msg === 'stop')) {
+                //     player.popups.push(
+                //       {
+                //         state: false,
+                //         count: 0,
+                //         limit: 25,
+                //         type: '',
+                //         position: '',
+                //         msg: 'stop',
+                //         img: '',
+                //
+                //       }
+                //     )
+                //   }
+                //
+                // }
+                // else {
+                //   if (player.defending.count === 0 && player.defendDecay.state !== true) {
+                //     player.defending = {
+                //       state: false,
+                //       count: 1,
+                //       limit: player.defending.limit,
+                //     }
+                //
+                //     player.popups.push(
+                //         {
+                //           state: false,
+                //           count: 0,
+                //           limit: 5,
+                //           type: '',
+                //           position: '',
+                //           msg: 'preAction1',
+                //           img: '',
+                //
+                //         }
+                //       )
+                //   } else {
+                //     // console.log('cant start defend. might already be in progress');
+                //   }
+                // }
+
+                if (player.defending.count === 0 && player.defendDecay.state !== true) {
+                  player.defending = {
+                    state: false,
                     count: 1,
-                    limit: player.statusDisplay.limit,
+                    limit: player.defending.limit,
                   }
 
-                  if (!player.popups.find(x=>x.msg === 'stop')) {
-                    player.popups.push(
+                  player.popups.push(
                       {
                         state: false,
                         count: 0,
-                        limit: 25,
+                        limit: 5,
                         type: '',
                         position: '',
-                        msg: 'stop',
+                        msg: 'preAction1',
                         img: '',
 
                       }
                     )
-                  }
-
-
-
-
                 } else {
-                  if (player.defending.count === 0 && player.defendDecay.state !== true) {
-                    player.defending = {
-                      state: false,
-                      count: 1,
-                      limit: player.defending.limit,
-                    }
-
-                    player.popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit: 5,
-                          type: '',
-                          position: '',
-                          msg: 'preAction1',
-                          img: '',
-
-                        }
-                      )
-                  } else {
-                    // console.log('cant start defend. might already be in progress');
-                  }
+                  // console.log('cant start defend. might already be in progress');
                 }
 
               }
@@ -8812,6 +9143,16 @@ class App extends Component {
               cll.number.y === y
             ) {
               floor = this.refs.floorAttack;
+            }
+          }
+        }
+        if (this.cellsUnderPreAttack.length > 0) {
+          for (const cll2 of this.cellsUnderPreAttack) {
+            if (
+              cll2.number.x === x &&
+              cll2.number.y === y
+            ) {
+              floor = this.refs.floorAttack2;
             }
           }
         }
@@ -13409,6 +13750,12 @@ class App extends Component {
           count: 1,
           limit: this.players[player.number-1].statusDisplay.limit,
         };
+
+        this.players[player.number-1].defendDecay = {
+          state: false,
+          count: 0,
+          limit: player.defendDecay.limit,
+        }
 
         player.popups.push(
           {
@@ -20959,7 +21306,7 @@ class App extends Component {
     // instructions.pop();
 
     // console.log('this.pathArray',this.pathArray);
-    console.log('path',path,'player',aiPlayer);
+    // console.log('path',path,'player',aiPlayer);
     // console.log('parse path instructions',instructions);
 
     // console.log('player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction,'mission',this.players[aiPlayer-1].ai.mission,'instructions',instructions);
@@ -21813,6 +22160,7 @@ class App extends Component {
           <img src={floorBramble} className='hidden' ref="floorBramble" alt="logo" id="floor2"/>
           <img src={floorLava} className='hidden' ref="floorLava" alt="logo" id="floor2"/>
           <img src={floorAttack} className='hidden' ref="floorAttack" alt="logo" id="floor3"/>
+          <img src={floorAttack2} className='hidden' ref="floorAttack2" alt="logo" id="floor3"/>
           <img src={floorVoid} className='hidden' ref="floorVoid" alt="logo" id="floor4"/>
           <img src={floorVoid2} className='hidden' ref="floorVoid2" alt="logo" id="floor4"/>
           <img src={floorVoid3} className='hidden' ref="floorVoid3" alt="logo" id="floor4"/>
