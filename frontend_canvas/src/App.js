@@ -4243,7 +4243,7 @@ class App extends Component {
               }
             }
 
-;            this.bloodSacrificeVoidedCells = [];
+            this.bloodSacrificeVoidedCells = [];
             this.bloodSacrificeEvent.restore = false;
           }
         }
