@@ -271,14 +271,14 @@ class App extends Component {
       row12: ['x120x','x121x','z122x','x123x','x124x','x125x','x126x','x127x','x128x','x129x','z1210x','x1211x','x1212x'],
     };
     this.levelData9 = {
-      row0: ['x00x','x01x','x02x','x03x','x04x','x05g','x06g','x07h','x08f','x09d'],
-      row1: ['x10a','x11a','x12a','x13a','x14x','x15x','z16x','x17x','x18f','x19d'],
-      row2: ['x20x','x21a','x22a','x23a','x24x','x25x','x26x','x27x','x28d','x29d'],
+      row0: ['x00x','z01x','x02x','x03x','x04x','x05g','x06g','x07h','x08f','x09d'],
+      row1: ['x10a','y11a','x12a','x13a','x14x','x15x','z16x','x17x','x18f','x19d'],
+      row2: ['z20x','x21a','x22a','x23a','x24x','x25x','x26x','x27x','x28d','x29d'],
       row3: ['x30a','x31j','x32b','x33j','x34j','x35b','x36j','x37j','x38j','x39d'],
       row4: ['x40j','x41j','x42b','x43b','x44b','x45b','x46j','x47j','x48j','x49d'],
       row5: ['x50j','x51j','x52b','x53j','x54j','x55b','x56j','x57j','x58j','x59d'],
       row6: ['z60x','x61x','x62x','x63i','x64x','x65x','x66x','x67x','x68f','x69f'],
-      row7: ['x70x','x71x','y72x','x73i','x74x','x75x','x76x','x77x','x78f','x79f'],
+      row7: ['x70x','x71x','y72x','x73i','y74x','y75x','y76x','y77x','x78f','x79f'],
       row8: ['x80x','x81x','x82k','x83x','x84x','x85x','x86x','x87x','x88x','x89x'],
       row9: ['x90x','x91x','x92k','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
     };
@@ -4235,11 +4235,15 @@ class App extends Component {
           console.log('Blood Sacrifice event is now over.');
           if (this.bloodSacrificeEvent.restore === true) {
 
+
             for (const cell of this.bloodSacrificeVoidedCells) {
-              cell.void.state = false;
+              console.log('restoring cells after blood Sacrifice',cell);
+              if (cell.terrain.name !== 'void') {
+                cell.void.state = false;
+              }
             }
 
-            this.bloodSacrificeVoidedCells = [];
+;            this.bloodSacrificeVoidedCells = [];
             this.bloodSacrificeEvent.restore = false;
           }
         }
@@ -7898,6 +7902,7 @@ class App extends Component {
 
       let setFocus = false;
       let setZoomPan = false;
+      let findFocusCell = false;
 
 
       // IDLE ANIM STEPPER!
@@ -8003,6 +8008,7 @@ class App extends Component {
             this.camera.panDirection = 'north';
             setFocus = true;
             setZoomPan = true;
+            findFocusCell = true;
 
             // console.log('panning north');
 
@@ -8023,6 +8029,7 @@ class App extends Component {
             this.camera.panDirection = 'south';
             setFocus = true;
             setZoomPan = true;
+            findFocusCell = true;
 
             // console.log('panning south');
 
@@ -8043,6 +8050,7 @@ class App extends Component {
             this.camera.panDirection = 'east';
             setFocus = true;
             setZoomPan = true;
+            findFocusCell = true;
 
             // console.log('panning east');
           }
@@ -8062,13 +8070,14 @@ class App extends Component {
             this.camera.panDirection = 'west';
             setFocus = true;
             setZoomPan = true;
+            findFocusCell = true;
 
             // console.log('panning west');
           }
           if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
-          console.log('pan limit west');
-          this.camera.limits.state.pan = true;
-        }
+            console.log('pan limit west');
+            this.camera.limits.state.pan = true;
+          }
 
         } else {
           // console.log('cant pan at this zoom');
@@ -8215,6 +8224,10 @@ class App extends Component {
         this.setCameraFocus('input',canvas, context, canvas2, context2);
       }
 
+      if (findFocusCell) {
+        this.findFocusCell('panToCell',{})
+      }
+
 
     }
 
@@ -8326,6 +8339,11 @@ class App extends Component {
         //
         // use a cameraInstructionRef to adjust the camera values accordingly, and push to this.camera.instructions
 
+        let focusCell = {
+          x: undefined,
+          y: undefined
+        }
+        this.findFocusCell('cellToPan',focusCell)
 
       }
       if (this.camera.instructionType === 'story') {
@@ -11023,11 +11041,11 @@ class App extends Component {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
           context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
         }
-        if(gridInfoCell.levelData.charAt(0) === 'y') {
+        if(gridInfoCell.levelData.charAt(0) === 'y' && gridInfoCell.void.state !== true) {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
           context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
         }
-        if(gridInfoCell.levelData.charAt(0) === 'z') {
+        if(gridInfoCell.levelData.charAt(0) === 'z' && gridInfoCell.void.state !== true) {
           offset = {x: wallImageWidth/2, y: wallImageHeight}
           context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
 
@@ -13690,9 +13708,9 @@ class App extends Component {
     // console.log('point checker player',player);
 
     let points = player.points;
-    if (points %5 === 0) {
+    if (points %1 === 0) {
       this.bloodSacrificeEvent.state = true;
-      this.bloodSacrificeEvent.limit = 1000;
+      this.bloodSacrificeEvent.limit = 2000;
       this.bloodSacrificeEvent.restore = true;
       this.openVoid = true;
       console.log('the gods have accepted a blood sacrifice. Standby for void tiles');
@@ -14915,6 +14933,73 @@ class App extends Component {
      }
 
   }
+  findFocusCell = (inputType,args) => {
+
+    let cell = {
+      x: undefined,
+      y: undefined
+    }
+    let direction = "";
+    let cellOffsetX = 0;
+    let cellOffsetY = 0;
+    let centerCellRef = {
+      x: 4,
+      y: 4,
+    }
+    let newCell = {
+      x: undefined,
+      y: undefined,
+    }
+
+    if (inputType === 'cellToPan') {
+      cell = args;
+    }
+
+    if (inputType === 'panToCell') {
+
+      if (this.camera.pan.x < 0) {
+        direction = 'east';
+        cellOffsetX = parseInt((this.camera.pan.x/100).toFixed(0))
+      }
+      if (this.camera.pan.x > 0) {
+        direction = 'west';
+        cellOffsetX = parseInt((this.camera.pan.x/100).toFixed(0))
+      }
+      if (this.camera.pan.y > 0) {
+        direction = 'north';
+        cellOffsetY = parseInt((this.camera.pan.y/25).toFixed(0))
+      }
+      if (this.camera.pan.y < 0) {
+        direction = 'south';
+        cellOffsetY = parseInt((this.camera.pan.y/25).toFixed(0))
+      }
+      if (this.camera.pan.x === -1) {
+        cellOffsetX = 0;
+      }
+      if (this.camera.pan.y === -1) {
+        cellOffsetY = 0;
+      }
+
+      newCell = {
+        x: centerCellRef.x+cellOffsetX,
+        y: centerCellRef.y+cellOffsetY,
+      }
+      // console.log('newCell',newCell);
+      console.log('cellOffsetX',cellOffsetX,'cellOffsetY',cellOffsetY);
+
+      // switch (direction) {
+      //   case "north":
+      //     newCell = {
+      //       x: centerCellRef.x+cellOffsetX,
+      //       y: centerCellRef.y+cellOffsetY,
+      //     }
+      //   break;
+      // }
+
+    }
+
+
+  }
 
 
   customCellToVoid = (cell) => {
@@ -14958,22 +15043,24 @@ class App extends Component {
         cl.void.state = true;
 
         if (this.bloodSacrificeEvent.state === true) {
+          console.log('bloodSacrificeVoidedCells',cl);
           this.bloodSacrificeVoidedCells.push(cl)
         }
         // console.log('voiding',cl.number.x,cl.number.y);
 
-        if (
-          cl.levelData.charAt(0) === 'y'
-        ) {
-          let x = cl.levelData.slice(1,3)
-          cl.levelData = "x"+x+"";
-        }
-        if (
-          cl.levelData.charAt(0) === 'z'
-        ) {
-          let x = cl.levelData.slice(1,3)
-          cl.levelData = "x"+x+"";
-        }
+        // if (
+        //   cl.levelData.charAt(0) === 'y'
+        // ) {
+        //   let x = cl.levelData.slice(1,3)
+        //   cl.levelData = "x"+x+"";
+        // }
+        // if (
+        //   cl.levelData.charAt(0) === 'z'
+        // ) {
+        //   let x = cl.levelData.slice(1,3)
+        //   cl.levelData = "x"+x+"";
+        // }
+
       }
 
 
@@ -15249,6 +15336,7 @@ class App extends Component {
       let levelData2Row = 'row'+elem.number.x;
       let elemLevelData = this.['levelData'+this.gridWidth][levelData2Row][elem.number.y];
       elem.levelData = elemLevelData;
+      // console.log('level data processing',elem.levelData);
 
       let terrainInfo = elem.levelData.length-1;
       elem.terrain = this.terrainLevelDataRef[elem.levelData.charAt(terrainInfo)]
