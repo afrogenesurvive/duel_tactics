@@ -4226,6 +4226,7 @@ class App extends Component {
 
     // BLOOD SACRIFICE!!
     if (this.bloodSacrificeEvent.state === true) {
+      
       if (this.bloodSacrificeEvent.count < this.bloodSacrificeEvent.limit) {
         this.bloodSacrificeEvent.count++;
       } else if (this.bloodSacrificeEvent.count >= this.bloodSacrificeEvent.limit) {
@@ -4237,7 +4238,7 @@ class App extends Component {
 
 
             for (const cell of this.bloodSacrificeVoidedCells) {
-              console.log('restoring cells after blood Sacrifice',cell);
+              // console.log('restoring cells after blood Sacrifice',cell);
               if (cell.terrain.name !== 'void') {
                 cell.void.state = false;
               }
