@@ -1720,8 +1720,9 @@ class App extends Component {
         }
       },
       instructionType: 'default',
+      preInstructions: [],
+      currentInstruction: 0,
       instructions: [],
-
     };
     this.cameraInstructionRef = {
       default: {},
@@ -8224,6 +8225,8 @@ class App extends Component {
               this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
               this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
+              findFocusCell = true;
+
             }
 
           }
@@ -8318,6 +8321,8 @@ class App extends Component {
           }
         },
         instructionType: 'default',
+        preInstructions: [],
+        currentInstruction: 0,
         instructions: [],
       };
 
@@ -8328,16 +8333,109 @@ class App extends Component {
     }
 
 
+    if (this.time === 1000) {
+      this.camera.preInstructions.push(
+        'moveTo_1_1',
+        'waitFor_500',
+        'moveTo_6_6,'
+      )
+    }
     // AUTO CAMERA
     if (this.camera.state !== true && this.camera.fixed !== true) {
 
       if (this.camera.instructionType === 'default') {
 
+        if (this.camera.preInstructions.length > 0 ) {
+
+          for (const preInstruction of this.camera.preInstructions) {
+
+            let focusCell = {
+              x: undefined,
+              y: undefined
+            }
+
+            if (preInstruction.split("_")[0] === "moveTo") {
+              focusCell.x = parseInt(preInstruction.split("_")[1])
+              focusCell.y = parseInt(preInstruction.split("_")[2])
+              this.findFocusCell('cellToPan',focusCell,canvas,context)
+            }
+
+            if (preInstruction.split("_")[0] === "waitFor") {
+              this.camera.instructions.push(
+                {
+                  action:'wait',
+                  count: 0,
+                  limit: parseInt(preInstruction.split("_")[1])
+                }
+              )
+            }
+          }
+
+          this.camera.preInstructions = [];
+        }
 
 
-        // if there are instructions, execute and step instruction.count, remove from array
-        //
-        // push to instructions set based on conditions
+        if (this.camera.preInstructions.length === 0 && this.camera.instructions.length > 0) {
+          console.log('step through instructions');
+
+          if (this.camera.currentlInstruction < this.camera.instructions.length) {
+            console.log('still have camera instructions left ');
+
+            if (this.camera.instructions[this.camera.currentlInstruction].count < this.camera.instructions[this.camera.currentlInstruction].limit) {
+              console.log('step through a single instruction',);
+              if (this.camera.instructions[this.camera.currentlInstruction].action === 'wait') {
+                console.log('single instruction: auto camera waiting');
+              }
+              if (this.camera.instructions[this.camera.currentlInstruction].action.split("_")[0] === 'pan') {
+                console.log('single instruction: adjusting pan x/y -/+ based on direction');
+                switch (this.camera.instructions[this.camera.currentlInstruction].action.split("_")[1]) {
+                  case 'north':
+                  // this.camera.pan.y += 10;
+                  // this.camera.adjustedPan.y += (10*this.camera.zoom.x);
+                  break;
+                  case 'south':
+                  // this.camera.pan.y -= 10;
+                  // this.camera.adjustedPan.y -= (10*this.camera.zoom.x);
+                  break;
+                  case 'east':
+                    // this.camera.pan.x -= 10;
+                    // this.camera.adjustedPan.x -= (10*this.camera.zoom.x);
+                  break;
+                  case 'west':
+                    // this.camera.pan.x += 10;
+                    // this.camera.adjustedPan.x += (10*this.camera.zoom.x);
+                  break;
+                }
+              }
+              if (this.camera.instructions[this.camera.currentlInstruction].action.split("_")[0] === 'zoom') {
+                console.log('single instruction: adjusting zoom x -/+ based on direction');
+                switch (this.camera.instructions[this.camera.currentlInstruction].action.split("_")[1]) {
+                  case 'in':
+                    // x +=
+                  break;
+                  case 'out':
+                    // x -+
+                  break;
+                }
+              }
+              this.camera.instructions[this.camera.currentlInstruction].count++;
+            }
+            else if (this.camera.instructions[this.camera.currentlInstruction].count >= this.camera.instructions[this.camera.currentlInstruction].limit) {
+              console.log('single instruction finished. step to next instruction');
+              this.camera.currentlInstruction++;
+            }
+
+          }
+          if (this.camera.currentlInstruction >= this.camera.instructions.length) {
+            console.log('finished camera instructions');
+            this.camera.instructions = [];
+            this.camera.currentlInstruction = 0;
+          }
+
+
+
+        }
+
         //
         // If 1 player zoom when engaging based on ranged weapon or not
         //
@@ -8358,11 +8456,7 @@ class App extends Component {
         //
         // use a cameraInstructionRef to adjust the camera values accordingly, and push to this.camera.instructions
 
-        let focusCell = {
-          x: undefined,
-          y: undefined
-        }
-        this.findFocusCell('cellToPan',focusCell,canvas,context)
+
 
       }
       if (this.camera.instructionType === 'story') {
@@ -14992,6 +15086,20 @@ class App extends Component {
       //
       // generate iso direction array from origin to dest
       // then gen pan & zoom instructions
+
+      // this.camera.instructions.push(
+      //   {
+      //     action:'pan_north',
+      //     count: 0,
+      //     limit: 25,
+      //   }
+      //   {
+      //     action:'zoom_in',
+      //     count: 0,
+      //     limit: 25,
+      //   }
+      // )
+
 
 
     }
