@@ -33,6 +33,7 @@ import floorAttack2 from './assets/floorAttacked2.png'
 import floorVoid from './assets/floorVoid.png'
 import floorVoid2 from './assets/floorVoid2.png'
 import floorVoid3 from './assets/floorVoid3.png'
+import floorHighlight from './assets/floorHighlight.png'
 import wall from './assets/wall.png'
 import wall2 from './assets/wall2.png'
 import wall3 from './assets/wall3.png'
@@ -1630,6 +1631,7 @@ class App extends Component {
     this.cellsUnderAttack = [];
     this.cellsUnderPreAttack = [];
     this.cellsToHighlight = [];
+    this.cellsToHighlight2 = [];
     this.gamepadPollCounter = {
       count1: 0,
       count2: 0,
@@ -4133,7 +4135,6 @@ class App extends Component {
 
     let nextPosition;
 
-
     if (player.dead.state === true) {
 
       if (player.dead.count > 0 && player.dead.count < player.dead.limit+1) {
@@ -4143,7 +4144,9 @@ class App extends Component {
       else if (player.dead.count >= player.dead.limit) {
         player.dead.count = 0;
       }
+
     }
+
     if (player.dead.state === true && player.dead.count === 0) {
       // console.log('done dying remove from board');
       player.nextPosition = {
@@ -4226,7 +4229,7 @@ class App extends Component {
 
     // BLOOD SACRIFICE!!
     if (this.bloodSacrificeEvent.state === true) {
-      
+
       if (this.bloodSacrificeEvent.count < this.bloodSacrificeEvent.limit) {
         this.bloodSacrificeEvent.count++;
       } else if (this.bloodSacrificeEvent.count >= this.bloodSacrificeEvent.limit) {
@@ -4937,24 +4940,39 @@ class App extends Component {
 
         // CHECK CELL UNDER ATTACK & PRE ATTACK!!
         for (const cell of this.cellsUnderAttack) {
-          if (cell.count < cell.limit) {
-            cell.count++
-          }
-          else if (cell.count >= cell.limit) {
-            let index = this.cellsUnderAttack.indexOf(cell)
-            this.cellsUnderAttack.splice(index,1)
+          if (cell.limit > 0) {
+            if (cell.count < cell.limit) {
+              cell.count++
+            }
+            else if (cell.count >= cell.limit) {
+              let index = this.cellsUnderAttack.indexOf(cell)
+              this.cellsUnderAttack.splice(index,1)
+            }
           }
 
         }
         for (const cell2 of this.cellsUnderPreAttack) {
-          if (cell2.count < cell2.limit) {
-            cell2.count++
+          if (cell2.limit > 0) {
+            if (cell2.count < cell2.limit) {
+              cell2.count++
+            }
+            else if (cell2.count >= cell2.limit) {
+              let index = this.cellsUnderPreAttack.indexOf(cell2)
+              this.cellsUnderPreAttack.splice(index,1)
+            }
           }
-          else if (cell2.count >= cell2.limit) {
-            let index = this.cellsUnderPreAttack.indexOf(cell2)
-            this.cellsUnderPreAttack.splice(index,1)
+        }
+        // CELLS TO HIGHLIGHT V2!!
+        for (const cell3 of this.cellsToHighlight2) {
+          if (cell3.limit > 0) {
+            if (cell3.count < cell3.limit) {
+              cell3.count++
+            }
+            else if (cell3.count >= cell3.limit) {
+              let index = this.cellsToHighlight2.indexOf(cell3)
+              this.cellsToHighlight2.splice(index,1)
+            }
           }
-
         }
 
 
@@ -8226,7 +8244,7 @@ class App extends Component {
       }
 
       if (findFocusCell) {
-        this.findFocusCell('panToCell',{})
+        this.findFocusCell('panToCell',{},canvas,context)
       }
 
 
@@ -8344,7 +8362,7 @@ class App extends Component {
           x: undefined,
           y: undefined
         }
-        this.findFocusCell('cellToPan',focusCell)
+        this.findFocusCell('cellToPan',focusCell,canvas,context)
 
       }
       if (this.camera.instructionType === 'story') {
@@ -9201,6 +9219,19 @@ class App extends Component {
             }
           }
         }
+        // CELLS TO HIGHLIGHT V2!!
+        if (this.cellsToHighlight2.length > 0) {
+
+          for (const cll3 of this.cellsToHighlight2) {
+            if (
+              cll3.number.x === x &&
+              cll3.number.y === y
+            ) {
+              floor = this.refs.floorHighlight;
+            }
+          }
+        }
+
 
 
         if (drawFloor === true) {
@@ -14934,7 +14965,7 @@ class App extends Component {
      }
 
   }
-  findFocusCell = (inputType,args) => {
+  findFocusCell = (inputType,args,canvas,context) => {
 
     let cell = {
       x: undefined,
@@ -14952,19 +14983,142 @@ class App extends Component {
       y: undefined,
     }
 
+
+
     if (inputType === 'cellToPan') {
-      cell = args;
+
+      // destCell = args;
+      // originCell = this.camera.focusCell;
+      //
+      // generate iso direction array from origin to dest
+      // then gen pan & zoom instructions
+
+
     }
 
     if (inputType === 'panToCell') {
 
+      let focusCell;
+      const rect = canvas.getBoundingClientRect()
+      const scale = rect.width / canvas.offsetWidth;
+
+      const x = this.canvasWidth/2;
+      const y = this.canvasHeight/2;
+
+      // ADJUSTED FOR CANVAS SCALE & TRANSFORM
+      let newX = (x-this.camera.zoomFocusPan.x)/this.camera.zoom.x;
+      let newY = (y-this.camera.zoomFocusPan.y)/this.camera.zoom.y;
+
+      let insideGrid = false;
+
+      for(const cell of this.gridInfo) {
+        let point = [newX,newY];
+        // let point = [newX,newY];
+        let polygon = [];
+        for (const vertex of cell.vertices) {
+          let vertexPoint = [vertex.x+10,vertex.y+5];
+          polygon.push(vertexPoint)
+        }
+        let pip = pointInPolygon(point, polygon)
+        if (pip === true) {
+          insideGrid = true;
+          // console.log("clicked a cell",cell.number,"x: " + x + " y: " + y);
+          focusCell = cell;
+        }
+      }
+      if ( insideGrid === false ) {
+        // console.log("clicked the canvas", 'x: ',x,'y: ',y);
+        // console.log('clicked outside the grid');
+        // this.showCellInfoBox = false;
+        focusCell = {
+          number:{
+            x:0,
+            y:0
+          },
+          center:{
+            x:0,
+            y:0
+          },
+          drawCenter:{
+            x:0,
+            y:0
+          },
+          vertices: [
+            {
+              x:0,
+              y:0
+            },
+            {
+              x:0,
+              y:0
+            },
+            {
+              x:0,
+              y:0
+            },
+            {
+              x:0,
+              y:0
+            },
+          ],
+          side: 0,
+          levelData: '',
+          edge: {
+            state: false,
+            side: ''
+          },
+          terrain: {
+            name: '',
+            type: '',
+            effect: ''
+          },
+          item: {
+            name: '',
+            type: '',
+            subType: '',
+            effect: '',
+            initDrawn: false
+          },
+          void: {
+            state: false
+          },
+        }
+        this.cellsToHighlight2 = [];
+      }
+      if (insideGrid === true) {
+        // console.log('panToCell using pointInPolygon',focusCell.number);
+        this.camera.focusCell.x = focusCell.number.x;
+        this.camera.focusCell.y = focusCell.number.y;
+        for (const cell2 of this.cellsToHighlight2) {
+          if (cell2.number.x !== focusCell.number.x || cell2.number.y !== focusCell.number.y) {
+            let indx = this.cellsToHighlight2.indexOf(cell2);
+            this.cellsToHighlight2.splice(indx,1)
+          }
+        }
+        if (!this.cellsToHighlight2.find(x=> x.number.x === focusCell.number.x && x.number.y === focusCell.number.y)) {
+          this.cellsToHighlight2.push(
+            {
+              number: {
+                x: focusCell.number.x,
+                y: focusCell.number.y,
+              },
+              count: 0,
+              limit: 0,
+            },
+          )
+        }
+        // console.log('this.cellsToHighlight2',this.cellsToHighlight2);
+      }
+
+
+
       if (this.camera.pan.x < 0) {
         direction = 'east';
-        cellOffsetX = parseInt((this.camera.pan.x/100).toFixed(0))
+        cellOffsetX = parseInt((this.camera.pan.x/50).toFixed(0))
       }
       if (this.camera.pan.x > 0) {
         direction = 'west';
-        cellOffsetX = parseInt((this.camera.pan.x/100).toFixed(0))
+        cellOffsetX = parseInt((this.camera.pan.x/50).toFixed(0))
       }
       if (this.camera.pan.y > 0) {
         direction = 'north';
@@ -14974,6 +15128,7 @@ class App extends Component {
         direction = 'south';
         cellOffsetY = parseInt((this.camera.pan.y/25).toFixed(0))
       }
+
       if (this.camera.pan.x === -1) {
         cellOffsetX = 0;
       }
@@ -14981,21 +15136,10 @@ class App extends Component {
         cellOffsetY = 0;
       }
 
-      newCell = {
-        x: centerCellRef.x+cellOffsetX,
-        y: centerCellRef.y+cellOffsetY,
-      }
-      // console.log('newCell',newCell);
-      console.log('cellOffsetX',cellOffsetX,'cellOffsetY',cellOffsetY);
+      // console.log('cellOffsetX',cellOffsetX,'cellOffsetY',cellOffsetY);
 
-      // switch (direction) {
-      //   case "north":
-      //     newCell = {
-      //       x: centerCellRef.x+cellOffsetX,
-      //       y: centerCellRef.y+cellOffsetY,
-      //     }
-      //   break;
-      // }
+
+
 
     }
 
@@ -15044,7 +15188,7 @@ class App extends Component {
         cl.void.state = true;
 
         if (this.bloodSacrificeEvent.state === true) {
-          console.log('bloodSacrificeVoidedCells',cl);
+          // console.log('bloodSacrificeVoidedCells',cl);
           this.bloodSacrificeVoidedCells.push(cl)
         }
         // console.log('voiding',cl.number.x,cl.number.y);
@@ -22274,6 +22418,7 @@ class App extends Component {
           <img src={floorVoid} className='hidden' ref="floorVoid" alt="logo" id="floor4"/>
           <img src={floorVoid2} className='hidden' ref="floorVoid2" alt="logo" id="floor4"/>
           <img src={floorVoid3} className='hidden' ref="floorVoid3" alt="logo" id="floor4"/>
+          <img src={floorHighlight} className='hidden' ref="floorHighlight" alt="logo" id="floor4"/>
           <img src={wall} className='hidden' ref="wall" id="wall" alt="logo" />
           <img src={wall2} className='hidden' ref="wall2" id="wall2" alt="logo" />
           <img src={wall3} className='hidden' ref="wall3" id="wall3" alt="logo" />
