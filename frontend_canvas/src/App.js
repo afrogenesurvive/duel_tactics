@@ -7500,68 +7500,99 @@ class App extends Component {
                     if (cellsWithinBounds === true) {
                       if (
                         cell1.void.state === true ||
-                        cell1.terrain.type === 'deep'
+                        cell1.terrain.type === 'deep' ||
+                        cell1.terrain.type === 'hazard'
                       ) {
                         // console.log('a');
                         if (
                           cell2.levelData.charAt(0) !==  'z' ||
                           cell2.levelData.charAt(0) !==  'y'
                         ) {
-                          // console.log('b');
+                          // console.log('no obstacles at jump destination');
 
-                          let targetOccupied = false;
-                          for (const plyr of this.players) {
-                            if (
-                              plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
-                              plyr.currentPosition.cell.number.y === player.target.cell2.number.y
-                            ) {
-                              // console.log('c');
-                              targetOccupied = true
+                          if (
+                            cell2.void.state !== true &&
+                            cell2.terrain.type !== 'deep'
+                          ) {
+                            // console.log('can jump');
+                            this.players[player.number-1].jumping.checking = false;
+                            this.players[player.number-1].jumping.state = true;
+                            player.action = 'jumping'
+                            player.stamina.current = player.stamina.current - this.staminaCostRef.jump;
+
+                            player.moving = {
+                              state: true,
+                              step: 0,
+                              course: '',
+                              origin: {
+                                number: player.currentPosition.cell.number,
+                                center: player.currentPosition.cell.center,
+                              },
+                              destination: target.cell2.center
                             }
 
-                          }
-
-                          if (targetOccupied !== true) {
-                            if (
-                              cell2.void.state !== true &&
-                              cell2.terrain.type !== 'deep'
-                            ) {
-                              // console.log('can jump');
-                              this.players[player.number-1].jumping.checking = false;
-                              this.players[player.number-1].jumping.state = true;
-                              player.action = 'jumping'
-                              player.stamina.current = player.stamina.current - this.staminaCostRef.jump;
-
-                              player.moving = {
-                                state: true,
-                                step: 0,
-                                course: '',
-                                origin: {
-                                  number: player.currentPosition.cell.number,
-                                  center: player.currentPosition.cell.center,
-                                },
-                                destination: target.cell2.center
-                              }
-
-                              nextPosition = this.lineCrementer(player);
-                              // nextPosition = this.jumpCrementer(player);
-                              player.nextPosition = nextPosition;
-                            } else {
-                              // console.log('can only jump over voids or deep water cell 2');
-                              this.players[player.number-1].jumping.checking = false;
-                            }
-                          }
-                          else {
-                            // console.log('jump destination occupied');
+                            nextPosition = this.lineCrementer(player);
+                            // nextPosition = this.jumpCrementer(player);
+                            player.nextPosition = nextPosition;
+                          } else {
+                            // console.log('can only jump over voids or deep water cell 2');
                             this.players[player.number-1].jumping.checking = false;
                           }
+
+
+                          // let targetOccupied = false;
+                          // for (const plyr of this.players) {
+                          //   if (
+                          //     plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
+                          //     plyr.currentPosition.cell.number.y === player.target.cell2.number.y
+                          //   ) {
+                          //     // console.log('c');
+                          //     targetOccupied = true
+                          //   }
+                          //
+                          // }
+
+                          // if (targetOccupied !== true) {
+                          //   if (
+                          //     cell2.void.state !== true &&
+                          //     cell2.terrain.type !== 'deep'
+                          //   ) {
+                          //     // console.log('can jump');
+                          //     this.players[player.number-1].jumping.checking = false;
+                          //     this.players[player.number-1].jumping.state = true;
+                          //     player.action = 'jumping'
+                          //     player.stamina.current = player.stamina.current - this.staminaCostRef.jump;
+                          //
+                          //     player.moving = {
+                          //       state: true,
+                          //       step: 0,
+                          //       course: '',
+                          //       origin: {
+                          //         number: player.currentPosition.cell.number,
+                          //         center: player.currentPosition.cell.center,
+                          //       },
+                          //       destination: target.cell2.center
+                          //     }
+                          //
+                          //     nextPosition = this.lineCrementer(player);
+                          //     // nextPosition = this.jumpCrementer(player);
+                          //     player.nextPosition = nextPosition;
+                          //   } else {
+                          //     // console.log('can only jump over voids or deep water cell 2');
+                          //     this.players[player.number-1].jumping.checking = false;
+                          //   }
+                          // }
+                          // else {
+                          //   // console.log('jump destination occupied');
+                          //   this.players[player.number-1].jumping.checking = false;
+                          // }
 
                         } else {
                           // console.log('jump obstacle detected');
                           this.players[player.number-1].jumping.checking = false;
                         }
                       } else {
-                        // console.log('can only jump over voids or deep water cell 2');
+                        // console.log('can only jump over voids, hazards or deep water cell 2');
                         this.players[player.number-1].jumping.checking = false;
                       }
                     } else {
