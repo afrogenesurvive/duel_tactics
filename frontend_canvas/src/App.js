@@ -272,14 +272,14 @@ class App extends Component {
       row12: ['x120x','x121x','z122x','x123x','x124x','x125x','x126x','x127x','x128x','x129x','z1210x','x1211x','x1212x'],
     };
     this.levelData9 = {
-      row0: ['x00x','z01x','x02x','x03x','x04x','x05g','x06g','x07h','x08f','x09d'],
-      row1: ['x10a','y11a','x12a','x13a','x14x','x15x','z16x','x17x','x18f','x19d'],
+      row0: ['x00x','z01x','x02x','x03k','x04x','x05g','x06g','x07h','x08f','x09d'],
+      row1: ['x10a','y11a','x12a','x13i','x14x','x15x','z16x','x17x','x18f','x19d'],
       row2: ['z20x','x21a','x22a','x23a','x24x','x25x','x26x','x27x','x28d','x29d'],
       row3: ['x30a','x31j','x32b','x33j','x34j','x35b','x36j','x37j','x38j','x39d'],
-      row4: ['x40j','x41j','x42b','x43b','x44b','x45b','x46j','x47j','x48j','x49d'],
+      row4: ['x40j','x41j','x42b','x43b','x44b','x45b','x46b','x47j','x48j','x49d'],
       row5: ['x50j','x51j','x52b','x53j','x54j','x55b','x56j','x57j','x58j','x59d'],
       row6: ['z60x','x61x','x62x','x63i','x64x','x65x','x66x','x67x','x68f','x69f'],
-      row7: ['x70x','x71x','y72x','x73i','y74x','y75x','y76x','y77x','x78f','x79f'],
+      row7: ['x70x','x71x','y72x','x73i','x74x','y75x','y76x','y77x','x78f','x79f'],
       row8: ['x80x','x81x','x82k','x83x','x84x','x85x','x86x','x87x','x88x','x89x'],
       row9: ['x90x','x91x','x92k','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
     };
@@ -609,8 +609,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 8,
-              y: 5,
+              x: 1,
+              y: 4,
             },
             center: {
               x: 0,
@@ -999,7 +999,7 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 0,
+              x: 1,
               y: 2,
             },
             center: {
@@ -4514,7 +4514,7 @@ class App extends Component {
         nextPosition = this.lineCrementer(player);
         // player.currentPosition.cell = player.target.cell;
         player.nextPosition = nextPosition;
-        // console.log('nextPosition',nextPosition,'dest',player.target.cell.center,'zoom',this.camera.zoom,'pan',this.camera.pan);
+        // console.log('plyr',player.number,'nextPosition',nextPosition,'dest',player.target.cell.center);
 
 
         let atDestRanges = [false,false,false,false];
@@ -4542,7 +4542,6 @@ class App extends Component {
             atDestRanges[0] = true;
             destRngIndx = 0;
           }
-
           if (
             nextPosition.x === player.target.cell.center.x-0.25 &&
             nextPosition.y === player.target.cell.center.y+0.5
@@ -4550,7 +4549,6 @@ class App extends Component {
             atDestRanges[1] = true;
             destRngIndx = 1;
           }
-
           if (
             nextPosition.x === player.target.cell.center.x &&
             nextPosition.y === player.target.cell.center.y
@@ -4558,7 +4556,6 @@ class App extends Component {
             atDestRanges[2] = true;
             destRngIndx = 2;
           }
-
           if (
             nextPosition.x === player.target.cell.center.x-5 &&
             nextPosition.y === player.target.cell.center.y-5
@@ -4566,7 +4563,6 @@ class App extends Component {
             atDestRanges[3] = true;
             destRngIndx = 3;
           }
-
 
 
           for (const el of atDestRanges) {
@@ -4614,7 +4610,7 @@ class App extends Component {
 
               // PUSHBACK MOVEMENT
               if (player.pushBack.state === true && player.target.void !== true) {
-
+                // console.log('player',player.number,'finished moving pushed back');
 
                 // CANCEL AI ATTACK, DEFEND!!
                 if (player.ai.state === true) {
@@ -4745,7 +4741,7 @@ class App extends Component {
                   plyr.moving.state === true
                 ) {
 
-                  // console.log('jump destination occupied, fall into target 1',player.direction);
+                  console.log('jump destination occupied, fall into target 1',player.direction);
 
                   pushBack = true;
                   opp = plyr;
@@ -4881,15 +4877,18 @@ class App extends Component {
       else if (player.moving.state === false) {
 
 
-        // MOVEMENT OVERLAP PUSHBACK!!
+        // COLLISION/ MOVEMENT OVERLAP PUSHBACK!!
         for (const plyr4 of this.players) {
           if (
             player.number !== plyr4.number &&
             player.currentPosition.cell.number.x === plyr4.currentPosition.cell.number.x &&
-            player.currentPosition.cell.number.y === plyr4.currentPosition.cell.number.y
+            player.currentPosition.cell.number.y === plyr4.currentPosition.cell.number.y &&
+            player.pushBack.state !== true &&
+            plyr4.pushBack.state !== true
           ) {
             // console.log('buck up btwn plyrs',player.number,plyr4.number,"@",player.currentPosition.cell.number,plyr4.currentPosition.cell.number);
-
+            // console.log('plyrs pushed back?',player.pushBack.state,plyr4.pushBack.state);
+            // console.log('plyrs moving?',player.moving.state,plyr4.moving.state);
 
             let playerAPushDir2;
             let playerBPushDir2;
@@ -6265,6 +6264,7 @@ class App extends Component {
                       }
 
                       let canPushback = this.pushBack(player,pushBackDirection);
+                      // console.log('canPushback',canPushback);
 
                       if (canPushback === true && shouldDeflectAttacker === 1) {
                         // console.log('predeflect --> pushback');
@@ -6276,12 +6276,14 @@ class App extends Component {
                         player.defending = {
                           state: false,
                           count: 0,
-                          limit: this.players[player.target.occupant.player-1].defending.limit,
+                          limit: player.defending.limit,
+                          // limit: this.players[player.target.occupant.player-1].defending.limit,
                         }
                         player.attacking = {
                           state: false,
                           count: 0,
-                          limit: this.players[player.target.occupant.player-1].attacking.limit,
+                          limit: player.attacking.limit,
+                          // limit: this.players[player.target.occupant.player-1].attacking.limit,
                         }
 
                         player.success.deflected = {
@@ -13969,7 +13971,7 @@ class App extends Component {
 
   }
   pushBack = (player,hitByPlayerDirection) => {
-    // console.log('pushing back');
+    // console.log('pushing back',player.number);
 
     player.pushBack.prePushMoveSpeed = player.speed.move;
     player.speed.move = .125;
@@ -13990,6 +13992,7 @@ class App extends Component {
     let target = this.getTarget(player)
 
     if (target.free === true && player.target.void === false) {
+      // console.log('proceed with pushback',player.number,'to',target.cell.number);
 
       player.action = 'strafe moving';
       player.moving = {
@@ -14013,7 +14016,15 @@ class App extends Component {
 
     }
     if (target.free === false) {
-          console.log('target is NOT free');
+          console.log('Pushback target is NOT free');
+          let blockedCell = this.gridInfo.find(x=>x.number.x === target.cell.number.x && x.number.y === target.cell.number.y)
+          if (
+            blockedCell.levelData.charAt(0) === 'y' ||
+            blockedCell.levelData.charAt(0) === 'z'
+          ) {
+            console.log("Pushedback into obstacle! Push it, destroy it or do nothing.");
+          }
+          // player.pushBack.state = false;
     }
     if (player.target.void === true) {
       console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
@@ -14038,22 +14049,26 @@ class App extends Component {
     if (target.free === true) {
       player.pushBack.state = true;
 
-      player.popups.push(
-        {
-          state: false,
-          count: 0,
-          limit: 25,
-          type: '',
-          position: '',
-          msg: 'pushedBack',
-          img: '',
+      if (!player.popups.find(x=>x.msg === "pushedBack")) {
+        player.popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 25,
+            type: '',
+            position: '',
+            msg: 'pushedBack',
+            img: '',
 
-        }
-      )
+          }
+        )
+      }
+
 
       this.players[player.number-1] = player;
       return true
     } else {
+      player.pushBack.state = false;
       this.players[player.number-1] = player;
       return false
     }
