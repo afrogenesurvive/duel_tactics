@@ -6175,6 +6175,7 @@ class App extends Component {
                     shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
                     shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack);
 
+                    // PEAK DEFEND/PARRY!!
                     if (
                       this.players[player.target.occupant.player-1].defending.state === true &&
                       player.defendDecay.state !== true ||
@@ -6205,6 +6206,8 @@ class App extends Component {
                         }
                       )
                     }
+
+                    // OFF PEAK DEFEND
                     else {
                       // console.log('off peak defend');
                       shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
@@ -13510,6 +13513,16 @@ class App extends Component {
             )
           }
 
+
+          let currentMoveSpeedIndx = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
+          if (currentMoveSpeedIndx > 0) {
+            this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentMoveSpeedIndx-1]
+          }
+
+          // if (player.hp === 1) {
+          //   player.speed.move = .05;
+          // }
+
           if (this.players[player.number-1].hp <= 0) {
             this.killPlayer(this.players[player.number-1]);
 
@@ -13517,6 +13530,7 @@ class App extends Component {
             this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
 
           }
+
           else {
             this.players[player.number-1].action = 'deflected';
             this.players[player.number-1].success.deflected = {
