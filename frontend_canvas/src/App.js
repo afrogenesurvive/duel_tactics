@@ -4075,14 +4075,14 @@ class App extends Component {
           this.camera.preInstructions.push(
             'moveTo_1_1',
             'waitFor_200',
-            // 'moveTo_6_6,',
+            'moveTo_6_6',
+            'zoom_in_10',
+            'waitFor_200',
+            'moveTo_0_0',
             // 'zoom_in_10',
-            // 'waitFor_200',
-            // 'moveTo_0_0,',
-            // 'zoom_in_10',
-            // 'zoom_out_10',
-            // 'waitFor_200',
-            // 'moveTo_8_8,',
+            'zoom_out_20',
+            'waitFor_200',
+            'moveTo_8_8',
             // 'zoom_out_10',
           )
           this.camera.state = false;
@@ -8421,7 +8421,7 @@ class App extends Component {
             x: undefined,
             y: undefined,
           }
-          console.log('Step through pre instructions...indx',indx,'preInstructions',preInstruction);
+          // console.log('Step through pre instructions...indx',indx,'preInstructions',preInstruction);
 
           switch (preInstruction.split("_")[0]) {
             case 'moveTo':
@@ -8463,10 +8463,10 @@ class App extends Component {
           }
 
           if (indx ===  this.camera.preInstructions.length-1) {
-            console.log('this is the last preInstruction. Empty array');
+            // console.log('this is the last preInstruction. Empty array');
             this.camera.preInstructions = [];
             this.camera.currentPreInstruction = 0;
-            console.log('camera instructions',this.camera.instructions);
+            // console.log('camera instructions',this.camera.instructions);
           } else {
             this.camera.currentPreInstruction++
           }
@@ -8479,10 +8479,10 @@ class App extends Component {
 
         // PARSED INSTRUCTIONS!
         if (this.camera.instructions.length > 0 && this.camera.currentInstruction < this.camera.instructions.length) {
-          console.log('stepping through all instructions... current',this.camera.currentInstruction,this.camera.instructions[this.camera.currentInstruction]);
+          // console.log('stepping through all instructions... current',this.camera.currentInstruction,this.camera.instructions[this.camera.currentInstruction]);
 
             if (this.camera.instructions[this.camera.currentInstruction].count < this.camera.instructions[this.camera.currentInstruction].limit) {
-              console.log('step through a single instruction',this.camera.instructions[this.camera.currentInstruction],'count',this.camera.instructions[this.camera.currentInstruction].count);
+              // console.log('step through a single instruction',this.camera.instructions[this.camera.currentInstruction],'count',this.camera.instructions[this.camera.currentInstruction].count);
 
               if (this.camera.instructions[this.camera.currentInstruction].action === 'wait') {
                 // console.log('single instruction: auto camera waiting');
@@ -8644,7 +8644,6 @@ class App extends Component {
 
               }
 
-
               this.camera.instructions[this.camera.currentInstruction].count++;
             }
             else if (
@@ -8653,18 +8652,19 @@ class App extends Component {
 
               // if (this.camera.instructions[this.camera.currentInstruction].action2 === "") {
               if (this.camera.instructions[this.camera.currentInstruction].action2 === "" && this.camera.currentInstruction < this.camera.instructions.length) {
-                console.log('single instruction finished w/ no secondaries. step to next instruction');
+                // console.log('single instruction finished w/ no secondaries. step to next instruction');
                 this.camera.currentInstruction++;
               }
 
             }
 
             if (
+              this.camera.instructions[this.camera.currentInstruction] &&
               this.camera.instructions[this.camera.currentInstruction].action2 !== "" &&
               this.camera.instructions[this.camera.currentInstruction].count2 < this.camera.instructions[this.camera.currentInstruction].limit2
             ) {
 
-              console.log('step through a single secondary instruction',this.camera.instructions[this.camera.currentInstruction],'count2',this.camera.instructions[this.camera.currentInstruction].count2);
+              // console.log('step through a single secondary instruction',this.camera.instructions[this.camera.currentInstruction],'count2',this.camera.instructions[this.camera.currentInstruction].count2);
 
               switch (this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1]) {
                 case 'north':
@@ -8699,13 +8699,14 @@ class App extends Component {
               this.camera.instructions[this.camera.currentInstruction].count2++;
             }
             else if (
+              this.camera.instructions[this.camera.currentInstruction] &&
               this.camera.instructions[this.camera.currentInstruction].action2 !== "" &&
               this.camera.instructions[this.camera.currentInstruction].count2 >= this.camera.instructions[this.camera.currentInstruction].limit2
             ) {
 
               // if (this.camera.instructions[this.camera.currentInstruction].action2 !== "") {
               // if (this.camera.currentInstruction < this.camera.instructions.length-1) {
-                console.log('single secondary instruction finished. step to next instruction');
+                // console.log('single secondary instruction finished. step to next instruction');
                 this.camera.currentInstruction++;
               // }
 
