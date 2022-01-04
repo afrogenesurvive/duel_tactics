@@ -42,6 +42,7 @@ const CameraControl = (props) => {
 
         </div>
       )}
+
       {props.camera.mode === 'pan' && (
         <div className="cameraBoxMode">
         <a href="javascript:" onClick={props.toggleMode.bind(this, 'zoom')}>
