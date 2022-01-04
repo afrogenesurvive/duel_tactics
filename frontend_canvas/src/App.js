@@ -1742,6 +1742,10 @@ class App extends Component {
       count: 0,
       limit: 0,
     }
+    this.engagedZoomThreshold = {
+      melee: 0,
+      ranged: 0,
+    }
 
 
     // AI
@@ -1798,6 +1802,7 @@ class App extends Component {
       restore: false,
     }
     this.bloodSacrificeVoidedCells = [];
+
 
 
   }
@@ -4083,9 +4088,9 @@ class App extends Component {
         // AUTO CAMERA INSTRUCTIONS!
         if (this.time === 100) {
           this.camera.preInstructions.push(
-            'moveTo_1_1_fast',
+            'moveTo_1_1_slow',
             'waitFor_200',
-            'moveTo_6_6_slow',
+            'moveTo_6_6_fast',
             // 'zoom_in_10',
             // 'zoom_out_20',
             // 'waitFor_200',
@@ -5178,6 +5183,12 @@ class App extends Component {
 
         // ATTACK/DEFEND/DEFLECT CHECK!!
         if (player.attacking.state === true) {
+
+
+          this.setAutoCamera('attackFocus',player)
+
+
+
           let attackPeak = this.attackAnimRef.peak.sword;
           if (player.currentWeapon.type === 'sword') {
             this.players[player.number-1].attacking.limit = this.attackAnimRef.limit.sword;
@@ -6523,6 +6534,8 @@ class App extends Component {
             player.attackStrength = 0;
             player.bluntAttack = false;
             player.action = 'idle';
+
+            this.setAutoCamera('attackFocusBreak',player)
             console.log('attack end');
 
           }
@@ -7963,7 +7976,7 @@ class App extends Component {
               this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
               this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
 
-              this.setCameraFocus('input',canvas, context, canvas2, context2);
+              // this.setCameraFocus('input',canvas, context, canvas2, context2);
               this.findFocusCell('panToCell',{},canvas,context)
             }
 
@@ -8354,7 +8367,7 @@ class App extends Component {
 
       //SET CAMERA FOCUS
       if (setFocus === true) {
-        this.setCameraFocus('input',canvas, context, canvas2, context2);
+        // this.setCameraFocus('input',canvas, context, canvas2, context2);
       }
 
       if (findFocusCell) {
@@ -8445,7 +8458,7 @@ class App extends Component {
 
 
 
-      this.setCameraFocus('reset', canvas, context, canvas2, context2);
+      // this.setCameraFocus('reset', canvas, context, canvas2, context2);
 
     }
 
@@ -8560,7 +8573,7 @@ class App extends Component {
                         this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
                         this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
 
-                        this.setCameraFocus('input',canvas, context, canvas2, context2);
+                        // this.setCameraFocus('input',canvas, context, canvas2, context2);
                         this.findFocusCell('panToCell',{},canvas,context)
 
                       }
@@ -8736,7 +8749,8 @@ class App extends Component {
                 let zoom = this.camera.zoom.x;
                 this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
                 this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
-                this.setCameraFocus('input',canvas, context, canvas2, context2);
+
+                // this.setCameraFocus('input',canvas, context, canvas2, context2);
                 this.findFocusCell('panToCell',{},canvas,context)
                 this.camera.instructions[this.camera.currentInstruction].count2++;
 
@@ -8789,7 +8803,7 @@ class App extends Component {
                   this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
                   this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
 
-                  this.setCameraFocus('input',canvas, context, canvas2, context2);
+                  // this.setCameraFocus('input',canvas, context, canvas2, context2);
                   this.findFocusCell('panToCell',{},canvas,context)
 
                 }
@@ -8823,7 +8837,7 @@ class App extends Component {
                 this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
                 this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
-                this.setCameraFocus('input',canvas, context, canvas2, context2);
+                // this.setCameraFocus('input',canvas, context, canvas2, context2);
                 this.findFocusCell('panToCell',{},canvas,context)
 
                 if (this.camera.instructions[this.camera.currentInstruction].count === this.camera.instructions[this.camera.currentInstruction].limit) {
@@ -8965,7 +8979,7 @@ class App extends Component {
               this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
               this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
-              this.setCameraFocus('input',canvas, context, canvas2, context2);
+              // this.setCameraFocus('input',canvas, context, canvas2, context2);
               this.findFocusCell('panToCell',{},canvas,context)
 
               this.camera.instructions[this.camera.currentInstruction].count2++;
@@ -8997,27 +9011,6 @@ class App extends Component {
 
 
         }
-
-
-        // If 1 player zoom when engaging based on ranged weapon or not
-        //
-        // if 2 players and they are in range, zoom if even are engaging
-        //
-        // if at engage zoom level but not engaged, zoom back out
-        //
-        // if board is under a certain size, zoom appropriately
-        //
-        // if board is over a certain size
-        //   if 1 player and positions changes x amount of times within a this.time interval (use modulo), pan hard to follow
-        //   if 2 players only follow if both positions change x amount of times within a this.time interval (use modulo) and they are in range (use targetArea scan func), pan soft to follow
-        //   else, zoom and pan to get them both as centered and close zoomed as possible
-        //
-        // if 1 player and player respawns, pan to spawn location and zoom in then out
-        //
-        // when a new ai enters pan to it, then back player(s)
-        //
-        // use a cameraInstructionRef to adjust the camera values accordingly, and push to this.camera.instructions
-
 
       }
 
@@ -15712,7 +15705,7 @@ class App extends Component {
         )
       }
 
-      // console.log('origin',originCell,'destination',destCell,'instructions',preInstructions);
+      console.log('origin',originCell,'destination',destCell,'instructions',preInstructions);
 
       // this.camera.cellToPanOrigin.x = destCell.x;
       // this.camera.cellToPanOrigin.y = destCell.y;
@@ -15820,6 +15813,7 @@ class App extends Component {
       let focusCell;
       const rect = canvas.getBoundingClientRect()
       const scale = rect.width / canvas.offsetWidth;
+      // console.log('rect.width',rect.width);
 
       const x = this.canvasWidth/2;
       const y = this.canvasHeight/2;
@@ -16448,8 +16442,7 @@ class App extends Component {
     this.processLevelData(gridInfo);
 
     if (this.camera.fixed !== true) {
-
-      this.setCameraFocus('init', canvas, context, canvas2, context2);
+      // this.setCameraFocus('init', canvas, context, canvas2, context2);
     }
     this.findFocusCell('panToCell',{},canvas,context);
 
@@ -22996,6 +22989,61 @@ class App extends Component {
     this.resetCameraSwitch = true;
 
   }
+  setAutoCamera = (player,args) => {
+
+    this.camera.state = false;
+    this.camera.fixed = false;
+    console.log('setting auto camera instructions');
+
+
+    // if board is over a certain size
+    //   if 1 player and positions changes x amount of times within a this.time interval (use modulo), pan hard to follow
+    //   if 2 players only follow if both positions change x amount of times within a this.time interval (use modulo) and they are in range (use targetArea scan func), pan soft to follow
+    //   else, zoom and pan to get them both as centered and close zoomed as possible
+
+
+    switch (args) {
+      case 'attackFocus':
+        // if 1 player,
+        //   pan fast to plyr pos, check for engagedZoomThreshold[ranged/melee] value and adjust zoom as necessary
+        // if 2 players,
+        //   check distance between players (use logic from cellToPan and use instruction array),
+        //     zoom out and pan to intermediate cell
+      break;
+      case 'attackFocusBreak':
+        // zoom out past engagedZoomThreshold
+      break;
+      case 'playerSpawnFocus':
+        // pan to spawn location, zoom in, wait then out
+      break;
+      case 'aiSpawnFocus':
+        // pan to spawn location, zoom to engage threshold, wait,
+        // zoom out then pan to player 1 or zoom out and pan to inbetween cell
+      break;
+      case 'pushbackPan':
+        // pan to pushback target
+      break;
+      case 'followBolt':
+        // pan to pushback target
+      break;
+      default:
+
+    }
+
+
+
+    // this.camera.preInstructions.push(
+    //   'moveTo_1_1_slow',
+    //   'waitFor_200',
+    //   'moveTo_6_6_fast',
+    //   // 'zoom_in_10',
+    //   // 'zoom_out_20',
+    //   // 'waitFor_200',
+    //   // 'moveTo_6_6',
+    //   // 'zoom_out_10',
+    // )
+
+  }
   setCameraFocus = (focusType, canvas, context, canvas2, context2) => {
     // console.log('setting camera focus','zoom',this.camera.zoom.x,'pan',this.camera.pan);
 
@@ -23046,47 +23094,47 @@ class App extends Component {
       if (this.camera.mode === 'zoom') {
 
 
-        if (this.camera.zoomDirection === 'out' && this.camera.zoom.x > 1) {
-
-
-
-            if (this.camera.pan.x !== -1) {
-
-              if (this.camera.pan.x < 1) {
-                // this.camera.focus.x -= 10;
-                this.camera.focus.x -= (10*this.camera.zoom.x);
-              }
-              if (this.camera.pan.x > 1) {
-                // this.camera.focus.x += 10;
-                this.camera.focus.x += (10*this.camera.zoom.x);
-              }
-
-            }
-            if (this.camera.pan.y !== -1) {
-
-              if (this.camera.pan.y < 1) {
-                // this.camera.focus.y -= 10;
-                this.camera.focus.y -= (5*this.camera.zoom.x);
-              }
-              if (this.camera.pan.y > 1) {
-                // this.camera.focus.y += 10;
-                this.camera.focus.y += (5*this.camera.zoom.x);
-              }
-
-            }
-
-
-            this.camera.focus.x = ((canvas.width/2)-this.camera.zoomFocusPan.x)/this.camera.zoom.x;
-            this.camera.focus.y = ((canvas.height/2)-this.camera.zoomFocusPan.y)/this.camera.zoom.y;
-
-
-
-        }
-
-        if (this.camera.zoomDirection === 'in') {
-
-
-        }
+        // if (this.camera.zoomDirection === 'out' && this.camera.zoom.x > 1) {
+        //
+        //
+        //
+        //     if (this.camera.pan.x !== -1) {
+        //
+        //       if (this.camera.pan.x < 1) {
+        //         // this.camera.focus.x -= 10;
+        //         this.camera.focus.x -= (10*this.camera.zoom.x);
+        //       }
+        //       if (this.camera.pan.x > 1) {
+        //         // this.camera.focus.x += 10;
+        //         this.camera.focus.x += (10*this.camera.zoom.x);
+        //       }
+        //
+        //     }
+        //     if (this.camera.pan.y !== -1) {
+        //
+        //       if (this.camera.pan.y < 1) {
+        //         // this.camera.focus.y -= 10;
+        //         this.camera.focus.y -= (5*this.camera.zoom.x);
+        //       }
+        //       if (this.camera.pan.y > 1) {
+        //         // this.camera.focus.y += 10;
+        //         this.camera.focus.y += (5*this.camera.zoom.x);
+        //       }
+        //
+        //     }
+        //
+        //
+        //     this.camera.focus.x = ((canvas.width/2)-this.camera.zoomFocusPan.x)/this.camera.zoom.x;
+        //     this.camera.focus.y = ((canvas.height/2)-this.camera.zoomFocusPan.y)/this.camera.zoom.y;
+        //
+        //
+        //
+        // }
+        //
+        // if (this.camera.zoomDirection === 'in') {
+        //
+        //
+        // }
 
       }
 
