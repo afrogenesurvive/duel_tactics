@@ -1746,6 +1746,7 @@ class App extends Component {
       melee: 0.50,
       ranged: 0.10,
     }
+    this.settingAutoCamera = false;
 
 
     // AI
@@ -5273,8 +5274,10 @@ class App extends Component {
 
                 // console.log('this.cellsUnderPreAttack',this.cellsUnderPreAttack[0],this.cellsUnderPreAttack[1]);
 
+                if (this.settingAutoCamera === false) {
+                  this.setAutoCamera('attackFocus',player)
+                }
 
-                this.setAutoCamera('attackFocus',player)
             }
 
           }
@@ -6535,7 +6538,10 @@ class App extends Component {
             player.bluntAttack = false;
             player.action = 'idle';
 
-            this.setAutoCamera('attackFocusBreak',player)
+            if (this.settingAutoCamera === false) {
+              this.setAutoCamera('attackFocusBreak',player)
+            }
+
             console.log('attack end');
 
           }
@@ -9007,6 +9013,7 @@ class App extends Component {
             console.log('finished camera instructions');
             this.camera.instructions = [];
             this.camera.currentInstruction = 0;
+            this.settingAutoCamera = false;
           }
 
 
@@ -23003,6 +23010,7 @@ class App extends Component {
 
     this.camera.state = false;
     this.camera.fixed = false;
+    this.settingAutoCamera = true;
     console.log('setting auto camera instructions');
 
 
@@ -23039,8 +23047,8 @@ class App extends Component {
           )
 
           if ((this.camera.zoom.x-1) < this.engagedZoomThreshold[weaponType]) {
-            console.log('auto camera single player attack focus zoom amt',((.50-(this.camera.zoom.x-1))*10).toFixed(0));
-            zoomAdjust = ((.50-(this.camera.zoom.x-1))*10).toFixed(0);
+            console.log('auto camera single player attack focus zoom amt',((.50-(this.camera.zoom.x-1))*10).toFixed(0)*3);
+            zoomAdjust = ((.50-(this.camera.zoom.x-1))*10).toFixed(0)*3;
             this.camera.preInstructions.push(
               'zoom_in_'+zoomAdjust+''
             )
@@ -23150,19 +23158,20 @@ class App extends Component {
 
             this.camera.preInstructions.push(
               'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_fast',
+              // 'moveTo_'+this.players[0].currentPosition.cell.number.x+'_'+this.players[0].currentPosition.cell.number.y+'_fast',
               // 'waitFor_50',
             )
 
             if ((this.camera.zoom.x-1) < .50) {
-              console.log('auto camera 2 player close attack focus zoom in amt',((.50-(this.camera.zoom.x-1))*10).toFixed(0));
-              zoomAdjust = ((.50-(this.camera.zoom.x-1))*10).toFixed(0);
+              console.log('auto camera 2 player close attack focus zoom in amt',((.50-(this.camera.zoom.x-1))*10).toFixed(0)*3);
+              zoomAdjust = ((.50-(this.camera.zoom.x-1))*10).toFixed(0)*3;
               this.camera.preInstructions.push(
                 'zoom_in_'+zoomAdjust+''
               )
             }
             if ((this.camera.zoom.x-1) > .50) {
-              console.log('auto camera 2 player close attack focus zoom out amt',(((this.camera.zoom.x-1)-.50)*10).toFixed(0));
-              zoomAdjust = (((this.camera.zoom.x-1)-.50)*10).toFixed(0);
+              console.log('auto camera 2 player close attack focus zoom out amt',(((this.camera.zoom.x-1)-.50)*10).toFixed(0)*3);
+              zoomAdjust = (((this.camera.zoom.x-1)-.50)*10).toFixed(0)*3;
               this.camera.preInstructions.push(
                 'zoom_out_'+zoomAdjust+''
               )
@@ -23174,7 +23183,7 @@ class App extends Component {
 
             console.log('attack focus auto cam: 2 players at a distance');
 
-            console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
+            // console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
 
             let intermediateCell = {
               x: parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)].x,
@@ -23187,15 +23196,15 @@ class App extends Component {
             )
 
             if ((this.camera.zoom.x-1) < .35) {
-              console.log('auto cam 2 player attack focus distance zoom in amt',((.35-(this.camera.zoom.x-1))*10).toFixed(0));
-              zoomAdjust = ((.35-(this.camera.zoom.x-1))*10).toFixed(0);
+              console.log('auto cam 2 player attack focus distance zoom in amt',((.35-(this.camera.zoom.x-1))*10).toFixed(0)*3);
+              zoomAdjust = ((.35-(this.camera.zoom.x-1))*10).toFixed(0)*3;
               this.camera.preInstructions.push(
                 'zoom_in_'+zoomAdjust+''
               )
             }
             if ((this.camera.zoom.x-1) > .35) {
-              console.log('auto cam 2 player attack focus distance zoom out amt',(((this.camera.zoom.x-1)-.35)*10).toFixed(0));
-              zoomAdjust = (((this.camera.zoom.x-1)-.35)*10).toFixed(0);
+              console.log('auto cam 2 player attack focus distance zoom out amt',(((this.camera.zoom.x-1)-.35)*10).toFixed(0)*3);
+              zoomAdjust = (((this.camera.zoom.x-1)-.35)*10).toFixed(0)*3;
               this.camera.preInstructions.push(
                 'zoom_out_'+zoomAdjust+''
               )
@@ -23208,12 +23217,19 @@ class App extends Component {
       break;
       case 'attackFocusBreak':
         if ((this.camera.zoom.x-1) > 0) {
-          console.log('auto cam attack focus break zoom out amt ',((this.camera.zoom.x-1)*10).toFixed(0));
-          zoomAdjust = ((this.camera.zoom.x-1)*10).toFixed(0)
+          console.log('auto cam attack focus break zoom out amt ',((this.camera.zoom.x-1)*10).toFixed(0)*3);
+          zoomAdjust = ((this.camera.zoom.x-1)*10).toFixed(0)*3
           this.camera.preInstructions.push(
             'zoom_out_'+zoomAdjust+''
           )
         }
+        // if ((this.camera.zoom.x-1) > .35) {
+        //   console.log('auto cam attack focus break zoom out amt ',(((this.camera.zoom.x-1)-.35)*10).toFixed(0)*3);
+        //   zoomAdjust = (((this.camera.zoom.x-1)-.35)*10).toFixed(0)*3;
+        //   this.camera.preInstructions.push(
+        //     'zoom_out_'+zoomAdjust+''
+        //   )
+        // }
       break;
       case 'playerSpawnFocus':
         // pan to spawn location, zoom in, wait then out
