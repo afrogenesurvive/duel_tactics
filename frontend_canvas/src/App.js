@@ -1743,8 +1743,8 @@ class App extends Component {
       limit: 0,
     }
     this.engagedZoomThreshold = {
-      melee: 0,
-      ranged: 0,
+      melee: 0.50,
+      ranged: 0.10,
     }
 
 
@@ -3160,6 +3160,8 @@ class App extends Component {
     if (playerNumber < 2) {
       this.players.splice(1,1)
       this.playerNumber = 1;
+    } else {
+      this.playerNumber = 2;
     }
 
 
@@ -3408,7 +3410,7 @@ class App extends Component {
   getCustomPlyrStartPosList = (args) => {
     this.settingsFormPlyrGridInfo = this.gridInfo;
 
-    this.playerNumber = args;
+    this.playerNumber = args.length;
 
     let avoidCells = [];
 
@@ -4087,19 +4089,19 @@ class App extends Component {
 
         // AUTO CAMERA INSTRUCTIONS!
         if (this.time === 100) {
-          this.camera.preInstructions.push(
-            'moveTo_1_1_slow',
-            'waitFor_200',
-            'moveTo_6_6_fast',
-            // 'zoom_in_10',
-            // 'zoom_out_20',
-            // 'waitFor_200',
-            // 'moveTo_6_6',
-            // 'zoom_out_10',
-          )
-          this.camera.state = false;
-          this.camera.fixed = false;
-          console.log('setting auto camera instructions');
+          // this.camera.preInstructions.push(
+          //   'moveTo_1_1_slow',
+          //   'waitFor_200',
+          //   'moveTo_6_6_fast',
+          //   // 'zoom_in_10',
+          //   // 'zoom_out_20',
+          //   // 'waitFor_200',
+          //   // 'moveTo_6_6',
+          //   // 'zoom_out_10',
+          // )
+          // this.camera.state = false;
+          // this.camera.fixed = false;
+          // console.log('setting auto camera instructions');
         }
 
 
@@ -5185,10 +5187,6 @@ class App extends Component {
         if (player.attacking.state === true) {
 
 
-          this.setAutoCamera('attackFocus',player)
-
-
-
           let attackPeak = this.attackAnimRef.peak.sword;
           if (player.currentWeapon.type === 'sword') {
             this.players[player.number-1].attacking.limit = this.attackAnimRef.limit.sword;
@@ -5275,6 +5273,8 @@ class App extends Component {
 
                 // console.log('this.cellsUnderPreAttack',this.cellsUnderPreAttack[0],this.cellsUnderPreAttack[1]);
 
+
+                this.setAutoCamera('attackFocus',player)
             }
 
           }
@@ -16445,6 +16445,16 @@ class App extends Component {
       // this.setCameraFocus('init', canvas, context, canvas2, context2);
     }
     this.findFocusCell('panToCell',{},canvas,context);
+    // switch (this.gridWidth) {
+    //   case 9 :
+    //     this.engagedZoomThreshold.melee = .50;
+    //     this.engagedZoomThreshold.ranged = .20;
+    //   break;
+    //   case 12 :
+    //     this.engagedZoomThreshold.melee = .50;
+    //     this.engagedZoomThreshold.ranged = .20;
+    //   break;
+    // }
 
     // CENTER LARGER GRIDS GRID
     if (window.innerWidth < 1100 && this.gridWidth >= 12) {
@@ -22989,7 +22999,7 @@ class App extends Component {
     this.resetCameraSwitch = true;
 
   }
-  setAutoCamera = (player,args) => {
+  setAutoCamera = (args,player) => {
 
     this.camera.state = false;
     this.camera.fixed = false;
@@ -23002,16 +23012,208 @@ class App extends Component {
     //   else, zoom and pan to get them both as centered and close zoomed as possible
 
 
+    let zoomAdjust = 0;
     switch (args) {
       case 'attackFocus':
-        // if 1 player,
-        //   pan fast to plyr pos, check for engagedZoomThreshold[ranged/melee] value and adjust zoom as necessary
-        // if 2 players,
-        //   check distance between players (use logic from cellToPan and use instruction array),
-        //     zoom out and pan to intermediate cell
+
+        let weaponType = "";
+        if (
+          player.currentWeapon.type === 'spear' ||
+          player.currentWeapon.type === 'sword' ||
+          player.currentWeapon.type === ''
+        ) {
+          weaponType = 'melee'
+        }
+        if (
+          player.currentWeapon.type === 'crossbow' ||
+          player.currentWeapon.type === 'bow'
+        ) {
+          weaponType = 'ranged'
+        }
+
+        if (this.playerNumber === 1) {
+
+          this.camera.preInstructions.push(
+            'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_fast',
+            // 'waitFor_50',
+          )
+
+          if ((this.camera.zoom.x-1) < this.engagedZoomThreshold[weaponType]) {
+            console.log('ppp',((.50-(this.camera.zoom.x-1))*10).toFixed(0));
+            zoomAdjust = ((.50-(this.camera.zoom.x-1))*10).toFixed(0);
+            this.camera.preInstructions.push(
+              'zoom_in_'+zoomAdjust+''
+            )
+          }
+
+        }
+
+        if (this.playerNumber === 2) {
+
+
+          let originCell = {
+            x: player.currentPosition.cell.number.x,
+            y: player.currentPosition.cell.number.y,
+          };
+          let destCell = {
+            x: this.players[1].currentPosition.cell.number.x,
+            y: this.players[1].currentPosition.cell.number.y,
+          };
+
+          let x1 = originCell.x;
+          let y1 = originCell.y;
+          let x2 = destCell.x;
+          let y2 = destCell.y;
+          let xSteps = 0;
+          let ySteps = 0;
+          let xDirection = "";
+          let yDirection = "";
+          let preInstructions = [];
+
+          if (x1 > x2) {
+            xDirection = "west";
+            xSteps = x1-x2;
+          }
+          if (x2 > x1) {
+            xDirection = "east";
+            xSteps = x2-x1;
+          }
+          if (y1 > y2) {
+            yDirection = "north";
+            ySteps = y1-y2;
+          }
+          if (y2 > y1) {
+            yDirection = "south";
+            ySteps = y2-y1;
+          }
+
+          for (var i = 0; i < xSteps; i++) {
+            preInstructions.push(
+              xDirection
+            )
+          }
+          for (var j = 0; j < ySteps; j++) {
+            preInstructions.push(
+              yDirection
+            )
+          }
+
+          let parsedPreInstructions = []
+          let currentCell = {
+            x: originCell.x,
+            y: originCell.y,
+          }
+
+          parsedPreInstructions.push(originCell)
+
+          for (const instruction of preInstructions) {
+
+            switch (instruction) {
+              case 'north':
+                currentCell.y -= 1;
+                parsedPreInstructions.push({
+                  x: currentCell.x,
+                  y: currentCell.y,
+                })
+              break;
+              case 'south':
+                currentCell.y += 1;
+                parsedPreInstructions.push({
+                  x: currentCell.x,
+                  y: currentCell.y,
+                })
+              break;
+              case 'west':
+                currentCell.x -= 1;
+                parsedPreInstructions.push({
+                  x: currentCell.x,
+                  y: currentCell.y,
+                })
+              break;
+              case 'east':
+                currentCell.x += 1;
+                parsedPreInstructions.push({
+                  x: currentCell.x,
+                  y: currentCell.y,
+                })
+              break;
+            }
+
+              console.log(''+preInstructions.indexOf(instruction)+'',parsedPreInstructions);
+
+          }
+
+          if (parsedPreInstructions.length < 4) {
+
+            console.log('attack focus auto cam: 2 players in close range');
+
+
+            this.camera.preInstructions.push(
+              'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_fast',
+              // 'waitFor_50',
+            )
+
+            if ((this.camera.zoom.x-1) < .50) {
+              console.log('ppp',((.50-(this.camera.zoom.x-1))*10).toFixed(0));
+              zoomAdjust = ((.50-(this.camera.zoom.x-1))*10).toFixed(0)*2;
+              this.camera.preInstructions.push(
+                'zoom_in_'+zoomAdjust+''
+              )
+            }
+            if ((this.camera.zoom.x-1) > .50) {
+              console.log('qqq',(((this.camera.zoom.x-1)-.50)*10).toFixed(0));
+              zoomAdjust = (((this.camera.zoom.x-1)-.50)*10).toFixed(0)*2;
+              this.camera.preInstructions.push(
+                'zoom_out_'+zoomAdjust+''
+              )
+            }
+
+          }
+          else {
+
+
+            console.log('attack focus auto cam: 2 players at a distance');
+
+            console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
+
+            let intermediateCell = {
+              x: parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)].x,
+              y: parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)].y,
+            }
+
+            this.camera.preInstructions.push(
+              'moveTo_'+intermediateCell.x+'_'+intermediateCell.y+'_fast',
+              // 'waitFor_50',
+            )
+
+            if ((this.camera.zoom.x-1) < .35) {
+              console.log('ppp',((.35-(this.camera.zoom.x-1))*10).toFixed(0));
+              zoomAdjust = ((.35-(this.camera.zoom.x-1))*10).toFixed(0)*2;
+              this.camera.preInstructions.push(
+                'zoom_in_'+zoomAdjust+''
+              )
+            }
+            if ((this.camera.zoom.x-1) > .35) {
+              console.log('qqq',(((this.camera.zoom.x-1)-.35)*10).toFixed(0));
+              zoomAdjust = (((this.camera.zoom.x-1)-.35)*10).toFixed(0)*2;
+              this.camera.preInstructions.push(
+                'zoom_out_'+zoomAdjust+''
+              )
+            }
+
+          }
+
+        }
+
       break;
       case 'attackFocusBreak':
-        // zoom out past engagedZoomThreshold
+        if ((this.camera.zoom.x-1) > 0) {
+          console.log('vvv',zoomAdjust = ((this.camera.zoom.x-1)*10).toFixed(0));
+          zoomAdjust = ((this.camera.zoom.x-1)*10).toFixed(0)*2
+          this.camera.preInstructions.push(
+            'zoom_out_'+zoomAdjust+''
+          )
+        }
       break;
       case 'playerSpawnFocus':
         // pan to spawn location, zoom in, wait then out
@@ -23031,17 +23233,6 @@ class App extends Component {
     }
 
 
-
-    // this.camera.preInstructions.push(
-    //   'moveTo_1_1_slow',
-    //   'waitFor_200',
-    //   'moveTo_6_6_fast',
-    //   // 'zoom_in_10',
-    //   // 'zoom_out_20',
-    //   // 'waitFor_200',
-    //   // 'moveTo_6_6',
-    //   // 'zoom_out_10',
-    // )
 
   }
   setCameraFocus = (focusType, canvas, context, canvas2, context2) => {
