@@ -5274,7 +5274,7 @@ class App extends Component {
 
                 // console.log('this.cellsUnderPreAttack',this.cellsUnderPreAttack[0],this.cellsUnderPreAttack[1]);
 
-                if (this.settingAutoCamera === false) {
+                if (this.settingAutoCamera === false && player.ai.state !== true) {
                   this.setAutoCamera('attackFocus',player)
                 }
 
@@ -6538,7 +6538,7 @@ class App extends Component {
             player.bluntAttack = false;
             player.action = 'idle';
 
-            if (this.settingAutoCamera === false) {
+            if (this.settingAutoCamera === false && player.ai.state !== true) {
               this.setAutoCamera('attackFocusBreak',player)
             }
 
@@ -23049,7 +23049,7 @@ class App extends Component {
           if (weaponType === 'melee') {
 
             if ((this.camera.zoom.x-1) < .50) {
-              console.log('auto camera single player attack focus zoom amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
+              // console.log('auto camera single player attack focus zoom amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
               zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
               this.camera.preInstructions.push(
                 'zoom_in_'+zoomAdjust+''
@@ -23061,7 +23061,7 @@ class App extends Component {
           if (weaponType === 'ranged') {
 
             if ((this.camera.zoom.x-1) < .35) {
-              console.log('auto camera single player attack focus zoom amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5));
+              // console.log('auto camera single player attack focus zoom amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5));
               zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
               this.camera.preInstructions.push(
                 'zoom_in_'+zoomAdjust+''
@@ -23182,14 +23182,14 @@ class App extends Component {
 
             if (weaponType === 'melee') {
               if ((this.camera.zoom.x-1) < .50) {
-                console.log('auto camera 2 player close melee attack focus zoom in amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
+                // console.log('auto camera 2 player close melee attack focus zoom in amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
                 zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
                 this.camera.preInstructions.push(
                   'zoom_in_'+zoomAdjust+''
                 )
               }
               if ((this.camera.zoom.x-1) > .50) {
-                console.log('auto camera 2 player close melee attack focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5));
+                // console.log('auto camera 2 player close melee attack focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5));
                 zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
                 this.camera.preInstructions.push(
                   'zoom_out_'+zoomAdjust+''
@@ -23199,14 +23199,14 @@ class App extends Component {
 
             if (weaponType === 'ranged') {
               if ((this.camera.zoom.x-1) < .35) {
-                console.log('auto camera 2 player close ranged attack focus zoom in amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5));
+                // console.log('auto camera 2 player close ranged attack focus zoom in amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5));
                 zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
                 this.camera.preInstructions.push(
                   'zoom_in_'+zoomAdjust+''
                 )
               }
               if ((this.camera.zoom.x-1) > .35) {
-                console.log('auto camera 2 player close ranged attack focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5));
+                // console.log('auto camera 2 player close ranged attack focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5));
                 zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
                 this.camera.preInstructions.push(
                   'zoom_out_'+zoomAdjust+''
@@ -23240,14 +23240,14 @@ class App extends Component {
 
 
             if ((this.camera.zoom.x-1) < .35) {
-              console.log('auto cam 2 player attack focus distance zoom in amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5));
+              // console.log('auto cam 2 player attack focus distance zoom in amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5));
               zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
               this.camera.preInstructions.push(
                 'zoom_in_'+zoomAdjust+''
               )
             }
             if ((this.camera.zoom.x-1) > .35) {
-              console.log('auto cam 2 player attack focus distance zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5));
+              // console.log('auto cam 2 player attack focus distance zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5));
               zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
               this.camera.preInstructions.push(
                 'zoom_out_'+zoomAdjust+''
@@ -23269,7 +23269,7 @@ class App extends Component {
         // }
 
         if ((this.camera.zoom.x-1) > .15) {
-          console.log('auto cam attack focus break zoom out amt ',Math.ceil((((this.camera.zoom.x-1)-.15)*10)*5));
+          // console.log('auto cam attack focus break zoom out amt ',Math.ceil((((this.camera.zoom.x-1)-.15)*10)*5));
           zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.15)*10)*5);
           this.camera.preInstructions.push(
             'zoom_out_'+zoomAdjust+''
@@ -23287,7 +23287,7 @@ class App extends Component {
         // pan to pushback target
       break;
       case 'followBolt':
-        // pan to pushback target
+        // pan to somewhere along bolt path, then pan back to bolt owner position
       break;
       default:
 
