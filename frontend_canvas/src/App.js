@@ -16480,19 +16480,10 @@ class App extends Component {
     if (this.camera.fixed !== true) {
       // this.setCameraFocus('init', canvas, context, canvas2, context2);
     }
-    this.findFocusCell('panToCell',{},canvas,context);
-    // switch (this.gridWidth) {
-    //   case 9 :
-    //     this.engagedZoomThreshold.melee = .50;
-    //     this.engagedZoomThreshold.ranged = .20;
-    //   break;
-    //   case 12 :
-    //     this.engagedZoomThreshold.melee = .50;
-    //     this.engagedZoomThreshold.ranged = .20;
-    //   break;
-    // }
+    this.findFocusCell('panToCell',{},canvas,context)
 
-    // CENTER LARGER GRIDS GRID
+
+    // CENTER LARGER GRIDS
     if (window.innerWidth < 1100 && this.gridWidth >= 12) {
       // this.camera.zoom.x = 0.7;
       // this.camera.zoom.y = 0.7;
@@ -23049,7 +23040,7 @@ class App extends Component {
     this.camera.state = false;
     this.camera.fixed = false;
     this.settingAutoCamera = true;
-    console.log('setting auto camera instructions: ',args);
+    // console.log('setting auto camera instructions: ',args);
 
 
     // if board is over a certain size
