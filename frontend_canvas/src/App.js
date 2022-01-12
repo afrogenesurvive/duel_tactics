@@ -5274,8 +5274,16 @@ class App extends Component {
 
                 // console.log('this.cellsUnderPreAttack',this.cellsUnderPreAttack[0],this.cellsUnderPreAttack[1]);
 
-                if (this.settingAutoCamera === false && player.ai.state !== true) {
+                if (
+                  this.settingAutoCamera === false &&
+                  player.ai.state !== true &&
+                  this.camera.preInstructions.length === 0 &&
+                  this.camera.instructions.length === 0
+                ) {
                   this.setAutoCamera('attackFocus',player)
+                }
+                else {
+                  console.log('no setting auto cam: attackFocus');
                 }
 
             }
@@ -6538,8 +6546,16 @@ class App extends Component {
             player.bluntAttack = false;
             player.action = 'idle';
 
-            if (this.settingAutoCamera === false && player.ai.state !== true) {
+            if (
+              this.settingAutoCamera === false &&
+              player.ai.state !== true &&
+              this.camera.preInstructions.length === 0 &&
+              this.camera.instructions.length === 0
+            ) {
               this.setAutoCamera('attackFocusBreak',player)
+            }
+            else {
+              console.log('no setting auto cam: attackFocusBreak');
             }
 
             console.log('attack end');
@@ -8479,12 +8495,12 @@ class App extends Component {
           // console.log('step through auto camera pre instructions',this.camera.preInstructions);
 
           let preInstruction = this.camera.preInstructions[this.camera.currentPreInstruction];
-          let indx = this.camera.preInstructions.indexOf(preInstruction)
+          // let indx = this.camera.preInstructions.indexOf(preInstruction)
           let focusCell = {
             x: undefined,
             y: undefined,
           }
-          // console.log('Step through pre instructions...indx',indx,'preInstructions',preInstruction);
+          // console.log('Step through pre instructions...','preInstructions',preInstruction);
 
           switch (preInstruction.split("_")[0]) {
             case 'moveTo':
@@ -8528,13 +8544,13 @@ class App extends Component {
             break;
           }
 
-          if (indx ===  this.camera.preInstructions.length-1) {
+          if (this.camera.currentPreInstruction ===  this.camera.preInstructions.length-1) {
             // console.log('this is the last preInstruction. Empty array');
             this.camera.preInstructions = [];
             this.camera.currentPreInstruction = 0;
             // console.log('camera instructions',this.camera.instructions);
           } else {
-            this.camera.currentPreInstruction++
+            this.camera.currentPreInstruction++;
           }
 
         }
@@ -10079,98 +10095,98 @@ class App extends Component {
 
 
           // FOR TESTING BY CALLING ONLY @ 1 CELL
-          if (
-            plyr.currentPosition.cell.number.x === x &&
-            plyr.currentPosition.cell.number.y === y
-          ) {
-            switch(plyr.action) {
-              case 'moving':
-                let moveSpeed = plyr.speed.move;
-                if (plyr.terrainMoveSpeed.state === true) {
-                  moveSpeed = plyr.terrainMoveSpeed.speed;
-                }
-                let rangeIndex = plyr.speed.range.indexOf(moveSpeed)
-                let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
-                finalAnimIndex = moveAnimIndex;
-                // console.log('animation mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex,'move state',plyr.moving.state);
-                if (plyr.target.void == true) {
-                  // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-                }
-              break;
-              case 'jumping':
-                let rangeIndex4 = plyr.speed.range.indexOf(.1)
-                let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(plyr.moving.step)
-                finalAnimIndex = moveAnimIndex4;
-                // console.log('animation jump spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex,'move state',plyr.moving.state);
-
-              break;
-              case 'strafe moving':
-                if (player.pushBack.state === true ) {
-                  let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
-                  let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
-                  finalAnimIndex = moveAnimIndex3;
-                  // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-                } else {
-                  let rangeIndex2 = plyr.speed.range.indexOf(plyr.speed.move)
-                  let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
-                  finalAnimIndex = moveAnimIndex2;
-                  // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-                }
-              break;
-              case 'flanking':
-                let rangeIndex6 = plyr.speed.range.indexOf(.2)
-                let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(plyr.moving.step)
-                finalAnimIndex = moveAnimIndex6;
-                // console.log('spd',plyr.speed.move,'flanking step',plyr.flanking.step,'step',plyr.moving.step,'moveAnimIndex6',moveAnimIndex6);
-                // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-              break;
-              case 'attacking':
-                let animIndex = plyr.attacking.count -1;
-                finalAnimIndex = animIndex;
-                // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
-              break;
-              case 'defending':
-                if (plyr.defending.count > 0) {
-                  let animIndex2 = plyr.defending.count -1;
-                  finalAnimIndex = animIndex2;
-                  // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
-                }
-                if (plyr.defending.count === 0) {
-                  let animIndex2a = plyr.defending.limit;
-                  finalAnimIndex = animIndex2a;
-                  // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
-                }
-              break;
-              case 'idle':
-                if (plyr.number === 1) {
-                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-                }
-                if (plyr.number === 2) {
-                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-                }
-                let animIndex3 = plyr.idleAnim.count -1;
-                finalAnimIndex = animIndex3;
-              break;
-              case 'falling':
-                let animIndex4 = plyr.falling.count -1;
-                finalAnimIndex = animIndex4;
-                // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
-              break;
-              case 'deflected':
-                let animIndex5 = plyr.success.deflected.count -1;
-                finalAnimIndex = animIndex5;
-                console.log('anim testing dflct',plyr.success.deflected.count,'limit',plyr.success.deflected.limit,'plyr',plyr.number,'index',finalAnimIndex,'moving',plyr.moving.state);
-                // if (plyr.ai.state === true) {
-                //   console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number,'index',finalAnimIndex,'moving',plyr.moving.state);
-                // }
-              break;
-              case 'dodging':
-                let animIndex7 = plyr.dodging.count -1;
-                finalAnimIndex = animIndex7;
-                // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number,'index',finalAnimIndex);
-              break;
-            }
-          }
+          // if (
+          //   plyr.currentPosition.cell.number.x === x &&
+          //   plyr.currentPosition.cell.number.y === y
+          // ) {
+          //   switch(plyr.action) {
+          //     case 'moving':
+          //       let moveSpeed = plyr.speed.move;
+          //       if (plyr.terrainMoveSpeed.state === true) {
+          //         moveSpeed = plyr.terrainMoveSpeed.speed;
+          //       }
+          //       let rangeIndex = plyr.speed.range.indexOf(moveSpeed)
+          //       let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
+          //       finalAnimIndex = moveAnimIndex;
+          //       // console.log('animation mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex,'move state',plyr.moving.state);
+          //       if (plyr.target.void == true) {
+          //         // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+          //       }
+          //     break;
+          //     case 'jumping':
+          //       let rangeIndex4 = plyr.speed.range.indexOf(.1)
+          //       let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(plyr.moving.step)
+          //       finalAnimIndex = moveAnimIndex4;
+          //       // console.log('animation jump spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex,'move state',plyr.moving.state);
+          //
+          //     break;
+          //     case 'strafe moving':
+          //       if (player.pushBack.state === true ) {
+          //         let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
+          //         let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
+          //         finalAnimIndex = moveAnimIndex3;
+          //         // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+          //       } else {
+          //         let rangeIndex2 = plyr.speed.range.indexOf(plyr.speed.move)
+          //         let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
+          //         finalAnimIndex = moveAnimIndex2;
+          //         // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+          //       }
+          //     break;
+          //     case 'flanking':
+          //       let rangeIndex6 = plyr.speed.range.indexOf(.2)
+          //       let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(plyr.moving.step)
+          //       finalAnimIndex = moveAnimIndex6;
+          //       // console.log('spd',plyr.speed.move,'flanking step',plyr.flanking.step,'step',plyr.moving.step,'moveAnimIndex6',moveAnimIndex6);
+          //       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+          //     break;
+          //     case 'attacking':
+          //       let animIndex = plyr.attacking.count -1;
+          //       finalAnimIndex = animIndex;
+          //       // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
+          //     break;
+          //     case 'defending':
+          //       if (plyr.defending.count > 0) {
+          //         let animIndex2 = plyr.defending.count -1;
+          //         finalAnimIndex = animIndex2;
+          //         // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
+          //       }
+          //       if (plyr.defending.count === 0) {
+          //         let animIndex2a = plyr.defending.limit;
+          //         finalAnimIndex = animIndex2a;
+          //         // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
+          //       }
+          //     break;
+          //     case 'idle':
+          //       if (plyr.number === 1) {
+          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+          //       }
+          //       if (plyr.number === 2) {
+          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+          //       }
+          //       let animIndex3 = plyr.idleAnim.count -1;
+          //       finalAnimIndex = animIndex3;
+          //     break;
+          //     case 'falling':
+          //       let animIndex4 = plyr.falling.count -1;
+          //       finalAnimIndex = animIndex4;
+          //       // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
+          //     break;
+          //     case 'deflected':
+          //       let animIndex5 = plyr.success.deflected.count -1;
+          //       finalAnimIndex = animIndex5;
+          //       console.log('anim testing dflct',plyr.success.deflected.count,'limit',plyr.success.deflected.limit,'plyr',plyr.number,'index',finalAnimIndex,'moving',plyr.moving.state);
+          //       // if (plyr.ai.state === true) {
+          //       //   console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number,'index',finalAnimIndex,'moving',plyr.moving.state);
+          //       // }
+          //     break;
+          //     case 'dodging':
+          //       let animIndex7 = plyr.dodging.count -1;
+          //       finalAnimIndex = animIndex7;
+          //       // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number,'index',finalAnimIndex);
+          //     break;
+          //   }
+          // }
           // FOR TESTING BY CALLING ONLY @ 1 CELL
 
 
@@ -11156,8 +11172,16 @@ class App extends Component {
 
                 context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  respawnPoint.center.x-25, respawnPoint.center.y-50,this.playerDrawWidth, this.playerDrawHeight)
 
-                if (this.settingAutoCamera === false && plyr.ai.state !== true) {
+                if (
+                    this.settingAutoCamera === false &&
+                    player.ai.state !== true &&
+                    this.camera.preInstructions.length === 0 &&
+                    this.camera.instructions.length === 0
+                  ) {
                   this.setAutoCamera('playerSpawnFocus',plyr)
+                }
+                else {
+                  console.log('no setting auto cam: playerSpawnFocus');
                 }
 
               }
@@ -15717,7 +15741,7 @@ class App extends Component {
         )
       }
 
-      console.log('origin',originCell,'destination',destCell,'instructions',preInstructions);
+      // console.log('origin',originCell,'destination',destCell,'instructions',preInstructions);
 
       // this.camera.cellToPanOrigin.x = destCell.x;
       // this.camera.cellToPanOrigin.y = destCell.y;
@@ -16965,7 +16989,6 @@ class App extends Component {
 
       if (checkCell === true) {
 
-
         let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y)
         let newPlayer = {
           number: newPlayerNumber,
@@ -17425,8 +17448,15 @@ class App extends Component {
         }
 
 
-        if (this.settingAutoCamera === false) {
+        if (
+          this.settingAutoCamera === false &&
+          this.camera.preInstructions.length === 0 &&
+          this.camera.instructions.length === 0
+        ) {
           this.setAutoCamera('aiSpawnFocus',newPlayer)
+        }
+        else {
+          console.log('no setting auto cam: aiSpawnFocus');
         }
 
       }
@@ -23019,7 +23049,7 @@ class App extends Component {
     this.camera.state = false;
     this.camera.fixed = false;
     this.settingAutoCamera = true;
-    console.log('setting auto camera instructions');
+    console.log('setting auto camera instructions: ',args);
 
 
     // if board is over a certain size
@@ -23174,7 +23204,7 @@ class App extends Component {
               break;
             }
 
-              console.log(''+preInstructions.indexOf(instruction)+'',parsedPreInstructions);
+              // console.log(''+preInstructions.indexOf(instruction)+'',parsedPreInstructions);
 
           }
 
@@ -23283,6 +23313,9 @@ class App extends Component {
           this.camera.preInstructions.push(
             'zoom_out_'+zoomAdjust+''
           )
+        }
+        else {
+          this.settingAutoCamera = false;
         }
       break;
       case 'playerSpawnFocus':
@@ -23417,19 +23450,19 @@ class App extends Component {
               // 'waitFor_50',
             )
             if ((this.camera.zoom.x-1) < .50) {
-                // console.log('auto camera 2 player close melee attack focus zoom in amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
-                zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
-                this.camera.preInstructions.push(
-                  'zoom_in_'+zoomAdjust+''
-                )
-              }
-              if ((this.camera.zoom.x-1) > .50) {
-                // console.log('auto camera 2 player close melee attack focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5));
-                zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
-                this.camera.preInstructions.push(
-                  'zoom_out_'+zoomAdjust+''
-                )
-              }
+              console.log('auto camera 2 player close melee attack focus zoom in amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
+              zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
+              this.camera.preInstructions.push(
+                'zoom_in_'+zoomAdjust+''
+              )
+            }
+            if ((this.camera.zoom.x-1) > .50) {
+              console.log('auto camera 2 player close melee attack focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5));
+              zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
+              this.camera.preInstructions.push(
+                'zoom_out_'+zoomAdjust+''
+              )
+            }
 
           }
           else {
@@ -23454,14 +23487,14 @@ class App extends Component {
 
 
             if ((this.camera.zoom.x-1) < .35) {
-              // console.log('auto cam 2 player attack focus distance zoom in amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5));
+              console.log('auto cam 2 player attack focus distance zoom in amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5));
               zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
               this.camera.preInstructions.push(
                 'zoom_in_'+zoomAdjust+''
               )
             }
             if ((this.camera.zoom.x-1) > .35) {
-              // console.log('auto cam 2 player attack focus distance zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5));
+              console.log('auto cam 2 player attack focus distance zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5));
               zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
               this.camera.preInstructions.push(
                 'zoom_out_'+zoomAdjust+''
@@ -23478,7 +23511,7 @@ class App extends Component {
           )
 
         }
-        console.log('this.camera.preInstructions',this.camera.preInstructions);
+        // console.log('this.camera.preInstructions',this.camera.preInstructions);
 
       break;
       case 'aiSpawnFocus':
@@ -23620,7 +23653,7 @@ class App extends Component {
               break;
             }
 
-              console.log(''+preInstructions.indexOf(instruction)+'',parsedPreInstructions);
+              // console.log(''+preInstructions.indexOf(instruction)+'',parsedPreInstructions);
 
           }
 
@@ -23700,8 +23733,6 @@ class App extends Component {
       default:
 
     }
-
-
 
   }
   setCameraFocus = (focusType, canvas, context, canvas2, context2) => {
