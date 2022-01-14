@@ -224,6 +224,10 @@ class App extends Component {
     this.cellCenterOffsetY = 2;
 
 
+
+
+
+
     // GRIND INFO, LEVEL DATA & MAPPING
     this.init = false;
     // this.openVoid = true;
@@ -272,17 +276,29 @@ class App extends Component {
       row12: ['x120x','x121x','z122x','x123x','x124x','x125x','x126x','x127x','x128x','x129x','z1210x','x1211x','x1212x'],
     };
     this.levelData9 = {
-      row0: ['x00x','x01x','x02x','x03k','x04x','x05g','x06g','x07h','x08f','x09d'],
-      row1: ['x10a','x11a','x12a','x13i','x14x','x15x','z16x','x17x','x18f','x19d'],
-      row2: ['x20x','x21a','x22a','x23a','x24x','x25x','x26x','x27x','x28d','x29d'],
-      row3: ['x30a','x31j','x32b','x33j','x34j','x35b','x36j','x37j','x38j','x39d'],
-      row4: ['x40j','x41j','x42b','x43b','x44b','x45b','x46b','x47j','x48j','x49d'],
-      row5: ['x50j','x51j','x52b','x53j','x54j','x55b','x56j','x57j','x58j','x59d'],
-      row6: ['z60x','x61x','x62x','x63i','x64x','x65x','x66x','x67x','x68f','x69f'],
-      row7: ['x70x','x71x','y72x','x73i','x74x','y75x','y76x','y77x','x78f','x79f'],
-      row8: ['x80x','x81x','x82k','x83x','x84x','x85x','x86x','x87x','x88x','x89x'],
-      row9: ['x90x','x91x','x92k','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
+      row0: ['**_*_0.0_a_0**','**_*_0.1_a_0**','**_*_0.2_a_0**','**_*_0.3_a_0**','**_*_0.4_a_0**','**_*_0.5_a_0**','**_*_0.6_a_0**','**_*_0.7_a_0**','**_*_0.8_a_0**','**_*_0.9_a_0**'],
+      row1: ['**_*_1.0_a_0**','**_*_1.1_a_0**','**_*_1.2_a_0**','**_*_1.3_a_0**','**_*_1.4_a_0**','**_*_1.5_a_0**','**_*_1.6_a_0**','**_*_1.7_a_0**','**_*_1.8_a_0**','**_*_1.9_a_0**'],
+      row2: ['**_*_2.0_a_0**','**_*_2.1_a_0**','**_*_2.2_a_0**','**_*_2.3_a_0**','**_*_2.4_a_0**','**_*_2.5_a_0**','**_*_2.6_a_0**','**_*_2.7_a_0**','**_*_2.8_a_0**','**_*_2.9_a_0**'],
+      row3: ['**_*_3.0_a_0**','**_*_3.1_a_0**','**_*_3.2_a_0**','**_*_3.3_a_0**','**_*_3.4_a_0**','**_*_3.5_a_0**','**_*_3.6_a_0**','**_*_3.7_a_0**','**_*_3.8_a_0**','**_*_3.9_a_0**'],
+      row4: ['**_*_4.0_a_0**','**_*_4.1_a_0**','**_*_4.2_a_0**','**_*_4.3_a_0**','**_*_4.4_a_0**','**_*_4.5_a_0**','**_*_4.6_a_0**','**_*_4.7_a_0**','**_*_4.8_a_0**','**_*_4.9_a_0**'],
+      row5: ['**_*_5.0_a_0**','**_*_5.1_a_0**','**_*_5.2_a_0**','**_*_5.3_a_0**','**_*_5.4_a_0**','**_*_5.5_a_0**','**_*_5.6_a_0**','**_*_5.7_a_0**','**_*_5.8_a_0**','**_*_5.9_a_0**'],
+      row6: ['**_*_6.0_a_0**','**_*_6.1_a_0**','**_*_6.2_a_0**','**_*_6.3_a_0**','**_*_6.4_a_0**','**_*_6.5_a_0**','**_*_6.6_a_0**','**_*_6.7_a_0**','**_*_6.8_a_0**','**_*_6.9_a_0**'],
+      row7: ['**_*_7.0_a_0**','**_*_7.1_a_0**','**_*_7.2_a_0**','**_*_7.3_a_0**','**_*_7.4_a_0**','**_*_7.5_a_0**','**_*_7.6_a_0**','**_*_7.7_a_0**','**_*_7.8_a_0**','**_*_7.9_a_0**'],
+      row8: ['**_*_8.0_a_0**','**_*_8.1_a_0**','**_*_8.2_a_0**','**_*_8.3_a_0**','**_*_8.4_a_0**','**_*_8.5_a_0**','**_*_8.6_a_0**','**_*_8.7_a_0**','**_*_8.8_a_0**','**_*_8.9_a_0**'],
+      row9: ['**_*_9.0_a_0**','**_*_9.1_a_0**','**_*_9.2_a_0**','**_*_9.3_a_0**','**_*_9.4_a_0**','**_*_9.5_a_0**','**_*_9.6_a_0**','**_*_9.7_a_0**','**_*_9.8_a_0**','**_*_9.9_a_0**'],
     };
+    // this.levelData9 = {
+    //   row0: ['x00x','x01x','x02x','x03k','x04x','x05g','x06g','x07h','x08f','x09d'],
+    //   row1: ['x10a','x11a','x12a','x13i','x14x','x15x','z16x','x17x','x18f','x19d'],
+    //   row2: ['x20x','x21a','x22a','x23a','x24x','x25x','x26x','x27x','x28d','x29d'],
+    //   row3: ['x30a','x31j','x32b','x33j','x34j','x35b','x36j','x37j','x38j','x39d'],
+    //   row4: ['x40j','x41j','x42b','x43b','x44b','x45b','x46b','x47j','x48j','x49d'],
+    //   row5: ['x50j','x51j','x52b','x53j','x54j','x55b','x56j','x57j','x58j','x59d'],
+    //   row6: ['z60x','x61x','x62x','x63i','x64x','x65x','x66x','x67x','x68f','x69f'],
+    //   row7: ['x70x','x71x','y72x','x73i','x74x','y75x','y76x','y77x','x78f','x79f'],
+    //   row8: ['x80x','x81x','x82k','x83x','x84x','x85x','x86x','x87x','x88x','x89x'],
+    //   row9: ['x90x','x91x','x92k','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
+    // };
     this.levelData6 = {
       row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
       row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
@@ -355,6 +371,15 @@ class App extends Component {
         effect: 'void',
       },
     }
+    this.obstacleLevelDataRef = {
+
+    };
+    this.barrierLevelDataRef = {
+
+    };
+    this.elevationTypeLevelDataRef = {
+
+    };
     this.pathArray = [];
 
 
@@ -1653,6 +1678,7 @@ class App extends Component {
     this.playerDrawWidth = 40;
     this.playerDrawHeight = 40;
     this.popupSize = 35;
+    this.movingObstacles = [];
 
 
     // CAMERA
@@ -4082,28 +4108,12 @@ class App extends Component {
       if(this.stepper.deltaTime > this.stepper.interval) {
 
         this.time++
+
         // if (this.time === 200) {
-        //   this.openVoid = true;
+          // this.openVoid = true;
         // OR
         //   this.customCellToVoid({x:2,y:2})
         // }
-
-        // AUTO CAMERA INSTRUCTIONS!
-        if (this.time === 100) {
-          // this.camera.preInstructions.push(
-          //   'moveTo_1_1_slow',
-          //   'waitFor_200',
-          //   'moveTo_6_6_fast',
-          //   // 'zoom_in_10',
-          //   // 'zoom_out_20',
-          //   // 'waitFor_200',
-          //   // 'moveTo_6_6',
-          //   // 'zoom_out_10',
-          // )
-          // this.camera.state = false;
-          // this.camera.fixed = false;
-          // console.log('setting auto camera instructions');
-        }
 
 
         this.setState({
@@ -16251,6 +16261,76 @@ class App extends Component {
           void: {
             state: false
           },
+          obstacle: {
+            name: '',
+            type: '',
+            hp: 2,
+            destructible: {
+              state: false,
+              weapons: [],
+              leaveRubble: false,
+            },
+            locked: {
+              state: false,
+              key: '',
+            },
+            weight: 1,
+            height: 0.5,
+            items: [],
+            effects: [],
+            moving: {
+              state: false,
+              origin: {
+                number: {
+                  x: undefined,
+                  y: undefined,
+                },
+                center: {
+                  x: undefined,
+                  y: undefined,
+                },
+              },
+              destination: {
+                number: {
+                  x: undefined,
+                  y: undefined,
+                },
+                center: {
+                  x: undefined,
+                  y: undefined,
+                },
+              },
+              currentPosition: {
+                x: undefined,
+                y: undefined,
+              },
+              nextPosition: {
+                x: undefined,
+                y: undefined,
+              },
+            }
+          },
+          barrier: {
+            name: '',
+            type: '',
+            hp: 2,
+            destructible: {
+              state: false,
+              weapons: [],
+              leaveRubble: false,
+            },
+            locked: {
+              state: false,
+              key: '',
+            },
+            position: '',
+            height: 1,
+          },
+          elevation: {
+            number: 0,
+            type: '',
+            position: '',
+          },
         })
 
       }
@@ -16308,6 +16388,76 @@ class App extends Component {
           void: {
             state: false
           },
+          obstacle: {
+            name: '',
+            type: '',
+            hp: 2,
+            destructible: {
+              state: false,
+              weapons: [],
+              leaveRubble: false,
+            },
+            locked: {
+              state: false,
+              key: '',
+            },
+            weight: 1,
+            height: 0.5,
+            items: [],
+            effects: [],
+            moving: {
+              state: false,
+              origin: {
+                number: {
+                  x: undefined,
+                  y: undefined,
+                },
+                center: {
+                  x: undefined,
+                  y: undefined,
+                },
+              },
+              destination: {
+                number: {
+                  x: undefined,
+                  y: undefined,
+                },
+                center: {
+                  x: undefined,
+                  y: undefined,
+                },
+              },
+              currentPosition: {
+                x: undefined,
+                y: undefined,
+              },
+              nextPosition: {
+                x: undefined,
+                y: undefined,
+              },
+            }
+          },
+          barrier: {
+            name: '',
+            type: '',
+            hp: 2,
+            destructible: {
+              state: false,
+              weapons: [],
+              leaveRubble: false,
+            },
+            locked: {
+              state: false,
+              key: '',
+            },
+            position: '',
+            height: 1,
+          },
+          elevation: {
+            number: 0,
+            type: '',
+            position: '',
+          },
         })
 
       }
@@ -16328,11 +16478,64 @@ class App extends Component {
       elem.levelData = elemLevelData;
       // console.log('level data processing',elem.levelData);
 
-      let terrainInfo = elem.levelData.length-1;
-      elem.terrain = this.terrainLevelDataRef[elem.levelData.charAt(terrainInfo)]
+
+      // '**_*_0.0_a_0**'
+
+      // let terrainInfo = elem.levelData.length-1;
+      // elem.terrain = this.terrainLevelDataRef[elem.levelData.charAt(terrainInfo)]
+      elem.terrain = this.terrainLevelDataRef[elem.levelData.split('_')[3]]
       if (elem.terrain.name === 'void') {
         elem.void.state = true
       }
+
+      elem.elevation.number = parseInt(elem.levelData.split('_')[4].charAt(0));
+      if (elem.levelData.split('_')[4].charAt(1) !== '*') {
+        elem.elevation.type = this.elevationTypeLevelDataRef[elem.levelData.split('_')[4].charAt(1)]
+      }
+
+      if (elem.levelData.split('_')[4].charAt(1) !== '*') {
+        switch (elem.levelData.split('_')[4].charAt(2)) {
+          case 'n':
+            elem.elevation.position = 'north'
+          break;
+          case 's':
+            elem.elevation.position = 'south'
+          break;
+          case 'e':
+            elem.elevation.position = 'east'
+          break;
+          case 'w':
+            elem.elevation.position = 'west'
+          break;
+          default:
+        }
+      }
+
+
+      if (elem.levelData.split('_')[1] !== '*') {
+        elem.obstacle = this.obstacleLevelDataRef[elem.levelData.split('_')[1]];
+      }
+
+      if (elem.levelData.split('_')[0] !== '**') {
+        elem.barrier = this.barrierLevelDataRef[elem.levelData.split('_')[0].charAt(0)];
+
+        switch (elem.levelData.split('_')[0].charAt(1)) {
+          case 'n':
+            elem.barrier.position = 'north';
+          break;
+          case 's':
+            elem.barrier.position = 'south';
+          break;
+          case 'e':
+            elem.barrier.position = 'east';
+          break;
+          case 'w':
+            elem.barrier.position = 'west';
+          break;
+          default:
+        }
+      }
+
 
       // console.log('oo2',elem.levelData,elem.number,elem.terrain);
 
@@ -16372,10 +16575,59 @@ class App extends Component {
       let elemLevelData = this.['levelData'+this.settingsGridWidth][levelData2Row][elem2.number.y];
       elem2.levelData = elemLevelData;
 
-      let terrainInfo = elem2.levelData.length-1;
-      elem2.terrain = this.terrainLevelDataRef[elem2.levelData.charAt(terrainInfo)]
+      // let terrainInfo = elem2.levelData.length-1;
+      // elem2.terrain = this.terrainLevelDataRef[elem2.levelData.charAt(terrainInfo)]
+      elem2.terrain = this.terrainLevelDataRef[elem2.levelData.split('_')[3]]
       if (elem2.terrain.name === 'void') {
         elem2.void.state = true
+      }
+
+      elem2.elevation.number = parseInt(elem2.levelData.split('_')[4].charAt(0));
+      if (elem2.levelData.split('_')[4].charAt(1) !== '*') {
+        elem2.elevation.type = this.elevationTypeLevelDataRef[elem2.levelData.split('_')[4].charAt(1)]
+      }
+
+      if (elem2.levelData.split('_')[4].charAt(1) !== '*') {
+        switch (elem2.levelData.split('_')[4].charAt(2)) {
+          case 'n':
+            elem2.elevation.position = 'north'
+          break;
+          case 's':
+            elem2.elevation.position = 'south'
+          break;
+          case 'e':
+            elem2.elevation.position = 'east'
+          break;
+          case 'w':
+            elem2.elevation.position = 'west'
+          break;
+          default:
+        }
+      }
+
+
+      if (elem2.levelData.split('_')[1] !== '*') {
+        elem2.obstacle = this.obstacleLevelDataRef[elem2.levelData.split('_')[1]];
+      }
+
+      if (elem2.levelData.split('_')[0] !== '**') {
+        elem2.barrier = this.barrierLevelDataRef[elem2.levelData.split('_')[0].charAt(0)];
+
+        switch (elem2.levelData.split('_')[0].charAt(1)) {
+          case 'n':
+            elem2.barrier.position = 'north';
+          break;
+          case 's':
+            elem2.barrier.position = 'south';
+          break;
+          case 'e':
+            elem2.barrier.position = 'east';
+          break;
+          case 'w':
+            elem2.barrier.position = 'west';
+          break;
+          default:
+        }
       }
 
       // console.log('oo2',elem.levelData,elem.number,elem.terrain);
