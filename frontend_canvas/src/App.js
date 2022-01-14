@@ -18,25 +18,35 @@ import {
 
 
 import logo from './logo.svg';
-import floorDirt from './assets/floorDirt.png'
-import floorGrass from './assets/floorGrass.png'
-import floorIce from './assets/floorIce.png'
-import floorMud from './assets/floorMud.png'
-import floorPond from './assets/floorPond.png'
-import floorRiver from './assets/floorRiver.png'
-import floorSand from './assets/floorSand.png'
-import floorStone from './assets/floorStone.png'
-import floorBramble from './assets/floorBramble.png'
-import floorLava from './assets/floorLava.png'
-import floorAttack from './assets/floorAttacked.png'
-import floorAttack2 from './assets/floorAttacked2.png'
-import floorVoid from './assets/floorVoid.png'
-import floorVoid2 from './assets/floorVoid2.png'
-import floorVoid3 from './assets/floorVoid3.png'
-import floorHighlight from './assets/floorHighlight.png'
-import wall from './assets/wall.png'
-import wall2 from './assets/wall2.png'
-import wall3 from './assets/wall3.png'
+import floorDirt from './assets/floorDirt.png';
+import floorGrass from './assets/floorGrass.png';
+import floorIce from './assets/floorIce.png';
+import floorMud from './assets/floorMud.png';
+import floorPond from './assets/floorPond.png';
+import floorRiver from './assets/floorRiver.png';
+import floorSand from './assets/floorSand.png';
+import floorStone from './assets/floorStone.png';
+import floorBramble from './assets/floorBramble.png';
+import floorLava from './assets/floorLava.png';
+import floorAttack from './assets/floorAttacked.png';
+import floorAttack2 from './assets/floorAttacked2.png';
+import floorVoid from './assets/floorVoid.png';
+import floorVoid2 from './assets/floorVoid2.png';
+import floorVoid3 from './assets/floorVoid3.png';
+import floorHighlight from './assets/floorHighlight.png';
+import wall from './assets/wall.png';
+import wall2 from './assets/wall2.png';
+import wall3 from './assets/wall3.png';
+import obstacleAHalf from './assets/obstacleA_half.png';
+import obstacleAFull from './assets/obstacleA_full.png';
+import obstacleBHalf from './assets/obstacleB_half.png';
+import obstacleBFull from './assets/obstacleB_full.png';
+import obstacleCHalf from './assets/obstacleC_half.png';
+import obstacleCFull from './assets/obstacleC_full.png';
+import obstacleDHalf from './assets/obstacleD_half.png';
+import obstacleDFull from './assets/obstacleD_full.png';
+import obstacleEHalf from './assets/obstacleE_half.png';
+import obstacleEFull from './assets/obstacleE_full.png';
 
 
 import attack1Indicate from './assets/indicators/attack1.png';
@@ -276,16 +286,16 @@ class App extends Component {
       row12: ['x120x','x121x','z122x','x123x','x124x','x125x','x126x','x127x','x128x','x129x','z1210x','x1211x','x1212x'],
     };
     this.levelData9 = {
-      row0: ['**_*_0.0_a_0**','**_*_0.1_a_0**','**_*_0.2_a_0**','**_*_0.3_a_0**','**_*_0.4_a_0**','**_*_0.5_a_0**','**_*_0.6_a_0**','**_*_0.7_a_0**','**_*_0.8_a_0**','**_*_0.9_a_0**'],
-      row1: ['**_*_1.0_a_0**','**_*_1.1_a_0**','**_*_1.2_a_0**','**_*_1.3_a_0**','**_*_1.4_a_0**','**_*_1.5_a_0**','**_*_1.6_a_0**','**_*_1.7_a_0**','**_*_1.8_a_0**','**_*_1.9_a_0**'],
-      row2: ['**_*_2.0_a_0**','**_*_2.1_a_0**','**_*_2.2_a_0**','**_*_2.3_a_0**','**_*_2.4_a_0**','**_*_2.5_a_0**','**_*_2.6_a_0**','**_*_2.7_a_0**','**_*_2.8_a_0**','**_*_2.9_a_0**'],
-      row3: ['**_*_3.0_a_0**','**_*_3.1_a_0**','**_*_3.2_a_0**','**_*_3.3_a_0**','**_*_3.4_a_0**','**_*_3.5_a_0**','**_*_3.6_a_0**','**_*_3.7_a_0**','**_*_3.8_a_0**','**_*_3.9_a_0**'],
-      row4: ['**_*_4.0_a_0**','**_*_4.1_a_0**','**_*_4.2_a_0**','**_*_4.3_a_0**','**_*_4.4_a_0**','**_*_4.5_a_0**','**_*_4.6_a_0**','**_*_4.7_a_0**','**_*_4.8_a_0**','**_*_4.9_a_0**'],
-      row5: ['**_*_5.0_a_0**','**_*_5.1_a_0**','**_*_5.2_a_0**','**_*_5.3_a_0**','**_*_5.4_a_0**','**_*_5.5_a_0**','**_*_5.6_a_0**','**_*_5.7_a_0**','**_*_5.8_a_0**','**_*_5.9_a_0**'],
-      row6: ['**_*_6.0_a_0**','**_*_6.1_a_0**','**_*_6.2_a_0**','**_*_6.3_a_0**','**_*_6.4_a_0**','**_*_6.5_a_0**','**_*_6.6_a_0**','**_*_6.7_a_0**','**_*_6.8_a_0**','**_*_6.9_a_0**'],
-      row7: ['**_*_7.0_a_0**','**_*_7.1_a_0**','**_*_7.2_a_0**','**_*_7.3_a_0**','**_*_7.4_a_0**','**_*_7.5_a_0**','**_*_7.6_a_0**','**_*_7.7_a_0**','**_*_7.8_a_0**','**_*_7.9_a_0**'],
-      row8: ['**_*_8.0_a_0**','**_*_8.1_a_0**','**_*_8.2_a_0**','**_*_8.3_a_0**','**_*_8.4_a_0**','**_*_8.5_a_0**','**_*_8.6_a_0**','**_*_8.7_a_0**','**_*_8.8_a_0**','**_*_8.9_a_0**'],
-      row9: ['**_*_9.0_a_0**','**_*_9.1_a_0**','**_*_9.2_a_0**','**_*_9.3_a_0**','**_*_9.4_a_0**','**_*_9.5_a_0**','**_*_9.6_a_0**','**_*_9.7_a_0**','**_*_9.8_a_0**','**_*_9.9_a_0**'],
+      row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*','**_*_0.7_a_0a*','**_*_0.8_a_0a*','**_*_0.9_a_0a*'],
+      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
+      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_*_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_a_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
+      row3: ['**_*_3.0_a_0a*','**_*_3.1_a_0a*','**_*_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
+      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','**_*_4.4_a_0a*','**_*_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','**_*_4.9_a_0a*'],
+      row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','**_*_5.2_a_0a*','**_*_5.3_a_0a*','**_*_5.4_a_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','**_*_5.8_a_0a*','**_*_5.9_a_0a*'],
+      row6: ['**_*_6.0_a_0a*','**_*_6.1_a_0a*','**_*_6.2_a_0a*','**_*_6.3_a_0a*','**_*_6.4_a_0a*','**_*_6.5_a_0a*','**_*_6.6_a_0a*','**_*_6.7_a_0a*','**_*_6.8_a_0a*','**_*_6.9_a_0a*'],
+      row7: ['**_*_7.0_a_0a*','**_*_7.1_a_0a*','**_*_7.2_a_0a*','**_*_7.3_a_0a*','**_*_7.4_a_0a*','**_*_7.5_a_0a*','**_*_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_a_0a*'],
+      row8: ['**_*_8.0_a_0a*','**_*_8.1_a_0a*','**_*_8.2_a_0a*','**_*_8.3_a_0a*','**_*_8.4_a_0a*','**_*_8.5_a_0a*','**_*_8.6_a_0a*','**_*_8.7_a_0a*','**_*_8.8_a_0a*','**_*_8.9_a_0a*'],
+      row9: ['**_*_9.0_a_0a*','**_*_9.1_a_0a*','**_*_9.2_a_0a*','**_*_9.3_a_0a*','**_*_9.4_a_0a*','**_*_9.5_a_0a*','**_*_9.6_a_0a*','**_*_9.7_a_0a*','**_*_9.8_a_0a*','**_*_9.9_a_0a*'],
     };
     // this.levelData9 = {
     //   row0: ['x00x','x01x','x02x','x03k','x04x','x05g','x06g','x07h','x08f','x09d'],
@@ -371,14 +381,433 @@ class App extends Component {
         effect: 'void',
       },
     }
-    this.obstacleLevelDataRef = {
 
+
+    this.obstacleLevelDataRef = {
+      a: {
+        state: true,
+        name: 'chest1',
+        type: 'chest',
+        hp: 2,
+        destructible: {
+          state: false,
+          weapons: [],
+          leaveRubble: false,
+        },
+        locked: {
+          state: false,
+          key: '',
+        },
+        weight: 1,
+        height: 0.5,
+        items: [],
+        effects: [],
+        moving: {
+          state: false,
+          origin: {
+            number: {
+              x: undefined,
+              y: undefined,
+            },
+            center: {
+              x: undefined,
+              y: undefined,
+            },
+          },
+          destination: {
+            number: {
+              x: undefined,
+              y: undefined,
+            },
+            center: {
+              x: undefined,
+              y: undefined,
+            },
+          },
+          currentPosition: {
+            x: undefined,
+            y: undefined,
+          },
+          nextPosition: {
+            x: undefined,
+            y: undefined,
+          },
+        }
+      },
+      b: {
+        state: true,
+        name: 'table1',
+        type: 'table',
+        hp: 2,
+        destructible: {
+          state: false,
+          weapons: [],
+          leaveRubble: false,
+        },
+        locked: {
+          state: false,
+          key: '',
+        },
+        weight: 1,
+        height: 0.5,
+        items: [],
+        effects: [],
+        moving: {
+          state: false,
+          origin: {
+            number: {
+              x: undefined,
+              y: undefined,
+            },
+            center: {
+              x: undefined,
+              y: undefined,
+            },
+          },
+          destination: {
+            number: {
+              x: undefined,
+              y: undefined,
+            },
+            center: {
+              x: undefined,
+              y: undefined,
+            },
+          },
+          currentPosition: {
+            x: undefined,
+            y: undefined,
+          },
+          nextPosition: {
+            x: undefined,
+            y: undefined,
+          },
+        }
+      },
+      c: {
+        state: true,
+        name: 'closet1',
+        type: 'closet',
+        hp: 2,
+        destructible: {
+          state: false,
+          weapons: [],
+          leaveRubble: false,
+        },
+        locked: {
+          state: false,
+          key: '',
+        },
+        weight: 1,
+        height: 0.5,
+        items: [],
+        effects: [],
+        moving: {
+          state: false,
+          origin: {
+            number: {
+              x: undefined,
+              y: undefined,
+            },
+            center: {
+              x: undefined,
+              y: undefined,
+            },
+          },
+          destination: {
+            number: {
+              x: undefined,
+              y: undefined,
+            },
+            center: {
+              x: undefined,
+              y: undefined,
+            },
+          },
+          currentPosition: {
+            x: undefined,
+            y: undefined,
+          },
+          nextPosition: {
+            x: undefined,
+            y: undefined,
+          },
+        }
+      },
+      d: {
+        state: true,
+        name: 'chair1',
+        type: 'chair',
+        hp: 2,
+        destructible: {
+          state: false,
+          weapons: [],
+          leaveRubble: false,
+        },
+        locked: {
+          state: false,
+          key: '',
+        },
+        weight: 1,
+        height: 0.5,
+        items: [],
+        effects: [],
+        moving: {
+          state: false,
+          origin: {
+            number: {
+              x: undefined,
+              y: undefined,
+            },
+            center: {
+              x: undefined,
+              y: undefined,
+            },
+          },
+          destination: {
+            number: {
+              x: undefined,
+              y: undefined,
+            },
+            center: {
+              x: undefined,
+              y: undefined,
+            },
+          },
+          currentPosition: {
+            x: undefined,
+            y: undefined,
+          },
+          nextPosition: {
+            x: undefined,
+            y: undefined,
+          },
+        }
+      },
+      e: {
+        state: true,
+        name: 'shelf1',
+        type: 'shelf',
+        hp: 2,
+        destructible: {
+          state: false,
+          weapons: [],
+          leaveRubble: false,
+        },
+        locked: {
+          state: false,
+          key: '',
+        },
+        weight: 1,
+        height: 0.5,
+        items: [],
+        effects: [],
+        moving: {
+          state: false,
+          origin: {
+            number: {
+              x: undefined,
+              y: undefined,
+            },
+            center: {
+              x: undefined,
+              y: undefined,
+            },
+          },
+          destination: {
+            number: {
+              x: undefined,
+              y: undefined,
+            },
+            center: {
+              x: undefined,
+              y: undefined,
+            },
+          },
+          currentPosition: {
+            x: undefined,
+            y: undefined,
+          },
+          nextPosition: {
+            x: undefined,
+            y: undefined,
+          },
+        }
+      },
+      f: {
+        state: true,
+        name: 'counter1',
+        type: 'counter',
+        hp: 2,
+        destructible: {
+          state: false,
+          weapons: [],
+          leaveRubble: false,
+        },
+        locked: {
+          state: false,
+          key: '',
+        },
+        weight: 1,
+        height: 0.5,
+        items: [],
+        effects: [],
+        moving: {
+          state: false,
+          origin: {
+            number: {
+              x: undefined,
+              y: undefined,
+            },
+            center: {
+              x: undefined,
+              y: undefined,
+            },
+          },
+          destination: {
+            number: {
+              x: undefined,
+              y: undefined,
+            },
+            center: {
+              x: undefined,
+              y: undefined,
+            },
+          },
+          currentPosition: {
+            x: undefined,
+            y: undefined,
+          },
+          nextPosition: {
+            x: undefined,
+            y: undefined,
+          },
+        }
+      },
+      g: {
+        state: true,
+        name: 'smallBox1',
+        type: 'smallBox',
+        hp: 2,
+        destructible: {
+          state: false,
+          weapons: [],
+          leaveRubble: false,
+        },
+        locked: {
+          state: false,
+          key: '',
+        },
+        weight: 1,
+        height: 0.5,
+        items: [],
+        effects: [],
+        moving: {
+          state: false,
+          origin: {
+            number: {
+              x: undefined,
+              y: undefined,
+            },
+            center: {
+              x: undefined,
+              y: undefined,
+            },
+          },
+          destination: {
+            number: {
+              x: undefined,
+              y: undefined,
+            },
+            center: {
+              x: undefined,
+              y: undefined,
+            },
+          },
+          currentPosition: {
+            x: undefined,
+            y: undefined,
+          },
+          nextPosition: {
+            x: undefined,
+            y: undefined,
+          },
+        }
+      },
+      h: {
+        state: true,
+        name: 'largeBox1',
+        type: 'largeBox',
+        hp: 2,
+        destructible: {
+          state: false,
+          weapons: [],
+          leaveRubble: false,
+        },
+        locked: {
+          state: false,
+          key: '',
+        },
+        weight: 1,
+        height: 0.5,
+        items: [],
+        effects: [],
+        moving: {
+          state: false,
+          origin: {
+            number: {
+              x: undefined,
+              y: undefined,
+            },
+            center: {
+              x: undefined,
+              y: undefined,
+            },
+          },
+          destination: {
+            number: {
+              x: undefined,
+              y: undefined,
+            },
+            center: {
+              x: undefined,
+              y: undefined,
+            },
+          },
+          currentPosition: {
+            x: undefined,
+            y: undefined,
+          },
+          nextPosition: {
+            x: undefined,
+            y: undefined,
+          },
+        }
+      },
     };
     this.barrierLevelDataRef = {
-
+      a: {
+        state: true,
+        name: '',
+        type: '',
+        hp: 2,
+        destructible: {
+          state: false,
+          weapons: [],
+          leaveRubble: false,
+        },
+        locked: {
+          state: false,
+          key: '',
+        },
+        position: '',
+        height: 1,
+      },
     };
     this.elevationTypeLevelDataRef = {
-
+      a: 'floor',
+      b: 'step',
+      c: 'ramp',
     };
     this.pathArray = [];
 
@@ -1498,6 +1927,78 @@ class App extends Component {
       void: {
         state: false
       },
+      obstacle: {
+        state: false,
+        name: '',
+        type: '',
+        hp: 2,
+        destructible: {
+          state: false,
+          weapons: [],
+          leaveRubble: false,
+        },
+        locked: {
+          state: false,
+          key: '',
+        },
+        weight: 1,
+        height: 0.5,
+        items: [],
+        effects: [],
+        moving: {
+          state: false,
+          origin: {
+            number: {
+              x: undefined,
+              y: undefined,
+            },
+            center: {
+              x: undefined,
+              y: undefined,
+            },
+          },
+          destination: {
+            number: {
+              x: undefined,
+              y: undefined,
+            },
+            center: {
+              x: undefined,
+              y: undefined,
+            },
+          },
+          currentPosition: {
+            x: undefined,
+            y: undefined,
+          },
+          nextPosition: {
+            x: undefined,
+            y: undefined,
+          },
+        }
+      },
+      barrier: {
+        state: false,
+        name: '',
+        type: '',
+        hp: 2,
+        destructible: {
+          state: false,
+          weapons: [],
+          leaveRubble: false,
+        },
+        locked: {
+          state: false,
+          key: '',
+        },
+        position: '',
+        height: 1,
+      },
+      elevation: {
+        number: 0,
+        type: '',
+        position: '',
+      },
     };
     this.turnCheckerDirection = '';
 
@@ -1559,6 +2060,78 @@ class App extends Component {
       },
       void: {
         state: false
+      },
+      obstacle: {
+        state: false,
+        name: '',
+        type: '',
+        hp: 2,
+        destructible: {
+          state: false,
+          weapons: [],
+          leaveRubble: false,
+        },
+        locked: {
+          state: false,
+          key: '',
+        },
+        weight: 1,
+        height: 0.5,
+        items: [],
+        effects: [],
+        moving: {
+          state: false,
+          origin: {
+            number: {
+              x: undefined,
+              y: undefined,
+            },
+            center: {
+              x: undefined,
+              y: undefined,
+            },
+          },
+          destination: {
+            number: {
+              x: undefined,
+              y: undefined,
+            },
+            center: {
+              x: undefined,
+              y: undefined,
+            },
+          },
+          currentPosition: {
+            x: undefined,
+            y: undefined,
+          },
+          nextPosition: {
+            x: undefined,
+            y: undefined,
+          },
+        }
+      },
+      barrier: {
+        state: false,
+        name: '',
+        type: '',
+        hp: 2,
+        destructible: {
+          state: false,
+          weapons: [],
+          leaveRubble: false,
+        },
+        locked: {
+          state: false,
+          key: '',
+        },
+        position: '',
+        height: 1,
+      },
+      elevation: {
+        number: 0,
+        type: '',
+        position: '',
       },
     };
     this.settingsFormAiGridInfo = [] ;
@@ -2717,6 +3290,78 @@ class App extends Component {
         void: {
           state: false
         },
+        obstacle: {
+          state: false,
+          name: '',
+          type: '',
+          hp: 2,
+          destructible: {
+            state: false,
+            weapons: [],
+            leaveRubble: false,
+          },
+          locked: {
+            state: false,
+            key: '',
+          },
+          weight: 1,
+          height: 0.5,
+          items: [],
+          effects: [],
+          moving: {
+            state: false,
+            origin: {
+              number: {
+                x: undefined,
+                y: undefined,
+              },
+              center: {
+                x: undefined,
+                y: undefined,
+              },
+            },
+            destination: {
+              number: {
+                x: undefined,
+                y: undefined,
+              },
+              center: {
+                x: undefined,
+                y: undefined,
+              },
+            },
+            currentPosition: {
+              x: undefined,
+              y: undefined,
+            },
+            nextPosition: {
+              x: undefined,
+              y: undefined,
+            },
+          }
+        },
+        barrier: {
+          state: false,
+          name: '',
+          type: '',
+          hp: 2,
+          destructible: {
+            state: false,
+            weapons: [],
+            leaveRubble: false,
+          },
+          locked: {
+            state: false,
+            key: '',
+          },
+          position: '',
+          height: 1,
+        },
+        elevation: {
+          number: 0,
+          type: '',
+          position: '',
+        },
       }
     }
 
@@ -2800,6 +3445,78 @@ class App extends Component {
         },
         void: {
           state: false
+        },
+        obstacle: {
+          state: false,
+          name: '',
+          type: '',
+          hp: 2,
+          destructible: {
+            state: false,
+            weapons: [],
+            leaveRubble: false,
+          },
+          locked: {
+            state: false,
+            key: '',
+          },
+          weight: 1,
+          height: 0.5,
+          items: [],
+          effects: [],
+          moving: {
+            state: false,
+            origin: {
+              number: {
+                x: undefined,
+                y: undefined,
+              },
+              center: {
+                x: undefined,
+                y: undefined,
+              },
+            },
+            destination: {
+              number: {
+                x: undefined,
+                y: undefined,
+              },
+              center: {
+                x: undefined,
+                y: undefined,
+              },
+            },
+            currentPosition: {
+              x: undefined,
+              y: undefined,
+            },
+            nextPosition: {
+              x: undefined,
+              y: undefined,
+            },
+          }
+        },
+        barrier: {
+          state: false,
+          name: '',
+          type: '',
+          hp: 2,
+          destructible: {
+            state: false,
+            weapons: [],
+            leaveRubble: false,
+          },
+          locked: {
+            state: false,
+            key: '',
+          },
+          position: '',
+          height: 1,
+        },
+        elevation: {
+          number: 0,
+          type: '',
+          position: '',
         },
       }
     }
@@ -3527,16 +4244,25 @@ class App extends Component {
 
     let cellFree = true;
     let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y);
+    // if (
+    //   cell2.levelData.charAt(0) ===  'z' ||
+    //   cell2.levelData.charAt(0) ===  'y'
+    // ) {
+    //   cellFree = false;
+    // }
+    // if (cell2.item.name !== '') {
+    //   cellFree = false;
+    // }
+    // if (
+    //   cell2.terrain.type === 'deep' ||
+    //   cell2.terrain.type === 'hazard'
+    // ) {
+    //   cellFree = false;
+    // }
+
     if (
-      cell2.levelData.charAt(0) ===  'z' ||
-      cell2.levelData.charAt(0) ===  'y'
-    ) {
-      cellFree = false;
-    }
-    if (cell2.item.name !== '') {
-      cellFree = false;
-    }
-    if (
+      cell2.obstacle.state === true ||
+      cell2.item.name !== '' ||
       cell2.terrain.type === 'deep' ||
       cell2.terrain.type === 'hazard'
     ) {
@@ -3859,6 +4585,17 @@ class App extends Component {
       void3: this.refs.floorVoid3,
     }
 
+    let obstacleImgs = {
+      table: this.refs.obstacleAHalf,
+      closet: this.refs.obstacleAFull,
+      chair: this.refs.obstacleBHalf,
+      shelf: this.refs.obstacleBFull,
+      smallBox: this.refs.obstacleCHalf,
+      largeBox: this.refs.obstacleCFull,
+      counter: this.refs.obstacleDHalf,
+      chest: this.refs.obstacleEHalf,
+    }
+
     class Point {
         constructor(x, y) {
             this.x = x;
@@ -3987,35 +4724,63 @@ class App extends Component {
         }
 
 
-        let walledTiles = []
-        if (walledTiles.includes(''+x+','+y+'')) {
-          context3.drawImage(wall3, iso2.x - offset2.x, iso2.y - offset2.y, 50,50);
-          if (context4) {
-            context4.drawImage(wall3, iso2.x - offset2.x, iso2.y - offset2.y, 50,50);
-          }
-        }
-        if(cellLevelData.charAt(0) === 'y') {
+        if (cell.obstacle.state === true && cell.void.state !== true) {
           let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
-          context3.drawImage(wall3, (iso2.x) - (offset.x), (iso2.y) - (offset.y), 50,50);
-          if (context4) {
-            context4.drawImage(wall3, (iso2.x) - (offset.x), (iso2.y) - (offset.y), 50,50);
+          let obstacleImg = obstacleImgs[cell.obstacle.type]
+
+          if (cell.obstacle.height > 1) {
+            let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
+            context3.drawImage(obstacleImg, iso2.x - offset.x, iso2.y - offset.y, 50,50);
+            if (context4) {
+              context4.drawImage(obstacleImg, iso2.x - offset.x, iso2.y - offset.y, 50,50);
+            }
+
+            let isoHeight = (wallImageHeight/2) - (floorImageHeight/2)
+            offset.y += isoHeight
+            context3.drawImage(obstacleImg, iso2.x - offset.x, iso2.y - offset.y, 50,50);
+            if (context4) {
+              context4.drawImage(obstacleImg, iso2.x - offset.x, iso2.y - offset.y, 50,50);
+            }
+          }
+          else {
+            let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
+            context3.drawImage(obstacleImg, (iso2.x) - (offset.x), (iso2.y) - (offset.y), 50,50);
+            if (context4) {
+              context4.drawImage(obstacleImg, (iso2.x) - (offset.x), (iso2.y) - (offset.y), 50,50);
+            }
           }
         }
-        if(cellLevelData.charAt(0) === 'z') {
-          let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
-          context3.drawImage(wall2, iso2.x - offset.x, iso2.y - offset.y, 50,50);
-          if (context4) {
-            context4.drawImage(wall2, iso2.x - offset.x, iso2.y - offset.y, 50,50);
-          }
 
-          let isoHeight = (wallImageHeight/2) - (floorImageHeight/2)
-          offset.y += isoHeight
-          context3.drawImage(wall2, iso2.x - offset.x, iso2.y - offset.y, 50,50);
-          if (context4) {
-            context4.drawImage(wall2, iso2.x - offset.x, iso2.y - offset.y, 50,50);
-          }
 
-        }
+        // let walledTiles = []
+        // if (walledTiles.includes(''+x+','+y+'')) {
+        //   context3.drawImage(wall3, iso2.x - offset2.x, iso2.y - offset2.y, 50,50);
+        //   if (context4) {
+        //     context4.drawImage(wall3, iso2.x - offset2.x, iso2.y - offset2.y, 50,50);
+        //   }
+        // }
+        // if(cellLevelData.charAt(0) === 'y') {
+        //   let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
+        //   context3.drawImage(wall3, (iso2.x) - (offset.x), (iso2.y) - (offset.y), 50,50);
+        //   if (context4) {
+        //     context4.drawImage(wall3, (iso2.x) - (offset.x), (iso2.y) - (offset.y), 50,50);
+        //   }
+        // }
+        // if(cellLevelData.charAt(0) === 'z') {
+        //   let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
+        //   context3.drawImage(wall2, iso2.x - offset.x, iso2.y - offset.y, 50,50);
+        //   if (context4) {
+        //     context4.drawImage(wall2, iso2.x - offset.x, iso2.y - offset.y, 50,50);
+        //   }
+        //
+        //   let isoHeight = (wallImageHeight/2) - (floorImageHeight/2)
+        //   offset.y += isoHeight
+        //   context3.drawImage(wall2, iso2.x - offset.x, iso2.y - offset.y, 50,50);
+        //   if (context4) {
+        //     context4.drawImage(wall2, iso2.x - offset.x, iso2.y - offset.y, 50,50);
+        //   }
+        //
+        // }
 
       }
     }
@@ -7593,8 +8358,9 @@ class App extends Component {
                       ) {
                         // console.log('a');
                         if (
-                          cell2.levelData.charAt(0) !==  'z' ||
-                          cell2.levelData.charAt(0) !==  'y'
+                          // cell2.levelData.charAt(0) !==  'z' ||
+                          // cell2.levelData.charAt(0) !==  'y'
+                          cell2.obstacle.state
                         ) {
                           // console.log('no obstacles at jump destination');
 
@@ -9787,6 +10553,17 @@ class App extends Component {
       void3: this.refs.floorVoid3,
     }
 
+    let obstacleImgs = {
+      table: this.refs.obstacleAHalf,
+      closet: this.refs.obstacleAFull,
+      chair: this.refs.obstacleBHalf,
+      shelf: this.refs.obstacleBFull,
+      smallBox: this.refs.obstacleCHalf,
+      largeBox: this.refs.obstacleCFull,
+      counter: this.refs.obstacleDHalf,
+      chest: this.refs.obstacleEHalf,
+    }
+
     let updatedPlayerImg;
     let newDirection;
 
@@ -11763,23 +12540,42 @@ class App extends Component {
 
 
         // OBSTACLES
-        let walledTiles = []
-        if (walledTiles.includes(''+x+','+y+'')) {
-          offset = {x: wallImageWidth/2, y: wallImageHeight}
-          context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
-        }
-        if(gridInfoCell.levelData.charAt(0) === 'y' && gridInfoCell.void.state !== true) {
-          offset = {x: wallImageWidth/2, y: wallImageHeight}
-          context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
-        }
-        if(gridInfoCell.levelData.charAt(0) === 'z' && gridInfoCell.void.state !== true) {
-          offset = {x: wallImageWidth/2, y: wallImageHeight}
-          context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+        if (gridInfoCell.obstacle.state === true && gridInfoCell.void.state !== true) {
+          let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
+          let obstacleImg = obstacleImgs[gridInfoCell.obstacle.type]
 
-          let isoHeight = wallImageHeight - floorImageHeight
-          offset.y += isoHeight
-          context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+          if (gridInfoCell.obstacle.height > 1) {
+            offset = {x: wallImageWidth/2, y: wallImageHeight}
+            context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+
+            let isoHeight = wallImageHeight - floorImageHeight
+            offset.y += isoHeight
+            context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+          }
+          else {
+            offset = {x: wallImageWidth/2, y: wallImageHeight}
+            context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+          }
         }
+
+
+        // let walledTiles = []
+        // if (walledTiles.includes(''+x+','+y+'')) {
+        //   offset = {x: wallImageWidth/2, y: wallImageHeight}
+        //   context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
+        // }
+        // if(gridInfoCell.levelData.charAt(0) === 'y' && gridInfoCell.void.state !== true) {
+        //   offset = {x: wallImageWidth/2, y: wallImageHeight}
+        //   context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
+        // }
+        // if(gridInfoCell.levelData.charAt(0) === 'z' && gridInfoCell.void.state !== true) {
+        //   offset = {x: wallImageWidth/2, y: wallImageHeight}
+        //   context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+        //
+        //   let isoHeight = wallImageHeight - floorImageHeight
+        //   offset.y += isoHeight
+        //   context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+        // }
 
 
         // CAMERA FOCUS POINT
@@ -16262,6 +17058,7 @@ class App extends Component {
             state: false
           },
           obstacle: {
+            state: false,
             name: '',
             type: '',
             hp: 2,
@@ -16311,6 +17108,7 @@ class App extends Component {
             }
           },
           barrier: {
+            state: false,
             name: '',
             type: '',
             hp: 2,
@@ -16389,6 +17187,7 @@ class App extends Component {
             state: false
           },
           obstacle: {
+            state: false,
             name: '',
             type: '',
             hp: 2,
@@ -16438,6 +17237,7 @@ class App extends Component {
             }
           },
           barrier: {
+            state: false,
             name: '',
             type: '',
             hp: 2,
@@ -16480,6 +17280,7 @@ class App extends Component {
 
 
       // '**_*_0.0_a_0**'
+      // barrierbarrierPosition_obstacle_x.y_terrain_elevationNumberelevationTypeelevationPosition
 
       // let terrainInfo = elem.levelData.length-1;
       // elem.terrain = this.terrainLevelDataRef[elem.levelData.charAt(terrainInfo)]
@@ -16805,6 +17606,16 @@ class App extends Component {
       void: this.refs.floorVoid,
       void2: this.refs.floorVoid2,
       void3: this.refs.floorVoid3,
+    };
+    let obstacleImgs = {
+      table: this.refs.obstacleAHalf,
+      closet: this.refs.obstacleAFull,
+      chair: this.refs.obstacleBHalf,
+      shelf: this.refs.obstacleBFull,
+      smallBox: this.refs.obstacleCHalf,
+      largeBox: this.refs.obstacleCFull,
+      counter: this.refs.obstacleDHalf,
+      chest: this.refs.obstacleEHalf,
     }
 
     this.placeItems({init: true, items: ''});
@@ -17055,25 +17866,44 @@ class App extends Component {
 
         }
 
-        let walledTiles = []
-        if (walledTiles.includes(''+x+','+y+'')) {
-          offset = {x: wallImageWidth/2, y: wallImageHeight}
-          context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
-        }
-        if(cellLevelData.charAt(0) === 'y') {
-          offset = {x: wallImageWidth/2, y: wallImageHeight}
-          context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
+        // OBSTACLES
+        if (cell.obstacle.state === true && cell.void.state !== true) {
+          let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
+          let obstacleImg = obstacleImgs[cell.obstacle.type]
 
-        }
-        if(cellLevelData.charAt(0) === 'z') {
-          offset = {x: wallImageWidth/2, y: wallImageHeight}
-          context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+          if (cell.obstacle.height > 1) {
+            offset = {x: wallImageWidth/2, y: wallImageHeight}
+            context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
 
-          let isoHeight = wallImageHeight - floorImageHeight
-          offset.y += isoHeight
-          context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
-
+            let isoHeight = wallImageHeight - floorImageHeight
+            offset.y += isoHeight
+            context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+          }
+          else {
+            offset = {x: wallImageWidth/2, y: wallImageHeight}
+            context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+          }
         }
+
+        // let walledTiles = []
+        // if (walledTiles.includes(''+x+','+y+'')) {
+        //   offset = {x: wallImageWidth/2, y: wallImageHeight}
+        //   context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
+        // }
+        // if(cellLevelData.charAt(0) === 'y') {
+        //   offset = {x: wallImageWidth/2, y: wallImageHeight}
+        //   context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
+        //
+        // }
+        // if(cellLevelData.charAt(0) === 'z') {
+        //   offset = {x: wallImageWidth/2, y: wallImageHeight}
+        //   context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+        //
+        //   let isoHeight = wallImageHeight - floorImageHeight
+        //   offset.y += isoHeight
+        //   context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
+        //
+        // }
 
         this.init = false;
         this.setState({
@@ -24264,6 +25094,18 @@ class App extends Component {
           <img src={wall} className='hidden' ref="wall" id="wall" alt="logo" />
           <img src={wall2} className='hidden' ref="wall2" id="wall2" alt="logo" />
           <img src={wall3} className='hidden' ref="wall3" id="wall3" alt="logo" />
+
+
+          <img src={obstacleAHalf} className='hidden' ref="obstacleAHalf" id="wall3" alt="logo" />
+          <img src={obstacleAFull} className='hidden' ref="obstacleAFull" id="wall3" alt="logo" />
+          <img src={obstacleBHalf} className='hidden' ref="obstacleBHalf" id="wall3" alt="logo" />
+          <img src={obstacleBFull} className='hidden' ref="obstacleBFull" id="wall3" alt="logo" />
+          <img src={obstacleCHalf} className='hidden' ref="obstacleCHalf" id="wall3" alt="logo" />
+          <img src={obstacleCFull} className='hidden' ref="obstacleCFull" id="wall3" alt="logo" />
+          <img src={obstacleDHalf} className='hidden' ref="obstacleDHalf" id="wall3" alt="logo" />
+          <img src={obstacleDFull} className='hidden' ref="obstacleDFull" id="wall3" alt="logo" />
+          <img src={obstacleEHalf} className='hidden' ref="obstacleEHalf" id="wall3" alt="logo" />
+          <img src={obstacleEFull} className='hidden' ref="obstacleEFull" id="wall3" alt="logo" />
 
 
           <img src={attack1Indicate} className='hidden playerImgs' ref="attack1Indicate" id="attack1Indicate" alt="logo" />
