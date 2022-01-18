@@ -288,8 +288,8 @@ class App extends Component {
     this.levelData9 = {
       row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*','**_*_0.7_a_0a*','**_*_0.8_a_0a*','**_*_0.9_a_0a*'],
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
-      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_*_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_a_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
-      row3: ['**_*_3.0_a_0a*','**_*_3.1_a_0a*','**_*_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
+      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_a_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
+      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_c_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
       row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','**_*_4.4_a_0a*','**_*_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','**_*_4.9_a_0a*'],
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','**_*_5.2_a_0a*','**_*_5.3_a_0a*','**_*_5.4_a_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','**_*_5.8_a_0a*','**_*_5.9_a_0a*'],
       row6: ['**_*_6.0_a_0a*','**_*_6.1_a_0a*','**_*_6.2_a_0a*','**_*_6.3_a_0a*','**_*_6.4_a_0a*','**_*_6.5_a_0a*','**_*_6.6_a_0a*','**_*_6.7_a_0a*','**_*_6.8_a_0a*','**_*_6.9_a_0a*'],
@@ -381,7 +381,6 @@ class App extends Component {
         effect: 'void',
       },
     }
-
 
     this.obstacleLevelDataRef = {
       a: {
@@ -499,7 +498,7 @@ class App extends Component {
           key: '',
         },
         weight: 1,
-        height: 0.5,
+        height: 1,
         items: [],
         effects: [],
         moving: {
@@ -599,7 +598,7 @@ class App extends Component {
           key: '',
         },
         weight: 1,
-        height: 0.5,
+        height: 1,
         items: [],
         effects: [],
         moving: {
@@ -749,7 +748,7 @@ class App extends Component {
           key: '',
         },
         weight: 1,
-        height: 0.5,
+        height: 1,
         items: [],
         effects: [],
         moving: {
@@ -4584,7 +4583,6 @@ class App extends Component {
       void2: this.refs.floorVoid2,
       void3: this.refs.floorVoid3,
     }
-
     let obstacleImgs = {
       table: this.refs.obstacleAHalf,
       closet: this.refs.obstacleAFull,
@@ -4725,7 +4723,7 @@ class App extends Component {
 
 
         if (cell.obstacle.state === true && cell.void.state !== true) {
-          let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
+          // let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
           let obstacleImg = obstacleImgs[cell.obstacle.type]
 
           if (cell.obstacle.height > 1) {
@@ -4742,11 +4740,24 @@ class App extends Component {
               context4.drawImage(obstacleImg, iso2.x - offset.x, iso2.y - offset.y, 50,50);
             }
           }
-          else {
+
+          if (cell.obstacle.height === 1) {
             let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
-            context3.drawImage(obstacleImg, (iso2.x) - (offset.x), (iso2.y) - (offset.y), 50,50);
+            context3.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y), 50, 50);
             if (context4) {
-              context4.drawImage(obstacleImg, (iso2.x) - (offset.x), (iso2.y) - (offset.y), 50,50);
+              context4.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y), 50, 50);
+            }
+          }
+
+          if (cell.obstacle.height < 1) {
+            let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
+            context3.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y)+10, 50, 40);
+            // context3.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y), 50, 50);
+            // context3.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y)+10, 50, 50);
+            if (context4) {
+              context4.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y)+10, 50, 40);
+              // context4.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y), 50, 50);
+              // context4.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y)+12.5, 50, 50);
             }
           }
         }
@@ -4872,7 +4883,7 @@ class App extends Component {
 
       if(this.stepper.deltaTime > this.stepper.interval) {
 
-        this.time++
+        this.time++;
 
         // if (this.time === 200) {
           // this.openVoid = true;
@@ -4884,7 +4895,6 @@ class App extends Component {
         this.setState({
           stateUpdater: '..'
         })
-
 
 
         if (this.gamepad === true) {
@@ -12541,7 +12551,7 @@ class App extends Component {
 
         // OBSTACLES
         if (gridInfoCell.obstacle.state === true && gridInfoCell.void.state !== true) {
-          let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
+          // let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
           let obstacleImg = obstacleImgs[gridInfoCell.obstacle.type]
 
           if (gridInfoCell.obstacle.height > 1) {
@@ -12552,10 +12562,16 @@ class App extends Component {
             offset.y += isoHeight
             context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
           }
-          else {
+          if (gridInfoCell.obstacle.height < 1) {
+            offset = {x: wallImageWidth/2, y: wallImageHeight}
+            // context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+            context.drawImage(obstacleImg, iso.x - offset.x, (iso.y - offset.y)+25);
+          }
+          if (gridInfoCell.obstacle.height === 1) {
             offset = {x: wallImageWidth/2, y: wallImageHeight}
             context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
           }
+
         }
 
 
@@ -17866,9 +17882,10 @@ class App extends Component {
 
         }
 
+
         // OBSTACLES
         if (cell.obstacle.state === true && cell.void.state !== true) {
-          let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
+          // let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
           let obstacleImg = obstacleImgs[cell.obstacle.type]
 
           if (cell.obstacle.height > 1) {
@@ -17879,10 +17896,16 @@ class App extends Component {
             offset.y += isoHeight
             context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
           }
-          else {
+          if (cell.obstacle.height < 1) {
+            offset = {x: wallImageWidth/2, y: wallImageHeight}
+            // context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+            context.drawImage(obstacleImg, iso.x - offset.x, (iso.y - offset.y)+25);
+          }
+          if (cell.obstacle.height === 1) {
             offset = {x: wallImageWidth/2, y: wallImageHeight}
             context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
           }
+
         }
 
         // let walledTiles = []
