@@ -236,7 +236,8 @@ class App extends Component {
 
 
 
-
+    // '**_*_0.0_a_0**'
+    // barrierbarrierPosition_obstacle_x.y_terrain_elevationNumberelevationTypeelevationPosition
 
     // GRIND INFO, LEVEL DATA & MAPPING
     this.init = false;
@@ -4261,6 +4262,7 @@ class App extends Component {
 
     if (
       cell2.obstacle.state === true ||
+      cell2.barrier.state === true ||
       cell2.item.name !== '' ||
       cell2.terrain.type === 'deep' ||
       cell2.terrain.type === 'hazard'
@@ -8370,7 +8372,8 @@ class App extends Component {
                         if (
                           // cell2.levelData.charAt(0) !==  'z' ||
                           // cell2.levelData.charAt(0) !==  'y'
-                          cell2.obstacle.state
+                          cell2.obstacle.state !== true &&
+                          cell2.barrier.state !== true
                         ) {
                           // console.log('no obstacles at jump destination');
 
@@ -10119,10 +10122,17 @@ class App extends Component {
                 cell2.number.y === cell.number.y
               ) {
                 if (
-                  cell2.levelData.charAt(0) ===  'z' ||
-                  cell2.levelData.charAt(0) ===  'y'
+                  // cell2.levelData.charAt(0) ===  'z' ||
+                  // cell2.levelData.charAt(0) ===  'y'
+                  cell2.obstacle.state === true &&
+                  cell2.obstacle.height >= 1
+
                 ) {
-                  // console.log('bolt hit an obstacle');
+                  console.log('bolt hit an obstacle');
+                  bolt.kill = true;
+                }
+                if (cell2.barrier.state === true) {
+                  console.log('bolt hit a barrier');
                   bolt.kill = true;
                 }
               }
@@ -10136,6 +10146,7 @@ class App extends Component {
           bolt.currentPosition.center.x > 1300 ||
           bolt.currentPosition.center.y > 800
         ) {
+          // console.log('bolt went out of canvas bounds');
           bolt.kill = true;
         }
       }
@@ -11880,15 +11891,23 @@ class App extends Component {
                 altRespawnPoint2.center.x = elem2.center.x;
                 altRespawnPoint2.center.y = elem2.center.y;
 
+
+                // '**_*_0.0_a_0**'
+                // barrierbarrierPosition_obstacle_x.y_terrain_elevationNumberelevationTypeelevationPosition
+
+
                 let elem3 = this.gridInfo.find(gridCell => gridCell.number.x === plyr.startPosition.cell.number.x && gridCell.number.y === plyr.startPosition.cell.number.y);
                 for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
                   for (const cell of row) {
                     if (
-                      cell.charAt(0) === 'y' ||
-                      cell.charAt(0) ===  'z'
+                      cell.split('_')[0] !== "**" ||
+                      cell.split('_')[1] !== "*"
+                      // cell.charAt(0) === 'y' ||
+                      // cell.charAt(0) ===  'z'
                     ) {
                       let obstaclePosition = {
-                        x: Number(cell.charAt(1)),
+                        // x: Number(cell.charAt(1)),
+                        x: Number(cell.split("_")[2].charAt(0)),
                         y: row.indexOf(cell),
                       }
                       // console.log('found obstacle during map scan @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
@@ -13144,6 +13163,10 @@ class App extends Component {
       center: targetCellCenter
     };
 
+    // '**_*_0.0_a_0**'
+    // barrierbarrierPosition_obstacle_x.y_terrain_elevationNumberelevationTypeelevationPosition
+
+
     let obstacleObstructFound = false;
     let playerObstructFound = false;
     let spearCellObstacle = false;
@@ -13151,12 +13174,17 @@ class App extends Component {
     for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
       for (const cell of row) {
         if (
-          cell.charAt(0) === 'y' ||
-          cell.charAt(0) ===  'z'
+          // cell.charAt(0) === 'y' ||
+          // cell.charAt(0) ===  'z'
+          cell.split('_')[0] !== "**" ||
+          cell.split('_')[1] !== "*"
         ) {
 
+
+
           let obstaclePosition = {
-            x: Number(cell.charAt(1)),
+            // x: Number(cell.charAt(1)),
+            x: Number(cell.split("_")[2].charAt(0)),
             y: row.indexOf(cell),
           }
           // console.log('found obstacle during map scan @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
@@ -13259,12 +13287,16 @@ class App extends Component {
       for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
         for (const cell of row) {
           if (
-            cell.charAt(0) === 'y' ||
-            cell.charAt(0) ===  'z'
+            // cell.charAt(0) === 'y' ||
+            // cell.charAt(0) ===  'z'
+            cell.split('_')[0] !== "**" ||
+            cell.split('_')[1] !== "*"
           ) {
 
+
             let obstaclePosition = {
-              x: Number(cell.charAt(1)),
+              // x: Number(cell.charAt(1)),
+              x: Number(cell.split("_")[2].charAt(0)),
               y: row.indexOf(cell),
             }
             // console.log('found obstacle during map scan 2 @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
@@ -13309,15 +13341,19 @@ class App extends Component {
       }
       break;
       case 'northWest' :
+
       for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
         for (const cell of row) {
           if (
-            cell.charAt(0) === 'y' ||
-            cell.charAt(0) ===  'z'
+            // cell.charAt(0) === 'y' ||
+            // cell.charAt(0) ===  'z'
+            cell.split('_')[0] !== "**" ||
+            cell.split('_')[1] !== "*"
           ) {
 
             let obstaclePosition = {
-              x: Number(cell.charAt(1)),
+              // x: Number(cell.charAt(1)),
+              x: Number(cell.split("_")[2].charAt(0)),
               y: row.indexOf(cell),
             }
             // console.log('found obstacle during map scan 2 @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
@@ -13363,12 +13399,15 @@ class App extends Component {
       for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
         for (const cell of row) {
           if (
-            cell.charAt(0) === 'y' ||
-            cell.charAt(0) ===  'z'
+            // cell.charAt(0) === 'y' ||
+            // cell.charAt(0) ===  'z'
+            cell.split('_')[0] !== "**" ||
+            cell.split('_')[1] !== "*"
           ) {
 
             let obstaclePosition = {
-              x: Number(cell.charAt(1)),
+              // x: Number(cell.charAt(1)),
+              x: Number(cell.split("_")[2].charAt(0)),
               y: row.indexOf(cell),
             }
             // console.log('found obstacle during map scan 2 @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
@@ -13414,12 +13453,15 @@ class App extends Component {
       for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
         for (const cell of row) {
           if (
-            cell.charAt(0) === 'y' ||
-            cell.charAt(0) ===  'z'
+            // cell.charAt(0) === 'y' ||
+            // cell.charAt(0) ===  'z'
+            cell.split('_')[0] !== "**" ||
+            cell.split('_')[1] !== "*"
           ) {
 
             let obstaclePosition = {
-              x: Number(cell.charAt(1)),
+              // x: Number(cell.charAt(1)),
+              x: Number(cell.split("_")[2].charAt(0)),
               y: row.indexOf(cell),
             }
             // console.log('found obstacle during map scan 2 @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
@@ -13714,6 +13756,8 @@ class App extends Component {
      }
     }
 
+    
+
 
     // IS SIGHT OBSTRUCTED?
     // let clearToShoot = true;
@@ -13722,12 +13766,19 @@ class App extends Component {
       // console.log('cellx',cellx);
       let cellRef4 = this.gridInfo.find(elemb => elemb.number.x === cellx.x && elemb.number.y === cellx.y)
       if (
-        cellRef4.levelData.charAt(0) ===  'z' ||
-        cellRef4.levelData.charAt(0) ===  'y'
+        cellRef4.obstacle.state === true &&
+        cellRef4.obstacle.height >= 1
       ) {
         // clearToShoot = false;
         obstructions.push(cellx)
       }
+      if (
+        cellRef4.barrier.state === true
+      ) {
+        // clearToShoot = false;
+        obstructions.push(cellx)
+      }
+
       if (
         cellRef4.levelData.charAt(0) !==  'y' &&
         cellRef4.levelData.charAt(0) !==  'z'
@@ -24306,7 +24357,7 @@ class App extends Component {
 
           if (parsedPreInstructions.length < 4) {
 
-            console.log('attack focus auto cam: 2 players in close range');
+            // console.log('attack focus auto cam: 2 players in close range');
 
 
             this.camera.preInstructions.push(
@@ -24355,7 +24406,7 @@ class App extends Component {
           else {
 
 
-            console.log('attack focus auto cam: 2 players at a distance');
+            // console.log('attack focus auto cam: 2 players at a distance');
 
             // console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
 
