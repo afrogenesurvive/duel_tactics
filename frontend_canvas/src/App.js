@@ -788,8 +788,42 @@ class App extends Component {
     this.barrierLevelDataRef = {
       a: {
         state: true,
-        name: '',
-        type: '',
+        name: 'wall1',
+        type: 'wall',
+        hp: 2,
+        destructible: {
+          state: false,
+          weapons: [],
+          leaveRubble: false,
+        },
+        locked: {
+          state: false,
+          key: '',
+        },
+        position: '',
+        height: 1,
+      },
+      b: {
+        state: true,
+        name: 'door1',
+        type: 'door',
+        hp: 2,
+        destructible: {
+          state: false,
+          weapons: [],
+          leaveRubble: false,
+        },
+        locked: {
+          state: false,
+          key: '',
+        },
+        position: '',
+        height: 1,
+      },
+      c: {
+        state: true,
+        name: 'balcony1',
+        type: 'balcony',
         hp: 2,
         destructible: {
           state: false,
@@ -10573,7 +10607,6 @@ class App extends Component {
       void2: this.refs.floorVoid2,
       void3: this.refs.floorVoid3,
     }
-
     let obstacleImgs = {
       table: this.refs.obstacleAHalf,
       closet: this.refs.obstacleAFull,
@@ -13756,7 +13789,7 @@ class App extends Component {
      }
     }
 
-    
+
 
 
     // IS SIGHT OBSTRUCTED?
@@ -13780,8 +13813,12 @@ class App extends Component {
       }
 
       if (
-        cellRef4.levelData.charAt(0) !==  'y' &&
-        cellRef4.levelData.charAt(0) !==  'z'
+        // cellRef4.levelData.charAt(0) !==  'y' &&
+        // cellRef4.levelData.charAt(0) !==  'z'
+        cellRef4.obstacle.state !== true &&
+        cellRef4.barrier.state !== true ||
+        cellRef4.obstacle.state === true &&
+        cellRef4.obstacle.height < 1
       ) {
         // clearToShoot = true;
         // obstructions.push(cellx)
@@ -15462,13 +15499,21 @@ class App extends Component {
           console.log('Pushback target is NOT free');
           let blockedCell = this.gridInfo.find(x=>x.number.x === target.cell.number.x && x.number.y === target.cell.number.y)
           if (
-            blockedCell.levelData.charAt(0) === 'y' ||
-            blockedCell.levelData.charAt(0) === 'z'
+            // blockedCell.levelData.charAt(0) === 'y' ||
+            // blockedCell.levelData.charAt(0) === 'z'
+            blockedCell.obstacle.state === true
           ) {
-            console.log("Pushedback into obstacle! Push it, destroy it or do nothing.");
+            console.log("Pushedback into obstacle! Push it, lower hp, destroy it or do nothing.");
+
+
+
+          }
+          if (blockedCell.barrier.state === true) {
+            console.log('Pushedback into barrier. lower hp Break it or do nothing');
           }
           // player.pushBack.state = false;
     }
+
     if (player.target.void === true) {
       console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
       player.action = 'strafe moving';
@@ -15938,8 +15983,9 @@ class App extends Component {
     let cellFree = true;
     let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y);
     if (
-      cell2.levelData.charAt(0) ===  'z' ||
-      cell2.levelData.charAt(0) ===  'y'
+      // cell2.levelData.charAt(0) ===  'z' ||
+      // cell2.levelData.charAt(0) ===  'y'
+      cell2.obstacle.state === true
     ) {
       cellFree = false;
     }
@@ -16804,6 +16850,78 @@ class App extends Component {
           void: {
             state: false
           },
+          obstacle: {
+            state: false,
+            name: '',
+            type: '',
+            hp: 2,
+            destructible: {
+              state: false,
+              weapons: [],
+              leaveRubble: false,
+            },
+            locked: {
+              state: false,
+              key: '',
+            },
+            weight: 1,
+            height: 0.5,
+            items: [],
+            effects: [],
+            moving: {
+              state: false,
+              origin: {
+                number: {
+                  x: undefined,
+                  y: undefined,
+                },
+                center: {
+                  x: undefined,
+                  y: undefined,
+                },
+              },
+              destination: {
+                number: {
+                  x: undefined,
+                  y: undefined,
+                },
+                center: {
+                  x: undefined,
+                  y: undefined,
+                },
+              },
+              currentPosition: {
+                x: undefined,
+                y: undefined,
+              },
+              nextPosition: {
+                x: undefined,
+                y: undefined,
+              },
+            }
+          },
+          barrier: {
+            state: false,
+            name: '',
+            type: '',
+            hp: 2,
+            destructible: {
+              state: false,
+              weapons: [],
+              leaveRubble: false,
+            },
+            locked: {
+              state: false,
+              key: '',
+            },
+            position: '',
+            height: 1,
+          },
+          elevation: {
+            number: 0,
+            type: '',
+            position: '',
+          }
         }
         this.cellsToHighlight2 = [];
       }
@@ -16832,7 +16950,6 @@ class App extends Component {
         }
         // console.log('this.cellsToHighlight2',this.cellsToHighlight2);
       }
-
 
 
       if (this.camera.pan.x < 0) {
