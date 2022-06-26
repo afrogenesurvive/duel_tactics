@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import Easystar from 'easystarjs';
 import Pathfinding from 'pathfinding';
 import { AStarFinder } from "astar-typescript";
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
+import Popover from 'react-bootstrap/Popover';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCogs,
@@ -234,10 +236,8 @@ class App extends Component {
     this.cellCenterOffsetY = 2;
 
 
-
-
     // '**_*_0.0_a_0**'
-    // barrierbarrierPosition_obstacle_x.y_terrain_elevationNumberelevationTypeelevationPosition
+    // barrierType(a,b,c)BarrierPosition(n,s,e,w)_obstacle_x.y_terrain_elevationNumber(0,1,2)ElevationType(a,b,c)ElevationPosition(n,s,e,w)
 
     // GRIND INFO, LEVEL DATA & MAPPING
     this.init = false;
@@ -272,20 +272,35 @@ class App extends Component {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
     this.levelData12 = {
-      row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x','x010x','x011x','x012x'],
-      row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x','x110x','x111x','x112x'],
-      row2: ['x20x','x21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x','x210x','x211x','x212x'],
-      row3: ['x30x','x31x','x32x','x33x','x34x','x35x','x36x','x37x','x38x','x39x','x310x','x311x','x312x'],
-      row4: ['x40x','x41x','x42x','x43x','x44x','x45x','x46x','x47x','x48x','x49x','x410x','x411x','x412x'],
-      row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','y57x','x58x','x59x','x510x','x511x','x512x'],
-      row6: ['x60x','x61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x','x610x','x611x','x612x'],
-      row7: ['x70x','x71x','x72x','x73x','x74x','x75x','x76x','x77x','x78x','x79x','x710x','x711x','x712x'],
-      row8: ['x80x','x81x','x82x','z83x','x84x','x85x','x86x','x87x','x88x','x89x','x810x','x811x','x812x'],
-      row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','y97x','x98x','x99x','x910x','x911x','x912x'],
-      row10: ['x100x','x101x','x102x','x103x','x104x','x105x','x106x','x107x','x108x','x109x','x1010x','x1011x','x1012x'],
-      row11: ['x110x','x111x','x112x','x113x','x114x','x115x','x116x','x117x','x118x','x119x','x1110x','x1111x','x1112x'],
-      row12: ['x120x','x121x','z122x','x123x','x124x','x125x','x126x','x127x','x128x','x129x','z1210x','x1211x','x1212x'],
+      row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*','**_*_0.7_a_0a*','**_*_0.8_a_0a*','**_*_0.9_a_0a*','**_*_0.10_a_0a*','**_*_0.11_a_0a*','**_*_0.12_a_0a*'],
+      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*','**_*_1.10_a_0a*','**_*_1.11_a_0a*','**_*_1.12_a_0a*'],
+      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_a_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*','**_*_2.10_a_0a*','**_*_2.11_a_0a*','**_*_2.12_a_0a*'],
+      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_c_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*','**_*_3.10_a_0a*','**_*_3.11_a_0a*','**_*_3.12_a_0a*'],
+      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','**_*_4.4_a_0a*','**_*_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','**_*_4.9_a_0a*','**_*_4.10_a_0a*','**_*_4.11_a_0a*','**_*_4.12_a_0a*'],
+      row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','**_*_5.2_a_0a*','**_*_5.3_a_0a*','**_*_5.4_a_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','**_*_5.8_a_0a*','**_*_5.9_a_0a*','**_*_5.10_a_0a*','**_*_5.11_a_0a*','**_*_5.12_a_0a*'],
+      row6: ['**_*_6.0_a_0a*','**_*_6.1_a_0a*','**_*_6.2_a_0a*','**_*_6.3_a_0a*','**_*_6.4_a_0a*','**_*_6.5_a_0a*','**_*_6.6_a_0a*','**_*_6.7_a_0a*','**_*_6.8_a_0a*','**_*_6.9_a_0a*','**_*_6.10_a_0a*','**_*_6.11_a_0a*','**_*_6.12_a_0a*'],
+      row7: ['**_*_7.0_a_0a*','**_*_7.1_a_0a*','**_*_7.2_a_0a*','**_*_7.3_a_0a*','**_*_7.4_a_0a*','**_*_7.5_a_0a*','**_*_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_a_0a*','**_*_7.10_a_0a*','**_*_7.11_a_0a*','**_*_7.12_a_0a*'],
+      row8: ['**_*_8.0_a_0a*','**_*_8.1_a_0a*','**_*_8.2_a_0a*','**_*_8.3_a_0a*','**_*_8.4_a_0a*','**_*_8.5_a_0a*','**_*_8.6_a_0a*','**_*_8.7_a_0a*','**_*_8.8_a_0a*','**_*_8.9_a_0a*','**_*_8.10_a_0a*','**_*_8.11_a_0a*','**_*_8.12_a_0a*'],
+      row9: ['**_*_9.0_a_0a*','**_*_9.1_a_0a*','**_*_9.2_a_0a*','**_*_9.3_a_0a*','**_*_9.4_a_0a*','**_*_9.5_a_0a*','**_*_9.6_a_0a*','**_*_9.7_a_0a*','**_*_9.8_a_0a*','**_*_9.9_a_0a*','**_*_9.10_a_0a*','**_*_9.11_a_0a*','**_*_9.12_a_0a*'],
+      row10: ['**_*_10.0_a_0a*','**_*_10.1_a_0a*','**_*_10.2_a_0a*','**_*_10.3_a_0a*','**_*_10.4_a_0a*','**_*_10.5_a_0a*','**_*_10.6_a_0a*','**_*_10.7_a_0a*','**_*_10.8_a_0a*','**_*_10.9_a_0a*','**_*_10.10_a_0a*','**_*_10.11_a_0a*','**_*_10.12_a_0a*'],
+      row11: ['**_*_11.0_a_0a*','**_*_11.1_a_0a*','**_*_11.2_a_0a*','**_*_11.3_a_0a*','**_*_11.4_a_0a*','**_*_11.5_a_0a*','**_*_11.6_a_0a*','**_*_11.7_a_0a*','**_*_11.8_a_0a*','**_*_11.9_a_0a*','**_*_11.10_a_0a*','**_*_11.11_a_0a*','**_*_11.12_a_0a*'],
+      row12: ['**_*_12.0_a_0a*','**_*_12.1_a_0a*','**_*_12.2_a_0a*','**_*_12.3_a_0a*','**_*_12.4_a_0a*','**_*_12.5_a_0a*','**_*_12.6_a_0a*','**_*_12.7_a_0a*','**_*_12.8_a_0a*','**_*_12.9_a_0a*','**_*_12.10_a_0a*','**_*_12.11_a_0a*','**_*_12.12_a_0a*'],
     };
+    // this.levelData12 = {
+    //   row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x','x010x','x011x','x012x'],
+    //   row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x','x110x','x111x','x112x'],
+    //   row2: ['x20x','x21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x','x210x','x211x','x212x'],
+    //   row3: ['x30x','x31x','x32x','x33x','x34x','x35x','x36x','x37x','x38x','x39x','x310x','x311x','x312x'],
+    //   row4: ['x40x','x41x','x42x','x43x','x44x','x45x','x46x','x47x','x48x','x49x','x410x','x411x','x412x'],
+    //   row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','y57x','x58x','x59x','x510x','x511x','x512x'],
+    //   row6: ['x60x','x61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x','x610x','x611x','x612x'],
+    //   row7: ['x70x','x71x','x72x','x73x','x74x','x75x','x76x','x77x','x78x','x79x','x710x','x711x','x712x'],
+    //   row8: ['x80x','x81x','x82x','z83x','x84x','x85x','x86x','x87x','x88x','x89x','x810x','x811x','x812x'],
+    //   row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','y97x','x98x','x99x','x910x','x911x','x912x'],
+    //   row10: ['x100x','x101x','x102x','x103x','x104x','x105x','x106x','x107x','x108x','x109x','x1010x','x1011x','x1012x'],
+    //   row11: ['x110x','x111x','x112x','x113x','x114x','x115x','x116x','x117x','x118x','x119x','x1110x','x1111x','x1112x'],
+    //   row12: ['x120x','x121x','z122x','x123x','x124x','x125x','x126x','x127x','x128x','x129x','z1210x','x1211x','x1212x'],
+    // };
     this.levelData9 = {
       row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*','**_*_0.7_a_0a*','**_*_0.8_a_0a*','**_*_0.9_a_0a*'],
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
@@ -311,20 +326,35 @@ class App extends Component {
     //   row9: ['x90x','x91x','x92k','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
     // };
     this.levelData6 = {
-      row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
-      row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
-      row2: ['x20x','x21x','y22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x'],
-      row3: ['x30x','x31x','x32x','x33x','x34x','x35x','x36x','x37x','x38x','x39x'],
-      row4: ['x40x','x41x','x42x','x43x','x44x','x45x','x46x','x47x','x48x','z49x'],
-      row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58x','x59x'],
-      row6: ['x60x','x61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
+      row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*'],
+      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*'],
+      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_a_0a*'],
+      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_c_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*'],
+      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','**_*_4.4_a_0a*','**_*_4.5_a_0a*','**_*_4.6_a_0a*'],
+      row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','**_*_5.2_a_0a*','**_*_5.3_a_0a*','**_*_5.4_a_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*'],
+      row6: ['**_*_6.0_a_0a*','**_*_6.1_a_0a*','**_*_6.2_a_0a*','**_*_6.3_a_0a*','**_*_6.4_a_0a*','**_*_6.5_a_0a*','**_*_6.6_a_0a*'],
     };
+    // this.levelData6 = {
+    //   row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
+    //   row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
+    //   row2: ['x20x','x21x','y22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x'],
+    //   row3: ['x30x','x31x','x32x','x33x','x34x','x35x','x36x','x37x','x38x','x39x'],
+    //   row4: ['x40x','x41x','x42x','x43x','x44x','x45x','x46x','x47x','x48x','z49x'],
+    //   row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58x','x59x'],
+    //   row6: ['x60x','x61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
+    // };
     this.levelData3 = {
-      row0: ['x00x','x01x','x02x','x03x'],
-      row1: ['x10x','x11x','x12x','x13x'],
-      row2: ['x20x','x21x','x22x','y23x'],
-      row3: ['z30x','x31x','x32x','x33x'],
+      row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*'],
+      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*'],
+      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*'],
+      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_c_3.2_a_0a*','**_*_3.3_a_0a*'],
     };
+    // this.levelData3 = {
+    //   row0: ['x00x','x01x','x02x','x03x'],
+    //   row1: ['x10x','x11x','x12x','x13x'],
+    //   row2: ['x20x','x21x','x22x','y23x'],
+    //   row3: ['z30x','x31x','x32x','x33x'],
+    // };
     this.terrainLevelDataRef = {
       a:{
         name: 'grass',
@@ -2380,6 +2410,7 @@ class App extends Component {
       ranged: 0.10,
     }
     this.settingAutoCamera = false;
+    this.highlightZoomPanFocusCell = false;
 
 
     // AI
@@ -5264,6 +5295,7 @@ class App extends Component {
       // }
 
     }
+    //END DEFLECTION, SPIN & DROP
     else if (player.success.deflected.state === true && player.success.deflected.count >= player.success.deflected.limit) {
       // console.log('deflect end',player.success.deflected.type);
       // DEFLECT SPIN!
@@ -6101,7 +6133,7 @@ class App extends Component {
                   this.camera.preInstructions.length === 0 &&
                   this.camera.instructions.length === 0
                 ) {
-                  this.setAutoCamera('attackFocus',player)
+                  // this.setAutoCamera('attackFocus',player)
                 }
                 else {
                   console.log('no setting auto cam: attackFocus');
@@ -6545,7 +6577,7 @@ class App extends Component {
 
                   }
 
-                  // ADJUSTE INJURY SPEED!
+                  // ADJUST TARGET PLYR SPEED ON INJURY
                   if (doubleHit === 1 || singleHit === 1) {
                     let currentMoveSpeedIndx = this.players[player.target.occupant.player-1].speed.range.indexOf(this.players[player.target.occupant.player-1].speed.move)
                     if (currentMoveSpeedIndx > 0) {
@@ -7311,6 +7343,7 @@ class App extends Component {
 
 
               // DESTROY ITEMS!
+              // **add consideration for obstacles and floor elevation as well
               if (player.target.occupant.type !== 'player') {
                 if (player.currentWeapon.name !== '' || player.bluntAttack === true) {
                   let cell = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y )
@@ -7373,7 +7406,7 @@ class App extends Component {
               this.camera.preInstructions.length === 0 &&
               this.camera.instructions.length === 0
             ) {
-              this.setAutoCamera('attackFocusBreak',player)
+              // this.setAutoCamera('attackFocusBreak',player)
             }
             else {
               console.log('no setting auto cam: attackFocusBreak');
@@ -9229,7 +9262,7 @@ class App extends Component {
 
       this.resetCameraSwitch = false;
       this.camera = {
-        state: false,
+        state: true,
         startCount: 0,
         startLimit: 4,
         mode: 'pan',
@@ -12052,6 +12085,7 @@ class App extends Component {
               context.drawImage(indicatorImgs.ghost, plyr.ghost.position.cell.center.x-20, plyr.ghost.position.cell.center.y-20, 25,25);
             }
           }
+
           // if (plyr.itemDrop.state === true && plyr.dead.state !== true) {
           //   if (plyr.itemDrop.gear.type === '' && plyr.itemDrop.item.name === '') {
           //     // console.log('nothing to drop');
@@ -15347,7 +15381,7 @@ class App extends Component {
     // console.log('point checker player',player);
 
     let points = player.points;
-    if (points %1 === 0) {
+    if (points %5 === 0) {
       this.bloodSacrificeEvent.state = true;
       this.bloodSacrificeEvent.limit = 2000;
       this.bloodSacrificeEvent.restore = true;
@@ -16925,30 +16959,37 @@ class App extends Component {
         }
         this.cellsToHighlight2 = [];
       }
+
+
+      // SEND FOCUS CELL TO cellsToHighlight
+
       if (insideGrid === true) {
         // console.log('panToCell using pointInPolygon',focusCell.number);
         this.camera.focusCell.x = focusCell.number.x;
         this.camera.focusCell.y = focusCell.number.y;
         // console.log('panToCell camera.focusCell',this.camera.focusCell);
-        for (const cell2 of this.cellsToHighlight2) {
-          if (cell2.number.x !== focusCell.number.x || cell2.number.y !== focusCell.number.y) {
-            let indx = this.cellsToHighlight2.indexOf(cell2);
-            this.cellsToHighlight2.splice(indx,1)
+        if (this.highlightZoomPanFocusCell === true) {
+          for (const cell2 of this.cellsToHighlight2) {
+            if (cell2.number.x !== focusCell.number.x || cell2.number.y !== focusCell.number.y) {
+              let indx = this.cellsToHighlight2.indexOf(cell2);
+              this.cellsToHighlight2.splice(indx,1)
+            }
           }
-        }
-        if (!this.cellsToHighlight2.find(x=> x.number.x === focusCell.number.x && x.number.y === focusCell.number.y)) {
-          this.cellsToHighlight2.push(
-            {
-              number: {
-                x: focusCell.number.x,
-                y: focusCell.number.y,
+          if (!this.cellsToHighlight2.find(x=> x.number.x === focusCell.number.x && x.number.y === focusCell.number.y)) {
+            this.cellsToHighlight2.push(
+              {
+                number: {
+                  x: focusCell.number.x,
+                  y: focusCell.number.y,
+                },
+                count: 0,
+                limit: 0,
               },
-              count: 0,
-              limit: 0,
-            },
-          )
+            )
+          }
+          // console.log('this.cellsToHighlight2',this.cellsToHighlight2);
         }
-        // console.log('this.cellsToHighlight2',this.cellsToHighlight2);
+
       }
 
 
@@ -17464,7 +17505,9 @@ class App extends Component {
 
 
       // '**_*_0.0_a_0**'
-      // barrierbarrierPosition_obstacle_x.y_terrain_elevationNumberelevationTypeelevationPosition
+      // barrierType(a,b,c)BarrierPosition(n,s,e,w)_obstacle_x.y_terrain_elevationNumber(0,1,2)ElevationType(a,b,c)ElevationPosition(n,s,e,w)
+
+
 
       // let terrainInfo = elem.levelData.length-1;
       // elem.terrain = this.terrainLevelDataRef[elem.levelData.charAt(terrainInfo)]
@@ -17744,9 +17787,9 @@ class App extends Component {
 
     let diff = 1 - this.camera.zoom.x;
 
+    // FOCUSED ZOOMING INIT SET
     this.camera.pan.x = (diff*this.canvasWidth/2);
     this.camera.pan.y = (diff*this.canvasWidth/2)-(diff*150);
-    // FOR FOCUSED ZOOMING
     if (this.camera.pan.x === 0) {
       this.camera.pan.x = -1
       this.camera.pan.y = -1
@@ -18076,25 +18119,6 @@ class App extends Component {
 
         }
 
-        // let walledTiles = []
-        // if (walledTiles.includes(''+x+','+y+'')) {
-        //   offset = {x: wallImageWidth/2, y: wallImageHeight}
-        //   context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
-        // }
-        // if(cellLevelData.charAt(0) === 'y') {
-        //   offset = {x: wallImageWidth/2, y: wallImageHeight}
-        //   context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
-        //
-        // }
-        // if(cellLevelData.charAt(0) === 'z') {
-        //   offset = {x: wallImageWidth/2, y: wallImageHeight}
-        //   context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
-        //
-        //   let isoHeight = wallImageHeight - floorImageHeight
-        //   offset.y += isoHeight
-        //   context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
-        //
-        // }
 
         this.init = false;
         this.setState({
@@ -18717,7 +18741,7 @@ class App extends Component {
           this.camera.preInstructions.length === 0 &&
           this.camera.instructions.length === 0
         ) {
-          this.setAutoCamera('aiSpawnFocus',newPlayer)
+          // this.setAutoCamera('aiSpawnFocus',newPlayer)
         }
         else {
           console.log('no setting auto cam: aiSpawnFocus');
@@ -25128,7 +25152,10 @@ class App extends Component {
     // console.log('camera focus set',this.camera.focus,focusType,'zoom',this.camera.zoom,'pan',this.camera.pan);
 
   }
-
+  menuToggleCamera = () => {
+    this.camera.state = true;
+    this.camera.fixed = true;
+  }
 
   render() {
     return (
@@ -25181,19 +25208,73 @@ class App extends Component {
             // SETTINGS BOX
             <div className="settingsSwitch">
               <a href="javascript:" className="setSwitchLink" onClick={this.openSettings}>
-                <FontAwesomeIcon icon={faCogs} size="sm" className="setSwitchIcon"/>
+                <OverlayTrigger
+                  placement={'top'}
+                  overlay={
+                    <Popover id={`popover-positioned-${'top'}`}>
+                      <Popover.Content>
+                        <strong>Show Settings</strong>
+                      </Popover.Content>
+                    </Popover>
+                  }
+                >
+                  <FontAwesomeIcon icon={faCogs} size="sm" className="setSwitchIcon"/>
+                </OverlayTrigger>
+
               </a>
               {this.aiPlayers[0] &&(
               // {this.updateSettingsFormAiDataData.random &&(
                 <a href="javascript:" className="setSwitchLink cameraModeHighlighted" onClick={this.toggleAiDisplay}>
-                  <FontAwesomeIcon icon={faRobot} size="sm" className="setSwitchIcon"/>
+                  <OverlayTrigger
+                    placement={'top'}
+                    overlay={
+                      <Popover id={`popover-positioned-${'top'}`}>
+                        <Popover.Content>
+                          <strong>Toggle Ai Sub-menu</strong>
+                        </Popover.Content>
+                      </Popover>
+                    }
+                  >
+                    <FontAwesomeIcon icon={faRobot} size="sm" className="setSwitchIcon"/>
+                  </OverlayTrigger>
+
                 </a>
               )}
               {!this.aiPlayers[0] &&(
               // {!this.updateSettingsFormAiDataData.random &&(
                 <a href="javascript:" className="setSwitchLink" onClick={this.toggleAiDisplay}>
-                  <FontAwesomeIcon icon={faRobot} size="sm" className="setSwitchIcon"/>
+                  <OverlayTrigger
+                    placement={'top'}
+                    overlay={
+                      <Popover id={`popover-positioned-${'top'}`}>
+                        <Popover.Content>
+                          <strong>Toggle Ai Sub-menu</strong>
+                        </Popover.Content>
+                      </Popover>
+                    }
+                  >
+                    <FontAwesomeIcon icon={faRobot} size="sm" className="setSwitchIcon"/>
+                  </OverlayTrigger>
+
                 </a>
+              )}
+              {this.camera.state === false && (
+                <a href="javascript:" className="setSwitchLink" onClick={this.menuToggleCamera}>
+                  <OverlayTrigger
+                    placement={'top'}
+                    overlay={
+                      <Popover id={`popover-positioned-${'top'}`}>
+                        <Popover.Content>
+                          <strong>Toggle Camera Sub-menu</strong>
+                        </Popover.Content>
+                      </Popover>
+                    }
+                  >
+                    <FontAwesomeIcon icon={faVideo} size="sm" className="setSwitchIcon"/>
+                  </OverlayTrigger>
+
+                </a>
+              )}
               )}
 
             </div>
@@ -25217,7 +25298,19 @@ class App extends Component {
             // CELL INFO
             {this.showCellInfoBox !== true && (
               <div className="cellInfoSwitch">
+                <OverlayTrigger
+                  placement={'top'}
+                  overlay={
+                    <Popover id={`popover-positioned-${'top'}`}>
+                      <Popover.Content>
+                        <strong>Cell Info. Click a cell to show details.</strong>
+                      </Popover.Content>
+                    </Popover>
+                  }
+                >
                   <FontAwesomeIcon icon={faChessBoard} size="sm" className="setSwitchIcon"/>
+                </OverlayTrigger>
+
               </div>
             )}
             {this.showCellInfoBox === true && (

@@ -88,26 +88,72 @@ const DebugBox = props => {
 
 
         <li className="debugBoxListItem">
-          <FontAwesomeIcon icon={faSkullCrossbones} size="sm" className="debugBoxIcon"/>
+          <OverlayTrigger
+            placement={'top'}
+            overlay={
+              <Popover id={`popover-positioned-${'top'}`}>
+                <Popover.Content>
+                  <strong>Kills/Points</strong>
+                </Popover.Content>
+              </Popover>
+            }
+          >
+            <FontAwesomeIcon icon={faSkullCrossbones} size="sm" className="debugBoxIcon"/>
+          </OverlayTrigger>
+
           <p className="debugBoxText">
             {props.player.points}
           </p>
         </li>
         <li className="debugBoxListItem3">
-          <FontAwesomeIcon icon={faLungs} size="sm" className="debugBoxIcon"/>
+          <OverlayTrigger
+            placement={'top'}
+            overlay={
+              <Popover id={`popover-positioned-${'top'}`}>
+                <Popover.Content>
+                  <strong>Stamina</strong>
+                </Popover.Content>
+              </Popover>
+            }
+          >
+            <FontAwesomeIcon icon={faLungs} size="sm" className="debugBoxIcon"/>
+          </OverlayTrigger>
           <ProgressBar className="staminaProgress" now={staminaPercent} variant={staminaColor}/>
         </li>
 
 
         <li className="debugBoxListItem">
-          <FontAwesomeIcon icon={faHeartbeat} size="sm" className="debugBoxIcon"/>
+          <OverlayTrigger
+            placement={'top'}
+            overlay={
+              <Popover id={`popover-positioned-${'top'}`}>
+                <Popover.Content>
+                  <strong>HP</strong>
+                </Popover.Content>
+              </Popover>
+            }
+          >
+            <FontAwesomeIcon icon={faHeartbeat} size="sm" className="debugBoxIcon"/>
+          </OverlayTrigger>
+
           <p className="debugBoxText">
             {props.player.hp}
           </p>
         </li>
 
         <li className="debugBoxListItem">
-        <img src={speed} className="debugBoxIcon" alt="logo"/>
+          <OverlayTrigger
+            placement={'top'}
+            overlay={
+              <Popover id={`popover-positioned-${'top'}`}>
+                <Popover.Content>
+                  <strong>Movement Speed</strong>
+                </Popover.Content>
+              </Popover>
+            }
+          >
+            <img src={speed} className="debugBoxIcon" alt="logo"/>
+          </OverlayTrigger>
           <p className="debugBoxText">
             {props.player.speed.move}
           </p>
@@ -115,7 +161,19 @@ const DebugBox = props => {
 
         {props.player.hp === 1 && (
           <li className="debugBoxListItem">
-            <img src={deflectInjuredInidcate} className="debugBoxImg"></img>
+            <OverlayTrigger
+              placement={'top'}
+              overlay={
+                <Popover id={`popover-positioned-${'top'}`}>
+                  <Popover.Content>
+                    <strong>Player is Injured</strong>
+                  </Popover.Content>
+                </Popover>
+              }
+            >
+              <img src={deflectInjuredInidcate} className="debugBoxImg"></img>
+            </OverlayTrigger>
+
           </li>
         )}
         {props.player.success.attackSuccess.state === true && (
@@ -148,23 +206,71 @@ const DebugBox = props => {
 
         <li className="debugBoxListItem">
           {props.player.currentWeapon.name === '' && (
-            <img src={unarmed} className="debugBoxImgSelected"></img>
+            <OverlayTrigger
+              placement={'top'}
+              overlay={
+                <Popover id={`popover-positioned-${'top'}`}>
+                  <Popover.Content>
+                    <strong>Player is Unarmed</strong>
+                  </Popover.Content>
+                </Popover>
+              }
+            >
+              <img src={unarmed} className="debugBoxImgSelected"></img>
+            </OverlayTrigger>
+
           )}
           {props.player.currentWeapon.type === 'sword' && (
-            <img src={sword} className="debugBoxImgSelected"></img>
+            <OverlayTrigger
+              placement={'top'}
+              overlay={
+                <Popover id={`popover-positioned-${'top'}`}>
+                  <Popover.Content>
+                    <strong>Player using a Sword: {props.player.currentWeapon.name}</strong>
+                  </Popover.Content>
+                </Popover>
+              }
+            >
+              <img src={sword} className="debugBoxImgSelected"></img>
+            </OverlayTrigger>
+
           )}
           {props.player.currentWeapon.type === 'sword' && (
             <p className="debugBoxText">{props.player.currentWeapon.effect}</p>
           )}
           {props.player.currentWeapon.type === 'spear' && (
-            <img src={spear} className="debugBoxImgSelected"></img>
+            <OverlayTrigger
+              placement={'top'}
+              overlay={
+                <Popover id={`popover-positioned-${'top'}`}>
+                  <Popover.Content>
+                    <strong>Player using a Spear: {props.player.currentWeapon.name}</strong>
+                  </Popover.Content>
+                </Popover>
+              }
+            >
+              <img src={spear} className="debugBoxImgSelected"></img>
+            </OverlayTrigger>
+
           )}
           {props.player.currentWeapon.type === 'spear' && (
             <p className="debugBoxText">{props.player.currentWeapon.effect}</p>
           )}
 
           {props.player.currentWeapon.type === 'crossbow' && (
-            <img src={bow} className="debugBoxImgSelected"></img>
+            <OverlayTrigger
+              placement={'top'}
+              overlay={
+                <Popover id={`popover-positioned-${'top'}`}>
+                  <Popover.Content>
+                    <strong>Player using a Crossbow: {props.player.currentWeapon.name}</strong>
+                  </Popover.Content>
+                </Popover>
+              }
+            >
+              <img src={bow} className="debugBoxImgSelected"></img>
+            </OverlayTrigger>
+
           )}
           {props.player.currentWeapon.type === 'crossbow' && (
             <p className="debugBoxText">
@@ -183,30 +289,90 @@ const DebugBox = props => {
         <li className="debugBoxListItem">
 
           {props.player.currentArmor.type === 'mail' && (
-            <img src={mail} className="debugBoxImgSelected"></img>
+            <OverlayTrigger
+              placement={'top'}
+              overlay={
+                <Popover id={`popover-positioned-${'top'}`}>
+                  <Popover.Content>
+                    <strong>Player is wearing Mail: {props.player.currentArmor.name}</strong>
+                  </Popover.Content>
+                </Popover>
+              }
+            >
+              <img src={mail} className="debugBoxImgSelected"></img>
+            </OverlayTrigger>
+
           )}
           {props.player.currentArmor.type === 'greaves' && (
-            <img src={greaves} className="debugBoxImgSelected"></img>
+            <OverlayTrigger
+              placement={'top'}
+              overlay={
+                <Popover id={`popover-positioned-${'top'}`}>
+                  <Popover.Content>
+                    <strong>Player is wearing Greaves: {props.player.currentArmor.name}</strong>
+                  </Popover.Content>
+                </Popover>
+              }
+            >
+              <img src={greaves} className="debugBoxImgSelected"></img>
+            </OverlayTrigger>
+
           )}
           {props.player.currentArmor.type === 'helmet' && (
-             <img src={helmet} className="debugBoxImgSelected"></img>
+            <OverlayTrigger
+              placement={'top'}
+              overlay={
+                <Popover id={`popover-positioned-${'top'}`}>
+                  <Popover.Content>
+                    <strong>Player is wearing a Helmet: {props.player.currentArmor.name}</strong>
+                  </Popover.Content>
+                </Popover>
+              }
+            >
+              <img src={helmet} className="debugBoxImgSelected"></img>
+            </OverlayTrigger>
+
           )}
 
         </li>
 
         <li className="debugBoxListItem">
           <a href="javascript:" onClick={()=>handleStateChange('gear',props.player.number)}>
-            <Button variant="outline-secondary" type="button" className="showCritsBtn">
-              <FontAwesomeIcon icon={faBriefcase} size="lg" className="debugBoxIcon btnIcon" />
-            </Button>
+            <OverlayTrigger
+              placement={'top'}
+              overlay={
+                <Popover id={`popover-positioned-${'top'}`}>
+                  <Popover.Content>
+                    <strong>Inventory</strong>
+                  </Popover.Content>
+                </Popover>
+              }
+            >
+              <Button variant="outline-secondary" type="button" className="showCritsBtn">
+                <FontAwesomeIcon icon={faBriefcase} size="lg" className="debugBoxIcon btnIcon" />
+              </Button>
+            </OverlayTrigger>
+
           </a>
         </li>
 
         <li className="debugBoxListItem">
         <a href="javascript:" onClick={()=>handleStateChange("crits",props.player.number)}>
+          <OverlayTrigger
+            placement={'top'}
+            overlay={
+              <Popover id={`popover-positioned-${'top'}`}>
+                <Popover.Content>
+                  <strong>Crits</strong>
+                </Popover.Content>
+              </Popover>
+            }
+          >
           <Button variant="outline-secondary" type="button" className="showCritsBtn">
             <FontAwesomeIcon icon={faDice} size="lg" className="debugBoxIcon btnIcon" />
           </Button>
+          </OverlayTrigger>
+
         </a>
         </li>
       </ul>

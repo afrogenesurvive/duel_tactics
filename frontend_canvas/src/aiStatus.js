@@ -2,7 +2,9 @@ import React, {useState} from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
-import ProgressBar from 'react-bootstrap/ProgressBar'
+import ProgressBar from 'react-bootstrap/ProgressBar';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
+import Popover from 'react-bootstrap/Popover';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCaretRight,
@@ -81,17 +83,41 @@ const AiStatus = props => {
           Ai Players:
         </strong>
       </p>
-      <a className="aiStatusBoxSwitch" role="button" data-slide="next" onClick={()=>handleStateChange()}>
-        <FontAwesomeIcon icon={faCaretRight} size="sm" className="debugBoxIcon"/>
-      </a>
+      <OverlayTrigger
+        placement={'top'}
+        overlay={
+          <Popover id={`popover-positioned-${'top'}`}>
+            <Popover.Content>
+              <strong>Show Next AI</strong>
+            </Popover.Content>
+          </Popover>
+        }
+      >
+        <a className="aiStatusBoxSwitch" role="button" data-slide="next" onClick={()=>handleStateChange()}>
+          <FontAwesomeIcon icon={faCaretRight} size="sm" className="debugBoxIcon"/>
+        </a>
+      </OverlayTrigger>
+
 
     </div>
 
     <div className="aiStatHeadBox">
 
-      <a className="" role="button" data-slide="next" onClick={props.onAiAdd.bind(this,'random')}>
-        <FontAwesomeIcon icon={faPlus} size="sm" className="debugBoxIcon2"/>
-      </a>
+      <OverlayTrigger
+        placement={'top'}
+        overlay={
+          <Popover id={`popover-positioned-${'top'}`}>
+            <Popover.Content>
+              <strong>Add New AI</strong>
+            </Popover.Content>
+          </Popover>
+        }
+      >
+        <a className="" role="button" data-slide="next" onClick={props.onAiAdd.bind(this,'random')}>
+          <FontAwesomeIcon icon={faPlus} size="sm" className="debugBoxIcon2"/>
+        </a>
+      </OverlayTrigger>
+
     </div>
 
 
@@ -142,6 +168,12 @@ const AiStatus = props => {
           // )}
         }
           <li className="debugBoxListItem">
+            <p className="debugBoxText">
+              <strong>Plyr #</strong> {aiPlayers[state].number}
+            </p>
+          </li>
+          <li className="debugBoxListItem">
+            
             <FontAwesomeIcon icon={faBullseye} size="sm" className="aiStatusIcon"/> :
             <p className="debugBoxText">
               {aiPlayers[state].ai.mission}
