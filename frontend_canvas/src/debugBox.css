@@ -114,6 +114,19 @@
   font-size: medium;
 }
 
+.popoverHead {
+  margin: 0 auto;
+  text-decoration: underline;
+}
+.popoverList {
+  padding: 0;
+  list-style-type: none;
+
+}
+.popoverList > li > p {
+  margin-bottom: .2rem;
+}
+
 .gearPopover {
   display: block;
 }

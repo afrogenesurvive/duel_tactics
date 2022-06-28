@@ -167,44 +167,127 @@ const AiStatus = props => {
           //   </li>
           // )}
         }
+
           <li className="debugBoxListItem">
+            <OverlayTrigger
+              placement={'top'}
+              overlay={
+                <Popover id={`popover-positioned-${'top'}`}>
+                  <Popover.Content>
+                    <strong>AI Player Number</strong>
+                  </Popover.Content>
+                </Popover>
+              }
+            >
+              <FontAwesomeIcon icon={faUser} size="sm" className="aiStatusIcon"/>
+            </OverlayTrigger>
+
             <p className="debugBoxText">
-              <strong>Plyr #</strong> {aiPlayers[state].number}
+               - {aiPlayers[state].number}
             </p>
           </li>
           <li className="debugBoxListItem">
-            
-            <FontAwesomeIcon icon={faBullseye} size="sm" className="aiStatusIcon"/> :
+            <OverlayTrigger
+              placement={'top'}
+              overlay={
+                <Popover id={`popover-positioned-${'top'}`}>
+                  <Popover.Content>
+                    <strong>AI Mission</strong>
+                  </Popover.Content>
+                </Popover>
+              }
+            >
+              <FontAwesomeIcon icon={faBullseye} size="sm" className="aiStatusIcon"/>
+            </OverlayTrigger>
+
             <p className="debugBoxText">
-              {aiPlayers[state].ai.mission}
+               - {aiPlayers[state].ai.mission}
             </p>
           </li>
           <li className="debugBoxListItem">
-            <FontAwesomeIcon icon={faSkullCrossbones} size="sm" className="aiStatusIcon"/> :
+            <OverlayTrigger
+              placement={'top'}
+              overlay={
+                <Popover id={`popover-positioned-${'top'}`}>
+                  <Popover.Content>
+                    <strong>Kills/Points</strong>
+                  </Popover.Content>
+                </Popover>
+              }
+            >
+              <FontAwesomeIcon icon={faSkullCrossbones} size="sm" className="aiStatusIcon"/>
+            </OverlayTrigger>
+
             <p className="debugBoxText">
-              {aiPlayers[state].points}
+               - {aiPlayers[state].points}
             </p>
           </li>
           <li className="debugBoxListItem3">
-            <FontAwesomeIcon icon={faLungs} size="sm" className="aiStatusIcon"/> :
-            <ProgressBar className="staminaProgress" now={staminaPercent} variant={staminaColor}/>
+            <OverlayTrigger
+              placement={'top'}
+              overlay={
+                <Popover id={`popover-positioned-${'top'}`}>
+                  <Popover.Content>
+                    <strong>Stamina</strong>
+                  </Popover.Content>
+                </Popover>
+              }
+            >
+              <FontAwesomeIcon icon={faLungs} size="sm" className="aiStatusIcon"/>
+            </OverlayTrigger>
+             - <ProgressBar className="staminaProgress" now={staminaPercent} variant={staminaColor}/>
           </li>
           <li className="debugBoxListItem">
-            <FontAwesomeIcon icon={faHeartbeat} size="sm" className="aiStatusIcon"/> :
+            <OverlayTrigger
+              placement={'top'}
+              overlay={
+                <Popover id={`popover-positioned-${'top'}`}>
+                  <Popover.Content>
+                    <strong>HP</strong>
+                  </Popover.Content>
+                </Popover>
+              }
+            >
+              <FontAwesomeIcon icon={faHeartbeat} size="sm" className="aiStatusIcon"/>
+            </OverlayTrigger>
             <p className="debugBoxText">
-              {aiPlayers[state].hp}
+               - {aiPlayers[state].hp}
             </p>
           </li>
 
           <li className="debugBoxListItem">
-          <img src={speed} className="debugBoxIcon" alt="logo"/>
+            <OverlayTrigger
+              placement={'top'}
+              overlay={
+                <Popover id={`popover-positioned-${'top'}`}>
+                  <Popover.Content>
+                    <strong>Movement Speed</strong>
+                  </Popover.Content>
+                </Popover>
+              }
+            >
+              <img src={speed} className="debugBoxIcon" alt="logo"/>
+            </OverlayTrigger>
+
             <p className="debugBoxText">
-              {aiPlayers[state].speed.move}
+               - {aiPlayers[state].speed.move}
             </p>
           </li>
           {aiPlayers[state].hp === 1 && (
             <li className="debugBoxListItem">
-              <img src={deflectInjuredInidcate} className="debugBoxImg"></img>
+              <OverlayTrigger
+                placement={'top'}
+                overlay={
+                  <Popover id={`popover-positioned-${'top'}`}>
+                    <Popover.Content>
+                      <strong>Player Injured</strong>
+                    </Popover.Content>
+                  </Popover>
+                }
+              >
+                  <img src={deflectInjuredInidcate} className="debugBoxImg"></img>
+              </OverlayTrigger>
+
             </li>
           )}
 
@@ -212,22 +295,68 @@ const AiStatus = props => {
               <li className="debugBoxListItem">
                 {aiPlayers[state].currentWeapon.name !== weapon.name &&
                   weapon.type === 'sword' && (
-                  <img src={sword}></img>
+                    <OverlayTrigger
+                      placement={'top'}
+                      overlay={
+                        <Popover id={`popover-positioned-${'top'}`}>
+                          <Popover.Content>
+                            <strong>Sword: {aiPlayers[state].currentWeapon.name}</strong>
+                          </Popover.Content>
+                        </Popover>
+                      }
+                    >
+                      <img src={sword}></img>
+                    </OverlayTrigger>
+
                 )}
 
                 {aiPlayers[state].currentWeapon.name !== weapon.name &&
                   weapon.type === 'spear' && (
-                  <img src={spear}></img>
+                    <OverlayTrigger
+                      placement={'top'}
+                      overlay={
+                        <Popover id={`popover-positioned-${'top'}`}>
+                          <Popover.Content>
+                            <strong>Spear: {aiPlayers[state].currentWeapon.name}</strong>
+                          </Popover.Content>
+                        </Popover>
+                      }
+                    >
+                      <img src={spear}></img>
+                    </OverlayTrigger>
                 )}
 
                 {aiPlayers[state].currentWeapon.name !== weapon.name &&
                   weapon.type === 'crossbow' && (
-                  <img src={bow}></img>
+                    <OverlayTrigger
+                      placement={'top'}
+                      overlay={
+                        <Popover id={`popover-positioned-${'top'}`}>
+                          <Popover.Content>
+                            <strong>Crossbow: {aiPlayers[state].currentWeapon.name}</strong>
+                          </Popover.Content>
+                        </Popover>
+                      }
+                    >
+                      <img src={bow}></img>
+                    </OverlayTrigger>
                 )}
 
                 {aiPlayers[state].currentWeapon.name === weapon.name &&
                   weapon.type === 'sword' && (
-                  <img src={sword} className="debugBoxImgSelected"></img>
+                    <OverlayTrigger
+                      placement={'top'}
+                      overlay={
+                        <Popover id={`popover-positioned-${'top'}`}>
+                          <Popover.Content>
+                            <strong>AI is using a Sword: {aiPlayers[state].currentWeapon.name}</strong>
+                          </Popover.Content>
+                        </Popover>
+                      }
+                    >
+                      <img src={sword} className="debugBoxImgSelected"></img>
+                    </OverlayTrigger>
+
                 )}
                 {aiPlayers[state].currentWeapon.name === weapon.name &&
                   weapon.type === 'sword' && (
@@ -236,7 +365,18 @@ const AiStatus = props => {
 
                 {aiPlayers[state].currentWeapon.name === weapon.name &&
                   weapon.type === 'spear' && (
-                  <img src={spear} className="debugBoxImgSelected"></img>
+                    <OverlayTrigger
+                      placement={'top'}
+                      overlay={
+                        <Popover id={`popover-positioned-${'top'}`}>
+                          <Popover.Content>
+                            <strong>AI is using a Spear: {aiPlayers[state].currentWeapon.name}</strong>
+                          </Popover.Content>
+                        </Popover>
+                      }
+                    >
+                      <img src={spear} className="debugBoxImgSelected"></img>
+                    </OverlayTrigger>
                 )}
                 {aiPlayers[state].currentWeapon.name === weapon.name &&
                   weapon.type === 'spear' && (
@@ -245,14 +385,37 @@ const AiStatus = props => {
 
                 {aiPlayers[state].currentWeapon.name === weapon.name &&
                   weapon.type === 'crossbow' && (
-                  <img src={bow} className="debugBoxImgSelected"></img>
+                    <OverlayTrigger
+                      placement={'top'}
+                      overlay={
+                        <Popover id={`popover-positioned-${'top'}`}>
+                          <Popover.Content>
+                            <strong>AI is using a Crossbow: {aiPlayers[state].currentWeapon.name}</strong>
+                          </Popover.Content>
+                        </Popover>
+                      }
+                    >
+                      <img src={bow} className="debugBoxImgSelected"></img>
+                    </OverlayTrigger>
                 )}
 
                 {aiPlayers[state].currentWeapon.type === 'crossbow' &&
                   weapon.type === 'crossbow' && (
-                  <p className="debugBoxText">
-                    - {aiPlayers[state].items.ammo}
-                  </p>
+                    <OverlayTrigger
+                      placement={'top'}
+                      overlay={
+                        <Popover id={`popover-positioned-${'top'}`}>
+                          <Popover.Content>
+                            <strong>Ammunition</strong>
+                          </Popover.Content>
+                        </Popover>
+                      }
+                    >
+                      <p className="debugBoxText">
+                        - {aiPlayers[state].items.ammo}
+                      </p>
+                    </OverlayTrigger>
+
                 )}
               </li>
           ))}
@@ -262,32 +425,100 @@ const AiStatus = props => {
               <li className="debugBoxListItem">
                 {aiPlayers[state].currentArmor.name !== armor.name &&
                   armor.type === 'mail' && (
-                  <img src={mail}></img>
+                    <OverlayTrigger
+                      placement={'top'}
+                      overlay={
+                        <Popover id={`popover-positioned-${'top'}`}>
+                          <Popover.Content>
+                            <strong>Mail: {armor.name}</strong>
+                          </Popover.Content>
+                        </Popover>
+                      }
+                    >
+                      <img src={mail}></img>
+                    </OverlayTrigger>
+
                 )}
 
                 {aiPlayers[state].currentArmor.name !== armor.name &&
                   armor.type === 'greaves' && (
-                  <img src={greaves}></img>
+                    <OverlayTrigger
+                      placement={'top'}
+                      overlay={
+                        <Popover id={`popover-positioned-${'top'}`}>
+                          <Popover.Content>
+                            <strong>Greaves: {armor.name}</strong>
+                          </Popover.Content>
+                        </Popover>
+                      }
+                    >
+                      <img src={greaves}></img>
+                    </OverlayTrigger>
                 )}
 
                 {aiPlayers[state].currentArmor.name !== armor.name &&
                   armor.type === 'helmet' && (
-                  <img src={helmet}></img>
+                    <OverlayTrigger
+                      placement={'top'}
+                      overlay={
+                        <Popover id={`popover-positioned-${'top'}`}>
+                          <Popover.Content>
+                            <strong>Helmet: {armor.name}</strong>
+                          </Popover.Content>
+                        </Popover>
+                      }
+                    >
+                      <img src={helmet}></img>
+                    </OverlayTrigger>
                 )}
 
                 {aiPlayers[state].currentArmor.name === armor.name &&
                   armor.type === 'mail' && (
-                  <img src={mail} className="debugBoxImgSelected"></img>
+                    <OverlayTrigger
+                      placement={'top'}
+                      overlay={
+                        <Popover id={`popover-positioned-${'top'}`}>
+                          <Popover.Content>
+                            <strong>AI is wearing Mail: {armor.name}</strong>
+                          </Popover.Content>
+                        </Popover>
+                      }
+                    >
+                      <img src={mail} className="debugBoxImgSelected"></img>
+                    </OverlayTrigger>
+
                 )}
 
                 {aiPlayers[state].currentArmor.name === armor.name &&
                   armor.type === 'greaves' && (
-                  <img src={greaves} className="debugBoxImgSelected"></img>
+                    <OverlayTrigger
+                      placement={'top'}
+                      overlay={
+                        <Popover id={`popover-positioned-${'top'}`}>
+                          <Popover.Content>
+                            <strong>AI is wearing Greaves: {armor.name}</strong>
+                          </Popover.Content>
+                        </Popover>
+                      }
+                    >
+                      <img src={greaves} className="debugBoxImgSelected"></img>
+                    </OverlayTrigger>
                 )}
 
                 {aiPlayers[state].currentArmor.name === armor.name &&
                   armor.type === 'helmet' && (
-                   <img src={helmet} className="debugBoxImgSelected"></img>
+                    <OverlayTrigger
+                      placement={'top'}
+                      overlay={
+                        <Popover id={`popover-positioned-${'top'}`}>
+                          <Popover.Content>
+                            <strong>AI is wearing a Helmet: {armor.name}</strong>
+                          </Popover.Content>
+                        </Popover>
+                      }
+                    >
+                      <img src={helmet} className="debugBoxImgSelected"></img>
+                    </OverlayTrigger>
                 )}
               </li>
 

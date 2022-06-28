@@ -89,9 +89,9 @@ const DebugBox = props => {
 
         <li className="debugBoxListItem">
           <OverlayTrigger
-            placement={'top'}
+            placement={'bottom'}
             overlay={
-              <Popover id={`popover-positioned-${'top'}`}>
+              <Popover id={`popover-positioned-${'bottom'}`}>
                 <Popover.Content>
                   <strong>Kills/Points</strong>
                 </Popover.Content>
@@ -107,9 +107,9 @@ const DebugBox = props => {
         </li>
         <li className="debugBoxListItem3">
           <OverlayTrigger
-            placement={'top'}
+            placement={'bottom'}
             overlay={
-              <Popover id={`popover-positioned-${'top'}`}>
+              <Popover id={`popover-positioned-${'bottom'}`}>
                 <Popover.Content>
                   <strong>Stamina</strong>
                 </Popover.Content>
@@ -124,9 +124,9 @@ const DebugBox = props => {
 
         <li className="debugBoxListItem">
           <OverlayTrigger
-            placement={'top'}
+            placement={'bottom'}
             overlay={
-              <Popover id={`popover-positioned-${'top'}`}>
+              <Popover id={`popover-positioned-${'bottom'}`}>
                 <Popover.Content>
                   <strong>HP</strong>
                 </Popover.Content>
@@ -143,9 +143,9 @@ const DebugBox = props => {
 
         <li className="debugBoxListItem">
           <OverlayTrigger
-            placement={'top'}
+            placement={'bottom'}
             overlay={
-              <Popover id={`popover-positioned-${'top'}`}>
+              <Popover id={`popover-positioned-${'bottom'}`}>
                 <Popover.Content>
                   <strong>Movement Speed</strong>
                 </Popover.Content>
@@ -162,9 +162,9 @@ const DebugBox = props => {
         {props.player.hp === 1 && (
           <li className="debugBoxListItem">
             <OverlayTrigger
-              placement={'top'}
+              placement={'bottom'}
               overlay={
-                <Popover id={`popover-positioned-${'top'}`}>
+                <Popover id={`popover-positioned-${'bottom'}`}>
                   <Popover.Content>
                     <strong>Player is Injured</strong>
                   </Popover.Content>
@@ -207,9 +207,9 @@ const DebugBox = props => {
         <li className="debugBoxListItem">
           {props.player.currentWeapon.name === '' && (
             <OverlayTrigger
-              placement={'top'}
+              placement={'bottom'}
               overlay={
-                <Popover id={`popover-positioned-${'top'}`}>
+                <Popover id={`popover-positioned-${'bottom'}`}>
                   <Popover.Content>
                     <strong>Player is Unarmed</strong>
                   </Popover.Content>
@@ -222,9 +222,9 @@ const DebugBox = props => {
           )}
           {props.player.currentWeapon.type === 'sword' && (
             <OverlayTrigger
-              placement={'top'}
+              placement={'bottom'}
               overlay={
-                <Popover id={`popover-positioned-${'top'}`}>
+                <Popover id={`popover-positioned-${'bottom'}`}>
                   <Popover.Content>
                     <strong>Player using a Sword: {props.player.currentWeapon.name}</strong>
                   </Popover.Content>
@@ -240,9 +240,9 @@ const DebugBox = props => {
           )}
           {props.player.currentWeapon.type === 'spear' && (
             <OverlayTrigger
-              placement={'top'}
+              placement={'bottom'}
               overlay={
-                <Popover id={`popover-positioned-${'top'}`}>
+                <Popover id={`popover-positioned-${'bottom'}`}>
                   <Popover.Content>
                     <strong>Player using a Spear: {props.player.currentWeapon.name}</strong>
                   </Popover.Content>
@@ -259,9 +259,9 @@ const DebugBox = props => {
 
           {props.player.currentWeapon.type === 'crossbow' && (
             <OverlayTrigger
-              placement={'top'}
+              placement={'bottom'}
               overlay={
-                <Popover id={`popover-positioned-${'top'}`}>
+                <Popover id={`popover-positioned-${'bottom'}`}>
                   <Popover.Content>
                     <strong>Player using a Crossbow: {props.player.currentWeapon.name}</strong>
                   </Popover.Content>
@@ -290,9 +290,9 @@ const DebugBox = props => {
 
           {props.player.currentArmor.type === 'mail' && (
             <OverlayTrigger
-              placement={'top'}
+              placement={'bottom'}
               overlay={
-                <Popover id={`popover-positioned-${'top'}`}>
+                <Popover id={`popover-positioned-${'bottom'}`}>
                   <Popover.Content>
                     <strong>Player is wearing Mail: {props.player.currentArmor.name}</strong>
                   </Popover.Content>
@@ -305,9 +305,9 @@ const DebugBox = props => {
           )}
           {props.player.currentArmor.type === 'greaves' && (
             <OverlayTrigger
-              placement={'top'}
+              placement={'bottom'}
               overlay={
-                <Popover id={`popover-positioned-${'top'}`}>
+                <Popover id={`popover-positioned-${'bottom'}`}>
                   <Popover.Content>
                     <strong>Player is wearing Greaves: {props.player.currentArmor.name}</strong>
                   </Popover.Content>
@@ -320,9 +320,9 @@ const DebugBox = props => {
           )}
           {props.player.currentArmor.type === 'helmet' && (
             <OverlayTrigger
-              placement={'top'}
+              placement={'bottom'}
               overlay={
-                <Popover id={`popover-positioned-${'top'}`}>
+                <Popover id={`popover-positioned-${'bottom'}`}>
                   <Popover.Content>
                     <strong>Player is wearing a Helmet: {props.player.currentArmor.name}</strong>
                   </Popover.Content>
@@ -339,9 +339,9 @@ const DebugBox = props => {
         <li className="debugBoxListItem">
           <a href="javascript:" onClick={()=>handleStateChange('gear',props.player.number)}>
             <OverlayTrigger
-              placement={'top'}
+              placement={'bottom'}
               overlay={
-                <Popover id={`popover-positioned-${'top'}`}>
+                <Popover id={`popover-positioned-${'bottom'}`}>
                   <Popover.Content>
                     <strong>Inventory</strong>
                   </Popover.Content>
@@ -359,9 +359,9 @@ const DebugBox = props => {
         <li className="debugBoxListItem">
         <a href="javascript:" onClick={()=>handleStateChange("crits",props.player.number)}>
           <OverlayTrigger
-            placement={'top'}
+            placement={'bottom'}
             overlay={
-              <Popover id={`popover-positioned-${'top'}`}>
+              <Popover id={`popover-positioned-${'bottom'}`}>
                 <Popover.Content>
                   <strong>Crits</strong>
                 </Popover.Content>

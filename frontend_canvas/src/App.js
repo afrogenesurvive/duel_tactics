@@ -480,7 +480,11 @@ class App extends Component {
         },
         weight: 1,
         height: 0.5,
-        items: [],
+        items: [{
+          name: 'sword1',
+          type: 'sword',
+          effect: '',
+        }],
         effects: [],
         moving: {
           state: false,

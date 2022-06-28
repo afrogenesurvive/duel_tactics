@@ -14,6 +14,8 @@ import './debugBox.css';
 
 const CellInfo = props => {
 
+  // console.log('cell info :',props.cell);
+
   let lvlData;
   switch (props.cell.levelData.charAt(0)) {
     case "x":
@@ -46,19 +48,38 @@ const CellInfo = props => {
             No: {props.cell.number.x}, {props.cell.number.y}
           </p>
         </li>
-        <li className="cellInfoListItem">
+        {props.cell.item.name !== "" && (
+          <li className="cellInfoListItem">
+          <OverlayTrigger
+            placement={'left'}
+            overlay={
+              <Popover id={`popover-positioned-${'left'}`}>
+                <Popover.Content>
+                  <strong className="popoverHead">{props.cell.item.name} :</strong>
+                  <ul className="popoverList">
+                    <li>
+                      <p>Type: {props.cell.item.type}</p>
+                    </li>
+                    <li>
+                      <p>Effect: {props.cell.item.effect}</p>
+                    </li>
+                  </ul>
+                </Popover.Content>
+              </Popover>
+            }
+          >
           <p className="cellInfoText">
-            Item: {props.cell.item.name}, {props.cell.item.effect}
+            Item: {props.cell.item.name}
           </p>
-        </li>
+          </OverlayTrigger>
+
+          </li>
+        )}
+
+
         <li className="cellInfoListItem">
           <p className="cellInfoText">
-            Item type: {props.cell.item.type}, {props.cell.item.subType}
-          </p>
-        </li>
-        <li className="cellInfoListItem">
-          <p className="cellInfoText">
-            Level Data: {lvlData}
+            Level Data: {props.cell.levelData}
           </p>
         </li>
         <li className="cellInfoListItem">
@@ -67,10 +88,97 @@ const CellInfo = props => {
           </p>
         </li>
         <li className="cellInfoListItem">
+          <OverlayTrigger
+            placement={'left'}
+            overlay={
+              <Popover id={`popover-positioned-${'left'}`}>
+                <Popover.Content>
+                  <strong>{props.cell.elevation.type}</strong>
+                </Popover.Content>
+              </Popover>
+            }
+          >
+          <p className="cellInfoText">
+            Elevation: {props.cell.elevation.number}
+          </p>
+          </OverlayTrigger>
+
+        </li>
+        <li className="cellInfoListItem">
           <p className="cellInfoText">
             Void: {props.cell.void.state.toString()}
           </p>
         </li>
+        {props.cell.obstacle.state === true && (
+          <li className="cellInfoListItem">
+            <OverlayTrigger
+              placement={'left'}
+              overlay={
+                <Popover id={`popover-positioned-${'left'}`}>
+                  <Popover.Content>
+                    <strong className="popoverHead">{props.cell.obstacle.name} :</strong>
+                    <ul className="popoverList">
+                      <li>
+                        <p>Type: {props.cell.obstacle.type}</p>
+                      </li>
+                      <li>
+                        <p>HP: {props.cell.obstacle.hp}</p>
+                      </li>
+                      <li>
+                        <p>Height: {props.cell.obstacle.height}</p>
+                      </li>
+                      <li>
+                        <p>Weight: {props.cell.obstacle.weight}</p>
+                      </li>
+                      <li>
+                        <p>Destruct: {props.cell.obstacle.destructible.state.toString()}</p>
+                      </li>
+                    </ul>
+                  </Popover.Content>
+                </Popover>
+              }
+            >
+            <p className="cellInfoText">
+              Obstacle: {props.cell.obstacle.name}
+            </p>
+            </OverlayTrigger>
+
+          </li>
+        )}
+
+        {props.cell.barrier.state === true && (
+          <li className="cellInfoListItem">
+            <OverlayTrigger
+              placement={'left'}
+              overlay={
+                <Popover id={`popover-positioned-${'left'}`}>
+                  <Popover.Content>
+                    <strong className="popoverHead">{props.cell.barrier.name} :</strong>
+                    <ul className="popoverList">
+                      <li>
+                        <p>Type: {props.cell.barrier.type}</p>
+                      </li>
+                      <li>
+                        <p>HP: {props.cell.barrier.hp}</p>
+                      </li>
+                      <li>
+                        <p>Height: {props.cell.barrier.height}</p>
+                      </li>
+                      <li>
+                        <p>Destruct: {props.cell.barrier.destructible.state.toString()}</p>
+                      </li>
+                    </ul>
+                  </Popover.Content>
+                </Popover>
+              }
+            >
+            <p className="cellInfoText">
+              Barrier: {props.cell.barrier.name}
+            </p>
+            </OverlayTrigger>
+
+          </li>
+        )}
       </ul>
     </div>
   )
