@@ -6697,7 +6697,7 @@ class App extends Component {
 
                   }
 
-                  // BLUNT ATTACK -> DEFLECT -!
+                  // BLUNT ATTACK -> DEFLECT/GUARD BREAK -!
                   else if (player.bluntAttack === true) {
                     this.players[player.target.occupant.player-1].action = 'deflected';
 
@@ -6736,13 +6736,17 @@ class App extends Component {
                   console.log('attack defended by ',player.target.occupant.player,'target defending?',this.players.[player.target.occupant.player-1].defending.state,'against plyr ',player.number);
 
                   let shouldDefend = false;
+
+                  // DEFENDER IS UNARMED
                   if (this.players[player.target.occupant.player-1].currentWeapon.name === "" && this.players[player.target.occupant.player-1].currentWeapon.type === "") {
 
                     // console.log('target is unarmed');
                     if (player.currentWeapon.name === "" && player.currentWeapon.type === "") {
                       console.log('target and attacker unarmed. target defend');
                       shouldDefend = true;
-                    } else {
+                    }
+
+                    else {
                       console.log('armed player attacked unarmed target defense: cancel target defend and attack them');
                       shouldDefend = false;
 
@@ -6797,6 +6801,7 @@ class App extends Component {
                         )
                       }
 
+                      // KILL PLAYER
                       if (this.players[player.target.occupant.player-1].hp <= 0) {
                         this.killPlayer(this.players[player.target.occupant.player-1]);
 
@@ -6848,6 +6853,7 @@ class App extends Component {
 
 
                     }
+                    // DEFENDER IS ARMED
                   } else {
                     // console.log('target is armed');
                     if (player.currentWeapon.name === "" && player.currentWeapon.type === "") {
@@ -6964,7 +6970,7 @@ class App extends Component {
                     }
                   }
 
-
+                  // DEFENDER DEFEND SUCCESS, DETERMINE DEFLECT OR PUSHBACK
                   if (shouldDefend === true) {
 
                     player.popups.push(
@@ -7007,18 +7013,6 @@ class App extends Component {
                     )
 
 
-                    // UNARMED DAMAGE!
-                    // if ( player.currentWeapon.type === '') {
-                    //
-                    //   let shouldDamageFist = this.rnJesus(1,3);
-                    //   if (shouldDamageFist === 1) {
-                    //     console.log('unarmed attack defended damaged fist');
-                    //     if (player.hp > 1) {
-                    //       player.hp = player.hp - 1;
-                    //       player.speed.move = .05;
-                    //     }
-                    //   }
-                    // }
 
 
                     // PUSHBACK OPPONENT!
@@ -7029,8 +7023,9 @@ class App extends Component {
                       // console.log('pushback opponent');
                       let canPushback = this.pushBack(this.players[player.target.occupant.player-1],player.direction);
 
-
                     }
+
+                    // DON'T PUSHBACK OPPONENT, JUST DEFLECT/GUARD BREAK
                     else {
 
 
@@ -7081,27 +7076,28 @@ class App extends Component {
 
                     }
 
-                    // ATTACKER PUSHBACK DEFLECT!!
+
+                    // ATTACKER PUSHBACK/DEFLECT!!??
 
                     let shouldDeflectAttacker;
 
                     // let shouldDeflectAttacker = this.rnJesus(1,2);
 
-                    let shouldDeflectPushBack;
+                    let shouldDeflectPushBackAttacker;
 
-                    shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
-                    shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack);
+                    shouldDeflectAttacker = this.rnJesus(1,player.crits.guardBreak);
+                    shouldDeflectPushBackAttacker = this.rnJesus(1,player.crits.pushBack);
 
                     // PEAK DEFEND/PARRY!!
                     if (
                       this.players[player.target.occupant.player-1].defending.state === true &&
-                      player.defendDecay.state !== true ||
-                      player.defendDecay.state === true &&
-                      player.defendDecay.count < 4
+                      this.players[player.target.occupant.player-1].defendDecay.state !== true ||
+                      this.players[player.target.occupant.player-1].defendDecay.state === true &&
+                      this.players[player.target.occupant.player-1].defendDecay.count < 4
                     ) {
                       console.log('peak defend/parry');
                       shouldDeflectAttacker = this.rnJesus(1,1);
-                      shouldDeflectPushBack = this.rnJesus(1,1);
+                      shouldDeflectPushBackAttacker = this.rnJesus(1,1);
 
                       player.statusDisplay = {
                         state: true,
@@ -7126,9 +7122,9 @@ class App extends Component {
 
                     // OFF PEAK DEFEND
                     else {
-                      // console.log('off peak defend');
+                      console.log('off peak defend');
                       shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
-                      shouldDeflectPushBack = this.rnJesus(1,player.crits.pushBack);
+                      shouldDeflectPushBackAttacker = this.rnJesus(1,player.crits.pushBack);
 
                       player.statusDisplay = {
                         state: true,
@@ -7151,10 +7147,10 @@ class App extends Component {
                       )
                     }
 
-                    shouldDeflectPushBack = 1;
-                    shouldDeflectAttacker = 1;
+                    // shouldDeflectPushBackAttacker = 1;
+                    // shouldDeflectAttacker = 1;
 
-                    if (shouldDeflectPushBack === 1) {
+                    if (shouldDeflectPushBackAttacker === 1) {
                       let pushBackDirection;
                       switch(player.direction) {
                         case 'north' :
@@ -7229,7 +7225,7 @@ class App extends Component {
                     }
 
                     // ATTACKER NO PUSHBACK, JUST DEFLECT!
-                    else if (shouldDeflectPushBack !== 1 && shouldDeflectAttacker === 1) {
+                    else if (shouldDeflectPushBackAttacker !== 1 && shouldDeflectAttacker === 1) {
                       console.log('no pushback ---> just deflect');
 
                       player.defending = {
@@ -7260,7 +7256,7 @@ class App extends Component {
                     }
 
                     // ATTACKER NO DEFLECT NO PUSHBACK!
-                    else if (shouldDeflectPushBack !== 1 && shouldDeflectAttacker !== 1) {
+                    else if (shouldDeflectPushBackAttacker !== 1 && shouldDeflectAttacker !== 1) {
                       // console.log('attacker not deflected or pushed back');
                     }
 
@@ -10158,7 +10154,67 @@ class App extends Component {
 
                   // GUARD BREAK!
                   // let deflectOpponent = this.rnJesus(1,3);
-                  let deflectOpponent = this.rnJesus(1,this.players[plyr.number-1].crits.guardBreak);
+                  let deflectOpponent = 0;
+
+                  // PEAK DEFEND/PARRY!!
+                  if (
+                    this.players.[plyr.number-1].defending.state === true &&
+                    this.players.[plyr.number-1].defendDecay.state !== true ||
+                    this.players.[plyr.number-1].defendDecay.state === true &&
+                    this.players.[plyr.number-1].defendDecay.count < 4
+                  ) {
+                    console.log('peak bolt defend/parry');
+                    deflectOpponent = this.rnJesus(1,1);
+
+
+                    this.players.[plyr.number-1].statusDisplay = {
+                      state: true,
+                      status: 'Parry!',
+                      count: 1,
+                      limit: this.players[player.number-1].statusDisplay.limit,
+                    }
+
+                    this.players.[plyr.number-1].popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 25,
+                        type: '',
+                        position: '',
+                        msg: 'attackParried',
+                        img: '',
+
+                      }
+                    )
+                  }
+
+                  // OFF PEAK DEFEND
+                  else {
+                    console.log('off peak bolt defend');
+                    deflectOpponent = this.rnJesus(1,this.players[plyr.number-1].crits.guardBreak);
+
+                    this.players.[plyr.number-1].statusDisplay = {
+                      state: true,
+                      status: 'Defend',
+                      count: 1,
+                      limit: this.players[player.number-1].statusDisplay.limit,
+                    }
+
+                    this.players.[plyr.number-1].popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 25,
+                        type: '',
+                        position: '',
+                        msg: 'attackDefended',
+                        img: '',
+
+                      }
+                    )
+                  }
+
+
                   if (deflectOpponent === 1) {
                     this.players[plyr.number-1].breakAnim.defend = {
                       state: true,
@@ -15904,7 +15960,8 @@ class App extends Component {
       player.crits = {
         singleHit: 1,
         doubleHit: 6,
-        pushBack: 3,
+        pushBack: 4,
+        guardBreak: 3,
         dodge: 0,
       };
       player.items = {
