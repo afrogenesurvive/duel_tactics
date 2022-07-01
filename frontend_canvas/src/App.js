@@ -286,45 +286,18 @@ class App extends Component {
       row11: ['**_*_11.0_a_0a*','**_*_11.1_a_0a*','**_*_11.2_a_0a*','**_*_11.3_a_0a*','**_*_11.4_a_0a*','**_*_11.5_a_0a*','**_*_11.6_a_0a*','**_*_11.7_a_0a*','**_*_11.8_a_0a*','**_*_11.9_a_0a*','**_*_11.10_a_0a*','**_*_11.11_a_0a*','**_*_11.12_a_0a*'],
       row12: ['**_*_12.0_a_0a*','**_*_12.1_a_0a*','**_*_12.2_a_0a*','**_*_12.3_a_0a*','**_*_12.4_a_0a*','**_*_12.5_a_0a*','**_*_12.6_a_0a*','**_*_12.7_a_0a*','**_*_12.8_a_0a*','**_*_12.9_a_0a*','**_*_12.10_a_0a*','**_*_12.11_a_0a*','**_*_12.12_a_0a*'],
     };
-    // this.levelData12 = {
-    //   row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x','x010x','x011x','x012x'],
-    //   row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x','x110x','x111x','x112x'],
-    //   row2: ['x20x','x21x','x22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x','x210x','x211x','x212x'],
-    //   row3: ['x30x','x31x','x32x','x33x','x34x','x35x','x36x','x37x','x38x','x39x','x310x','x311x','x312x'],
-    //   row4: ['x40x','x41x','x42x','x43x','x44x','x45x','x46x','x47x','x48x','x49x','x410x','x411x','x412x'],
-    //   row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','y57x','x58x','x59x','x510x','x511x','x512x'],
-    //   row6: ['x60x','x61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x','x610x','x611x','x612x'],
-    //   row7: ['x70x','x71x','x72x','x73x','x74x','x75x','x76x','x77x','x78x','x79x','x710x','x711x','x712x'],
-    //   row8: ['x80x','x81x','x82x','z83x','x84x','x85x','x86x','x87x','x88x','x89x','x810x','x811x','x812x'],
-    //   row9: ['x90x','x91x','x92x','x93x','x94x','x95x','x96x','y97x','x98x','x99x','x910x','x911x','x912x'],
-    //   row10: ['x100x','x101x','x102x','x103x','x104x','x105x','x106x','x107x','x108x','x109x','x1010x','x1011x','x1012x'],
-    //   row11: ['x110x','x111x','x112x','x113x','x114x','x115x','x116x','x117x','x118x','x119x','x1110x','x1111x','x1112x'],
-    //   row12: ['x120x','x121x','z122x','x123x','x124x','x125x','x126x','x127x','x128x','x129x','z1210x','x1211x','x1212x'],
-    // };
     this.levelData9 = {
       row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*','**_*_0.7_a_0a*','**_*_0.8_a_0a*','**_*_0.9_a_0a*'],
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_a_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_c_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
-      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','**_*_4.4_a_0a*','**_*_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','**_*_4.9_a_0a*'],
+      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','**_*_4.4_a_0a*','**_*_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','**_*_4.9_k_0a*'],
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','**_*_5.2_a_0a*','**_*_5.3_a_0a*','**_*_5.4_a_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','**_*_5.8_a_0a*','**_*_5.9_a_0a*'],
       row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_j_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_j_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
       row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','**_*_7.5_a_0a*','**_*_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
       row8: ['**_*_8.0_a_0a*','**_*_8.1_a_0a*','**_*_8.2_a_0a*','**_*_8.3_a_0a*','**_*_8.4_a_0a*','**_*_8.5_a_0a*','**_*_8.6_a_0a*','**_*_8.7_a_0a*','**_*_8.8_a_0a*','**_*_8.9_d_0a*'],
       row9: ['**_*_9.0_a_0a*','**_*_9.1_a_0a*','**_*_9.2_a_0a*','**_*_9.3_a_0a*','**_*_9.4_a_0a*','**_*_9.5_a_0a*','**_*_9.6_a_0a*','**_*_9.7_a_0a*','**_*_9.8_a_0a*','**_*_9.9_a_0a*'],
     };
-    // this.levelData9 = {
-    //   row0: ['x00x','x01x','x02x','x03k','x04x','x05g','x06g','x07h','x08f','x09d'],
-    //   row1: ['x10a','x11a','x12a','x13i','x14x','x15x','z16x','x17x','x18f','x19d'],
-    //   row2: ['x20x','x21a','x22a','x23a','x24x','x25x','x26x','x27x','x28d','x29d'],
-    //   row3: ['x30a','x31j','x32b','x33j','x34j','x35b','x36j','x37j','x38j','x39d'],
-    //   row4: ['x40j','x41j','x42b','x43b','x44b','x45b','x46b','x47j','x48j','x49d'],
-    //   row5: ['x50j','x51j','x52b','x53j','x54j','x55b','x56j','x57j','x58j','x59d'],
-    //   row6: ['z60x','x61x','x62x','x63i','x64x','x65x','x66x','x67x','x68f','x69f'],
-    //   row7: ['x70x','x71x','y72x','x73i','x74x','y75x','y76x','y77x','x78f','x79f'],
-    //   row8: ['x80x','x81x','x82k','x83x','x84x','x85x','x86x','x87x','x88x','x89x'],
-    //   row9: ['x90x','x91x','x92k','x93x','x94x','x95x','x96x','x97x','x98x','x99x'],
-    // };
     this.levelData6 = {
       row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*'],
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*'],
@@ -334,15 +307,6 @@ class App extends Component {
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','**_*_5.2_a_0a*','**_*_5.3_a_0a*','**_*_5.4_a_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*'],
       row6: ['**_*_6.0_a_0a*','**_*_6.1_a_0a*','**_*_6.2_a_0a*','**_*_6.3_a_0a*','**_*_6.4_a_0a*','**_*_6.5_a_0a*','**_*_6.6_a_0a*'],
     };
-    // this.levelData6 = {
-    //   row0: ['x00x','x01x','x02x','x03x','x04x','x05x','x06x','x07x','x08x','x09x'],
-    //   row1: ['x10x','x11x','x12x','x13x','x14x','x15x','x16x','x17x','x18x','x19x'],
-    //   row2: ['x20x','x21x','y22x','x23x','x24x','x25x','x26x','x27x','x28x','x29x'],
-    //   row3: ['x30x','x31x','x32x','x33x','x34x','x35x','x36x','x37x','x38x','x39x'],
-    //   row4: ['x40x','x41x','x42x','x43x','x44x','x45x','x46x','x47x','x48x','z49x'],
-    //   row5: ['x50x','x51x','x52x','x53x','x54x','x55x','x56x','x57x','x58x','x59x'],
-    //   row6: ['x60x','x61x','x62x','x63x','x64x','x65x','x66x','x67x','x68x','x69x'],
-    // };
     this.levelData3 = {
       row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*'],
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*'],
@@ -412,7 +376,6 @@ class App extends Component {
         effect: 'void',
       },
     }
-
     this.obstacleLevelDataRef = {
       a: {
         state: true,
@@ -17561,6 +17524,14 @@ class App extends Component {
       // APPLY LEVEL DATA TO GRID INFO CELLS!
       let levelData2Row = 'row'+elem.number.x;
       let elemLevelData = this.['levelData'+this.gridWidth][levelData2Row][elem.number.y];
+
+      if (
+        (elemLevelData.split('_')[1] !== "*" &&
+        this.terrainLevelDataRef[elemLevelData.split('_')[3]].type === 'deep') ||
+        (elemLevelData.split('_')[1] !== "*" && this.terrainLevelDataRef[elemLevelData.split('_')[3]].type === 'void')
+      ) {
+        elemLevelData = elemLevelData.replaceAt(3, '*');
+      }
       elem.levelData = elemLevelData;
       // console.log('level data processing',elem.levelData);
 
@@ -17582,6 +17553,7 @@ class App extends Component {
         elem.elevation.type = this.elevationTypeLevelDataRef[elem.levelData.split('_')[4].charAt(1)]
       }
 
+
       if (elem.levelData.split('_')[4].charAt(1) !== '*') {
         switch (elem.levelData.split('_')[4].charAt(2)) {
           case 'n':
@@ -17600,11 +17572,12 @@ class App extends Component {
         }
       }
 
-
+      // OBSTACLE
       if (elem.levelData.split('_')[1] !== '*') {
         elem.obstacle = this.obstacleLevelDataRef[elem.levelData.split('_')[1]];
       }
 
+      // BARRIER
       if (elem.levelData.split('_')[0] !== '**') {
         elem.barrier = this.barrierLevelDataRef[elem.levelData.split('_')[0].charAt(0)];
 
@@ -17662,20 +17635,28 @@ class App extends Component {
       // SET LEVEL DATA!
       let levelData2Row = 'row'+elem2.number.x;
       let elemLevelData = this.['levelData'+this.settingsGridWidth][levelData2Row][elem2.number.y];
+      if (
+        (elemLevelData.split('_')[1] !== "*" &&
+        this.terrainLevelDataRef[elemLevelData.split('_')[3]].type === 'deep') ||
+        (elemLevelData.split('_')[1] !== "*" && this.terrainLevelDataRef[elemLevelData.split('_')[3]].type === 'void')
+      ) {
+        elemLevelData = elemLevelData.replaceAt(3, '*');
+      }
       elem2.levelData = elemLevelData;
 
-      // let terrainInfo = elem2.levelData.length-1;
-      // elem2.terrain = this.terrainLevelDataRef[elem2.levelData.charAt(terrainInfo)]
+      // TERRAIN
       elem2.terrain = this.terrainLevelDataRef[elem2.levelData.split('_')[3]]
       if (elem2.terrain.name === 'void') {
         elem2.void.state = true
       }
 
+      // ELEVATION NUMBER
       elem2.elevation.number = parseInt(elem2.levelData.split('_')[4].charAt(0));
       if (elem2.levelData.split('_')[4].charAt(1) !== '*') {
         elem2.elevation.type = this.elevationTypeLevelDataRef[elem2.levelData.split('_')[4].charAt(1)]
       }
 
+      // ELEVATION POSITION
       if (elem2.levelData.split('_')[4].charAt(1) !== '*') {
         switch (elem2.levelData.split('_')[4].charAt(2)) {
           case 'n':
@@ -17694,11 +17675,12 @@ class App extends Component {
         }
       }
 
-
+      // OBSTACLE
       if (elem2.levelData.split('_')[1] !== '*') {
         elem2.obstacle = this.obstacleLevelDataRef[elem2.levelData.split('_')[1]];
       }
 
+      // BARRIER
       if (elem2.levelData.split('_')[0] !== '**') {
         elem2.barrier = this.barrierLevelDataRef[elem2.levelData.split('_')[0].charAt(0)];
 
@@ -23412,6 +23394,7 @@ class App extends Component {
           }
         }
 
+        // AVOID PATHS THAT GO CLOSE TO ENEMY PLAYERS
         if (aiPlayer.ai.mission === 'retreat' || aiPlayer.ai.mission === 'retrive') {
 
           for (const plyr of this.players) {
@@ -23589,15 +23572,18 @@ class App extends Component {
         }
 
 
+        // '**_*_0.0_a_0**'
+        // barrierType(a,b,c)BarrierPosition(n,s,e,w)_obstacle_x.y_terrain_elevationNumber(0,1,2)ElevationType(a,b,c)ElevationPosition(n,s,e,w)
+
 
         // TERRAIN & OBSTACLE CELLS TO AVOID
         for (const cell2 of this.gridInfo) {
           let terrainInfo3 = cell2.levelData.length-1;
           if (
-            cell2.levelData.charAt(terrainInfo3) === 'j' ||
-            cell2.levelData.charAt(terrainInfo3) === 'h' ||
-            cell2.levelData.charAt(terrainInfo3) === 'i' ||
-            cell2.levelData.charAt(0) !== 'x' ||
+            cell2.levelData.split('_')[1] !== '*' ||
+            cell2.terrain.type === 'deep' ||
+            cell2.terrain.type === 'hazard' ||
+            cell2.barrier.state === true ||
             cell2.void.state === true
           ) {
             this.easyStar.avoidAdditionalPoint(cell2.number.x, cell2.number.y);
