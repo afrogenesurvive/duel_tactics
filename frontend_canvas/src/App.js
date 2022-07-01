@@ -4919,11 +4919,16 @@ class App extends Component {
 
         this.time++;
 
-        // if (this.time === 200) {
-          // this.openVoid = true;
+        if (this.time === 300) {
+        //   this.openVoid = true;
         // OR
         //   this.customCellToVoid({x:2,y:2})
-        // }
+
+        // this.players[1].ai.retreating.state = false;
+        // this.players[1].ai.retreating.checkin = undefined;
+        // this.players[1].ai.mission = 'retreat';
+        // this.players[1].ai.retreating.safe = false;
+        }
 
 
         this.setState({
@@ -6596,7 +6601,7 @@ class App extends Component {
                     this.killPlayer(this.players[player.target.occupant.player-1]);
 
                     let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                    this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+                    this.placeItems({init: false, item: this.itemList[8].name})
 
                     player.points++;
 
@@ -21071,6 +21076,20 @@ class App extends Component {
           plyr.ai.mission = plyr.ai.primaryMission;
           this.aiResetRanges(plyr)
 
+          switch (plyr.ai.primaryMission) {
+            case 'defend':
+              plyr.ai.defending.checkin = undefined;
+            break;
+            case 'patrol':
+              plyr.ai.patrolling.checkin = undefined;
+            break;
+            default:
+
+          }
+
+
+          // console.log('gg',plyr.ai.targetPlayer);
+
           if (!plyr.popups.find(x=>x.msg === 'missionComplete')) {
             plyr.popups.push(
               {
@@ -21101,7 +21120,7 @@ class App extends Component {
           //   )
           // }
 
-          plyr.ai.targetSet = false
+          // plyr.ai.targetSet = false
           plyr.ai.targetAcquired = false
         }
 
@@ -22555,12 +22574,12 @@ class App extends Component {
           let cellRef2 = this.gridInfo.find(elem=> elem.number.x === cell2.x && elem.number.y === cell2.y);
           if (cellRef2) {
 
-            let terrainInfo4 = cellRef2.levelData.length-1;
+
             if (
-              cellRef2.levelData.charAt(terrainInfo4) === 'j' ||
-              cellRef2.levelData.charAt(terrainInfo4) === 'h' ||
-              cellRef2.levelData.charAt(terrainInfo4) === 'i' ||
-              cellRef2.levelData.charAt(0) !== 'x' ||
+              cellRef2.levelData.split('_')[1] !== '*' ||
+              cellRef2.terrain.type === 'deep' ||
+              cellRef2.terrain.type === 'hazard' ||
+              // cellRef2.barrier.state === true ||
               cellRef2.void.state === true
             ) {
               freeCell2 = false;
@@ -23583,7 +23602,7 @@ class App extends Component {
             cell2.levelData.split('_')[1] !== '*' ||
             cell2.terrain.type === 'deep' ||
             cell2.terrain.type === 'hazard' ||
-            cell2.barrier.state === true ||
+            // cell2.barrier.state === true ||
             cell2.void.state === true
           ) {
             this.easyStar.avoidAdditionalPoint(cell2.number.x, cell2.number.y);
