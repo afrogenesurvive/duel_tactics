@@ -6601,7 +6601,7 @@ class App extends Component {
                     this.killPlayer(this.players[player.target.occupant.player-1]);
 
                     let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                    this.placeItems({init: false, item: this.itemList[8].name})
+                    this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
 
                     player.points++;
 
@@ -18950,7 +18950,7 @@ class App extends Component {
     // console.log('aiEvaluate',plyr.ai.upgradeWeapon);
     // console.log('aiEvaluate',plyr.ai.organizing.dropped.state);
 
-
+    // SOMEONE DIED, RESET AI TARGETS
     if (this.resetAiTarget.state === true) {
       console.log('someone died. reset ai targets');
       if (!plyr.popups.find(x=>x.msg === 'thinking')) {
@@ -22718,7 +22718,7 @@ class App extends Component {
 
       // SET OUT
       if (aiPlayer.ai.retrieving.state !== true && aiPlayer.ai.retrieving.safe === true) {
-        console.log('retrive mission start: target item ',aiPlayer.ai.retrieving.targetItem.name,targetPlayer);
+        // console.log('retrive mission start: target item ',aiPlayer.ai.retrieving.targetItem.name,targetPlayer,aiPlayer.ai.retrieving);
         aiPlayer.ai.retrieving.state = true;
         aiPlayer.ai.retrieving.checkin = 'enroute';
         getPath = true;
@@ -22825,6 +22825,246 @@ class App extends Component {
 
     // SET PATH !!
     let pathSet = [];
+
+    if (getPath === true && !targetPlayer && aiPlayer.ai.mission === 'retrieve' && aiPlayer.ai.retrieving.state === true) {
+      console.log('pathfinding...retrieve');
+      this.updatePathArray();
+      this.easyStar = new Easystar.js();
+
+      let aiPos;
+      let targetPos;
+
+      // console.log('get retrive path',aiPlayer.ai.retrieving.point);
+      aiPos = aiPlayer.currentPosition.cell.number;
+      targetPos = {
+        x: aiPlayer.ai.retrieving.point.x,
+        y: aiPlayer.ai.retrieving.point.y,
+      }
+
+
+      this.easyStar.setGrid(this.pathArray);
+      this.easyStar.setAcceptableTiles([0]);
+
+
+      // PLAYER CELLS TO AVOID
+      for (const plyr of this.players) {
+        // console.log('building pathfind obstacles checking plyr',plyr.number);
+        if (plyr.dead.state !== true && plyr.falling.state !== true && plyr.respawn !== true && plyr.number !== aiPlayer.number && plyr.number !== targetPlayer.number) {
+          // console.log('avoid plyr',plyr.number,'@',plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
+          this.easyStar.avoidAdditionalPoint(plyr.currentPosition.cell.number.x, plyr.currentPosition.cell.number.y);
+        }
+      }
+
+      // AVOID PATHS THAT GO CLOSE TO ENEMY PLAYERS IF ALIVE
+      for (const plyr of this.players) {
+        if (plyr.ai.state !== true && plyr.dead.state !== true && plyr.falling.state !== true) {
+          console.log(aiPlayer.ai.mission,' careful pathfinding. enemy is plyr #',plyr.number);
+          let rng;
+          let span;
+
+          if (plyr.currentWeapon.type === "sword" || plyr.currentWeapon.name === "") {
+            rng = 1;
+          }
+          else {
+            rng = 2;
+          }
+          span = (rng*2)+1;
+          let cornerCell = undefined;
+          let whichCorner;
+
+          while (!cornerCell) {
+
+            let whichCorner2 = this.rnJesus(1,4)
+
+            switch(whichCorner2) {
+              case 1:
+                cornerCell = this.gridInfo.find(elem=> elem.number.x === plyr.currentPosition.cell.number.x+rng && elem.number.y === plyr.currentPosition.cell.number.y+rng)
+                whichCorner = 'southEast';
+              break;
+              case 2:
+                cornerCell = this.gridInfo.find(elem=> elem.number.x === plyr.currentPosition.cell.number.x-rng && elem.number.y === plyr.currentPosition.cell.number.y-rng)
+                whichCorner = 'northWest';
+              break;
+              case 3:
+                cornerCell = this.gridInfo.find(elem=> elem.number.x === plyr.currentPosition.cell.number.x-rng && elem.number.y === plyr.currentPosition.cell.number.y+rng)
+                whichCorner = 'southWest';
+              break;
+              case 4:
+                cornerCell = this.gridInfo.find(elem=> elem.number.x === plyr.currentPosition.cell.number.x+rng && elem.number.y === plyr.currentPosition.cell.number.y-rng)
+                whichCorner = 'northEast';
+              break;
+            }
+
+          }
+
+          if (cornerCell) {
+            // console.log('cornerCell',cornerCell.number);
+
+            for (var i = 0; i < span; i++) {
+
+              let startCell;
+              switch(whichCorner) {
+                case 'southEast':
+                  startCell = {
+                    x: cornerCell.number.x-i,
+                    y: cornerCell.number.y
+                  }
+                break;
+                case 'northEast':
+                  startCell = {
+                    x: cornerCell.number.x-i,
+                    y: cornerCell.number.y
+                  }
+                break;
+                case 'southWest':
+                  startCell = {
+                    x: cornerCell.number.x+i,
+                    y: cornerCell.number.y
+                  }
+                break;
+                case 'northWest':
+                  startCell = {
+                    x: cornerCell.number.x+i,
+                    y: cornerCell.number.y
+                  }
+                break;
+              }
+              // console.log('startCell',startCell,i);
+
+              for (var j = 0; j < span; j++) {
+                let cell;
+
+                switch(whichCorner) {
+                  case 'southEast':
+                    cell = {
+                      x: startCell.x,
+                      y: startCell.y-j,
+                    }
+                  break;
+                  case 'northEast':
+                    cell = {
+                      x: startCell.x,
+                      y: startCell.y+j,
+                    }
+                  break;
+                  case 'southWest':
+                    cell = {
+                      x: startCell.x,
+                      y: startCell.y-j,
+                    }
+                  break;
+                  case 'northWest':
+                    cell = {
+                      x: startCell.x,
+                      y: startCell.y+j,
+                    }
+                  break;
+                }
+                // console.log('cell',cell,j);
+
+
+                if (
+                  cell.x <= this.gridWidth && cell.x >= 0 &&
+                  cell.y <= this.gridWidth && cell.y >= 0
+                ) {
+                  // console.log(aiPlayer.ai.mission,'avoid cell ',cell);
+                  this.easyStar.avoidAdditionalPoint(cell.x, cell.y);
+                }
+
+              }
+            }
+
+          }
+
+        }
+      }
+
+       // AVOID DEBUFFS!!
+       if (aiPlayer.ai.mission === 'retrieve') {
+
+
+         let fieldItemScan = []
+         for (const cell of this.gridInfo) {
+           if (cell.item.name !== '') {
+             fieldItemScan.push({
+               name: cell.item.name,
+               type: cell.item.type,
+               subType: cell.item.subType,
+               effect: cell.item.effect,
+               location: {x: cell.number.x, y: cell.number.y}
+             })
+           }
+         }
+
+
+         let nerfItemPositions = [];
+         for (const item of fieldItemScan) {
+
+           switch(item.name) {
+             case 'moveSpeedDown':
+               nerfItemPositions.push(item)
+             break;
+             case 'hpDown':
+               nerfItemPositions.push(item)
+             break;
+             case 'focusDown':
+               nerfItemPositions.push(item)
+             break;
+             case 'strengthDown':
+               nerfItemPositions.push(item)
+             break;
+           }
+
+         };
+
+         for (const nerf of nerfItemPositions) {
+
+           this.easyStar.avoidAdditionalPoint(nerf.location.x, nerf.location.y);
+
+         }
+
+       }
+
+       // TERRAIN & OBSTACLE CELLS TO AVOID
+       for (const cell2 of this.gridInfo) {
+         let terrainInfo3 = cell2.levelData.length-1;
+         if (
+           cell2.levelData.split('_')[1] !== '*' ||
+           cell2.terrain.type === 'deep' ||
+           cell2.terrain.type === 'hazard' ||
+           // cell2.barrier.state === true ||
+           cell2.void.state === true
+         ) {
+           this.easyStar.avoidAdditionalPoint(cell2.number.x, cell2.number.y);
+         }
+       }
+
+
+       // FIND PATH!
+       this.players[aiPlayer.number-1].ai.easyStarPath = this.easyStar.findPath(aiPos.x, aiPos.y, targetPos.x, targetPos.y, function( path ) {
+         if (path === null) {
+           cancelPath = true;
+           console.log("Path was not found...for player",aiPlayer.number);
+         } else {
+           pathSet = path;
+         }
+       });
+
+       this.easyStar.setIterationsPerCalculation(4000)
+       this.easyStar.calculate();
+       setTimeout(()=>{
+         // console.log('plyr',aiPlayer.number,'pathSet',pathSet,this.players[aiPlayer.number-1].ai.easyStarPath);
+
+         if (cancelPath === true) {
+           console.log('cancel path');
+           this.easyStar = new Easystar.js();
+           this.players[aiPlayer.number-1].ai.targetAcquired = false;
+         }
+         this.aiParsePath(pathSet,aiPlayer.number);
+       }, 50);
+
+
+    }
 
     if (targetPlayer) {
       if (getPath === true && targetPlayer.dead.state !== true && targetPlayer.falling.state !== true) {
@@ -23414,7 +23654,7 @@ class App extends Component {
         }
 
         // AVOID PATHS THAT GO CLOSE TO ENEMY PLAYERS
-        if (aiPlayer.ai.mission === 'retreat' || aiPlayer.ai.mission === 'retrive') {
+        if (aiPlayer.ai.mission === 'retreat' || aiPlayer.ai.mission === 'retrieve') {
 
           for (const plyr of this.players) {
             if (plyr.ai.state !== true) {
@@ -23638,7 +23878,6 @@ class App extends Component {
 
 
     this.players[aiPlayer.number-1] = aiPlayer;
-
 
     this.aiAct(aiPlayer);
 
