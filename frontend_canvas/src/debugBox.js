@@ -104,6 +104,12 @@ const DebugBox = props => {
           <p className="debugBoxText">
             {props.player.points}
           </p>
+          {
+            // <p className="debugBoxText">
+            //   {props.player.direction}
+            // </p>
+          }
+
         </li>
         <li className="debugBoxListItem3">
           <OverlayTrigger
