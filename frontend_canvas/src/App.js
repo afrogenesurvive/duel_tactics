@@ -2030,6 +2030,7 @@ class App extends Component {
         type: '',
         position: '',
       },
+      rubble: false,
     };
     this.turnCheckerDirection = '';
 
@@ -2164,6 +2165,7 @@ class App extends Component {
         type: '',
         position: '',
       },
+      rubble: false,
     };
     this.settingsFormAiGridInfo = [] ;
     this.settingsFormAiStartPosList = [];
@@ -3394,6 +3396,7 @@ class App extends Component {
           type: '',
           position: '',
         },
+        rubble: false,
       }
     }
 
@@ -3550,6 +3553,7 @@ class App extends Component {
           type: '',
           position: '',
         },
+        rubble: false,
       }
     }
 
@@ -10635,7 +10639,10 @@ class App extends Component {
                   console.log('bolt hit an obstacle');
                   bolt.kill = true;
                 }
-                if (cell2.barrier.state === true) {
+                if (
+                  cell2.barrier.state === true &&
+                  cell2.barrier.height >= 1
+                ) {
                   console.log('bolt hit a barrier');
                   bolt.kill = true;
                 }
@@ -17394,7 +17401,8 @@ class App extends Component {
             number: 0,
             type: '',
             position: '',
-          }
+          },
+          rubble: false,
         }
         this.cellsToHighlight2 = [];
       }
@@ -17793,6 +17801,7 @@ class App extends Component {
             type: '',
             position: '',
           },
+          rubble: false,
         })
 
       }
@@ -17922,6 +17931,7 @@ class App extends Component {
             type: '',
             position: '',
           },
+          rubble: false,
         })
 
       }
