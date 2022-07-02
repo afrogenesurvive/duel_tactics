@@ -22718,7 +22718,7 @@ class App extends Component {
 
       // SET OUT
       if (aiPlayer.ai.retrieving.state !== true && aiPlayer.ai.retrieving.safe === true) {
-        console.log('retrive mission start: target item ',aiPlayer.ai.retrieving.targetItem.name);
+        console.log('retrive mission start: target item ',aiPlayer.ai.retrieving.targetItem.name,targetPlayer);
         aiPlayer.ai.retrieving.state = true;
         aiPlayer.ai.retrieving.checkin = 'enroute';
         getPath = true;
@@ -23391,7 +23391,7 @@ class App extends Component {
           }
         }
         if (aiPlayer.ai.mission === 'retrieve') {
-          // console.log('get retrive path',aiPlayer.ai.retrieving.point);
+          console.log('get retrive path',aiPlayer.ai.retrieving.point);
           aiPos = aiPlayer.currentPosition.cell.number;
           targetPos = {
             x: aiPlayer.ai.retrieving.point.x,
@@ -23792,9 +23792,9 @@ class App extends Component {
     // if (this.players[aiPlayer-1].ai.mission === 'retreat') {
     //   console.log('retreat instructions',instructions,'player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction,'path',path);
     // }
-    // if (this.players[aiPlayer-1].ai.mission === 'retrieve') {
-    //   console.log('retrieve instructions',instructions,'player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction,'path',path);
-    // }
+    if (this.players[aiPlayer-1].ai.mission === 'retrieve') {
+      console.log('retrieve instructions',instructions,'player',aiPlayer,this.players[aiPlayer-1].ai.currentInstruction,'path',path);
+    }
 
 
     this.players[aiPlayer-1].ai.pathArray = path;
