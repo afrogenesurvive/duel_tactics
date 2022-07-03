@@ -4881,7 +4881,8 @@ class App extends Component {
 
   gameLoop = () => {
 
-    // SETTINGS KEYPRESS
+    // IF PRESSED SETTINGS KEY, COUNT
+    // PAUSE GAME IF SETTINGS OPENED
     if (this.showSettingsKeyPress.state === true) {
       if (this.showSettingsKeyPress.count < this.showSettingsKeyPress.limit) {
         this.showSettingsKeyPress.count++;
@@ -5463,7 +5464,15 @@ class App extends Component {
                   }
                 }
                 if (player.strafing.state === true) {
-                  player.strafing.state = false;
+
+                  // CONTINUOUS STRAFING CHECK
+                  if (this.keyPressed[player.number-1].strafe !== true) {
+                    player.strafing.state = false;
+                  }
+                  else {
+                    player.strafing.direction = '';
+                  }
+
                 }
 
 
@@ -5891,7 +5900,7 @@ class App extends Component {
 
         // KEY PRESS RELEASE CHECKS!!
         if (player.turning.state === false && player.flanking.state !== true) {
-          // console.log('turn complete');s
+          // console.log('turn complete');
           player.direction = player.turning.toDirection;
           player.nextPosition = {
             x: player.currentPosition.cell.center.x,
@@ -8725,17 +8734,6 @@ class App extends Component {
                 }
 
               }
-
-
-                // // CHANGE DIRECTION IF NOT STRAFING!!
-                // if (keyPressedDirection !== player.direction && player.strafing.state === false) {
-                //
-                //   // console.log('change player direction to',keyPressedDirection);
-                //   // console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
-                //   player.turning.state = true;
-                //   player.turning.toDirection = keyPressedDirection;
-                //
-                // }
 
               }
 
@@ -13190,7 +13188,7 @@ class App extends Component {
     }
 
 
-    if (player.strafing.state === true) {
+    if (player.strafing.state === true &&  player.strafing.direction !== '') {
       direction = player.strafing.direction;
     }
 
