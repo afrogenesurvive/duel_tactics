@@ -503,6 +503,11 @@ class App extends Component {
           total: 4,
           type: 'item',
           effect: 'hpUp',
+        },
+        {
+          name: 'sword1',
+          type: 'sword',
+          effect: '',
         }],
         effects: [],
         moving: {
@@ -1310,7 +1315,17 @@ class App extends Component {
               name: 'sword1',
               type: 'sword',
               effect: '',
-            }
+            },
+            {
+              name: 'crossbow1',
+              type: 'crossbow',
+              effect: '',
+            },
+            {
+              name: 'spear1',
+              type: 'spear',
+              effect: '',
+            },
           ],
           armor: [
             {
@@ -1319,7 +1334,7 @@ class App extends Component {
               effect: '',
             }
           ],
-          ammo: 0,
+          ammo: 20,
         },
         inventorySize: 4,
         cycleWeapon: {
@@ -12618,6 +12633,33 @@ class App extends Component {
         }
 
 
+
+        // OBSTACLES
+        if (gridInfoCell.obstacle.state === true && gridInfoCell.void.state !== true) {
+          // let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
+          let obstacleImg = obstacleImgs[gridInfoCell.obstacle.type]
+
+          if (gridInfoCell.obstacle.height > 1) {
+            offset = {x: wallImageWidth/2, y: wallImageHeight}
+            context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+
+            let isoHeight = wallImageHeight - floorImageHeight
+            offset.y += isoHeight
+            context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+          }
+          if (gridInfoCell.obstacle.height < 1) {
+            offset = {x: wallImageWidth/2, y: wallImageHeight}
+            // context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+            context.drawImage(obstacleImg, iso.x - offset.x, (iso.y - offset.y)+25);
+          }
+          if (gridInfoCell.obstacle.height === 1) {
+            offset = {x: wallImageWidth/2, y: wallImageHeight}
+            context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+          }
+
+        }
+
+
         // PROJECTILES
         for (const bolt of this.projectiles) {
           if (
@@ -12653,30 +12695,7 @@ class App extends Component {
         }
 
 
-        // OBSTACLES
-        if (gridInfoCell.obstacle.state === true && gridInfoCell.void.state !== true) {
-          // let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
-          let obstacleImg = obstacleImgs[gridInfoCell.obstacle.type]
 
-          if (gridInfoCell.obstacle.height > 1) {
-            offset = {x: wallImageWidth/2, y: wallImageHeight}
-            context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
-
-            let isoHeight = wallImageHeight - floorImageHeight
-            offset.y += isoHeight
-            context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
-          }
-          if (gridInfoCell.obstacle.height < 1) {
-            offset = {x: wallImageWidth/2, y: wallImageHeight}
-            // context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
-            context.drawImage(obstacleImg, iso.x - offset.x, (iso.y - offset.y)+25);
-          }
-          if (gridInfoCell.obstacle.height === 1) {
-            offset = {x: wallImageWidth/2, y: wallImageHeight}
-            context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
-          }
-
-        }
 
 
         // let walledTiles = []
@@ -17241,7 +17260,7 @@ class App extends Component {
               }
 
               // DESTROY FWD BARRIER W/ OR W/O RUBBLE
-              if (targetCell.barrier.hp - damage <= 0) {
+              else if (targetCell.barrier.hp - damage <= 0) {
                 if (targetCell.barrier.destructible.leaveRubble === true) {
                   console.log('leave rubble on ',targetCell.number,'removing barrier');
                   this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).rubble = true;
@@ -17443,7 +17462,7 @@ class App extends Component {
                 }
 
                 // DESTROY OBSTACLE W/ OR W/O RUBBLE
-                if (targetCell.obstacle.hp - damage <= 0) {
+                else if (targetCell.obstacle.hp - damage <= 0) {
                   let itemsToDrop = [];
                   if (targetCell.obstacle.destructible.leaveRubble === true) {
                     console.log('leave rubble on ',targetCell.number,'removing obstacle');
@@ -17960,6 +17979,7 @@ class App extends Component {
         // NO FWD BARRIER. OBSTACLE?
         else {
           if (targetCell.obstacle.state === true) {
+            console.log('targetCell.obstacle.hp',targetCell.obstacle.hp);
 
             if (targetCell.obstacle.destructible.state === true) {
               // WEAPON CHECK
@@ -17969,7 +17989,7 @@ class App extends Component {
                 }
 
                 // DESTROY OBSTACLE W/ OR W/O RUBBLE
-                if (targetCell.obstacle.hp - damage <= 0) {
+                else if (targetCell.obstacle.hp - damage <= 0) {
                   let itemsToDrop = [];
                   if (targetCell.obstacle.destructible.leaveRubble === true) {
                     console.log('leave rubble on ',targetCell.number,'removing obstacle');
@@ -18050,11 +18070,11 @@ class App extends Component {
                       }
                     )
                   } else {
-                    console.log('no rubble. Just remove obstacle');
+                    console.log('no rubble. Just remove obstacle';
                     if (targetCell.obstacle.items[0]) {
                       itemsToDrop = targetCell.obstacle.items;
                     }
-                    this.gridInfo.find(elem => elem.number.x === targetCell.cell.number.x && elem.number.y === targetCell.cell.number.y ).obstacle =
+                    this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).obstacle =
                     {
                       state: false,
                       name: '',
@@ -18201,7 +18221,7 @@ class App extends Component {
                   }
 
                   // DESTROY FWD BARRIER W/ OR W/O RUBBLE
-                  if (targetCell.barrier.hp - damage <= 0) {
+                  else if (targetCell.barrier.hp - damage <= 0) {
                     if (targetCell.barrier.destructible.leaveRubble === true) {
                       console.log('leave rubble on ',targetCell.number,'removing barrier');
                       this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).rubble = true;
