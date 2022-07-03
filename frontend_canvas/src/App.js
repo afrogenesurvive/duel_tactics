@@ -17770,6 +17770,10 @@ class App extends Component {
               }
             }
 
+            if (targetCell.rubble === true & damage) {
+              this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).rubble = false;
+            }
+
             // NO OBSTACLE. DESTROY REAR BARRIER
             else {
               // do nothing
