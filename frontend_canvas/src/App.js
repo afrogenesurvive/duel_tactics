@@ -1316,16 +1316,6 @@ class App extends Component {
               type: 'sword',
               effect: '',
             },
-            {
-              name: 'crossbow1',
-              type: 'crossbow',
-              effect: '',
-            },
-            {
-              name: 'spear1',
-              type: 'spear',
-              effect: '',
-            },
           ],
           armor: [
             {
@@ -7534,7 +7524,11 @@ class App extends Component {
 
           let startMod = player.crits.dodge;
           let endMod = player.crits.dodge;
+          if (player.crits.dodge > 4) {
+            player.crits.dodge = 4;
+          }
 
+          // HAVE STAMIN FOR DODGE
           if (player.stamina.current - this.staminaCostRef.dodge >= 0) {
 
             if (player.dodging.count === 1) {
@@ -7577,8 +7571,10 @@ class App extends Component {
             if (player.dodging.count > (player.dodging.peak.start - startMod) && player.dodging.count < (player.dodging.peak.end + endMod)) {
               player.dodging.state = true;
 
-              // console.log('dodge peak',player.dodging.count);
+              console.log('dodge peak',player.dodging.count,'crit',player.crits.dodge);
             }
+
+            // CHOOSE DODGE DIRECTION
             if (player.dodging.count === player.dodging.peak.start) {
               let whichDirection = this.rnJesus(1,2);
               let dodgeDirection;
@@ -7614,10 +7610,12 @@ class App extends Component {
               }
               player.dodgeDirection = dodgeDirection;
             }
+
+            // IF DODGE IS BEFORE OR AFTER PEAK, STATE OFF
             if (player.dodging.count < (player.dodging.peak.start - startMod) || player.dodging.count > (player.dodging.peak.end + endMod)) {
               player.dodging.state = false;
               player.dodgeDirection = '';
-              // console.log('dodge peak off');
+              console.log('dodge peak off');
             }
             if (player.dodging.count >= player.dodging.limit) {
               player.action = 'idle';
@@ -7634,6 +7632,8 @@ class App extends Component {
             }
 
           }
+
+          // CAN'T DODGE. OUT OF STAMINA
           else {
 
             player.dodging = {
@@ -8708,7 +8708,7 @@ class App extends Component {
 
           else if (this.keyPressed[player.number-1].dodge === true) {
             if (player.dodging.state !== true && player.dodging.countState !== true) {
-              // console.log('start dodge');
+              // console.log('start wind up');
               player.dodging.countState = true;
             } else {
               // console.log('already dodging');
@@ -15977,11 +15977,23 @@ class App extends Component {
       player.items = {
         weaponIndex: 0,
         armorIndex: 0,
-        weapons: [{
-          name: 'sword1',
-          type: 'sword',
-          effect: '',
-        }],
+        weapons: [
+          {
+            name: 'sword1',
+            type: 'sword',
+            effect: '',
+          },
+          {
+            name: 'crossbow1',
+            type: 'crossbow',
+            effect: '',
+          },
+          {
+            name: 'spear1',
+            type: 'spear',
+            effect: '',
+          }
+        ],
         armor: [],
         ammo: 0,
       };
@@ -19594,7 +19606,7 @@ class App extends Component {
 
     }
 
-    if (type === 'flyOver') {
+    if (type === 'flyOverBolt') {
 
 
       myCell = undefined;
