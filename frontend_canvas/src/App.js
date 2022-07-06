@@ -1318,11 +1318,7 @@ class App extends Component {
             },
           ],
           armor: [
-            {
-              name: '',
-              type: '',
-              effect: '',
-            }
+
           ],
           ammo: 20,
         },
@@ -5369,7 +5365,11 @@ class App extends Component {
 
 
       if (player.dead.state !== true && player.falling.state !== true) {
-        this.deflectDrop(player)
+        let shouldDeflectDrop = this.rnJesus(1,player.crits.guardBreak)
+        if (shouldDeflectDrop === 1) {
+          this.deflectDrop(player)
+        }
+
       }
 
 
@@ -6157,6 +6157,7 @@ class App extends Component {
               let origin = plyrX.currentPosition.cell;
               let currentPosition = plyrX.currentPosition.cell;
               let nextPosition = plyrX.currentPosition.cell.center;
+              let elevation = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y).elevation.number;
 
               let projectileId = this.projectiles.length;
               let boltx = {
@@ -6196,7 +6197,7 @@ class App extends Component {
                   void: false,
                 },
                 speed: this.projectileSpeed,
-                evelavtion: this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y).elevation.number,
+                elevation: elevation,
                 kill: false,
               }
               this.projectiles.push(boltx)
@@ -7571,7 +7572,7 @@ class App extends Component {
             if (player.dodging.count > (player.dodging.peak.start - startMod) && player.dodging.count < (player.dodging.peak.end + endMod)) {
               player.dodging.state = true;
 
-              console.log('dodge peak',player.dodging.count,'crit',player.crits.dodge);
+              // console.log('dodge peak',player.dodging.count,'crit',player.crits.dodge);
             }
 
             // CHOOSE DODGE DIRECTION
@@ -7615,7 +7616,7 @@ class App extends Component {
             if (player.dodging.count < (player.dodging.peak.start - startMod) || player.dodging.count > (player.dodging.peak.end + endMod)) {
               player.dodging.state = false;
               player.dodgeDirection = '';
-              console.log('dodge peak off');
+              // console.log('dodge peak off');
             }
             if (player.dodging.count >= player.dodging.limit) {
               player.action = 'idle';
@@ -9914,6 +9915,7 @@ class App extends Component {
 
 
             let infoCell = this.gridInfo.find(x => x.number.x === cell.number.x && x.number.y === cell.number.y);
+            
             if (infoCell.elevation.number === bolt.elevation) {
 
               for (const plyr of this.players) {
@@ -12727,27 +12729,6 @@ class App extends Component {
           context.drawImage(boltDeflectImg, this.boltDeflectAnim.position.x+35, this.boltDeflectAnim.position.y-35, 35, 35);
         }
 
-
-
-
-
-        // let walledTiles = []
-        // if (walledTiles.includes(''+x+','+y+'')) {
-        //   offset = {x: wallImageWidth/2, y: wallImageHeight}
-        //   context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
-        // }
-        // if(gridInfoCell.levelData.charAt(0) === 'y' && gridInfoCell.void.state !== true) {
-        //   offset = {x: wallImageWidth/2, y: wallImageHeight}
-        //   context.drawImage(wall3, iso.x - offset.x, iso.y - offset.y);
-        // }
-        // if(gridInfoCell.levelData.charAt(0) === 'z' && gridInfoCell.void.state !== true) {
-        //   offset = {x: wallImageWidth/2, y: wallImageHeight}
-        //   context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
-        //
-        //   let isoHeight = wallImageHeight - floorImageHeight
-        //   offset.y += isoHeight
-        //   context.drawImage(wall2, iso.x - offset.x, iso.y - offset.y);
-        // }
 
 
         // CAMERA FOCUS POINT
@@ -15995,7 +15976,7 @@ class App extends Component {
           }
         ],
         armor: [],
-        ammo: 0,
+        ammo: 20,
       };
       player.currentWeapon = {
         name: 'sword1',
@@ -18270,11 +18251,10 @@ class App extends Component {
                       //   then other 7 (going east/right from mycell) surrounding free cells, then next outer 4
                       // for each item in obstacle items, place item at corresponding index of above array
                       //   if array item type is player,
-                      //     if actual item type is weapon place in plyr inventory,
+                      //     if actual item type is weapon place in plyr inventory if has space,
+                        //      set item/gear effect,
                       //     if item type is item, use/apply effect
                       //   else, gridinfo at point item set
-                      //
-
 
                     }
                     this.obstacleBarrierToDestroy.push({
