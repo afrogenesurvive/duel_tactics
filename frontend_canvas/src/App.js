@@ -290,11 +290,11 @@ class App extends Component {
       row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*','**_*_0.7_a_0a*','**_*_0.8_a_0a*','**_*_0.9_a_0a*'],
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_a_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
-      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_c_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
+      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_i_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_c_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
       row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','**_h_4.4_a_0a*','**_b_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','**_*_4.9_k_0a*'],
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','**_*_5.2_a_0a*','**_*_5.3_a_0a*','**_*_5.4_a_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','**_*_5.8_a_0a*','**_*_5.9_a_0a*'],
       row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_j_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_j_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
-      row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','**_*_7.5_a_0a*','**_*_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
+      row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','**_*_7.5_a_0a*','**_i_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
       row8: ['**_*_8.0_a_0a*','**_*_8.1_a_0a*','**_*_8.2_a_0a*','**_*_8.3_a_0a*','**_*_8.4_a_0a*','**_*_8.5_a_0a*','**_*_8.6_a_0a*','**_*_8.7_a_0a*','**_*_8.8_a_0a*','**_*_8.9_d_0a*'],
       row9: ['**_*_9.0_a_0a*','**_*_9.1_a_0a*','**_*_9.2_a_0a*','**_*_9.3_a_0a*','**_*_9.4_a_0a*','**_*_9.5_a_0a*','**_*_9.6_a_0a*','**_*_9.7_a_0a*','**_*_9.8_a_0a*','**_*_9.9_a_0a*'],
     };
@@ -759,6 +759,67 @@ class App extends Component {
         weight: 1,
         height: 1,
         items: [],
+        effects: [],
+        moving: {
+          state: false,
+          origin: {
+            number: {
+              x: undefined,
+              y: undefined,
+            },
+            center: {
+              x: undefined,
+              y: undefined,
+            },
+          },
+          destination: {
+            number: {
+              x: undefined,
+              y: undefined,
+            },
+            center: {
+              x: undefined,
+              y: undefined,
+            },
+          },
+          currentPosition: {
+            x: undefined,
+            y: undefined,
+          },
+          nextPosition: {
+            x: undefined,
+            y: undefined,
+          },
+        }
+      },
+      i: {
+        state: true,
+        name: 'closet2',
+        type: 'closet',
+        hp: 2,
+        destructible: {
+          state: true,
+          weapons: ['sword1','bolt','spear1'],
+          leaveRubble: false,
+        },
+        locked: {
+          state: false,
+          key: '',
+        },
+        weight: 1,
+        height: 1,
+        items: [{
+          name: 'hpUp',
+          amount: 4,
+          total: 4,
+          type: 'item',
+          effect: 'hpUp',
+        },
+        {
+          name: 'sword1',
+          type: 'sword',
+          effect: '',
+        }],
         effects: [],
         moving: {
           state: false,
@@ -3258,7 +3319,7 @@ class App extends Component {
     let newY = (y-this.camera.zoomFocusPan.y)/this.camera.zoom.y;
 
 
-    console.log("clicked the canvas", 'x: ',x,'y: ',y,'newX',newX,'newY',newY,'zoom',this.camera.zoom.x.toFixed(2),'pan',this.camera.pan.x,this.camera.pan.y);
+    // console.log("clicked the canvas", 'x: ',x,'y: ',y,'newX',newX,'newY',newY,'zoom',this.camera.zoom.x.toFixed(2),'pan',this.camera.pan.x,this.camera.pan.y);
 
     let insideGrid = false;
 
@@ -13446,6 +13507,7 @@ class App extends Component {
     let spearCell2Obstacle = false;
     for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
       for (const cell of row) {
+        let cellRef = this.gridInfo.find(elem => elem.number.x === parseInt(cell.split("_")[2].split(".")[0]) && elem.number.y === parseInt(cell.split("_")[2].split(".")[1]))
         if (
           // cell.charAt(0) === 'y' ||
           // cell.charAt(0) ===  'z'
@@ -17650,7 +17712,7 @@ class App extends Component {
           // NO FWD BARRIER. OBSTACLE, REAR  BARRIER (SPEAR)?
           else {
             if (targetCell.obstacle.state === true) {
-
+              // damage = 1;
               if (targetCell.obstacle.destructible.state === true) {
                 // WEAPON CHECK
                 if (targetCell.obstacle.destructible.weapons.find(x => x === player.currentWeapon.name)) {
@@ -19365,16 +19427,22 @@ class App extends Component {
 
       // NO FWD BARRIER. OBSTACLE?
       else {
+        damage = 1;
         if (targetCell.obstacle.state === true) {
-          console.log('player ',player.number,'hit obstacle ',targetCell.obstacle.name,' @ ',targetCell.number,type);
-          console.log('targetCell.obstacle.hp',targetCell.obstacle.hp);
+          console.log('player ',player.number,'hit obstacle ',targetCell.obstacle.name,' @ ',targetCell.number,type,' for ',damage,' damage');
+
 
           if (targetCell.obstacle.destructible.state === true) {
             // WEAPON CHECK
             if (targetCell.obstacle.destructible.weapons.find(x => x === 'bolt')) {
               if (targetCell.obstacle.hp - damage > 0) {
-                this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).obstacle.hp -= damage;
-
+                targetCell.obstacle.hp -= damage;
+                console.log('1',targetCell);
+                console.log('2',this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y));
+                // let cellRef = this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y);
+                // this.gridInfo.find(elem => elem === targetCell).obstacle.hp -= damage;
+                // this.gridInfo.find(elem => elem === targetCell).obstacle.hp = this.gridInfo.find(elem => elem === targetCell).obstacle.hp - damage;
+                // cellRef.obstacle.hp -= damage;
                 this.obstacleBarrierToDestroy.push({
                   type: 'obstacle',
                   action: 'damage',
@@ -19393,10 +19461,10 @@ class App extends Component {
                   if (targetCell.obstacle.items[0]) {
                     itemsToDrop = targetCell.obstacle.items;
                   }
-                  this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).rubble = true;
-                  this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).terrain.type = 'hazard';
-                  this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).obstacle =
-                  {
+                  let cellRef = this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y);
+                  cellRef.rubble = true;
+                  cellRef.terrain.type = 'hazard';
+                  cellRef.obstacle = {
                     state: false,
                     name: '',
                     type: '',
@@ -19446,6 +19514,59 @@ class App extends Component {
                       },
                     }
                   };
+                  // this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).rubble = true;
+                  // this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).terrain.type = 'hazard';
+                  // this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).obstacle =
+                  // {
+                  //   state: false,
+                  //   name: '',
+                  //   type: '',
+                  //   hp: 2,
+                  //   destructible: {
+                  //     state: false,
+                  //     weapons: [],
+                  //     leaveRubble: false,
+                  //   },
+                  //   locked: {
+                  //     state: false,
+                  //     key: '',
+                  //   },
+                  //   weight: 1,
+                  //   height: 0.5,
+                  //   items: [],
+                  //   effects: [],
+                  //   moving: {
+                  //     state: false,
+                  //     origin: {
+                  //       number: {
+                  //         x: undefined,
+                  //         y: undefined,
+                  //       },
+                  //       center: {
+                  //         x: undefined,
+                  //         y: undefined,
+                  //       },
+                  //     },
+                  //     destination: {
+                  //       number: {
+                  //         x: undefined,
+                  //         y: undefined,
+                  //       },
+                  //       center: {
+                  //         x: undefined,
+                  //         y: undefined,
+                  //       },
+                  //     },
+                  //     currentPosition: {
+                  //       x: undefined,
+                  //       y: undefined,
+                  //     },
+                  //     nextPosition: {
+                  //       x: undefined,
+                  //       y: undefined,
+                  //     },
+                  //   }
+                  // };
 
                   this.players[player.number-1].statusDisplay = {
                     state: true,
@@ -19583,6 +19704,7 @@ class App extends Component {
                 })
 
               }
+
             }
 
             // WEAPON NO GOOD. DEFLECT
@@ -19593,10 +19715,16 @@ class App extends Component {
 
           }
 
+
+
+
+
+
           // INDESTRUCTIBLE OBSTACLE
           else {
             console.log('attacking invurnerable obstacle w/ bolt');
           }
+
 
         } else {
 
@@ -19923,6 +20051,7 @@ class App extends Component {
         else {
           console.log('attacking invurnerable barrier w/ bolt');
         }
+        this.projectiles.find(blt => blt.id === bolt.id).kill = true;
       }
 
       // NO FWD BARRIER. OBSTACLE?
@@ -20158,7 +20287,7 @@ class App extends Component {
           else {
             console.log('attacking invurnerable obstacle w/ bolt');
           }
-
+          this.projectiles.find(blt => blt.id === bolt.id).kill = true;
         } else {
 
           // NO OBSTACLE. ITEM ON GROUND? DESTROY
@@ -20298,6 +20427,7 @@ class App extends Component {
             else {
               console.log('attacking invurnerable barrier');
             }
+            this.projectiles.find(blt => blt.id === bolt.id).kill = true;
           }
 
         }
