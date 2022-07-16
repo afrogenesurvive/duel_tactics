@@ -9979,193 +9979,47 @@ class App extends Component {
 
             if (infoCell.elevation.number === bolt.elevation) {
 
-              for (const plyr of this.players) {
-                if (
-                  plyr.currentPosition.cell.number.x === cell.number.x &&
-                  plyr.currentPosition.cell.number.y === cell.number.y &&
-                  plyr.number !== bolt.owner
-                ) {
-                  // console.log('bolt hit a player',plyr);
-                  this.cellsUnderAttack.push(
-                    {
-                      number: {
-                        x: cell.number.x,
-                        y: cell.number.y,
-                      },
-                      count: 1,
-                      limit: 8,
-                    },
-                  )
-
-
+              let fwdBarrier = false;
+              if (infoCell.barrier.state === true) {
+                if (bolt.direction === 'north' && infoCell.barrier.position === 'south') {
+                  fwdBarrier = true;
+                }
+                if (bolt.direction === 'south' && infoCell.barrier.position === 'north') {
+                  fwdBarrier = true;
+                }
+                if (bolt.direction === 'east' && infoCell.barrier.position === 'west') {
+                  fwdBarrier = true;
+                }
+                if (bolt.direction === 'west' && infoCell.barrier.position === 'east') {
+                  fwdBarrier = true;
+                }
+              }
+              if (fwdBarrier !== true) {
+                for (const plyr of this.players) {
                   if (
-                    this.players.[plyr.number-1].defending.state === false ||
-                    this.players.[plyr.number-1].direction === bolt.direction
+                    plyr.currentPosition.cell.number.x === cell.number.x &&
+                    plyr.currentPosition.cell.number.y === cell.number.y &&
+                    plyr.number !== bolt.owner
                   ) {
-                    // console.log('attack success');
-
-                    let backAttack = false;
-                    if (this.players.[plyr.number-1].direction === bolt.direction) {
-                      console.log('back attack');
-                      backAttack = true;
-                    }
-
-                    this.players[bolt.owner-1].success.attackSuccess = {
-                      state: true,
-                      count: 1,
-                      limit: this.players[bolt.owner-1].success.attackSuccess.limit
-                    }
-
-
-                    // CALCULATE ATTACKER DOUBLE HIT!
-                    let doubleHitChance = this.players[bolt.owner-1].crits.doubleHit;
-                    let singleHitChance = this.players[bolt.owner-1].crits.singleHit;
-                    if (backAttack === true) {
-                      if (doubleHitChance > 2) {
-                        let diff = doubleHitChance - 2;
-                        doubleHitChance = doubleHitChance - diff;
-                      }
-                    }
-
-                    if (this.players.[plyr.number-1].currentArmor.name !== '') {
-                      // console.log('opponent armour found');
-                      switch(this.players.[plyr.number-1].currentArmor.effect) {
-                        case 'dblhit-5' :
-                          doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+5;
-                        break;
-                        case 'dblhit-10' :
-                          doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+10;
-                        break;
-                        case 'dblhit-15' :
-                          doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+15;
-                        break;
-                        // case 'dblhit-30' :
-                        //   doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+30;
-                        // break;
-                        case 'snghit-5' :
-                          singleHitChance = this.players[bolt.owner-1].crits.singleHit+5;
-                        break;
-                        case 'snghit-10' :
-                          singleHitChance = this.players[bolt.owner-1].crits.singleHit+10;
-                        break;
-                      }
-                    }
-
-                    let doubleHit = this.rnJesus(1,doubleHitChance);
-                    let singleHit = this.rnJesus(1,singleHitChance);
-
-  // -----------
-                    // doubleHit = 2;
-                    // singleHit = 2;
-                    // ----------------
-
-                    let miss;
-                    if (doubleHit === 1) {
-                      console.log('bolt double hit attack');
-                      this.players[plyr.number-1].hp = this.players[plyr.number-1].hp - 2;
-                      this.attackedCancel(this.players[plyr.number-1]);
-
-                      if (!this.players[plyr.number-1].popups.find(x=>x.msg === 'alarmed')) {
-                        this.players[plyr.number-1].popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit:25,
-                            type: '',
-                            position: '',
-                            msg: 'alarmed',
-                            img: '',
-
-                          }
-                        )
-                      }
-
-                    }
-                    else if (singleHit === 1) {
-                      console.log('bolt single hit attack');
-                      this.players[plyr.number-1].hp = this.players[plyr.number-1].hp - 1;
-                      this.attackedCancel(this.players[plyr.number-1]);
-
-                      if (!this.players[plyr.number-1].popups.find(x=>x.msg === 'alarmed')) {
-                        this.players[plyr.number-1].popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit:25,
-                            type: '',
-                            position: '',
-                            msg: 'alarmed',
-                            img: '',
-
-                          }
-                        )
-                      }
-
-                    }
-                    else if (doubleHit !== 1 && singleHit !== 1) {
-                      console.log('bolt attack but no damage');
-                      miss = true;
-                      this.players[bolt.owner-1].statusDisplay = {
-                        state: true,
-                        status: 'attack missed!',
+                    // console.log('bolt hit a player',plyr);
+                    this.cellsUnderAttack.push(
+                      {
+                        number: {
+                          x: cell.number.x,
+                          y: cell.number.y,
+                        },
                         count: 1,
-                        limit: this.players[bolt.owner-1].statusDisplay.limit,
-                      }
-                    }
-
-                    if (this.players.[plyr.number-1].hp === 1) {
-                      this.players.[plyr.number-1].speed.move = .05;
-                    }
-
-                    if (this.players.[plyr.number-1].hp <= 0) {
-                      this.killPlayer(this.players.[plyr.number-1]);
-
-                      let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                      this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
-
-                      this.players[bolt.owner-1].points++;
-                      this.pointChecker(this.players[bolt.owner-1])
-
-                    }
-                    else if (miss !== true) {
-                      this.players.[plyr.number-1].action = 'deflected';
-
-                      this.players[plyr.number-1].defending = {
-                        state: false,
-                        count: 0,
-                        limit: this.players[plyr.number-1].defending.limit,
-                      }
-                      this.players[plyr.number-1].attacking = {
-                        state: false,
-                        count: 0,
-                        limit: this.players[plyr.number-1].attacking.limit,
-                      }
-
-                      this.players.[plyr.number-1].success.deflected = {
-                        state: true,
-                        count: 1,
-                        limit: this.deflectedLengthRef.attacked,
-                        predeflect: this.players.[plyr.number-1].success.deflected.predeflect,
-                        type: 'attacked',
-                      };
+                        limit: 8,
+                      },
+                    )
 
 
-                      if (this.aiDeflectedCheck.includes(this.players.[plyr.number-1].number) !== true) {
-                        this.aiDeflectedCheck.push(this.players.[plyr.number-1].number)
-                      }
+                    if (
+                      this.players.[plyr.number-1].defending.state === false ||
+                      this.players.[plyr.number-1].direction === bolt.direction
+                    ) {
+                      // console.log('attack success');
 
-
-                    }
-
-
-                  }
-                  // ATTACK DEFENDED!!
-                  else {
-
-
-                    // CAN'T DEFLECT BOLT UNARMED
-                    if (this.players.[plyr.number-1].currentWeapon.name === "") {
-                      console.log('cant deflect bolt unarmed');
                       let backAttack = false;
                       if (this.players.[plyr.number-1].direction === bolt.direction) {
                         console.log('back attack');
@@ -10177,6 +10031,7 @@ class App extends Component {
                         count: 1,
                         limit: this.players[bolt.owner-1].success.attackSuccess.limit
                       }
+
 
                       // CALCULATE ATTACKER DOUBLE HIT!
                       let doubleHitChance = this.players[bolt.owner-1].crits.doubleHit;
@@ -10214,6 +10069,11 @@ class App extends Component {
 
                       let doubleHit = this.rnJesus(1,doubleHitChance);
                       let singleHit = this.rnJesus(1,singleHitChance);
+
+    // -----------
+                      // doubleHit = 2;
+                      // singleHit = 2;
+                      // ----------------
 
                       let miss;
                       if (doubleHit === 1) {
@@ -10312,159 +10172,327 @@ class App extends Component {
 
 
                       }
-                    } else {
-                      // console.log('bullet doged');
 
-                      this.boltDeflectAnim = {
-                        position: {
-                          x: bolt.currentPosition.center.x,
-                          y: bolt.currentPosition.center.y,
-                        },
-                        state: true,
-                        count: 1,
-                        limit: this.boltDeflectAnim.limit,
-                      }
 
-                      this.players.[plyr.number-1].success.defendSuccess = {
-                        state: true,
-                        count: 1,
-                        limit: this.players.[plyr.number-1].success.defendSuccess.limit
-                      }
+                    }
+                    // ATTACK DEFENDED!!
+                    else {
 
-                      player.popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit:25,
-                          type: '',
-                          position: '',
-                          msg: 'defendSuccess',
-                          img: '',
 
+                      // CAN'T DEFLECT BOLT UNARMED
+                      if (this.players.[plyr.number-1].currentWeapon.name === "") {
+                        console.log('cant deflect bolt unarmed');
+                        let backAttack = false;
+                        if (this.players.[plyr.number-1].direction === bolt.direction) {
+                          console.log('back attack');
+                          backAttack = true;
                         }
-                      )
 
-
-                      // GUARD BREAK!
-                      // let deflectOpponent = this.rnJesus(1,3);
-                      let deflectOpponent = 0;
-
-                      // PEAK DEFEND/PARRY!!
-                      if (
-                        this.players.[plyr.number-1].defending.state === true &&
-                        this.players.[plyr.number-1].defendDecay.state !== true ||
-                        this.players.[plyr.number-1].defendDecay.state === true &&
-                        this.players.[plyr.number-1].defendDecay.count < 4
-                      ) {
-                        console.log('peak bolt defend/parry');
-                        deflectOpponent = this.rnJesus(1,1);
-
-
-                        this.players.[plyr.number-1].statusDisplay = {
+                        this.players[bolt.owner-1].success.attackSuccess = {
                           state: true,
-                          status: 'Parry!',
                           count: 1,
-                          limit: this.players[player.number-1].statusDisplay.limit,
+                          limit: this.players[bolt.owner-1].success.attackSuccess.limit
                         }
 
-                        this.players.[plyr.number-1].popups.push(
+                        // CALCULATE ATTACKER DOUBLE HIT!
+                        let doubleHitChance = this.players[bolt.owner-1].crits.doubleHit;
+                        let singleHitChance = this.players[bolt.owner-1].crits.singleHit;
+                        if (backAttack === true) {
+                          if (doubleHitChance > 2) {
+                            let diff = doubleHitChance - 2;
+                            doubleHitChance = doubleHitChance - diff;
+                          }
+                        }
+
+                        if (this.players.[plyr.number-1].currentArmor.name !== '') {
+                          // console.log('opponent armour found');
+                          switch(this.players.[plyr.number-1].currentArmor.effect) {
+                            case 'dblhit-5' :
+                              doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+5;
+                            break;
+                            case 'dblhit-10' :
+                              doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+10;
+                            break;
+                            case 'dblhit-15' :
+                              doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+15;
+                            break;
+                            // case 'dblhit-30' :
+                            //   doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+30;
+                            // break;
+                            case 'snghit-5' :
+                              singleHitChance = this.players[bolt.owner-1].crits.singleHit+5;
+                            break;
+                            case 'snghit-10' :
+                              singleHitChance = this.players[bolt.owner-1].crits.singleHit+10;
+                            break;
+                          }
+                        }
+
+                        let doubleHit = this.rnJesus(1,doubleHitChance);
+                        let singleHit = this.rnJesus(1,singleHitChance);
+
+                        let miss;
+                        if (doubleHit === 1) {
+                          console.log('bolt double hit attack');
+                          this.players[plyr.number-1].hp = this.players[plyr.number-1].hp - 2;
+                          this.attackedCancel(this.players[plyr.number-1]);
+
+                          if (!this.players[plyr.number-1].popups.find(x=>x.msg === 'alarmed')) {
+                            this.players[plyr.number-1].popups.push(
+                              {
+                                state: false,
+                                count: 0,
+                                limit:25,
+                                type: '',
+                                position: '',
+                                msg: 'alarmed',
+                                img: '',
+
+                              }
+                            )
+                          }
+
+                        }
+                        else if (singleHit === 1) {
+                          console.log('bolt single hit attack');
+                          this.players[plyr.number-1].hp = this.players[plyr.number-1].hp - 1;
+                          this.attackedCancel(this.players[plyr.number-1]);
+
+                          if (!this.players[plyr.number-1].popups.find(x=>x.msg === 'alarmed')) {
+                            this.players[plyr.number-1].popups.push(
+                              {
+                                state: false,
+                                count: 0,
+                                limit:25,
+                                type: '',
+                                position: '',
+                                msg: 'alarmed',
+                                img: '',
+
+                              }
+                            )
+                          }
+
+                        }
+                        else if (doubleHit !== 1 && singleHit !== 1) {
+                          console.log('bolt attack but no damage');
+                          miss = true;
+                          this.players[bolt.owner-1].statusDisplay = {
+                            state: true,
+                            status: 'attack missed!',
+                            count: 1,
+                            limit: this.players[bolt.owner-1].statusDisplay.limit,
+                          }
+                        }
+
+                        if (this.players.[plyr.number-1].hp === 1) {
+                          this.players.[plyr.number-1].speed.move = .05;
+                        }
+
+                        if (this.players.[plyr.number-1].hp <= 0) {
+                          this.killPlayer(this.players.[plyr.number-1]);
+
+                          let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+                          this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+                          this.players[bolt.owner-1].points++;
+                          this.pointChecker(this.players[bolt.owner-1])
+
+                        }
+                        else if (miss !== true) {
+                          this.players.[plyr.number-1].action = 'deflected';
+
+                          this.players[plyr.number-1].defending = {
+                            state: false,
+                            count: 0,
+                            limit: this.players[plyr.number-1].defending.limit,
+                          }
+                          this.players[plyr.number-1].attacking = {
+                            state: false,
+                            count: 0,
+                            limit: this.players[plyr.number-1].attacking.limit,
+                          }
+
+                          this.players.[plyr.number-1].success.deflected = {
+                            state: true,
+                            count: 1,
+                            limit: this.deflectedLengthRef.attacked,
+                            predeflect: this.players.[plyr.number-1].success.deflected.predeflect,
+                            type: 'attacked',
+                          };
+
+
+                          if (this.aiDeflectedCheck.includes(this.players.[plyr.number-1].number) !== true) {
+                            this.aiDeflectedCheck.push(this.players.[plyr.number-1].number)
+                          }
+
+
+                        }
+                      } else {
+                        // console.log('bullet doged');
+
+                        this.boltDeflectAnim = {
+                          position: {
+                            x: bolt.currentPosition.center.x,
+                            y: bolt.currentPosition.center.y,
+                          },
+                          state: true,
+                          count: 1,
+                          limit: this.boltDeflectAnim.limit,
+                        }
+
+                        this.players.[plyr.number-1].success.defendSuccess = {
+                          state: true,
+                          count: 1,
+                          limit: this.players.[plyr.number-1].success.defendSuccess.limit
+                        }
+
+                        player.popups.push(
                           {
                             state: false,
                             count: 0,
-                            limit: 25,
+                            limit:25,
                             type: '',
                             position: '',
-                            msg: 'attackParried',
+                            msg: 'defendSuccess',
                             img: '',
 
                           }
                         )
-                      }
 
-                      // OFF PEAK DEFEND
-                      else {
-                        console.log('off peak bolt defend');
-                        deflectOpponent = this.rnJesus(1,this.players[plyr.number-1].crits.guardBreak);
 
-                        this.players.[plyr.number-1].statusDisplay = {
-                          state: true,
-                          status: 'Defend',
-                          count: 1,
-                          limit: this.players[player.number-1].statusDisplay.limit,
-                        }
+                        // GUARD BREAK!
+                        // let deflectOpponent = this.rnJesus(1,3);
+                        let deflectOpponent = 0;
 
-                        this.players.[plyr.number-1].popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit: 25,
-                            type: '',
-                            position: '',
-                            msg: 'attackDefended',
-                            img: '',
+                        // PEAK DEFEND/PARRY!!
+                        if (
+                          this.players.[plyr.number-1].defending.state === true &&
+                          this.players.[plyr.number-1].defendDecay.state !== true ||
+                          this.players.[plyr.number-1].defendDecay.state === true &&
+                          this.players.[plyr.number-1].defendDecay.count < 4
+                        ) {
+                          console.log('peak bolt defend/parry');
+                          deflectOpponent = this.rnJesus(1,1);
 
+
+                          this.players.[plyr.number-1].statusDisplay = {
+                            state: true,
+                            status: 'Parry!',
+                            count: 1,
+                            limit: this.players[player.number-1].statusDisplay.limit,
                           }
-                        )
-                      }
 
+                          this.players.[plyr.number-1].popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit: 25,
+                              type: '',
+                              position: '',
+                              msg: 'attackParried',
+                              img: '',
 
-                      if (deflectOpponent === 1) {
-                        this.players[plyr.number-1].breakAnim.defend = {
-                          state: true,
-                          count: 1,
-                          limit: player.breakAnim.defend.limit,
-                        };
-                        this.players[plyr.number-1].success.deflected = {
-                          state: true,
-                          count: 1,
-                          limit: this.deflectedLengthRef.defended,
-                          predeflect: this.players[plyr.number-1].success.deflected.predeflect,
-                          type: 'defended',
-                        };
+                            }
+                          )
+                        }
 
+                        // OFF PEAK DEFEND
+                        else {
+                          console.log('off peak bolt defend');
+                          deflectOpponent = this.rnJesus(1,this.players[plyr.number-1].crits.guardBreak);
 
-                        if (this.aiDeflectedCheck.includes(this.players[plyr.number-1].number) !== true) {
-                          this.aiDeflectedCheck.push(this.players[plyr.number-1].number)
+                          this.players.[plyr.number-1].statusDisplay = {
+                            state: true,
+                            status: 'Defend',
+                            count: 1,
+                            limit: this.players[player.number-1].statusDisplay.limit,
+                          }
+
+                          this.players.[plyr.number-1].popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit: 25,
+                              type: '',
+                              position: '',
+                              msg: 'attackDefended',
+                              img: '',
+
+                            }
+                          )
                         }
 
 
+                        if (deflectOpponent === 1) {
+                          this.players[plyr.number-1].breakAnim.defend = {
+                            state: true,
+                            count: 1,
+                            limit: player.breakAnim.defend.limit,
+                          };
+                          this.players[plyr.number-1].success.deflected = {
+                            state: true,
+                            count: 1,
+                            limit: this.deflectedLengthRef.defended,
+                            predeflect: this.players[plyr.number-1].success.deflected.predeflect,
+                            type: 'defended',
+                          };
+
+
+                          if (this.aiDeflectedCheck.includes(this.players[plyr.number-1].number) !== true) {
+                            this.aiDeflectedCheck.push(this.players[plyr.number-1].number)
+                          }
+
+
+                        }
                       }
+
+
                     }
 
+                    bolt.kill = true;
 
                   }
-
-                  bolt.kill = true;
-
                 }
               }
+              else {
 
-              // CHECK FOR OBSTACLE & BARRIER COLLISION
-              for (const cell2 of this.gridInfo) {
-                if (
-                  cell2.number.x === cell.number.x &&
-                  cell2.number.y === cell.number.y
-                ) {
-                  if (
-                    // cell2.levelData.charAt(0) ===  'z' ||
-                    // cell2.levelData.charAt(0) ===  'y'
-                    cell2.obstacle.state === true &&
-                    cell2.obstacle.height >= 1
+                // CHECK FOR OBSTACLE & BARRIER COLLISION
 
-                  ) {
-                    console.log('bolt hit an obstacle @ ',cell2.number);
-                    this.attackCellContents('bolt',this.players[bolt.owner-1],cell2,undefined,undefined,bolt)
-                    bolt.kill = true;
-                  }
-                  if (
-                    cell2.barrier.state === true &&
-                    cell2.barrier.height >= 1
-                  ) {
-                    console.log('bolt hit a barrier @ ',cell2.number);
-                    this.attackCellContents('bolt',this.players[bolt.owner-1],cell2,undefined,undefined,bolt)
-                    bolt.kill = true;
-                  }
+                if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
+                  this.attackCellContents('bolt',this.players[bolt.owner-1],infoCell,undefined,undefined,bolt)
+                  bolt.kill = true;
                 }
+                else if (infoCell.obstacle.state === true && infoCell.obstacle.height >= 1) {
+                  this.attackCellContents('bolt',this.players[bolt.owner-1],infoCell,undefined,undefined,bolt)
+                  bolt.kill = true;
+                }
+
+                // for (const cell2 of this.gridInfo) {
+                //   if (
+                //     cell2.number.x === cell.number.x &&
+                //     cell2.number.y === cell.number.y
+                //   ) {
+                //     if (
+                //       cell2.barrier.state === true &&
+                //       cell2.barrier.height >= 1
+                //     ) {
+                //       // console.log('bolt hit a barrier @ ',cell2.number);
+                //       this.attackCellContents('bolt',this.players[bolt.owner-1],cell2,undefined,undefined,bolt)
+                //       bolt.kill = true;
+                //     }
+                //     else if (
+                //       cell2.obstacle.state === true &&
+                //       cell2.obstacle.height >= 1
+                //     ) {
+                //       // console.log('bolt hit an obstacle @ ',cell2.number);
+                //       this.attackCellContents('bolt',this.players[bolt.owner-1],cell2,undefined,undefined,bolt)
+                //       bolt.kill = true;
+                //     }
+                //
+                //   }
+                // }
+
               }
 
             }
@@ -13508,11 +13536,27 @@ class App extends Component {
     for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
       for (const cell of row) {
         let cellRef = this.gridInfo.find(elem => elem.number.x === parseInt(cell.split("_")[2].split(".")[0]) && elem.number.y === parseInt(cell.split("_")[2].split(".")[1]))
+        let fwdBarrier = false;
+        if (cellRef.barrier.state === true) {
+          if (player.direction === 'north' && cellRef.barrier.position === 'south') {
+            fwdBarrier = true;
+          }
+          if (player.direction === 'south' && cellRef.barrier.position === 'north') {
+            fwdBarrier = true;
+          }
+          if (player.direction === 'east' && cellRef.barrier.position === 'west') {
+            fwdBarrier = true;
+          }
+          if (player.direction === 'west' && cellRef.barrier.position === 'east') {
+            fwdBarrier = true;
+          }
+        }
+
         if (
-          // cell.charAt(0) === 'y' ||
-          // cell.charAt(0) ===  'z'
-          cell.split('_')[0] !== "**" ||
-          cell.split('_')[1] !== "*"
+          // cell.split('_')[0] !== "**" ||
+          // cell.split('_')[1] !== "*"
+          fwdBarrier === true ||
+          cellRef.obstacle.state === true
         ) {
 
 
@@ -13533,6 +13577,7 @@ class App extends Component {
             target.occupant.type = 'obstacle';
             obstacleObstructFound = true;
           }
+
           if (player.currentWeapon.type === 'spear' && player.attacking.state === true && player.strafing.state !== true) {
 
             if (
@@ -15645,20 +15690,7 @@ class App extends Component {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
-  pointChecker = (player) => {
 
-    // console.log('point checker player',player);
-
-    let points = player.points;
-    if (points %5 === 0) {
-      this.bloodSacrificeEvent.state = true;
-      this.bloodSacrificeEvent.limit = 2000;
-      this.bloodSacrificeEvent.restore = true;
-      this.openVoid = true;
-      console.log('the gods have accepted a blood sacrifice. Standby for void tiles');
-    }
-
-  }
 
 
   attackedCancel = (player) => {
@@ -16293,7 +16325,20 @@ class App extends Component {
 
   }
 
+  pointChecker = (player) => {
 
+    // console.log('point checker player',player);
+
+    let points = player.points;
+    if (points %5 === 0) {
+      this.bloodSacrificeEvent.state = true;
+      this.bloodSacrificeEvent.limit = 2000;
+      this.bloodSacrificeEvent.restore = true;
+      this.openVoid = true;
+      console.log('the gods have accepted a blood sacrifice. Standby for void tiles');
+    }
+
+  }
   checkCell = (cell) => {
     // console.log('check cell');
 
@@ -17442,7 +17487,13 @@ class App extends Component {
     }
 
   }
-  attackCellContents = (type,player,targetCell,targetCell2,myCell,bolt) => {
+  attackCellContents = (type,player,targetCellx,targetCellx2,myCell,bolt) => {
+
+    let targetCell = this.gridInfo.find(x=>x.number.x === targetCellx.number.x && x.number.y === targetCellx.number.y)
+    let targetCell2;
+    if (targetCellx2 !== undefined) {
+      targetCell2 = this.gridInfo.find(x=>x.number.x === targetCellx2.number.x && x.number.y === targetCellx2.number.y)
+    }
 
 
     if (type === 'melee') {
@@ -19251,6 +19302,7 @@ class App extends Component {
 
     if (type === 'bolt') {
 
+
       myCell = undefined;
       if (bolt.direction === 'north') {
         myCell = this.gridInfo.find(elem => elem.number.x === targetCell.number.x+1 && elem.number.y === targetCell.number.y)
@@ -19435,14 +19487,76 @@ class App extends Component {
           if (targetCell.obstacle.destructible.state === true) {
             // WEAPON CHECK
             if (targetCell.obstacle.destructible.weapons.find(x => x === 'bolt')) {
+              console.log('target',targetCell);
               if (targetCell.obstacle.hp - damage > 0) {
-                targetCell.obstacle.hp -= damage;
-                console.log('1',targetCell);
-                console.log('2',this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y));
-                // let cellRef = this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y);
-                // this.gridInfo.find(elem => elem === targetCell).obstacle.hp -= damage;
-                // this.gridInfo.find(elem => elem === targetCell).obstacle.hp = this.gridInfo.find(elem => elem === targetCell).obstacle.hp - damage;
-                // cellRef.obstacle.hp -= damage;
+                // targetCell.obstacle.hp -= damage;
+                let targetCellA = this.gridInfo.find(y=> y.number.x === targetCell.number.x && y.number.y === targetCell.number.y);
+                let hp = (targetCellA.obstacle.hp -= damage);
+                console.log('hpx',hp);
+                targetCellA.obstacle = {
+                  state: true,
+                  name: 'closet2',
+                  type: 'closet',
+                  hp: hp,
+                  destructible: {
+                    state: true,
+                    weapons: ['sword1','bolt','spear1'],
+                    leaveRubble: false,
+                  },
+                  locked: {
+                    state: false,
+                    key: '',
+                  },
+                  weight: 1,
+                  height: 1,
+                  items: [{
+                    name: 'hpUp',
+                    amount: 4,
+                    total: 4,
+                    type: 'item',
+                    effect: 'hpUp',
+                  },
+                  {
+                    name: 'sword1',
+                    type: 'sword',
+                    effect: '',
+                  }],
+                  effects: [],
+                  moving: {
+                    state: false,
+                    origin: {
+                      number: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                      center: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                    },
+                    destination: {
+                      number: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                      center: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                    },
+                    currentPosition: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                    nextPosition: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                  }
+                };
+
+                console.log('ff',this.gridInfo.filter(x=>x.obstacle.hp === targetCell.obstacle.hp && x.obstacle.name === targetCell.obstacle.name));
+
                 this.obstacleBarrierToDestroy.push({
                   type: 'obstacle',
                   action: 'damage',
@@ -19451,7 +19565,11 @@ class App extends Component {
                   complete: false,
                   cell: targetCell,
                 })
+
               }
+
+
+
 
               // DESTROY OBSTACLE W/ OR W/O RUBBLE
               else if (targetCell.obstacle.hp - damage <= 0) {
@@ -19705,6 +19823,7 @@ class App extends Component {
 
               }
 
+
             }
 
             // WEAPON NO GOOD. DEFLECT
@@ -19713,10 +19832,8 @@ class App extends Component {
 
             }
 
+
           }
-
-
-
 
 
 
@@ -21016,6 +21133,9 @@ class App extends Component {
 
 
   }
+
+
+
 
   drawGridInit = (canvas, context, canvas2, context2) => {
     // console.log('drawing initial');
