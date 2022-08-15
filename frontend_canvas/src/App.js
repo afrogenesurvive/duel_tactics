@@ -489,7 +489,7 @@ class App extends Component {
         destructible: {
           state: true,
           weapons: ['sword1','bolt','spear1'],
-          leaveRubble: false,
+          leaveRubble: true,
         },
         locked: {
           state: false,
@@ -800,7 +800,7 @@ class App extends Component {
         destructible: {
           state: true,
           weapons: ['sword1','bolt','spear1'],
-          leaveRubble: false,
+          leaveRubble: true,
         },
         locked: {
           state: false,
@@ -2508,8 +2508,8 @@ class App extends Component {
     this.bloodSacrificeVoidedCells = [];
 
 
-
   }
+
 
 
   componentDidMount() {
@@ -9950,7 +9950,7 @@ class App extends Component {
       if (bolt.kill === true) {
         let index = this.projectiles.findIndex(blt => blt.id === bolt.id);
         this.projectiles.splice(index, 1);
-        console.log('kill bolt',bolt.currentPosition.number, this.players[bolt.owner-1].currentPosition.cell.number,this.projectiles);
+        // console.log('kill bolt',bolt.currentPosition.number, this.players[bolt.owner-1].currentPosition.cell.number,this.projectiles);
       }
       if (bolt.type === 'bolt' && bolt.moving.state === true && bolt.kill !== true) {
         // console.log('traking projectile');
@@ -9971,16 +9971,16 @@ class App extends Component {
           }
           let pip = pointInPolygon(point, polygon)
           if (pip === true) {
-            // console.log('gotcha',cell.number);
+            // console.log('bolt passing through cell',cell.number);
             bolt.currentPosition.number = cell.number;
 
-
             let infoCell = this.gridInfo.find(x => x.number.x === cell.number.x && x.number.y === cell.number.y);
+
 
             if (infoCell.elevation.number === bolt.elevation) {
 
               let fwdBarrier = false;
-              if (infoCell.barrier.state === true) {
+              if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
                 if (bolt.direction === 'north' && infoCell.barrier.position === 'south') {
                   fwdBarrier = true;
                 }
@@ -10454,54 +10454,43 @@ class App extends Component {
 
                   }
                 }
+
+
+                // CHECK FOR OBSTACLE &  REAR BARRIER COLLISION
+
+                if (infoCell.obstacle.state === true && infoCell.obstacle.height >= 1) {
+                  this.attackCellContents('bolt',this.players[bolt.owner-1],infoCell,undefined,undefined,bolt)
+
+                  bolt.kill = true;
+                }
+
+
+                else if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
+                  this.attackCellContents('bolt',this.players[bolt.owner-1],infoCell,undefined,undefined,bolt)
+                  bolt.kill = true;
+                }
+
+
               }
               else {
 
-                // CHECK FOR OBSTACLE & BARRIER COLLISION
-
+                // HANDLE FWD BARRIER BOLT COLLISION
                 if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
                   this.attackCellContents('bolt',this.players[bolt.owner-1],infoCell,undefined,undefined,bolt)
-                  bolt.kill = true;
-                }
-                else if (infoCell.obstacle.state === true && infoCell.obstacle.height >= 1) {
-                  this.attackCellContents('bolt',this.players[bolt.owner-1],infoCell,undefined,undefined,bolt)
-                  bolt.kill = true;
-                }
 
-                // for (const cell2 of this.gridInfo) {
-                //   if (
-                //     cell2.number.x === cell.number.x &&
-                //     cell2.number.y === cell.number.y
-                //   ) {
-                //     if (
-                //       cell2.barrier.state === true &&
-                //       cell2.barrier.height >= 1
-                //     ) {
-                //       // console.log('bolt hit a barrier @ ',cell2.number);
-                //       this.attackCellContents('bolt',this.players[bolt.owner-1],cell2,undefined,undefined,bolt)
-                //       bolt.kill = true;
-                //     }
-                //     else if (
-                //       cell2.obstacle.state === true &&
-                //       cell2.obstacle.height >= 1
-                //     ) {
-                //       // console.log('bolt hit an obstacle @ ',cell2.number);
-                //       this.attackCellContents('bolt',this.players[bolt.owner-1],cell2,undefined,undefined,bolt)
-                //       bolt.kill = true;
-                //     }
-                //
-                //   }
-                // }
+                  bolt.kill = true;
+                }
 
               }
 
             }
+
+
             else {
               if (infoCell.elevation.number < bolt.elevation) {
                 console.log('bolt moving over lower cell. ');
 
                   this.attackCellContents('flyOverBolt',this.players[bolt.owner-1],infoCell,undefined,undefined,bolt)
-
 
               }
               if (infoCell.elevation.number > bolt.elevation) {
@@ -15301,7 +15290,7 @@ class App extends Component {
 
       break;
       case 'hazard' :
-        // console.log('player',player.number,' stepped in',cell.terrain.name,'type',cell.terrain.type);
+        console.log('player',player.number,' stepped in',cell.terrain.name,'type',cell.terrain.type);
         let applyHazard;
         if (cell.terrain.name === 'lava') {
           applyHazard = this.rnJesus(1,2)
@@ -17487,13 +17476,9 @@ class App extends Component {
     }
 
   }
-  attackCellContents = (type,player,targetCellx,targetCellx2,myCell,bolt) => {
+  attackCellContents = (type,player,targetCell,targetCell2,myCell,bolt) => {
 
-    let targetCell = this.gridInfo.find(x=>x.number.x === targetCellx.number.x && x.number.y === targetCellx.number.y)
-    let targetCell2;
-    if (targetCellx2 !== undefined) {
-      targetCell2 = this.gridInfo.find(x=>x.number.x === targetCellx2.number.x && x.number.y === targetCellx2.number.y)
-    }
+
 
 
     if (type === 'melee') {
@@ -17556,7 +17541,20 @@ class App extends Component {
               // WEAPON CHECK
               if (targetCell.barrier.destructible.weapons.find(x => x === player.currentWeapon.name)) {
                 if (targetCell.barrier.hp - damage > 0) {
-                  this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).barrier.hp -= damage;
+
+                  let hp = targetCell.barrier.hp - damage;
+
+                  targetCell.barrier =
+                  {
+                    state: targetCell.barrier.state,
+                    name: targetCell.barrier.name,
+                    type: targetCell.barrier.type,
+                    hp: hp,
+                    destructible: targetCell.barrier.destructible,
+                    locked: targetCell.barrier.locked,
+                    position: targetCell.barrier.position,
+                    height: targetCell.barrier.height,
+                  };
 
                   this.obstacleBarrierToDestroy.push({
                     type: 'barrier',
@@ -17572,25 +17570,18 @@ class App extends Component {
                 else if (targetCell.barrier.hp - damage <= 0) {
                   if (targetCell.barrier.destructible.leaveRubble === true) {
                     console.log('leave rubble on ',targetCell.number,'removing barrier');
-                    this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).rubble = true;
-                    this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).terrain.type = 'hazard';
-                    this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).barrier =
+                    targetCell.rubble = true;
+                    targetCell.terrain.type = 'hazard';
+                    targetCell.barrier =
                     {
                       state: false,
-                      name: '',
-                      type: '',
-                      hp: 2,
-                      destructible: {
-                        state: false,
-                        weapons: [],
-                        leaveRubble: false,
-                      },
-                      locked: {
-                        state: false,
-                        key: '',
-                      },
-                      position: '',
-                      height: 1,
+                      name: targetCell.barrier.name,
+                      type: targetCell.barrier.type,
+                      hp: 0,
+                      destructible: targetCell.barrier.destructible,
+                      locked: targetCell.barrier.locked,
+                      position: targetCell.barrier.position,
+                      height: targetCell.barrier.height,
                     };
 
                     this.players[player.number-1].statusDisplay = {
@@ -17614,23 +17605,17 @@ class App extends Component {
                     )
                   } else {
                     console.log('no rubble. Just remove barrier');
-                    this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).barrier =
+
+                    targetCell.barrier =
                     {
                       state: false,
-                      name: '',
-                      type: '',
-                      hp: 2,
-                      destructible: {
-                        state: false,
-                        weapons: [],
-                        leaveRubble: false,
-                      },
-                      locked: {
-                        state: false,
-                        key: '',
-                      },
-                      position: '',
-                      height: 1,
+                      name: targetCell.barrier.name,
+                      type: targetCell.barrier.type,
+                      hp: 0,
+                      destructible: targetCell.barrier.destructible,
+                      locked: targetCell.barrier.locked,
+                      position: targetCell.barrier.position,
+                      height: targetCell.barrier.height,
                     };
 
                     this.players[player.number-1].statusDisplay = {
@@ -17768,7 +17753,23 @@ class App extends Component {
                 // WEAPON CHECK
                 if (targetCell.obstacle.destructible.weapons.find(x => x === player.currentWeapon.name)) {
                   if (targetCell.obstacle.hp - damage > 0) {
-                    this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).obstacle.hp -= damage;
+                    // this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).obstacle.hp -= damage;
+
+                    let hp = targetCell.obstacle.hp - damage;
+
+                    targetCell.obstacle = {
+                      state: targetCell.obstacle.state,
+                      name: targetCell.obstacle.name,
+                      type: targetCell.obstacle.type,
+                      hp: hp,
+                      destructible: targetCell.obstacle.destructible,
+                      locked: targetCell.obstacle.locked,
+                      weight: targetCell.obstacle.weight,
+                      height: targetCell.obstacle.height,
+                      items: targetCell.obstacle.items,
+                      effects: targetCell.obstacle.effects,
+                      moving: targetCell.obstacle.moving
+                    };
 
                     this.obstacleBarrierToDestroy.push({
                       type: 'obstacle',
@@ -17789,58 +17790,21 @@ class App extends Component {
                       if (targetCell.obstacle.items[0]) {
                         itemsToDrop = targetCell.obstacle.items;
                       }
-                      this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).rubble = true;
-                      this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).terrain.type = 'hazard';
-                      this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).obstacle =
-                      {
+                      targetCell.rubble = true;
+                      targetCell.terrain.type = 'hazard';
+
+                      targetCell.obstacle = {
                         state: false,
-                        name: '',
-                        type: '',
-                        hp: 2,
-                        destructible: {
-                          state: false,
-                          weapons: [],
-                          leaveRubble: false,
-                        },
-                        locked: {
-                          state: false,
-                          key: '',
-                        },
-                        weight: 1,
-                        height: 0.5,
-                        items: [],
-                        effects: [],
-                        moving: {
-                          state: false,
-                          origin: {
-                            number: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                            center: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                          },
-                          destination: {
-                            number: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                            center: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                          },
-                          currentPosition: {
-                            x: undefined,
-                            y: undefined,
-                          },
-                          nextPosition: {
-                            x: undefined,
-                            y: undefined,
-                          },
-                        }
+                        name: targetCell.obstacle.name,
+                        type: targetCell.obstacle.type,
+                        hp: 0,
+                        destructible: targetCell.obstacle.destructible,
+                        locked: targetCell.obstacle.locked,
+                        weight: targetCell.obstacle.weight,
+                        height: targetCell.obstacle.height,
+                        items: targetCell.obstacle.items,
+                        effects: targetCell.obstacle.effects,
+                        moving: targetCell.obstacle.moving
                       };
 
                       this.players[player.number-1].statusDisplay = {
@@ -17869,56 +17833,19 @@ class App extends Component {
                       if (targetCell.obstacle.items[0]) {
                         itemsToDrop = targetCell.obstacle.items;
                       }
-                      this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).obstacle =
-                      {
+                      // this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).obstacle =
+                      targetCell.obstacle = {
                         state: false,
-                        name: '',
-                        type: '',
-                        hp: 2,
-                        destructible: {
-                          state: false,
-                          weapons: [],
-                          leaveRubble: false,
-                        },
-                        locked: {
-                          state: false,
-                          key: '',
-                        },
-                        weight: 1,
-                        height: 0.5,
-                        items: [],
-                        effects: [],
-                        moving: {
-                          state: false,
-                          origin: {
-                            number: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                            center: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                          },
-                          destination: {
-                            number: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                            center: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                          },
-                          currentPosition: {
-                            x: undefined,
-                            y: undefined,
-                          },
-                          nextPosition: {
-                            x: undefined,
-                            y: undefined,
-                          },
-                        }
+                        name: targetCell.obstacle.name,
+                        type: targetCell.obstacle.type,
+                        hp: 0,
+                        destructible: targetCell.obstacle.destructible,
+                        locked: targetCell.obstacle.locked,
+                        weight: targetCell.obstacle.weight,
+                        height: targetCell.obstacle.height,
+                        items: targetCell.obstacle.items,
+                        effects: targetCell.obstacle.effects,
+                        moving: targetCell.obstacle.moving
                       };
 
                       this.players[player.number-1].statusDisplay = {
@@ -18154,7 +18081,20 @@ class App extends Component {
               // WEAPON CHECK
               if (targetCell2.barrier.destructible.weapons.find(x => x === player.currentWeapon.name)) {
                 if (targetCell2.barrier.hp - damage > 0) {
-                  this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y ).barrier.hp -= damage;
+                  // this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y ).barrier.hp -= damage;
+
+                  let hp = targetCell2.barrier.hp - damage;
+
+                  targetCell2.barrier = {
+                    state: targetCell2.barrier.state,
+                    name: targetCell2.barrier.name,
+                    type: targetCell2.barrier.type,
+                    hp: hp,
+                    destructible: targetCell2.barrier.destructible,
+                    locked: targetCell2.barrier.locked,
+                    position: targetCell2.barrier.position,
+                    height: targetCell2.barrier.height,
+                  };
 
                   this.obstacleBarrierToDestroy.push({
                     type: 'barrier',
@@ -18170,25 +18110,17 @@ class App extends Component {
                 else if (targetCell2.barrier.hp - damage <= 0) {
                   if (targetCell2.barrier.destructible.leaveRubble === true) {
                     console.log('leave rubble on ',targetCell2.number,'removing barrier');
-                    this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y ).rubble = true;
-                    this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y ).terrain.type = 'hazard';
-                    this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y ).barrier =
-                    {
+                    targetCell2.rubble = true;
+                    targetCell2.terrain.type = 'hazard';
+                    targetCell2.barrier = {
                       state: false,
-                      name: '',
-                      type: '',
-                      hp: 2,
-                      destructible: {
-                        state: false,
-                        weapons: [],
-                        leaveRubble: false,
-                      },
-                      locked: {
-                        state: false,
-                        key: '',
-                      },
-                      position: '',
-                      height: 1,
+                      name: targetCell2.barrier.name,
+                      type: targetCell2.barrier.type,
+                      hp: 0,
+                      destructible: targetCell2.barrier.destructible,
+                      locked: targetCell2.barrier.locked,
+                      position: targetCell2.barrier.position,
+                      height: targetCell2.barrier.height,
                     };
 
                     this.players[player.number-1].statusDisplay = {
@@ -18212,23 +18144,16 @@ class App extends Component {
                     )
                   } else {
                     console.log('no rubble. Just remove barrier');
-                    this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y ).barrier =
-                    {
+
+                    targetCell2.barrier = {
                       state: false,
-                      name: '',
-                      type: '',
-                      hp: 2,
-                      destructible: {
-                        state: false,
-                        weapons: [],
-                        leaveRubble: false,
-                      },
-                      locked: {
-                        state: false,
-                        key: '',
-                      },
-                      position: '',
-                      height: 1,
+                      name: targetCell2.barrier.name,
+                      type: targetCell2.barrier.type,
+                      hp: 0,
+                      destructible: targetCell2.barrier.destructible,
+                      locked: targetCell2.barrier.locked,
+                      position: targetCell2.barrier.position,
+                      height: targetCell2.barrier.height,
                     };
 
                     this.players[player.number-1].statusDisplay = {
@@ -18326,7 +18251,21 @@ class App extends Component {
                 // WEAPON CHECK
                 if (targetCell2.obstacle.destructible.weapons.find(x => x === player.currentWeapon.name)) {
                   if (targetCell2.obstacle.hp - damage > 0) {
-                    this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y ).obstacle.hp -= damage;
+
+                    let hp = targetCell2.hp - damage;
+                    targetCell2.obstacle = {
+                      state: targetCell2.obstacle.state,
+                      name: targetCell2.obstacle.name,
+                      type: targetCell2.obstacle.type,
+                      hp: hp,
+                      destructible: targetCell2.obstacle.destructible,
+                      locked: targetCell2.obstacle.locked,
+                      weight: targetCell2.obstacle.weight,
+                      height: targetCell2.obstacle.height,
+                      items: targetCell2.obstacle.items,
+                      effects: targetCell2.obstacle.effects,
+                      moving: targetCell2.obstacle.moving
+                    };
 
                     this.obstacleBarrierToDestroy.push({
                       type: 'obstacle',
@@ -18347,58 +18286,21 @@ class App extends Component {
                       if (targetCell2.obstacle.items[0]) {
                         itemsToDrop = targetCell2.obstacle.items;
                       }
-                      this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y ).rubble = true;
-                      this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y ).terrain.type = 'hazard';
-                      this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y ).obstacle =
-                      {
-                        state: false,
-                        name: '',
-                        type: '',
-                        hp: 2,
-                        destructible: {
-                          state: false,
-                          weapons: [],
-                          leaveRubble: false,
-                        },
-                        locked: {
-                          state: false,
-                          key: '',
-                        },
-                        weight: 1,
-                        height: 0.5,
-                        items: [],
-                        effects: [],
-                        moving: {
-                          state: false,
-                          origin: {
-                            number: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                            center: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                          },
-                          destination: {
-                            number: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                            center: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                          },
-                          currentPosition: {
-                            x: undefined,
-                            y: undefined,
-                          },
-                          nextPosition: {
-                            x: undefined,
-                            y: undefined,
-                          },
-                        }
+                      targetCell2.rubble = true;
+                      targetCell2.terrain.type = 'hazard';
+
+                      targetCell2.obstacle = {
+                        state: targetCell2.obstacle.state,
+                        name: targetCell2.obstacle.name,
+                        type: targetCell2.obstacle.type,
+                        hp: 0,
+                        destructible: targetCell2.obstacle.destructible,
+                        locked: targetCell2.obstacle.locked,
+                        weight: targetCell2.obstacle.weight,
+                        height: targetCell2.obstacle.height,
+                        items: targetCell2.obstacle.items,
+                        effects: targetCell2.obstacle.effects,
+                        moving: targetCell2.obstacle.moving
                       };
 
                       this.players[player.number-1].statusDisplay = {
@@ -18427,56 +18329,19 @@ class App extends Component {
                       if (targetCell2.obstacle.items[0]) {
                         itemsToDrop = targetCell2.obstacle.items;
                       }
-                      this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y ).obstacle =
-                      {
+
+                      targetCell2.obstacle = {
                         state: false,
-                        name: '',
-                        type: '',
-                        hp: 2,
-                        destructible: {
-                          state: false,
-                          weapons: [],
-                          leaveRubble: false,
-                        },
-                        locked: {
-                          state: false,
-                          key: '',
-                        },
-                        weight: 1,
-                        height: 0.5,
-                        items: [],
-                        effects: [],
-                        moving: {
-                          state: false,
-                          origin: {
-                            number: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                            center: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                          },
-                          destination: {
-                            number: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                            center: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                          },
-                          currentPosition: {
-                            x: undefined,
-                            y: undefined,
-                          },
-                          nextPosition: {
-                            x: undefined,
-                            y: undefined,
-                          },
-                        }
+                        name: targetCell2.obstacle.name,
+                        type: targetCell2.obstacle.type,
+                        hp: 0,
+                        destructible: targetCell2.obstacle.destructible,
+                        locked: targetCell2.obstacle.locked,
+                        weight: targetCell2.obstacle.weight,
+                        height: targetCell2.obstacle.height,
+                        items: targetCell2.obstacle.items,
+                        effects: targetCell2.obstacle.effects,
+                        moving: targetCell2.obstacle.moving
                       };
 
                       this.players[player.number-1].statusDisplay = {
@@ -18644,7 +18509,18 @@ class App extends Component {
                     // WEAPON CHECK
                     if (targetCell2.barrier.destructible.weapons.find(x => x === player.currentWeapon.name)) {
                       if (targetCell2.barrier.hp - damage > 0) {
-                        this.gridInfo.find(elem => elem.number.x === targetCell2.number.x && elem.number.y === targetCell2.number.y ).barrier.hp -= damage;
+
+                        let hp = targetCell2.barrier.hp - damage;
+                        targetCell2.barrier = {
+                          state: targetCell2.barrier.state,
+                          name: targetCell2.barrier.name,
+                          type: targetCell2.barrier.type,
+                          hp: hp,
+                          destructible: targetCell2.barrier.destructible,
+                          locked: targetCell2.barrier.locked,
+                          position: targetCell2.barrier.position,
+                          height: targetCell2.barrier.height,
+                        };
 
                         this.obstacleBarrierToDestroy.push({
                           type: 'barrier',
@@ -18660,25 +18536,17 @@ class App extends Component {
                       else if (targetCell2.barrier.hp - damage <= 0) {
                         if (targetCell2.barrier.destructible.leaveRubble === true) {
                           console.log('leave rubble on ',targetCell2.number,'removing barrier');
-                          this.gridInfo.find(elem => elem.number.x === targetCell2.number.x && elem.number.y === targetCell2.number.y ).rubble = true;
-                          this.gridInfo.find(elem => elem.number.x === targetCell2.number.x && elem.number.y === targetCell2.number.y ).terrain.type = 'hazard';
-                          this.gridInfo.find(elem => elem.number.x === targetCell2.number.x && elem.number.y === targetCell2.number.y ).barrier =
-                          {
+                          targetCell2.rubble = true;
+                          targetCell2.terrain.type = 'hazard';
+                          targetCell2.barrier = {
                             state: false,
-                            name: '',
-                            type: '',
-                            hp: 2,
-                            destructible: {
-                              state: false,
-                              weapons: [],
-                              leaveRubble: false,
-                            },
-                            locked: {
-                              state: false,
-                              key: '',
-                            },
-                            position: '',
-                            height: 1,
+                            name: targetCell2.barrier.name,
+                            type: targetCell2.barrier.type,
+                            hp: 0,
+                            destructible: targetCell2.barrier.destructible,
+                            locked: targetCell2.barrier.locked,
+                            position: targetCell2.barrier.position,
+                            height: targetCell2.barrier.height,
                           };
 
                           this.players[player.number-1].statusDisplay = {
@@ -18702,23 +18570,15 @@ class App extends Component {
                           )
                         } else {
                           console.log('no rubble. Just remove barrier');
-                          this.gridInfo.find(elem => elem.number.x === targetCell2.number.x && elem.number.y === targetCell2.number.y ).barrier =
-                          {
+                          targetCell2.barrier = {
                             state: false,
-                            name: '',
-                            type: '',
-                            hp: 2,
-                            destructible: {
-                              state: false,
-                              weapons: [],
-                              leaveRubble: false,
-                            },
-                            locked: {
-                              state: false,
-                              key: '',
-                            },
-                            position: '',
-                            height: 1,
+                            name: targetCell2.barrier.name,
+                            type: targetCell2.barrier.type,
+                            hp: 0,
+                            destructible: targetCell2.barrier.destructible,
+                            locked: targetCell2.barrier.locked,
+                            position: targetCell2.barrier.position,
+                            height: targetCell2.barrier.height,
                           };
 
                           this.players[player.number-1].statusDisplay = {
@@ -18806,7 +18666,18 @@ class App extends Component {
               // WEAPON CHECK
               if (targetCell.barrier.destructible.weapons.find(x => x === player.currentWeapon.name)) {
                 if (targetCell.barrier.hp - damage > 0) {
-                  this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).barrier.hp -= damage;
+
+                  let hp = targetCell.barrier.hp - damage;
+                  targetCell.barrier = {
+                    state: targetCell.barrier.state,
+                    name: targetCell.barrier.name,
+                    type: targetCell.barrier.type,
+                    hp: hp,
+                    destructible: targetCell.barrier.destructible,
+                    locked: targetCell.barrier.locked,
+                    position: targetCell.barrier.position,
+                    height: targetCell.barrier.height,
+                  };
 
                   this.obstacleBarrierToDestroy.push({
                     type: 'barrier',
@@ -18822,25 +18693,17 @@ class App extends Component {
                 else if (targetCell.barrier.hp - damage <= 0) {
                   if (targetCell.barrier.destructible.leaveRubble === true) {
                     console.log('leave rubble on ',targetCell2.number,'removing barrier');
-                    this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).rubble = true;
-                    this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).terrain.type = 'hazard';
-                    this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).barrier =
-                    {
+                    targetCell.rubble = true;
+                    targetCell.terrain.type = 'hazard';
+                    targetCell.barrier = {
                       state: false,
-                      name: '',
-                      type: '',
-                      hp: 2,
-                      destructible: {
-                        state: false,
-                        weapons: [],
-                        leaveRubble: false,
-                      },
-                      locked: {
-                        state: false,
-                        key: '',
-                      },
-                      position: '',
-                      height: 1,
+                      name: targetCell.barrier.name,
+                      type: targetCell.barrier.type,
+                      hp: 0,
+                      destructible: targetCell.barrier.destructible,
+                      locked: targetCell.barrier.locked,
+                      position: targetCell.barrier.position,
+                      height: targetCell.barrier.height,
                     };
 
                     this.players[player.number-1].statusDisplay = {
@@ -18864,23 +18727,15 @@ class App extends Component {
                     )
                   } else {
                     console.log('no rubble. Just remove barrier');
-                    this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).barrier =
-                    {
+                    targetCell.barrier = {
                       state: false,
-                      name: '',
-                      type: '',
-                      hp: 2,
-                      destructible: {
-                        state: false,
-                        weapons: [],
-                        leaveRubble: false,
-                      },
-                      locked: {
-                        state: false,
-                        key: '',
-                      },
-                      position: '',
-                      height: 1,
+                      name: targetCell.barrier.name,
+                      type: targetCell.barrier.type,
+                      hp: 0,
+                      destructible: targetCell.barrier.destructible,
+                      locked: targetCell.barrier.locked,
+                      position: targetCell.barrier.position,
+                      height: targetCell.barrier.height,
                     };
 
                     this.players[player.number-1].statusDisplay = {
@@ -18978,7 +18833,21 @@ class App extends Component {
                 // WEAPON CHECK
                 if (targetCell.obstacle.destructible.weapons.find(x => x === player.currentWeapon.name)) {
                   if (targetCell.obstacle.hp - damage > 0) {
-                    this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).obstacle.hp -= damage;
+
+                    let hp = targetCell.obstacle.hp - damage;
+                    targetCell.obstacle = {
+                      state: targetCell.obstacle.state,
+                      name: targetCell.obstacle.name,
+                      type: targetCell.obstacle.type,
+                      hp: hp,
+                      destructible: targetCell.obstacle.destructible,
+                      locked: targetCell.obstacle.locked,
+                      weight: targetCell.obstacle.weight,
+                      height: targetCell.obstacle.height,
+                      items: targetCell.obstacle.items,
+                      effects: targetCell.obstacle.effects,
+                      moving: targetCell.obstacle.moving
+                    };
 
                     this.obstacleBarrierToDestroy.push({
                       type: 'obstacle',
@@ -18999,58 +18868,20 @@ class App extends Component {
                       if (targetCell2.obstacle.items[0]) {
                         itemsToDrop = targetCell2.obstacle.items;
                       }
-                      this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y ).rubble = true;
-                      this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y ).terrain.type = 'hazard';
-                      this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y ).obstacle =
-                      {
+                      targetCell.rubble = true;
+                      targetCell.terrain.type = 'hazard';
+                      targetCell.obstacle = {
                         state: false,
-                        name: '',
-                        type: '',
-                        hp: 2,
-                        destructible: {
-                          state: false,
-                          weapons: [],
-                          leaveRubble: false,
-                        },
-                        locked: {
-                          state: false,
-                          key: '',
-                        },
-                        weight: 1,
-                        height: 0.5,
-                        items: [],
-                        effects: [],
-                        moving: {
-                          state: false,
-                          origin: {
-                            number: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                            center: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                          },
-                          destination: {
-                            number: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                            center: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                          },
-                          currentPosition: {
-                            x: undefined,
-                            y: undefined,
-                          },
-                          nextPosition: {
-                            x: undefined,
-                            y: undefined,
-                          },
-                        }
+                        name: targetCell.obstacle.name,
+                        type: targetCell.obstacle.type,
+                        hp: 0,
+                        destructible: targetCell.obstacle.destructible,
+                        locked: targetCell.obstacle.locked,
+                        weight: targetCell.obstacle.weight,
+                        height: targetCell.obstacle.height,
+                        items: targetCell.obstacle.items,
+                        effects: targetCell.obstacle.effects,
+                        moving: targetCell.obstacle.moving
                       };
 
                       this.players[player.number-1].statusDisplay = {
@@ -19077,56 +18908,18 @@ class App extends Component {
                       if (targetCell.obstacle.items[0]) {
                         itemsToDrop = targetCell.obstacle.items;
                       }
-                      this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).obstacle =
-                      {
+                      targetCell.obstacle = {
                         state: false,
-                        name: '',
-                        type: '',
-                        hp: 2,
-                        destructible: {
-                          state: false,
-                          weapons: [],
-                          leaveRubble: false,
-                        },
-                        locked: {
-                          state: false,
-                          key: '',
-                        },
-                        weight: 1,
-                        height: 0.5,
-                        items: [],
-                        effects: [],
-                        moving: {
-                          state: false,
-                          origin: {
-                            number: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                            center: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                          },
-                          destination: {
-                            number: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                            center: {
-                              x: undefined,
-                              y: undefined,
-                            },
-                          },
-                          currentPosition: {
-                            x: undefined,
-                            y: undefined,
-                          },
-                          nextPosition: {
-                            x: undefined,
-                            y: undefined,
-                          },
-                        }
+                        name: targetCell.obstacle.name,
+                        type: targetCell.obstacle.type,
+                        hp: 0,
+                        destructible: targetCell.obstacle.destructible,
+                        locked: targetCell.obstacle.locked,
+                        weight: targetCell.obstacle.weight,
+                        height: targetCell.obstacle.height,
+                        items: targetCell.obstacle.items,
+                        effects: targetCell.obstacle.effects,
+                        moving: targetCell.obstacle.moving
                       };
 
                       this.players[player.number-1].statusDisplay = {
@@ -19352,7 +19145,21 @@ class App extends Component {
           // WEAPON CHECK
           if (targetCell.barrier.destructible.weapons.find(x => x === 'bolt')) {
             if (targetCell.barrier.hp - damage > 0) {
-              this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier.hp -= damage;
+              // this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier.hp -= damage;
+
+              let hp = targetCell.barrier.hp - damage;
+
+              targetCell.barrier =
+              {
+                state: targetCell.barrier.state,
+                name: targetCell.barrier.name,
+                type: targetCell.barrier.type,
+                hp: hp,
+                destructible: targetCell.barrier.destructible,
+                locked: targetCell.barrier.locked,
+                position: targetCell.barrier.position,
+                height: targetCell.barrier.height,
+              };
 
               this.obstacleBarrierToDestroy.push({
                 type: 'barrier',
@@ -19369,25 +19176,19 @@ class App extends Component {
 
               if (targetCell.barrier.destructible.leaveRubble === true) {
                 console.log('leave rubble on ',targetCell.number,'removing barrier');
-                this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).rubble = true;
-                this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).terrain.type = 'hazard';
-                this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier =
+                targetCell.rubble = true;
+                targetCell.terrain.type = 'hazard';
+
+                targetCell.barrier =
                 {
                   state: false,
-                  name: '',
-                  type: '',
-                  hp: 2,
-                  destructible: {
-                    state: false,
-                    weapons: [],
-                    leaveRubble: false,
-                  },
-                  locked: {
-                    state: false,
-                    key: '',
-                  },
-                  position: '',
-                  height: 1,
+                  name: targetCell.barrier.name,
+                  type: targetCell.barrier.type,
+                  hp: 0,
+                  destructible: targetCell.barrier.destructible,
+                  locked: targetCell.barrier.locked,
+                  position: targetCell.barrier.position,
+                  height: targetCell.barrier.height,
                 };
 
                 this.players[player.number-1].statusDisplay = {
@@ -19411,23 +19212,16 @@ class App extends Component {
                 )
               } else {
                 console.log('no rubble. Just remove barrier');
-                this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier =
+                targetCell.barrier =
                 {
                   state: false,
-                  name: '',
-                  type: '',
-                  hp: 2,
-                  destructible: {
-                    state: false,
-                    weapons: [],
-                    leaveRubble: false,
-                  },
-                  locked: {
-                    state: false,
-                    key: '',
-                  },
-                  position: '',
-                  height: 1,
+                  name: targetCell.barrier.name,
+                  type: targetCell.barrier.type,
+                  hp: 0,
+                  destructible: targetCell.barrier.destructible,
+                  locked: targetCell.barrier.locked,
+                  position: targetCell.barrier.position,
+                  height: targetCell.barrier.height,
                 };
 
                 this.players[player.number-1].statusDisplay = {
@@ -19479,7 +19273,7 @@ class App extends Component {
 
       // NO FWD BARRIER. OBSTACLE?
       else {
-        damage = 1;
+
         if (targetCell.obstacle.state === true) {
           console.log('player ',player.number,'hit obstacle ',targetCell.obstacle.name,' @ ',targetCell.number,type,' for ',damage,' damage');
 
@@ -19487,75 +19281,25 @@ class App extends Component {
           if (targetCell.obstacle.destructible.state === true) {
             // WEAPON CHECK
             if (targetCell.obstacle.destructible.weapons.find(x => x === 'bolt')) {
-              console.log('target',targetCell);
+
+
               if (targetCell.obstacle.hp - damage > 0) {
-                // targetCell.obstacle.hp -= damage;
-                let targetCellA = this.gridInfo.find(y=> y.number.x === targetCell.number.x && y.number.y === targetCell.number.y);
-                let hp = (targetCellA.obstacle.hp -= damage);
-                console.log('hpx',hp);
-                targetCellA.obstacle = {
-                  state: true,
-                  name: 'closet2',
-                  type: 'closet',
+                let hp = targetCell.obstacle.hp - damage;
+
+                targetCell.obstacle = {
+                  state: targetCell.obstacle.state,
+                  name: targetCell.obstacle.name,
+                  type: targetCell.obstacle.type,
                   hp: hp,
-                  destructible: {
-                    state: true,
-                    weapons: ['sword1','bolt','spear1'],
-                    leaveRubble: false,
-                  },
-                  locked: {
-                    state: false,
-                    key: '',
-                  },
-                  weight: 1,
-                  height: 1,
-                  items: [{
-                    name: 'hpUp',
-                    amount: 4,
-                    total: 4,
-                    type: 'item',
-                    effect: 'hpUp',
-                  },
-                  {
-                    name: 'sword1',
-                    type: 'sword',
-                    effect: '',
-                  }],
-                  effects: [],
-                  moving: {
-                    state: false,
-                    origin: {
-                      number: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                      center: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                    },
-                    destination: {
-                      number: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                      center: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                    },
-                    currentPosition: {
-                      x: undefined,
-                      y: undefined,
-                    },
-                    nextPosition: {
-                      x: undefined,
-                      y: undefined,
-                    },
-                  }
+                  destructible: targetCell.obstacle.destructible,
+                  locked: targetCell.obstacle.locked,
+                  weight: targetCell.obstacle.weight,
+                  height: targetCell.obstacle.height,
+                  items: targetCell.obstacle.items,
+                  effects: targetCell.obstacle.effects,
+                  moving: targetCell.obstacle.moving
                 };
 
-                console.log('ff',this.gridInfo.filter(x=>x.obstacle.hp === targetCell.obstacle.hp && x.obstacle.name === targetCell.obstacle.name));
 
                 this.obstacleBarrierToDestroy.push({
                   type: 'obstacle',
@@ -19570,7 +19314,6 @@ class App extends Component {
 
 
 
-
               // DESTROY OBSTACLE W/ OR W/O RUBBLE
               else if (targetCell.obstacle.hp - damage <= 0) {
                 let itemsToDrop = [];
@@ -19579,112 +19322,24 @@ class App extends Component {
                   if (targetCell.obstacle.items[0]) {
                     itemsToDrop = targetCell.obstacle.items;
                   }
-                  let cellRef = this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y);
-                  cellRef.rubble = true;
-                  cellRef.terrain.type = 'hazard';
-                  cellRef.obstacle = {
+                  // let cellRef = this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y);
+                  targetCell.rubble = true;
+                  targetCell.terrain.type = 'hazard';
+
+                  targetCell.obstacle =
+                  {
                     state: false,
-                    name: '',
-                    type: '',
-                    hp: 2,
-                    destructible: {
-                      state: false,
-                      weapons: [],
-                      leaveRubble: false,
-                    },
-                    locked: {
-                      state: false,
-                      key: '',
-                    },
-                    weight: 1,
-                    height: 0.5,
-                    items: [],
-                    effects: [],
-                    moving: {
-                      state: false,
-                      origin: {
-                        number: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                        center: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                      },
-                      destination: {
-                        number: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                        center: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                      },
-                      currentPosition: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                      nextPosition: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                    }
+                    name: targetCell.obstacle.name,
+                    type: targetCell.obstacle.type,
+                    hp: 0,
+                    destructible: targetCell.obstacle.destructible,
+                    locked: targetCell.obstacle.locked,
+                    weight: targetCell.obstacle.weight,
+                    height: targetCell.obstacle.height,
+                    items: targetCell.obstacle.items,
+                    effects: targetCell.obstacle.effects,
+                    moving: targetCell.obstacle.moving
                   };
-                  // this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).rubble = true;
-                  // this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).terrain.type = 'hazard';
-                  // this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).obstacle =
-                  // {
-                  //   state: false,
-                  //   name: '',
-                  //   type: '',
-                  //   hp: 2,
-                  //   destructible: {
-                  //     state: false,
-                  //     weapons: [],
-                  //     leaveRubble: false,
-                  //   },
-                  //   locked: {
-                  //     state: false,
-                  //     key: '',
-                  //   },
-                  //   weight: 1,
-                  //   height: 0.5,
-                  //   items: [],
-                  //   effects: [],
-                  //   moving: {
-                  //     state: false,
-                  //     origin: {
-                  //       number: {
-                  //         x: undefined,
-                  //         y: undefined,
-                  //       },
-                  //       center: {
-                  //         x: undefined,
-                  //         y: undefined,
-                  //       },
-                  //     },
-                  //     destination: {
-                  //       number: {
-                  //         x: undefined,
-                  //         y: undefined,
-                  //       },
-                  //       center: {
-                  //         x: undefined,
-                  //         y: undefined,
-                  //       },
-                  //     },
-                  //     currentPosition: {
-                  //       x: undefined,
-                  //       y: undefined,
-                  //     },
-                  //     nextPosition: {
-                  //       x: undefined,
-                  //       y: undefined,
-                  //     },
-                  //   }
-                  // };
 
                   this.players[player.number-1].statusDisplay = {
                     state: true,
@@ -19710,56 +19365,20 @@ class App extends Component {
                   if (targetCell.obstacle.items[0]) {
                     itemsToDrop = targetCell.obstacle.items;
                   }
-                  this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).obstacle =
+
+                  targetCell.obstacle =
                   {
                     state: false,
-                    name: '',
-                    type: '',
-                    hp: 2,
-                    destructible: {
-                      state: false,
-                      weapons: [],
-                      leaveRubble: false,
-                    },
-                    locked: {
-                      state: false,
-                      key: '',
-                    },
-                    weight: 1,
-                    height: 0.5,
-                    items: [],
-                    effects: [],
-                    moving: {
-                      state: false,
-                      origin: {
-                        number: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                        center: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                      },
-                      destination: {
-                        number: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                        center: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                      },
-                      currentPosition: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                      nextPosition: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                    }
+                    name: targetCell.obstacle.name,
+                    type: targetCell.obstacle.type,
+                    hp: 0,
+                    destructible: targetCell.obstacle.destructible,
+                    locked: targetCell.obstacle.locked,
+                    weight: targetCell.obstacle.weight,
+                    height: targetCell.obstacle.height,
+                    items: targetCell.obstacle.items,
+                    effects: targetCell.obstacle.effects,
+                    moving: targetCell.obstacle.moving
                   };
 
                   this.players[player.number-1].statusDisplay = {
@@ -19824,6 +19443,7 @@ class App extends Component {
               }
 
 
+
             }
 
             // WEAPON NO GOOD. DEFLECT
@@ -19861,7 +19481,20 @@ class App extends Component {
               // WEAPON CHECK
               if (targetCell.barrier.destructible.weapons.find(x => x === 'bolt')) {
                 if (targetCell.barrier.hp - damage > 0) {
-                  this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier.hp -= damage;
+                  // this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier.hp -= damage;
+
+                  let hp = targetCell.barrier.hp - damage;
+                  targetCell.barrier =
+                  {
+                    state: targetCell.barrier.state,
+                    name: targetCell.barrier.name,
+                    type: targetCell.barrier.type,
+                    hp: hp,
+                    destructible: targetCell.barrier.destructible,
+                    locked: targetCell.barrier.locked,
+                    position: targetCell.barrier.position,
+                    height: targetCell.barrier.height,
+                  };
 
                   this.obstacleBarrierToDestroy.push({
                     type: 'barrier',
@@ -19877,25 +19510,18 @@ class App extends Component {
                 else if (targetCell.barrier.hp - damage <= 0) {
                   if (targetCell.barrier.destructible.leaveRubble === true) {
                     console.log('leave rubble on ',targetCell.number,'removing barrier');
-                    this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).rubble = true;
-                    this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).terrain.type = 'hazard';
-                    this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier =
+                    targetCell.rubble = true;
+                    targetCell.terrain.type = 'hazard';
+                    targetCell.barrier =
                     {
                       state: false,
-                      name: '',
-                      type: '',
-                      hp: 2,
-                      destructible: {
-                        state: false,
-                        weapons: [],
-                        leaveRubble: false,
-                      },
-                      locked: {
-                        state: false,
-                        key: '',
-                      },
-                      position: '',
-                      height: 1,
+                      name: targetCell.barrier.name,
+                      type: targetCell.barrier.type,
+                      hp: 0,
+                      destructible: targetCell.barrier.destructible,
+                      locked: targetCell.barrier.locked,
+                      position: targetCell.barrier.position,
+                      height: targetCell.barrier.height,
                     };
 
                     this.players[player.number-1].statusDisplay = {
@@ -19919,24 +19545,19 @@ class App extends Component {
                     )
                   } else {
                     console.log('no rubble. Just remove barrier');
-                    this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier =
+                    // this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier =
+                    targetCell.barrier =
                     {
                       state: false,
-                      name: '',
-                      type: '',
-                      hp: 2,
-                      destructible: {
-                        state: false,
-                        weapons: [],
-                        leaveRubble: false,
-                      },
-                      locked: {
-                        state: false,
-                        key: '',
-                      },
-                      position: '',
-                      height: 1,
+                      name: targetCell.barrier.name,
+                      type: targetCell.barrier.type,
+                      hp: 0,
+                      destructible: targetCell.barrier.destructible,
+                      locked: targetCell.barrier.locked,
+                      position: targetCell.barrier.position,
+                      height: targetCell.barrier.height,
                     };
+
 
                     this.players[player.number-1].statusDisplay = {
                       state: true,
@@ -20045,7 +19666,18 @@ class App extends Component {
           // WEAPON CHECK
           if (targetCell.barrier.destructible.weapons.find(x => x === 'bolt')) {
             if (targetCell.barrier.hp - damage > 0) {
-              this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier.hp -= damage;
+
+              let hp = targetCell.barrier.hp - damage;
+              targetCell.barrier = {
+                state: targetCell.barrier.state,
+                name: targetCell.barrier.name,
+                type: targetCell.barrier.type,
+                hp: hp,
+                destructible: targetCell.barrier.destructible,
+                locked: targetCell.barrier.locked,
+                position: targetCell.barrier.position,
+                height: targetCell.barrier.height,
+              };
 
               this.obstacleBarrierToDestroy.push({
                 type: 'barrier',
@@ -20062,25 +19694,17 @@ class App extends Component {
 
               if (targetCell.barrier.destructible.leaveRubble === true) {
                 console.log('leave rubble on ',targetCell.number,'removing barrier');
-                this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).rubble = true;
-                this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).terrain.type = 'hazard';
-                this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier =
-                {
+                targetCell.rubble = true;
+                targetCell.terrain.type = 'hazard';
+                targetCell.barrier = {
                   state: false,
-                  name: '',
-                  type: '',
-                  hp: 2,
-                  destructible: {
-                    state: false,
-                    weapons: [],
-                    leaveRubble: false,
-                  },
-                  locked: {
-                    state: false,
-                    key: '',
-                  },
-                  position: '',
-                  height: 1,
+                  name: targetCell.barrier.name,
+                  type: targetCell.barrier.type,
+                  hp: 0,
+                  destructible: targetCell.barrier.destructible,
+                  locked: targetCell.barrier.locked,
+                  position: targetCell.barrier.position,
+                  height: targetCell.barrier.height,
                 };
 
                 this.players[player.number-1].statusDisplay = {
@@ -20104,23 +19728,15 @@ class App extends Component {
                 )
               } else {
                 console.log('no rubble. Just remove barrier');
-                this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier =
-                {
+                targetCell.barrier = {
                   state: false,
-                  name: '',
-                  type: '',
-                  hp: 2,
-                  destructible: {
-                    state: false,
-                    weapons: [],
-                    leaveRubble: false,
-                  },
-                  locked: {
-                    state: false,
-                    key: '',
-                  },
-                  position: '',
-                  height: 1,
+                  name: targetCell.barrier.name,
+                  type: targetCell.barrier.type,
+                  hp: 0,
+                  destructible: targetCell.barrier.destructible,
+                  locked: targetCell.barrier.locked,
+                  position: targetCell.barrier.position,
+                  height: targetCell.barrier.height,
                 };
 
                 this.players[player.number-1].statusDisplay = {
@@ -20180,7 +19796,21 @@ class App extends Component {
             // WEAPON CHECK
             if (targetCell.obstacle.destructible.weapons.find(x => x === 'bolt')) {
               if (targetCell.obstacle.hp - damage > 0) {
-                this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).obstacle.hp -= damage;
+
+                let hp = targetCell.obstacle.hp - damage;
+                targetCell.obstacle = {
+                  state: targetCell.obstacle.state,
+                  name: targetCell.obstacle.name,
+                  type: targetCell.obstacle.type,
+                  hp: hp,
+                  destructible: targetCell.obstacle.destructible,
+                  locked: targetCell.obstacle.locked,
+                  weight: targetCell.obstacle.weight,
+                  height: targetCell.obstacle.height,
+                  items: targetCell.obstacle.items,
+                  effects: targetCell.obstacle.effects,
+                  moving: targetCell.obstacle.moving
+                };
 
                 this.obstacleBarrierToDestroy.push({
                   type: 'obstacle',
@@ -20200,58 +19830,20 @@ class App extends Component {
                   if (targetCell.obstacle.items[0]) {
                     itemsToDrop = targetCell.obstacle.items;
                   }
-                  this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).rubble = true;
-                  this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).terrain.type = 'hazard';
-                  this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).obstacle =
-                  {
+                  targetCell.rubble = true;
+                  targetCell.terrain.type = 'hazard';
+                  targetCell.obstacle = {
                     state: false,
-                    name: '',
-                    type: '',
-                    hp: 2,
-                    destructible: {
-                      state: false,
-                      weapons: [],
-                      leaveRubble: false,
-                    },
-                    locked: {
-                      state: false,
-                      key: '',
-                    },
-                    weight: 1,
-                    height: 0.5,
-                    items: [],
-                    effects: [],
-                    moving: {
-                      state: false,
-                      origin: {
-                        number: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                        center: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                      },
-                      destination: {
-                        number: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                        center: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                      },
-                      currentPosition: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                      nextPosition: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                    }
+                    name: targetCell.obstacle.name,
+                    type: targetCell.obstacle.type,
+                    hp: 0,
+                    destructible: targetCell.obstacle.destructible,
+                    locked: targetCell.obstacle.locked,
+                    weight: targetCell.obstacle.weight,
+                    height: targetCell.obstacle.height,
+                    items: targetCell.obstacle.items,
+                    effects: targetCell.obstacle.effects,
+                    moving: targetCell.obstacle.moving
                   };
 
                   this.players[player.number-1].statusDisplay = {
@@ -20278,56 +19870,19 @@ class App extends Component {
                   if (targetCell.obstacle.items[0]) {
                     itemsToDrop = targetCell.obstacle.items;
                   }
-                  this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).obstacle =
-                  {
+
+                  targetCell.obstacle = {
                     state: false,
-                    name: '',
-                    type: '',
-                    hp: 2,
-                    destructible: {
-                      state: false,
-                      weapons: [],
-                      leaveRubble: false,
-                    },
-                    locked: {
-                      state: false,
-                      key: '',
-                    },
-                    weight: 1,
-                    height: 0.5,
-                    items: [],
-                    effects: [],
-                    moving: {
-                      state: false,
-                      origin: {
-                        number: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                        center: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                      },
-                      destination: {
-                        number: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                        center: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                      },
-                      currentPosition: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                      nextPosition: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                    }
+                    name: targetCell.obstacle.name,
+                    type: targetCell.obstacle.type,
+                    hp: 0,
+                    destructible: targetCell.obstacle.destructible,
+                    locked: targetCell.obstacle.locked,
+                    weight: targetCell.obstacle.weight,
+                    height: targetCell.obstacle.height,
+                    items: targetCell.obstacle.items,
+                    effects: targetCell.obstacle.effects,
+                    moving: targetCell.obstacle.moving
                   };
 
                   this.players[player.number-1].statusDisplay = {
@@ -20422,7 +19977,18 @@ class App extends Component {
               // WEAPON CHECK
               if (targetCell.barrier.destructible.weapons.find(x => x === 'bolt')) {
                 if (targetCell.barrier.hp - damage > 0) {
-                  this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier.hp -= damage;
+
+                  let hp = targetCell.barrier.hp - damage;
+                  targetCell.barrier = {
+                    state: targetCell.barrier.state,
+                    name: targetCell.barrier.name,
+                    type: targetCell.barrier.type,
+                    hp: hp,
+                    destructible: targetCell.barrier.destructible,
+                    locked: targetCell.barrier.locked,
+                    position: targetCell.barrier.position,
+                    height: targetCell.barrier.height,
+                  };
 
                   this.obstacleBarrierToDestroy.push({
                     type: 'barrier',
@@ -20438,25 +20004,18 @@ class App extends Component {
                 else if (targetCell.barrier.hp - damage <= 0) {
                   if (targetCell.barrier.destructible.leaveRubble === true) {
                     console.log('leave rubble on ',targetCell.number,'removing barrier');
-                    this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).rubble = true;
-                    this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).terrain.type = 'hazard';
-                    this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier =
-                    {
+                    targetCell.rubble = true;
+                    targetCell.terrain.type = 'hazard';
+
+                    targetCell.barrier = {
                       state: false,
-                      name: '',
-                      type: '',
-                      hp: 2,
-                      destructible: {
-                        state: false,
-                        weapons: [],
-                        leaveRubble: false,
-                      },
-                      locked: {
-                        state: false,
-                        key: '',
-                      },
-                      position: '',
-                      height: 1,
+                      name: targetCell.barrier.name,
+                      type: targetCell.barrier.type,
+                      hp: 0,
+                      destructible: targetCell.barrier.destructible,
+                      locked: targetCell.barrier.locked,
+                      position: targetCell.barrier.position,
+                      height: targetCell.barrier.height,
                     };
 
                     this.players[player.number-1].statusDisplay = {
@@ -20480,23 +20039,16 @@ class App extends Component {
                     )
                   } else {
                     console.log('no rubble. Just remove barrier');
-                    this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier =
-                    {
+
+                    targetCell.barrier = {
                       state: false,
-                      name: '',
-                      type: '',
-                      hp: 2,
-                      destructible: {
-                        state: false,
-                        weapons: [],
-                        leaveRubble: false,
-                      },
-                      locked: {
-                        state: false,
-                        key: '',
-                      },
-                      position: '',
-                      height: 1,
+                      name: targetCell.barrier.name,
+                      type: targetCell.barrier.type,
+                      hp: 0,
+                      destructible: targetCell.barrier.destructible,
+                      locked: targetCell.barrier.locked,
+                      position: targetCell.barrier.position,
+                      height: targetCell.barrier.height,
                     };
 
                     this.players[player.number-1].statusDisplay = {
