@@ -175,8 +175,18 @@ const CellInfo = props => {
             <p className="cellInfoText">
               Barrier: {props.cell.barrier.name}
             </p>
+
+
             </OverlayTrigger>
 
+          </li>
+        )}
+
+        {props.cell.rubble == true && (
+          <li className="cellInfoListItem">
+            <p className="cellInfoText">
+              Rubble: {props.cell.rubble.toString()}
+            </p>
           </li>
         )}
       </ul>
