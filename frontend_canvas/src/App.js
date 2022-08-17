@@ -7382,18 +7382,19 @@ class App extends Component {
                     )
                   } else {
 
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
-                        type: '',
-                        position: '',
-                        msg: 'missedAttack',
-                        img: '',
 
-                      }
-                    )
+                    // player.popups.push(
+                    //   {
+                    //     state: false,
+                    //     count: 0,
+                    //     limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
+                    //     type: '',
+                    //     position: '',
+                    //     msg: 'missedAttack',
+                    //     img: '',
+                    //
+                    //   }
+                    // )
                   }
                   player.stamina.current = player.stamina.current - this.staminaCostRef.attack[weapon];
 
@@ -15371,6 +15372,85 @@ class App extends Component {
       break;
     }
 
+    if(cell.rubble === true ) {
+      console.log('steped on rubble @ check destination. removing it too');
+
+      let applyHazard = this.rnJesus(1,3);
+
+      if (applyHazard === 1) {
+        this.players[player.number-1].hp = this.players[player.number-1].hp -1;
+
+        if (!this.players[player.number-1].popups.find(x=>x.msg === 'alarmed')) {
+          this.players[player.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit:25,
+              type: '',
+              position: '',
+              msg: 'alarmed',
+              img: '',
+
+            }
+          )
+        }
+
+
+        let currentMoveSpeedIndx = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
+        if (currentMoveSpeedIndx > 0) {
+          this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentMoveSpeedIndx-1]
+        }
+
+        // if (player.hp === 1) {
+        //   player.speed.move = .05;
+        // }
+
+        if (this.players[player.number-1].hp <= 0) {
+          this.killPlayer(this.players[player.number-1]);
+
+          let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+          this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+        }
+
+        else {
+          this.players[player.number-1].action = 'deflected';
+          this.players[player.number-1].success.deflected = {
+            state: true,
+            count: 1,
+            limit: this.deflectedLengthRef.attacked,
+            predeflect: this.players[player.number-1].success.deflected.predeflect,
+            type: 'attacked',
+          };
+
+          if (!player.popups.find(x=>x.msg === 'terrainInjured')) {
+            this.players[player.number-1].popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: 25,
+                type: '',
+                position: '',
+                msg: 'terrainInjured',
+                img: '',
+
+              }
+            )
+          }
+
+
+
+          if (this.aiDeflectedCheck.includes(this.players[player.number-1].number) !== true) {
+            this.aiDeflectedCheck.push(this.players[player.number-1].number)
+          }
+
+
+        }
+      }
+
+      this.gridInfo.find(x => x.number.x === cell.number.x && x.number.y === cell.number.y).rubble = false;
+    }
+
   }
   popupDrawCalc = (popup,playerOrigin,plyrNo) => {
 
@@ -17479,8 +17559,6 @@ class App extends Component {
   attackCellContents = (type,player,targetCell,targetCell2,myCell,bolt) => {
 
 
-
-
     if (type === 'melee') {
 
       let doubleHitChance = player.crits.doubleHit;
@@ -17571,7 +17649,7 @@ class App extends Component {
                   if (targetCell.barrier.destructible.leaveRubble === true) {
                     console.log('leave rubble on ',targetCell.number,'removing barrier');
                     targetCell.rubble = true;
-                    targetCell.terrain.type = 'hazard';
+                    // targetCell.terrain.type = 'hazard';
                     targetCell.barrier =
                     {
                       state: false,
@@ -17791,7 +17869,7 @@ class App extends Component {
                         itemsToDrop = targetCell.obstacle.items;
                       }
                       targetCell.rubble = true;
-                      targetCell.terrain.type = 'hazard';
+                      // targetCell.terrain.type = 'hazard';
 
                       targetCell.obstacle = {
                         state: false,
@@ -18043,8 +18121,6 @@ class App extends Component {
               if (targetCell.rubble === true & damage > 0) {
                 console.log('damage/clear rubble');
                 this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).rubble = false;
-                console.log('here3',this.terrainLevelDataRef[targetCell.levelData.split("_")[3]].type);
-                this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).terrain.type = this.terrainLevelDataRef[targetCell.levelData.split("_")[3]].type;
 
               }
 
@@ -18116,7 +18192,7 @@ class App extends Component {
                   if (targetCell2.barrier.destructible.leaveRubble === true) {
                     console.log('leave rubble on ',targetCell2.number,'removing barrier');
                     targetCell2.rubble = true;
-                    targetCell2.terrain.type = 'hazard';
+                    // targetCell2.terrain.type = 'hazard';
                     targetCell2.barrier = {
                       state: false,
                       name: targetCell2.barrier.name,
@@ -18256,7 +18332,6 @@ class App extends Component {
                 // WEAPON CHECK
                 if (targetCell2.obstacle.destructible.weapons.find(x => x === player.currentWeapon.name)) {
                   if (targetCell2.obstacle.hp - damage > 0) {
-                    console.log('here!',targetCell.number,targetCell2.number);
                     let hp = targetCell2.obstacle.hp - damage;
                     targetCell2.obstacle = {
                       state: targetCell2.obstacle.state,
@@ -18292,7 +18367,7 @@ class App extends Component {
                         itemsToDrop = targetCell2.obstacle.items;
                       }
                       targetCell2.rubble = true;
-                      targetCell2.terrain.type = 'hazard';
+                      // targetCell2.terrain.type = 'hazard';
 
                       targetCell2.obstacle = {
                         state: false,
@@ -18544,7 +18619,7 @@ class App extends Component {
                         if (targetCell2.barrier.destructible.leaveRubble === true) {
                           console.log('leave rubble on ',targetCell2.number,'removing barrier');
                           targetCell2.rubble = true;
-                          targetCell2.terrain.type = 'hazard';
+                          // targetCell2.terrain.type = 'hazard';
                           targetCell2.barrier = {
                             state: false,
                             name: targetCell2.barrier.name,
@@ -18673,7 +18748,7 @@ class App extends Component {
               // WEAPON CHECK
               if (targetCell.barrier.destructible.weapons.find(x => x === player.currentWeapon.name)) {
                 if (targetCell.barrier.hp - damage > 0) {
-                  console.log('here2');
+
                   let hp = targetCell.barrier.hp - damage;
                   targetCell.barrier = {
                     state: targetCell.barrier.state,
@@ -18701,7 +18776,7 @@ class App extends Component {
                   if (targetCell.barrier.destructible.leaveRubble === true) {
                     console.log('leave rubble on ',targetCell.number,'removing barrier');
                     targetCell.rubble = true;
-                    targetCell.terrain.type = 'hazard';
+                    // targetCell.terrain.type = 'hazard';
                     targetCell.barrier = {
                       state: false,
                       name: targetCell.barrier.name,
@@ -18876,7 +18951,7 @@ class App extends Component {
                         itemsToDrop = targetCell.obstacle.items;
                       }
                       targetCell.rubble = true;
-                      targetCell.terrain.type = 'hazard';
+                      // targetCell.terrain.type = 'hazard';
                       targetCell.obstacle = {
                         state: false,
                         name: targetCell.obstacle.name,
@@ -19079,16 +19154,30 @@ class App extends Component {
               if (targetCell.rubble === true & damage > 0) {
                 console.log('damage/clear rubble');
                 this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).rubble = false;
-                console.log('here3',this.terrainLevelDataRef[targetCell.levelData.split("_")[3]].type);
-                this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).terrain.type = this.terrainLevelDataRef[targetCell.levelData.split("_")[3]].type;
               }
 
               // NO OBSTACLE. DESTROY REAR BARRIER
+
+              if (!player.popups.find(x=>x.msg === 'missedAttack')) {
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
+                  type: '',
+                  position: '',
+                  msg: 'missedAttack',
+                  img: '',
+
+                }
+              )}
 
               // else {
               //   // do nothing
               // }
             }
+
+
 
           }
 
@@ -19187,7 +19276,7 @@ class App extends Component {
               if (targetCell.barrier.destructible.leaveRubble === true) {
                 console.log('leave rubble on ',targetCell.number,'removing barrier');
                 targetCell.rubble = true;
-                targetCell.terrain.type = 'hazard';
+                // targetCell.terrain.type = 'hazard';
 
                 targetCell.barrier =
                 {
@@ -19334,7 +19423,7 @@ class App extends Component {
                   }
                   // let cellRef = this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y);
                   targetCell.rubble = true;
-                  targetCell.terrain.type = 'hazard';
+                  // targetCell.terrain.type = 'hazard';
 
                   targetCell.obstacle =
                   {
@@ -19521,7 +19610,7 @@ class App extends Component {
                   if (targetCell.barrier.destructible.leaveRubble === true) {
                     console.log('leave rubble on ',targetCell.number,'removing barrier');
                     targetCell.rubble = true;
-                    targetCell.terrain.type = 'hazard';
+                    // targetCell.terrain.type = 'hazard';
                     targetCell.barrier =
                     {
                       state: false,
@@ -19705,7 +19794,7 @@ class App extends Component {
               if (targetCell.barrier.destructible.leaveRubble === true) {
                 console.log('leave rubble on ',targetCell.number,'removing barrier');
                 targetCell.rubble = true;
-                targetCell.terrain.type = 'hazard';
+                // targetCell.terrain.type = 'hazard';
                 targetCell.barrier = {
                   state: false,
                   name: targetCell.barrier.name,
@@ -19841,7 +19930,7 @@ class App extends Component {
                     itemsToDrop = targetCell.obstacle.items;
                   }
                   targetCell.rubble = true;
-                  targetCell.terrain.type = 'hazard';
+                  // targetCell.terrain.type = 'hazard';
                   targetCell.obstacle = {
                     state: false,
                     name: targetCell.obstacle.name,
@@ -20015,7 +20104,7 @@ class App extends Component {
                   if (targetCell.barrier.destructible.leaveRubble === true) {
                     console.log('leave rubble on ',targetCell.number,'removing barrier');
                     targetCell.rubble = true;
-                    targetCell.terrain.type = 'hazard';
+                    // targetCell.terrain.type = 'hazard';
 
                     targetCell.barrier = {
                       state: false,
