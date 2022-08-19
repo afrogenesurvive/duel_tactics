@@ -290,12 +290,12 @@ class App extends Component {
       row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*','**_*_0.7_a_0a*','**_*_0.8_a_0a*','**_*_0.9_a_0a*'],
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_a_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
-      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_i_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_c_3.7_a_0a*','**_i_3.8_a_0a*','**_*_3.9_a_0a*'],
+      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_i_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
       row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','**_h_4.4_a_0a*','**_b_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','**_*_4.9_k_0a*'],
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','**_*_5.2_a_0a*','**_*_5.3_a_0a*','**_*_5.4_a_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','**_*_5.8_a_0a*','**_*_5.9_a_0a*'],
-      row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_j_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_j_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
+      row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_j_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_b_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
       row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','**_*_7.5_a_0a*','**_i_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
-      row8: ['**_*_8.0_a_0a*','**_*_8.1_a_0a*','**_*_8.2_a_0a*','**_*_8.3_a_0a*','**_*_8.4_a_0a*','**_*_8.5_a_0a*','**_*_8.6_a_0a*','**_*_8.7_a_0a*','**_*_8.8_a_0a*','**_*_8.9_d_0a*'],
+      row8: ['**_*_8.0_a_0a*','**_*_8.1_a_0a*','**_*_8.2_a_0a*','**_*_8.3_a_0a*','**_*_8.4_a_0a*','**_*_8.5_a_0a*','**_c_8.6_a_0a*','**_*_8.7_a_0a*','**_*_8.8_a_0a*','**_*_8.9_d_0a*'],
       row9: ['**_*_9.0_a_0a*','**_*_9.1_a_0a*','**_*_9.2_a_0a*','**_*_9.3_a_0a*','**_*_9.4_a_0a*','**_*_9.5_a_0a*','**_*_9.6_a_0a*','**_*_9.7_a_0a*','**_*_9.8_a_0a*','**_*_9.9_a_0a*'],
     };
     this.levelData6 = {
@@ -2508,6 +2508,12 @@ class App extends Component {
     this.bloodSacrificeVoidedCells = [];
 
 
+
+    this.testDraw = {
+      state: true,
+      x: undefined,
+      y: undefined,
+    }
   }
 
 
@@ -6146,44 +6152,77 @@ class App extends Component {
                 }
                 if (player.currentWeapon.type === 'spear') {
                   // console.log('spear target',player.target);
-                  if (cellUnderPreAttack1 && cellUnderPreAttack1.terrain.type !== 'deep') {
-                    this.cellsUnderPreAttack.push(
-                      {
-                        number: {
-                          x: player.target.cell.number.x,
-                          y: player.target.cell.number.y,
-                        },
-                        count: 1,
-                        limit: 8,
-                      },
-                    )
-                  }
-                  if (cellUnderPreAttack2 && cellUnderPreAttack2.terrain.type !== 'deep') {
-                    this.cellsUnderPreAttack.push(
-                      {
-                        number: {
-                          x: player.target.cell2.number.x,
-                          y: player.target.cell2.number.y,
-                        },
-                        count: 1,
-                        limit: 8,
-                      },
-                    )
+                  // if (cellUnderPreAttack1 && cellUnderPreAttack1.terrain.type !== 'deep') {
+                  //   this.cellsUnderPreAttack.push(
+                  //     {
+                  //       number: {
+                  //         x: player.target.cell.number.x,
+                  //         y: player.target.cell.number.y,
+                  //       },
+                  //       count: 1,
+                  //       limit: 8,
+                  //     },
+                  //   )
+                  // }
+                  // if (cellUnderPreAttack2 && cellUnderPreAttack2.terrain.type !== 'deep') {
+                  //   this.cellsUnderPreAttack.push(
+                  //     {
+                  //       number: {
+                  //         x: player.target.cell2.number.x,
+                  //         y: player.target.cell2.number.y,
+                  //       },
+                  //       count: 1,
+                  //       limit: 8,
+                  //     },
+                  //   )
+                  //
+                  // }
 
-                  }
-                }
-                else if (player.currentWeapon.type === 'sword' || player.currentWeapon.type === '') {
-                  // console.log('sword target',player.target);
-                  if (cellUnderPreAttack1 && cellUnderPreAttack1.terrain.type !== 'deep') {
-                    this.cellsUnderPreAttack.push({
+                  this.cellsUnderPreAttack.push(
+                    {
                       number: {
                         x: player.target.cell.number.x,
                         y: player.target.cell.number.y,
                       },
                       count: 1,
                       limit: 8,
-                    })
-                  }
+                    },
+                  )
+                  this.cellsUnderPreAttack.push(
+                    {
+                      number: {
+                        x: player.target.cell2.number.x,
+                        y: player.target.cell2.number.y,
+                      },
+                      count: 1,
+                      limit: 8,
+                    },
+                  )
+
+
+                }
+                else if (player.currentWeapon.type === 'sword' || player.currentWeapon.type === '') {
+                  // console.log('sword target',player.target);
+
+                  // if (cellUnderPreAttack1 && cellUnderPreAttack1.terrain.type !== 'deep') {
+                  //   this.cellsUnderPreAttack.push({
+                  //     number: {
+                  //       x: player.target.cell.number.x,
+                  //       y: player.target.cell.number.y,
+                  //     },
+                  //     count: 1,
+                  //     limit: 8,
+                  //   })
+                  // }
+                  this.cellsUnderPreAttack.push({
+                    number: {
+                      x: player.target.cell.number.x,
+                      y: player.target.cell.number.y,
+                    },
+                    count: 1,
+                    limit: 8,
+                  })
+
                 }
 
                 // console.log('this.cellsUnderPreAttack',this.cellsUnderPreAttack[0],this.cellsUnderPreAttack[1]);
@@ -6219,6 +6258,26 @@ class App extends Component {
               let currentPosition = plyrX.currentPosition.cell;
               let nextPosition = plyrX.currentPosition.cell.center;
               let elevation = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y).elevation.number;
+
+              // let currentPositionCenter = {
+              //   x: currentPosition.center.x,
+              //   y: currentPosition.center.y
+              // }
+              // switch(plyrX.direction) {
+              //   case 'north' :
+              //     // currentPositionCenter.x
+              //     // currentPositionCenter.y
+              //   break;
+              //   case 'south' :
+              //   break;
+              //   case 'east' :
+              //   break;
+              //   case 'west' :
+              //   break;
+              // }
+
+              this.testDraw.x = currentPosition.center.x
+              this.testDraw.y = currentPosition.center.y
 
               let projectileId = this.projectiles.length;
               let boltx = {
@@ -6315,44 +6374,78 @@ class App extends Component {
               }
               if (player.currentWeapon.type === 'spear') {
                 // console.log('spear target',player.target);
-                if (cellUnderAttack1 && cellUnderAttack1.terrain.type !== 'deep') {
-                  this.cellsUnderAttack.push(
-                    {
-                      number: {
-                        x: player.target.cell.number.x,
-                        y: player.target.cell.number.y,
-                      },
-                      count: 1,
-                      limit: 8,
-                    },
-                  )
-                }
-                if (cellUnderAttack2 && cellUnderAttack2.terrain.type !== 'deep') {
-                  this.cellsUnderAttack.push(
-                    {
-                      number: {
-                        x: player.target.cell2.number.x,
-                        y: player.target.cell2.number.y,
-                      },
-                      count: 1,
-                      limit: 8,
-                    },
-                  )
 
-                }
-              }
-              else if (player.currentWeapon.type === 'sword' || player.currentWeapon.type === '') {
-                // console.log('sword target',player.target);
-                if (cellUnderAttack1 && cellUnderAttack1.terrain.type !== 'deep') {
-                  this.cellsUnderAttack.push({
+                // if (cellUnderAttack1 && cellUnderAttack1.terrain.type !== 'deep') {
+                //   this.cellsUnderAttack.push(
+                //     {
+                //       number: {
+                //         x: player.target.cell.number.x,
+                //         y: player.target.cell.number.y,
+                //       },
+                //       count: 1,
+                //       limit: 8,
+                //     },
+                //   )
+                // }
+                // if (cellUnderAttack2 && cellUnderAttack2.terrain.type !== 'deep') {
+                //   this.cellsUnderAttack.push(
+                //     {
+                //       number: {
+                //         x: player.target.cell2.number.x,
+                //         y: player.target.cell2.number.y,
+                //       },
+                //       count: 1,
+                //       limit: 8,
+                //     },
+                //   )
+                //
+                // }
+
+                this.cellsUnderAttack.push(
+                  {
                     number: {
                       x: player.target.cell.number.x,
                       y: player.target.cell.number.y,
                     },
                     count: 1,
                     limit: 8,
-                  })
-                }
+                  },
+                )
+                this.cellsUnderAttack.push(
+                  {
+                    number: {
+                      x: player.target.cell2.number.x,
+                      y: player.target.cell2.number.y,
+                    },
+                    count: 1,
+                    limit: 8,
+                  },
+                )
+
+
+              }
+              else if (player.currentWeapon.type === 'sword' || player.currentWeapon.type === '') {
+                // console.log('sword target',player.target);
+
+                // if (cellUnderAttack1 && cellUnderAttack1.terrain.type !== 'deep') {
+                //   this.cellsUnderAttack.push({
+                //     number: {
+                //       x: player.target.cell.number.x,
+                //       y: player.target.cell.number.y,
+                //     },
+                //     count: 1,
+                //     limit: 8,
+                //   })
+                // }
+                this.cellsUnderAttack.push({
+                  number: {
+                    x: player.target.cell.number.x,
+                    y: player.target.cell.number.y,
+                  },
+                  count: 1,
+                  limit: 8,
+                })
+
               }
 
 
@@ -11043,6 +11136,7 @@ class App extends Component {
               cll.number.x === x &&
               cll.number.y === y
             ) {
+              console.log('beep',cll.number);
               floor = this.refs.floorAttack;
             }
           }
@@ -11064,6 +11158,7 @@ class App extends Component {
               cll2.x === x &&
               cll2.y === y
             ) {
+              console.log('beep2',cll2.number);
               floor = this.refs.floorVoid;
             }
           }
@@ -11076,6 +11171,7 @@ class App extends Component {
               cll3.number.x === x &&
               cll3.number.y === y
             ) {
+              console.log('beep3',cll3.number);
               floor = this.refs.floorHighlight;
             }
           }
@@ -12976,6 +13072,13 @@ class App extends Component {
 
         }
 
+        if (this.testDraw.state === true) {
+          context.fillStyle = "red";
+          context.beginPath();
+          context.arc(this.testDraw.x, this.testDraw.y, 10, 0, 2 * Math.PI);
+          context.fill();
+        }
+
 
       }
     }
@@ -13053,7 +13156,7 @@ class App extends Component {
     let targetCellNumber = {x: 0,y: 0};
     let targetCellCenter = {x: 0,y: 0};
 
-    // VOID CHECK & SET!!
+    // EDGE VOID CHECK & SET!!
     if (currentPosition.x === 0 && currentPosition.y === 0) {
       if (
         direction === 'north' ||
@@ -13886,7 +13989,6 @@ class App extends Component {
 
     player.target = target;
     this.players[player.number-1] = player;
-
 
     return target;
 
