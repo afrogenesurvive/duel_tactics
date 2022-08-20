@@ -36,6 +36,7 @@ import floorVoid from './assets/floorVoid.png';
 import floorVoid2 from './assets/floorVoid2.png';
 import floorVoid3 from './assets/floorVoid3.png';
 import floorHighlight from './assets/floorHighlight.png';
+import floorRubble from './assets/floorRubble.png';
 import wall from './assets/wall.png';
 import wall2 from './assets/wall2.png';
 import wall3 from './assets/wall3.png';
@@ -2509,11 +2510,8 @@ class App extends Component {
 
 
 
-    this.testDraw = {
-      state: true,
-      x: undefined,
-      y: undefined,
-    }
+    this.testDraw = [];
+
   }
 
 
@@ -6276,8 +6274,8 @@ class App extends Component {
               //   break;
               // }
 
-              this.testDraw.x = currentPosition.center.x
-              this.testDraw.y = currentPosition.center.y
+              // this.testDraw.push({color:'blue',x:currentPosition.center.x,y:currentPosition.center.y})
+
 
               let projectileId = this.projectiles.length;
               let boltx = {
@@ -10051,6 +10049,9 @@ class App extends Component {
 
         let index = this.projectiles.findIndex(blt => blt.id === bolt.id);
         bolt.currentPosition.center = bolt.nextPosition;
+
+        // this.testDraw.push({color:'red',x:bolt.currentPosition.center.x,y:bolt.currentPosition.center.y});
+
         let boltNextPosition = this.boltCrementer(bolt);
         bolt.nextPosition = boltNextPosition;
 
@@ -10137,6 +10138,7 @@ class App extends Component {
                         }
                       }
 
+                      // FACTOR OPPONENT ARMOUR
                       if (this.players.[plyr.number-1].currentArmor.name !== '') {
                         // console.log('opponent armour found');
                         switch(this.players.[plyr.number-1].currentArmor.effect) {
@@ -11035,6 +11037,7 @@ class App extends Component {
       void: this.refs.floorVoid,
       void2: this.refs.floorVoid2,
       void3: this.refs.floorVoid3,
+      rubble: this.refs.floorRubble,
     }
     let obstacleImgs = {
       table: this.refs.obstacleAHalf,
@@ -11136,7 +11139,6 @@ class App extends Component {
               cll.number.x === x &&
               cll.number.y === y
             ) {
-              console.log('beep',cll.number);
               floor = this.refs.floorAttack;
             }
           }
@@ -11158,7 +11160,6 @@ class App extends Component {
               cll2.x === x &&
               cll2.y === y
             ) {
-              console.log('beep2',cll2.number);
               floor = this.refs.floorVoid;
             }
           }
@@ -11171,7 +11172,6 @@ class App extends Component {
               cll3.number.x === x &&
               cll3.number.y === y
             ) {
-              console.log('beep3',cll3.number);
               floor = this.refs.floorHighlight;
             }
           }
@@ -11179,8 +11179,15 @@ class App extends Component {
 
 
 
+
+
         if (drawFloor === true) {
           context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
+        }
+
+        // RUBBLE
+        if (gridInfoCell.rubble === true) {
+          context.drawImage(floorImgs.rubble, iso.x - offset.x, iso.y - offset.y);
         }
 
 
@@ -11329,6 +11336,8 @@ class App extends Component {
           // context.fill();
 
         }
+
+
 
 
         function playerDrawLog (x,y,plyr) {
@@ -13028,6 +13037,7 @@ class App extends Component {
 
         // PROJECTILES
         for (const bolt of this.projectiles) {
+
           if (
             bolt.currentPosition.number.x === x &&
             bolt.currentPosition.number.y === y
@@ -13051,8 +13061,8 @@ class App extends Component {
 
              // context2.fillStyle = "black";
              // context2.fillRect(bolt.currentPosition.center.x, bolt.currentPosition.center.y,10,5);
-
-             context.drawImage(boltImg, bolt.currentPosition.center.x, bolt.currentPosition.center.y-15, 35,35);
+             // this.testDraw.push({color:'green',x:bolt.currentPosition.center.x,y:bolt.currentPosition.center.y})
+             context.drawImage(boltImg, bolt.currentPosition.center.x-15, bolt.currentPosition.center.y-15, 35,35);
           }
         }
         if (this.boltDeflectAnim.state === true) {
@@ -13072,12 +13082,13 @@ class App extends Component {
 
         }
 
-        if (this.testDraw.state === true) {
-          context.fillStyle = "red";
+        for (const point of this.testDraw ) {
+          context.fillStyle = point.color;
           context.beginPath();
-          context.arc(this.testDraw.x, this.testDraw.y, 10, 0, 2 * Math.PI);
+          context.arc(point.x, point.y, 10, 0, 2 * Math.PI);
           context.fill();
         }
+
 
 
       }
@@ -14402,8 +14413,8 @@ class App extends Component {
 
     let moveSpeed = bolt.speed;
     // moveSpeed = bolt.speed/distanceFactor;
-    // moveSpeed = bolt.speed/(distanceFactor/5);
-    moveSpeed = bolt.speed/(distanceFactor/10);
+    moveSpeed = bolt.speed/(distanceFactor/5);
+    // moveSpeed = bolt.speed/(distanceFactor/10);
 
     bolt.moving.step = bolt.moving.step + moveSpeed;
     let newPosition;
@@ -14412,7 +14423,7 @@ class App extends Component {
     let startPt = bolt.moving.origin.center;
     let endPt = bolt.target.path[bolt.target.path.length-1].center;
     let percent = bolt.moving.step;
-    // console.log('percent',percent);
+    console.log('percent',percent,'time',this.time);
     //
     function getLineXYatPercent(startPt,endPt,percent) {
       let dx = endPt.x-startPt.x;
@@ -15475,7 +15486,7 @@ class App extends Component {
     }
 
     if(cell.rubble === true ) {
-      console.log('steped on rubble @ check destination. removing it too');
+      console.log('stepped on rubble @ check destination. removing it too');
 
       let applyHazard = this.rnJesus(1,3);
 
@@ -28807,6 +28818,7 @@ class App extends Component {
           <img src={floorVoid2} className='hidden' ref="floorVoid2" alt="logo" id="floor4"/>
           <img src={floorVoid3} className='hidden' ref="floorVoid3" alt="logo" id="floor4"/>
           <img src={floorHighlight} className='hidden' ref="floorHighlight" alt="logo" id="floor4"/>
+          <img src={floorRubble} className='hidden' ref="floorRubble" alt="logo" id="floor4"/>
           <img src={wall} className='hidden' ref="wall" id="wall" alt="logo" />
           <img src={wall2} className='hidden' ref="wall2" id="wall2" alt="logo" />
           <img src={wall3} className='hidden' ref="wall3" id="wall3" alt="logo" />
