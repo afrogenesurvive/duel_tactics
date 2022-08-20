@@ -4871,9 +4871,9 @@ class App extends Component {
 
         if (cell.barrier.state === true && cell.void.state !== true) {
           let barrierImg = barrierImgs[cell.barrier.type][cell.barrier.position]
-          context3.drawImage(barrierImg, iso2.x - offset2.x, iso2.y - offset2.y, 50, 50);
+          context3.drawImage(barrierImg, iso2.x - offset2.x, iso2.y - (barrierImg.height/2), barrierImg.width/2, barrierImg.height/2);
           if (context4) {
-            context4.drawImage(barrierImg, iso2.x - offset2.x, iso2.y - offset2.y, 50, 50);
+            context4.drawImage(barrierImg, iso2.x - offset2.x, iso2.y - (barrierImg.height/2), barrierImg.width/2, barrierImg.height/2);
           }
         }
 
@@ -4916,9 +4916,9 @@ class App extends Component {
           // }
 
 
-          context3.drawImage(obstacleImg, iso2.x - offset2.x, iso2.y - offset2.y, 50, 50);
+          context3.drawImage(obstacleImg, iso2.x - offset2.x, iso2.y - (obstacleImg.height/2), obstacleImg.width/2, obstacleImg.height/2);
           if (context4) {
-            context4.drawImage(obstacleImg, iso2.x - offset2.x, iso2.y - offset2.y, 50, 50);
+            context4.drawImage(obstacleImg, iso2.x - offset2.x, iso2.y - (obstacleImg.height/2), obstacleImg.width/2, obstacleImg.height/2);
           }
 
 
@@ -6172,6 +6172,7 @@ class App extends Component {
           }
 
 
+          // STEP ATTACK COUNT & CELLS UDER PRE-ATTACK
           if (player.attacking.count < player.attacking.limit) {
             // console.log('attack wind up',player.attacking.count,'player',player.number);
             player.action = 'attacking';
@@ -6306,25 +6307,6 @@ class App extends Component {
               let currentPosition = plyrX.currentPosition.cell;
               let nextPosition = plyrX.currentPosition.cell.center;
               let elevation = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y).elevation.number;
-
-              // let currentPositionCenter = {
-              //   x: currentPosition.center.x,
-              //   y: currentPosition.center.y
-              // }
-              // switch(plyrX.direction) {
-              //   case 'north' :
-              //     // currentPositionCenter.x
-              //     // currentPositionCenter.y
-              //   break;
-              //   case 'south' :
-              //   break;
-              //   case 'east' :
-              //   break;
-              //   case 'west' :
-              //   break;
-              // }
-
-              // this.testDraw.push({color:'blue',x:currentPosition.center.x,y:currentPosition.center.y})
 
 
               let projectileId = this.projectiles.length;
@@ -7466,7 +7448,7 @@ class App extends Component {
                 }
               }
 
-              // EMPTY TARGET STAMINA COST!
+              // EMPTY TARGET STAMINA COST! CHECK FOR OBSTACLE/BARRIER/ITEM
               else {
 
                 let weapon = player.currentWeapon.type
@@ -11418,8 +11400,6 @@ class App extends Component {
         }
 
 
-
-
         function playerDrawLog (x,y,plyr) {
           console.log('** playerDrawLog **');
           console.log('-- player --',plyr.number);
@@ -13089,8 +13069,6 @@ class App extends Component {
 
 
 
-
-
         // OBSTACLES & BARRIERS
 
         if (gridInfoCell.barrier.state === true && gridInfoCell.void.state !== true) {
@@ -13103,7 +13081,7 @@ class App extends Component {
           let obstacleImg = obstacleImgs[gridInfoCell.obstacle.type]
 
           // if (gridInfoCell.obstacle.height > 1) {
-          //   offset = {x: wallImageWidth/2, y: wallImageHeight}
+            // offset = {x: wallImageWidth/2, y: wallImageHeight}
           //   context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
           //
           //   let isoHeight = wallImageHeight - floorImageHeight
@@ -13120,7 +13098,7 @@ class App extends Component {
           //   context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
           // }
 
-          context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+          context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
 
         }
 
@@ -15962,7 +15940,6 @@ class App extends Component {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
-
 
 
   attackedCancel = (player) => {
@@ -20989,8 +20966,6 @@ class App extends Component {
   }
 
 
-
-
   drawGridInit = (canvas, context, canvas2, context2) => {
     // console.log('drawing initial');
 
@@ -21409,8 +21384,7 @@ class App extends Component {
           // let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
           let obstacleImg = obstacleImgs[cell.obstacle.type]
 
-
-          context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+          context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
 
           // if (cell.obstacle.height > 1) {
           //   offset = {x: wallImageWidth/2, y: wallImageHeight}
@@ -21442,6 +21416,7 @@ class App extends Component {
     }
 
   }
+
 
   addAiPlayer = () => {
 
