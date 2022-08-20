@@ -50,6 +50,12 @@ import obstacleDHalf from './assets/obstacleD_half.png';
 import obstacleDFull from './assets/obstacleD_full.png';
 import obstacleEHalf from './assets/obstacleE_half.png';
 import obstacleEFull from './assets/obstacleE_full.png';
+import obstacleCrate from './assets/obstacle_crate.png';
+import obstacleBarrel from './assets/obstacle_barrel.png';
+import barrierANorth from './assets/barrierA_north.png';
+import barrierASouth from './assets/barrierA_south.png';
+import barrierAEast from './assets/barrierA_east.png';
+import barrierAWest from './assets/barrierA_west.png';
 
 
 import attack1Indicate from './assets/indicators/attack1.png';
@@ -292,7 +298,7 @@ class App extends Component {
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_a_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_i_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
-      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','**_h_4.4_a_0a*','**_b_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','**_*_4.9_k_0a*'],
+      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','**_h_4.4_a_0a*','cs_b_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','**_*_4.9_k_0a*'],
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','**_*_5.2_a_0a*','**_*_5.3_a_0a*','**_*_5.4_a_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','**_*_5.8_a_0a*','**_*_5.9_a_0a*'],
       row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_j_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_b_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
       row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','**_*_7.5_a_0a*','**_i_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
@@ -485,7 +491,7 @@ class App extends Component {
       c: {
         state: true,
         name: 'closet1',
-        type: 'closet',
+        type: 'barrel',
         hp: 2,
         destructible: {
           state: true,
@@ -796,7 +802,7 @@ class App extends Component {
       i: {
         state: true,
         name: 'closet2',
-        type: 'closet',
+        type: 'barrel',
         hp: 2,
         destructible: {
           state: true,
@@ -4704,6 +4710,35 @@ class App extends Component {
       largeBox: this.refs.obstacleCFull,
       counter: this.refs.obstacleDHalf,
       chest: this.refs.obstacleEHalf,
+      crate: this.refs.obstacleCrate,
+      barrel: this.refs.obstacleBarrel,
+      chest: this.refs.obstacleCrate,
+      table: this.refs.obstacleCrate,
+      chair: this.refs.obstacleCrate,
+      shelf: this.refs.obstacleCrate,
+      counter: this.refs.obstacleCrate,
+      smallBox: this.refs.obstacleCrate,
+      largeBox: this.refs.obstacleBarrel,
+    }
+    let barrierImgs = {
+      wall: {
+        north: this.refs.barrierANorth,
+        south: this.refs.barrierASouth,
+        east: this.refs.barrierAEast,
+        west: this.refs.barrierAWest,
+      },
+      door: {
+        north: this.refs.barrierANorth,
+        south: this.refs.barrierASouth,
+        east: this.refs.barrierAEast,
+        west: this.refs.barrierAWest,
+      },
+      balcony: {
+        north: this.refs.barrierANorth,
+        south: this.refs.barrierASouth,
+        east: this.refs.barrierAEast,
+        west: this.refs.barrierAWest,
+      },
     }
 
     class Point {
@@ -4834,44 +4869,59 @@ class App extends Component {
         }
 
 
+        if (cell.barrier.state === true && cell.void.state !== true) {
+          let barrierImg = barrierImgs[cell.barrier.type][cell.barrier.position]
+          context3.drawImage(barrierImg, iso2.x - offset2.x, iso2.y - offset2.y, 50, 50);
+          if (context4) {
+            context4.drawImage(barrierImg, iso2.x - offset2.x, iso2.y - offset2.y, 50, 50);
+          }
+        }
+
+
         if (cell.obstacle.state === true && cell.void.state !== true) {
           // let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
           let obstacleImg = obstacleImgs[cell.obstacle.type]
 
-          if (cell.obstacle.height > 1) {
-            let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
-            context3.drawImage(obstacleImg, iso2.x - offset.x, iso2.y - offset.y, 50,50);
-            if (context4) {
-              context4.drawImage(obstacleImg, iso2.x - offset.x, iso2.y - offset.y, 50,50);
-            }
+          // if (cell.obstacle.height > 1) {
+          //   let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
+          //   context3.drawImage(obstacleImg, iso2.x - offset.x, iso2.y - offset.y, 50,50);
+          //   if (context4) {
+          //     context4.drawImage(obstacleImg, iso2.x - offset.x, iso2.y - offset.y, 50,50);
+          //   }
+          //
+          //   let isoHeight = (wallImageHeight/2) - (floorImageHeight/2)
+          //   offset.y += isoHeight
+          //   context3.drawImage(obstacleImg, iso2.x - offset.x, iso2.y - offset.y, 50,50);
+          //   if (context4) {
+          //     context4.drawImage(obstacleImg, iso2.x - offset.x, iso2.y - offset.y, 50,50);
+          //   }
+          // }
+          // if (cell.obstacle.height === 1) {
+          //   let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
+          //   context3.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y), 50, 50);
+          //   if (context4) {
+          //     context4.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y), 50, 50);
+          //   }
+          // }
+          // if (cell.obstacle.height < 1) {
+          //   let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
+          //   context3.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y)+10, 50, 40);
+          //   // context3.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y), 50, 50);
+          //   // context3.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y)+10, 50, 50);
+          //   if (context4) {
+          //     context4.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y)+10, 50, 40);
+          //     // context4.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y), 50, 50);
+          //     // context4.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y)+12.5, 50, 50);
+          //   }
+          // }
 
-            let isoHeight = (wallImageHeight/2) - (floorImageHeight/2)
-            offset.y += isoHeight
-            context3.drawImage(obstacleImg, iso2.x - offset.x, iso2.y - offset.y, 50,50);
-            if (context4) {
-              context4.drawImage(obstacleImg, iso2.x - offset.x, iso2.y - offset.y, 50,50);
-            }
+
+          context3.drawImage(obstacleImg, iso2.x - offset2.x, iso2.y - offset2.y, 50, 50);
+          if (context4) {
+            context4.drawImage(obstacleImg, iso2.x - offset2.x, iso2.y - offset2.y, 50, 50);
           }
 
-          if (cell.obstacle.height === 1) {
-            let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
-            context3.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y), 50, 50);
-            if (context4) {
-              context4.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y), 50, 50);
-            }
-          }
 
-          if (cell.obstacle.height < 1) {
-            let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
-            context3.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y)+10, 50, 40);
-            // context3.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y), 50, 50);
-            // context3.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y)+10, 50, 50);
-            if (context4) {
-              context4.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y)+10, 50, 40);
-              // context4.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y), 50, 50);
-              // context4.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y)+12.5, 50, 50);
-            }
-          }
         }
 
 
@@ -11048,7 +11098,37 @@ class App extends Component {
       largeBox: this.refs.obstacleCFull,
       counter: this.refs.obstacleDHalf,
       chest: this.refs.obstacleEHalf,
+      crate: this.refs.obstacleCrate,
+      barrel: this.refs.obstacleBarrel,
+      chest: this.refs.obstacleCrate,
+      table: this.refs.obstacleCrate,
+      chair: this.refs.obstacleCrate,
+      shelf: this.refs.obstacleCrate,
+      counter: this.refs.obstacleCrate,
+      smallBox: this.refs.obstacleCrate,
+      largeBox: this.refs.obstacleBarrel,
     }
+    let barrierImgs = {
+      wall: {
+        north: this.refs.barrierANorth,
+        south: this.refs.barrierASouth,
+        east: this.refs.barrierAEast,
+        west: this.refs.barrierAWest,
+      },
+      door: {
+        north: this.refs.barrierANorth,
+        south: this.refs.barrierASouth,
+        east: this.refs.barrierAEast,
+        west: this.refs.barrierAWest,
+      },
+      balcony: {
+        north: this.refs.barrierANorth,
+        south: this.refs.barrierASouth,
+        east: this.refs.barrierAEast,
+        west: this.refs.barrierAWest,
+      },
+    }
+
 
     let updatedPlayerImg;
     let newDirection;
@@ -13009,28 +13089,38 @@ class App extends Component {
 
 
 
-        // OBSTACLES
+
+
+        // OBSTACLES & BARRIERS
+
+        if (gridInfoCell.barrier.state === true && gridInfoCell.void.state !== true) {
+          let barrierImg = barrierImgs[gridInfoCell.barrier.type][gridInfoCell.barrier.position]
+          context.drawImage(barrierImg, iso.x - offset.x, iso.y - offset.y);
+        }
+
         if (gridInfoCell.obstacle.state === true && gridInfoCell.void.state !== true) {
-          // let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
+
           let obstacleImg = obstacleImgs[gridInfoCell.obstacle.type]
 
-          if (gridInfoCell.obstacle.height > 1) {
-            offset = {x: wallImageWidth/2, y: wallImageHeight}
-            context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+          // if (gridInfoCell.obstacle.height > 1) {
+          //   offset = {x: wallImageWidth/2, y: wallImageHeight}
+          //   context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+          //
+          //   let isoHeight = wallImageHeight - floorImageHeight
+          //   offset.y += isoHeight
+          //   context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+          // }
+          // if (gridInfoCell.obstacle.height < 1) {
+          //   offset = {x: wallImageWidth/2, y: wallImageHeight}
+          //   // context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+          //   context.drawImage(obstacleImg, iso.x - offset.x, (iso.y - offset.y)+25);
+          // }
+          // if (gridInfoCell.obstacle.height === 1) {
+          //   offset = {x: wallImageWidth/2, y: wallImageHeight}
+          //   context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+          // }
 
-            let isoHeight = wallImageHeight - floorImageHeight
-            offset.y += isoHeight
-            context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
-          }
-          if (gridInfoCell.obstacle.height < 1) {
-            offset = {x: wallImageWidth/2, y: wallImageHeight}
-            // context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
-            context.drawImage(obstacleImg, iso.x - offset.x, (iso.y - offset.y)+25);
-          }
-          if (gridInfoCell.obstacle.height === 1) {
-            offset = {x: wallImageWidth/2, y: wallImageHeight}
-            context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
-          }
+          context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
 
         }
 
@@ -21029,6 +21119,35 @@ class App extends Component {
       largeBox: this.refs.obstacleCFull,
       counter: this.refs.obstacleDHalf,
       chest: this.refs.obstacleEHalf,
+      crate: this.refs.obstacleCrate,
+      barrel: this.refs.obstacleBarrel,
+      chest: this.refs.obstacleCrate,
+      table: this.refs.obstacleCrate,
+      chair: this.refs.obstacleCrate,
+      shelf: this.refs.obstacleCrate,
+      counter: this.refs.obstacleCrate,
+      smallBox: this.refs.obstacleCrate,
+      largeBox: this.refs.obstacleBarrel,
+    }
+    let barrierImgs = {
+      wall: {
+        north: this.refs.barrierANorth,
+        south: this.refs.barrierASouth,
+        east: this.refs.barrierAEast,
+        west: this.refs.barrierAWest,
+      },
+      door: {
+        north: this.refs.barrierANorth,
+        south: this.refs.barrierASouth,
+        east: this.refs.barrierAEast,
+        west: this.refs.barrierAWest,
+      },
+      balcony: {
+        north: this.refs.barrierANorth,
+        south: this.refs.barrierASouth,
+        east: this.refs.barrierAEast,
+        west: this.refs.barrierAWest,
+      },
     }
 
     this.placeItems({init: true, items: ''});
@@ -21065,7 +21184,8 @@ class App extends Component {
         }
 
 
-        context.drawImage(floor, iso.x - offset.x, iso.y - offset.y, 100, 100);
+        // context.drawImage(floor, iso.x - offset.x, iso.y - offset.y, 100, 100);
+        context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
 
         context.fillStyle = 'black';
         context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12);
@@ -21279,29 +21399,36 @@ class App extends Component {
 
         }
 
+        if (cell.barrier.state === true && cell.void.state !== true) {
+          let barrierImg = barrierImgs[cell.barrier.type][cell.barrier.position]
+          context.drawImage(barrierImg, iso.x - offset.x, iso.y - offset.y);
+        }
 
         // OBSTACLES
         if (cell.obstacle.state === true && cell.void.state !== true) {
           // let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
           let obstacleImg = obstacleImgs[cell.obstacle.type]
 
-          if (cell.obstacle.height > 1) {
-            offset = {x: wallImageWidth/2, y: wallImageHeight}
-            context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
 
-            let isoHeight = wallImageHeight - floorImageHeight
-            offset.y += isoHeight
-            context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
-          }
-          if (cell.obstacle.height < 1) {
-            offset = {x: wallImageWidth/2, y: wallImageHeight}
-            // context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
-            context.drawImage(obstacleImg, iso.x - offset.x, (iso.y - offset.y)+25);
-          }
-          if (cell.obstacle.height === 1) {
-            offset = {x: wallImageWidth/2, y: wallImageHeight}
-            context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
-          }
+          context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+
+          // if (cell.obstacle.height > 1) {
+          //   offset = {x: wallImageWidth/2, y: wallImageHeight}
+          //   context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+          //
+          //   let isoHeight = wallImageHeight - floorImageHeight
+          //   offset.y += isoHeight
+          //   context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+          // }
+          // if (cell.obstacle.height < 1) {
+          //   offset = {x: wallImageWidth/2, y: wallImageHeight}
+          //   // context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+          //   context.drawImage(obstacleImg, iso.x - offset.x, (iso.y - offset.y)+25);
+          // }
+          // if (cell.obstacle.height === 1) {
+          //   offset = {x: wallImageWidth/2, y: wallImageHeight}
+          //   context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
+          // }
 
         }
 
@@ -28834,6 +28961,12 @@ class App extends Component {
           <img src={obstacleDFull} className='hidden' ref="obstacleDFull" id="wall3" alt="logo" />
           <img src={obstacleEHalf} className='hidden' ref="obstacleEHalf" id="wall3" alt="logo" />
           <img src={obstacleEFull} className='hidden' ref="obstacleEFull" id="wall3" alt="logo" />
+          <img src={obstacleCrate} className='hidden' ref="obstacleCrate" id="wall3" alt="logo" />
+          <img src={obstacleBarrel} className='hidden' ref="obstacleBarrel" id="wall3" alt="logo" />
+          <img src={barrierANorth} className='hidden' ref="barrierANorth" id="wall3" alt="logo" />
+          <img src={barrierASouth} className='hidden' ref="barrierASouth" id="wall3" alt="logo" />
+          <img src={barrierAEast} className='hidden' ref="barrierAEast" id="wall3" alt="logo" />
+          <img src={barrierAWest} className='hidden' ref="barrierAWest" id="wall3" alt="logo" />
 
 
           <img src={attack1Indicate} className='hidden playerImgs' ref="attack1Indicate" id="attack1Indicate" alt="logo" />
