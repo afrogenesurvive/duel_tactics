@@ -19462,7 +19462,7 @@ class App extends Component {
         }
       }
 
-      if (fwdBarrier === true) {
+      if (fwdBarrier === true && targetCell.barrier.height >= 1) {
         console.log('player ',player.number,'hit fwd barrier ',targetCell.barrier.name,'@ ',targetCell.number,type);
         if (targetCell.barrier.destructible.state === true) {
           // WEAPON CHECK
@@ -19597,7 +19597,7 @@ class App extends Component {
       // NO FWD BARRIER. OBSTACLE?
       else {
 
-        if (targetCell.obstacle.state === true) {
+        if (targetCell.obstacle.state === true && targetCell.obstacle.height >= 1) {
           console.log('player ',player.number,'hit obstacle ',targetCell.obstacle.name,' @ ',targetCell.number,type,' for ',damage,' damage');
 
 
@@ -19798,7 +19798,7 @@ class App extends Component {
               rearBarrier = true;
             }
           }
-          if (rearBarrier === true) {
+          if (rearBarrier === true && targetCell.barrier.height >= 1) {
             console.log('player ',player.number,'hit rear barrier ',targetCell.barrier.name,' @ ',targetCell.number,type);
             if (targetCell.barrier.destructible.state === true) {
               // WEAPON CHECK
