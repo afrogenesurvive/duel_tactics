@@ -903,7 +903,7 @@ class App extends Component {
         hp: 2,
         destructible: {
           state: true,
-          weapons: ['sword1','spear1'],
+          weapons: ['sword1','spear1','bolt'],
           leaveRubble: true,
         },
         locked: {
@@ -13731,12 +13731,12 @@ class App extends Component {
         let cellRef = this.gridInfo.find(elem => elem.number.x === parseInt(cell.split("_")[2].split(".")[0]) && elem.number.y === parseInt(cell.split("_")[2].split(".")[1]))
         let myCell = this.gridInfo.find(elem2 => elem2.number.x === player.currentPosition.cell.number.x && elem2.number.y === player.currentPosition.cell.number.y)
 
-        let myCellRearBarrier = false;
+        let myCellBarrier = false;
         if (myCell.barrier.state === true ) {
           if (myCell.barrier.position === direction) {
-              myCellRearBarrier = true;
+              myCellBarrier = true;
 
-              console.log('barrier is in your way',myCell.barrier);
+              // console.log('barrier is in your way',myCell.barrier);
           }
         }
 
@@ -13759,7 +13759,7 @@ class App extends Component {
 
         }
 
-        if (myCellRearBarrier === true) {
+        if (myCellBarrier === true) {
 
           target.free = false;
           target.occupant.type = 'obstacle';
@@ -17821,6 +17821,220 @@ class App extends Component {
         // set this false if first target obstacles or barrier industructible or not destroyed
 
         if (player.currentWeapon.type !== 'spear') {
+
+          // MY CELL BARRIER?
+          if (myCell.barrier.state === true ) {
+            if (myCell.barrier.position === player.direction) {
+
+                if (myCell.barrier.destructible.state === true) {
+                  // WEAPON CHECK
+                  if (myCell.barrier.destructible.weapons.find(x => x === player.currentWeapon.name)) {
+                    if (myCell.barrier.hp - damage > 0) {
+
+                      let hp = myCell.barrier.hp - damage;
+
+                      myCell.barrier =
+                      {
+                        state: myCell.barrier.state,
+                        name: myCell.barrier.name,
+                        type: myCell.barrier.type,
+                        hp: hp,
+                        destructible: myCell.barrier.destructible,
+                        locked: myCell.barrier.locked,
+                        position: myCell.barrier.position,
+                        height: myCell.barrier.height,
+                      };
+
+                      this.obstacleBarrierToDestroy.push({
+                        type: 'barrier',
+                        action: 'damage',
+                        count: 0,
+                        limit: 20,
+                        complete: false,
+                        cell: myCell,
+                      })
+                    }
+
+                    // DESTROY FWD BARRIER W/ OR W/O RUBBLE
+                    else if (myCell.barrier.hp - damage <= 0) {
+                      if (myCell.barrier.destructible.leaveRubble === true) {
+                        console.log('leave rubble on ',myCell.number,'removing barrier');
+                        myCell.rubble = true;
+                        // myCell.terrain.type = 'hazard';
+                        myCell.barrier =
+                        {
+                          state: false,
+                          name: myCell.barrier.name,
+                          type: myCell.barrier.type,
+                          hp: 0,
+                          destructible: myCell.barrier.destructible,
+                          locked: myCell.barrier.locked,
+                          position: myCell.barrier.position,
+                          height: myCell.barrier.height,
+                        };
+
+                        this.players[player.number-1].statusDisplay = {
+                          state: true,
+                          status: 'Destroyed '+myCell.barrier.name+'!',
+                          count: 1,
+                          limit: this.players[player.number-1].statusDisplay.limit,
+                        }
+
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 25,
+                            type: '',
+                            position: '',
+                            msg: 'destroyedItem',
+                            img: '',
+
+                          }
+                        )
+                      } else {
+                        console.log('no rubble. Just remove barrier');
+
+                        myCell.barrier =
+                        {
+                          state: false,
+                          name: myCell.barrier.name,
+                          type: myCell.barrier.type,
+                          hp: 0,
+                          destructible: myCell.barrier.destructible,
+                          locked: myCell.barrier.locked,
+                          position: myCell.barrier.position,
+                          height: myCell.barrier.height,
+                        };
+
+                        this.players[player.number-1].statusDisplay = {
+                          state: true,
+                          status: 'Destroyed '+myCell.barrier.name+'!',
+                          count: 1,
+                          limit: this.players[player.number-1].statusDisplay.limit,
+                        }
+
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 25,
+                            type: '',
+                            position: '',
+                            msg: 'destroyedItem',
+                            img: '',
+
+                          }
+                        )
+                      }
+
+                      this.obstacleBarrierToDestroy.push({
+                        type: 'barrier',
+                        action: 'destroy',
+                        count: 0,
+                        limit: 20,
+                        complete: false,
+                        cell: myCell,
+                      })
+
+                    }
+                  }
+
+                  // WEAPON NO GOOD. DEFLECT
+                  else {
+                    console.log('your current weapon cannot destroy this, you need ',myCell.obstacle.barrierible.weapons,'. Deflect player?');
+                     let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+                     if (shouldDeflect === 1) {
+
+                       this.attackedCancel(this.players[player.number-1]);
+
+                       player.success.deflected = {
+                         state: true,
+                         count: 1,
+                         limit: this.deflectedLengthRef.attack,
+                         predeflect: player.success.deflected.predeflect,
+                         type: 'attack'
+                       }
+                       player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+
+
+                       if (this.aiDeflectedCheck.includes(player.number) !== true) {
+                         this.aiDeflectedCheck.push(player.number)
+                       }
+
+                       if (player.currentWeapon.name === '') {
+                         console.log('this barrier is stronger than your fist. Take damage?');
+                         let takeDamage = this.rnJesus(1,player.crits.guardBreak);
+                         if (takeDamage === 1) {
+                           if (player.hp - 1 <= 0) {
+                             this.killPlayer(this.players[player.number-1]);
+
+                             let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+                             this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+                             this.players[player.number-1].points--;
+
+                             this.pointChecker(player)
+                           } else {
+                             this.players[player.number-1].hp -= 1;
+                           }
+                         }
+                       }
+
+                     }
+                  }
+
+                }
+
+                // INDESTRUCTIBLE MY CELL BARRIER
+                else {
+                  console.log('attacking invurnerable barrier, deflect player?');
+                   let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+                   if (shouldDeflect === 1) {
+                     this.attackedCancel(this.players[player.number-1]);
+
+                     player.success.deflected = {
+                       state: true,
+                       count: 1,
+                       limit: this.deflectedLengthRef.attack,
+                       predeflect: player.success.deflected.predeflect,
+                       type: 'attack'
+                     }
+                     player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+
+
+                     if (this.aiDeflectedCheck.includes(player.number) !== true) {
+                       this.aiDeflectedCheck.push(player.number)
+                     }
+
+                     if (player.currentWeapon.name === '') {
+                       console.log('this barrier is stronger than your fist. Take damage?');
+                       let takeDamage = this.rnJesus(1,player.crits.guardBreak);
+                       if (takeDamage === 1) {
+                         if (player.hp - 1 <= 0) {
+                           this.killPlayer(this.players[player.number-1]);
+
+                           let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+                           this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+                           this.players[player.number-1].points--;
+
+                           this.pointChecker(player)
+                         } else {
+                           this.players[player.number-1].hp -= 1;
+
+                           if (this.players[player.number-1].hp === 1) {
+                             this.players[player.number-1].speed.move = .05;
+                           }
+                         }
+                       }
+                     }
+
+                   }
+                }
+            }
+          }
+
           // FWD BARRIER?
           let fwdBarrier = false;
           if (targetCell.barrier.state === true) {
@@ -18362,6 +18576,219 @@ class App extends Component {
 
         // CHECK 1ST CELL, TARGET 2
         if (player.currentWeapon.type === 'spear') {
+
+          if (myCell.barrier.state === true ) {
+            if (myCell.barrier.position === player.direction) {
+
+                if (myCell.barrier.destructible.state === true) {
+                  // WEAPON CHECK
+                  if (myCell.barrier.destructible.weapons.find(x => x === player.currentWeapon.name)) {
+                    if (myCell.barrier.hp - damage > 0) {
+
+                      let hp = myCell.barrier.hp - damage;
+
+                      myCell.barrier =
+                      {
+                        state: myCell.barrier.state,
+                        name: myCell.barrier.name,
+                        type: myCell.barrier.type,
+                        hp: hp,
+                        destructible: myCell.barrier.destructible,
+                        locked: myCell.barrier.locked,
+                        position: myCell.barrier.position,
+                        height: myCell.barrier.height,
+                      };
+
+                      this.obstacleBarrierToDestroy.push({
+                        type: 'barrier',
+                        action: 'damage',
+                        count: 0,
+                        limit: 20,
+                        complete: false,
+                        cell: myCell,
+                      })
+                    }
+
+                    // DESTROY FWD BARRIER W/ OR W/O RUBBLE
+                    else if (myCell.barrier.hp - damage <= 0) {
+                      if (myCell.barrier.destructible.leaveRubble === true) {
+                        console.log('leave rubble on ',myCell.number,'removing barrier');
+                        myCell.rubble = true;
+                        // myCell.terrain.type = 'hazard';
+                        myCell.barrier =
+                        {
+                          state: false,
+                          name: myCell.barrier.name,
+                          type: myCell.barrier.type,
+                          hp: 0,
+                          destructible: myCell.barrier.destructible,
+                          locked: myCell.barrier.locked,
+                          position: myCell.barrier.position,
+                          height: myCell.barrier.height,
+                        };
+
+                        this.players[player.number-1].statusDisplay = {
+                          state: true,
+                          status: 'Destroyed '+myCell.barrier.name+'!',
+                          count: 1,
+                          limit: this.players[player.number-1].statusDisplay.limit,
+                        }
+
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 25,
+                            type: '',
+                            position: '',
+                            msg: 'destroyedItem',
+                            img: '',
+
+                          }
+                        )
+                      } else {
+                        console.log('no rubble. Just remove barrier');
+
+                        myCell.barrier =
+                        {
+                          state: false,
+                          name: myCell.barrier.name,
+                          type: myCell.barrier.type,
+                          hp: 0,
+                          destructible: myCell.barrier.destructible,
+                          locked: myCell.barrier.locked,
+                          position: myCell.barrier.position,
+                          height: myCell.barrier.height,
+                        };
+
+                        this.players[player.number-1].statusDisplay = {
+                          state: true,
+                          status: 'Destroyed '+myCell.barrier.name+'!',
+                          count: 1,
+                          limit: this.players[player.number-1].statusDisplay.limit,
+                        }
+
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 25,
+                            type: '',
+                            position: '',
+                            msg: 'destroyedItem',
+                            img: '',
+
+                          }
+                        )
+                      }
+
+                      this.obstacleBarrierToDestroy.push({
+                        type: 'barrier',
+                        action: 'destroy',
+                        count: 0,
+                        limit: 20,
+                        complete: false,
+                        cell: myCell,
+                      })
+
+                    }
+                  }
+
+                  // WEAPON NO GOOD. DEFLECT
+                  else {
+                    console.log('your current weapon cannot destroy this, you need ',myCell.obstacle.barrierible.weapons,'. Deflect player?');
+                     let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+                     if (shouldDeflect === 1) {
+
+                       this.attackedCancel(this.players[player.number-1]);
+
+                       player.success.deflected = {
+                         state: true,
+                         count: 1,
+                         limit: this.deflectedLengthRef.attack,
+                         predeflect: player.success.deflected.predeflect,
+                         type: 'attack'
+                       }
+                       player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+
+
+                       if (this.aiDeflectedCheck.includes(player.number) !== true) {
+                         this.aiDeflectedCheck.push(player.number)
+                       }
+
+                       if (player.currentWeapon.name === '') {
+                         console.log('this barrier is stronger than your fist. Take damage?');
+                         let takeDamage = this.rnJesus(1,player.crits.guardBreak);
+                         if (takeDamage === 1) {
+                           if (player.hp - 1 <= 0) {
+                             this.killPlayer(this.players[player.number-1]);
+
+                             let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+                             this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+                             this.players[player.number-1].points--;
+
+                             this.pointChecker(player)
+                           } else {
+                             this.players[player.number-1].hp -= 1;
+                           }
+                         }
+                       }
+
+                     }
+                  }
+
+                }
+
+                // INDESTRUCTIBLE MY CELL BARRIER
+                else {
+                  console.log('attacking invurnerable barrier, deflect player?');
+                   let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+                   if (shouldDeflect === 1) {
+                     this.attackedCancel(this.players[player.number-1]);
+
+                     player.success.deflected = {
+                       state: true,
+                       count: 1,
+                       limit: this.deflectedLengthRef.attack,
+                       predeflect: player.success.deflected.predeflect,
+                       type: 'attack'
+                     }
+                     player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+
+
+                     if (this.aiDeflectedCheck.includes(player.number) !== true) {
+                       this.aiDeflectedCheck.push(player.number)
+                     }
+
+                     if (player.currentWeapon.name === '') {
+                       console.log('this barrier is stronger than your fist. Take damage?');
+                       let takeDamage = this.rnJesus(1,player.crits.guardBreak);
+                       if (takeDamage === 1) {
+                         if (player.hp - 1 <= 0) {
+                           this.killPlayer(this.players[player.number-1]);
+
+                           let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+                           this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+                           this.players[player.number-1].points--;
+
+                           this.pointChecker(player)
+                         } else {
+                           this.players[player.number-1].hp -= 1;
+
+                           if (this.players[player.number-1].hp === 1) {
+                             this.players[player.number-1].speed.move = .05;
+                           }
+                         }
+                       }
+                     }
+
+                   }
+                }
+            }
+          }
+
           // FWD BARRIER?
           let fwdBarrier = false;
           if (targetCell2.barrier.state === true) {
@@ -18950,6 +19377,220 @@ class App extends Component {
         // CHECK 2ND CELL TARGET1
         if (player.currentWeapon.type === 'spear' && checkSpearTarget === true) {
           let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y)
+
+
+          if (myCell.barrier.state === true ) {
+            if (myCell.barrier.position === player.direction) {
+
+                if (myCell.barrier.destructible.state === true) {
+                  // WEAPON CHECK
+                  if (myCell.barrier.destructible.weapons.find(x => x === player.currentWeapon.name)) {
+                    if (myCell.barrier.hp - damage > 0) {
+
+                      let hp = myCell.barrier.hp - damage;
+
+                      myCell.barrier =
+                      {
+                        state: myCell.barrier.state,
+                        name: myCell.barrier.name,
+                        type: myCell.barrier.type,
+                        hp: hp,
+                        destructible: myCell.barrier.destructible,
+                        locked: myCell.barrier.locked,
+                        position: myCell.barrier.position,
+                        height: myCell.barrier.height,
+                      };
+
+                      this.obstacleBarrierToDestroy.push({
+                        type: 'barrier',
+                        action: 'damage',
+                        count: 0,
+                        limit: 20,
+                        complete: false,
+                        cell: myCell,
+                      })
+                    }
+
+                    // DESTROY FWD BARRIER W/ OR W/O RUBBLE
+                    else if (myCell.barrier.hp - damage <= 0) {
+                      if (myCell.barrier.destructible.leaveRubble === true) {
+                        console.log('leave rubble on ',myCell.number,'removing barrier');
+                        myCell.rubble = true;
+                        // myCell.terrain.type = 'hazard';
+                        myCell.barrier =
+                        {
+                          state: false,
+                          name: myCell.barrier.name,
+                          type: myCell.barrier.type,
+                          hp: 0,
+                          destructible: myCell.barrier.destructible,
+                          locked: myCell.barrier.locked,
+                          position: myCell.barrier.position,
+                          height: myCell.barrier.height,
+                        };
+
+                        this.players[player.number-1].statusDisplay = {
+                          state: true,
+                          status: 'Destroyed '+myCell.barrier.name+'!',
+                          count: 1,
+                          limit: this.players[player.number-1].statusDisplay.limit,
+                        }
+
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 25,
+                            type: '',
+                            position: '',
+                            msg: 'destroyedItem',
+                            img: '',
+
+                          }
+                        )
+                      } else {
+                        console.log('no rubble. Just remove barrier');
+
+                        myCell.barrier =
+                        {
+                          state: false,
+                          name: myCell.barrier.name,
+                          type: myCell.barrier.type,
+                          hp: 0,
+                          destructible: myCell.barrier.destructible,
+                          locked: myCell.barrier.locked,
+                          position: myCell.barrier.position,
+                          height: myCell.barrier.height,
+                        };
+
+                        this.players[player.number-1].statusDisplay = {
+                          state: true,
+                          status: 'Destroyed '+myCell.barrier.name+'!',
+                          count: 1,
+                          limit: this.players[player.number-1].statusDisplay.limit,
+                        }
+
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 25,
+                            type: '',
+                            position: '',
+                            msg: 'destroyedItem',
+                            img: '',
+
+                          }
+                        )
+                      }
+
+                      this.obstacleBarrierToDestroy.push({
+                        type: 'barrier',
+                        action: 'destroy',
+                        count: 0,
+                        limit: 20,
+                        complete: false,
+                        cell: myCell,
+                      })
+
+                    }
+                  }
+
+                  // WEAPON NO GOOD. DEFLECT
+                  else {
+                    console.log('your current weapon cannot destroy this, you need ',myCell.obstacle.barrierible.weapons,'. Deflect player?');
+                     let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+                     if (shouldDeflect === 1) {
+
+                       this.attackedCancel(this.players[player.number-1]);
+
+                       player.success.deflected = {
+                         state: true,
+                         count: 1,
+                         limit: this.deflectedLengthRef.attack,
+                         predeflect: player.success.deflected.predeflect,
+                         type: 'attack'
+                       }
+                       player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+
+
+                       if (this.aiDeflectedCheck.includes(player.number) !== true) {
+                         this.aiDeflectedCheck.push(player.number)
+                       }
+
+                       if (player.currentWeapon.name === '') {
+                         console.log('this barrier is stronger than your fist. Take damage?');
+                         let takeDamage = this.rnJesus(1,player.crits.guardBreak);
+                         if (takeDamage === 1) {
+                           if (player.hp - 1 <= 0) {
+                             this.killPlayer(this.players[player.number-1]);
+
+                             let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+                             this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+                             this.players[player.number-1].points--;
+
+                             this.pointChecker(player)
+                           } else {
+                             this.players[player.number-1].hp -= 1;
+                           }
+                         }
+                       }
+
+                     }
+                  }
+
+                }
+
+                // INDESTRUCTIBLE MY CELL BARRIER
+                else {
+                  console.log('attacking invurnerable barrier, deflect player?');
+                   let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+                   if (shouldDeflect === 1) {
+                     this.attackedCancel(this.players[player.number-1]);
+
+                     player.success.deflected = {
+                       state: true,
+                       count: 1,
+                       limit: this.deflectedLengthRef.attack,
+                       predeflect: player.success.deflected.predeflect,
+                       type: 'attack'
+                     }
+                     player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+
+
+                     if (this.aiDeflectedCheck.includes(player.number) !== true) {
+                       this.aiDeflectedCheck.push(player.number)
+                     }
+
+                     if (player.currentWeapon.name === '') {
+                       console.log('this barrier is stronger than your fist. Take damage?');
+                       let takeDamage = this.rnJesus(1,player.crits.guardBreak);
+                       if (takeDamage === 1) {
+                         if (player.hp - 1 <= 0) {
+                           this.killPlayer(this.players[player.number-1]);
+
+                           let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+                           this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+                           this.players[player.number-1].points--;
+
+                           this.pointChecker(player)
+                         } else {
+                           this.players[player.number-1].hp -= 1;
+
+                           if (this.players[player.number-1].hp === 1) {
+                             this.players[player.number-1].speed.move = .05;
+                           }
+                         }
+                       }
+                     }
+
+                   }
+                }
+            }
+          }
+
 
           let fwdBarrier = false;
           if (targetCell.barrier.state === true) {
@@ -19917,7 +20558,7 @@ class App extends Component {
 
               // WEAPON NO GOOD. DEFLECT
               else {
-                console.log('your current weapon cannot destroy this, you need ',targetCell.obstacle.barrierible.weapons,'. Deflect player?');
+                console.log('your current weapon cannot destroy this, you need ',targetCell.barrier.destructible.weapons,'. Deflect player?');
 
               }
 
