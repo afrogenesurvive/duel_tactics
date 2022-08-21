@@ -159,6 +159,9 @@ const CellInfo = props => {
                         <p>Type: {props.cell.barrier.type}</p>
                       </li>
                       <li>
+                        <p>Position: {props.cell.barrier.position}</p>
+                      </li>
+                      <li>
                         <p>HP: {props.cell.barrier.hp}</p>
                       </li>
                       <li>

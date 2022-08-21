@@ -295,8 +295,8 @@ class App extends Component {
     };
     this.levelData9 = {
       row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*','**_*_0.7_a_0a*','**_*_0.8_a_0a*','**_*_0.9_a_0a*'],
-      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
-      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_a_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
+      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','ce_*_1.6_a_0a*','ce_*_1.7_a_0a*','**_*_1.8_k_0a*','**_*_1.9_a_0a*'],
+      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','ce_*_2.6_a_0a*','ce_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_i_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
       row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','**_h_4.4_a_0a*','cs_b_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','**_*_4.9_k_0a*'],
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','**_*_5.2_a_0a*','**_*_5.3_a_0a*','**_*_5.4_a_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','**_*_5.8_a_0a*','**_*_5.9_a_0a*'],
@@ -902,9 +902,9 @@ class App extends Component {
         type: 'balcony',
         hp: 2,
         destructible: {
-          state: false,
-          weapons: [],
-          leaveRubble: false,
+          state: true,
+          weapons: ['sword1','spear1'],
+          leaveRubble: true,
         },
         locked: {
           state: false,
@@ -3801,7 +3801,15 @@ class App extends Component {
         ) {
           this.players[0].strafeReleaseHook = true
         }
+        if (
+          state === false &&
+          this.players[0].moving.state !== true &&
+          this.keyPressed[0].strafe === true
+        ) {
+          this.players[0].strafeReleaseHook = true;
+        }
         else {
+
           this.keyPressed[0].strafe = state;
           this.players[0].strafing.state = state;
           this.currentPlayer = 1;
@@ -3925,6 +3933,13 @@ class App extends Component {
           this.players[1].strafing.state === true
         ) {
           this.players[1].strafeReleaseHook = true
+        }
+        if (
+          state === false &&
+          this.players[1].moving.state !== true &&
+          this.keyPressed[1].strafe === true
+        ) {
+          this.players[1].strafeReleaseHook = true;
         }
         else {
           this.keyPressed[1].strafe = state;
@@ -5591,6 +5606,7 @@ class App extends Component {
                     y: 0,
                   }
                 }
+
                 if (player.strafing.state === true) {
 
                   // CONTINUOUS STRAFING CHECK
@@ -6082,6 +6098,7 @@ class App extends Component {
         if (player.strafeReleaseHook === true ) {
           player.strafing.state = false;
           player.strafeReleaseHook = false;
+          this.getTarget(player);
         }
 
 
@@ -8558,6 +8575,10 @@ class App extends Component {
                     }
                     nextPosition = this.lineCrementer(player);
                     player.nextPosition = nextPosition;
+                  }
+
+                  if (target.free === false) {
+                    // console.log('here',player.direction);
                   }
                 }
 
@@ -13708,20 +13729,42 @@ class App extends Component {
     for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
       for (const cell of row) {
         let cellRef = this.gridInfo.find(elem => elem.number.x === parseInt(cell.split("_")[2].split(".")[0]) && elem.number.y === parseInt(cell.split("_")[2].split(".")[1]))
+        let myCell = this.gridInfo.find(elem2 => elem2.number.x === player.currentPosition.cell.number.x && elem2.number.y === player.currentPosition.cell.number.y)
+
+        let myCellRearBarrier = false;
+        if (myCell.barrier.state === true ) {
+          if (myCell.barrier.position === direction) {
+              myCellRearBarrier = true;
+
+              console.log('barrier is in your way',myCell.barrier);
+          }
+        }
+
         let fwdBarrier = false;
         if (cellRef.barrier.state === true) {
-          if (player.direction === 'north' && cellRef.barrier.position === 'south') {
+
+          if (direction === 'north' && cellRef.barrier.position === 'south') {
             fwdBarrier = true;
           }
-          if (player.direction === 'south' && cellRef.barrier.position === 'north') {
+          if (direction === 'south' && cellRef.barrier.position === 'north') {
             fwdBarrier = true;
           }
-          if (player.direction === 'east' && cellRef.barrier.position === 'west') {
+          if (direction === 'east' && cellRef.barrier.position === 'west') {
             fwdBarrier = true;
           }
-          if (player.direction === 'west' && cellRef.barrier.position === 'east') {
+          if (direction === 'west' && cellRef.barrier.position === 'east') {
             fwdBarrier = true;
           }
+
+
+        }
+
+        if (myCellRearBarrier === true) {
+
+          target.free = false;
+          target.occupant.type = 'obstacle';
+          obstacleObstructFound = true;
+
         }
 
         if (
@@ -13730,8 +13773,6 @@ class App extends Component {
           fwdBarrier === true ||
           cellRef.obstacle.state === true
         ) {
-
-
 
           let obstaclePosition = {
             // x: Number(cell.charAt(1)),
@@ -13743,7 +13784,7 @@ class App extends Component {
             targetCellNumber.x === obstaclePosition.x &&
             targetCellNumber.y === obstaclePosition.y
           ) {
-            // console.log('an obstacle is in your way');
+            console.log('an obstacle is in your way');
 
             target.free = false;
             target.occupant.type = 'obstacle';
@@ -13770,6 +13811,9 @@ class App extends Component {
           //   spearCell2Obstacle = true;
           // }
         }
+
+
+
       }
     }
 
@@ -20804,6 +20848,7 @@ class App extends Component {
           break;
           default:
         }
+        // console.log('*** ',elem.barrier.position);
       }
 
 
