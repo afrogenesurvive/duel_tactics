@@ -298,7 +298,7 @@ class App extends Component {
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','ce_*_1.6_a_0a*','ce_*_1.7_a_0a*','**_*_1.8_k_0a*','**_*_1.9_a_0a*'],
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','ce_*_2.6_a_0a*','ce_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_i_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
-      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','**_h_4.4_a_0a*','cs_b_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','**_*_4.9_k_0a*'],
+      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','cs_h_4.4_a_0a*','cs_b_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','**_*_4.9_k_0a*'],
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','**_*_5.2_a_0a*','**_*_5.3_a_0a*','**_*_5.4_a_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','**_*_5.8_a_0a*','**_*_5.9_a_0a*'],
       row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_j_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_b_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
       row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','**_*_7.5_a_0a*','**_i_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
@@ -4884,14 +4884,8 @@ class App extends Component {
         }
 
 
-        if (cell.barrier.state === true && cell.void.state !== true) {
-          let barrierImg = barrierImgs[cell.barrier.type][cell.barrier.position]
-          context3.drawImage(barrierImg, iso2.x - offset2.x, iso2.y - (barrierImg.height/2), barrierImg.width/2, barrierImg.height/2);
-          if (context4) {
-            context4.drawImage(barrierImg, iso2.x - offset2.x, iso2.y - (barrierImg.height/2), barrierImg.width/2, barrierImg.height/2);
-          }
-        }
 
+        // BARRIERS & OBSTACLES
 
         if (cell.obstacle.state === true && cell.void.state !== true) {
           // let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
@@ -4939,6 +4933,13 @@ class App extends Component {
 
         }
 
+        if (cell.barrier.state === true && cell.void.state !== true) {
+          let barrierImg = barrierImgs[cell.barrier.type][cell.barrier.position]
+          context3.drawImage(barrierImg, iso2.x - offset2.x, iso2.y - (barrierImg.height/2), barrierImg.width/2, barrierImg.height/2);
+          if (context4) {
+            context4.drawImage(barrierImg, iso2.x - offset2.x, iso2.y - (barrierImg.height/2), barrierImg.width/2, barrierImg.height/2);
+          }
+        }
 
         // let walledTiles = []
         // if (walledTiles.includes(''+x+','+y+'')) {
@@ -13092,11 +13093,6 @@ class App extends Component {
 
         // OBSTACLES & BARRIERS
 
-        if (gridInfoCell.barrier.state === true && gridInfoCell.void.state !== true) {
-          let barrierImg = barrierImgs[gridInfoCell.barrier.type][gridInfoCell.barrier.position]
-          context.drawImage(barrierImg, iso.x - offset.x, iso.y - offset.y);
-        }
-
         if (gridInfoCell.obstacle.state === true && gridInfoCell.void.state !== true) {
 
           let obstacleImg = obstacleImgs[gridInfoCell.obstacle.type]
@@ -13121,6 +13117,11 @@ class App extends Component {
 
           context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
 
+        }
+
+        if (gridInfoCell.barrier.state === true && gridInfoCell.void.state !== true) {
+          let barrierImg = barrierImgs[gridInfoCell.barrier.type][gridInfoCell.barrier.position]
+          context.drawImage(barrierImg, iso.x - offset.x, iso.y - offset.y);
         }
 
 
@@ -13873,7 +13874,6 @@ class App extends Component {
     //     };
     //   }
     // }
-
 
     // DIAGONALLY ALIGNED PLAYERS/OBSTACLES CAN'T MOVE!!
     let found = 0;
@@ -16070,7 +16070,115 @@ class App extends Component {
           }
         )
         break;
+      case 'strafe moving':
+        player.action = 'idle';
+        player.idleAnim = {
+          state: false,
+          count: 0,
+          limit: 5,
+        };
+        player.strafing: {
+          state: false,
+          direction: '',
+        };
+        this.players[player.number-1].statusDisplay = {
+          state: true,
+          status: 'strafe break!',
+          count: 1,
+          limit: this.players[player.number-1].statusDisplay.limit,
+        }
+        player.popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 25,
+            type: '',
+            position: '',
+            msg: 'attackCancelled',
+            img: '',
+
+          }
+        )
+      break;
+      case 'dodging':
+        player.action = 'idle';
+        player.idleAnim = {
+          state: false,
+          count: 0,
+          limit: 5,
+        };
+        player.dodging: {
+          countState: false,
+          state: false,
+          count: 0,
+          limit: 20,
+          peak: {
+            start: 5,
+            end: 10,
+          }
+        };
+        player.dodgeDirection: '',
+        this.players[player.number-1].statusDisplay = {
+          state: true,
+          status: 'dodge break!',
+          count: 1,
+          limit: this.players[player.number-1].statusDisplay.limit,
+        }
+        player.popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 25,
+            type: '',
+            position: '',
+            msg: 'attackCancelled',
+            img: '',
+
+          }
+        )
+      break;
+      case 'flanking':
+        player.action = 'idle';
+        player.idleAnim = {
+          state: false,
+          count: 0,
+          limit: 5,
+        };
+        player.flanking: {
+          checking: false,
+          preFlankDirection: '',
+          direction: '',
+          state: false,
+          step: 0,
+          target1: {x:0 ,y:0},
+          target2: {x:0 ,y:0},
+        };
+        player.dodgeDirection: '',
+        this.players[player.number-1].statusDisplay = {
+          state: true,
+          status: 'flanking break!',
+          count: 1,
+          limit: this.players[player.number-1].statusDisplay.limit,
+        }
+        player.popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 25,
+            type: '',
+            position: '',
+            msg: 'attackCancelled',
+            img: '',
+
+          }
+        )
+      break;
     }
+
+
+
+
+
 
     if (player.ai.state === true) {
       this.players[player.number-1].ai.currentInstruction = 0
@@ -22060,12 +22168,9 @@ class App extends Component {
 
         }
 
-        if (cell.barrier.state === true && cell.void.state !== true) {
-          let barrierImg = barrierImgs[cell.barrier.type][cell.barrier.position]
-          context.drawImage(barrierImg, iso.x - offset.x, iso.y - offset.y);
-        }
 
-        // OBSTACLES
+
+        // OBSTACLES & BARRIERS
         if (cell.obstacle.state === true && cell.void.state !== true) {
           // let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
           let obstacleImg = obstacleImgs[cell.obstacle.type]
@@ -22090,6 +22195,11 @@ class App extends Component {
           //   context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
           // }
 
+        }
+
+        if (cell.barrier.state === true && cell.void.state !== true) {
+          let barrierImg = barrierImgs[cell.barrier.type][cell.barrier.position]
+          context.drawImage(barrierImg, iso.x - offset.x, iso.y - offset.y);
         }
 
 
