@@ -299,7 +299,7 @@ class App extends Component {
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','ce_*_2.6_a_0a*','ce_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_i_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
       row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','cs_h_4.4_a_0a*','cs_b_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','**_*_4.9_k_0a*'],
-      row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','**_*_5.2_a_0a*','**_*_5.3_a_0a*','**_*_5.4_a_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','**_*_5.8_a_0a*','**_*_5.9_a_0a*'],
+      row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','cn_*_5.2_a_0a*','**_*_5.3_a_0a*','**_*_5.4_a_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','**_*_5.8_a_0a*','**_*_5.9_a_0a*'],
       row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_j_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_b_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
       row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','**_*_7.5_a_0a*','**_i_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
       row8: ['**_*_8.0_a_0a*','**_*_8.1_a_0a*','**_*_8.2_a_0a*','**_*_8.3_a_0a*','**_*_8.4_a_0a*','**_*_8.5_a_0a*','**_c_8.6_a_0a*','**_*_8.7_a_0a*','**_*_8.8_a_0a*','**_*_8.9_d_0a*'],
@@ -4282,6 +4282,7 @@ class App extends Component {
     }
   }
 
+
   getCustomPlyrStartPosList = (args) => {
     this.settingsFormPlyrGridInfo = this.gridInfo;
 
@@ -4368,6 +4369,7 @@ class App extends Component {
     })
 
     this.settingsFormGridWidthUpdate(this.settingsGridWidth)
+
     // console.log('this.settingsFormPlyrStartPosList',this.settingsFormPlyrStartPosList);
 
   }
@@ -4554,11 +4556,19 @@ class App extends Component {
 
 
     let gridInfo;
-    this.startProcessLevelData(this.state.canvas);
-    gridInfo = this.gridInfo;
-    this.processLevelData(gridInfo);
 
-    this.settingsFormAiGridInfo = this.gridInfo;
+    // ----------------
+    // this.startProcessLevelData(this.state.canvas);
+    // gridInfo = this.gridInfo;
+    // this.processLevelData(gridInfo);
+    // ----------------
+
+
+
+    // this.settingsFormAiGridInfo = this.gridInfo;
+    this.settingsFormAiGridInfo = this.settingsGridInfo;
+
+    console.log('post process barrier check settings',this.settingsGridInfo.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
 
     this.settingsGridWidth = args;
 
@@ -4610,29 +4620,29 @@ class App extends Component {
       }
 
 
-
       setTimeout(()=>{
         this.redrawSettingsGrid(canvas3,context3,canvas4,context4);
       }, 30);
-    }
 
+    }
 
     // this.redrawSettingsGrid(this.state.canvas3,this.state.context3);
 
     this.gridWidth = prevGridWidth;
 
-    this.startProcessLevelData(this.state.canvas);
-    gridInfo = this.gridInfo;
-    this.processLevelData(gridInfo);
+
+    // ----------------
+    // this.startProcessLevelData(this.state.canvas);
+    // gridInfo = this.gridInfo;
+    // this.processLevelData(gridInfo);
+    // ----------------
+
+
 
     // this.setState({
     //   stateUpdater: '..'
     // })
 
-    // console.log('-----------xx----------');
-    // console.log('this.settingsFormPlyrStartPosList',this.settingsFormPlyrStartPosList);
-    // console.log('this.updateSettingsFormAiData',this.updateSettingsFormAiDataData);
-    // console.log('this.settingsFormAiStartPosList',this.settingsFormAiStartPosList);
 
   }
   updateSettingsFormAiData = (args) => {
@@ -4934,11 +4944,13 @@ class App extends Component {
         }
 
         if (cell.barrier.state === true && cell.void.state !== true) {
+
           let barrierImg = barrierImgs[cell.barrier.type][cell.barrier.position]
           context3.drawImage(barrierImg, iso2.x - offset2.x, iso2.y - (barrierImg.height/2), barrierImg.width/2, barrierImg.height/2);
           if (context4) {
             context4.drawImage(barrierImg, iso2.x - offset2.x, iso2.y - (barrierImg.height/2), barrierImg.width/2, barrierImg.height/2);
           }
+          // console.log('xxx3',cell.levelData,cell.barrier.position);
         }
 
         // let walledTiles = []
@@ -13122,6 +13134,7 @@ class App extends Component {
         if (gridInfoCell.barrier.state === true && gridInfoCell.void.state !== true) {
           let barrierImg = barrierImgs[gridInfoCell.barrier.type][gridInfoCell.barrier.position]
           context.drawImage(barrierImg, iso.x - offset.x, iso.y - offset.y);
+          // console.log('xxx2',gridInfoCell.levelData,gridInfoCell.barrier.position);
         }
 
 
@@ -13785,7 +13798,7 @@ class App extends Component {
             targetCellNumber.x === obstaclePosition.x &&
             targetCellNumber.y === obstaclePosition.y
           ) {
-            console.log('an obstacle is in your way');
+            // console.log('an obstacle is in your way');
 
             target.free = false;
             target.occupant.type = 'obstacle';
@@ -16077,7 +16090,7 @@ class App extends Component {
           count: 0,
           limit: 5,
         };
-        player.strafing: {
+        player.strafing = {
           state: false,
           direction: '',
         };
@@ -16107,7 +16120,7 @@ class App extends Component {
           count: 0,
           limit: 5,
         };
-        player.dodging: {
+        player.dodging = {
           countState: false,
           state: false,
           count: 0,
@@ -16117,7 +16130,7 @@ class App extends Component {
             end: 10,
           }
         };
-        player.dodgeDirection: '',
+        player.dodgeDirection = '';
         this.players[player.number-1].statusDisplay = {
           state: true,
           status: 'dodge break!',
@@ -16144,7 +16157,7 @@ class App extends Component {
           count: 0,
           limit: 5,
         };
-        player.flanking: {
+        player.flanking = {
           checking: false,
           preFlankDirection: '',
           direction: '',
@@ -16153,7 +16166,6 @@ class App extends Component {
           target1: {x:0 ,y:0},
           target2: {x:0 ,y:0},
         };
-        player.dodgeDirection: '',
         this.players[player.number-1].statusDisplay = {
           state: true,
           status: 'flanking break!',
@@ -21570,6 +21582,8 @@ class App extends Component {
             elem.elevation.position = 'west'
           break;
           default:
+
+          break
         }
       }
 
@@ -21596,8 +21610,9 @@ class App extends Component {
             elem.barrier.position = 'west';
           break;
           default:
+          break;
         }
-        // console.log('*** ',elem.barrier.position);
+        console.log('set barrier main',elem.levelData,elem.barrier.position);
       }
 
 
@@ -21701,6 +21716,8 @@ class App extends Component {
           break;
           default:
         }
+        console.log('set barrier settings',elem2.levelData,elem2.barrier.position);
+
       }
 
       // console.log('oo2',elem.levelData,elem.number,elem.terrain);
@@ -21754,6 +21771,9 @@ class App extends Component {
     // this.settingsFormAiGridInfo = this.gridInfo;
     // console.log('post parse gridInfo',this.gridInfo);
 
+    // console.log('yyy',allCells.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
+    // console.log('yyy2',this.settingsGridInfo.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
+
     this.updatePathArray()
 
 
@@ -21801,7 +21821,8 @@ class App extends Component {
     this.startProcessLevelData(canvas);
     gridInfo = this.gridInfo;
 
-    this.processLevelData(gridInfo);
+    this.processLevelData(this.gridInfo);
+    console.log('post process barrier check init',this.gridInfo.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
 
     if (this.camera.fixed !== true) {
       // this.setCameraFocus('init', canvas, context, canvas2, context2);
@@ -22168,14 +22189,20 @@ class App extends Component {
 
         }
 
+        if (cell.barrier.state === true && cell.void.state !== true) {
+          let barrierImg = barrierImgs[cell.barrier.type][cell.barrier.position]
+          context.drawImage(barrierImg, iso.x - offset.x, iso.y - offset.y);
 
+          // console.log('barrier check 1',cell.levelData,cell.barrier.position);
+        }
 
-        // OBSTACLES & BARRIERS
+        // OBSTACLES
         if (cell.obstacle.state === true && cell.void.state !== true) {
           // let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
           let obstacleImg = obstacleImgs[cell.obstacle.type]
 
-          context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
+
+          context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
 
           // if (cell.obstacle.height > 1) {
           //   offset = {x: wallImageWidth/2, y: wallImageHeight}
@@ -22195,11 +22222,6 @@ class App extends Component {
           //   context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
           // }
 
-        }
-
-        if (cell.barrier.state === true && cell.void.state !== true) {
-          let barrierImg = barrierImgs[cell.barrier.type][cell.barrier.position]
-          context.drawImage(barrierImg, iso.x - offset.x, iso.y - offset.y);
         }
 
 
