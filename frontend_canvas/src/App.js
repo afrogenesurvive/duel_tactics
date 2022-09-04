@@ -295,10 +295,10 @@ class App extends Component {
     };
     this.levelData9 = {
       row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*','**_*_0.7_a_0a*','**_*_0.8_a_0a*','**_*_0.9_a_0a*'],
-      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','ce_*_1.6_a_0a*','ce_*_1.7_a_0a*','**_*_1.8_k_0a*','**_*_1.9_a_0a*'],
+      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','ce_*_1.6_a_0a*','ce_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','ce_*_2.6_a_0a*','ce_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_i_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
-      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','cs_h_4.4_a_0a*','cs_b_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','**_*_4.9_k_0a*'],
+      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','cs_h_4.4_a_0a*','cs_b_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','**_*_4.9_a_0a*'],
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','cn_*_5.2_a_0a*','**_*_5.3_a_0a*','**_*_5.4_a_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','**_*_5.8_a_0a*','**_*_5.9_a_0a*'],
       row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_j_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_b_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
       row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','**_*_7.5_a_0a*','**_i_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
@@ -4568,7 +4568,7 @@ class App extends Component {
     // this.settingsFormAiGridInfo = this.gridInfo;
     this.settingsFormAiGridInfo = this.settingsGridInfo;
 
-    console.log('post process barrier check settings',this.settingsGridInfo.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
+    // console.log('post process barrier check settings',this.settingsGridInfo.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
 
     this.settingsGridWidth = args;
 
@@ -13185,6 +13185,8 @@ class App extends Component {
 
         }
 
+
+        // TEST DRAW
         for (const point of this.testDraw ) {
           context.fillStyle = point.color;
           context.beginPath();
@@ -21195,6 +21197,8 @@ class App extends Component {
   }
 
 
+
+
   updatePathArray = () => {
     // console.log('updating pathArray');
 
@@ -21553,9 +21557,6 @@ class App extends Component {
       // barrierType(a,b,c)BarrierPosition(n,s,e,w)_obstacle_x.y_terrain_elevationNumber(0,1,2)ElevationType(a,b,c)ElevationPosition(n,s,e,w)
 
 
-
-      // let terrainInfo = elem.levelData.length-1;
-      // elem.terrain = this.terrainLevelDataRef[elem.levelData.charAt(terrainInfo)]
       elem.terrain = this.terrainLevelDataRef[elem.levelData.split('_')[3]]
       if (elem.terrain.name === 'void') {
         elem.void.state = true
@@ -21570,16 +21571,32 @@ class App extends Component {
       if (elem.levelData.split('_')[4].charAt(1) !== '*') {
         switch (elem.levelData.split('_')[4].charAt(2)) {
           case 'n':
-            elem.elevation.position = 'north'
+            elem.elevation = {
+              number: elem.elevation.number,
+              type: elem.elevation.type,
+              position: 'north',
+            }
           break;
           case 's':
-            elem.elevation.position = 'south'
+            elem.elevation = {
+              number: elem.elevation.number,
+              type: elem.elevation.type,
+              position: 'south',
+            }
           break;
           case 'e':
-            elem.elevation.position = 'east'
+            elem.elevation = {
+              number: elem.elevation.number,
+              type: elem.elevation.type,
+              position: 'east',
+            }
           break;
           case 'w':
-            elem.elevation.position = 'west'
+            elem.elevation = {
+              number: elem.elevation.number,
+              type: elem.elevation.type,
+              position: 'west',
+            }
           break;
           default:
 
@@ -21598,23 +21615,57 @@ class App extends Component {
 
         switch (elem.levelData.split('_')[0].charAt(1)) {
           case 'n':
-            elem.barrier.position = 'north';
+            elem.barrier = {
+              state: elem.barrier.state,
+              name: elem.barrier.name,
+              type: elem.barrier.type,
+              hp: elem.barrier.hp,
+              destructible: elem.barrier.destructible,
+              locked: elem.barrier.locked,
+              position: 'north',
+              height: elem.barrier.height,
+            }
           break;
           case 's':
-            elem.barrier.position = 'south';
+            elem.barrier = {
+              state: elem.barrier.state,
+              name: elem.barrier.name,
+              type: elem.barrier.type,
+              hp: elem.barrier.hp,
+              destructible: elem.barrier.destructible,
+              locked: elem.barrier.locked,
+              position: 'south',
+              height: elem.barrier.height,
+            }
           break;
           case 'e':
-            elem.barrier.position = 'east';
+            elem.barrier = {
+              state: elem.barrier.state,
+              name: elem.barrier.name,
+              type: elem.barrier.type,
+              hp: elem.barrier.hp,
+              destructible: elem.barrier.destructible,
+              locked: elem.barrier.locked,
+              position: 'east',
+              height: elem.barrier.height,
+            }
           break;
           case 'w':
-            elem.barrier.position = 'west';
+            elem.barrier = {
+              state: elem.barrier.state,
+              name: elem.barrier.name,
+              type: elem.barrier.type,
+              hp: elem.barrier.hp,
+              destructible: elem.barrier.destructible,
+              locked: elem.barrier.locked,
+              position: 'west',
+              height: elem.barrier.height,
+            }
           break;
           default:
           break;
         }
-        console.log('set barrier main',elem.levelData,elem.barrier.position);
       }
-
 
       // console.log('oo2',elem.levelData,elem.number,elem.terrain);
 
@@ -21677,16 +21728,32 @@ class App extends Component {
       if (elem2.levelData.split('_')[4].charAt(1) !== '*') {
         switch (elem2.levelData.split('_')[4].charAt(2)) {
           case 'n':
-            elem2.elevation.position = 'north'
+            elem2.elevation = {
+              number: elem2.elevation.number,
+              type: elem2.elevation.type,
+              position: 'north',
+            }
           break;
           case 's':
-            elem2.elevation.position = 'south'
+            elem2.elevation = {
+              number: elem2.elevation.number,
+              type: elem2.elevation.type,
+              position: 'south',
+            }
           break;
           case 'e':
-            elem2.elevation.position = 'east'
+            elem2.elevation = {
+              number: elem2.elevation.number,
+              type: elem2.elevation.type,
+              position: 'east',
+            }
           break;
           case 'w':
-            elem2.elevation.position = 'west'
+            elem2.elevation = {
+              number: elem2.elevation.number,
+              type: elem2.elevation.type,
+              position: 'west',
+            }
           break;
           default:
         }
@@ -21703,20 +21770,55 @@ class App extends Component {
 
         switch (elem2.levelData.split('_')[0].charAt(1)) {
           case 'n':
-            elem2.barrier.position = 'north';
+            elem2.barrier = {
+              state: elem2.barrier.state,
+              name: elem2.barrier.name,
+              type: elem2.barrier.type,
+              hp: elem2.barrier.hp,
+              destructible: elem2.barrier.destructible,
+              locked: elem2.barrier.locked,
+              position: 'north',
+              height: elem2.barrier.height,
+            }
           break;
           case 's':
-            elem2.barrier.position = 'south';
+            elem2.barrier = {
+              state: elem2.barrier.state,
+              name: elem2.barrier.name,
+              type: elem2.barrier.type,
+              hp: elem2.barrier.hp,
+              destructible: elem2.barrier.destructible,
+              locked: elem2.barrier.locked,
+              position: 'south',
+              height: elem2.barrier.height,
+            }
           break;
           case 'e':
-            elem2.barrier.position = 'east';
+            elem2.barrier = {
+              state: elem2.barrier.state,
+              name: elem2.barrier.name,
+              type: elem2.barrier.type,
+              hp: elem2.barrier.hp,
+              destructible: elem2.barrier.destructible,
+              locked: elem2.barrier.locked,
+              position: 'east',
+              height: elem2.barrier.height,
+            }
           break;
           case 'w':
-            elem2.barrier.position = 'west';
+            elem2.barrier = {
+              state: elem2.barrier.state,
+              name: elem2.barrier.name,
+              type: elem2.barrier.type,
+              hp: elem2.barrier.hp,
+              destructible: elem2.barrier.destructible,
+              locked: elem2.barrier.locked,
+              position: 'west',
+              height: elem2.barrier.height,
+            }
           break;
           default:
         }
-        console.log('set barrier settings',elem2.levelData,elem2.barrier.position);
 
       }
 
@@ -21819,10 +21921,10 @@ class App extends Component {
     let tileWidth = this.tileWidth;
 
     this.startProcessLevelData(canvas);
-    gridInfo = this.gridInfo;
+    // gridInfo = this.gridInfo;
 
     this.processLevelData(this.gridInfo);
-    console.log('post process barrier check init',this.gridInfo.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
+    // console.log('post process barrier check init',this.gridInfo.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
 
     if (this.camera.fixed !== true) {
       // this.setCameraFocus('init', canvas, context, canvas2, context2);
@@ -22232,6 +22334,8 @@ class App extends Component {
 
       }
     }
+
+
 
   }
 
