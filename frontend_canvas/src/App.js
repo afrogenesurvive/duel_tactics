@@ -13132,9 +13132,11 @@ class App extends Component {
         }
 
         if (gridInfoCell.barrier.state === true && gridInfoCell.void.state !== true) {
-          let barrierImg = barrierImgs[gridInfoCell.barrier.type][gridInfoCell.barrier.position]
-          context.drawImage(barrierImg, iso.x - offset.x, iso.y - offset.y);
-          // console.log('xxx2',gridInfoCell.levelData,gridInfoCell.barrier.position);
+          let barrierImg = barrierImgs[gridInfoCell.barrier.type][gridInfoCell.barrier.position];
+          context.drawImage(barrierImg, iso.x - offset.x, iso.y - barrierImg.height, barrierImg.width, barrierImg.height);
+          // context.drawImage(barrierImg, iso.x - offset.x, iso.y - offset.y);
+
+
         }
 
 
@@ -22292,8 +22294,10 @@ class App extends Component {
         }
 
         if (cell.barrier.state === true && cell.void.state !== true) {
-          let barrierImg = barrierImgs[cell.barrier.type][cell.barrier.position]
-          context.drawImage(barrierImg, iso.x - offset.x, iso.y - offset.y);
+          let barrierImg = barrierImgs[cell.barrier.type][cell.barrier.position];
+
+          context.drawImage(barrierImg, iso.x - offset.x, iso.y - barrierImg.height, barrierImg.width, barrierImg.height);
+          // context.drawImage(barrierImg, iso.x - offset.x, iso.y - offset.y);
 
           // console.log('barrier check 1',cell.levelData,cell.barrier.position);
         }
