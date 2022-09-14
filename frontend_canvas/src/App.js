@@ -298,8 +298,8 @@ class App extends Component {
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','ce_*_1.6_a_0a*','ce_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','ce_*_2.6_a_0a*','ce_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_i_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
-      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','cs_h_4.4_a_0a*','cs_b_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','**_*_4.9_a_0a*'],
-      row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','cn_*_5.2_a_0a*','**_*_5.3_a_0a*','**_*_5.4_a_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','**_*_5.8_a_0a*','**_*_5.9_a_0a*'],
+      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','cs_h_4.4_a_0a*','cs_b_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
+      row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','cn_*_5.2_a_0a*','**_*_5.3_a_0a*','**_*_5.4_a_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','cs_*_5.8_a_0a*','**_*_5.9_a_0a*'],
       row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_j_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_b_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
       row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','**_*_7.5_a_0a*','**_i_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
       row8: ['**_*_8.0_a_0a*','**_*_8.1_a_0a*','**_*_8.2_a_0a*','**_*_8.3_a_0a*','**_*_8.4_a_0a*','**_*_8.5_a_0a*','**_c_8.6_a_0a*','**_*_8.7_a_0a*','**_*_8.8_a_0a*','**_*_8.9_d_0a*'],
@@ -383,6 +383,8 @@ class App extends Component {
         effect: 'void',
       },
     }
+
+    // OBSTACLES HAVE MAX 5 ITEMS
     this.obstacleLevelDataRef = {
       a: {
         state: true,
@@ -452,7 +454,8 @@ class App extends Component {
         height: 0.5,
         items: [{
           name: 'sword1',
-          type: 'sword',
+          type: 'weapon',
+          subType: 'sword',
           effect: '',
         }],
         effects: [],
@@ -506,14 +509,14 @@ class App extends Component {
         height: 1,
         items: [{
           name: 'hpUp',
-          amount: 4,
-          total: 4,
           type: 'item',
+          subType: '',
           effect: 'hpUp',
         },
         {
           name: 'sword1',
-          type: 'sword',
+          type: 'weapon',
+          subType: 'sword',
           effect: '',
         }],
         effects: [],
@@ -815,18 +818,44 @@ class App extends Component {
         },
         weight: 1,
         height: 1,
-        items: [{
-          name: 'hpUp',
-          amount: 4,
-          total: 4,
-          type: 'item',
-          effect: 'hpUp',
-        },
-        {
-          name: 'sword1',
-          type: 'sword',
-          effect: '',
-        }],
+        items: [
+          {
+            name: 'hpUp',
+            type: 'item',
+            subType: '',
+            effect: 'hpUp',
+          },
+          {
+            name: 'sword1',
+            type: 'weapon',
+            subType: 'sword',
+            effect: '',
+          },
+          {
+            name: 'spear1',
+            type: 'weapon',
+            subType: 'spear',
+            effect: '',
+          },
+          {
+            name: 'crossbow1',
+            type: 'weapon',
+            subType: 'crossbow',
+            effect: 'ammo+5',
+          },
+          {
+            name: 'ironPlate',
+            type: 'armor',
+            subType: 'mail',
+            effect: 'hpUp',
+          },
+          {
+            name: 'ammo10',
+            type: 'item',
+            subType: '',
+            effect: '',
+          },
+        ],
         effects: [],
         moving: {
           state: false,
@@ -2361,7 +2390,7 @@ class App extends Component {
     this.popupSize = 35;
     this.movingObstacles = [];
     this.obstacleBarrierToDestroy = [];
-    this.obstacleBarrierToDamage = [];
+    this.obstacleItemsToDrop = [];
 
 
     // CAMERA
@@ -10132,11 +10161,10 @@ class App extends Component {
           }
           let pip = pointInPolygon(point, polygon)
           if (pip === true) {
-            // console.log('bolt passing through cell',cell.number);
+            console.log('bolt passing through cell',cell.number);
             bolt.currentPosition.number = cell.number;
 
             let infoCell = this.gridInfo.find(x => x.number.x === cell.number.x && x.number.y === cell.number.y);
-
 
             if (infoCell.elevation.number === bolt.elevation) {
 
@@ -13140,6 +13168,11 @@ class App extends Component {
         }
 
 
+        // DROP ITEMS & DAMAGE/DESTROY OBSTACLES & BARRIERS
+        // this.obstacleBarrierToDestroy
+        // this.obstacleItemsToDrop
+
+
         // PROJECTILES
         for (const bolt of this.projectiles) {
 
@@ -14426,6 +14459,18 @@ class App extends Component {
       x: bolt.moving.origin.number.x,
       y: bolt.moving.origin.number.y,
     }
+
+    bolt.target.path.push({
+      number: {
+        x: originCell.x,
+        y: originCell.y,
+      },
+      center: {
+        x: 0,
+        y: 0,
+      },
+      vertices: [],
+    });
 
     let nextCell = {
       number: {
@@ -18509,31 +18554,11 @@ class App extends Component {
                       )
                     }
 
-            //         {
-            //           name: 'sword1',
-            //           type: 'sword',
-            //           effect: '',
-            //         }
-            // {
-            //           name: 'hpUp',
-            //           amount: 4,
-            //           total: 4,
-            //           type: 'item',
-            //           effect: 'hpUp',
-            //         }
+
                     // DROP OBSTACLE ITEMS?
                     if (itemsToDrop[0]) {
                       console.log('dropping obstacle items melee',itemsToDrop);
-
-                      // populate an array of {points,type:'player'/''}, w/ target cell 1st and player position 2nd,
-                      //   then other 7 (going east/right from mycell) surrounding free cells, then next outer 4
-                      // for each item in obstacle items, place item at corresponding index of above array
-                      //   if array item type is player,
-                      //     if actual item type is weapon place in plyr inventory,
-                      //     if item type is item, use/apply effect
-                      //   else, gridinfo at point item set
-                      //
-
+                      this.obstacleItemDrop(targetCell,player);
 
                     }
                     this.obstacleBarrierToDestroy.push({
@@ -19220,32 +19245,16 @@ class App extends Component {
                       )
                     }
 
-            //         {
-            //           name: 'sword1',
-            //           type: 'sword',
-            //           effect: '',
-            //         }
-            // {
-            //           name: 'hpUp',
-            //           amount: 4,
-            //           total: 4,
-            //           type: 'item',
-            //           effect: 'hpUp',
-            //         }
+
                     // DROP OBSTACLE ITEMS?
                     if (itemsToDrop[0]) {
                       console.log('dropping obstacle items melee',itemsToDrop);
 
-                      // populate an array of {points,type:'player'/''}, w/ target cell 1st and player position 2nd,
-                      //   then other 7 (going east/right from mycell) surrounding free cells, then next outer 4
-                      // for each item in obstacle items, place item at corresponding index of above array
-                      //   if array item type is player,
-                      //     if actual item type is weapon place in plyr inventory if has space,
-                        //      set item/gear effect,
-                      //     if item type is item, use/apply effect
-                      //   else, gridinfo at point item set
+                      this.obstacleItemDrop(targetCell,player);
 
                     }
+
+
                     this.obstacleBarrierToDestroy.push({
                       type: 'obstacle',
                       action: 'destroy',
@@ -20014,31 +20023,12 @@ class App extends Component {
                       )
                     }
 
-            //         {
-            //           name: 'sword1',
-            //           type: 'sword',
-            //           effect: '',
-            //         }
-            // {
-            //           name: 'hpUp',
-            //           amount: 4,
-            //           total: 4,
-            //           type: 'item',
-            //           effect: 'hpUp',
-            //         }
+
                     // DROP OBSTACLE ITEMS?
                     if (itemsToDrop[0]) {
                       console.log('dropping obstacle items melee',itemsToDrop);
 
-                      // populate an array of {points,type:'player'/''}, w/ target cell 1st and player position 2nd,
-                      //   then other 7 (going east/right from mycell) surrounding free cells, then next outer 4
-                      // for each item in obstacle items, place item at corresponding index of above array
-                      //   if array item type is player,
-                      //     if actual item type is weapon place in plyr inventory,
-                      //     if item type is item, use/apply effect
-                      //   else, gridinfo at point item set
-                      //
-
+                      this.obstacleItemDrop(targetCell,player);
 
                     }
 
@@ -20207,6 +20197,220 @@ class App extends Component {
         damage = 2;
       } else {
         damage = 1;
+      }
+
+
+      // MY CELL BARRIER?
+      if (myCell.barrier.state === true ) {
+        if (myCell.barrier.position === player.direction) {
+
+            if (myCell.barrier.destructible.state === true) {
+              // WEAPON CHECK
+              if (myCell.barrier.destructible.weapons.find(x => x === player.currentWeapon.name)) {
+                if (myCell.barrier.hp - damage > 0) {
+
+                  let hp = myCell.barrier.hp - damage;
+
+                  myCell.barrier =
+                  {
+                    state: myCell.barrier.state,
+                    name: myCell.barrier.name,
+                    type: myCell.barrier.type,
+                    hp: hp,
+                    destructible: myCell.barrier.destructible,
+                    locked: myCell.barrier.locked,
+                    position: myCell.barrier.position,
+                    height: myCell.barrier.height,
+                  };
+
+                  this.obstacleBarrierToDestroy.push({
+                    type: 'barrier',
+                    action: 'damage',
+                    count: 0,
+                    limit: 20,
+                    complete: false,
+                    cell: myCell,
+                  })
+                }
+
+                // DESTROY FWD BARRIER W/ OR W/O RUBBLE
+                else if (myCell.barrier.hp - damage <= 0) {
+                  if (myCell.barrier.destructible.leaveRubble === true) {
+                    console.log('leave rubble on ',myCell.number,'removing barrier');
+                    myCell.rubble = true;
+                    // myCell.terrain.type = 'hazard';
+                    myCell.barrier =
+                    {
+                      state: false,
+                      name: myCell.barrier.name,
+                      type: myCell.barrier.type,
+                      hp: 0,
+                      destructible: myCell.barrier.destructible,
+                      locked: myCell.barrier.locked,
+                      position: myCell.barrier.position,
+                      height: myCell.barrier.height,
+                    };
+
+                    this.players[player.number-1].statusDisplay = {
+                      state: true,
+                      status: 'Destroyed '+myCell.barrier.name+'!',
+                      count: 1,
+                      limit: this.players[player.number-1].statusDisplay.limit,
+                    }
+
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 25,
+                        type: '',
+                        position: '',
+                        msg: 'destroyedItem',
+                        img: '',
+
+                      }
+                    )
+                  } else {
+                    console.log('no rubble. Just remove barrier');
+
+                    myCell.barrier =
+                    {
+                      state: false,
+                      name: myCell.barrier.name,
+                      type: myCell.barrier.type,
+                      hp: 0,
+                      destructible: myCell.barrier.destructible,
+                      locked: myCell.barrier.locked,
+                      position: myCell.barrier.position,
+                      height: myCell.barrier.height,
+                    };
+
+                    this.players[player.number-1].statusDisplay = {
+                      state: true,
+                      status: 'Destroyed '+myCell.barrier.name+'!',
+                      count: 1,
+                      limit: this.players[player.number-1].statusDisplay.limit,
+                    }
+
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 25,
+                        type: '',
+                        position: '',
+                        msg: 'destroyedItem',
+                        img: '',
+
+                      }
+                    )
+                  }
+
+                  this.obstacleBarrierToDestroy.push({
+                    type: 'barrier',
+                    action: 'destroy',
+                    count: 0,
+                    limit: 20,
+                    complete: false,
+                    cell: myCell,
+                  })
+
+                }
+              }
+
+              // WEAPON NO GOOD. DEFLECT
+              else {
+                console.log('your current weapon cannot destroy this, you need ',myCell.obstacle.barrierible.weapons,'. Deflect player?');
+                 let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+                 if (shouldDeflect === 1) {
+
+                   this.attackedCancel(this.players[player.number-1]);
+
+                   player.success.deflected = {
+                     state: true,
+                     count: 1,
+                     limit: this.deflectedLengthRef.attack,
+                     predeflect: player.success.deflected.predeflect,
+                     type: 'attack'
+                   }
+                   player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+
+
+                   if (this.aiDeflectedCheck.includes(player.number) !== true) {
+                     this.aiDeflectedCheck.push(player.number)
+                   }
+
+                   if (player.currentWeapon.name === '') {
+                     console.log('this barrier is stronger than your fist. Take damage?');
+                     let takeDamage = this.rnJesus(1,player.crits.guardBreak);
+                     if (takeDamage === 1) {
+                       if (player.hp - 1 <= 0) {
+                         this.killPlayer(this.players[player.number-1]);
+
+                         let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+                         this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+                         this.players[player.number-1].points--;
+
+                         this.pointChecker(player)
+                       } else {
+                         this.players[player.number-1].hp -= 1;
+                       }
+                     }
+                   }
+
+                 }
+              }
+
+            }
+
+            // INDESTRUCTIBLE MY CELL BARRIER
+            else {
+              console.log('attacking invurnerable barrier, deflect player?');
+               let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+               if (shouldDeflect === 1) {
+                 this.attackedCancel(this.players[player.number-1]);
+
+                 player.success.deflected = {
+                   state: true,
+                   count: 1,
+                   limit: this.deflectedLengthRef.attack,
+                   predeflect: player.success.deflected.predeflect,
+                   type: 'attack'
+                 }
+                 player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+
+
+                 if (this.aiDeflectedCheck.includes(player.number) !== true) {
+                   this.aiDeflectedCheck.push(player.number)
+                 }
+
+                 if (player.currentWeapon.name === '') {
+                   console.log('this barrier is stronger than your fist. Take damage?');
+                   let takeDamage = this.rnJesus(1,player.crits.guardBreak);
+                   if (takeDamage === 1) {
+                     if (player.hp - 1 <= 0) {
+                       this.killPlayer(this.players[player.number-1]);
+
+                       let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+                       this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+                       this.players[player.number-1].points--;
+
+                       this.pointChecker(player)
+                     } else {
+                       this.players[player.number-1].hp -= 1;
+
+                       if (this.players[player.number-1].hp === 1) {
+                         this.players[player.number-1].speed.move = .05;
+                       }
+                     }
+                   }
+                 }
+
+               }
+            }
+        }
       }
 
 
@@ -20490,33 +20694,12 @@ class App extends Component {
                   )
                 }
 
-        //         {
-        //           name: 'sword1',
-        //           type: 'sword',
-        //           effect: '',
-        //         }
-        // {
-        //           name: 'hpUp',
-        //           amount: 4,
-        //           total: 4,
-        //           type: 'item',
-        //           effect: 'hpUp',
-                // }
+
                 // DROP OBSTACLE ITEMS?
                 if (itemsToDrop[0]) {
                   console.log('dropping obstacle items bolt',itemsToDrop);
 
-                  // populate an array of {points,type:'player'/''}, w/ target cell 1st and player position 2nd,
-                  //   then other 7 (going east/right from mycell) surrounding free cells, then next outer 4
-                  // for each item in obstacle items, place item at corresponding index of above array
-                  //   if array item type is player,
-                  //     if actual item type is weapon place in plyr inventory,
-                  //     if item type is item, use/apply effect
-                  //   else, gridinfo at point item set
-                  //
-
-
-
+                  this.obstacleItemDrop(targetCell,player);
 
                 }
                 this.obstacleBarrierToDestroy.push({
@@ -20994,33 +21177,11 @@ class App extends Component {
                   )
                 }
 
-        //         {
-        //           name: 'sword1',
-        //           type: 'sword',
-        //           effect: '',
-        //         }
-        // {
-        //           name: 'hpUp',
-        //           amount: 4,
-        //           total: 4,
-        //           type: 'item',
-        //           effect: 'hpUp',
-                // }
+
                 // DROP OBSTACLE ITEMS?
                 if (itemsToDrop[0]) {
                   console.log('dropping obstacle items bolt',itemsToDrop);
-
-                  // populate an array of {points,type:'player'/''}, w/ target cell 1st and player position 2nd,
-                  //   then other 7 (going east/right from mycell) surrounding free cells, then next outer 4
-                  // for each item in obstacle items, place item at corresponding index of above array
-                  //   if array item type is player,
-                  //     if actual item type is weapon place in plyr inventory,
-                  //     if item type is item, use/apply effect
-                  //   else, gridinfo at point item set
-                  //
-
-
-
+                  this.obstacleItemDrop(targetCell,player);
 
                 }
                 this.obstacleBarrierToDestroy.push({
@@ -21197,7 +21358,142 @@ class App extends Component {
     }
 
   }
+  obstacleItemDrop = (targetCell,player) => {
+    // console.log("obstacleItemDrop");
 
+    let itemCount = targetCell.obstacle.items.length;
+    let itemCount2 = itemCount;
+    let availibleCells = [];
+    let baseDirs = ['south','west','north','east'];
+    let multiple = 1;
+    let baseDirIndx = 0;
+    let refPos = {
+      x: targetCell.number.x,
+      y: targetCell.number.y,
+    };
+    let cellToCheck = {
+      x: undefined,
+      y: undefined,
+    };
+    let instructions = [];
+    let instructionRef = {
+      north: {
+        x: 0,
+        y: -1,
+      },
+      south: {
+        x: 0,
+        y: 1,
+      },
+      east: {
+        x: 1,
+        y: 0,
+      },
+      west: {
+        x: -1,
+        y: 0,
+      },
+    };
+    let steps = 0;
+
+    while (availibleCells.length < itemCount) {
+
+      for (let i = 0; i < multiple; i++) {
+        instructions.push(baseDirs[baseDirIndx])
+        // console.log('set instructions baseDirIndx',baseDirIndx,'multiple',multiple,'baseDir',baseDirs[baseDirIndx]);
+      }
+      // console.log('item drop instructions',instructions);
+
+      for(const instruct of instructions) {
+        // console.log('ctc instruct ',instruct,instructionRef[instruct]);
+        cellToCheck = {
+          x: refPos.x + instructionRef[instruct].x,
+          y: refPos.y + instructionRef[instruct].y,
+        }
+
+        let ctcRef = this.gridInfo.find(x=> x.number.x === cellToCheck.x && x.number.y === cellToCheck.y);
+
+        let  cellFree = true;
+        if (
+          ctcRef.obstacle.state === true ||
+          ctcRef.void.state === true ||
+          ctcRef.terrain.type === 'deep' ||
+          ctcRef.rubble === true
+        ) {
+          cellFree = false;
+        }
+
+        for(const plyr of this.players) {
+          if(plyr.currentPosition.cell.number.x === ctcRef.number.x && plyr.currentPosition.cell.number.y === ctcRef.number.y) {
+            cellFree = false;
+          }
+        }
+
+        if(cellFree === true) {
+          itemCount2--;
+          availibleCells.push(cellToCheck);
+          // console.log('cell free',cellToCheck,'item count1',itemCount,'item count2',itemCount2);
+          // console.log('availibleCells',availibleCells.length,availibleCells);
+        }
+        else {
+          // console.log('cell not free',cellToCheck);
+          // console.log('availibleCells',availibleCells.length,availibleCells);
+        }
+        refPos = {
+          x: cellToCheck.x,
+          y: cellToCheck.y
+        }
+        steps++;
+
+
+      }
+
+      instructions = [];
+
+      if (steps%2 === 0) {
+        multiple++;
+      }
+      if (baseDirIndx >= 3) {
+        console.log('a');
+        baseDirIndx = 0;
+      }
+      else {
+        baseDirIndx++;
+      }
+
+    }
+
+    if(availibleCells.length === itemCount ) {
+      for(const cell of availibleCells) {
+        let indx = availibleCells.indexOf(cell);
+        let item = targetCell.obstacle.items[indx];
+        this.gridInfo.find(x=> x.number.x === cell.x && x.number.y === cell.y).item = item;
+
+        this.cellsToHighlight2.push({
+          number: {
+            x: cell.x,
+            y: cell.y,
+          },
+          count: 0,
+          limit: 50,
+        });
+        this.obstacleItemsToDrop.push({
+          origin: targetCell.number,
+          target: cell,
+          item: item,
+          state: true,
+          count: 0,
+          limit: 20,
+          position: {
+            x: undefined,
+            y: undefined,
+          }
+        })
+      }
+    }
+
+
+  }
 
 
 
