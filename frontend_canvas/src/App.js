@@ -6037,6 +6037,34 @@ class App extends Component {
           }
         }
 
+        // OBSTACLE/BARRIER DAMAGE/DESTROY
+        for(const cell of this.obstacleBarrierToDestroy) {
+          if (cell.limit > 0) {
+            if (cell.count < cell.limit) {
+              cell.count++
+            }
+            else if (cell.count >= cell.limit) {
+              let index = this.obstacleBarrierToDestroy.indexOf(cell)
+              this.obstacleBarrierToDestroy.splice(index,1)
+            }
+          }
+        }
+
+        // ITEMS TO DROP
+        // -call itemdrop crementer and set position like w/ movement
+        for(const cell of this.obstacleItemsToDrop) {
+          if (cell.limit > 0) {
+            if (cell.count < cell.limit) {
+              cell.count++
+            }
+            else if (cell.count >= cell.limit) {
+              let index = this.obstacleItemsToDrop.indexOf(cell)
+              this.obstacleItemsToDrop.splice(index,1)
+            }
+          }
+        }
+
+
 
         // // IDLE ANIM STEPPER!
         if (player.action === 'idle') {
@@ -11377,91 +11405,106 @@ class App extends Component {
         // IN GAME ITEM PLACEMENT!!
         if (gridInfoCell.item.name !== '' && gridInfoCell.void.state !== true) {
 
-          let itemImg;
-          let fillClr;
-          if (gridInfoCell.item.type === 'item') {
-            switch(gridInfoCell.item.name) {
-              case 'moveSpeedUp' :
-                fillClr = "purple";
-                itemImg = itemImgs[gridInfoCell.item.name];
-              break;
-              case 'moveSpeedDown' :
-                fillClr = "blue";
-                itemImg = itemImgs[gridInfoCell.item.name];
-              break;
-              case 'hpUp' :
-                fillClr = "yellow";
-                itemImg = itemImgs[gridInfoCell.item.name];
-              break;
-              case 'hpDown' :
-                fillClr = "brown";
-                itemImg = itemImgs[gridInfoCell.item.name];
-              break;
-              case 'focusUp' :
-                fillClr = "white";
-                itemImg = itemImgs[gridInfoCell.item.name];
-              break;
-              case 'focusDown' :
-                fillClr = "black";
-                itemImg = itemImgs[gridInfoCell.item.name];
-              break;
-              case 'strengthUp' :
-                fillClr = "green";
-                itemImg = itemImgs[gridInfoCell.item.name];
-              break;
-              case 'strengthDown' :
-                fillClr = "red";
-                itemImg = itemImgs[gridInfoCell.item.name];
-              break;
-              case 'ammo5' :
-                fillClr = "#283618";
-                itemImg = itemImgs[gridInfoCell.item.name];
-              break;
-              case 'ammo10' :
-                fillClr = "#283618";
-                itemImg = itemImgs[gridInfoCell.item.name];
-              break;
-            }
-          }
-          else if (gridInfoCell.item.type === 'weapon') {
-            switch(gridInfoCell.item.subType) {
-              case 'sword' :
-                fillClr = "orange";
-                itemImg = itemImgs[gridInfoCell.item.subType];
-              break;
-              case 'spear' :
-                fillClr = "maroon";
-                itemImg = itemImgs[gridInfoCell.item.subType];
-              break;
-              case 'crossbow' :
-                fillClr = "navy";
-                itemImg = itemImgs[gridInfoCell.item.subType];
-              break;
-            }
-          }
-          else if (gridInfoCell.item.type === 'armor') {
-            switch(gridInfoCell.item.subType) {
-              case 'helmet' :
-                fillClr = "grey";
-                itemImg = itemImgs[gridInfoCell.item.subType];
-              break;
-              case 'mail' :
-                fillClr = "olive";
-                itemImg = itemImgs[gridInfoCell.item.subType];
-              break;
-              case 'greaves' :
-                fillClr = "#b5179e";
-                itemImg = itemImgs[gridInfoCell.item.subType];
-              break;
+          let hide = false;
+          if (this.obstacleItemsToDrop.length > 0) {
+            for(const cell of this.obstacleItemsToDrop) {
+              if (gridInfoCell.number.x === cell.target.x && gridInfoCell.number.y === cell.target.y && gridInfoCell.item.name === cell.item.name) {
+                hide = true;
+              }
             }
           }
 
-          context.drawImage(itemImg, center.x-15, center.y-15);
 
-          // context.fillStyle = fillClr;
-          // context.beginPath();
-          // context.arc(center.x, center.y, 10, 0, 2 * Math.PI);
-          // context.fill();
+          if (hide !== true) {
+
+            let itemImg;
+            let fillClr;
+            if (gridInfoCell.item.type === 'item') {
+              switch(gridInfoCell.item.name) {
+                case 'moveSpeedUp' :
+                  fillClr = "purple";
+                  itemImg = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'moveSpeedDown' :
+                  fillClr = "blue";
+                  itemImg = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'hpUp' :
+                  fillClr = "yellow";
+                  itemImg = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'hpDown' :
+                  fillClr = "brown";
+                  itemImg = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'focusUp' :
+                  fillClr = "white";
+                  itemImg = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'focusDown' :
+                  fillClr = "black";
+                  itemImg = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'strengthUp' :
+                  fillClr = "green";
+                  itemImg = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'strengthDown' :
+                  fillClr = "red";
+                  itemImg = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'ammo5' :
+                  fillClr = "#283618";
+                  itemImg = itemImgs[gridInfoCell.item.name];
+                break;
+                case 'ammo10' :
+                  fillClr = "#283618";
+                  itemImg = itemImgs[gridInfoCell.item.name];
+                break;
+              }
+            }
+            else if (gridInfoCell.item.type === 'weapon') {
+              switch(gridInfoCell.item.subType) {
+                case 'sword' :
+                  fillClr = "orange";
+                  itemImg = itemImgs[gridInfoCell.item.subType];
+                break;
+                case 'spear' :
+                  fillClr = "maroon";
+                  itemImg = itemImgs[gridInfoCell.item.subType];
+                break;
+                case 'crossbow' :
+                  fillClr = "navy";
+                  itemImg = itemImgs[gridInfoCell.item.subType];
+                break;
+              }
+            }
+            else if (gridInfoCell.item.type === 'armor') {
+              switch(gridInfoCell.item.subType) {
+                case 'helmet' :
+                  fillClr = "grey";
+                  itemImg = itemImgs[gridInfoCell.item.subType];
+                break;
+                case 'mail' :
+                  fillClr = "olive";
+                  itemImg = itemImgs[gridInfoCell.item.subType];
+                break;
+                case 'greaves' :
+                  fillClr = "#b5179e";
+                  itemImg = itemImgs[gridInfoCell.item.subType];
+                break;
+              }
+            }
+
+            context.drawImage(itemImg, center.x-15, center.y-15);
+
+            // context.fillStyle = fillClr;
+            // context.beginPath();
+            // context.arc(center.x, center.y, 10, 0, 2 * Math.PI);
+            // context.fill();
+
+          }
+
 
         }
 
@@ -13139,42 +13182,103 @@ class App extends Component {
 
         if (gridInfoCell.obstacle.state === true && gridInfoCell.void.state !== true) {
 
-          let obstacleImg = obstacleImgs[gridInfoCell.obstacle.type]
+          let hide = false;
 
-          // if (gridInfoCell.obstacle.height > 1) {
-            // offset = {x: wallImageWidth/2, y: wallImageHeight}
-          //   context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
-          //
-          //   let isoHeight = wallImageHeight - floorImageHeight
-          //   offset.y += isoHeight
-          //   context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
-          // }
-          // if (gridInfoCell.obstacle.height < 1) {
-          //   offset = {x: wallImageWidth/2, y: wallImageHeight}
-          //   // context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
-          //   context.drawImage(obstacleImg, iso.x - offset.x, (iso.y - offset.y)+25);
-          // }
-          // if (gridInfoCell.obstacle.height === 1) {
-          //   offset = {x: wallImageWidth/2, y: wallImageHeight}
-          //   context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
-          // }
+          if (this.obstacleBarrierToDestroy.length > 0) {
+            for(const cell of this.obstacleBarrierToDestroy) {
+              if (cell.type === 'obstacle' && gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y && gridInfoCell.obstacle.name === cell.cell.obstacle.name) {
+                hide = true;
+              }
+            }
+          }
 
-          context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
+          if (hide !== true) {
+            let obstacleImg = obstacleImgs[gridInfoCell.obstacle.type]
+
+            context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
+          }
+
+
 
         }
 
         if (gridInfoCell.barrier.state === true && gridInfoCell.void.state !== true) {
-          let barrierImg = barrierImgs[gridInfoCell.barrier.type][gridInfoCell.barrier.position];
-          context.drawImage(barrierImg, iso.x - offset.x, iso.y - barrierImg.height, barrierImg.width, barrierImg.height);
-          // context.drawImage(barrierImg, iso.x - offset.x, iso.y - offset.y);
+
+
+          let hide = false;
+
+          if (this.obstacleBarrierToDestroy.length > 0) {
+            for(const cell of this.obstacleBarrierToDestroy) {
+              if (cell.type === 'barrier' && gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y && gridInfoCell.barrier.name === cell.cell.barrier.name) {
+                hide = true;
+              }
+            }
+          }
+
+          if (hide !== true) {
+
+            let barrierImg = barrierImgs[gridInfoCell.barrier.type][gridInfoCell.barrier.position];
+            context.drawImage(barrierImg, iso.x - offset.x, iso.y - barrierImg.height, barrierImg.width, barrierImg.height);
+
+          }
+
 
 
         }
 
 
+        // type: 'obstacle',
+        // action: 'destroy',
+        // count: 0,
+        // limit: 20,
+        // complete: false,
+        // cell: targetCell,
+        //
+        // origin: targetCell.number,
+        // target: cell,
+        // item: item,
+        // state: true,
+        // count: 0,
+        // limit: 20,
+        // position: {
+        //   x: undefined,
+        //   y: undefined,
+        // }
+
         // DROP ITEMS & DAMAGE/DESTROY OBSTACLES & BARRIERS
-        // this.obstacleBarrierToDestroy
-        // this.obstacleItemsToDrop
+        for(const cell of this.obstacleBarrierToDestroy) {
+          if (gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y) {
+            if(cell.count % 3 === 0) {
+              if (cell.type === "obstacle") {
+                console.log('here');
+                let obstacleImg = obstacleImgs[cell.cell.obstacle.type];
+                context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
+              }
+              if (cell.type === "barrier") {
+                let barrierImg = barrierImgs[cell.cell.barrier.type][cell.cell.barrier.position];
+                context.drawImage(barrierImg, iso.x - offset.x, iso.y - barrierImg.height, barrierImg.width, barrierImg.height);
+              }
+
+            }
+          }
+        }
+
+        for(const cell of this.obstacleItemsToDrop) {
+          // console.log('obstacleItemsToDrop',cell);
+          if (gridInfoCell.number.x === cell.target.x && gridInfoCell.number.y === cell.target.y) {
+            if(cell.count % 3 === 0) {
+              let itemImg;
+              if (cell.item.type === "item") {
+                itemImg = itemImgs[cell.item.name];
+              }
+              if (cell.item.type === "weapon" || cell.item.type === "armor") {
+                itemImg = itemImgs[cell.item.subType];
+              }
+              context.drawImage(itemImg, center.x-15, center.y-15);
+            }
+          }
+        }
+
 
 
         // PROJECTILES
@@ -18022,7 +18126,7 @@ class App extends Component {
                         type: 'barrier',
                         action: 'damage',
                         count: 0,
-                        limit: 20,
+                        limit: 30,
                         complete: false,
                         cell: myCell,
                       })
@@ -18031,7 +18135,7 @@ class App extends Component {
                     // DESTROY FWD BARRIER W/ OR W/O RUBBLE
                     else if (myCell.barrier.hp - damage <= 0) {
                       if (myCell.barrier.destructible.leaveRubble === true) {
-                        console.log('leave rubble on ',myCell.number,'removing barrier');
+                        // console.log('leave rubble on ',myCell.number,'removing barrier');
                         myCell.rubble = true;
                         // myCell.terrain.type = 'hazard';
                         myCell.barrier =
@@ -18066,7 +18170,7 @@ class App extends Component {
                           }
                         )
                       } else {
-                        console.log('no rubble. Just remove barrier');
+                        // console.log('no rubble. Just remove barrier');
 
                         myCell.barrier =
                         {
@@ -18105,7 +18209,7 @@ class App extends Component {
                         type: 'barrier',
                         action: 'destroy',
                         count: 0,
-                        limit: 20,
+                        limit: 30,
                         complete: false,
                         cell: myCell,
                       })
@@ -18249,7 +18353,7 @@ class App extends Component {
                     type: 'barrier',
                     action: 'damage',
                     count: 0,
-                    limit: 20,
+                    limit: 30,
                     complete: false,
                     cell: targetCell,
                   })
@@ -18258,7 +18362,7 @@ class App extends Component {
                 // DESTROY FWD BARRIER W/ OR W/O RUBBLE
                 else if (targetCell.barrier.hp - damage <= 0) {
                   if (targetCell.barrier.destructible.leaveRubble === true) {
-                    console.log('leave rubble on ',targetCell.number,'removing barrier');
+                    // console.log('leave rubble on ',targetCell.number,'removing barrier');
                     targetCell.rubble = true;
                     // targetCell.terrain.type = 'hazard';
                     targetCell.barrier =
@@ -18293,7 +18397,7 @@ class App extends Component {
                       }
                     )
                   } else {
-                    console.log('no rubble. Just remove barrier');
+                    // console.log('no rubble. Just remove barrier');
 
                     targetCell.barrier =
                     {
@@ -18332,7 +18436,7 @@ class App extends Component {
                     type: 'barrier',
                     action: 'destroy',
                     count: 0,
-                    limit: 20,
+                    limit: 30,
                     complete: false,
                     cell: targetCell,
                   })
@@ -18464,7 +18568,7 @@ class App extends Component {
                       type: 'obstacle',
                       action: 'damage',
                       count: 0,
-                      limit: 20,
+                      limit: 30,
                       complete: false,
                       cell: targetCell,
                     })
@@ -18474,7 +18578,7 @@ class App extends Component {
                   else if (targetCell.obstacle.hp - damage <= 0) {
                     let itemsToDrop = [];
                     if (targetCell.obstacle.destructible.leaveRubble === true) {
-                      console.log('leave rubble on ',targetCell.number,'removing obstacle');
+                      // console.log('leave rubble on ',targetCell.number,'removing obstacle');
 
                       if (targetCell.obstacle.items[0]) {
                         itemsToDrop = targetCell.obstacle.items;
@@ -18518,7 +18622,7 @@ class App extends Component {
 
 
                     } else {
-                      console.log('no rubble. Just remove obstacle');
+                      // console.log('no rubble. Just remove obstacle');
                       if (targetCell.obstacle.items[0]) {
                         itemsToDrop = targetCell.obstacle.items;
                       }
@@ -18561,7 +18665,7 @@ class App extends Component {
 
                     // DROP OBSTACLE ITEMS?
                     if (itemsToDrop[0]) {
-                      console.log('dropping obstacle items melee',itemsToDrop);
+                      // console.log('dropping obstacle items melee',itemsToDrop);
                       this.obstacleItemDrop(targetCell,player);
 
                     }
@@ -18569,7 +18673,7 @@ class App extends Component {
                       type: 'obstacle',
                       action: 'destroy',
                       count: 0,
-                      limit: 20,
+                      limit: 30,
                       complete: false,
                       cell: targetCell,
                     })
@@ -18710,7 +18814,7 @@ class App extends Component {
               }
 
               if (targetCell.rubble === true & damage > 0) {
-                console.log('damage/clear rubble');
+                // console.log('damage/clear rubble');
                 this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).rubble = false;
 
               }
@@ -18756,7 +18860,7 @@ class App extends Component {
                         type: 'barrier',
                         action: 'damage',
                         count: 0,
-                        limit: 20,
+                        limit: 30,
                         complete: false,
                         cell: myCell,
                       })
@@ -18765,7 +18869,7 @@ class App extends Component {
                     // DESTROY FWD BARRIER W/ OR W/O RUBBLE
                     else if (myCell.barrier.hp - damage <= 0) {
                       if (myCell.barrier.destructible.leaveRubble === true) {
-                        console.log('leave rubble on ',myCell.number,'removing barrier');
+                        // console.log('leave rubble on ',myCell.number,'removing barrier');
                         myCell.rubble = true;
                         // myCell.terrain.type = 'hazard';
                         myCell.barrier =
@@ -18800,7 +18904,7 @@ class App extends Component {
                           }
                         )
                       } else {
-                        console.log('no rubble. Just remove barrier');
+                        // console.log('no rubble. Just remove barrier');
 
                         myCell.barrier =
                         {
@@ -18839,7 +18943,7 @@ class App extends Component {
                         type: 'barrier',
                         action: 'destroy',
                         count: 0,
-                        limit: 20,
+                        limit: 30,
                         complete: false,
                         cell: myCell,
                       })
@@ -18985,7 +19089,7 @@ class App extends Component {
                     type: 'barrier',
                     action: 'damage',
                     count: 0,
-                    limit: 20,
+                    limit: 30,
                     complete: false,
                     cell: targetCell2,
                   })
@@ -18994,7 +19098,7 @@ class App extends Component {
                 // DESTROY FWD BARRIER W/ OR W/O RUBBLE
                 else if (targetCell2.barrier.hp - damage <= 0) {
                   if (targetCell2.barrier.destructible.leaveRubble === true) {
-                    console.log('leave rubble on ',targetCell2.number,'removing barrier');
+                    // console.log('leave rubble on ',targetCell2.number,'removing barrier');
                     targetCell2.rubble = true;
                     // targetCell2.terrain.type = 'hazard';
                     targetCell2.barrier = {
@@ -19028,7 +19132,7 @@ class App extends Component {
                       }
                     )
                   } else {
-                    console.log('no rubble. Just remove barrier');
+                    // console.log('no rubble. Just remove barrier');
 
                     targetCell2.barrier = {
                       state: false,
@@ -19066,7 +19170,7 @@ class App extends Component {
                     type: 'barrier',
                     action: 'destroy',
                     count: 0,
-                    limit: 20,
+                    limit: 30,
                     complete: false,
                     cell: targetCell2,
                   })
@@ -19155,7 +19259,7 @@ class App extends Component {
                       type: 'obstacle',
                       action: 'damage',
                       count: 0,
-                      limit: 20,
+                      limit: 30,
                       complete: false,
                       cell: targetCell2,
                     })
@@ -19165,7 +19269,7 @@ class App extends Component {
                   else if (targetCell2.obstacle.hp - damage <= 0) {
                     let itemsToDrop = [];
                     if (targetCell2.obstacle.destructible.leaveRubble === true) {
-                      console.log('leave rubble on ',targetCell2.number,'removing obstacle');
+                      // console.log('leave rubble on ',targetCell2.number,'removing obstacle');
 
                       if (targetCell2.obstacle.items[0]) {
                         itemsToDrop = targetCell2.obstacle.items;
@@ -19209,7 +19313,7 @@ class App extends Component {
 
 
                     } else {
-                      console.log('no rubble. Just remove obstacle');
+                      // console.log('no rubble. Just remove obstacle');
                       if (targetCell2.obstacle.items[0]) {
                         itemsToDrop = targetCell2.obstacle.items;
                       }
@@ -19252,7 +19356,7 @@ class App extends Component {
 
                     // DROP OBSTACLE ITEMS?
                     if (itemsToDrop[0]) {
-                      console.log('dropping obstacle items melee',itemsToDrop);
+                      // console.log('dropping obstacle items melee',itemsToDrop);
 
                       this.obstacleItemDrop(targetCell,player);
 
@@ -19263,7 +19367,7 @@ class App extends Component {
                       type: 'obstacle',
                       action: 'destroy',
                       count: 0,
-                      limit: 20,
+                      limit: 30,
                       complete: false,
                       cell: targetCell2,
                     })
@@ -19360,7 +19464,7 @@ class App extends Component {
               }
 
               if (targetCell2.rubble === true & damage > 0) {
-                console.log('damage/clear rubble @ ',targetCell2.number);
+                // console.log('damage/clear rubble @ ',targetCell2.number);
                 this.gridInfo.find(elem => elem.number.x === targetCell2.number.x && elem.number.y === targetCell2.number.y ).rubble = false;
 
               }
@@ -19396,7 +19500,7 @@ class App extends Component {
                           type: 'barrier',
                           action: 'damage',
                           count: 0,
-                          limit: 20,
+                          limit: 30,
                           complete: false,
                           cell: targetCell2,
                         })
@@ -19405,7 +19509,7 @@ class App extends Component {
                       // DESTROY FWD BARRIER W/ OR W/O RUBBLE
                       else if (targetCell2.barrier.hp - damage <= 0) {
                         if (targetCell2.barrier.destructible.leaveRubble === true) {
-                          console.log('leave rubble on ',targetCell2.number,'removing barrier');
+                          // console.log('leave rubble on ',targetCell2.number,'removing barrier');
                           targetCell2.rubble = true;
                           // targetCell2.terrain.type = 'hazard';
                           targetCell2.barrier = {
@@ -19439,7 +19543,7 @@ class App extends Component {
                             }
                           )
                         } else {
-                          console.log('no rubble. Just remove barrier');
+                          // console.log('no rubble. Just remove barrier');
                           targetCell2.barrier = {
                             state: false,
                             name: targetCell2.barrier.name,
@@ -19476,7 +19580,7 @@ class App extends Component {
                           type: 'barrier',
                           action: 'destroy',
                           count: 0,
-                          limit: 20,
+                          limit: 30,
                           complete: false,
                           cell: targetCell2,
                         })
@@ -19498,7 +19602,7 @@ class App extends Component {
                   }
                 }
                 else {
-                  console.log('spear target one no obstructions, atk spear target 2');
+                  // console.log('spear target one no obstructions, atk spear target 2');
                   checkSpearTarget = true;
                 }
               }
@@ -19542,7 +19646,7 @@ class App extends Component {
                         type: 'barrier',
                         action: 'damage',
                         count: 0,
-                        limit: 20,
+                        limit: 30,
                         complete: false,
                         cell: myCell,
                       })
@@ -19551,7 +19655,7 @@ class App extends Component {
                     // DESTROY FWD BARRIER W/ OR W/O RUBBLE
                     else if (myCell.barrier.hp - damage <= 0) {
                       if (myCell.barrier.destructible.leaveRubble === true) {
-                        console.log('leave rubble on ',myCell.number,'removing barrier');
+                        // console.log('leave rubble on ',myCell.number,'removing barrier');
                         myCell.rubble = true;
                         // myCell.terrain.type = 'hazard';
                         myCell.barrier =
@@ -19586,7 +19690,7 @@ class App extends Component {
                           }
                         )
                       } else {
-                        console.log('no rubble. Just remove barrier');
+                        // console.log('no rubble. Just remove barrier');
 
                         myCell.barrier =
                         {
@@ -19625,7 +19729,7 @@ class App extends Component {
                         type: 'barrier',
                         action: 'destroy',
                         count: 0,
-                        limit: 20,
+                        limit: 30,
                         complete: false,
                         cell: myCell,
                       })
@@ -19767,7 +19871,7 @@ class App extends Component {
                     type: 'barrier',
                     action: 'damage',
                     count: 0,
-                    limit: 20,
+                    limit: 30,
                     complete: false,
                     cell: targetCell,
                   })
@@ -19776,7 +19880,7 @@ class App extends Component {
                 // DESTROY FWD BARRIER W/ OR W/O RUBBLE
                 else if (targetCell.barrier.hp - damage <= 0) {
                   if (targetCell.barrier.destructible.leaveRubble === true) {
-                    console.log('leave rubble on ',targetCell.number,'removing barrier');
+                    // console.log('leave rubble on ',targetCell.number,'removing barrier');
                     targetCell.rubble = true;
                     // targetCell.terrain.type = 'hazard';
                     targetCell.barrier = {
@@ -19810,7 +19914,7 @@ class App extends Component {
                       }
                     )
                   } else {
-                    console.log('no rubble. Just remove barrier');
+                    // console.log('no rubble. Just remove barrier');
                     targetCell.barrier = {
                       state: false,
                       name: targetCell.barrier.name,
@@ -19847,7 +19951,7 @@ class App extends Component {
                     type: 'barrier',
                     action: 'destroy',
                     count: 0,
-                    limit: 20,
+                    limit: 30,
                     complete: false,
                     cell: targetCell,
                   })
@@ -19937,7 +20041,7 @@ class App extends Component {
                       type: 'obstacle',
                       action: 'damage',
                       count: 0,
-                      limit: 20,
+                      limit: 30,
                       complete: false,
                       cell: targetCell,
                     })
@@ -19947,7 +20051,7 @@ class App extends Component {
                   else if (targetCell.obstacle.hp - damage <= 0) {
                     let itemsToDrop = [];
                     if (targetCell.obstacle.destructible.leaveRubble === true) {
-                      console.log('leave rubble on ',targetCell.number,'removing obstacle');
+                      // console.log('leave rubble on ',targetCell.number,'removing obstacle');
 
                       if (targetCell.obstacle.items[0]) {
                         itemsToDrop = targetCell.obstacle.items;
@@ -19988,7 +20092,7 @@ class App extends Component {
                         }
                       )
                     } else {
-                      console.log('no rubble. Just remove obstacle');
+                      // console.log('no rubble. Just remove obstacle');
                       if (targetCell.obstacle.items[0]) {
                         itemsToDrop = targetCell.obstacle.items;
                       }
@@ -20030,7 +20134,7 @@ class App extends Component {
 
                     // DROP OBSTACLE ITEMS?
                     if (itemsToDrop[0]) {
-                      console.log('dropping obstacle items melee',itemsToDrop);
+                      // console.log('dropping obstacle items melee',itemsToDrop);
 
                       this.obstacleItemDrop(targetCell,player);
 
@@ -20040,7 +20144,7 @@ class App extends Component {
                       type: 'obstacle',
                       action: 'destroy',
                       count: 0,
-                      limit: 20,
+                      limit: 30,
                       complete: false,
                       cell: targetCell,
                     })
@@ -20135,7 +20239,7 @@ class App extends Component {
               }
 
               if (targetCell.rubble === true & damage > 0) {
-                console.log('damage/clear rubble');
+                // console.log('damage/clear rubble');
                 this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).rubble = false;
               }
 
@@ -20437,7 +20541,7 @@ class App extends Component {
       }
 
       if (fwdBarrier === true && targetCell.barrier.height >= 1) {
-        console.log('player ',player.number,'hit fwd barrier ',targetCell.barrier.name,'@ ',targetCell.number,type);
+        // console.log('player ',player.number,'hit fwd barrier ',targetCell.barrier.name,'@ ',targetCell.number,type);
         if (targetCell.barrier.destructible.state === true) {
           // WEAPON CHECK
           if (targetCell.barrier.destructible.weapons.find(x => x === 'bolt')) {
@@ -20462,7 +20566,7 @@ class App extends Component {
                 type: 'barrier',
                 action: 'damage',
                 count: 0,
-                limit: 20,
+                limit: 30,
                 complete: false,
                 cell: targetCell,
               })
@@ -20472,7 +20576,7 @@ class App extends Component {
             else if (targetCell.barrier.hp - damage <= 0) {
 
               if (targetCell.barrier.destructible.leaveRubble === true) {
-                console.log('leave rubble on ',targetCell.number,'removing barrier');
+                // console.log('leave rubble on ',targetCell.number,'removing barrier');
                 targetCell.rubble = true;
                 // targetCell.terrain.type = 'hazard';
 
@@ -20508,7 +20612,7 @@ class App extends Component {
                   }
                 )
               } else {
-                console.log('no rubble. Just remove barrier');
+                // console.log('no rubble. Just remove barrier');
                 targetCell.barrier =
                 {
                   state: false,
@@ -20546,7 +20650,7 @@ class App extends Component {
                 type: 'barrier',
                 action: 'destroy',
                 count: 0,
-                limit: 20,
+                limit: 30,
                 complete: false,
                 cell: targetCell,
               })
@@ -20575,7 +20679,7 @@ class App extends Component {
       else {
 
         if (targetCell.obstacle.state === true && targetCell.obstacle.height >= 1) {
-          console.log('player ',player.number,'hit obstacle ',targetCell.obstacle.name,' @ ',targetCell.number,type,' for ',damage,' damage');
+          // console.log('player ',player.number,'hit obstacle ',targetCell.obstacle.name,' @ ',targetCell.number,type,' for ',damage,' damage');
 
 
           if (targetCell.obstacle.destructible.state === true) {
@@ -20605,7 +20709,7 @@ class App extends Component {
                   type: 'obstacle',
                   action: 'damage',
                   count: 0,
-                  limit: 20,
+                  limit: 30,
                   complete: false,
                   cell: targetCell,
                 })
@@ -20618,7 +20722,7 @@ class App extends Component {
               else if (targetCell.obstacle.hp - damage <= 0) {
                 let itemsToDrop = [];
                 if (targetCell.obstacle.destructible.leaveRubble === true) {
-                  console.log('leave rubble on ',targetCell.number,'removing obstacle');
+                  // console.log('leave rubble on ',targetCell.number,'removing obstacle');
                   if (targetCell.obstacle.items[0]) {
                     itemsToDrop = targetCell.obstacle.items;
                   }
@@ -20661,7 +20765,7 @@ class App extends Component {
                     }
                   )
                 } else {
-                  console.log('no rubble. Just remove obstacle');
+                  // console.log('no rubble. Just remove obstacle');
                   if (targetCell.obstacle.items[0]) {
                     itemsToDrop = targetCell.obstacle.items;
                   }
@@ -20705,7 +20809,7 @@ class App extends Component {
 
                 // DROP OBSTACLE ITEMS?
                 if (itemsToDrop[0]) {
-                  console.log('dropping obstacle items bolt',itemsToDrop);
+                  // console.log('dropping obstacle items bolt',itemsToDrop);
 
                   this.obstacleItemDrop(targetCell,player);
 
@@ -20714,7 +20818,7 @@ class App extends Component {
                   type: 'obstacle',
                   action: 'destroy',
                   count: 0,
-                  limit: 20,
+                  limit: 30,
                   complete: false,
                   cell: targetCell,
                 })
@@ -20747,7 +20851,7 @@ class App extends Component {
         } else {
 
           // NO OBSTACLE. ITEM ON GROUND? DESTROY
-          console.log('bolt cant destroy item on ground');
+          // console.log('bolt cant destroy item on ground');
 
           // NO OBSTACLE. DESTROY REAR BARRIER
           let rearBarrier = false;
@@ -20757,7 +20861,7 @@ class App extends Component {
             }
           }
           if (rearBarrier === true && targetCell.barrier.height >= 1) {
-            console.log('player ',player.number,'hit rear barrier ',targetCell.barrier.name,' @ ',targetCell.number,type);
+            // console.log('player ',player.number,'hit rear barrier ',targetCell.barrier.name,' @ ',targetCell.number,type);
             if (targetCell.barrier.destructible.state === true) {
               // WEAPON CHECK
               if (targetCell.barrier.destructible.weapons.find(x => x === 'bolt')) {
@@ -20781,7 +20885,7 @@ class App extends Component {
                     type: 'barrier',
                     action: 'damage',
                     count: 0,
-                    limit: 20,
+                    limit: 30,
                     complete: false,
                     cell: targetCell,
                   })
@@ -20790,7 +20894,7 @@ class App extends Component {
                 // DESTROY FWD BARRIER W/ OR W/O RUBBLE
                 else if (targetCell.barrier.hp - damage <= 0) {
                   if (targetCell.barrier.destructible.leaveRubble === true) {
-                    console.log('leave rubble on ',targetCell.number,'removing barrier');
+                    // console.log('leave rubble on ',targetCell.number,'removing barrier');
                     targetCell.rubble = true;
                     // targetCell.terrain.type = 'hazard';
                     targetCell.barrier =
@@ -20825,7 +20929,7 @@ class App extends Component {
                       }
                     )
                   } else {
-                    console.log('no rubble. Just remove barrier');
+                    // console.log('no rubble. Just remove barrier');
                     // this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier =
                     targetCell.barrier =
                     {
@@ -20865,7 +20969,7 @@ class App extends Component {
                     type: 'barrier',
                     action: 'destroy',
                     count: 0,
-                    limit: 20,
+                    limit: 30,
                     complete: false,
                     cell: targetCell,
                   })
@@ -20968,7 +21072,7 @@ class App extends Component {
                 type: 'barrier',
                 action: 'damage',
                 count: 0,
-                limit: 20,
+                limit: 30,
                 complete: false,
                 cell: targetCell,
               })
@@ -20978,7 +21082,7 @@ class App extends Component {
             else if (targetCell.barrier.hp - damage <= 0) {
 
               if (targetCell.barrier.destructible.leaveRubble === true) {
-                console.log('leave rubble on ',targetCell.number,'removing barrier');
+                // console.log('leave rubble on ',targetCell.number,'removing barrier');
                 targetCell.rubble = true;
                 // targetCell.terrain.type = 'hazard';
                 targetCell.barrier = {
@@ -21012,7 +21116,7 @@ class App extends Component {
                   }
                 )
               } else {
-                console.log('no rubble. Just remove barrier');
+                // console.log('no rubble. Just remove barrier');
                 targetCell.barrier = {
                   state: false,
                   name: targetCell.barrier.name,
@@ -21049,7 +21153,7 @@ class App extends Component {
                 type: 'barrier',
                 action: 'destroy',
                 count: 0,
-                limit: 20,
+                limit: 30,
                 complete: false,
                 cell: targetCell,
               })
@@ -21076,7 +21180,7 @@ class App extends Component {
       // NO FWD BARRIER. OBSTACLE?
       else {
         if (targetCell.obstacle.state === true && obstacleHeightCheck === true) {
-          console.log('targetCell.obstacle.hp',targetCell.obstacle.hp);
+          // console.log('targetCell.obstacle.hp',targetCell.obstacle.hp);
 
           if (targetCell.obstacle.destructible.state === true) {
             // WEAPON CHECK
@@ -21102,7 +21206,7 @@ class App extends Component {
                   type: 'obstacle',
                   action: 'damage',
                   count: 0,
-                  limit: 20,
+                  limit: 30,
                   complete: false,
                   cell: targetCell,
                 })
@@ -21112,7 +21216,7 @@ class App extends Component {
               else if (targetCell.obstacle.hp - damage <= 0) {
                 let itemsToDrop = [];
                 if (targetCell.obstacle.destructible.leaveRubble === true) {
-                  console.log('leave rubble on ',targetCell.number,'removing obstacle');
+                  // console.log('leave rubble on ',targetCell.number,'removing obstacle');
                   if (targetCell.obstacle.items[0]) {
                     itemsToDrop = targetCell.obstacle.items;
                   }
@@ -21152,7 +21256,7 @@ class App extends Component {
                     }
                   )
                 } else {
-                  console.log('no rubble. Just remove obstacle');
+                  // console.log('no rubble. Just remove obstacle');
                   if (targetCell.obstacle.items[0]) {
                     itemsToDrop = targetCell.obstacle.items;
                   }
@@ -21195,7 +21299,7 @@ class App extends Component {
 
                 // DROP OBSTACLE ITEMS?
                 if (itemsToDrop[0]) {
-                  console.log('dropping obstacle items bolt',itemsToDrop);
+                  // console.log('dropping obstacle items bolt',itemsToDrop);
                   this.obstacleItemDrop(targetCell,player);
 
                 }
@@ -21203,7 +21307,7 @@ class App extends Component {
                   type: 'obstacle',
                   action: 'destroy',
                   count: 0,
-                  limit: 20,
+                  limit: 30,
                   complete: false,
                   cell: targetCell,
                 })
@@ -21228,7 +21332,7 @@ class App extends Component {
         } else {
 
           // NO OBSTACLE. ITEM ON GROUND? DESTROY
-          console.log('bolt cant destroy item on ground');
+          // console.log('bolt cant destroy item on ground');
 
           // NO OBSTACLE. DESTROY REAR BARRIER
           let rearBarrier = false;
@@ -21259,7 +21363,7 @@ class App extends Component {
                     type: 'barrier',
                     action: 'damage',
                     count: 0,
-                    limit: 20,
+                    limit: 30,
                     complete: false,
                     cell: targetCell,
                   })
@@ -21268,7 +21372,7 @@ class App extends Component {
                 // DESTROY FWD BARRIER W/ OR W/O RUBBLE
                 else if (targetCell.barrier.hp - damage <= 0) {
                   if (targetCell.barrier.destructible.leaveRubble === true) {
-                    console.log('leave rubble on ',targetCell.number,'removing barrier');
+                    // console.log('leave rubble on ',targetCell.number,'removing barrier');
                     targetCell.rubble = true;
                     // targetCell.terrain.type = 'hazard';
 
@@ -21303,7 +21407,7 @@ class App extends Component {
                       }
                     )
                   } else {
-                    console.log('no rubble. Just remove barrier');
+                    // console.log('no rubble. Just remove barrier');
 
                     targetCell.barrier = {
                       state: false,
@@ -21341,7 +21445,7 @@ class App extends Component {
                     type: 'barrier',
                     action: 'destroy',
                     count: 0,
-                    limit: 20,
+                    limit: 30,
                     complete: false,
                     cell: targetCell,
                   })
@@ -21419,7 +21523,7 @@ class App extends Component {
         instructions.push(baseDirs[baseDirIndx])
         // console.log('set instructions baseDirIndx',baseDirIndx,'multiple',multiple,'baseDir',baseDirs[baseDirIndx]);
       }
-      console.log('item drop instructions',instructions);
+      // console.log('item drop instructions',instructions);
 
       for(const instruct of instructions) {
 
@@ -21427,7 +21531,7 @@ class App extends Component {
           x: refPos.x + instructionRef[instruct].x,
           y: refPos.y + instructionRef[instruct].y,
         }
-        console.log('ctc instruct ',instruct,instructionRef[instruct],'cell to check',cellToCheck,'steps',stepsA,stepsB);
+        // console.log('ctc instruct ',instruct,instructionRef[instruct],'cell to check',cellToCheck,'steps',stepsA,stepsB);
 
         let ctcRef = this.gridInfo.find(x=> x.number.x === cellToCheck.x && x.number.y === cellToCheck.y);
 
@@ -21466,11 +21570,11 @@ class App extends Component {
         if(cellFree === true) {
           itemCount2--;
           availibleCells.push(cellToCheck);
-          console.log('cell free',cellToCheck,'item count1',itemCount,'item count2',itemCount2,'availibleCells',availibleCells.length,'steps',stepsA,stepsB);
+          // console.log('cell free',cellToCheck,'item count1',itemCount,'item count2',itemCount2,'availibleCells',availibleCells.length,'steps',stepsA,stepsB);
           // console.log('availibleCells',availibleCells.length,availibleCells);
         }
         else {
-          console.log('cell not free',cellToCheck,'availibleCells',availibleCells.length,'steps',stepsA,stepsB);
+          // console.log('cell not free',cellToCheck,'availibleCells',availibleCells.length,'steps',stepsA,stepsB);
           // console.log('availibleCells',availibleCells.length,availibleCells);
         }
         refPos = {
@@ -21507,7 +21611,7 @@ class App extends Component {
     }
 
     if(availibleCells.length === itemCount ) {
-      console.log('break loop. have free cell for each item');
+      // console.log('break loop. have free cell for each item');
       for(const cell of availibleCells) {
         let indx = availibleCells.indexOf(cell);
         let item = targetCell.obstacle.items[indx];
@@ -21528,7 +21632,7 @@ class App extends Component {
           item: item,
           state: true,
           count: 0,
-          limit: 20,
+          limit: 30,
           position: {
             x: undefined,
             y: undefined,
@@ -21539,7 +21643,6 @@ class App extends Component {
 
 
   }
-
 
 
   updatePathArray = () => {
@@ -22683,6 +22786,7 @@ class App extends Component {
 
 
   }
+
 
 
   addAiPlayer = () => {
