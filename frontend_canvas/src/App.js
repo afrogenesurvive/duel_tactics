@@ -10161,7 +10161,7 @@ class App extends Component {
           }
           let pip = pointInPolygon(point, polygon)
           if (pip === true) {
-            console.log('bolt passing through cell',cell.number);
+            // console.log('bolt passing through cell',cell.number);
             bolt.currentPosition.number = cell.number;
 
             let infoCell = this.gridInfo.find(x => x.number.x === cell.number.x && x.number.y === cell.number.y);
@@ -14597,7 +14597,7 @@ class App extends Component {
     let startPt = bolt.moving.origin.center;
     let endPt = bolt.target.path[bolt.target.path.length-1].center;
     let percent = bolt.moving.step;
-    console.log('percent',percent,'time',this.time);
+    // console.log('percent',percent,'time',this.time);
     //
     function getLineXYatPercent(startPt,endPt,percent) {
       let dx = endPt.x-startPt.x;
@@ -21394,7 +21394,8 @@ class App extends Component {
         y: 0,
       },
     };
-    let steps = 0;
+    let stepsA = 0;
+    let stepsB = 0;
 
     while (availibleCells.length < itemCount) {
 
@@ -21402,59 +21403,85 @@ class App extends Component {
         instructions.push(baseDirs[baseDirIndx])
         // console.log('set instructions baseDirIndx',baseDirIndx,'multiple',multiple,'baseDir',baseDirs[baseDirIndx]);
       }
-      // console.log('item drop instructions',instructions);
+      console.log('item drop instructions',instructions);
 
       for(const instruct of instructions) {
-        // console.log('ctc instruct ',instruct,instructionRef[instruct]);
+
         cellToCheck = {
           x: refPos.x + instructionRef[instruct].x,
           y: refPos.y + instructionRef[instruct].y,
         }
+        console.log('ctc instruct ',instruct,instructionRef[instruct],'cell to check',cellToCheck,'steps',stepsA,stepsB);
 
         let ctcRef = this.gridInfo.find(x=> x.number.x === cellToCheck.x && x.number.y === cellToCheck.y);
 
         let  cellFree = true;
-        if (
-          ctcRef.obstacle.state === true ||
-          ctcRef.void.state === true ||
-          ctcRef.terrain.type === 'deep' ||
-          ctcRef.rubble === true
-        ) {
+
+        // if (
+        //   ctcRef.number.x < 0 ||
+        //   ctcRef.number.x > this.gridWidth-1 ||
+        //   ctcRef.number.y < 0 ||
+        //   ctcRef.number.y > this.gridWidth-1
+        // ) {
+        //   cellFree = false;
+        // }
+        if (ctcRef) {
+          if (
+            ctcRef.obstacle.state === true ||
+            ctcRef.void.state === true ||
+            ctcRef.terrain.type === 'deep' ||
+            ctcRef.item.name !== "" ||
+            ctcRef.rubble === true
+          ) {
+            cellFree = false;
+          }
+
+          for(const plyr of this.players) {
+            if(plyr.currentPosition.cell.number.x === ctcRef.number.x && plyr.currentPosition.cell.number.y === ctcRef.number.y) {
+              cellFree = false;
+            }
+          }
+        }
+        else {
           cellFree = false;
         }
 
-        for(const plyr of this.players) {
-          if(plyr.currentPosition.cell.number.x === ctcRef.number.x && plyr.currentPosition.cell.number.y === ctcRef.number.y) {
-            cellFree = false;
-          }
-        }
 
         if(cellFree === true) {
           itemCount2--;
           availibleCells.push(cellToCheck);
-          // console.log('cell free',cellToCheck,'item count1',itemCount,'item count2',itemCount2);
+          console.log('cell free',cellToCheck,'item count1',itemCount,'item count2',itemCount2,'availibleCells',availibleCells.length,'steps',stepsA,stepsB);
           // console.log('availibleCells',availibleCells.length,availibleCells);
         }
         else {
-          // console.log('cell not free',cellToCheck);
+          console.log('cell not free',cellToCheck,'availibleCells',availibleCells.length,'steps',stepsA,stepsB);
           // console.log('availibleCells',availibleCells.length,availibleCells);
         }
         refPos = {
           x: cellToCheck.x,
           y: cellToCheck.y
         }
-        steps++;
+        stepsA++;
+        stepsB++;
 
+        if (availibleCells.length === itemCount) {
+          break;
+        }
 
       }
 
       instructions = [];
 
-      if (steps%2 === 0) {
+      // if (steps%2 === 0) {
+      //   stepsA = 0;
+      //   multiple++;
+      // }
+      if (stepsB === multiple*2) {
         multiple++;
+        stepsB = 0;
       }
       if (baseDirIndx >= 3) {
-        console.log('a');
+        // console.log('a');
         baseDirIndx = 0;
       }
       else {
@@ -21464,6 +21491,7 @@ class App extends Component {
     }
 
     if(availibleCells.length === itemCount ) {
+      console.log('break loop. have free cell for each item');
       for(const cell of availibleCells) {
         let indx = availibleCells.indexOf(cell);
         let item = targetCell.obstacle.items[indx];
@@ -21477,6 +21505,7 @@ class App extends Component {
           count: 0,
           limit: 50,
         });
+
         this.obstacleItemsToDrop.push({
           origin: targetCell.number,
           target: cell,
