@@ -434,6 +434,10 @@ class App extends Component {
             x: undefined,
             y: undefined,
           },
+          moveSpeed: 0,
+          pushable: true,
+          pushed: false,
+          pusher: undefined,
         }
       },
       b: {
@@ -489,6 +493,10 @@ class App extends Component {
             x: undefined,
             y: undefined,
           },
+          moveSpeed: 0,
+          pushable: true,
+          pushed: false,
+          pusher: undefined,
         }
       },
       c: {
@@ -550,6 +558,10 @@ class App extends Component {
             x: undefined,
             y: undefined,
           },
+          moveSpeed: 0,
+          pushable: true,
+          pushed: false,
+          pusher: undefined,
         }
       },
       d: {
@@ -600,6 +612,10 @@ class App extends Component {
             x: undefined,
             y: undefined,
           },
+          moveSpeed: 0,
+          pushable: true,
+          pushed: false,
+          pusher: undefined,
         }
       },
       e: {
@@ -650,6 +666,10 @@ class App extends Component {
             x: undefined,
             y: undefined,
           },
+          moveSpeed: 0,
+          pushable: true,
+          pushed: false,
+          pusher: undefined,
         }
       },
       f: {
@@ -700,6 +720,10 @@ class App extends Component {
             x: undefined,
             y: undefined,
           },
+          moveSpeed: 0,
+          pushable: true,
+          pushed: false,
+          pusher: undefined,
         }
       },
       g: {
@@ -750,6 +774,10 @@ class App extends Component {
             x: undefined,
             y: undefined,
           },
+          moveSpeed: 0,
+          pushable: true,
+          pushed: false,
+          pusher: undefined,
         }
       },
       h: {
@@ -800,6 +828,10 @@ class App extends Component {
             x: undefined,
             y: undefined,
           },
+          moveSpeed: 0,
+          pushable: true,
+          pushed: false,
+          pusher: undefined,
         }
       },
       i: {
@@ -887,6 +919,10 @@ class App extends Component {
             x: undefined,
             y: undefined,
           },
+          moveSpeed: 0,
+          pushable: true,
+          pushed: false,
+          pusher: undefined,
         }
       },
     };
@@ -2110,6 +2146,10 @@ class App extends Component {
             x: undefined,
             y: undefined,
           },
+          moveSpeed: 0,
+          pushable: true,
+          pushed: false,
+          pusher: undefined,
         }
       },
       barrier: {
@@ -2245,6 +2285,10 @@ class App extends Component {
             x: undefined,
             y: undefined,
           },
+          moveSpeed: 0,
+          pushable: true,
+          pushed: false,
+          pusher: undefined,
         }
       },
       barrier: {
@@ -3481,6 +3525,10 @@ class App extends Component {
               x: undefined,
               y: undefined,
             },
+            moveSpeed: 0,
+            pushable: true,
+            pushed: false,
+            pusher: undefined,
           }
         },
         barrier: {
@@ -3638,6 +3686,10 @@ class App extends Component {
               x: undefined,
               y: undefined,
             },
+            moveSpeed: 0,
+            pushable: true,
+            pushed: false,
+            pusher: undefined,
           }
         },
         barrier: {
@@ -17830,6 +17882,10 @@ class App extends Component {
                 x: undefined,
                 y: undefined,
               },
+              moveSpeed: 0,
+              pushable: true,
+              pushed: false,
+              pusher: undefined,
             }
           },
           barrier: {
@@ -21815,6 +21871,10 @@ class App extends Component {
                 x: undefined,
                 y: undefined,
               },
+              moveSpeed: 0,
+              pushable: true,
+              pushed: false,
+              pusher: undefined,
             }
           },
           barrier: {
@@ -21945,6 +22005,10 @@ class App extends Component {
                 x: undefined,
                 y: undefined,
               },
+              moveSpeed: 0,
+              pushable: true,
+              pushed: false,
+              pusher: undefined,
             }
           },
           barrier: {
