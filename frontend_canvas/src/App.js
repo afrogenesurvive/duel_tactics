@@ -1618,6 +1618,19 @@ class App extends Component {
           current: 20,
           max: 20,
         },
+        prePush: {
+          state: false,
+          count: 0,
+          limit: 25,
+          targetCell: undefined,
+          direction: "",
+          pusher: undefined,
+        },
+        pushing: {
+          state: false,
+          targetCell: undefined,
+          moveSpeed: 0,
+        },
       },
       {
         number: 2,
@@ -16206,6 +16219,89 @@ class App extends Component {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
+  obstacleCanPush = () => {
+
+  }
+  obstacleMoveCrementer = (player) => {
+    // console.log('line crementer',player.number,player.target);
+
+    let currentPosition = player.currentPosition.cell.center;
+    let target = player.target;
+    let moveSpeed = player.speed.move;
+    if (player.terrainMoveSpeed.state === true) {
+      // console.log('terrain speed mod',player.terrainMoveSpeed.speed);
+      moveSpeed = player.terrainMoveSpeed.speed;
+    }
+    if (player.jumping.state === true) {
+      moveSpeed = .1;
+    }
+    if (player.stamina.current < 1) {
+      moveSpeed = .05;
+    }
+
+    if (player.flanking.state === true) {
+      // moveSpeed = .1
+      moveSpeed = .2
+      // if (moveSpeed === .05) {
+      //   moveSpeed = .1
+      // }
+      // else if (moveSpeed === .1) {
+      //   moveSpeed = .125
+      // }
+      // else if (moveSpeed === .125) {
+      //   moveSpeed = .2
+      // }
+    }
+
+    player.moving.step = +(Math.round((player.moving.step + moveSpeed) + "e+" + 3)  + "e-" + 3);
+    // player.moving.step = player.moving.step + moveSpeed;
+    // console.log('mover stepper',player.moving.step);
+    let newPosition;
+
+
+
+    // line: percent is 0-1
+    let startPt = currentPosition;
+    let endPt;
+    if (player.jumping.state === true) {
+      endPt = target.cell2.center;
+    } else {
+      endPt = target.cell.center;
+    }
+
+
+    let percent = player.moving.step;
+
+    function getLineXYatPercent(startPt,endPt,percent) {
+      let dx = endPt.x-startPt.x;
+      let dy = endPt.y-startPt.y;
+      let X = startPt.x + dx*percent;
+      let Y = startPt.y + dy*percent;
+      // newPosition = {x:X,y:Y}
+      newPosition = {x:Math.round(X),y:Math.round(Y)}
+    }
+    getLineXYatPercent(startPt,endPt,percent);
+
+    if (player.falling.state === true) {
+      // console.log('increment fall',player.action);
+
+      player.falling.count++;
+
+      newPosition = {
+        x: target.cell.center.x,
+        y: target.cell.center.y+player.falling.count*5,
+      }
+      player.currentPosition.cell.center = newPosition;
+
+    }
+
+    player.nextPosition = newPosition
+
+    this.players[player.number-1] = player;
+
+    return newPosition;
+
+  }
 
 
   attackedCancel = (player) => {
@@ -16922,6 +17018,19 @@ class App extends Component {
         step: 0,
         target1: {x:0 ,y:0},
         target2: {x:0 ,y:0},
+      };
+      player.prePush: {
+        state: false,
+        count: 0,
+        limit: 25,
+        targetCell: undefined,
+        direction: "",
+        pusher: undefined,
+      };
+      player.pushing = {
+        state: false,
+        targetCell: undefined,
+        moveSpeed: 0,
       };
       player.popups = [];
 
@@ -23389,6 +23498,19 @@ class App extends Component {
           stamina: {
             current: 20,
             max: 20,
+          },
+          prePush: {
+            state: false,
+            count: 0,
+            limit: 25,
+            targetCell: undefined,
+            direction: "",
+            pusher: undefined,
+          },
+          pushing: {
+            state: false,
+            targetCell: undefined,
+            moveSpeed: 0,
           },
         }
 
