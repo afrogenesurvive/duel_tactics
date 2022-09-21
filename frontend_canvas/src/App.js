@@ -2017,6 +2017,19 @@ class App extends Component {
           current: 20,
           max: 20,
         },
+        prePush: {
+          state: false,
+          count: 0,
+          limit: 25,
+          targetCell: undefined,
+          direction: "",
+          pusher: undefined,
+        },
+        pushing: {
+          state: false,
+          targetCell: undefined,
+          moveSpeed: 0,
+        },
       }
     ];
 
@@ -2599,7 +2612,6 @@ class App extends Component {
       restore: false,
     }
     this.bloodSacrificeVoidedCells = [];
-
 
 
     this.testDraw = [];
@@ -4087,6 +4099,7 @@ class App extends Component {
     // })
 
   }
+
 
   toggleCellInfoBox = () => {
 
@@ -6128,6 +6141,38 @@ class App extends Component {
             }
           }
         }
+
+
+        // prePush: {
+        //   state: false,
+        //   count: 0,
+        //   limit: 25,
+        //   targetCell: undefined,
+        //   direction: "",
+        //   pusher: undefined,
+        // },
+        // pushing: {
+        //   state: false,
+        //   targetCell: undefined,
+        //   moveSpeed: 0,
+        // }
+
+        // OBSTACLE PUSHING
+        // key release prepush check
+        if (player.prePush.state === true && this.keyPressed[player.number-1][player.prePush.direction] !== true) {
+          console.log('mid prePush but key released. reset prePush');
+          player.prePush = {
+            state: false,
+            count: 0,
+            limit: 25,
+            targetCell: undefined,
+            direction: "",
+            pusher: undefined,
+          }
+        }
+
+
+
 
 
 
@@ -8604,66 +8649,69 @@ class App extends Component {
                 // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
                 if (keyPressedDirection === player.direction && player.strafing.state === false) {
 
-                let target = this.getTarget(player)
+                  let target = this.getTarget(player)
 
-                if (target.free === true && player.target.void === false) {
+                  if (target.free === true && player.target.void === false) {
 
-                  if (player.dead.state === true && player.dead.count === 0) {
+                    if (player.dead.state === true && player.dead.count === 0) {
 
-                    player.nextPosition = {
-                      x: -30,
-                      y: -30,
+                      player.nextPosition = {
+                        x: -30,
+                        y: -30,
+                      }
+
+                    } else if (player.turning.delayCount === 0) {
+                      player.action = 'moving';
+                      player.moving = {
+                        state: true,
+                        step: 0,
+                        course: '',
+                        origin: {
+                          number: {
+                            x: player.currentPosition.cell.number.x,
+                            y: player.currentPosition.cell.number.y
+                          },
+                          center: {
+                            x: player.currentPosition.cell.center,
+                            y: player.currentPosition.cell.center
+                          },
+                        },
+                        destination: target.cell.center
+                      }
+                      nextPosition = this.lineCrementer(player);
+                      player.nextPosition = nextPosition;
+
                     }
 
-                  } else if (player.turning.delayCount === 0) {
-                    player.action = 'moving';
+                  }
+
+                  if (target.free === false) {
+                    // console.log('target is NOT free',target);
+                    if (target.occupant.type === "obstacle") {
+                      this.prePushCheck(player,target)
+                    }
+                  }
+                  if (player.target.void === true) {
+                    // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
+
+                    this.moveSpeed = player.speed.move;
+
                     player.moving = {
                       state: true,
                       step: 0,
                       course: '',
                       origin: {
-                        number: {
-                          x: player.currentPosition.cell.number.x,
-                          y: player.currentPosition.cell.number.y
-                        },
-                        center: {
-                          x: player.currentPosition.cell.center,
-                          y: player.currentPosition.cell.center
-                        },
+                        number: player.currentPosition.cell.number,
+                        center: player.currentPosition.cell.center,
                       },
                       destination: target.cell.center
                     }
+
                     nextPosition = this.lineCrementer(player);
                     player.nextPosition = nextPosition;
-
                   }
 
                 }
-
-                if (target.free === false) {
-                  // console.log('target is NOT free');
-                }
-                if (player.target.void === true) {
-                  // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
-
-                  this.moveSpeed = player.speed.move;
-
-                  player.moving = {
-                    state: true,
-                    step: 0,
-                    course: '',
-                    origin: {
-                      number: player.currentPosition.cell.number,
-                      center: player.currentPosition.cell.center,
-                    },
-                    destination: target.cell.center
-                  }
-
-                  nextPosition = this.lineCrementer(player);
-                  player.nextPosition = nextPosition;
-                }
-
-              }
 
               }
 
@@ -16219,7 +16267,153 @@ class App extends Component {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
-  obstacleCanPush = () => {
+  prePushCheck = (player,target) => {
+    console.log('pre push check');
+
+
+    let refCell = this.gridInfo.find(x => x.number.x === target.cell.number.x && x.number.y === target.cell.number.y);
+
+    if(refCell.obstacle.state !== true) {
+      console.log('barrier not obstacle. Cant be pushed');
+    }
+    else {
+      if (player.prePush.state !== true && player.prePush.count === 0) {
+        player.prePush = {
+          state: false,
+          count: player.prePush.count++,
+          limit: player.prePush.limit,
+          targetCell: refCell,
+          direction: player.direction,
+          pusher: player.number,
+        }
+
+      }
+
+      if (player.prePush.state === true) {
+
+        if (player.prePush.count >= player.prePush.limit) {
+
+          this.players[player.number-1].prePush = player.prePush;
+          this.players[player.number-1].pushing = player.pushing;
+
+          this.canPushObstacle(player,target);
+
+        }
+        else {
+
+           if (
+             player.prePush.targetCell.number.x === refCell.number.x &&
+             player.prePush.targetCell.number.y === refCell.number.y &&
+             player.prePush.direction === player.direction &&
+             player.prePush.pusher === player.number
+           ) {
+             console.log('pre pushing the same obstacle. Continue');
+             player.prePush.count++;
+           }
+           else {
+             console.log('pre push player, target or direction has changed. Reset prepush');
+             player.prePush = {
+               state: false,
+               count: 0,
+               limit: 25,
+               targetCell: undefined,
+               direction: "",
+               pusher: undefined,
+             };
+           }
+
+         }
+
+      }
+    }
+
+
+    this.players[player.number-1].prePush = player.prePush;
+    this.players[player.number-1].pushing = player.pushing;
+
+
+  }
+  canPushObstacle = (player,target) => {
+
+    let refCell = this.gridInfo.find(x => x.number.x === target.cell.number.x && x.number.y === target.cell.number.y);
+
+    // playerplayer.action = 'moving';
+    // player.moving = {
+    //   state: true,
+    //   step: 0,
+    //   course: '',
+    //   origin: {
+    //     number: {
+    //       x: player.currentPosition.cell.number.x,
+    //       y: player.currentPosition.cell.number.y
+    //     },
+    //     center: {
+    //       x: player.currentPosition.cell.center,
+    //       y: player.currentPosition.cell.center
+    //     },
+    //   },
+    //   destination: target.cell.center
+    // }
+    // nextPosition = this.lineCrementer(player);
+    // player.nextPosition = nextPosition;
+    //
+    // obstacle.moving: {
+    //   state: false,
+    //   origin: {
+    //     number: {
+    //       x: undefined,
+    //       y: undefined,
+    //     },
+    //     center: {
+    //       x: undefined,
+    //       y: undefined,
+    //     },
+    //   },
+    //   destination: {
+    //     number: {
+    //       x: undefined,
+    //       y: undefined,
+    //     },
+    //     center: {
+    //       x: undefined,
+    //       y: undefined,
+    //     },
+    //   },
+    //   currentPosition: {
+    //     x: undefined,
+    //     y: undefined,
+    //   },
+    //   nextPosition: {
+    //     x: undefined,
+    //     y: undefined,
+    //   },
+    //   moveSpeed: 0,
+    //   pushable: true,
+    //   pushed: false,
+    //   pusher: undefined,
+    // }
+    //
+    // crits: {
+    //   singleHit: 1,
+    //   doubleHit: 6,
+    //   pushBack: 4,
+    //   guardBreak: 3,
+    //   dodge: 0,
+    // }
+
+    // prePush: {
+    //   state: false,
+    //   count: 0,
+    //   limit: 25,
+    //   targetCell: undefined,
+    //   direction: "",
+    //   pusher: undefined,
+    // },
+    // pushing: {
+    //   state: false,
+    //   targetCell: undefined,
+    //   moveSpeed: 0,
+    // }
 
   }
   obstacleMoveCrementer = (player) => {
@@ -16228,30 +16422,7 @@ class App extends Component {
     let currentPosition = player.currentPosition.cell.center;
     let target = player.target;
     let moveSpeed = player.speed.move;
-    if (player.terrainMoveSpeed.state === true) {
-      // console.log('terrain speed mod',player.terrainMoveSpeed.speed);
-      moveSpeed = player.terrainMoveSpeed.speed;
-    }
-    if (player.jumping.state === true) {
-      moveSpeed = .1;
-    }
-    if (player.stamina.current < 1) {
-      moveSpeed = .05;
-    }
 
-    if (player.flanking.state === true) {
-      // moveSpeed = .1
-      moveSpeed = .2
-      // if (moveSpeed === .05) {
-      //   moveSpeed = .1
-      // }
-      // else if (moveSpeed === .1) {
-      //   moveSpeed = .125
-      // }
-      // else if (moveSpeed === .125) {
-      //   moveSpeed = .2
-      // }
-    }
 
     player.moving.step = +(Math.round((player.moving.step + moveSpeed) + "e+" + 3)  + "e-" + 3);
     // player.moving.step = player.moving.step + moveSpeed;
@@ -16296,8 +16467,6 @@ class App extends Component {
     }
 
     player.nextPosition = newPosition
-
-    this.players[player.number-1] = player;
 
     return newPosition;
 
@@ -17019,7 +17188,7 @@ class App extends Component {
         target1: {x:0 ,y:0},
         target2: {x:0 ,y:0},
       };
-      player.prePush: {
+      player.prePush = {
         state: false,
         count: 0,
         limit: 25,
@@ -22959,7 +23128,6 @@ class App extends Component {
 
 
   }
-
 
 
   addAiPlayer = () => {
@@ -30290,6 +30458,7 @@ class App extends Component {
               className="canvas2"
             />
 
+            // DEBUB BOX
             <div className={this.debugBoxStyle}>
               <DebugBox
                 player={this.players[0]}
@@ -30383,8 +30552,6 @@ class App extends Component {
 
 
             // CAMERA BOX
-
-
             {this.camera.state === true && (
               <div className="cameraBox">
                 <CameraControl
