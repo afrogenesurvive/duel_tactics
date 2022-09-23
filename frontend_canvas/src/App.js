@@ -1675,7 +1675,7 @@ class App extends Component {
         prePush: {
           state: false,
           count: 0,
-          limit: 20,
+          limit: 15,
           targetCell: undefined,
           direction: "",
           pusher: undefined,
@@ -2074,7 +2074,7 @@ class App extends Component {
         prePush: {
           state: false,
           count: 0,
-          limit: 20,
+          limit: 15,
           targetCell: undefined,
           direction: "",
           pusher: undefined,
@@ -2621,7 +2621,7 @@ class App extends Component {
       ranged: 0.10,
     }
     this.settingAutoCamera = false;
-    this.highlightZoomPanFocusCell = false;
+    this.highlightZoomPanFocusCell = true;
 
 
     // AI
@@ -3450,7 +3450,7 @@ class App extends Component {
     // console.log('adding listeners');
 
     canvas2.addEventListener("click", e => {
-      this.getCanvasClick(canvas2, e)
+      this.getCanvasClick(canvas2, e,"click")
     });
 
     // canvas3.addEventListener("click", e => {
@@ -3473,12 +3473,12 @@ class App extends Component {
 
     canvas2.addEventListener("mousemove", e => {
 
-      // this.getCanvasClick(canvas2, e)
+      // this.getCanvasClick(canvas2, e,"mousemove")
     });
 
 
   }
-  getCanvasClick = (canvas, event) => {
+  getCanvasClick = (canvas, event, type) => {
 
 
     const rect = canvas.getBoundingClientRect()
@@ -3510,6 +3510,19 @@ class App extends Component {
         // console.log("clicked a cell",cell.number,"x: " + x + " y: " + y);
         this.clicked = cell;
         this.showCellInfoBox = true;
+
+        if (type === "mousemove") {
+          this.cellsToHighlight2.push(
+            {
+              number: {
+                x: cell.number.x,
+                y: cell.number.y,
+              },
+              count: 0,
+              limit: 15,
+            },
+          )
+        }
       }
     }
     if ( insideGrid === false ) {
@@ -5704,6 +5717,20 @@ class App extends Component {
     }
 
 
+    // CELLS TO HIGHLIGHT V2!!
+    for (const cell3 of this.cellsToHighlight2) {
+      if (cell3.limit > 0) {
+        if (cell3.count < cell3.limit) {
+          cell3.count++
+        }
+        else if (cell3.count >= cell3.limit) {
+          let index = this.cellsToHighlight2.indexOf(cell3)
+          this.cellsToHighlight2.splice(index,1)
+        }
+      }
+    }
+
+
     // DEFLECTED PLAYER CAN'T DO ANYTHING!!
     if (player.success.deflected.state === false && player.dead.state !== true && this.camera.state !== true) {
 
@@ -6189,17 +6216,17 @@ class App extends Component {
           }
         }
         // CELLS TO HIGHLIGHT V2!!
-        for (const cell3 of this.cellsToHighlight2) {
-          if (cell3.limit > 0) {
-            if (cell3.count < cell3.limit) {
-              cell3.count++
-            }
-            else if (cell3.count >= cell3.limit) {
-              let index = this.cellsToHighlight2.indexOf(cell3)
-              this.cellsToHighlight2.splice(index,1)
-            }
-          }
-        }
+        // for (const cell3 of this.cellsToHighlight2) {
+        //   if (cell3.limit > 0) {
+        //     if (cell3.count < cell3.limit) {
+        //       cell3.count++
+        //     }
+        //     else if (cell3.count >= cell3.limit) {
+        //       let index = this.cellsToHighlight2.indexOf(cell3)
+        //       this.cellsToHighlight2.splice(index,1)
+        //     }
+        //   }
+        // }
 
         // OBSTACLE/BARRIER DAMAGE/DESTROY
         for(const cell of this.obstacleBarrierToDestroy) {
@@ -6229,43 +6256,30 @@ class App extends Component {
         }
 
 
-        // prePush: {
-        //   state: false,
-        //   count: 0,
-        //   limit: 25,
-        //   targetCell: undefined,
-        //   direction: "",
-        //   pusher: undefined,
-        // },
-        // pushing: {
-        //   state: false,
-        //   targetCell: undefined,
-        //   moveSpeed: 0,
-        // }
 
         // OBSTACLE PUSHING
         // key release prepush check
         if (player.prePush.state === true && this.keyPressed[player.number-1][player.prePush.direction] !== true) {
-          console.log('mid prePush but key released. reset prePush');
+          // console.log('mid prePush but key released. reset prePush');
           player.prePush = {
             state: false,
             count: 0,
-            limit: 25,
+            limit: player.prePush.limit,
             targetCell: undefined,
             direction: "",
             pusher: undefined,
           }
         }
-
         for(const cell of this.gridInfo) {
           if (cell.obstacle.state === true && cell.obstacle.moving.state === true) {
-            let nextPosition = this.lineCrementer(player);
-            cell.obstacle.moving.nextPosition = nextPosition;
+            // console.log('tracking moving obstacle',cell.obstacle.moving.step);
 
-            let obstacleCrementObj = this.obstacleMoveCrementer(cell.obstacle,cell);
+            let destCellRef = this.gridInfo.find(x => x.number.x === cell.obstacle.moving.destination.number.x && x.number.y === cell.obstacle.moving.destination.number.y)
+            let obstacleCrementObj = this.obstacleMoveCrementer(cell,destCellRef);
 
-            cell.obstacle.nextPosition = obstacleCrementObj.pos;
+            cell.obstacle.moving.nextPosition = obstacleCrementObj.pos;
             cell.obstacle.moving.step = obstacleCrementObj.step;
+            nextPosition = obstacleCrementObj.pos;
 
             let atDestRanges = [false,false,false,false];
 
@@ -6304,29 +6318,153 @@ class App extends Component {
 
             for (const el of atDestRanges) {
               if (el === true) {
-                console.log('obstacle at destination');
+
+                // console.log('obstacle at destination');
+
+                // if dest cell is void, deep or obs dest numbers undefined
+                // set obstacle falling, reset origin obstacle and level data, set dest obstacle and lvl data
+                //if out of bounds i.e dest numbers undefined, push to this. obstaclesOutOfBounds and check @ draw player, step position
+                //
+                // else, execute code below
+
                 let indx = atDestRanges.indexOf(el);
 
+                let cell2 = cell;
+                let originLevelData = cell2.levelData.split("_");
+                originLevelData[1] = "*";
 
-                // originCellRef
-                //
-                // destCellRef.obstacle = cell.obstacle and destCellRef.levelData = origincellref leveldata
-                //
-                // destCellRef obstacle moving reset
-                //
-                // if dest cell is void or deep, fall
-                // if dest has rubble roll for damage
+                let originCellRef = this.gridInfo.find(x => x.number.x === cell.obstacle.moving.origin.number.x && x.number.y === cell.obstacle.moving.origin.number.y)
+                let destCellRef = this.gridInfo.find(x => x.number.x === cell.obstacle.moving.destination.number.x && x.number.y === cell.obstacle.moving.destination.number.y)
 
 
+                destCellRef.obstacle = {
+                  state: true,
+                  name: cell2.obstacle.name,
+                  type: cell2.obstacle.type,
+                  hp: cell2.obstacle.hp,
+                  destructible: cell2.obstacle.destructible,
+                  locked: cell2.obstacle.locked,
+                  weight: cell2.obstacle.weight,
+                  height: cell2.obstacle.height,
+                  items: cell2.obstacle.items,
+                  effects: cell2.obstacle.effects,
+                  moving: {
+                    state: false,
+                    step: 0,
+                    origin: {
+                      number: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                      center: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                    },
+                    destination: {
+                      number: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                      center: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                    },
+                    currentPosition: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                    nextPosition: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                    moveSpeed: 0,
+                    pushable: true,
+                    pushed: false,
+                    pusher: undefined,
+                    falling: {
+                      state: false,
+                      count: 0,
+                      limit: 10,
+                    },
+                  }
+                };
+
+                destCellRef.levelData = cell2.levelData;
+
+                originCellRef.obstacle = {
+                  state: false,
+                  name: '',
+                  type: '',
+                  hp: 2,
+                  destructible: {
+                    state: false,
+                    weapons: [],
+                    leaveRubble: false,
+                  },
+                  locked: {
+                    state: false,
+                    key: '',
+                  },
+                  weight: 1,
+                  height: 0.5,
+                  items: [],
+                  effects: [],
+                  moving: {
+                    state: false,
+                    step: 0,
+                    origin: {
+                      number: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                      center: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                    },
+                    destination: {
+                      number: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                      center: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                    },
+                    currentPosition: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                    nextPosition: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                    moveSpeed: 0,
+                    pushable: true,
+                    pushed: false,
+                    pusher: undefined,
+                    falling: {
+                      state: false,
+                      count: 0,
+                      limit: 10,
+                    },
+                  }
+                };
+                originCellRef.levelData = originLevelData.join("_");
+
+                break;
               }
             }
 
+            // if (cell.obstacle.moving.step >= 1) {
+            //
+            // }
+
           }
         }
-        // falling obstacles check and step and reset @ limit & remove obstacle
-        // @draw player animate falling obstacles and blink cell falling in
-
-
 
 
 
@@ -8844,8 +8982,11 @@ class App extends Component {
 
                   if (target.free === false) {
                     // console.log('target is NOT free',target);
-                    if (target.occupant.type === "obstacle") {
+                    if (target.occupant.type === "obstacle" && player.pushing.state !== true) {
                       this.preObstaclePushCheck(player,target)
+                    }
+                    if (player.pushing.state === true) {
+                      // console.log('You are already pushing something');
                     }
                   }
                   if (player.target.void === true) {
@@ -10443,7 +10584,6 @@ class App extends Component {
         let index = this.projectiles.findIndex(blt => blt.id === bolt.id);
         bolt.currentPosition.center = bolt.nextPosition;
 
-        // this.testDraw.push({color:'red',x:bolt.currentPosition.center.x,y:bolt.currentPosition.center.y});
 
         let boltNextPosition = this.boltCrementer(bolt);
         bolt.nextPosition = boltNextPosition;
@@ -13450,7 +13590,7 @@ class App extends Component {
 
         // OBSTACLES & BARRIERS
 
-        if (gridInfoCell.obstacle.state === true && gridInfoCell.void.state !== true) {
+        if (gridInfoCell.obstacle.state === true && gridInfoCell.void.state !== true && gridInfoCell.terrain.type !== "deep") {
 
           let hide = false;
 
@@ -13465,12 +13605,18 @@ class App extends Component {
           if (hide !== true) {
             let obstacleImg = obstacleImgs[gridInfoCell.obstacle.type]
 
-            context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
+            if (gridInfoCell.obstacle.moving.state !== true) {
+              context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
+            }
+            else {
+              context.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x-offset.x, gridInfoCell.obstacle.moving.nextPosition.y- Math.ceil(obstacleImg.height/2));
+            }
+
           }
 
-
-
         }
+        // if obstacle state is true and falling is also true, step and update draw coords
+        // if state true falling true but at limit, reset, cell obstacle and level data
 
         if (gridInfoCell.barrier.state === true && gridInfoCell.void.state !== true) {
 
@@ -13497,30 +13643,11 @@ class App extends Component {
         }
 
 
-        // type: 'obstacle',
-        // action: 'destroy',
-        // count: 0,
-        // limit: 20,
-        // complete: false,
-        // cell: targetCell,
-        //
-        // origin: targetCell.number,
-        // target: cell,
-        // item: item,
-        // state: true,
-        // count: 0,
-        // limit: 20,
-        // position: {
-        //   x: undefined,
-        //   y: undefined,
-        // }
-
         // DROP ITEMS & DAMAGE/DESTROY OBSTACLES & BARRIERS
         for(const cell of this.obstacleBarrierToDestroy) {
           if (gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y) {
             if(cell.count % 3 === 0) {
               if (cell.type === "obstacle") {
-                console.log('here');
                 let obstacleImg = obstacleImgs[cell.cell.obstacle.type];
                 context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
               }
@@ -13548,6 +13675,8 @@ class App extends Component {
             }
           }
         }
+
+        // check obstacles to to destroy by falling, count drop draw position and splice on count == limit
 
 
 
@@ -13590,8 +13719,8 @@ class App extends Component {
 
         // CAMERA FOCUS POINT
         if (x === this.gridWidth && y === this.gridWidth ) {
-
-          context.fillStyle = 'purple';
+          // console.log('Camera centered');
+          // context.fillStyle = 'yellow';
           context.beginPath();
           context.arc(this.camera.focus.x, this.camera.focus.y, 10, 0, 2 * Math.PI);
           context.fill();
@@ -16429,17 +16558,26 @@ class App extends Component {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
   preObstaclePushCheck = (player,target) => {
-    console.log('pre push check');
+    // console.log('pre push check');
 
 
     let refCell = this.gridInfo.find(x => x.number.x === target.cell.number.x && x.number.y === target.cell.number.y);
+    let plyrRefCell = this.gridInfo.find(x => x.number.x === player.currentPosition.cell.number.x && x.number.y === player.currentPosition.cell.number.y);
+
+    let myCellCheck = true;
+    if (plyrRefCell.barrier.state === true && plyrRefCell.barrier.position === player.direction) {
+      myCellCheck = false
+    }
+    if (myCellCheck !== true) {
+      console.log('a barrier in player cell is blocking a push');
+    }
 
     if(refCell.obstacle.state !== true) {
       console.log('barrier not obstacle. Cant be pushed');
     }
-    else if (refCell.obstacle.moving.pushable === true) {
+    else if (refCell.obstacle.moving.pushable === true && myCellCheck === true) {
       if (player.prePush.state !== true && player.prePush.count === 0) {
-        console.log('start pre push');
+        // console.log('start pre push');
         player.prePush = {
           state: true,
           count: player.prePush.count++,
@@ -16455,7 +16593,7 @@ class App extends Component {
 
         if (player.prePush.count >= player.prePush.limit) {
 
-          console.log('pre push limit. check can push');
+          // console.log('pre push limit. check can push');
           this.players[player.number-1].prePush = player.prePush;
           this.players[player.number-1].pushing = player.pushing;
 
@@ -16472,14 +16610,14 @@ class App extends Component {
            ) {
 
              player.prePush.count++;
-             console.log('pre pushing the same obstacle. Continue',player.prePush.count);
+             // console.log('pre pushing the same obstacle. Continue',player.prePush.count);
            }
            else {
-             console.log('pre push player, target or direction has changed. Reset prepush');
+             // console.log('pre push player, target or direction has changed. Reset prepush');
              player.prePush = {
                state: false,
                count: 0,
-               limit: 25,
+               limit: player.prePush.limit,
                targetCell: undefined,
                direction: "",
                pusher: undefined,
@@ -16502,13 +16640,11 @@ class App extends Component {
   }
   canPushObstacle = (player,obstacleCell) => {
 
-    let refCell = this.gridInfo.find(x => x.number.x === obstacleCell.number.x && x.number.y === obstacleCell.number.y);
 
-    let obstacle = obstacleCell.obstacle;
-    let canPush = false;
+
     let thresholdMultiplier = this.rnJesus(1,3)
     let canPushStrength = false;
-    let canPushTargetFree = false;
+    let canPushTargetFree = true;
     let pushStrengthThreshold = (obstacleCell.obstacle.height + obstacleCell.obstacle.weight)*thresholdMultiplier;
     let pushStrengthPlayer = 0;
 
@@ -16531,30 +16667,217 @@ class App extends Component {
         destCell.y += 1;
         break;
       case "east":
-        destCell.x -= 1;
+        destCell.x += 1;
         break;
       case "west":
-        destCell.x += 1;
+        destCell.x -= 1;
         break;
       default:
         break;
     }
     let destCellRef = this.gridInfo.find(x => x.number.x === destCell.x && x.number.y === destCell.y);
     let destCellOccupant = "";
-    if (destCellRef.obstacle.state === true) {
-      canPushTargetFree = false;
-      destCellOccupant = "obstacle";
-    }
-    if (destCellRef.barrier.state === true) {
-      canPushTargetFree = false;
-      destCellOccupant = "barrier";
-    }
-    for(const plyr of this.players) {
-      if(plyr.currentPosition.cell.number.x === destCell.x && plyr.currentPosition.cell.number.y === destCell.y) {
-        canPushTargetFree = false;
-        destCellOccupant = `player_${plyr.number}`;
+
+    if (destCellRef) {
+      if (destCellRef.void.state !== true && destCellRef.terrain.type !== 'deep') {
+
+
+        if (destCellRef.obstacle.state === true) {
+          canPushTargetFree = false;
+          destCellOccupant = "obstacle";
+        }
+        if (destCellRef.barrier.state === true) {
+          let barrier = false;
+          switch (player.prePush.direction) {
+            case "north":
+              if (destCellRef.barrier.position === "south") {
+                barrier = true;
+              }
+              break;
+            case "south":
+              if (destCellRef.barrier.position === "north") {
+                barrier = true;
+              }
+              break;
+            case "east":
+              if (destCellRef.barrier.position === "west") {
+                barrier = true;
+              }
+              break;
+            case "west":
+              if (destCellRef.barrier.position === "east") {
+                barrier = true;
+              }
+              break;
+            default:
+              break;
+          }
+
+          if (barrier === true) {
+              canPushTargetFree = false;
+              destCellOccupant = "barrier";
+          }
+
+
+        }
+        if (obstacleCell.barrier.state === true) {
+
+          let barrier = false;
+          switch (player.prePush.direction) {
+            case "north":
+              if (obstacleCell.barrier.position === "south") {
+                barrier = true;
+              }
+              break;
+            case "south":
+              if (obstacleCell.barrier.position === "north") {
+                barrier = true;
+              }
+              break;
+            case "east":
+              if (obstacleCell.barrier.position === "west") {
+                barrier = true;
+              }
+              break;
+            case "west":
+              if (obstacleCell.barrier.position === "east") {
+                barrier = true;
+              }
+              break;
+            default:
+              break;
+          }
+
+          if (barrier === true) {
+            console.log('barrier in obstacle cell in front of obstacle');
+            canPushTargetFree = false;
+            destCellOccupant = "barrier";
+          }
+
+          if (obstacleCell.barrier.position === player.direction) {
+            console.log('barrier in obstacle cell behind obstacle');
+            canPushTargetFree = false;
+            destCellOccupant = "barrier";
+          }
+
+        }
+        for(const plyr of this.players) {
+          if(plyr.currentPosition.cell.number.x === destCell.x && plyr.currentPosition.cell.number.y === destCell.y) {
+            canPushTargetFree = false;
+            destCellOccupant = `player_${plyr.number}`;
+          }
+        }
+
+      }
+      else {
+        if (destCellRef.void.state === true) {
+
+        }
+        if (destCellRef.terrain.type === 'deep') {
+
+        }
       }
     }
+    else {
+
+      // calc dest center, set obs moving dest number to undefined and set obstacle moving
+
+
+
+      // let preMoveSpeed = Math.ceil(pushStrengthPlayer/pushStrengthThreshold);
+      // let moveSpeed = 0;
+      // if (preMoveSpeed <= 1) {
+      //   moveSpeed = .05;
+      // }
+      // if (preMoveSpeed === 2) {
+      //   moveSpeed = .1;
+      // }
+      // if (preMoveSpeed > 2 && preMoveSpeed < 4) {
+      //   moveSpeed = .125;
+      // }
+      // if (preMoveSpeed > 4) {
+      //   moveSpeed = .2;
+      // }
+      //
+      // let obstacleCrementObj = this.obstacleMoveCrementer(obstacleCell,destCellRef);
+      //
+      // obstacleCell.obstacle =
+      // {
+      //   state: obstacleCell.obstacle.state,
+      //   name: obstacleCell.obstacle.name,
+      //   type: obstacleCell.obstacle.type,
+      //   hp: obstacleCell.obstacle.hp,
+      //   destructible: obstacleCell.obstacle.destructible,
+      //   locked: obstacleCell.obstacle.locked,
+      //   weight: obstacleCell.obstacle.weight,
+      //   height: obstacleCell.obstacle.height,
+      //   items: obstacleCell.obstacle.items,
+      //   effects: obstacleCell.obstacle.effects,
+      //   moving: {
+      //     state: true,
+      //     step: obstacleCrementObj.step,
+      //     origin: {
+      //       number: obstacleCell.number,
+      //       center: obstacleCell.center,
+      //     },
+      //     destination: {
+      //       number: destCellRef.number,
+      //       center: destCellRef.center,
+      //     },
+      //     currentPosition: obstacleCell.center,
+      //     nextPosition: obstacleCrementObj.pos,
+      //     moveSpeed: moveSpeed,
+      //     pushable: true,
+      //     pushed: true,
+      //     pusher: player.number,
+      //     falling: {
+      //       state: false,
+      //       count: 0,
+      //       limit: 10,
+      //     },
+      //   }
+      // };
+      //
+      // this.players[player.number-1].prePush = {
+      //     state: false,
+      //     count: 0,
+      //     limit: player.prePush.limit,
+      //     targetCell: undefined,
+      //     direction: "",
+      //     pusher: undefined,
+      // }
+      // this.players[player.number-1].pushing = {
+      //     state: true,
+      //     targetCell: obstacleCell,
+      //     moveSpeed: moveSpeed,
+      // }
+      //
+      // if (player.turning.delayCount === 0) {
+      //   this.players[player.number-1].action = 'moving';
+      //   this.players[player.number-1].moving = {
+      //     state: true,
+      //     step: 0,
+      //     course: '',
+      //     origin: {
+      //       number: {
+      //         x: player.currentPosition.cell.number.x,
+      //         y: player.currentPosition.cell.number.y
+      //       },
+      //       center: {
+      //         x: player.currentPosition.cell.center,
+      //         y: player.currentPosition.cell.center
+      //       },
+      //     },
+      //     destination: destCellRef.center
+      //   }
+      //   let nextPosition = this.lineCrementer(player);
+      //   player.nextPosition = nextPosition;
+      //
+      // }
+
+    }
+
+    // console.log('pushStrengthThreshold/Player',pushStrengthThreshold,pushStrengthPlayer);
 
 
     if (pushStrengthPlayer > pushStrengthThreshold && obstacleCell.obstacle.moving.pushable === true) {
@@ -16564,9 +16887,13 @@ class App extends Component {
     else {
       console.log('you are NOT strong enough to push this obstacle');
     }
+    if (canPushTargetFree !== true) {
+      console.log('something is in the way of the obstacle to be pushed');
+    }
 
     if (canPushStrength === true && canPushTargetFree === true) {
 
+      // console.log('ready to push');
       let preMoveSpeed = Math.ceil(pushStrengthPlayer/pushStrengthThreshold);
       let moveSpeed = 0;
       if (preMoveSpeed <= 1) {
@@ -16583,23 +16910,10 @@ class App extends Component {
       }
 
 
-      obstacle.moving.state = true;
-      obstacle.moving.origin.number = obstacleCell.number;
-      obstacle.moving.origin.center = obstacleCell.center;
-      obstacle.moving.destination.number = destCellRef.number;
-      obstacle.moving.destination.center = destCellRef.center;
-      obstacle.moving.currentPosition = obstacleCell.center;
-      obstacle.moving.moveSpeed = moveSpeed;
-      obstacle.moving.pushed = true;
-      obstacle.moving.pusher = player.number;
-      obstacle.moving.currentPosition = obstacleCell.center;
+      let obstacleCrementObj = this.obstacleMoveCrementer(obstacleCell,destCellRef);
 
-      let obstacleCrementObj = this.obstacleMoveCrementer(obstacle,destCellRef);
 
-      obstacle.nextPosition = obstacleCrementObj.pos;
-      obstacle.moving.step = obstacleCrementObj.step;
-
-      this.gridInfo.find(x => x.number.x === obstacleCell.cell.number.x && x.number.y === obstacleCell.cell.number.y).obstacle =
+      obstacleCell.obstacle =
       {
         state: obstacleCell.obstacle.state,
         name: obstacleCell.obstacle.name,
@@ -16611,13 +16925,35 @@ class App extends Component {
         height: obstacleCell.obstacle.height,
         items: obstacleCell.obstacle.items,
         effects: obstacleCell.obstacle.effects,
-        moving: obstacle.moving
+        moving: {
+          state: true,
+          step: obstacleCrementObj.step,
+          origin: {
+            number: obstacleCell.number,
+            center: obstacleCell.center,
+          },
+          destination: {
+            number: destCellRef.number,
+            center: destCellRef.center,
+          },
+          currentPosition: obstacleCell.center,
+          nextPosition: obstacleCrementObj.pos,
+          moveSpeed: moveSpeed,
+          pushable: true,
+          pushed: true,
+          pusher: player.number,
+          falling: {
+            state: false,
+            count: 0,
+            limit: 10,
+          },
+        }
       };
 
       this.players[player.number-1].prePush = {
           state: false,
           count: 0,
-          limit: 25,
+          limit: player.prePush.limit,
           targetCell: undefined,
           direction: "",
           pusher: undefined,
@@ -16656,20 +16992,20 @@ class App extends Component {
     // if target isn't free, 1/2 pushback
 
   }
-  obstacleMoveCrementer = (obstacle,destCell) => {
-    console.log('obstacle line crementer',obstacle);
+  obstacleMoveCrementer = (obstacleCell,destCell) => {
+    // console.log('obstacle line crementer',obstacle.moving.step,obstacle.moving.moveSpeed);
 
-    let currentPosition = obstacle.moving.currentPosition;
+    let currentPosition = obstacleCell.obstacle.moving.currentPosition;
     let target = destCell;
-    let moveSpeed = obstacle.moving.moveSpeed;
+    let moveSpeed = obstacleCell.obstacle.moving.moveSpeed;
 
 
-    let step = +(Math.round((obstacle.moving.step + moveSpeed) + "e+" + 3)  + "e-" + 3);
+    let step = +(Math.round((obstacleCell.obstacle.moving.step + moveSpeed) + "e+" + 3)  + "e-" + 3);
+
+
     // player.moving.step = player.moving.step + moveSpeed;
     // console.log('mover stepper',player.moving.step);
     let newPosition;
-
-
 
     // line: percent is 0-1
     let startPt = currentPosition;
@@ -17253,7 +17589,7 @@ class App extends Component {
     player.prePush = {
       state: false,
       count: 0,
-      limit: 20,
+      limit: 15,
       targetCell: undefined,
       direction: "",
       pusher: undefined,
@@ -17426,7 +17762,7 @@ class App extends Component {
       player.prePush = {
         state: false,
         count: 0,
-        limit: 25,
+        limit: 15,
         targetCell: undefined,
         direction: "",
         pusher: undefined,
@@ -18287,7 +18623,7 @@ class App extends Component {
         let pip = pointInPolygon(point, polygon)
         if (pip === true) {
           insideGrid = true;
-          // console.log("clicked a cell",cell.number,"x: " + x + " y: " + y);
+          // console.log("camera focus cell",cell.number,"x: " + x + " y: " + y);
           focusCell = cell;
         }
       }
@@ -23923,7 +24259,7 @@ class App extends Component {
           prePush: {
             state: false,
             count: 0,
-            limit: 20,
+            limit: 15,
             targetCell: undefined,
             direction: "",
             pusher: undefined,
