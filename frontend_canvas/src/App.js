@@ -19309,9 +19309,10 @@ class App extends Component {
         if (player.currentWeapon.type !== 'spear') {
 
           // MY CELL BARRIER?
+          let myCellBarrier = false;
           if (myCell.barrier.state === true ) {
             if (myCell.barrier.position === player.direction) {
-
+                myCellBarrier = true;
                 if (myCell.barrier.destructible.state === true) {
                   // WEAPON CHECK
                   if (myCell.barrier.destructible.weapons.find(x => x === player.currentWeapon.name)) {
@@ -19748,7 +19749,7 @@ class App extends Component {
           }
 
           // NO FWD BARRIER. OBSTACLE, REAR  BARRIER (SPEAR)?
-          else {
+          else if (fwdBarrier !== true && myCellBarrier !== true) {
             if (targetCell.obstacle.state === true) {
               // damage = 1;
               if (targetCell.obstacle.destructible.state === true) {
@@ -20043,9 +20044,10 @@ class App extends Component {
         // CHECK 1ST CELL, TARGET 2
         if (player.currentWeapon.type === 'spear') {
 
+          let myCellBarrier = false;
           if (myCell.barrier.state === true ) {
             if (myCell.barrier.position === player.direction) {
-
+                myCellBarrier = true;
                 if (myCell.barrier.destructible.state === true) {
                   // WEAPON CHECK
                   if (myCell.barrier.destructible.weapons.find(x => x === player.currentWeapon.name)) {
@@ -20442,7 +20444,7 @@ class App extends Component {
           }
 
           // NO FWD BARRIER. OBSTACLE, REAR  BARRIER (SPEAR)?
-          else {
+          else if (myCellBarrier !== true && fwdBarrier !== true){
             if (targetCell2.obstacle.state === true) {
 
               if (targetCell2.obstacle.destructible.state === true) {
@@ -20828,10 +20830,10 @@ class App extends Component {
         if (player.currentWeapon.type === 'spear' && checkSpearTarget === true) {
           let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y)
 
-
+          let myCellBarrier = false;
           if (myCell.barrier.state === true ) {
             if (myCell.barrier.position === player.direction) {
-
+                myCellBarrier = true;
                 if (myCell.barrier.destructible.state === true) {
                   // WEAPON CHECK
                   if (myCell.barrier.destructible.weapons.find(x => x === player.currentWeapon.name)) {
@@ -21223,7 +21225,7 @@ class App extends Component {
           }
 
           // NO FWD BARRIER. OBSTACLE?
-          else {
+          else if (myCellBarrier !== true && fwdBarrier !== true) {
             if (targetCell.obstacle.state === true) {
 
               if (targetCell.obstacle.destructible.state === true) {
