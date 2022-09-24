@@ -6273,7 +6273,7 @@ class App extends Component {
           }
         }
         for(const cell of this.gridInfo) {
-          if (cell.obstacle.state === true && cell.obstacle.moving.state === true) {
+          if (cell.obstacle.state === true && cell.obstacle.moving.state === true && cell.obstacle.moving.falling.state !== true) {
             // console.log('tracking moving obstacle',cell.obstacle.moving.falling);
 
             let destCellRef = this.gridInfo.find(x => x.number.x === cell.obstacle.moving.destination.number.x && x.number.y === cell.obstacle.moving.destination.number.y)
@@ -6612,9 +6612,10 @@ class App extends Component {
 
           // step falling.count
           if (cell.obstacle.state === true && cell.obstacle.moving.falling.state === true) {
-            console.log('falling obstacle');
+            // console.log('falling obstacle');
             if (cell.obstacle.moving.falling.count < cell.obstacle.moving.falling.limit) {
               cell.obstacle.moving.falling.count++;
+              console.log('obstacle falling in bounds a count',cell.obstacle.moving.falling.count,'position',cell.obstacle.moving.nextPosition);
             }
             if (cell.obstacle.moving.falling.count >= cell.obstacle.moving.falling.limit) {
               let cell2 = cell;
@@ -6681,7 +6682,7 @@ class App extends Component {
                   },
                 }
               };
-
+              console.log('obstacle falling in bounds over');
             }
           }
         }
@@ -6689,8 +6690,10 @@ class App extends Component {
         for(const elem of this.obstaclesOutOfBoundsFall) {
           if (elem.moving.falling.count < elem.moving.falling.limit) {
             elem.moving.falling.count++;
+            console.log('obstacle falling out of bounds a count',elem.moving.falling.count,'position',elem.moving.nextPosition);
           }
           if (elem.moving.falling.count >= elem.moving.falling.limit) {
+            console.log('obstacle falling out of bounds over');
             let index = this.obstaclesOutOfBoundsFall.indexOf(elem)
             this.obstaclesOutOfBoundsFall.splice(index,1)
           }
@@ -11870,7 +11873,7 @@ class App extends Component {
     let newDirection;
 
     if (player.falling.state === true) {
-
+      console.log('player',player.number,'falling count',player.falling.count,'position',player.nextPosition);
       if (player.falling.count === player.falling.limit) {
         this.killPlayer(player)
       }
@@ -11936,7 +11939,7 @@ class App extends Component {
               plyrb.currentPosition.cell.number.x === x &&
               plyrb.currentPosition.cell.number.y === y
             ) {
-              // console.log('fr',plyrb.falling.count);
+              console.log('player',plyrb.number,'drowning count',plyrb.falling.count,'position',plyrb.nextPosition);
               if(plyrb.falling.count % 2 === 0) {
                 // drawFloor = false;
                 floor = floorImgs.void3;
@@ -11948,20 +11951,29 @@ class App extends Component {
           }
         }
 
-        if (gridInfoCell.obstacle.moving.falling.state === true) {
-          console.log('fr',gridInfoCell.obstacle.moving.falling.count);
-          if (
-            gridInfoCell.number.x === x &&
-            gridInfoCell.number.y === y
-          ) {
-            if(gridInfoCell.obstacle.moving.falling.count % 2 === 0) {
-              // drawFloor = false;
 
-              floor = floorImgs.void3;
-            } else {
-              floor = floorImgs[gridInfoCell.terrain.name]
-            }
-          }
+
+        // for(const cell3 of this.gridInfo) {
+        //   if (cell3.obstacle.moving.falling.state === true) {
+        //     console.log('obstacle falling in bounds a count',cell3.obstacle.moving.falling.count,'position',cell3.obstacle.moving.nextPosition);
+        //     if (
+        //       cell3.number.x === x &&
+        //       cell3.number.y === y
+        //     ) {
+        //       if(cell3.obstacle.moving.falling.count % 2 === 0) {
+        //         drawFloor = false;
+        //
+        //         // floor = floorImgs.void3;
+        //       } else {
+        //         floor = floorImgs[gridInfoCell.terrain.name]
+        //       }
+        //     }
+        //
+        //
+        //   }
+        // }
+
+        if (gridInfoCell.obstacle.state === true && gridInfoCell.obstacle.moving.falling.state === true) {
 
         }
 
@@ -13858,7 +13870,7 @@ class App extends Component {
 
         // OBSTACLES & BARRIERS
 
-        if (gridInfoCell.obstacle.state === true && gridInfoCell.void.state !== true && gridInfoCell.terrain.type !== "deep") {
+        if (gridInfoCell.obstacle.state === true && gridInfoCell.void.state !== true && gridInfoCell.terrain.type !== "deep" && gridInfoCell.obstacle.moving.falling.state !== true) {
 
           let hide = false;
 
@@ -13884,11 +13896,20 @@ class App extends Component {
 
         }
 
+        // if (gridInfoCell.obstacle.state === true && gridInfoCell.obstacle.moving.falling.state === true) {
+        //   let obstacleImg = obstacleImgs[gridInfoCell.obstacle.type]
+        //
+        //   context.drawImage(updatedPlayerImg, gridInfoCell.obstacle.moving.nextPosition.x, gridInfoCell.obstacle.moving.nextPosition.y, obstacleImg.height, obstacleImg.width);
+        //   gridInfoCell.obstacle.moving.nextPosition.y += 10
+        //   // gridInfoCell.obstacle.moving.nextPosition.y += (gridInfoCell.obstacle.moving.falling.count*5)
+        // }
+
         for(const obstacle of this.obstaclesOutOfBoundsFall) {
+          console.log('obstacle falling out of bounds b count',obstacle.moving.falling.count,'position',obstacle.moving.nextPosition);
           let obstacleImg = obstacleImgs[obstacle.type]
           context.drawImage(updatedPlayerImg, obstacle.moving.nextPosition.x, obstacle.moving.nextPosition.y, obstacleImg.height, obstacleImg.width);
           // obstacle.moving.nextPosition.y += 10;
-          // obstacle.moving.nextPosition.y += (obstacle.moving.falling.count*5)
+          obstacle.moving.nextPosition.y += (obstacle.moving.falling.count*5)
         }
 
 
@@ -16836,7 +16857,7 @@ class App extends Component {
   preObstaclePushCheck = (player,target) => {
     // console.log('pre push check');
 
-
+    let resetPush = false;
     let refCell = this.gridInfo.find(x => x.number.x === target.cell.number.x && x.number.y === target.cell.number.y);
     let plyrRefCell = this.gridInfo.find(x => x.number.x === player.currentPosition.cell.number.x && x.number.y === player.currentPosition.cell.number.y);
 
@@ -16846,10 +16867,12 @@ class App extends Component {
     }
     if (myCellCheck !== true) {
       console.log('a barrier in player cell is blocking a push');
+      resetPush = true;
     }
 
     if(refCell.obstacle.state !== true) {
       console.log('barrier not obstacle. Cant be pushed');
+      resetPush = true;
     }
     else if (refCell.obstacle.moving.pushable === true && myCellCheck === true) {
       if (player.prePush.state !== true && player.prePush.count === 0) {
@@ -16907,7 +16930,21 @@ class App extends Component {
 
     if (refCell.obstacle.moving.pushable !== true) {
       console.log('obstacle is instrinsically unpushable');
+      resetPush = true;
     }
+
+
+    if (resetPush === true) {
+      player.prePush = {
+        state: false,
+        count: 0,
+        limit: player.prePush.limit,
+        targetCell: undefined,
+        direction: "",
+        pusher: undefined,
+      };
+    }
+
 
     this.players[player.number-1].prePush = player.prePush;
     this.players[player.number-1].pushing = player.pushing;
@@ -16916,7 +16953,7 @@ class App extends Component {
   }
   canPushObstacle = (player,obstacleCell) => {
 
-
+    let resetPush = false;
     let thresholdMultiplier = this.rnJesus(1,3)
     let canPushStrength = false;
     let canPushTargetFree = true;
@@ -16973,6 +17010,7 @@ class App extends Component {
       if (destCellRef.obstacle.state === true) {
         canPushTargetFree = false;
         destCellOccupant = "obstacle";
+        resetPush = true;
       }
       if (destCellRef.barrier.state === true) {
         let barrier = false;
@@ -17004,6 +17042,7 @@ class App extends Component {
         if (barrier === true) {
             canPushTargetFree = false;
             destCellOccupant = "barrier";
+            resetPush = true;
         }
 
 
@@ -17040,18 +17079,23 @@ class App extends Component {
           console.log('barrier in obstacle cell in front of obstacle');
           canPushTargetFree = false;
           destCellOccupant = "barrier";
+          resetPush = true;
         }
 
         if (obstacleCell.barrier.position === player.direction) {
           console.log('barrier in obstacle cell behind obstacle');
           canPushTargetFree = false;
           destCellOccupant = "barrier";
+          resetPush = true;
         }
 
       }
       for(const plyr of this.players) {
         if(plyr.currentPosition.cell.number.x === destCell.x && plyr.currentPosition.cell.number.y === destCell.y) {
+
+          // change when implementing push player
           canPushTargetFree = false;
+          resetPush = true;
           destCellOccupant = `player_${plyr.number}`;
         }
       }
@@ -17195,13 +17239,16 @@ class App extends Component {
 
     if (pushStrengthPlayer > pushStrengthThreshold && obstacleCell.obstacle.moving.pushable === true) {
       canPushStrength = true;
+
       console.log('you are strongh enough to move this obstacle');
     }
     else {
       console.log('you are NOT strong enough to push this obstacle');
+      resetPush = true;
     }
     if (canPushTargetFree !== true) {
       console.log('something is in the way of the obstacle to be pushed');
+      resetPush = true;
     }
 
     if (canPushStrength === true && canPushTargetFree === true && destCellRef) {
@@ -17285,6 +17332,21 @@ class App extends Component {
     }
 
     // if target isn't free, 1/2 pushback
+    if (resetPush === true) {
+      this.players[player.number-1].prePush = {
+          state: false,
+          count: 0,
+          limit: player.prePush.limit,
+          targetCell: undefined,
+          direction: "",
+          pusher: undefined,
+      }
+      this.players[player.number-1].pushing = {
+          state: false,
+          targetCell: undefined,
+          moveSpeed: 0,
+      }
+    }
 
   }
   obstacleMoveCrementer = (obstacleCell,destCell) => {
