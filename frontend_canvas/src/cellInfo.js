@@ -45,6 +45,11 @@ const CellInfo = props => {
       <ul className="cellInfoList">
         <li className="cellInfoListItem">
           <p className="cellInfoText">
+            Coords: {props.cell.center.x.toFixed(2)}, {props.cell.center.y.toFixed(2)}
+          </p>
+        </li>
+        <li className="cellInfoListItem">
+          <p className="cellInfoText">
             No: {props.cell.number.x}, {props.cell.number.y}
           </p>
         </li>
