@@ -3433,7 +3433,7 @@ class App extends Component {
   let player = this.players[this.currentPlayer-1];
   if (player.defending.state === true && player.defending.count === 0) {
     if (this.keyPressed[this.currentPlayer-1].defend === false) {
-      // console.log('player',player.number,' stop defending1');
+      console.log('player',player.number,' stop defending1');
       player.defending.state = false;
     }
   }
@@ -4175,11 +4175,9 @@ class App extends Component {
     // }
 
     // KEY RELEASE FEINTING
-    // if (player.defending.state === true && player.defending.count < limit) {
-    // ***
     if (player.defending.state === true && player.defending.count === 0) {
       if (this.keyPressed[this.currentPlayer-1].defend === false) {
-        console.log('player',player.number,' defend key release');
+        // console.log('player',player.number,' defend key release');
         // player.defending.state = false;
 
         player.defending = {
@@ -6198,9 +6196,9 @@ class App extends Component {
 
         // TURNER!!
         if (player.turning.state === true && player.turning.toDirection === this.players[player.number-1].turnCheckerDirection) {
-          // console.log('player',player.number,' turn-ing');
+          console.log('player',player.number,' turn-ing');
           if (this.keyPressed[this.currentPlayer-1][this.players[player.number-1].turnCheckerDirection] === false) {
-            // console.log('player',player.number,' turn-stop');
+            console.log('player',player.number,' turn-stop');
             player.turning.state = false;
           }
         }
@@ -6770,7 +6768,7 @@ class App extends Component {
 
         // KEY PRESS RELEASE CHECKS!!
         if (player.turning.state === false && player.flanking.state !== true) {
-          // console.log('turn complete');
+          console.log('turn complete');
           player.direction = player.turning.toDirection;
           player.nextPosition = {
             x: player.currentPosition.cell.center.x,
@@ -6796,12 +6794,20 @@ class App extends Component {
           player.turning.state = undefined;
           this.getTarget(player);
         }
-        if (player.defending.state === false && player.defending.count === 0) {
 
+        if (this.keyPressed[player.number-1].defend === false && player.defending.state === true) {
+          // console.log('player',player.number,' defend key releasen 2');
           player.defending = {
             state: false,
             count: 0,
             limit: player.defending.limit
+          }
+          player.action = 'idle';
+
+          player.defendDecay = {
+            state: false,
+            count: 0,
+            limit: player.defendDecay.limit,
           }
 
           let defendPopup = player.popups.find(x=>x.msg.split("_")[0] === 'defending')
@@ -6812,14 +6818,6 @@ class App extends Component {
             player.action = 'idle';
           }
 
-        }
-        if (this.keyPressed[player.number-1].defend === false && player.defending.state === true) {
-          player.defending = {
-            state: false,
-            count: 0,
-            limit: player.defending.limit
-          }
-          player.action = 'idle';
         }
         if (player.strafeReleaseHook === true ) {
           player.strafing.state = false;
@@ -8338,13 +8336,40 @@ class App extends Component {
         // }
 
 
+        // TURNING LOGIC/FLOW **ADD TO REFERENCE**
+        on direction keypress, set player turnCheckerDirection
+
+
+
+        // DEFEND LOGIC/FLOW **ADD TO REFERENCE**
+        // defend key pressed
+        //   start defending wind up
+        //   at defend limit, defend state = true
+        //   decay state true
+        //   if decay state true
+        //     count decay
+        //     if decay count == decay limit-5
+        //       defending reset
+        //     if decay count == decay limit
+        //       decay reset
+
+          // if defend true and key released
+          //   dedend & decay reset
+
+          // when defend key pressed
+          //   if already defending
+          //     do nothing
+          //   if not defending && decay != true
+          //     start defend
+
+
         // DECAYING DEF
         if (player.defending.count > 0 && player.defending.count < player.defending.limit+1 && player.defendDecay.state !== true) {
           player.defending.count++;
           player.action = 'defending';
           console.log('defend winding up',player.defending.count, 'player',player.number);
         } else if (player.defending.count >= player.defending.limit+1 && player.defending.state === false && player.defendDecay.state !== true) {
-          console.log('peak defend player',player.number,player.defending.state);
+          console.log('peak defend player',player.number,'defending true if stamina ok');
 
           if (player.stamina.current - this.staminaCostRef.defend >= 0) {
 
@@ -8398,57 +8423,51 @@ class App extends Component {
         }
 
 
+
         // DEFENSE DECAY!!
-        if (player.defending.state === true && player.defending.count === 0) {
-          if (player.defendDecay.state === true) {
-            if (player.defendDecay.count < player.defendDecay.limit) {
-              player.defendDecay.count++;
 
-              if (player.popups.find(x=>x.msg.split("_")[0] === 'defending')) {
-
-                if (player.defendDecay.count > 4 && player.defendDecay.count < 15) {
-                  player.popups.find(x=>x.msg.split("_")[0] === 'defending').msg = 'defending_2'
-                }
-                if (player.defendDecay.count > 14 && player.defendDecay.count < 20) {
-                  player.popups.find(x=>x.msg.split("_")[0] === 'defending').msg = 'defending_3'
-                }
-                if (player.defendDecay.count > 19 && player.defendDecay.count < player.defendDecay.limit) {
-                  player.popups.find(x=>x.msg.split("_")[0] === 'defending').msg = 'defending_4'
-                }
-
-              }
-              console.log('defend decay1',player.defendDecay.count,player.defending.state);
-            }
-
-            // DEFENDING ENDS JUST BEFORE THE END OF THE DECAY
-            if (player.defendDecay.count === player.defendDecay.limit-5) {
-              console.log('drop defense!!');
-              player.defending = {
-                state: false,
-                count: 0,
-                limit: player.defending.limit,
-              }
-              player.action = 'idle';
-            }
-
-          }
-        }
-        if (player.defending.state !== true && player.defendDecay.state === true) {
+        if (player.defendDecay.state === true) {
           if (player.defendDecay.count < player.defendDecay.limit) {
             player.defendDecay.count++;
 
-            console.log('defend decay2',player.defendDecay.count,player.defending.state);
-            // console.log('defend decay3',player.defendDecay.limit);
+            if (player.popups.find(x=>x.msg.split("_")[0] === 'defending')) {
+
+              if (player.defendDecay.count > 4 && player.defendDecay.count < 15) {
+                player.popups.find(x=>x.msg.split("_")[0] === 'defending').msg = 'defending_2'
+              }
+              if (player.defendDecay.count > 14 && player.defendDecay.count < 20) {
+                player.popups.find(x=>x.msg.split("_")[0] === 'defending').msg = 'defending_3'
+              }
+              if (player.defendDecay.count > 19 && player.defendDecay.count < player.defendDecay.limit) {
+                player.popups.find(x=>x.msg.split("_")[0] === 'defending').msg = 'defending_4'
+              }
+
+            }
+            // console.log('defend decay1',player.defendDecay.count,player.defending.state);
           }
-          if (player.defendDecay.count >= player.defendDecay.limit) {
-            console.log('defend decay limit',player.defending.state);
-            player.defendDecay = {
+
+          // DEFENDING ENDS JUST BEFORE THE END OF THE DECAY
+          if (player.defendDecay.count === player.defendDecay.limit-5) {
+            console.log('drop defense!!');
+            player.defending = {
               state: false,
               count: 0,
-              limit: player.defendDecay.limit,
+              limit: player.defending.limit,
             }
+            player.action = 'idle';
           }
+
+          if (player.defendDecay.count >= player.defendDecay.limit) {
+              console.log('defend decay limit',player.defending.state);
+              player.defendDecay = {
+                state: false,
+                count: 0,
+                limit: player.defendDecay.limit,
+              }
+            }
+
         }
+
 
 
         // PULL CHECK
@@ -9290,8 +9309,8 @@ class App extends Component {
               // CHANGE DIRECTION IF NOT STRAFING!!
               if (keyPressedDirection !== player.direction && player.strafing.state === false) {
 
-                // console.log('change player direction to',keyPressedDirection);
-                // console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
+                console.log('change player direction to',keyPressedDirection);
+                console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
                 player.turning.state = true;
                 player.turning.toDirection = keyPressedDirection;
 
@@ -9587,7 +9606,8 @@ class App extends Component {
                 // )
               }
 
-              if (this.keyPressed[player.number-1].defend === true) {
+              // if (this.keyPressed[player.number-1].defend === true) {
+              if (this.keyPressed[player.number-1].defend === true && player.defendDecay.state !== true) {
                 // console.log('start defending',player.number);
 
                 // if (
