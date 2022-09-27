@@ -294,16 +294,16 @@ class App extends Component {
       row12: ['**_*_12.0_a_0a*','**_*_12.1_a_0a*','**_*_12.2_a_0a*','**_*_12.3_a_0a*','**_*_12.4_a_0a*','**_*_12.5_a_0a*','**_*_12.6_a_0a*','**_*_12.7_a_0a*','**_*_12.8_a_0a*','**_*_12.9_a_0a*','**_*_12.10_a_0a*','**_*_12.11_a_0a*','**_*_12.12_a_0a*'],
     };
     this.levelData9 = {
-      row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*','**_*_0.7_a_0a*','**_*_0.8_a_0a*','**_*_0.9_a_0a*'],
-      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','ce_*_1.6_a_0a*','ce_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
-      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','ce_*_2.6_a_0a*','ce_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
-      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_i_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
+      row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_a_0.5_a_0a*','**_*_0.6_a_0a*','**_*_0.7_a_0a*','**_*_0.8_a_0a*','**_*_0.9_a_0a*'],
+      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_a_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_a_1.9_a_0a*'],
+      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_a_2.5_a_0a*','**_*_2.6_k_0a*','**_a_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
+      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_i_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_a_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
       row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','cs_h_4.4_a_0a*','cs_b_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','cn_*_5.2_a_0a*','**_*_5.3_a_0a*','**_*_5.4_k_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','cs_*_5.8_a_0a*','**_*_5.9_a_0a*'],
-      row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_j_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_b_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
+      row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_b_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_b_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
       row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','**_*_7.5_a_0a*','**_i_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
       row8: ['**_*_8.0_a_0a*','**_*_8.1_a_0a*','**_*_8.2_a_0a*','**_*_8.3_a_0a*','**_*_8.4_a_0a*','**_*_8.5_a_0a*','**_c_8.6_a_0a*','**_*_8.7_a_0a*','**_*_8.8_a_0a*','**_*_8.9_d_0a*'],
-      row9: ['**_*_9.0_a_0a*','**_*_9.1_a_0a*','**_*_9.2_a_0a*','**_*_9.3_a_0a*','**_*_9.4_a_0a*','**_*_9.5_a_0a*','**_*_9.6_a_0a*','**_*_9.7_a_0a*','**_*_9.8_a_0a*','**_*_9.9_a_0a*'],
+      row9: ['**_*_9.0_a_0a*','**_a_9.1_a_0a*','**_*_9.2_a_0a*','**_*_9.3_a_0a*','**_*_9.4_a_0a*','**_*_9.5_a_0a*','**_*_9.6_a_0a*','**_*_9.7_a_0a*','**_*_9.8_a_0a*','**_*_9.9_a_0a*'],
     };
     this.levelData6 = {
       row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*'],
@@ -3527,7 +3527,7 @@ class App extends Component {
       }
     }
     if ( insideGrid === false ) {
-      // console.log("clicked the canvas", 'x: ',x,'y: ',y);
+      console.log("clicked the canvas out of bounds", 'x: ',x,'y: ',y);
       // console.log('clicked outside the grid');
       this.showCellInfoBox = false;
       this.clicked = {
@@ -6288,7 +6288,7 @@ class App extends Component {
 
 
           if (cell.obstacle.state === true && cell.obstacle.moving.state === true && cell.obstacle.moving.falling.state !== true) {
-            // console.log('tracking moving obstacle',cell.obstacle.moving.falling);
+            // console.log('tracking moving obstacle',cell.obstacle.moving.origin);
 
             let destCellRef = this.gridInfo.find(x => x.number.x === cell.obstacle.moving.destination.number.x && x.number.y === cell.obstacle.moving.destination.number.y)
 
@@ -6339,6 +6339,8 @@ class App extends Component {
               atDestRanges[3] = true;
               destRngIndx = 3;
             }
+
+
 
 
             for (const el of atDestRanges) {
@@ -6413,6 +6415,11 @@ class App extends Component {
                         }
                       }
                     };
+
+
+                    destCellRef.obstacle.moving.nextPosition.x -= this.floorImageWidth/2;
+                    destCellRef.obstacle.moving.nextPosition.y -= this.floorImageHeight/2;
+
                   }
                   if (destCellRef.void.state !== true && destCellRef.terrain.type !== "deep") {
                     destCellRef.obstacle = {
@@ -6533,7 +6540,7 @@ class App extends Component {
                 }
                 else {
 
-                  console.log('obstacle at out of bounds destination');
+                  console.log('obstacle at out of bounds destination',cell.obstacle.moving.origin.center,cell.obstacle.moving.nextPosition);
                   let cell2 = cell;
                   let originLevelData = cell2.levelData.split("_");
                   originLevelData[1] = "*";
@@ -6544,6 +6551,11 @@ class App extends Component {
                     count: 0,
                     limit: cell2.obstacle.moving.falling.limit,
                   };
+
+
+                  cell2.obstacle.moving.nextPosition.x -= this.floorImageWidth/2;
+                  cell2.obstacle.moving.nextPosition.y -= this.floorImageHeight/2;
+
                   this.obstaclesOutOfBoundsFall.push(cell2.obstacle);
 
                   let originCellRef = this.gridInfo.find(x => x.number.x === cell.obstacle.moving.origin.number.x && x.number.y === cell.obstacle.moving.origin.number.y)
@@ -6705,7 +6717,7 @@ class App extends Component {
           if (elem.moving.falling.count < elem.moving.falling.limit) {
             elem.moving.falling.count++;
             // obstacle.moving.nextPosition.y += (obstacle.moving.falling.count*5)
-            console.log('obstacle falling out of bounds a count',elem.moving.falling.count,'position',elem.moving.nextPosition);
+            // console.log('obstacle falling out of bounds a count',elem.moving.falling.count,'position',elem.moving.nextPosition);
           }
           if (elem.moving.falling.count >= elem.moving.falling.limit) {
             console.log('obstacle falling out of bounds over');
@@ -6713,9 +6725,6 @@ class App extends Component {
             this.obstaclesOutOfBoundsFall.splice(index,1)
           }
         }
-
-
-
 
 
 
@@ -8337,30 +8346,19 @@ class App extends Component {
 
 
         // TURNING LOGIC/FLOW **ADD TO REFERENCE**
-        on direction keypress, set player turnCheckerDirection
+        // on direction keypress, set player turnCheckerDirection
 
 
 
-        // DEFEND LOGIC/FLOW **ADD TO REFERENCE**
-        // defend key pressed
-        //   start defending wind up
-        //   at defend limit, defend state = true
-        //   decay state true
-        //   if decay state true
-        //     count decay
-        //     if decay count == decay limit-5
-        //       defending reset
-        //     if decay count == decay limit
-        //       decay reset
+        // on keypress
+        // check for turn conditions
+        // if not turning, set true
+        //   if turning true, count
+        //   if count is limit, & to direction = turncheckdirection,
+        //     turn and reset
+        // if turning or counting, do nothing
 
-          // if defend true and key released
-          //   dedend & decay reset
 
-          // when defend key pressed
-          //   if already defending
-          //     do nothing
-          //   if not defending && decay != true
-          //     start defend
 
 
         // DECAYING DEF
@@ -8425,7 +8423,6 @@ class App extends Component {
 
 
         // DEFENSE DECAY!!
-
         if (player.defendDecay.state === true) {
           if (player.defendDecay.count < player.defendDecay.limit) {
             player.defendDecay.count++;
@@ -12015,15 +12012,15 @@ class App extends Component {
         //   }
         // }
 
-        if (gridInfoCell.obstacle.state === true && gridInfoCell.obstacle.moving.falling.state === true) {
-          if(gridInfoCell.obstacle.moving.falling.count % 2 === 0) {
-            drawFloor = false;
-
-            // floor = floorImgs.void3;
-          } else {
-            floor = floorImgs[gridInfoCell.terrain.name]
-          }
-        }
+        // if (gridInfoCell.obstacle.state === true && gridInfoCell.obstacle.moving.falling.state === true && gridInfoCell.terrain.type === "deep") {
+        //   if(gridInfoCell.obstacle.moving.falling.count % 2 === 0) {
+        //     drawFloor = false;
+        //
+        //     // floor = floorImgs.void3;
+        //   } else {
+        //     floor = floorImgs[gridInfoCell.terrain.name]
+        //   }
+        // }
 
 
         // CELLS UNDER ATTACK & PREATTACK!!
@@ -13950,17 +13947,19 @@ class App extends Component {
 
           context.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x, gridInfoCell.obstacle.moving.nextPosition.y);
           gridInfoCell.obstacle.moving.nextPosition.y += 1
-          console.log('gg',gridInfoCell.obstacle.moving.nextPosition,'x/y',x,y);
+          console.log('falling obstacle',gridInfoCell.obstacle.moving.nextPosition,'x/y',x,y);
           // gridInfoCell.obstacle.moving.nextPosition.y += (gridInfoCell.obstacle.moving.falling.count*5)
         }
 
         for(const obstacle of this.obstaclesOutOfBoundsFall) {
-          if (x === 0 && y === 0) {
-            // console.log('obstacle falling out of bounds b count',obstacle.moving.falling.count,'position',obstacle.moving.nextPosition);
+          // here!! draw at origin cell x/y
+          // if (x === 0 && y === 0) {
+          if (x === obstacle.moving.origin.number.x && y === obstacle.moving.origin.number.y) {
+            console.log('obstacle falling out of bounds b count',obstacle.moving.origin.center,'position',obstacle.moving.nextPosition);
             let obstacleImg = obstacleImgs[obstacle.type]
             context.drawImage(obstacleImg, obstacle.moving.nextPosition.x, obstacle.moving.nextPosition.y);
             obstacle.moving.nextPosition = {
-              x: obstacle.moving.nextPosition,
+              x: obstacle.moving.nextPosition.x,
               y: obstacle.moving.nextPosition.y + 1
               // y: obstacle.moving.nextPosition.y+obstacle.moving.falling.count*5
             }
@@ -17163,7 +17162,6 @@ class App extends Component {
         x: undefined,
         y: undefined
       }
-
       switch(player.prePush.direction) {
         case 'north' :
           voidCenter = {
@@ -17177,8 +17175,10 @@ class App extends Component {
           obstacleCell.number.y === 9
         ) {
           voidCenter = {
-            x: obstacleCell.center.x-30,
-            y: obstacleCell.center.y+15,
+            // x: obstacleCell.center.x-30,
+            // y: obstacleCell.center.y+15,
+            x: obstacleCell.center.x-50,
+            y: obstacleCell.center.y+30,
           }
         } else {
           voidCenter = {
@@ -17193,8 +17193,10 @@ class App extends Component {
           obstacleCell.number.y === 9
         ) {
           voidCenter = {
-            x: obstacleCell.center.x-30,
-            y: obstacleCell.center.y-15,
+            // x: obstacleCell.center.x-30,
+            // y: obstacleCell.center.y-15,
+            x: obstacleCell.center.x-50,
+            y: obstacleCell.center.y-30,
           }
         } else {
           voidCenter = {
@@ -17347,6 +17349,7 @@ class App extends Component {
           falling: obstacleCell.obstacle.moving.falling,
         }
       };
+
 
       this.players[player.number-1].prePush = {
           state: false,
