@@ -442,7 +442,7 @@ class App extends Component {
           falling: {
             state: false,
             count: 0,
-            limit: 20,
+            limit: 25,
           },
         }
       },
@@ -507,7 +507,7 @@ class App extends Component {
           falling: {
             state: false,
             count: 0,
-            limit: 20,
+            limit: 25,
           },
         }
       },
@@ -578,7 +578,7 @@ class App extends Component {
           falling: {
             state: false,
             count: 0,
-            limit: 20,
+            limit: 25,
           },
         }
       },
@@ -638,7 +638,7 @@ class App extends Component {
           falling: {
             state: false,
             count: 0,
-            limit: 20,
+            limit: 25,
           },
         }
       },
@@ -698,7 +698,7 @@ class App extends Component {
           falling: {
             state: false,
             count: 0,
-            limit: 20,
+            limit: 25,
           },
         }
       },
@@ -758,7 +758,7 @@ class App extends Component {
           falling: {
             state: false,
             count: 0,
-            limit: 20,
+            limit: 25,
           },
         }
       },
@@ -818,7 +818,7 @@ class App extends Component {
           falling: {
             state: false,
             count: 0,
-            limit: 20,
+            limit: 25,
           },
         }
       },
@@ -878,7 +878,7 @@ class App extends Component {
           falling: {
             state: false,
             count: 0,
-            limit: 20,
+            limit: 25,
           },
         }
       },
@@ -975,7 +975,7 @@ class App extends Component {
           falling: {
             state: false,
             count: 0,
-            limit: 20,
+            limit: 25,
           },
         }
       },
@@ -6531,7 +6531,7 @@ class App extends Component {
                       falling: {
                         state: false,
                         count: 0,
-                        limit: 10,
+                        limit: 25,
                       },
                     }
                   };
@@ -6617,7 +6617,7 @@ class App extends Component {
                       falling: {
                         state: false,
                         count: 0,
-                        limit: 10,
+                        limit: 25,
                       },
                     }
                   };
@@ -6641,7 +6641,7 @@ class App extends Component {
             // console.log('falling obstacle');
             if (cell.obstacle.moving.falling.count < cell.obstacle.moving.falling.limit) {
               cell.obstacle.moving.falling.count++;
-              console.log('obstacle falling in bounds a count',cell.obstacle.moving.falling.count,'position',cell.obstacle.moving.nextPosition);
+              // console.log('obstacle falling in bounds a count',cell.obstacle.moving.falling.count,'position',cell.obstacle.moving.nextPosition);
             }
             if (cell.obstacle.moving.falling.count >= cell.obstacle.moving.falling.limit) {
               let cell2 = cell;
@@ -6708,7 +6708,7 @@ class App extends Component {
                   },
                 }
               };
-              console.log('obstacle falling in bounds over');
+              // console.log('obstacle falling in bounds over');
             }
           }
         }
@@ -6720,7 +6720,7 @@ class App extends Component {
             // console.log('obstacle falling out of bounds a count',elem.moving.falling.count,'position',elem.moving.nextPosition);
           }
           if (elem.moving.falling.count >= elem.moving.falling.limit) {
-            console.log('obstacle falling out of bounds over');
+            // console.log('obstacle falling out of bounds over');
             let index = this.obstaclesOutOfBoundsFall.indexOf(elem)
             this.obstaclesOutOfBoundsFall.splice(index,1)
           }
@@ -11912,7 +11912,7 @@ class App extends Component {
     let newDirection;
 
     if (player.falling.state === true) {
-      console.log('player',player.number,'falling count',player.falling.count,'position',player.nextPosition);
+      // console.log('player',player.number,'falling count',player.falling.count,'position',player.nextPosition);
       if (player.falling.count === player.falling.limit) {
         this.killPlayer(player)
       }
@@ -11978,7 +11978,7 @@ class App extends Component {
               plyrb.currentPosition.cell.number.x === x &&
               plyrb.currentPosition.cell.number.y === y
             ) {
-              console.log('player',plyrb.number,'drowning count',plyrb.falling.count,'position',plyrb.nextPosition);
+              // console.log('player',plyrb.number,'drowning count',plyrb.falling.count,'position',plyrb.nextPosition);
               if(plyrb.falling.count % 2 === 0) {
                 // drawFloor = false;
                 floor = floorImgs.void3;
@@ -12012,15 +12012,14 @@ class App extends Component {
         //   }
         // }
 
-        // if (gridInfoCell.obstacle.state === true && gridInfoCell.obstacle.moving.falling.state === true && gridInfoCell.terrain.type === "deep") {
-        //   if(gridInfoCell.obstacle.moving.falling.count % 2 === 0) {
-        //     drawFloor = false;
-        //
-        //     // floor = floorImgs.void3;
-        //   } else {
-        //     floor = floorImgs[gridInfoCell.terrain.name]
-        //   }
-        // }
+        if (gridInfoCell.obstacle.state === true && gridInfoCell.obstacle.moving.falling.state === true && gridInfoCell.terrain.type === "deep") {
+          if(gridInfoCell.obstacle.moving.falling.count % 3 === 0) {
+            console.log('1');
+            floor = floorImgs.void3;
+          } else {
+            floor = floorImgs[gridInfoCell.terrain.name]
+          }
+        }
 
 
         // CELLS UNDER ATTACK & PREATTACK!!
@@ -13947,7 +13946,7 @@ class App extends Component {
 
           context.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x, gridInfoCell.obstacle.moving.nextPosition.y);
           gridInfoCell.obstacle.moving.nextPosition.y += 1
-          console.log('falling obstacle',gridInfoCell.obstacle.moving.nextPosition,'x/y',x,y);
+          // console.log('falling obstacle',gridInfoCell.obstacle.moving.nextPosition,'x/y',x,y);
           // gridInfoCell.obstacle.moving.nextPosition.y += (gridInfoCell.obstacle.moving.falling.count*5)
         }
 
@@ -13955,7 +13954,7 @@ class App extends Component {
           // here!! draw at origin cell x/y
           // if (x === 0 && y === 0) {
           if (x === obstacle.moving.origin.number.x && y === obstacle.moving.origin.number.y) {
-            console.log('obstacle falling out of bounds b count',obstacle.moving.origin.center,'position',obstacle.moving.nextPosition);
+            // console.log('obstacle falling out of bounds b count',obstacle.moving.origin.center,'position',obstacle.moving.nextPosition);
             let obstacleImg = obstacleImgs[obstacle.type]
             context.drawImage(obstacleImg, obstacle.moving.nextPosition.x, obstacle.moving.nextPosition.y);
             obstacle.moving.nextPosition = {
