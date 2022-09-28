@@ -296,7 +296,7 @@ class App extends Component {
     this.levelData9 = {
       row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_a_0.5_a_0a*','**_*_0.6_a_0a*','**_*_0.7_a_0a*','**_*_0.8_a_0a*','**_*_0.9_a_0a*'],
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_a_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_a_1.9_a_0a*'],
-      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_a_2.5_a_0a*','**_*_2.6_k_0a*','**_a_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
+      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_a_2.5_a_0a*','**_*_2.6_j_0a*','**_a_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_i_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_a_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
       row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','cs_h_4.4_a_0a*','cs_b_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','cn_*_5.2_a_0a*','**_*_5.3_a_0a*','**_*_5.4_k_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','cs_*_5.8_a_0a*','**_*_5.9_a_0a*'],
@@ -6350,7 +6350,7 @@ class App extends Component {
                 // console.log('obstacle at destination');
 
                 if (destCellRef) {
-                  console.log('obstacle at in bounds destination',cell.obstacle.moving.nextPosition);
+                  // console.log('obstacle at in bounds destination',cell.obstacle.moving.nextPosition);
 
                   let cell2 = cell;
                   let originLevelData = cell2.levelData.split("_");
@@ -6540,7 +6540,7 @@ class App extends Component {
                 }
                 else {
 
-                  console.log('obstacle at out of bounds destination',cell.obstacle.moving.origin.center,cell.obstacle.moving.nextPosition);
+                  // console.log('obstacle at out of bounds destination',cell.obstacle.moving.origin.center,cell.obstacle.moving.nextPosition);
                   let cell2 = cell;
                   let originLevelData = cell2.levelData.split("_");
                   originLevelData[1] = "*";
@@ -11992,29 +11992,9 @@ class App extends Component {
 
 
 
-        // for(const cell3 of this.gridInfo) {
-        //   if (cell3.obstacle.moving.falling.state === true) {
-        //     console.log('obstacle falling in bounds a count',cell3.obstacle.moving.falling.count,'position',cell3.obstacle.moving.nextPosition);
-        //     if (
-        //       cell3.number.x === x &&
-        //       cell3.number.y === y
-        //     ) {
-        //       if(cell3.obstacle.moving.falling.count % 2 === 0) {
-        //         drawFloor = false;
-        //
-        //         // floor = floorImgs.void3;
-        //       } else {
-        //         floor = floorImgs[gridInfoCell.terrain.name]
-        //       }
-        //     }
-        //
-        //
-        //   }
-        // }
-
+        // FALLING OBSTACLE DEEP BLINKER
         if (gridInfoCell.obstacle.state === true && gridInfoCell.obstacle.moving.falling.state === true && gridInfoCell.terrain.type === "deep") {
           if(gridInfoCell.obstacle.moving.falling.count % 3 === 0) {
-            console.log('1');
             floor = floorImgs.void3;
           } else {
             floor = floorImgs[gridInfoCell.terrain.name]
@@ -12066,8 +12046,6 @@ class App extends Component {
             }
           }
         }
-
-
 
 
 
@@ -12380,6 +12358,9 @@ class App extends Component {
               let moveSpeed = plyr.speed.move;
               if (plyr.terrainMoveSpeed.state === true) {
                 moveSpeed = plyr.terrainMoveSpeed.speed;
+              }
+              if (plyr.pushing.state === true) {
+                moveSpeed = plyr.pushing.moveSpeed;
               }
               let rangeIndex = plyr.speed.range.indexOf(moveSpeed)
               let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
@@ -13914,6 +13895,32 @@ class App extends Component {
 
         // OBSTACLES & BARRIERS
 
+        if (gridInfoCell.obstacle.state === true && gridInfoCell.obstacle.moving.falling.state === true) {
+
+          let obstacleImg = obstacleImgs[gridInfoCell.obstacle.type]
+
+          context.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x, gridInfoCell.obstacle.moving.nextPosition.y);
+          gridInfoCell.obstacle.moving.nextPosition.y += 2
+
+          // console.log('falling obstacle',gridInfoCell.obstacle.moving.nextPosition,'x/y',x,y);
+        }
+
+        for(const obstacle of this.obstaclesOutOfBoundsFall) {
+          // here!! draw at origin cell x/y
+          // if (x === 0 && y === 0) {
+          if (x === obstacle.moving.origin.number.x && y === obstacle.moving.origin.number.y) {
+            // console.log('obstacle falling out of bounds b count',obstacle.moving.origin.center,'position',obstacle.moving.nextPosition);
+            let obstacleImg = obstacleImgs[obstacle.type]
+            context.drawImage(obstacleImg, obstacle.moving.nextPosition.x, obstacle.moving.nextPosition.y);
+            obstacle.moving.nextPosition = {
+              x: obstacle.moving.nextPosition.x,
+              y: obstacle.moving.nextPosition.y + 2
+              // y: obstacle.moving.nextPosition.y+obstacle.moving.falling.count*5
+            }
+
+          }
+        }
+
         if (gridInfoCell.obstacle.state === true && gridInfoCell.void.state !== true && gridInfoCell.terrain.type !== "deep" && gridInfoCell.obstacle.moving.falling.state !== true) {
 
           let hide = false;
@@ -13933,36 +13940,77 @@ class App extends Component {
               context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
             }
             else {
-              context.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x-offset.x, gridInfoCell.obstacle.moving.nextPosition.y- Math.ceil(obstacleImg.height/2));
+              // console.log('x/y',x,y);
+              // context.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x-offset.x, gridInfoCell.obstacle.moving.nextPosition.y- Math.ceil(obstacleImg.height/2));
             }
 
           }
 
         }
 
-        if (gridInfoCell.obstacle.state === true && gridInfoCell.obstacle.moving.falling.state === true) {
 
-          let obstacleImg = obstacleImgs[gridInfoCell.obstacle.type]
 
-          context.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x, gridInfoCell.obstacle.moving.nextPosition.y);
-          gridInfoCell.obstacle.moving.nextPosition.y += 1
-          // console.log('falling obstacle',gridInfoCell.obstacle.moving.nextPosition,'x/y',x,y);
-          // gridInfoCell.obstacle.moving.nextPosition.y += (gridInfoCell.obstacle.moving.falling.count*5)
-        }
+        for(const cell of this.gridInfo) {
 
-        for(const obstacle of this.obstaclesOutOfBoundsFall) {
-          // here!! draw at origin cell x/y
-          // if (x === 0 && y === 0) {
-          if (x === obstacle.moving.origin.number.x && y === obstacle.moving.origin.number.y) {
-            // console.log('obstacle falling out of bounds b count',obstacle.moving.origin.center,'position',obstacle.moving.nextPosition);
-            let obstacleImg = obstacleImgs[obstacle.type]
-            context.drawImage(obstacleImg, obstacle.moving.nextPosition.x, obstacle.moving.nextPosition.y);
-            obstacle.moving.nextPosition = {
-              x: obstacle.moving.nextPosition.x,
-              y: obstacle.moving.nextPosition.y + 1
-              // y: obstacle.moving.nextPosition.y+obstacle.moving.falling.count*5
+          if (cell.obstacle.state === true && cell.obstacle.moving.state === true) {
+
+            let drawHere = {
+              x: cell.obstacle.moving.origin.number.x,
+              y: cell.obstacle.moving.origin.number.y
+            }
+            let direction = undefined;
+            if (cell.obstacle.moving.destination.number.y === cell.obstacle.moving.origin.number.y+1) {
+              direction = 'south';
+            }
+            if (cell.obstacle.moving.destination.number.y === cell.obstacle.moving.origin.number.y-1) {
+              direction = 'north';
+            }
+            if (cell.obstacle.moving.destination.number.x === cell.obstacle.moving.origin.number.x-1) {
+              direction = 'west';
+            }
+            if (cell.obstacle.moving.destination.number.x === cell.obstacle.moving.origin.number.x+1) {
+              direction = 'east';
             }
 
+            if (cell.obstacle.moving.destination.number.x) {
+              // console.log('beep',cell.obstacle.moving.destination.number,cell.obstacle.moving.direction);
+              switch (direction) {
+                case 'south':
+                  // drawHere = cell.obstacle.moving.origin.number;
+                  // drawHere = cell.obstacle.moving.destination.number;
+                  drawHere.y = 9;
+                  drawHere.x = 9;
+                  // drawHere.y += 1;
+                  // console.log('1');
+                  break;
+                case 'east':
+                  // drawHere = cell.obstacle.moving.destination.number;
+                  drawHere.x = 9;
+                  drawHere.y = 9;
+                  // drawHere.x += 1
+                  // console.log('2');
+                  break;
+                default:
+
+              }
+            }
+
+
+            // if (x === cell.obstacle.moving.destination.number.x && y === cell.obstacle.moving.destination.number.y) {
+            if (x === drawHere.x && y === drawHere.y) {
+              // console.log('x/y',x,y,direction);
+              let obstacleImg = obstacleImgs[cell.obstacle.type]
+              context.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x-offset.x, gridInfoCell.obstacle.moving.nextPosition.y- Math.ceil(obstacleImg.height/2));
+
+
+              //
+              // context.drawImage(obstacleImg, cell.obstacle.moving.nextPosition.x, cell.obstacle.moving.nextPosition.y);
+              // cell.obstacle.moving.nextPosition.y += 2
+            }
+
+
+
+            // console.log('falling obstacle',gridInfoCell.obstacle.moving.nextPosition,'x/y',x,y);
           }
         }
 
@@ -14025,8 +14073,6 @@ class App extends Component {
             }
           }
         }
-
-        // check obstacles to to destroy by falling, count drop draw position and splice on count == limit
 
 
 
@@ -16930,7 +16976,7 @@ class App extends Component {
     }
     else if (refCell.obstacle.moving.pushable === true && myCellCheck === true) {
       if (player.prePush.state !== true && player.prePush.count === 0) {
-        console.log('start pre push');
+        // console.log('start pre push');
         player.prePush = {
           state: true,
           count: player.prePush.count++,
@@ -16946,7 +16992,7 @@ class App extends Component {
 
         if (player.prePush.count >= player.prePush.limit) {
 
-          console.log('pre push limit. check can push');
+          // console.log('pre push limit. check can push');
           this.players[player.number-1].prePush = player.prePush;
           this.players[player.number-1].pushing = player.pushing;
 
