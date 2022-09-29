@@ -13972,23 +13972,50 @@ class App extends Component {
               direction = 'east';
             }
 
-            if (cell.obstacle.moving.destination.number.x) {
+            let switchMarker = 2;
+            // switch (cell.obstacle.moving.moveSpeed) {
+            //   case .05:
+            //   switchMarker = 0.3
+            //   // switchMarker = 0.6
+            //     break;
+            //   case .1:
+            //   switchMarker = 0.3
+            //   // switchMarker = 0.6
+            //     break;
+            //   case .125:
+            //   switchMarker = 0.3
+            //   // switchMarker = 0.5
+            //     break;
+            //   case .2:
+            //   switchMarker = 0.3
+            //   // switchMarker = 0.4
+            //     break;
+            //   default:
+            //
+            // }
+
+            if (cell.obstacle.moving.destination.number.x && cell.obstacle.moving.step > switchMarker) {
               // console.log('beep',cell.obstacle.moving.destination.number,cell.obstacle.moving.direction);
               switch (direction) {
                 case 'south':
                   // drawHere = cell.obstacle.moving.origin.number;
-                  // drawHere = cell.obstacle.moving.destination.number;
-                  drawHere.y = 9;
-                  drawHere.x = 9;
+                  drawHere = cell.obstacle.moving.destination.number;
+                  // drawHere.y = 9;
+                  // drawHere.x = 9;
                   // drawHere.y += 1;
                   // console.log('1');
                   break;
                 case 'east':
-                  // drawHere = cell.obstacle.moving.destination.number;
-                  drawHere.x = 9;
-                  drawHere.y = 9;
+                  drawHere = cell.obstacle.moving.destination.number;
+                  // drawHere.x = 9;
+                  // drawHere.y = 9;
                   // drawHere.x += 1
                   // console.log('2');
+                  break;
+                case 'north':
+                  // drawHere = cell.obstacle.moving.destination.number;
+                  // drawHere.x = 9;
+                  // drawHere.y = drawHere.y+1;
                   break;
                 default:
 
@@ -13998,7 +14025,7 @@ class App extends Component {
 
             // if (x === cell.obstacle.moving.destination.number.x && y === cell.obstacle.moving.destination.number.y) {
             if (x === drawHere.x && y === drawHere.y) {
-              // console.log('x/y',x,y,direction);
+              console.log('x/y',x,y,direction,gridInfoCell.obstacle.moving.step);
               let obstacleImg = obstacleImgs[cell.obstacle.type]
               context.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x-offset.x, gridInfoCell.obstacle.moving.nextPosition.y- Math.ceil(obstacleImg.height/2));
 
@@ -15104,9 +15131,10 @@ class App extends Component {
       moveSpeed = player.pushing.moveSpeed;
     }
 
+    // console.log('mover stepper',player.moving.step);
     player.moving.step = +(Math.round((player.moving.step + moveSpeed) + "e+" + 3)  + "e-" + 3);
     // player.moving.step = player.moving.step + moveSpeed;
-    // console.log('mover stepper',player.moving.step);
+
     let newPosition;
 
 
