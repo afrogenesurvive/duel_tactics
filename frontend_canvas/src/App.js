@@ -296,7 +296,7 @@ class App extends Component {
     this.levelData9 = {
       row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_a_0.5_a_0a*','**_*_0.6_a_0a*','**_*_0.7_a_0a*','**_*_0.8_a_0a*','**_*_0.9_a_0a*'],
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_a_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_a_1.9_a_0a*'],
-      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_a_2.5_a_0a*','**_*_2.6_j_0a*','**_a_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
+      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_a_2.5_a_0a*','**_*_2.6_k_0a*','**_a_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_i_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_a_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
       row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','cs_h_4.4_a_0a*','cs_b_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','cn_*_5.2_a_0a*','**_*_5.3_a_0a*','**_*_5.4_k_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','cs_*_5.8_a_0a*','**_*_5.9_a_0a*'],
@@ -11931,6 +11931,7 @@ class App extends Component {
     for (var x = 0; x < this.gridWidth+1; x++) {
       for (var y = 0; y < this.gridWidth+1; y++) {
 
+
         let p = new Point();
         p.x = x * tileWidth;
         p.y = y * tileWidth;
@@ -12052,6 +12053,8 @@ class App extends Component {
         if (drawFloor === true) {
           context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
         }
+
+
 
         // RUBBLE
         if (gridInfoCell.rubble === true) {
@@ -13895,6 +13898,7 @@ class App extends Component {
 
         // OBSTACLES & BARRIERS
 
+        // FALLING
         if (gridInfoCell.obstacle.state === true && gridInfoCell.obstacle.moving.falling.state === true) {
 
           let obstacleImg = obstacleImgs[gridInfoCell.obstacle.type]
@@ -13904,7 +13908,6 @@ class App extends Component {
 
           // console.log('falling obstacle',gridInfoCell.obstacle.moving.nextPosition,'x/y',x,y);
         }
-
         for(const obstacle of this.obstaclesOutOfBoundsFall) {
           // here!! draw at origin cell x/y
           // if (x === 0 && y === 0) {
@@ -13921,6 +13924,7 @@ class App extends Component {
           }
         }
 
+        // STATIONARY
         if (gridInfoCell.obstacle.state === true && gridInfoCell.void.state !== true && gridInfoCell.terrain.type !== "deep" && gridInfoCell.obstacle.moving.falling.state !== true) {
 
           let hide = false;
@@ -13948,8 +13952,7 @@ class App extends Component {
 
         }
 
-
-
+        // MOVING
         for(const cell of this.gridInfo) {
 
           if (cell.obstacle.state === true && cell.obstacle.moving.state === true) {
@@ -13972,70 +13975,21 @@ class App extends Component {
               direction = 'east';
             }
 
-            let switchMarker = 2;
-            // switch (cell.obstacle.moving.moveSpeed) {
-            //   case .05:
-            //   switchMarker = 0.3
-            //   // switchMarker = 0.6
-            //     break;
-            //   case .1:
-            //   switchMarker = 0.3
-            //   // switchMarker = 0.6
-            //     break;
-            //   case .125:
-            //   switchMarker = 0.3
-            //   // switchMarker = 0.5
-            //     break;
-            //   case .2:
-            //   switchMarker = 0.3
-            //   // switchMarker = 0.4
-            //     break;
-            //   default:
-            //
-            // }
 
-            if (cell.obstacle.moving.destination.number.x && cell.obstacle.moving.step > switchMarker) {
-              // console.log('beep',cell.obstacle.moving.destination.number,cell.obstacle.moving.direction);
-              switch (direction) {
-                case 'south':
-                  // drawHere = cell.obstacle.moving.origin.number;
-                  drawHere = cell.obstacle.moving.destination.number;
-                  // drawHere.y = 9;
-                  // drawHere.x = 9;
-                  // drawHere.y += 1;
-                  // console.log('1');
-                  break;
-                case 'east':
-                  drawHere = cell.obstacle.moving.destination.number;
-                  // drawHere.x = 9;
-                  // drawHere.y = 9;
-                  // drawHere.x += 1
-                  // console.log('2');
-                  break;
-                case 'north':
-                  // drawHere = cell.obstacle.moving.destination.number;
-                  // drawHere.x = 9;
-                  // drawHere.y = drawHere.y+1;
-                  break;
-                default:
-
+            if (cell.obstacle.moving.destination.number.x) {
+              if(direction === 'south' || direction === 'east') {
+                drawHere = cell.obstacle.moving.destination.number;
               }
             }
 
 
-            // if (x === cell.obstacle.moving.destination.number.x && y === cell.obstacle.moving.destination.number.y) {
-            if (x === drawHere.x && y === drawHere.y) {
-              console.log('x/y',x,y,direction,gridInfoCell.obstacle.moving.step);
+            if (x === drawHere.x && y === drawHere.y ) {
+              // console.log('x/y',x,y,direction,cell.obstacle.moving.step);
+
               let obstacleImg = obstacleImgs[cell.obstacle.type]
-              context.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x-offset.x, gridInfoCell.obstacle.moving.nextPosition.y- Math.ceil(obstacleImg.height/2));
+              context.drawImage(obstacleImg, cell.obstacle.moving.nextPosition.x-offset.x, cell.obstacle.moving.nextPosition.y- Math.ceil(obstacleImg.height/2, 30, 30));
 
-
-              //
-              // context.drawImage(obstacleImg, cell.obstacle.moving.nextPosition.x, cell.obstacle.moving.nextPosition.y);
-              // cell.obstacle.moving.nextPosition.y += 2
             }
-
-
 
             // console.log('falling obstacle',gridInfoCell.obstacle.moving.nextPosition,'x/y',x,y);
           }
@@ -17489,7 +17443,7 @@ class App extends Component {
 
 
     let step = +(Math.round((obstacleCell.obstacle.moving.step + moveSpeed) + "e+" + 3)  + "e-" + 3);
-
+    // console.log('obstacle moving crementer',step);
 
     // player.moving.step = player.moving.step + moveSpeed;
     // console.log('mover stepper',player.moving.step);
