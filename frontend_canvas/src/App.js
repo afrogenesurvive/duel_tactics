@@ -6828,6 +6828,7 @@ class App extends Component {
         //   }
         // }
 
+
         if (player.turning.state === true && player.flanking.state !== true) {
           if (player.turning.delayCount < player.turning.limit) {
             player.turning.delayCount++;
