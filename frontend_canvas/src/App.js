@@ -1350,7 +1350,7 @@ class App extends Component {
           state: undefined,
           toDirection: '',
           delayCount: 0,
-          limit: 2.1,
+          limit: 5.1,
         },
         turnCheckerDirection: '',
         action: 'idle',
@@ -1750,7 +1750,7 @@ class App extends Component {
           state: undefined,
           toDirection: '',
           delayCount: 0,
-          limit: 2.1,
+          limit: 5.1,
         },
         turnCheckerDirection: '',
         action: 'idle',
@@ -2879,16 +2879,20 @@ class App extends Component {
             }
             // LEFT BTN
             if (gp.buttons.indexOf(btn) === 2) {
-              // console.log('1 player defend held',gp.buttons.indexOf(btn));
+              // console.log('1 player dodge held',gp.buttons.indexOf(btn));
               keyPressed[0].dodge = true;
               this.currentPlayer = 1;
             }
             // UP BTN
             if (gp.buttons.indexOf(btn) === 3) {
-              // console.log('1 player defend held',gp.buttons.indexOf(btn));
+              // console.log('1 player strafe held',gp.buttons.indexOf(btn));
+              console.log('gamepad strafe testing...');
+
               keyPressed[0].strafe = true;
               this.players[0].strafing.state = true;
               this.currentPlayer = 1;
+
+
             }
 
             // L BTN
@@ -2955,18 +2959,20 @@ class App extends Component {
             }
             // RIGHT BTN
             if (gp.buttons.indexOf(btn) === 13) {
-              // console.log('1 player defend held',gp.buttons.indexOf(btn));
+              // console.log('1 player attack held',gp.buttons.indexOf(btn));
               keyPressed[0].attack = true;
               this.currentPlayer = 1;
             }
             // LEFT BTN
             if (gp.buttons.indexOf(btn) === 12) {
-              // console.log('1 player defend held',gp.buttons.indexOf(btn));
+              // console.log('1 player dodge held',gp.buttons.indexOf(btn));
               keyPressed[0].dodge = true;
               this.currentPlayer = 1;
             }
             // UP BTN
             if (gp.buttons.indexOf(btn) === 15) {
+              console.log('gamepad strafe testing...');
+
               keyPressed[0].strafe = true;
               this.players[0].strafing.state = true;
               this.currentPlayer = 1;
@@ -3061,6 +3067,8 @@ class App extends Component {
                 // console.log('dbl capture2',this.gamepadPollCounter.store2);
                 if (this.gamepadPollCounter.store2[0] === 2 && this.gamepadPollCounter.store2[1] === 3) {
                   // console.log('UP BTN!');
+                  console.log('gamepad strafe testing...');
+
                   keyPressed[1].strafe = true;
                   this.players[1].strafing.state = true;
                   this.currentPlayer = 2;
@@ -3433,10 +3441,39 @@ class App extends Component {
   let player = this.players[this.currentPlayer-1];
   if (player.defending.state === true && player.defending.count === 0) {
     if (this.keyPressed[this.currentPlayer-1].defend === false) {
-      console.log('player',player.number,' stop defending1');
-      player.defending.state = false;
+      console.log('player',player.number,' stop defending1 @ gamepad');
+      // player.defending.state = false;
+
+      player.defending = {
+        state: false,
+        count: 0,
+        limit: player.defending.limit,
+      }
+      player.defendDecay = {
+        state: false,
+        count: 0,
+        limit: player.defendDecay.limit,
+      }
     }
   }
+
+
+  // STRAFE CHECKS
+  if (
+    keyPressed[this.currentPlayer-1].strafe === false &&
+    this.players[this.currentPlayer-1].moving.state === true &&
+    this.players[this.currentPlayer-1].strafing.state === true
+  ) {
+    this.players[this.currentPlayer-1].strafeReleaseHook = true
+  }
+  if (
+    keyPressed[this.currentPlayer-1].strafe === false &&
+    this.players[this.currentPlayer-1].moving.state !== true &&
+    this.keyPressed[this.currentPlayer-1].strafe === true
+  ) {
+    this.players[this.currentPlayer-1].strafeReleaseHook = true;
+  }
+
 
   // if (player.turning.state === true && player.turning.toDirection === this.turnCheckerDirection) {
   //   console.log('player',player.number,' turn-ing');
@@ -6194,14 +6231,7 @@ class App extends Component {
         }
 
 
-        // TURNER!!
-        if (player.turning.state === true && player.turning.toDirection === this.players[player.number-1].turnCheckerDirection) {
-          console.log('player',player.number,' turn-ing');
-          if (this.keyPressed[this.currentPlayer-1][this.players[player.number-1].turnCheckerDirection] === false) {
-            console.log('player',player.number,' turn-stop');
-            player.turning.state = false;
-          }
-        }
+
 
 
         // CHECK CELL UNDER ATTACK & PRE ATTACK!!
@@ -6775,35 +6805,81 @@ class App extends Component {
         }
 
 
-        // KEY PRESS RELEASE CHECKS!!
-        if (player.turning.state === false && player.flanking.state !== true) {
-          console.log('turn complete');
-          player.direction = player.turning.toDirection;
-          player.nextPosition = {
-            x: player.currentPosition.cell.center.x,
-            y: player.currentPosition.cell.center.y
+        // TURNING LOGIC/FLOW **ADD TO REFERENCE**
+        // on direction keypress, set player turnCheckerDirection
+
+
+
+        // on keypress
+        // check for turn conditions
+        // if not turning, set true
+        //   if turning true, count
+        //   if count is limit, & to direction = turncheckdirection,
+        //     turn and reset
+        // if turning or counting, do nothing
+
+        // TURNER!!
+        // if (player.turning.state === true && player.turning.toDirection === this.players[player.number-1].turnCheckerDirection) {
+        //   console.log('player',player.number,' turn-ing');
+        //   if (this.keyPressed[this.currentPlayer-1][this.players[player.number-1].turnCheckerDirection] === false) {
+        //     console.log('player',player.number,' turn-stop');
+        //     player.turning.state = false;
+        //   }
+        // }
+
+        if (player.turning.state === true && player.flanking.state !== true) {
+          if (player.turning.delayCount < player.turning.limit) {
+            player.turning.delayCount++;
+            console.log('turning...',player.turning.delayCount);
           }
-          player.moving = {
-            state: false,
-            step: 0,
-            course: '',
-            origin: {
-              number: {
-                x: player.currentPosition.cell.number.x,
-                y: player.currentPosition.cell.number.y
-              },
-              center: {
-                x: player.currentPosition.cell.center.x,
-                y: player.currentPosition.cell.center.y
-              },
-            },
-            destination: player.target.cell.center
+          if (player.turning.delayCount >= player.turning.limit) {
+            player.direction = player.turning.toDirection;
+            player.turnCheckerDirection = "";
+            player.turning = {
+              state: undefined,
+              toDirection: '',
+              delayCount: 0,
+              limit: player.turning.limit,
+            }
+
+
+            this.getTarget(player);
+            console.log('turned/ turn complete');
           }
-          player.turning.toDirection = '';
-          player.turning.state = undefined;
-          this.getTarget(player);
+
+
         }
 
+        // KEY PRESS RELEASE CHECKS!!
+        // if (player.turning.state === false && player.flanking.state !== true) {
+        //   console.log('turn complete');
+        //   player.direction = player.turning.toDirection;
+        //   player.nextPosition = {
+        //     x: player.currentPosition.cell.center.x,
+        //     y: player.currentPosition.cell.center.y
+        //   }
+        //   player.moving = {
+        //     state: false,
+        //     step: 0,
+        //     course: '',
+        //     origin: {
+        //       number: {
+        //         x: player.currentPosition.cell.number.x,
+        //         y: player.currentPosition.cell.number.y
+        //       },
+        //       center: {
+        //         x: player.currentPosition.cell.center.x,
+        //         y: player.currentPosition.cell.center.y
+        //       },
+        //     },
+        //     destination: player.target.cell.center
+        //   }
+        //   player.turning.toDirection = '';
+        //   player.turning.state = undefined;
+        //   this.getTarget(player);
+        // }
+
+        // DEFEND FEINT
         if (this.keyPressed[player.number-1].defend === false && player.defending.state === true) {
           // console.log('player',player.number,' defend key releasen 2');
           player.defending = {
@@ -6828,6 +6904,32 @@ class App extends Component {
           }
 
         }
+
+        // ATTACK FEINT
+        if (this.keyPressed[player.number-1].attack === false && player.attacking.state === true) {
+
+            let atkPeak;
+            if (player.currentWeapon.name === "") {
+              atkPeak = this.attackAnimRef.peak.unarmed;
+            }
+            else {
+              atkPeak = this.attackAnimRef.peak[player.currentWeapon.type];
+            }
+
+            if (player.attacking.count < atkPeak) {
+                console.log('attack windup key release before peak. feinting...');
+                player.bluntAttack = false
+                player.action = 'idle';
+                player.attacking = {
+                  state: false,
+                  count: 0,
+                  limit: player.attacking.limit,
+                }
+                player.attackStrength = 0;
+            }
+
+        }
+
         if (player.strafeReleaseHook === true ) {
           player.strafing.state = false;
           player.strafeReleaseHook = false;
@@ -6924,7 +7026,10 @@ class App extends Component {
 
           // STEP ATTACK COUNT & CELLS UDER PRE-ATTACK
           if (player.attacking.count < player.attacking.limit) {
-            // console.log('attack wind up',player.attacking.count,'player',player.number);
+            if (player.attacking.count < attackPeak) {
+              console.log('attack wind up',player.attacking.count,'player',player.number);
+            }
+
             player.action = 'attacking';
             player.attacking.count++;
 
@@ -8329,37 +8434,6 @@ class App extends Component {
 
 
         // DEFENSE DELAY!!
-        // NON DECAYIN DEF
-        // if (player.defending.count > 0 && player.defending.count < player.defending.limit+1) {
-        //   player.defending.count++;
-        //   player.action = 'defending';
-        //   // console.log('defend winding up',player.defending.count++, 'player',player.number);
-        // } else if (player.defending.count >= player.defending.limit+1 && player.defending.state === false) {
-        //   // console.log('defend wind up limit cap','player',player.number);
-        //
-        //   player.defending = {
-        //     state: true,
-        //     count: 0,
-        //     limit: player.defending.limit,
-        //   }
-        // }
-
-
-        // TURNING LOGIC/FLOW **ADD TO REFERENCE**
-        // on direction keypress, set player turnCheckerDirection
-
-
-
-        // on keypress
-        // check for turn conditions
-        // if not turning, set true
-        //   if turning true, count
-        //   if count is limit, & to direction = turncheckdirection,
-        //     turn and reset
-        // if turning or counting, do nothing
-
-
-
 
         // DECAYING DEF
         if (player.defending.count > 0 && player.defending.count < player.defending.limit+1 && player.defendDecay.state !== true) {
@@ -9522,38 +9596,19 @@ class App extends Component {
             // START ATTACK/DEFEND!!
             if (player.attacking.state === false && player.defending.state === false) {
 
+              if (this.keyPressed[player.number-1].attack === true && player.success.deflected.state !== true) {
 
-              let atkType = player.currentWeapon.type;
+                let atkType = player.currentWeapon.type;
 
-              if (player.bluntAttack === true) {
-                atkType = 'blunt';
-              }
-              if (player.currentWeapon.name === "") {
-                atkType = 'unarmed';
-              }
+                if (player.bluntAttack === true) {
+                  atkType = 'blunt';
+                }
+                if (player.currentWeapon.name === "") {
+                  atkType = 'unarmed';
+                }
 
-              if (player.stamina.current - this.staminaCostRef.attack[atkType] >= 0) {
+                if (player.stamina.current - this.staminaCostRef.attack[atkType] >= 0) {
 
-                if (this.keyPressed[player.number-1].attack === true && player.success.deflected.state !== true) {
-                  // console.log('start attacking');
-                  // console.log('pre attack');
-
-                  // if (player.currentWeapon.name === '' || !player.currentWeapon.name) {
-                  //   player.statusDisplay = {
-                  //     state: true,
-                  //     status: "No weapon. Can't attack",
-                  //     count: 1,
-                  //     limit: player.statusDisplay.limit,
-                  //   }
-                  // }
-                  // else {
-                  //   player.action = 'attacking';
-                  //   player.attacking = {
-                  //     state: true,
-                  //     count: 1,
-                  //     limit: player.attacking.limit,
-                  //   }
-                  // }
 
                   // BLUNT ATTACK!!
                   if (this.keyPressed[player.number-1].dodge === true) {
@@ -9582,31 +9637,30 @@ class App extends Component {
                   console.log('start attack');
 
                 }
+                else {
+                  player.statusDisplay = {
+                    state: true,
+                    status: "Out of Stamina",
+                    count: 1,
+                    limit: player.statusDisplay.limit,
+                  }
 
-              }
-              else {
-                player.statusDisplay = {
-                  state: true,
-                  status: "Out of Stamina",
-                  count: 1,
-                  limit: player.statusDisplay.limit,
+
+                  // player.popups.push(
+                  //   {
+                  //     state: false,
+                  //     count: 0,
+                  //     limit: 10,
+                  //     type: '',
+                  //     position: '',
+                  //     msg: 'outOfStamina',
+                  //     img: '',
+                  //
+                  //   }
+                  // )
                 }
 
-
-                // player.popups.push(
-                //   {
-                //     state: false,
-                //     count: 0,
-                //     limit: 10,
-                //     type: '',
-                //     position: '',
-                //     msg: 'outOfStamina',
-                //     img: '',
-                //
-                //   }
-                // )
               }
-
 
               if (this.keyPressed[player.number-1].defend === true && player.defendDecay.state !== true) {
                 // console.log('start defending',player.number);
@@ -9782,7 +9836,7 @@ class App extends Component {
     }
 
 
-    // POPUPS
+    //PLAYER POPUPS
     if (player.popups.length > 0) {
 
       for (const popup of player.popups) {
@@ -12402,6 +12456,9 @@ class App extends Component {
               if (plyr.pushing.state === true) {
                 moveSpeed = plyr.pushing.moveSpeed;
               }
+              // if (plyr.pulling.state === true) {
+              //   moveSpeed = plyr.pulling.moveSpeed;
+              // }
               let rangeIndex = plyr.speed.range.indexOf(moveSpeed)
               let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
               finalAnimIndex = moveAnimIndex;
@@ -24450,7 +24507,7 @@ class App extends Component {
             state: undefined,
             toDirection: '',
             delayCount: 0,
-            limit: 2.1,
+            limit: 5.1,
           },
           turnCheckerDirection: '',
           action: 'idle',
@@ -30572,20 +30629,28 @@ class App extends Component {
           }
         break;
         case 'attack':
-        // console.log('ai act -- attack');
-        if (plyr.attacking.state !== true && plyr.moving.state !== true) {
+        console.log('ai act -- attack',currentInstruction.count);
+        currentInstruction.limit = 12;
+        this.keyPressed[plyr.number-1].attack = true;
+        if (plyr.moving.state !== true) {
           // console.log('plyr',plyr.number,'all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
-            currentInstruction.limit = 1;
-            this.keyPressed[plyr.number-1].attack = true;
+            // currentInstruction.limit = 12;
+            // this.keyPressed[plyr.number-1].attack = true;
 
-            if (currentInstruction.limit === 1) {
+            // if (currentInstruction.limit === 1) {
+            //   plyr.ai.currentInstruction++;
+            // } else {
+            //   if (currentInstruction.count < currentInstruction.limit) {
+            //     currentInstruction.count++;
+            //   } else if (currentInstruction.count >= currentInstruction.limit) {
+            //     plyr.ai.currentInstruction++;
+            //   }
+            // }
+
+            if (currentInstruction.count < currentInstruction.limit) {
+              currentInstruction.count++;
+            } else if (currentInstruction.count >= currentInstruction.limit) {
               plyr.ai.currentInstruction++;
-            } else {
-              if (currentInstruction.count < currentInstruction.limit) {
-                currentInstruction.count++;
-              } else if (currentInstruction.count >= currentInstruction.limit) {
-                plyr.ai.currentInstruction++;
-              }
             }
 
         }
