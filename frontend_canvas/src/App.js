@@ -14012,16 +14012,20 @@ class App extends Component {
               direction = 'east';
             }
 
-
-            if (cell.obstacle.moving.destination.number.x) {
+            if (
+              cell.obstacle.moving.destination.number.x !== null &&
+              cell.obstacle.moving.destination.number.x > -1 &&
+              cell.obstacle.moving.destination.number.x < this.gridWidth+1
+            ) {
               if(direction === 'south' || direction === 'east') {
+
                 drawHere = cell.obstacle.moving.destination.number;
               }
             }
 
 
             if (x === drawHere.x && y === drawHere.y ) {
-              console.log('x/y',x,y,direction,cell.obstacle.moving.step);
+              // console.log('x/y',x,y,direction,cell.obstacle.moving.step);
 
               let obstacleImg = obstacleImgs[cell.obstacle.type]
               context.drawImage(obstacleImg, cell.obstacle.moving.nextPosition.x-offset.x, cell.obstacle.moving.nextPosition.y- Math.ceil(obstacleImg.height/2, 30, 30));
@@ -17379,6 +17383,7 @@ class App extends Component {
       if (canPushStrength === true && canPushTargetFree === true && destCellRef) {
 
         // console.log('ready to push');
+
 
         let obstacleCrementObj = this.obstacleMoveCrementer(obstacleCell,destCellRef);
 
