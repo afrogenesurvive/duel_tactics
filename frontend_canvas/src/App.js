@@ -8469,20 +8469,20 @@ class App extends Component {
 
         // PULL CHECK
         if (player.defending.state === true) {
-          if (this.keyPressed[player.number-1].north === true) {
+          if (player.direction === 'south' && this.keyPressed[player.number-1].north === true) {
             console.log('pulling trigger north',player.target);
             // this.preObstaclePullCheck();
+              // check facing and obstacle target
           }
-          if (this.keyPressed[player.number-1].south === true) {
+          if (player.direction === 'north' && this.keyPressed[player.number-1].south === true) {
             console.log('pulling trigger south',player.target);
           }
-          if (this.keyPressed[player.number-1].east === true) {
+          if (player.direction === 'west' && this.keyPressed[player.number-1].east === true) {
             console.log('pulling trigger east',player.target);
           }
-          if (this.keyPressed[player.number-1].west === true) {
+          if (player.direction === 'east' && this.keyPressed[player.number-1].west === true) {
             console.log('pulling trigger west',player.target);
           }
-
 
         }
 
@@ -9523,10 +9523,16 @@ class App extends Component {
             if (player.attacking.state === false && player.defending.state === false) {
 
 
+              let atkType = player.currentWeapon.type;
 
-              // if (this.keyPressed[player.number-1].attack === true ) {
+              if (player.bluntAttack === true) {
+                atkType = 'blunt';
+              }
+              if (player.currentWeapon.name === "") {
+                atkType = 'unarmed';
+              }
 
-              if (player.stamina.current - 3 >= 0) {
+              if (player.stamina.current - this.staminaCostRef.attack[atkType] >= 0) {
 
                 if (this.keyPressed[player.number-1].attack === true && player.success.deflected.state !== true) {
                   // console.log('start attacking');
@@ -9577,8 +9583,6 @@ class App extends Component {
 
                 }
 
-
-
               }
               else {
                 player.statusDisplay = {
@@ -9603,7 +9607,7 @@ class App extends Component {
                 // )
               }
 
-              // if (this.keyPressed[player.number-1].defend === true) {
+
               if (this.keyPressed[player.number-1].defend === true && player.defendDecay.state !== true) {
                 // console.log('start defending',player.number);
 
@@ -9659,28 +9663,61 @@ class App extends Component {
                 //   }
                 // }
 
-                if (player.defending.count === 0 && player.defendDecay.state !== true) {
-                  player.defending = {
-                    state: false,
-                    count: 1,
-                    limit: player.defending.limit,
+                if (player.stamina.current - this.staminaCostRef.defend >= 0) {
+
+                  if (player.defending.count === 0 && player.defendDecay.state !== true) {
+                    player.defending = {
+                      state: false,
+                      count: 1,
+                      limit: player.defending.limit,
+                    }
+
+                    if (!player.popups.find(x=>x.msg === 'preAction1')) {
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 5,
+                          type: '',
+                          position: '',
+                          msg: 'preAction1',
+                          img: '',
+
+                        }
+                      )
+                    }
+
+                  } else {
+                    // console.log('cant start defend. might already be in progress');
                   }
 
-                  player.popups.push(
+                }
+                else {
+
+                  player.statusDisplay = {
+                    state: true,
+                    status: "Out of Stamina",
+                    count: 1,
+                    limit: player.statusDisplay.limit,
+                  }
+
+                  if (!player.popups.find(x => x.msg === 'outOfStamina')) {
+                    player.popups.push(
                       {
                         state: false,
                         count: 0,
-                        limit: 5,
+                        limit: 15,
                         type: '',
                         position: '',
-                        msg: 'preAction1',
+                        msg: 'outOfStamina',
                         img: '',
 
                       }
                     )
-                } else {
-                  // console.log('cant start defend. might already be in progress');
+                  }
+
                 }
+
 
               }
             }
@@ -13984,7 +14021,7 @@ class App extends Component {
 
 
             if (x === drawHere.x && y === drawHere.y ) {
-              // console.log('x/y',x,y,direction,cell.obstacle.moving.step);
+              console.log('x/y',x,y,direction,cell.obstacle.moving.step);
 
               let obstacleImg = obstacleImgs[cell.obstacle.type]
               context.drawImage(obstacleImg, cell.obstacle.moving.nextPosition.x-offset.x, cell.obstacle.moving.nextPosition.y- Math.ceil(obstacleImg.height/2, 30, 30));
@@ -17042,382 +17079,412 @@ class App extends Component {
     let pushStrengthThreshold = (obstacleCell.obstacle.height + obstacleCell.obstacle.weight)*thresholdMultiplier;
     let pushStrengthPlayer = 0;
 
-    if (player.hp > 1) {
-      pushStrengthPlayer += (player.hp-1)
-    }
-    pushStrengthPlayer += (player.crits.pushBack-3);
-    pushStrengthPlayer += (player.crits.guardBreak-2);
 
+    if (player.stamina.current - this.staminaCostRef.defend >= 0) {
 
-    let destCell = {
-      x: obstacleCell.number.x,
-      y: obstacleCell.number.y,
-    } ;
-    switch (player.prePush.direction) {
-      case "north":
-        destCell.y -= 1;
-        break;
-      case "south":
-        destCell.y += 1;
-        break;
-      case "east":
-        destCell.x += 1;
-        break;
-      case "west":
-        destCell.x -= 1;
-        break;
-      default:
-        break;
-    }
-    let destCellRef = this.gridInfo.find(x => x.number.x === destCell.x && x.number.y === destCell.y);
-    let destCellOccupant = "";
-
-    let preMoveSpeed = Math.ceil(pushStrengthPlayer/pushStrengthThreshold);
-    let moveSpeed = 0;
-    if (preMoveSpeed <= 1) {
-      moveSpeed = .05;
-    }
-    if (preMoveSpeed === 2) {
-      moveSpeed = .1;
-    }
-    if (preMoveSpeed > 2 && preMoveSpeed < 4) {
-      moveSpeed = .125;
-    }
-    if (preMoveSpeed > 4) {
-      moveSpeed = .2;
-    }
-
-    if (destCellRef) {
-
-      if (destCellRef.obstacle.state === true) {
-        canPushTargetFree = false;
-        destCellOccupant = "obstacle";
-        resetPush = true;
+      if (player.hp > 1) {
+        pushStrengthPlayer += (player.hp-1)
       }
-      if (destCellRef.barrier.state === true) {
-        let barrier = false;
-        switch (player.prePush.direction) {
-          case "north":
-            if (destCellRef.barrier.position === "south") {
-              barrier = true;
-            }
-            break;
-          case "south":
-            if (destCellRef.barrier.position === "north") {
-              barrier = true;
-            }
-            break;
-          case "east":
-            if (destCellRef.barrier.position === "west") {
-              barrier = true;
-            }
-            break;
-          case "west":
-            if (destCellRef.barrier.position === "east") {
-              barrier = true;
-            }
-            break;
-          default:
-            break;
-        }
+      pushStrengthPlayer += (player.crits.pushBack-3);
+      pushStrengthPlayer += (player.crits.guardBreak-2);
 
-        if (barrier === true) {
+
+      let destCell = {
+        x: obstacleCell.number.x,
+        y: obstacleCell.number.y,
+      } ;
+      switch (player.prePush.direction) {
+        case "north":
+          destCell.y -= 1;
+          break;
+        case "south":
+          destCell.y += 1;
+          break;
+        case "east":
+          destCell.x += 1;
+          break;
+        case "west":
+          destCell.x -= 1;
+          break;
+        default:
+          break;
+      }
+      let destCellRef = this.gridInfo.find(x => x.number.x === destCell.x && x.number.y === destCell.y);
+      let destCellOccupant = "";
+
+      let preMoveSpeed = Math.ceil(pushStrengthPlayer/pushStrengthThreshold);
+      let moveSpeed = 0;
+      if (preMoveSpeed <= 1) {
+        moveSpeed = .05;
+      }
+      if (preMoveSpeed === 2) {
+        moveSpeed = .1;
+      }
+      if (preMoveSpeed > 2 && preMoveSpeed < 4) {
+        moveSpeed = .125;
+      }
+      if (preMoveSpeed > 4) {
+        moveSpeed = .2;
+      }
+
+      if (destCellRef) {
+
+        if (destCellRef.obstacle.state === true) {
+          canPushTargetFree = false;
+          destCellOccupant = "obstacle";
+          resetPush = true;
+        }
+        if (destCellRef.barrier.state === true) {
+          let barrier = false;
+          switch (player.prePush.direction) {
+            case "north":
+              if (destCellRef.barrier.position === "south") {
+                barrier = true;
+              }
+              break;
+            case "south":
+              if (destCellRef.barrier.position === "north") {
+                barrier = true;
+              }
+              break;
+            case "east":
+              if (destCellRef.barrier.position === "west") {
+                barrier = true;
+              }
+              break;
+            case "west":
+              if (destCellRef.barrier.position === "east") {
+                barrier = true;
+              }
+              break;
+            default:
+              break;
+          }
+
+          if (barrier === true) {
+              canPushTargetFree = false;
+              destCellOccupant = "barrier";
+              resetPush = true;
+          }
+
+
+        }
+        if (obstacleCell.barrier.state === true) {
+
+          let barrier = false;
+          switch (player.prePush.direction) {
+            case "north":
+              if (obstacleCell.barrier.position === "south") {
+                barrier = true;
+              }
+              break;
+            case "south":
+              if (obstacleCell.barrier.position === "north") {
+                barrier = true;
+              }
+              break;
+            case "east":
+              if (obstacleCell.barrier.position === "west") {
+                barrier = true;
+              }
+              break;
+            case "west":
+              if (obstacleCell.barrier.position === "east") {
+                barrier = true;
+              }
+              break;
+            default:
+              break;
+          }
+
+          if (barrier === true) {
+            console.log('barrier in obstacle cell in front of obstacle');
             canPushTargetFree = false;
             destCellOccupant = "barrier";
             resetPush = true;
+          }
+
+          if (obstacleCell.barrier.position === player.direction) {
+            console.log('barrier in obstacle cell behind obstacle');
+            canPushTargetFree = false;
+            destCellOccupant = "barrier";
+            resetPush = true;
+          }
+
+        }
+        for(const plyr of this.players) {
+          if(plyr.currentPosition.cell.number.x === destCell.x && plyr.currentPosition.cell.number.y === destCell.y) {
+
+            // change when implementing push player
+            canPushTargetFree = false;
+            resetPush = true;
+            destCellOccupant = `player_${plyr.number}`;
+          }
         }
 
-
       }
-      if (obstacleCell.barrier.state === true) {
+      if(!destCellRef && pushStrengthPlayer >= pushStrengthThreshold) {
 
-        let barrier = false;
-        switch (player.prePush.direction) {
-          case "north":
-            if (obstacleCell.barrier.position === "south") {
-              barrier = true;
+        let voidCenter = {
+          x: undefined,
+          y: undefined
+        }
+        switch(player.prePush.direction) {
+          case 'north' :
+            voidCenter = {
+              x: obstacleCell.center.x+50,
+              y: obstacleCell.center.y-30,
             }
-            break;
-          case "south":
-            if (obstacleCell.barrier.position === "north") {
-              barrier = true;
+          break;
+          case 'south' :
+          if (
+            obstacleCell.number.x === 0 &&
+            obstacleCell.number.y === 9
+          ) {
+            voidCenter = {
+              // x: obstacleCell.center.x-30,
+              // y: obstacleCell.center.y+15,
+              x: obstacleCell.center.x-50,
+              y: obstacleCell.center.y+30,
             }
-            break;
-          case "east":
-            if (obstacleCell.barrier.position === "west") {
-              barrier = true;
+          } else {
+            voidCenter = {
+              x: obstacleCell.center.x-50,
+              y: obstacleCell.center.y+30,
             }
-            break;
-          case "west":
-            if (obstacleCell.barrier.position === "east") {
-              barrier = true;
+          }
+          break;
+          case 'west' :
+          if (
+            obstacleCell.number.x === 0 &&
+            obstacleCell.number.y === 9
+          ) {
+            voidCenter = {
+              // x: obstacleCell.center.x-30,
+              // y: obstacleCell.center.y-15,
+              x: obstacleCell.center.x-50,
+              y: obstacleCell.center.y-30,
             }
-            break;
-          default:
-            break;
+          } else {
+            voidCenter = {
+              x: obstacleCell.center.x-50,
+              y: obstacleCell.center.y-30,
+            }
+          }
+          break;
+          case 'east' :
+            voidCenter = {
+              x: obstacleCell.center.x+50,
+              y: obstacleCell.center.y+30,
+            }
+          break;
         }
 
-        if (barrier === true) {
-          console.log('barrier in obstacle cell in front of obstacle');
-          canPushTargetFree = false;
-          destCellOccupant = "barrier";
-          resetPush = true;
-        }
 
-        if (obstacleCell.barrier.position === player.direction) {
-          console.log('barrier in obstacle cell behind obstacle');
-          canPushTargetFree = false;
-          destCellOccupant = "barrier";
-          resetPush = true;
-        }
+        let obstacleCrementObj = this.obstacleMoveCrementer(obstacleCell,{center:voidCenter});
 
-      }
-      for(const plyr of this.players) {
-        if(plyr.currentPosition.cell.number.x === destCell.x && plyr.currentPosition.cell.number.y === destCell.y) {
-
-          // change when implementing push player
-          canPushTargetFree = false;
-          resetPush = true;
-          destCellOccupant = `player_${plyr.number}`;
-        }
-      }
-
-    }
-    if(!destCellRef && pushStrengthPlayer >= pushStrengthThreshold) {
-
-      let voidCenter = {
-        x: undefined,
-        y: undefined
-      }
-      switch(player.prePush.direction) {
-        case 'north' :
-          voidCenter = {
-            x: obstacleCell.center.x+50,
-            y: obstacleCell.center.y-30,
-          }
-        break;
-        case 'south' :
-        if (
-          obstacleCell.number.x === 0 &&
-          obstacleCell.number.y === 9
-        ) {
-          voidCenter = {
-            // x: obstacleCell.center.x-30,
-            // y: obstacleCell.center.y+15,
-            x: obstacleCell.center.x-50,
-            y: obstacleCell.center.y+30,
-          }
-        } else {
-          voidCenter = {
-            x: obstacleCell.center.x-50,
-            y: obstacleCell.center.y+30,
-          }
-        }
-        break;
-        case 'west' :
-        if (
-          obstacleCell.number.x === 0 &&
-          obstacleCell.number.y === 9
-        ) {
-          voidCenter = {
-            // x: obstacleCell.center.x-30,
-            // y: obstacleCell.center.y-15,
-            x: obstacleCell.center.x-50,
-            y: obstacleCell.center.y-30,
-          }
-        } else {
-          voidCenter = {
-            x: obstacleCell.center.x-50,
-            y: obstacleCell.center.y-30,
-          }
-        }
-        break;
-        case 'east' :
-          voidCenter = {
-            x: obstacleCell.center.x+50,
-            y: obstacleCell.center.y+30,
-          }
-        break;
-      }
-
-
-      let obstacleCrementObj = this.obstacleMoveCrementer(obstacleCell,{center:voidCenter});
-
-      obstacleCell.obstacle =
-      {
-        state: obstacleCell.obstacle.state,
-        name: obstacleCell.obstacle.name,
-        type: obstacleCell.obstacle.type,
-        hp: obstacleCell.obstacle.hp,
-        destructible: obstacleCell.obstacle.destructible,
-        locked: obstacleCell.obstacle.locked,
-        weight: obstacleCell.obstacle.weight,
-        height: obstacleCell.obstacle.height,
-        items: obstacleCell.obstacle.items,
-        effects: obstacleCell.obstacle.effects,
-        moving: {
-          state: true,
-          step: obstacleCrementObj.step,
-          origin: {
-            number: obstacleCell.number,
-            center: obstacleCell.center,
-          },
-          destination: {
-            number: {
-              x: undefined,
-              y: undefined
+        obstacleCell.obstacle =
+        {
+          state: obstacleCell.obstacle.state,
+          name: obstacleCell.obstacle.name,
+          type: obstacleCell.obstacle.type,
+          hp: obstacleCell.obstacle.hp,
+          destructible: obstacleCell.obstacle.destructible,
+          locked: obstacleCell.obstacle.locked,
+          weight: obstacleCell.obstacle.weight,
+          height: obstacleCell.obstacle.height,
+          items: obstacleCell.obstacle.items,
+          effects: obstacleCell.obstacle.effects,
+          moving: {
+            state: true,
+            step: obstacleCrementObj.step,
+            origin: {
+              number: obstacleCell.number,
+              center: obstacleCell.center,
             },
-            center: voidCenter,
-          },
-          currentPosition: obstacleCell.center,
-          nextPosition: obstacleCrementObj.pos,
-          moveSpeed: moveSpeed,
-          pushable: true,
-          pushed: true,
-          pusher: player.number,
-          falling: obstacleCell.obstacle.moving.falling,
-        }
-      };
-
-
-      this.players[player.number-1].prePush = {
-          state: false,
-          count: 0,
-          limit: player.prePush.limit,
-          targetCell: undefined,
-          direction: "",
-          pusher: undefined,
-      }
-      this.players[player.number-1].pushing = {
-          state: true,
-          targetCell: obstacleCell,
-          moveSpeed: moveSpeed,
-      }
-
-      if (player.turning.delayCount === 0) {
-        this.players[player.number-1].action = 'moving';
-        this.players[player.number-1].moving = {
-          state: true,
-          step: 0,
-          course: '',
-          origin: {
-            number: {
-              x: player.currentPosition.cell.number.x,
-              y: player.currentPosition.cell.number.y
+            destination: {
+              number: {
+                x: undefined,
+                y: undefined
+              },
+              center: voidCenter,
             },
-            center: {
-              x: player.currentPosition.cell.center,
-              y: player.currentPosition.cell.center
-            },
-          },
-          destination: obstacleCell.center
+            currentPosition: obstacleCell.center,
+            nextPosition: obstacleCrementObj.pos,
+            moveSpeed: moveSpeed,
+            pushable: true,
+            pushed: true,
+            pusher: player.number,
+            falling: obstacleCell.obstacle.moving.falling,
+          }
+        };
+
+
+        this.players[player.number-1].prePush = {
+            state: false,
+            count: 0,
+            limit: player.prePush.limit,
+            targetCell: undefined,
+            direction: "",
+            pusher: undefined,
         }
-        let nextPosition = this.lineCrementer(player);
-        player.nextPosition = nextPosition;
+        this.players[player.number-1].pushing = {
+            state: true,
+            targetCell: obstacleCell,
+            moveSpeed: moveSpeed,
+        }
+
+        if (player.turning.delayCount === 0) {
+          this.players[player.number-1].action = 'moving';
+          this.players[player.number-1].moving = {
+            state: true,
+            step: 0,
+            course: '',
+            origin: {
+              number: {
+                x: player.currentPosition.cell.number.x,
+                y: player.currentPosition.cell.number.y
+              },
+              center: {
+                x: player.currentPosition.cell.center,
+                y: player.currentPosition.cell.center
+              },
+            },
+            destination: obstacleCell.center
+          }
+          let nextPosition = this.lineCrementer(player);
+          player.nextPosition = nextPosition;
+
+        }
 
       }
 
-    }
-
-    // console.log('pushStrengthThreshold/Player',pushStrengthThreshold,pushStrengthPlayer);
+      // console.log('pushStrengthThreshold/Player',pushStrengthThreshold,pushStrengthPlayer);
 
 
-    if (pushStrengthPlayer >= pushStrengthThreshold && obstacleCell.obstacle.moving.pushable === true) {
-      canPushStrength = true;
+      if (pushStrengthPlayer >= pushStrengthThreshold && obstacleCell.obstacle.moving.pushable === true) {
+        canPushStrength = true;
 
-      console.log('you are strongh enough to move this obstacle',pushStrengthPlayer,pushStrengthThreshold);
+        console.log('you are strongh enough to move this obstacle',pushStrengthPlayer,pushStrengthThreshold);
+      }
+      else {
+        console.log('you are NOT strong enough to push this obstacle',pushStrengthPlayer,pushStrengthThreshold);
+        resetPush = true;
+      }
+      if (canPushTargetFree !== true) {
+        console.log('something is in the way of the obstacle to be pushed');
+        resetPush = true;
+      }
+
+      if (canPushStrength === true && canPushTargetFree === true && destCellRef) {
+
+        // console.log('ready to push');
+
+        let obstacleCrementObj = this.obstacleMoveCrementer(obstacleCell,destCellRef);
+
+        obstacleCell.obstacle =
+        {
+          state: obstacleCell.obstacle.state,
+          name: obstacleCell.obstacle.name,
+          type: obstacleCell.obstacle.type,
+          hp: obstacleCell.obstacle.hp,
+          destructible: obstacleCell.obstacle.destructible,
+          locked: obstacleCell.obstacle.locked,
+          weight: obstacleCell.obstacle.weight,
+          height: obstacleCell.obstacle.height,
+          items: obstacleCell.obstacle.items,
+          effects: obstacleCell.obstacle.effects,
+          moving: {
+            state: true,
+            step: obstacleCrementObj.step,
+            origin: {
+              number: obstacleCell.number,
+              center: obstacleCell.center,
+            },
+            destination: {
+              number: destCellRef.number,
+              center: destCellRef.center,
+            },
+            currentPosition: obstacleCell.center,
+            nextPosition: obstacleCrementObj.pos,
+            moveSpeed: moveSpeed,
+            pushable: true,
+            pushed: true,
+            pusher: player.number,
+            falling: obstacleCell.obstacle.moving.falling,
+          }
+        };
+
+
+        this.players[player.number-1].prePush = {
+            state: false,
+            count: 0,
+            limit: player.prePush.limit,
+            targetCell: undefined,
+            direction: "",
+            pusher: undefined,
+        }
+        this.players[player.number-1].pushing = {
+            state: true,
+            targetCell: obstacleCell,
+            moveSpeed: moveSpeed,
+        }
+
+        if (player.turning.delayCount === 0) {
+          this.players[player.number-1].action = 'moving';
+          this.players[player.number-1].moving = {
+            state: true,
+            step: 0,
+            course: '',
+            origin: {
+              number: {
+                x: player.currentPosition.cell.number.x,
+                y: player.currentPosition.cell.number.y
+              },
+              center: {
+                x: player.currentPosition.cell.center,
+                y: player.currentPosition.cell.center
+              },
+            },
+            destination: obstacleCell.center
+          }
+          let nextPosition = this.lineCrementer(player);
+          player.nextPosition = nextPosition;
+
+        }
+
+      }
+
+      // if target isn't free, 1/2 pushback
+
     }
     else {
-      console.log('you are NOT strong enough to push this obstacle',pushStrengthPlayer,pushStrengthThreshold);
+
       resetPush = true;
-    }
-    if (canPushTargetFree !== true) {
-      console.log('something is in the way of the obstacle to be pushed');
-      resetPush = true;
-    }
-
-    if (canPushStrength === true && canPushTargetFree === true && destCellRef) {
-
-      // console.log('ready to push');
-
-
-      let obstacleCrementObj = this.obstacleMoveCrementer(obstacleCell,destCellRef);
-
-
-      obstacleCell.obstacle =
-      {
-        state: obstacleCell.obstacle.state,
-        name: obstacleCell.obstacle.name,
-        type: obstacleCell.obstacle.type,
-        hp: obstacleCell.obstacle.hp,
-        destructible: obstacleCell.obstacle.destructible,
-        locked: obstacleCell.obstacle.locked,
-        weight: obstacleCell.obstacle.weight,
-        height: obstacleCell.obstacle.height,
-        items: obstacleCell.obstacle.items,
-        effects: obstacleCell.obstacle.effects,
-        moving: {
-          state: true,
-          step: obstacleCrementObj.step,
-          origin: {
-            number: obstacleCell.number,
-            center: obstacleCell.center,
-          },
-          destination: {
-            number: destCellRef.number,
-            center: destCellRef.center,
-          },
-          currentPosition: obstacleCell.center,
-          nextPosition: obstacleCrementObj.pos,
-          moveSpeed: moveSpeed,
-          pushable: true,
-          pushed: true,
-          pusher: player.number,
-          falling: obstacleCell.obstacle.moving.falling,
-        }
-      };
-
-
-      this.players[player.number-1].prePush = {
-          state: false,
-          count: 0,
-          limit: player.prePush.limit,
-          targetCell: undefined,
-          direction: "",
-          pusher: undefined,
-      }
-      this.players[player.number-1].pushing = {
-          state: true,
-          targetCell: obstacleCell,
-          moveSpeed: moveSpeed,
+      player.statusDisplay = {
+        state: true,
+        status: "Out of Stamina",
+        count: 1,
+        limit: player.statusDisplay.limit,
       }
 
-      if (player.turning.delayCount === 0) {
-        this.players[player.number-1].action = 'moving';
-        this.players[player.number-1].moving = {
-          state: true,
-          step: 0,
-          course: '',
-          origin: {
-            number: {
-              x: player.currentPosition.cell.number.x,
-              y: player.currentPosition.cell.number.y
-            },
-            center: {
-              x: player.currentPosition.cell.center,
-              y: player.currentPosition.cell.center
-            },
-          },
-          destination: obstacleCell.center
-        }
-        let nextPosition = this.lineCrementer(player);
-        player.nextPosition = nextPosition;
+      if (!player.popups.find(x => x.msg === 'outOfStamina')) {
+        player.popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 15,
+            type: '',
+            position: '',
+            msg: 'outOfStamina',
+            img: '',
 
+          }
+        )
       }
-
     }
 
-    // if target isn't free, 1/2 pushback
+
     if (resetPush === true) {
       this.players[player.number-1].prePush = {
           state: false,
