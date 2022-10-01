@@ -6818,6 +6818,7 @@ class App extends Component {
         //     turn and reset
         // if turning or counting, do nothing
 
+
         // TURNER!!
         // if (player.turning.state === true && player.turning.toDirection === this.players[player.number-1].turnCheckerDirection) {
         //   console.log('player',player.number,' turn-ing');
@@ -28286,7 +28287,7 @@ class App extends Component {
               aiPlayer.ai.engaging.targetAction = ''
             }
 
-
+            // target status has changed. switch up the approach
             if (aiPlayer.ai.engaging.targetAction !== engageTargetAction && deflecting !== true ) {
             // if (aiPlayer.ai.engaging.targetAction !== engageTargetAction ) {
 
@@ -30629,23 +30630,17 @@ class App extends Component {
           }
         break;
         case 'attack':
-        console.log('ai act -- attack',currentInstruction.count);
-        currentInstruction.limit = 12;
+        // console.log('ai act -- attack');
+        let atkPeak;
+        if (plyr.currentWeapon.name === "") {
+          atkPeak = this.attackAnimRef.peak.unarmed;
+        }
+        else {
+          atkPeak = this.attackAnimRef.peak[plyr.currentWeapon.type];
+        }
+        currentInstruction.limit = atkPeak+2;
         this.keyPressed[plyr.number-1].attack = true;
         if (plyr.moving.state !== true) {
-          // console.log('plyr',plyr.number,'all',plyr.ai.instructions.length,'current',plyr.ai.instructions.indexOf(currentInstruction),currentInstruction.keyword,'pos',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y,'dir',plyr.direction);
-            // currentInstruction.limit = 12;
-            // this.keyPressed[plyr.number-1].attack = true;
-
-            // if (currentInstruction.limit === 1) {
-            //   plyr.ai.currentInstruction++;
-            // } else {
-            //   if (currentInstruction.count < currentInstruction.limit) {
-            //     currentInstruction.count++;
-            //   } else if (currentInstruction.count >= currentInstruction.limit) {
-            //     plyr.ai.currentInstruction++;
-            //   }
-            // }
 
             if (currentInstruction.count < currentInstruction.limit) {
               currentInstruction.count++;
