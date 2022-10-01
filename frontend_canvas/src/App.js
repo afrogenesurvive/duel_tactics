@@ -6805,20 +6805,6 @@ class App extends Component {
         }
 
 
-        // TURNING LOGIC/FLOW **ADD TO REFERENCE**
-        // on direction keypress, set player turnCheckerDirection
-
-
-
-        // on keypress
-        // check for turn conditions
-        // if not turning, set true
-        //   if turning true, count
-        //   if count is limit, & to direction = turncheckdirection,
-        //     turn and reset
-        // if turning or counting, do nothing
-
-
         // TURNER!!
         // if (player.turning.state === true && player.turning.toDirection === this.players[player.number-1].turnCheckerDirection) {
         //   console.log('player',player.number,' turn-ing');
@@ -6827,12 +6813,10 @@ class App extends Component {
         //     player.turning.state = false;
         //   }
         // }
-
-
         if (player.turning.state === true && player.flanking.state !== true) {
           if (player.turning.delayCount < player.turning.limit) {
             player.turning.delayCount++;
-            console.log('turning...',player.turning.delayCount);
+            // console.log('turning...',player.turning.delayCount);
           }
           if (player.turning.delayCount >= player.turning.limit) {
             player.direction = player.turning.toDirection;
@@ -6846,7 +6830,7 @@ class App extends Component {
 
 
             this.getTarget(player);
-            console.log('turned/ turn complete');
+            // console.log('turned/ turn complete');
           }
 
 
@@ -9382,8 +9366,8 @@ class App extends Component {
               // CHANGE DIRECTION IF NOT STRAFING!!
               if (keyPressedDirection !== player.direction && player.strafing.state === false) {
 
-                console.log('change player direction to',keyPressedDirection);
-                console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
+                // console.log('change player direction to',keyPressedDirection);
+                // console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
                 player.turning.state = true;
                 player.turning.toDirection = keyPressedDirection;
 
@@ -17133,7 +17117,7 @@ class App extends Component {
 
 
   }
-  canPushObstacle = (player,obstacleCell) => {
+  canPushObstacle = (player,obstacleCell,type) => {
 
     let resetPush = false;
     let thresholdMultiplier = this.rnJesus(1,3)
@@ -17141,6 +17125,10 @@ class App extends Component {
     let canPushTargetFree = true;
     let pushStrengthThreshold = (obstacleCell.obstacle.height + obstacleCell.obstacle.weight)*thresholdMultiplier;
     let pushStrengthPlayer = 0;
+    let movePlayer = true;
+    if (type === 'hitPush') {
+      movePlayer = false;
+    }
 
 
     if (player.stamina.current - this.staminaCostRef.defend >= 0) {
@@ -17150,6 +17138,7 @@ class App extends Component {
       }
       pushStrengthPlayer += (player.crits.pushBack-3);
       pushStrengthPlayer += (player.crits.guardBreak-2);
+      pushStrengthPlayer += 5;
 
 
       let destCell = {
@@ -17391,49 +17380,61 @@ class App extends Component {
             direction: "",
             pusher: undefined,
         }
-        this.players[player.number-1].pushing = {
-            state: true,
-            targetCell: obstacleCell,
-            moveSpeed: moveSpeed,
-        }
 
-        if (player.turning.delayCount === 0) {
-          this.players[player.number-1].action = 'moving';
-          this.players[player.number-1].moving = {
-            state: true,
-            step: 0,
-            course: '',
-            origin: {
-              number: {
-                x: player.currentPosition.cell.number.x,
-                y: player.currentPosition.cell.number.y
-              },
-              center: {
-                x: player.currentPosition.cell.center,
-                y: player.currentPosition.cell.center
-              },
-            },
-            destination: obstacleCell.center
+
+        if (movePlayer === true) {
+
+          this.players[player.number-1].pushing = {
+              state: true,
+              targetCell: obstacleCell,
+              moveSpeed: moveSpeed,
           }
-          let nextPosition = this.lineCrementer(player);
-          player.nextPosition = nextPosition;
 
+          if (player.turning.delayCount === 0) {
+            this.players[player.number-1].action = 'moving';
+            this.players[player.number-1].moving = {
+              state: true,
+              step: 0,
+              course: '',
+              origin: {
+                number: {
+                  x: player.currentPosition.cell.number.x,
+                  y: player.currentPosition.cell.number.y
+                },
+                center: {
+                  x: player.currentPosition.cell.center,
+                  y: player.currentPosition.cell.center
+                },
+              },
+              destination: obstacleCell.center
+            }
+            let nextPosition = this.lineCrementer(player);
+            player.nextPosition = nextPosition;
+
+          }
         }
+
 
       }
 
       // console.log('pushStrengthThreshold/Player',pushStrengthThreshold,pushStrengthPlayer);
 
-
+      let extraPush = 0;
       if (pushStrengthPlayer >= pushStrengthThreshold && obstacleCell.obstacle.moving.pushable === true) {
         canPushStrength = true;
-
-        console.log('you are strongh enough to move this obstacle',pushStrengthPlayer,pushStrengthThreshold);
+        extraPush = pushStrengthPlayer - pushStrengthThreshold;
+        console.log('you are strongh enough to move this obstacle',pushStrengthPlayer,pushStrengthThreshold,'extra',extraPush);
       }
       else {
         console.log('you are NOT strong enough to push this obstacle',pushStrengthPlayer,pushStrengthThreshold);
         resetPush = true;
       }
+      if (extraPush > 3) {
+        console.log('extra push force. Push obstacle w/o plyr move');
+        movePlayer = false;
+      }
+
+
       if (canPushTargetFree !== true) {
         console.log('something is in the way of the obstacle to be pushed');
         resetPush = true;
@@ -17488,32 +17489,38 @@ class App extends Component {
             direction: "",
             pusher: undefined,
         }
-        this.players[player.number-1].pushing = {
-            state: true,
-            targetCell: obstacleCell,
-            moveSpeed: moveSpeed,
-        }
 
-        if (player.turning.delayCount === 0) {
-          this.players[player.number-1].action = 'moving';
-          this.players[player.number-1].moving = {
-            state: true,
-            step: 0,
-            course: '',
-            origin: {
-              number: {
-                x: player.currentPosition.cell.number.x,
-                y: player.currentPosition.cell.number.y
-              },
-              center: {
-                x: player.currentPosition.cell.center,
-                y: player.currentPosition.cell.center
-              },
-            },
-            destination: obstacleCell.center
+
+        if (movePlayer === true) {
+
+          this.players[player.number-1].pushing = {
+              state: true,
+              targetCell: obstacleCell,
+              moveSpeed: moveSpeed,
           }
-          let nextPosition = this.lineCrementer(player);
-          player.nextPosition = nextPosition;
+
+          if (player.turning.delayCount === 0) {
+            this.players[player.number-1].action = 'moving';
+            this.players[player.number-1].moving = {
+              state: true,
+              step: 0,
+              course: '',
+              origin: {
+                number: {
+                  x: player.currentPosition.cell.number.x,
+                  y: player.currentPosition.cell.number.y
+                },
+                center: {
+                  x: player.currentPosition.cell.center,
+                  y: player.currentPosition.cell.center
+                },
+              },
+              destination: obstacleCell.center
+            }
+            let nextPosition = this.lineCrementer(player);
+            player.nextPosition = nextPosition;
+
+          }
 
         }
 
@@ -17566,6 +17573,7 @@ class App extends Component {
     }
 
   }
+
   obstacleMoveCrementer = (obstacleCell,destCell) => {
     // console.log('obstacle line crementer',obstacle.moving.step,obstacle.moving.moveSpeed);
 
