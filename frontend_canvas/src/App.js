@@ -17062,7 +17062,7 @@ class App extends Component {
           this.players[player.number-1].prePush = player.prePush;
           this.players[player.number-1].pushing = player.pushing;
 
-          this.canPushObstacle(player,refCell);
+          this.canPushObstacle(player,refCell,'');
 
         }
         else {
@@ -17126,8 +17126,18 @@ class App extends Component {
     let pushStrengthThreshold = (obstacleCell.obstacle.height + obstacleCell.obstacle.weight)*thresholdMultiplier;
     let pushStrengthPlayer = 0;
     let movePlayer = true;
-    if (type === 'hitPush') {
+    let impactDirection = "";
+    if (type === 'hitPush' || type.split('_')[0] === 'hitPushBolt') {
       movePlayer = false;
+      pushStrengthPlayer += 1;
+      console.log('obstacle hit push');
+    }
+
+    if (type.split('_')[0] === 'hitPushBolt') {
+      impactDirection = type.split('_')[1];
+    }
+    else {
+      impactDirection = player.prePush.direction;
     }
 
 
@@ -17145,7 +17155,7 @@ class App extends Component {
         x: obstacleCell.number.x,
         y: obstacleCell.number.y,
       } ;
-      switch (player.prePush.direction) {
+      switch (impactDirection) {
         case "north":
           destCell.y -= 1;
           break;
@@ -17188,7 +17198,7 @@ class App extends Component {
         }
         if (destCellRef.barrier.state === true) {
           let barrier = false;
-          switch (player.prePush.direction) {
+          switch (impactDirection) {
             case "north":
               if (destCellRef.barrier.position === "south") {
                 barrier = true;
@@ -17224,7 +17234,7 @@ class App extends Component {
         if (obstacleCell.barrier.state === true) {
 
           let barrier = false;
-          switch (player.prePush.direction) {
+          switch (impactDirection) {
             case "north":
               if (obstacleCell.barrier.position === "south") {
                 barrier = true;
@@ -17256,7 +17266,7 @@ class App extends Component {
             resetPush = true;
           }
 
-          if (obstacleCell.barrier.position === player.direction) {
+          if (obstacleCell.barrier.position === impactDirection) {
             console.log('barrier in obstacle cell behind obstacle');
             canPushTargetFree = false;
             destCellOccupant = "barrier";
@@ -17281,7 +17291,7 @@ class App extends Component {
           x: undefined,
           y: undefined
         }
-        switch(player.prePush.direction) {
+        switch(impactDirection) {
           case 'north' :
             voidCenter = {
               x: obstacleCell.center.x+50,
@@ -17804,9 +17814,16 @@ class App extends Component {
       break;
     }
 
-
-
-
+    if (player.prePush.state === true) {
+      player.prePush = {
+        state: false,
+        count: 0,
+        limit: player.prePush.limit,
+        targetCell: undefined,
+        direction: "",
+        pusher: undefined,
+      }
+    }
 
 
     if (player.ai.state === true) {
@@ -19805,6 +19822,7 @@ class App extends Component {
                      }
 
                    }
+
                 }
             }
           }
@@ -20069,6 +20087,9 @@ class App extends Component {
                       complete: false,
                       cell: targetCell,
                     })
+
+
+                     this.canPushObstacle(player,targetCell,'hitPush');
                   }
 
                   // DESTROY OBSTACLE W/ OR W/O RUBBLE
@@ -20223,7 +20244,11 @@ class App extends Component {
                        }
                      }
 
+                     this.canPushObstacle(player,targetCell,'hitPush');
+
                    }
+
+
                 }
 
               }
@@ -20250,7 +20275,7 @@ class App extends Component {
                    }
 
                    if (player.currentWeapon.name === '') {
-                     console.log('this barrier is stronger than your fist. Take damage?');
+                     console.log('this obstacle is stronger than your fist. Take damage?');
                      let takeDamage = this.rnJesus(1,player.crits.guardBreak);
                      if (takeDamage === 1) {
                        if (player.hp - 1 <= 0) {
@@ -20272,7 +20297,11 @@ class App extends Component {
                      }
                    }
 
+                   this.canPushObstacle(player,targetCell,'hitPush');
+
                  }
+
+
               }
 
 
@@ -20732,6 +20761,7 @@ class App extends Component {
 
           // NO FWD BARRIER. OBSTACLE, REAR  BARRIER (SPEAR)?
           else if (myCellBarrier !== true && fwdBarrier !== true){
+
             if (targetCell2.obstacle.state === true) {
 
               if (targetCell2.obstacle.destructible.state === true) {
@@ -20761,6 +20791,8 @@ class App extends Component {
                       complete: false,
                       cell: targetCell2,
                     })
+
+                    this.canPushObstacle(player,targetCell2,'hitPush');
                   }
 
                   // DESTROY OBSTACLE W/ OR W/O RUBBLE
@@ -20894,6 +20926,8 @@ class App extends Component {
                      if (this.aiDeflectedCheck.includes(player.number) !== true) {
                        this.aiDeflectedCheck.push(player.number)
                      }
+
+                     this.canPushObstacle(player,targetCell2,'hitPush');
 
                    }
                 }
@@ -21543,6 +21577,8 @@ class App extends Component {
                       complete: false,
                       cell: targetCell,
                     })
+
+                    this.canPushObstacle(player,targetCell,'hitPush');
                   }
 
                   // DESTROY OBSTACLE W/ OR W/O RUBBLE
@@ -21672,6 +21708,7 @@ class App extends Component {
                        this.aiDeflectedCheck.push(player.number)
                      }
 
+                     this.canPushObstacle(player,targetCell,'hitPush');
 
                    }
                 }
@@ -21699,7 +21736,7 @@ class App extends Component {
                      this.aiDeflectedCheck.push(player.number)
                    }
 
-
+                   this.canPushObstacle(player,targetCell,'hitPush');
                  }
               }
 
@@ -22068,6 +22105,8 @@ class App extends Component {
                 complete: false,
                 cell: targetCell,
               })
+
+
             }
 
             // DESTROY FWD BARRIER W/ OR W/O RUBBLE
@@ -22212,6 +22251,8 @@ class App extends Component {
                   cell: targetCell,
                 })
 
+                this.canPushObstacle(player,targetCell,`hitPushBolt_${bolt.direction}`);
+
               }
 
 
@@ -22331,6 +22372,8 @@ class App extends Component {
             else {
               console.log('your current weapon cannot destroy this, you need ',targetCell.obstacle.destructible.weapons,'. Deflect player?');
 
+              this.canPushObstacle(player,targetCell,`hitPushBolt_${bolt.direction}`);
+
             }
 
 
@@ -22341,6 +22384,9 @@ class App extends Component {
           // INDESTRUCTIBLE OBSTACLE
           else {
             console.log('attacking invurnerable obstacle w/ bolt');
+
+            this.canPushObstacle(player,targetCell,`hitPushBolt_${bolt.id}`);
+
           }
 
           // bolt.kill = true;
@@ -22708,6 +22754,8 @@ class App extends Component {
                   complete: false,
                   cell: targetCell,
                 })
+
+                this.canPushObstacle(player,targetCell,`hitPushBolt_${bolt.direction}`);
               }
 
               // DESTROY OBSTACLE W/ OR W/O RUBBLE
@@ -22817,6 +22865,7 @@ class App extends Component {
             else {
               console.log('your current weapon cannot destroy this, you need ',targetCell.obstacle.destructible.weapons,'. Deflect player?');
 
+              this.canPushObstacle(player,targetCell,`hitPushBolt_${bolt.direction}`);
             }
 
           }
@@ -22824,6 +22873,8 @@ class App extends Component {
           // INDESTRUCTIBLE OBSTACLE
           else {
             console.log('attacking invurnerable obstacle w/ bolt');
+
+            this.canPushObstacle(player,targetCell,`hitPushBolt_${bolt.direction}`);
           }
 
           this.projectiles.find(blt => blt.id === bolt.id).kill = true;
