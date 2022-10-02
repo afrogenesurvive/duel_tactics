@@ -1685,6 +1685,19 @@ class App extends Component {
           targetCell: undefined,
           moveSpeed: 0,
         },
+        prePull: {
+          state: false,
+          count: 0,
+          limit: 15,
+          targetCell: undefined,
+          direction: "",
+          puller: undefined,
+        },
+        pulling: {
+          state: false,
+          targetCell: undefined,
+          moveSpeed: 0,
+        },
       },
       {
         number: 2,
@@ -2080,6 +2093,19 @@ class App extends Component {
           pusher: undefined,
         },
         pushing: {
+          state: false,
+          targetCell: undefined,
+          moveSpeed: 0,
+        },
+        prePull: {
+          state: false,
+          count: 0,
+          limit: 15,
+          targetCell: undefined,
+          direction: "",
+          puller: undefined,
+        },
+        pulling: {
           state: false,
           targetCell: undefined,
           moveSpeed: 0,
@@ -6837,6 +6863,7 @@ class App extends Component {
         }
 
         // KEY PRESS RELEASE CHECKS!!
+          // OLD TURNER
         // if (player.turning.state === false && player.flanking.state !== true) {
         //   console.log('turn complete');
         //   player.direction = player.turning.toDirection;
@@ -8481,7 +8508,6 @@ class App extends Component {
         }
 
 
-
         // DEFENSE DECAY!!
         if (player.defendDecay.state === true) {
           if (player.defendDecay.count < player.defendDecay.limit) {
@@ -8526,22 +8552,44 @@ class App extends Component {
         }
 
 
-
         // PULL CHECK
-        if (player.defending.state === true) {
+        if (this.keyPressed[player.number-1].defend === true && player.pulling.state !== true) {
           if (player.direction === 'south' && this.keyPressed[player.number-1].north === true) {
             console.log('pulling trigger north',player.target);
-            // this.preObstaclePullCheck();
-              // check facing and obstacle target
+
+            if (player.target.occupant.type === "obstacle" && player.pulling.state !== true) {
+              this.preObstaclePullCheck(player,player.target)
+            }
+            if (player.target.occupant.type === "player" && player.pulling.state !== true) {
+              this.prePlayerPullCheck(player,player.target)
+            }
           }
           if (player.direction === 'north' && this.keyPressed[player.number-1].south === true) {
             console.log('pulling trigger south',player.target);
+            if (player.target.occupant.type === "obstacle" && player.pulling.state !== true) {
+              this.preObstaclePullCheck(player,player.target)
+            }
+            if (player.target.occupant.type === "player" && player.pulling.state !== true) {
+              this.prePlayerPullCheck(player,player.target)
+            }
           }
           if (player.direction === 'west' && this.keyPressed[player.number-1].east === true) {
             console.log('pulling trigger east',player.target);
+            if (player.target.occupant.type === "obstacle" && player.pulling.state !== true) {
+              this.preObstaclePullCheck(player,player.target)
+            }
+            if (player.target.occupant.type === "player" && player.pulling.state !== true) {
+              this.prePlayerPullCheck(player,player.target)
+            }
           }
           if (player.direction === 'east' && this.keyPressed[player.number-1].west === true) {
             console.log('pulling trigger west',player.target);
+            if (player.target.occupant.type === "obstacle" && player.pulling.state !== true) {
+              this.preObstaclePullCheck(player,player.target)
+            }
+            if (player.target.occupant.type === "player" && player.pulling.state !== true) {
+              this.prePlayerPullCheck(player,player.target)
+            }
           }
 
         }
@@ -9334,6 +9382,9 @@ class App extends Component {
                     // console.log('target is NOT free',target);
                     if (target.occupant.type === "obstacle" && player.pushing.state !== true) {
                       this.preObstaclePushCheck(player,target)
+                    }
+                    if (target.occupant.type === "player" && player.pushing.state !== true) {
+                      this.prePlayerPushCheck(player,target)
                     }
                     if (player.pushing.state === true) {
                       // console.log('You are already pushing something');
@@ -12442,9 +12493,9 @@ class App extends Component {
               if (plyr.pushing.state === true) {
                 moveSpeed = plyr.pushing.moveSpeed;
               }
-              // if (plyr.pulling.state === true) {
-              //   moveSpeed = plyr.pulling.moveSpeed;
-              // }
+              if (plyr.pulling.state === true) {
+                moveSpeed = plyr.pulling.moveSpeed;
+              }
               let rangeIndex = plyr.speed.range.indexOf(moveSpeed)
               let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
               finalAnimIndex = moveAnimIndex;
@@ -17583,6 +17634,58 @@ class App extends Component {
     }
 
   }
+  prePlayerPushCheck = (player,target) => {
+
+  }
+  preObstaclePullCheck = (player,target) => {
+
+    // prePush: {
+    //   state: false,
+    //   count: 0,
+    //   limit: 15,
+    //   targetCell: undefined,
+    //   direction: "",
+    //   pusher: undefined,
+    // },
+    // pushing: {
+    //   state: false,
+    //   targetCell: undefined,
+    //   moveSpeed: 0,
+    // },
+    // prePull: {
+    //   state: false,
+    //   count: 0,
+    //   limit: 15,
+    //   targetCell: undefined,
+    //   direction: "",
+    //   puller: undefined,
+    // },
+    // pulling: {
+    //   state: false,
+    //   targetCell: undefined,
+    //   moveSpeed: 0,
+    // },
+    //
+    // defending: {
+    //   state: false,
+    //   count: 0,
+    //   limit: 4,
+    // },
+    // defendDecay: {
+    //   state: false,
+    //   count: 0,
+    //   limit: 25,
+    // },
+
+    // target.occupant
+
+
+    // if can pull, cancel/reset defending, set pulling
+    // check facing and obstacle target
+  }
+  prePlayerPullCheck = (player,target) => {
+    // if can pull, cancel/reset defending, set pulling
+  }
 
   obstacleMoveCrementer = (obstacleCell,destCell) => {
     // console.log('obstacle line crementer',obstacle.moving.step,obstacle.moving.moveSpeed);
@@ -17620,10 +17723,7 @@ class App extends Component {
     return {pos:newPosition, step:step};
 
   }
-  preObstaclePullCheck = () => {
 
-    // if can push, cancel defending, set pulling
-  }
 
 
   attackedCancel = (player) => {
@@ -18034,6 +18134,32 @@ class App extends Component {
       max: 20,
     };
     this.players[player.number-1].popups = [];
+    this.players[player.number-1].prePush = {
+      state: false,
+      count: 0,
+      limit: 15,
+      targetCell: undefined,
+      direction: "",
+      pusher: undefined,
+    };
+    this.players[player.number-1].pushing = {
+      state: false,
+      targetCell: undefined,
+      moveSpeed: 0,
+    };
+    this.players[player.number-1].prePull = {
+      state: false,
+      count: 0,
+      limit: 15,
+      targetCell: undefined,
+      direction: "",
+      puller: undefined,
+    };
+    this.players[player.number-1].pulling = {
+      state: false,
+      targetCell: undefined,
+      moveSpeed: 0,
+    };
 
 
   }
@@ -18197,6 +18323,19 @@ class App extends Component {
       pusher: undefined,
     };
     player.pushing = {
+      state: false,
+      targetCell: undefined,
+      moveSpeed: 0,
+    };
+    player.prePull = {
+      state: false,
+      count: 0,
+      limit: 15,
+      targetCell: undefined,
+      direction: "",
+      puller: undefined,
+    };
+    player.pulling = {
       state: false,
       targetCell: undefined,
       moveSpeed: 0,
@@ -18370,6 +18509,19 @@ class App extends Component {
         pusher: undefined,
       };
       player.pushing = {
+        state: false,
+        targetCell: undefined,
+        moveSpeed: 0,
+      };
+      player.prePull = {
+        state: false,
+        count: 0,
+        limit: 15,
+        targetCell: undefined,
+        direction: "",
+        puller: undefined,
+      };
+      player.pulling = {
         state: false,
         targetCell: undefined,
         moveSpeed: 0,
@@ -24903,6 +25055,19 @@ class App extends Component {
             pusher: undefined,
           },
           pushing: {
+            state: false,
+            targetCell: undefined,
+            moveSpeed: 0,
+          },
+          prePull: {
+            state: false,
+            count: 0,
+            limit: 15,
+            targetCell: undefined,
+            direction: "",
+            puller: undefined,
+          },
+          pulling: {
             state: false,
             targetCell: undefined,
             moveSpeed: 0,
