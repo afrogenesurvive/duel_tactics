@@ -3472,16 +3472,16 @@ class App extends Component {
       console.log('player',player.number,' stop defending1 @ gamepad');
       // player.defending.state = false;
 
-      player.defending = {
-        state: false,
-        count: 0,
-        limit: player.defending.limit,
-      }
-      player.defendDecay = {
-        state: false,
-        count: 0,
-        limit: player.defendDecay.limit,
-      }
+      // player.defending = {
+      //   state: false,
+      //   count: 0,
+      //   limit: player.defending.limit,
+      // }
+      // player.defendDecay = {
+      //   state: false,
+      //   count: 0,
+      //   limit: player.defendDecay.limit,
+      // }
     }
   }
 
@@ -4242,19 +4242,19 @@ class App extends Component {
     // KEY RELEASE FEINTING
     if (player.defending.state === true && player.defending.count === 0) {
       if (this.keyPressed[this.currentPlayer-1].defend === false) {
-        // console.log('player',player.number,' defend key release');
+        console.log('player',player.number,' defend key release');
         // player.defending.state = false;
 
-        player.defending = {
-          state: false,
-          count: 0,
-          limit: player.defending.limit,
-        }
-        player.defendDecay = {
-          state: false,
-          count: 0,
-          limit: player.defendDecay.limit,
-        }
+        // player.defending = {
+        //   state: false,
+        //   count: 0,
+        //   limit: player.defending.limit,
+        // }
+        // player.defendDecay = {
+        //   state: false,
+        //   count: 0,
+        //   limit: player.defendDecay.limit,
+        // }
       }
     }
 
@@ -6848,10 +6848,11 @@ class App extends Component {
         //     player.turning.state = false;
         //   }
         // }
-        if (player.turning.state === true && player.flanking.state !== true) {
+
+        if (player.turning.state === true && player.flanking.state !== true ) {
           if (player.turning.delayCount < player.turning.limit) {
             player.turning.delayCount++;
-            // console.log('turning...',player.turning.delayCount);
+            console.log('turning...',player.turning.delayCount);
           }
           if (player.turning.delayCount >= player.turning.limit) {
             player.direction = player.turning.toDirection;
@@ -6865,7 +6866,7 @@ class App extends Component {
 
 
             this.getTarget(player);
-            // console.log('turned/ turn complete');
+            console.log('turned/ turn complete');
           }
 
 
@@ -6903,7 +6904,7 @@ class App extends Component {
 
         // DEFEND FEINT
         if (this.keyPressed[player.number-1].defend === false && player.defending.state === true) {
-          // console.log('player',player.number,' defend key releasen 2');
+          console.log('player',player.number,' defend key release');
           player.defending = {
             state: false,
             count: 0,
@@ -6916,6 +6917,8 @@ class App extends Component {
             count: 0,
             limit: player.defendDecay.limit,
           }
+
+
 
           let defendPopup = player.popups.find(x=>x.msg.split("_")[0] === 'defending')
           if (defendPopup) {
@@ -8458,6 +8461,7 @@ class App extends Component {
         // DEFENSE DELAY!!
 
         // DECAYING DEF
+        // if (player.defending.count > 0 && player.defending.count < player.defending.limit+1 && player.defendDecay.state !== true && player.prePull.state !== true && player.pulling.state !== true) {
         if (player.defending.count > 0 && player.defending.count < player.defending.limit+1 && player.defendDecay.state !== true) {
           player.defending.count++;
           player.action = 'defending';
@@ -8535,7 +8539,7 @@ class App extends Component {
               }
 
             }
-            // console.log('defend decay1',player.defendDecay.count,player.defending.state);
+            console.log('defend decay count',player.defendDecay.count,player.defending.state);
           }
 
           // DEFENDING ENDS JUST BEFORE THE END OF THE DECAY
@@ -8562,7 +8566,7 @@ class App extends Component {
 
 
         // PULL CHECK
-        if (this.keyPressed[player.number-1].defend === true && player.pulling.state !== true) {
+        if (this.keyPressed[player.number-1].defend === true && player.pulling.state !== true && player.turning.state !== true) {
           if (player.direction === 'south' && this.keyPressed[player.number-1].north === true) {
             console.log('pulling trigger north');
 
@@ -8601,6 +8605,32 @@ class App extends Component {
             }
           }
 
+        }
+
+        if (this.keyPressed[player.number-1].defend === false && player.prePull.state === true) {
+          console.log('defend pre pull key release. Cancel pre pull & defending/decay');
+
+          // player.defending = {
+          //   state: false,
+          //   count: 0,
+          //   limit: player.defending.limit
+          // }
+          //
+          // player.defendDecay = {
+          //   state: false,
+          //   count: 0,
+          //   limit: player.defendDecay.limit,
+          // }
+
+          player.action = 'idle';
+          player.prePull = {
+            state: false,
+            count: 0,
+            limit: player.prePull.limit,
+            targetCell: undefined,
+            direction: "",
+            puller: undefined,
+          };
         }
 
         // // DODGE STEPPER!
@@ -9330,8 +9360,10 @@ class App extends Component {
           if (
             player.attacking.state === false &&
             player.defending.state === false &&
+            player.defending.count < 1 &&
             player.dodging.state === false &&
-            player.dodging.countState === false
+            player.dodging.countState === false &&
+            player.turning.state !== true
             //defend decay, flanking, jumping, pushing, pulling, turning?
           ) {
             // CONFIRM MOVE KEYPRESS!!
@@ -9424,10 +9456,11 @@ class App extends Component {
               }
 
               // CHANGE DIRECTION IF NOT STRAFING!!
+              // if (keyPressedDirection !== player.direction && player.strafing.state === false && player.prePull.state !== true) {
               if (keyPressedDirection !== player.direction && player.strafing.state === false) {
 
                 // console.log('change player direction to',keyPressedDirection);
-                // console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
+                console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
                 player.turning.state = true;
                 player.turning.toDirection = keyPressedDirection;
 
@@ -9623,7 +9656,7 @@ class App extends Component {
 
 
         // CAN READ NON-MOVE INPUTS!!
-        if (player.strafing.state === false) {
+        if (player.strafing.state === false && player.turning.state !== true) {
 
           if (this.keyPressed[player.number-1].attack === true || this.keyPressed[player.number-1].defend === true) {
 
@@ -9640,7 +9673,7 @@ class App extends Component {
 
 
             // START ATTACK/DEFEND!!
-            if (player.attacking.state === false && player.defending.state === false) {
+            if (player.attacking.state === false && player.defending.state === false && player.defendDecay.state !== true) {
 
               if (this.keyPressed[player.number-1].attack === true && player.success.deflected.state !== true) {
 
@@ -9764,6 +9797,8 @@ class App extends Component {
                 // }
 
                 if (player.stamina.current - this.staminaCostRef.defend >= 0) {
+
+                  console.log('start defending');
 
                   if (player.defending.count === 0 && player.defendDecay.state !== true) {
                     player.defending = {
@@ -12980,7 +13015,7 @@ class App extends Component {
               }
 
             }
-            if (plyr.strafing.direction === 'east') {
+            if (plyr.strafing.direction === 'east' || plyr.direction === 'east') {
               if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
               // if (x === plyr.target.cell.number.x && y === plyr.target.cell.number.y) {
                 // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
@@ -12989,8 +13024,9 @@ class App extends Component {
               }
 
             }
-            if (plyr.strafing.direction === 'south') {
+            if (plyr.strafing.direction === 'south' || plyr.direction === 'south') {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
+              // if (x === plyr.moving.destination.number.x && y === plyr.moving.destination.number.y) {
               // if (x === plyr.target.cell.number.x && y === plyr.target.cell.number.y) {
                 // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
@@ -17663,7 +17699,7 @@ class App extends Component {
     let resetPull = false;
     let refCell = this.gridInfo.find(x => x.number.x === target.cell.number.x && x.number.y === target.cell.number.y);
     let plyrRefCell = this.gridInfo.find(x => x.number.x === player.currentPosition.cell.number.x && x.number.y === player.currentPosition.cell.number.y);
-
+    let limit = player.defending.limit-1;
     let myCellCheck = true;
     if (plyrRefCell.barrier.state === true && plyrRefCell.barrier.position === player.direction) {
       myCellCheck = false
@@ -17679,7 +17715,7 @@ class App extends Component {
     }
     else if (refCell.obstacle.moving.pushable === true && myCellCheck === true) {
       if (player.prePull.state !== true && player.prePull.count === 0) {
-        // console.log('start pre push');
+        console.log('start pre pull');
         player.prePull = {
           state: true,
           count: player.prePull.count++,
@@ -17693,9 +17729,10 @@ class App extends Component {
 
       if (player.prePull.state === true) {
 
-        if (player.prePull.count >= player.prePull.limit) {
+        // if (player.prePull.count >= player.prePull.limit) {
+        if (player.prePull.count >= limit) {
 
-          // console.log('pre pull limit. check can pull');
+          console.log('pre pull limit. check can pull');
           this.players[player.number-1].prePull = player.prePull;
           this.players[player.number-1].pulling = player.pulling;
 
@@ -17712,10 +17749,11 @@ class App extends Component {
            ) {
 
              player.prePull.count++;
-             // console.log('pre pulling the same obstacle. Continue',player.prePull.count);
+             console.log('pre pulling the same obstacle. Continue',player.prePull.count);
            }
            else {
-             // console.log('pre pull player, target or direction has changed. Reset prepull');
+             console.log('pre pull player, target or direction has changed. Reset prepull');
+             player.action = 'idle';
              player.prePull = {
                state: false,
                count: 0,
@@ -17740,6 +17778,7 @@ class App extends Component {
 
 
     if (resetPull === true) {
+      player.action = 'idle';
       player.prePull = {
         state: false,
         count: 0,
@@ -17940,7 +17979,7 @@ class App extends Component {
         this.players[player.number-1].defending = {
           state: false,
           count: 0,
-          limit: 4,
+          limit: player.defending.limit
         };
         this.players[player.number-1].defendDecay = {
           state: false,
@@ -18054,7 +18093,7 @@ class App extends Component {
         this.players[player.number-1].defending = {
           state: false,
           count: 0,
-          limit: 4,
+          limit: player.defending.limit
         };
         this.players[player.number-1].defendDecay = {
           state: false,
@@ -18173,6 +18212,8 @@ class App extends Component {
 
 
     if (resetPull === true) {
+
+      this.players[player.number-1].action = 'idle';
       this.players[player.number-1].prePull = {
           state: false,
           count: 0,
@@ -18190,7 +18231,7 @@ class App extends Component {
       this.players[player.number-1].defending = {
         state: false,
         count: 0,
-        limit: 4,
+        limit: player.defending.limit,
       };
       this.players[player.number-1].defendDecay = {
         state: false,
