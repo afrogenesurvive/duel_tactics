@@ -18445,6 +18445,16 @@ class App extends Component {
         pusher: undefined,
       }
     }
+    if (player.prePull.state === true) {
+      player.prePull = {
+        state: false,
+        count: 0,
+        limit: player.prePull.limit,
+        targetCell: undefined,
+        direction: "",
+        puller: undefined,
+      }
+    }
 
 
     if (player.ai.state === true) {
