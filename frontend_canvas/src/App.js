@@ -7923,9 +7923,12 @@ class App extends Component {
 
 
                     }
+
                     // DEFENDER IS ARMED
                   } else {
                     // console.log('target is armed');
+
+                    // player unarmed
                     if (player.currentWeapon.name === "" && player.currentWeapon.type === "") {
                       console.log('player unarmed attacked armed target defense: cancel player attack and check crits or otherwise roll for attacker damage');
                       shouldDefend = false;
@@ -8082,12 +8085,24 @@ class App extends Component {
                       }
                     )
 
+                    let defenderParry = false;
+                    if (
+                      this.players[player.target.occupant.player-1].defending.state === true &&
+                      this.players[player.target.occupant.player-1].defendDecay.state !== true ||
+                      this.players[player.target.occupant.player-1].defendDecay.state === true &&
+                      this.players[player.target.occupant.player-1].defendDecay.count < 4
+                    ) {
+                      defenderParry = true;
+                    }
 
 
 
                     // PUSHBACK OPPONENT!
                     // let shouldPushBackOpponent = 2;
                     let shouldPushBackOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.pushBack*2);
+                    if (defenderParry === true) {
+                      shouldPushBackOpponent = 0;
+                    }
                     // shouldPushBackOpponent = 1;
                     if (shouldPushBackOpponent === 1) {
                       // console.log('pushback opponent');
@@ -8102,10 +8117,13 @@ class App extends Component {
                       // OPPONENT GUARD BREAK ROLL!
                       // let deflectOpponent = this.rnJesus(1,1);
                       let deflectOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.guardBreak);
-                      if (player.bluntAttack === true) {
+                      if (player.bluntAttack === true && defenderParry !== true) {
                         deflectOpponent = 1;
                       }
                       // deflectOpponent = 1
+                      if (defenderParry === true) {
+                        deflectOpponent = 0;
+                      }
 
                       // DEFLECT OPPONENT!
                       if (deflectOpponent === 1) {
@@ -17688,7 +17706,7 @@ class App extends Component {
 
         // if (player.prePull.count >= player.prePull.limit) {
         // if (player.prePull.count >= player.limit) {
-        if (player.prePull.count >= 10) {
+        if (player.prePull.count >= limit) {
 
           console.log('pre pull limit. check can pull');
           this.players[player.number-1].prePull = player.prePull;
@@ -17750,6 +17768,17 @@ class App extends Component {
         count: 0,
         limit: player.postPull.limit
       }
+
+      this.players[player.number-1].defending = {
+        state: false,
+        count: 0,
+        limit: player.defending.limit,
+      };
+      this.players[player.number-1].defendDecay = {
+        state: false,
+        count: 0,
+        limit: 25,
+      };
     }
 
 
