@@ -5962,6 +5962,18 @@ class App extends Component {
                     moveSpeed: 0,
                   }
                 }
+                if (player.pulled.state === true) {
+                  player.pulled = {
+                    state: false,
+                    puller: 0,
+                  }
+                }
+                if (player.pushed.state === true) {
+                  player.pushed = {
+                    state: false,
+                    pusher: 0,
+                  }
+                }
 
 
                 this.checkDestination(player);
@@ -6271,66 +6283,71 @@ class App extends Component {
 
 
         // COLLISION/ MOVEMENT OVERLAP PUSHBACK!!
+          // if neither is pulling/pushng or pulled/pushed
 
         for (const plyr4 of this.players) {
-          let nopushpull = true;
-          if (
-            player.pulled.state !== true ||
-            player.pushed.state !== true ||
-            player.pulling.state !== true ||
-            player.pushing.state !== true ||
-            plyr4.pulled.state !== true ||
-            plyr4.pushed.state !== true ||
-            plyr4.pulling.state !== true ||
-            plyr4.pushing.state !== true
-          ) {
-            nopushpull = false;
-          }
+
           if (
             player.number !== plyr4.number &&
             player.currentPosition.cell.number.x === plyr4.currentPosition.cell.number.x &&
             player.currentPosition.cell.number.y === plyr4.currentPosition.cell.number.y &&
             player.pushBack.state !== true &&
-            plyr4.pushBack.state !== true &&
-            nopushpull === true
+            plyr4.pushBack.state !== true
           ) {
-            console.log('buck up btwn plyrs',player.number,plyr4.number,"@",player.currentPosition.cell.number,plyr4.currentPosition.cell.number);
+
+            let nopushpull = true;
+            if (
+              player.pulled.state === true ||
+              player.pushed.state === true ||
+              player.pulling.state === true ||
+              player.pushing.state === true ||
+              plyr4.pulled.state === true ||
+              plyr4.pushed.state === true ||
+              plyr4.pulling.state === true ||
+              plyr4.pushing.state === true
+            ) {
+              nopushpull = false;
+              console.log('player cell overlap but 1 is pushing/pulling the other');
+            }
+            // console.log('buck up btwn plyrs',player.number,plyr4.number,"@",player.currentPosition.cell.number,plyr4.currentPosition.cell.number);
             // console.log('plyrs pushed back?',player.pushBack.state,plyr4.pushBack.state);
             // console.log('plyrs moving?',player.moving.state,plyr4.moving.state);
+            if (nopushpull === true) {
+              let playerAPushDir2;
+              let playerBPushDir2;
+              switch(plyr4.direction) {
+                case 'north' :
+                  playerAPushDir2 = 'south';
+                break;
+                case 'south' :
+                  playerAPushDir2 = 'north';
+                break;
+                case 'east' :
+                  playerAPushDir2 = 'west';
+                break;
+                case 'west' :
+                  playerAPushDir2 = 'east';
+                break;
+              }
+              switch(player.direction) {
+                case 'north' :
+                  playerBPushDir2 = 'south';
+                break;
+                case 'south' :
+                  playerBPushDir2 = 'north';
+                break;
+                case 'east' :
+                  playerBPushDir2 = 'west';
+                break;
+                case 'west' :
+                  playerBPushDir2 = 'east';
+                break;
+              }
 
-            let playerAPushDir2;
-            let playerBPushDir2;
-            switch(plyr4.direction) {
-              case 'north' :
-                playerAPushDir2 = 'south';
-              break;
-              case 'south' :
-                playerAPushDir2 = 'north';
-              break;
-              case 'east' :
-                playerAPushDir2 = 'west';
-              break;
-              case 'west' :
-                playerAPushDir2 = 'east';
-              break;
-            }
-            switch(player.direction) {
-              case 'north' :
-                playerBPushDir2 = 'south';
-              break;
-              case 'south' :
-                playerBPushDir2 = 'north';
-              break;
-              case 'east' :
-                playerBPushDir2 = 'west';
-              break;
-              case 'west' :
-                playerBPushDir2 = 'east';
-              break;
+              let canPush = this.pushBack(plyr4,playerAPushDir2)
+              let canPush2 = this.pushBack(player,playerBPushDir2)
             }
 
-            let canPush = this.pushBack(plyr4,playerAPushDir2)
-            let canPush2 = this.pushBack(player,playerBPushDir2)
 
           }
         }
@@ -15392,9 +15409,11 @@ class App extends Component {
       moveSpeed = player.pushing.moveSpeed;
     }
     if (player.pulled.state === true) {
+      console.log('heeeere',this.players[player.pulled.puller-1].pulling.moveSpeed)
       moveSpeed = this.players[player.pulled.puller-1].pulling.moveSpeed;
     }
     if (player.pushed.state === true) {
+      console.log('heeeere',this.players[player.pushed.pusher-1].pushing.moveSpeed)
       moveSpeed = this.players[player.pushed.pusher-1].pushing.moveSpeed;
     }
 
@@ -17819,7 +17838,6 @@ class App extends Component {
     }
 
   }
-
   prePlayerPushCheck = (pusher,target) => {
     // console.log('prePlayerPushCheck');
 
@@ -18145,7 +18163,7 @@ class App extends Component {
         this.players[targetPlayer.number-1].strafing.state = true;
         this.players[targetPlayer.number-1].action = 'strafe moving';
 
-        this.players[targetPlayer.number-1].direction = impactDirection;
+        // this.players[targetPlayer.number-1].direction = impactDirection;
         this.players[targetPlayer.number-1].success.deflected = {
           state: false,
           count: 0,
@@ -18153,6 +18171,15 @@ class App extends Component {
           predeflect: false,
           type: '',
         }
+        if (targetPlayer.ai.state === true) {
+          let indx = this.aiDeflectedCheck.indexOf(player.number)
+          // this.aiDeflectedCheck.splice(indx,1)
+          let newArr = this.aiDeflectedCheck.filter(x=>x !== player.number)
+          this.aiDeflectedCheck = newArr;
+          console.log('this.aiDeflectedCheck',this.aiDeflectedCheck);
+        }
+
+
         this.players[targetPlayer.number-1].pushed = {
           state: true,
           pusher: pusher.number
@@ -18267,6 +18294,15 @@ class App extends Component {
           predeflect: false,
           type: '',
         }
+        if (targetPlayer.ai.state === true) {
+          let indx = this.aiDeflectedCheck.indexOf(player.number)
+          // this.aiDeflectedCheck.splice(indx,1)
+          let newArr = this.aiDeflectedCheck.filter(x=>x !== player.number)
+          this.aiDeflectedCheck = newArr;
+          console.log('this.aiDeflectedCheck',this.aiDeflectedCheck);
+        }
+
+
         this.players[targetPlayer.number-1].pushed = {
           state: true,
           pusher: pusher.number
@@ -18291,6 +18327,8 @@ class App extends Component {
         }
         let targetPlyrNextPosition = this.lineCrementer(targetPlayer);
         this.players[targetPlayer.number-1].nextPosition = targetPlyrNextPosition;
+
+
         console.log("!!!player ",targetPlayer.number," is being pushed to",destCellRef.number," by ",pusher.number,"!!!");
         console.log('vvs',moveSpeed,targetPlayer.speed.move);
 
@@ -18752,8 +18790,6 @@ class App extends Component {
             direction: "",
             puller: undefined,
         }
-
-
         this.players[player.number-1].pulling = {
             state: true,
             targetCell: obstacleCell,
@@ -22439,6 +22475,8 @@ class App extends Component {
 
 
                  }
+
+                 this.canPushObstacle(player,targetCell2,'hitPush');
               }
 
 
