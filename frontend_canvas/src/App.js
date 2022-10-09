@@ -8707,6 +8707,19 @@ class App extends Component {
           }
         }
 
+        // key release prepull check
+        if (player.prePull.state === true && this.keyPressed[player.number-1][player.prePush.direction] !== true) {
+          console.log('mid prePull but key released. reset prePull');
+          player.prePull = {
+            state: false,
+            count: 0,
+            limit: player.prePull.limit,
+            targetCell: undefined,
+            direction: "",
+            puller: undefined,
+          }
+        }
+
 
         // PULL CHECK
         if (this.keyPressed[player.number-1].defend === true && player.pulling.state !== true && player.turning.state !== true && player.postPull.state !== true) {
@@ -10025,6 +10038,11 @@ class App extends Component {
               type: 'blunt_attacked',
             };
             this.players[plyrPullPushedPlyr-1].action = "deflected";
+
+            if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
+              this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
+            }
+
           }
 
           this.players[plyrPullPushedPlyr-1].pushing = {
@@ -15473,19 +15491,19 @@ class App extends Component {
 
     if (player.pushing.state === true) {
       moveSpeed = player.pushing.moveSpeed;
-      console.log('player ',player.number,' pushing speed',moveSpeed);
+      // console.log('player ',player.number,' pushing speed',moveSpeed);
     }
     if (player.pulling.state === true) {
       moveSpeed = player.pulling.moveSpeed;
-      console.log('player ',player.number,' pulling speed',moveSpeed);
+      // console.log('player ',player.number,' pulling speed',moveSpeed);
     }
     if (player.pulled.state === true) {
       moveSpeed = player.pulled.moveSpeed;
-      console.log('player ',player.number,' pulled speed',moveSpeed);
+      // console.log('player ',player.number,' pulled speed',moveSpeed);
     }
     if (player.pushed.state === true) {
       moveSpeed = player.pushed.moveSpeed;
-      console.log('player ',player.number,' pushed speed',moveSpeed);
+      // console.log('player ',player.number,' pushed speed',moveSpeed);
     }
 
     // console.log('mover stepper',player.moving.step);
@@ -17406,6 +17424,8 @@ class App extends Component {
                direction: "",
                pusher: undefined,
              };
+
+             resetPush = true;
            }
 
          }
@@ -17994,6 +18014,8 @@ class App extends Component {
                direction: "",
                pusher: undefined,
              };
+
+             resetPush = true;
            }
 
          }
@@ -18277,6 +18299,7 @@ class App extends Component {
           predeflect: false,
           type: '',
         }
+
         if (targetPlayer.ai.state === true) {
           let indx = this.aiDeflectedCheck.indexOf(targetPlayer.number)
           // this.aiDeflectedCheck.splice(indx,1)
@@ -18589,6 +18612,8 @@ class App extends Component {
                direction: "",
                puller: undefined,
              };
+
+             resetPull = true;
 
            }
 
@@ -19192,6 +19217,8 @@ class App extends Component {
                direction: "",
                puller: undefined,
              };
+
+             resetPull = true;
            }
 
          }
