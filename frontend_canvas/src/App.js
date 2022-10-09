@@ -17912,7 +17912,7 @@ class App extends Component {
     if (targetPlayer.success.deflected.state === true || targetPlayer.action === 'idle') {
       targetOpen = true;
     } else {
-      console.log('target player is no longer deflected or idle');
+      // console.log('target player is no longer deflected or idle');
       resetPush = true;
     }
 
@@ -18488,7 +18488,7 @@ class App extends Component {
   }
 
   preObstaclePullCheck = (player,target,pullDirection) => {
-    console.log('pre obstacle pull check');
+    // console.log('pre obstacle pull check');
 
     let resetPull = false;
     let refCell = this.gridInfo.find(x => x.number.x === target.cell.number.x && x.number.y === target.cell.number.y);
@@ -18902,7 +18902,6 @@ class App extends Component {
         resetPull = true;
       }
 
-
       if (canPullTargetFree !== true) {
         console.log('something is in the way of the obstacle to be pulled');
         resetPull = true;
@@ -19078,9 +19077,8 @@ class App extends Component {
     }
 
   }
-
   prePlayerPullCheck = (puller,target,pullDirection) => {
-    console.log('pre player pull check');
+    // console.log('pre player pull check');
 
     let resetPull = false;
     let targetCell = this.gridInfo.find(x => x.number.x === target.cell.number.x && x.number.y === target.cell.number.y);
@@ -19121,6 +19119,7 @@ class App extends Component {
       if (puller.prePull.state === true) {
 
         // if (puller.prePllh.count >= pusher.prePull.limit) {
+        // if (puller.prePllh.count >= 25) {
         if (puller.prePull.count >= limit) {
 
           // console.log('pre pull limit. check can pull player');
@@ -19223,7 +19222,7 @@ class App extends Component {
         default:
           break;
       }
-      console.log('destCell',destCell,'pull pos',puller.currentPosition.cell.number,'impact dir',impactDirection);
+      // console.log('destCell',destCell,'pull pos',puller.currentPosition.cell.number,'impact dir',impactDirection);
       let destCellRef = this.gridInfo.find(x => x.number.x === destCell.x && x.number.y === destCell.y);
       let destCellOccupant = "";
 
@@ -19531,7 +19530,6 @@ class App extends Component {
 
 
         // MOVE TARGET PLAYER
-        // this.getTarget(targetPlayer);
         if (impactDirection !== targetPlayer.direction) {
           this.players[targetPlayer.number-1].strafing.direction = impactDirection;
           this.players[targetPlayer.number-1].strafing.state = true;
@@ -19541,7 +19539,6 @@ class App extends Component {
           this.players[targetPlayer.number-1].action = 'moving';
         }
 
-        // this.players[targetPlayer.number-1].direction = impactDirection;
         this.players[targetPlayer.number-1].success.deflected = {
           state: false,
           count: 0,
@@ -19556,7 +19553,6 @@ class App extends Component {
           this.aiDeflectedCheck = newArr;
           console.log('this.aiDeflectedCheck',this.aiDeflectedCheck);
         }
-
 
         this.players[targetPlayer.number-1].pulled = {
           state: true,
@@ -19583,9 +19579,12 @@ class App extends Component {
         }
         let targetPlyrNextPosition = this.lineCrementer(targetPlayer);
         this.players[targetPlayer.number-1].nextPosition = targetPlyrNextPosition;
+        //
+        // console.log("!!!player ",targetPlayer.number," is being pulled to",pullerCellRef.number," by ",puller.number,"!!!");
 
 
-        console.log("!!!player ",targetPlayer.number," is being pulled to",pullerCellRef.number," by ",puller.number,"!!!");
+
+
 
 
         // MOVE PULLER
@@ -19597,6 +19596,17 @@ class App extends Component {
             direction: "",
             puller: undefined,
         }
+        this.players[puller.number-1].defending = {
+          state: false,
+          count: 0,
+          limit: puller.defending.limit
+        };
+        this.players[puller.number-1].defendDecay = {
+          state: false,
+          count: 0,
+          limit: puller.defendDecay.limit,
+        };
+
         if (movePlayer === true) {
 
           this.players[puller.number-1].pulling = {
