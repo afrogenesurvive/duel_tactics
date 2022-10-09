@@ -9256,7 +9256,7 @@ class App extends Component {
 
 
           if (player.flanking.step === 2) {
-            // console.log('flanking step 2',player.direction,'flank dir',player.flanking.direction);
+            console.log('flanking step 2',player.direction,'flank dir',player.flanking.direction);
             switch(player.flanking.direction) {
               case 'north' :
                 player.direction = 'south';
@@ -9528,8 +9528,11 @@ class App extends Component {
           player.dodging.state === false &&
           player.dodging.countState === false &&
           player.turning.state !== true &&
-          player.postPull.state !== true
-          //defend decay, flanking, jumping, pushing, pulling, turning?
+          player.postPull.state !== true &&
+          player.defendDecay.state !== true &&
+          player.flanking.state !== true &&
+          player.jumping.state !== true &&
+          player.turning.state !== true
         ) {
           // CONFIRM MOVE KEYPRESS!!
           if (
@@ -12729,6 +12732,12 @@ class App extends Component {
               if (plyr.pulling.state === true) {
                 moveSpeed = plyr.pulling.moveSpeed;
               }
+              if (plyr.pushed.state === true) {
+                moveSpeed = plyr.pushed.moveSpeed;
+              }
+              if (plyr.pulled.state === true) {
+                moveSpeed = plyr.pulled.moveSpeed;
+              }
               let rangeIndex = plyr.speed.range.indexOf(moveSpeed)
               let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
               finalAnimIndex = moveAnimIndex;
@@ -12744,13 +12753,26 @@ class App extends Component {
               // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
             break;
             case 'strafe moving':
-              if (player.pushBack.state === true ) {
+              if (plyr.pushBack.state === true ) {
                 let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
                 let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
                 finalAnimIndex = moveAnimIndex3;
                 // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
               } else {
-                let rangeIndex2 = plyr.speed.range.indexOf(plyr.speed.move)
+                let moveSpeed = plyr.speed.move;
+                if (plyr.pushing.state === true) {
+                  moveSpeed = plyr.pushing.moveSpeed;
+                }
+                if (plyr.pulling.state === true) {
+                  moveSpeed = plyr.pulling.moveSpeed;
+                }
+                if (plyr.pushed.state === true) {
+                  moveSpeed = plyr.pushed.moveSpeed;
+                }
+                if (plyr.pulled.state === true) {
+                  moveSpeed = plyr.pulled.moveSpeed;
+                }
+                let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed)
                 let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
                 finalAnimIndex = moveAnimIndex2;
                 // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
@@ -15451,15 +15473,19 @@ class App extends Component {
 
     if (player.pushing.state === true) {
       moveSpeed = player.pushing.moveSpeed;
+      console.log('player ',player.number,' pushing speed',moveSpeed);
     }
     if (player.pulling.state === true) {
       moveSpeed = player.pulling.moveSpeed;
+      console.log('player ',player.number,' pulling speed',moveSpeed);
     }
     if (player.pulled.state === true) {
       moveSpeed = player.pulled.moveSpeed;
+      console.log('player ',player.number,' pulled speed',moveSpeed);
     }
     if (player.pushed.state === true) {
       moveSpeed = player.pushed.moveSpeed;
+      console.log('player ',player.number,' pushed speed',moveSpeed);
     }
 
     // console.log('mover stepper',player.moving.step);
@@ -17438,7 +17464,11 @@ class App extends Component {
     }
 
 
+
     if (player.stamina.current - this.staminaCostRef.push >= 0) {
+
+      player.stamina.current = player.stamina.current - this.staminaCostRef.push;
+
 
       if (player.hp > 1) {
         pushStrengthPlayer += (player.hp-1)
@@ -18006,7 +18036,10 @@ class App extends Component {
     let impactDirection = pusher.prePush.direction;
 
 
+
     if (pusher.stamina.current - this.staminaCostRef.push >= 0) {
+
+      pusher.stamina.current = pusher.stamina.current - this.staminaCostRef.push;
 
       if (pusher.hp > 1) {
         pushStrengthPlayer += (pusher.hp-1)
@@ -18621,7 +18654,13 @@ class App extends Component {
     let pullStrengthThreshold = (obstacleCell.obstacle.height + obstacleCell.obstacle.weight)*thresholdMultiplier;
     let pullStrengthPlayer = 0;
     let impactDirection = player.prePull.direction;
+
+
+
+
     if (player.stamina.current - this.staminaCostRef.pull >= 0) {
+
+      player.stamina.current = player.stamina.current - this.staminaCostRef.pull;
 
       if (player.hp > 1) {
         pullStrengthPlayer += (player.hp-1)
@@ -18737,6 +18776,8 @@ class App extends Component {
 
       }
       if(!destCellRef && pullStrengthPlayer >= pullStrengthThreshold) {
+
+        console.log('ready to pull',moveSpeed);
 
         let voidCenter = {
           x: undefined,
@@ -18909,7 +18950,7 @@ class App extends Component {
 
       if (canPullStrength === true && canPullTargetFree === true && destCellRef) {
 
-        // console.log('ready to pull');
+        // console.log('ready to pull',moveSpeed);
 
         this.players[player.number-1].defending = {
           state: false,
@@ -19192,7 +19233,11 @@ class App extends Component {
     let impactDirection = puller.prePull.direction;
     let pullerCellRef = this.gridInfo.find(x => x.number.x === puller.currentPosition.cell.number.x && x.number.y === puller.currentPosition.cell.number.y);
 
+
+
     if (puller.stamina.current - this.staminaCostRef.pull >= 0) {
+
+      puller.stamina.current = puller.stamina.current - this.staminaCostRef.pull;
 
       if (puller.hp > 1) {
         pullStrengthPlayer += (puller.hp-1)
@@ -19358,6 +19403,8 @@ class App extends Component {
       // movePlayer = true;
 
       if(!destCellRef && pullStrengthPlayer >= pullStrengthThreshold) {
+
+        // console.log('ready to pull',moveSpeed);
 
         let voidCenter = {
           x: undefined,
@@ -19526,7 +19573,7 @@ class App extends Component {
 
       if (canPullStrength === true && canPullTargetFree === true && destCellRef) {
 
-        // console.log('ready to pull');
+        // console.log('ready to pull',moveSpeed);
 
 
         // MOVE TARGET PLAYER
@@ -22504,6 +22551,8 @@ class App extends Component {
                      predeflect: player.success.deflected.predeflect,
                      type: 'attack'
                    }
+
+
                    player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
 
 
@@ -24061,21 +24110,6 @@ class App extends Component {
 
     if (type === 'bolt') {
 
-      // console.log('xxx',player.current);
-
-      // myCell = undefined;
-      // if (bolt.direction === 'north') {
-      //   myCell = this.gridInfo.find(elem => elem.number.x === targetCell.number.x+1 && elem.number.y === targetCell.number.y)
-      // }
-      // if (bolt.direction === 'south') {
-      //   myCell = this.gridInfo.find(elem => elem.number.x === targetCell.number.x-1 && elem.number.y === targetCell.number.y)
-      // }
-      // if (bolt.direction === 'east') {
-      //   myCell = this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y-1)
-      // }
-      // if (bolt.direction === 'east') {
-      //   myCell = this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y+1)
-      // }
 
       let doubleHitChance = player.crits.doubleHit;
       let singleHitChance = player.crits.singleHit;
