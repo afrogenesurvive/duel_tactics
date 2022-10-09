@@ -390,7 +390,7 @@ class App extends Component {
         state: true,
         name: 'chest1',
         type: 'chest',
-        hp: 2,
+        hp: 5,
         destructible: {
           state: true,
           weapons: ['sword1','spear1'],
@@ -5990,8 +5990,8 @@ class App extends Component {
                   this.gridInfo.find(x => x.number.x === player.currentPosition.cell.number.x && x.number.y === player.currentPosition.cell.number.y).terrain.type !== "deep"
                 ) {
                   console.log('pulled pushed player at destination. deflect?');
-                  let go = this.rnJesus(1,player.crits.guardBreak);
-                  if (go === 1) {
+
+                  if (this.rnJesus(1,player.crits.guardBreak) === 1) {
                     this.players[player.number-1].action = 'deflected';
 
                     this.players[player.number-1].success.deflected = {
@@ -6682,6 +6682,21 @@ class App extends Component {
                     }
                   };
                   originCellRef.levelData = originLevelData.join("_");
+
+
+                  for(const obs of this.obstacleBarrierToDestroy) {
+                    if (originCellRef.number.x === obs.cell.number.x && originCellRef.number.y === obs.cell.number.y) {
+                      this.obstacleBarrierToDestroy.push({
+                        type: 'obstacle',
+                        action: 'damage',
+                        count: 0,
+                        limit: 30,
+                        complete: false,
+                        cell: destCellRef,
+                      })
+                    }
+                  }
+
 
                 }
                 else {
@@ -10130,7 +10145,6 @@ class App extends Component {
       }
 
     }
-
 
 
     if (this.setInitZoom.state === true) {
@@ -14341,7 +14355,7 @@ class App extends Component {
             if (x === drawHere.x && y === drawHere.y ) {
               // console.log('x/y',x,y,direction,cell.obstacle.moving.step);
 
-              let obstacleImg = obstacleImgs[cell.obstacle.type]
+              let obstacleImg = obstacleImgs[cell.obstacle.type];
               context.drawImage(obstacleImg, cell.obstacle.moving.nextPosition.x-offset.x, cell.obstacle.moving.nextPosition.y- Math.ceil(obstacleImg.height/2, 30, 30));
 
             }
@@ -14349,8 +14363,6 @@ class App extends Component {
             // console.log('falling obstacle',gridInfoCell.obstacle.moving.nextPosition,'x/y',x,y);
           }
         }
-
-
 
         if (gridInfoCell.barrier.state === true && gridInfoCell.void.state !== true) {
 
@@ -14381,7 +14393,6 @@ class App extends Component {
         for(const cell of this.obstacleBarrierToDestroy) {
           if (gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y && cell.cell.obstacle.state === true) {
           // if (gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y) {
-            // console.log('heeeeere',cell.cell.obstacle.state,cell.cell.number);
             if(cell.count % 3 === 0) {
               if (cell.type === "obstacle") {
                 let obstacleImg = obstacleImgs[cell.cell.obstacle.type];
@@ -17422,6 +17433,9 @@ class App extends Component {
     if(type === 'hitPush') {
       impactDirection = player.direction;
     }
+    if (type === "") {
+      impactDirection = player.prePush.direction;
+    }
 
 
     if (player.stamina.current - this.staminaCostRef.push >= 0) {
@@ -17727,6 +17741,7 @@ class App extends Component {
             player.nextPosition = nextPosition;
 
           }
+
         }
 
 
@@ -17917,8 +17932,8 @@ class App extends Component {
 
       if (pusher.prePush.state === true) {
 
-        if (pusher.prePush.count >= 25) {
-        // if (pusher.prePush.count >= pusher.prePush.limit) {
+        // if (pusher.prePush.count >= 25) {
+        if (pusher.prePush.count >= pusher.prePush.limit) {
 
           // console.log('pre push limit. check can push player');
           this.players[pusher.number-1].prePush = pusher.prePush;
@@ -17998,7 +18013,7 @@ class App extends Component {
       }
       pushStrengthPlayer += (pusher.crits.pushBack-3);
       pushStrengthPlayer += (pusher.crits.guardBreak-2);
-      // pushStrengthPlayer += 15;
+      pushStrengthPlayer += 15;
 
 
       let destCell = {
