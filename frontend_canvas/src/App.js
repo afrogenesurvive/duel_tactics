@@ -4272,7 +4272,7 @@ class App extends Component {
     // KEY RELEASE FEINTING
     if (player.defending.state === true && player.defending.count === 0) {
       if (this.keyPressed[this.currentPlayer-1].defend === false) {
-        console.log('player',player.number,' defend key release');
+        // console.log('player',player.number,' defend key release');
         // player.defending.state = false;
 
         // player.defending = {
@@ -6398,6 +6398,9 @@ class App extends Component {
         // }
 
 
+
+
+
         // OBSTACLE/BARRIER DAMAGE/DESTROY
         for(const cell of this.obstacleBarrierToDestroy) {
           if (cell.limit > 0) {
@@ -6427,19 +6430,8 @@ class App extends Component {
 
 
 
-        // OBSTACLE PUSHING & FALLING
-        // key release prepush check
-        if (player.prePush.state === true && this.keyPressed[player.number-1][player.prePush.direction] !== true) {
-          console.log('mid prePush but key released. reset prePush');
-          player.prePush = {
-            state: false,
-            count: 0,
-            limit: player.prePush.limit,
-            targetCell: undefined,
-            direction: "",
-            pusher: undefined,
-          }
-        }
+        // OBSTACLE MOVING & FALLING
+
         for(const cell of this.gridInfo) {
 
 
@@ -6495,8 +6487,6 @@ class App extends Component {
               atDestRanges[3] = true;
               destRngIndx = 3;
             }
-
-
 
 
             for (const el of atDestRanges) {
@@ -6635,7 +6625,7 @@ class App extends Component {
                     state: false,
                     name: '',
                     type: '',
-                    hp: 2,
+                    hp: 0,
                     destructible: {
                       state: false,
                       weapons: [],
@@ -6721,7 +6711,7 @@ class App extends Component {
                     state: false,
                     name: '',
                     type: '',
-                    hp: 2,
+                    hp: 0,
                     destructible: {
                       state: false,
                       weapons: [],
@@ -6808,7 +6798,7 @@ class App extends Component {
                 state: false,
                 name: '',
                 type: '',
-                hp: 2,
+                hp: 0,
                 destructible: {
                   state: false,
                   weapons: [],
@@ -6940,6 +6930,35 @@ class App extends Component {
         //   }
         // }
 
+        // OLD TURNER COMPLETE
+        //if (player.turning.state === false && player.flanking.state !== true) {
+      //   console.log('turn complete');
+      //   player.direction = player.turning.toDirection;
+      //   player.nextPosition = {
+      //     x: player.currentPosition.cell.center.x,
+      //     y: player.currentPosition.cell.center.y
+      //   }
+      //   player.moving = {
+      //     state: false,
+      //     step: 0,
+      //     course: '',
+      //     origin: {
+      //       number: {
+      //         x: player.currentPosition.cell.number.x,
+      //         y: player.currentPosition.cell.number.y
+      //       },
+      //       center: {
+      //         x: player.currentPosition.cell.center.x,
+      //         y: player.currentPosition.cell.center.y
+      //       },
+      //     },
+      //     destination: player.target.cell.center
+      //   }
+      //   player.turning.toDirection = '';
+      //   player.turning.state = undefined;
+      //   this.getTarget(player);
+      // }
+
         if (player.turning.state === true && player.flanking.state !== true ) {
           if (player.turning.delayCount < player.turning.limit) {
             player.turning.delayCount++;
@@ -6964,34 +6983,7 @@ class App extends Component {
         }
 
         // KEY PRESS RELEASE CHECKS!!
-          // OLD TURNER
-        // if (player.turning.state === false && player.flanking.state !== true) {
-        //   console.log('turn complete');
-        //   player.direction = player.turning.toDirection;
-        //   player.nextPosition = {
-        //     x: player.currentPosition.cell.center.x,
-        //     y: player.currentPosition.cell.center.y
-        //   }
-        //   player.moving = {
-        //     state: false,
-        //     step: 0,
-        //     course: '',
-        //     origin: {
-        //       number: {
-        //         x: player.currentPosition.cell.number.x,
-        //         y: player.currentPosition.cell.number.y
-        //       },
-        //       center: {
-        //         x: player.currentPosition.cell.center.x,
-        //         y: player.currentPosition.cell.center.y
-        //       },
-        //     },
-        //     destination: player.target.cell.center
-        //   }
-        //   player.turning.toDirection = '';
-        //   player.turning.state = undefined;
-        //   this.getTarget(player);
-        // }
+
 
         // DEFEND FEINT
         if (this.keyPressed[player.number-1].defend === false && player.defending.state === true) {
@@ -7009,6 +7001,17 @@ class App extends Component {
             limit: player.defendDecay.limit,
           }
 
+          if (player.prePull.state === true) {
+            console.log('player was pre pulling. reset');
+            player.prePull = {
+              state: false,
+              count: 0,
+              limit: player.prePull.limit,
+              targetCell: undefined,
+              direction: '',
+              puller: 0,
+            }
+          }
 
 
           let defendPopup = player.popups.find(x=>x.msg.split("_")[0] === 'defending')
@@ -7053,7 +7056,7 @@ class App extends Component {
         }
 
 
-        // CHECK & UPDATE ACTIONS IN PROGRESS!!
+        // RESET MOVE SPEED POST PUSHBACK
         if (player.pushBack.state !== true && player.pushBack.prePushBackMoveSpeed !== 0) {
 
           player.speed.move = player.player.pushBack.prePushBackMoveSpeed;
@@ -8675,6 +8678,21 @@ class App extends Component {
 
 
 
+        // PUSHING
+        // key release prepush check
+        if (player.prePush.state === true && this.keyPressed[player.number-1][player.prePush.direction] !== true) {
+          console.log('mid prePush but key released. reset prePush');
+          player.prePush = {
+            state: false,
+            count: 0,
+            limit: player.prePush.limit,
+            targetCell: undefined,
+            direction: "",
+            pusher: undefined,
+          }
+        }
+
+
         // PULL CHECK
         if (this.keyPressed[player.number-1].defend === true && player.pulling.state !== true && player.turning.state !== true && player.postPull.state !== true) {
         // if (this.keyPressed[player.number-1].defend === true && player.pulling.state !== true && player.turning.state !== true) {
@@ -8738,6 +8756,8 @@ class App extends Component {
             };
           }
         }
+
+
 
 
 
@@ -14359,7 +14379,9 @@ class App extends Component {
 
         // DROP ITEMS & DAMAGE/DESTROY OBSTACLES & BARRIERS
         for(const cell of this.obstacleBarrierToDestroy) {
-          if (gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y) {
+          if (gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y && cell.cell.obstacle.state === true) {
+          // if (gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y) {
+            // console.log('heeeeere',cell.cell.obstacle.state,cell.cell.number);
             if(cell.count % 3 === 0) {
               if (cell.type === "obstacle") {
                 let obstacleImg = obstacleImgs[cell.cell.obstacle.type];
@@ -17456,9 +17478,7 @@ class App extends Component {
           canPushTargetFree = false;
           destCellOccupant = "obstacle";
           resetPush = true;
-          console.log('2',destCellRef.number);
         }
-
 
         if (destCellRef.barrier.state === true) {
           let barrier = false;
@@ -17488,7 +17508,6 @@ class App extends Component {
           }
 
           if (barrier === true) {
-            console.log('3');
               canPushTargetFree = false;
               destCellOccupant = "barrier";
               resetPush = true;
@@ -17544,10 +17563,9 @@ class App extends Component {
 
         }
 
-
         for(const plyr of this.players) {
           if(plyr.currentPosition.cell.number.x === destCell.x && plyr.currentPosition.cell.number.y === destCell.y) {
-            console.log('1');
+
             // change when implementing push player
             canPushTargetFree = false;
             resetPush = true;
@@ -17980,7 +17998,7 @@ class App extends Component {
       }
       pushStrengthPlayer += (pusher.crits.pushBack-3);
       pushStrengthPlayer += (pusher.crits.guardBreak-2);
-      pushStrengthPlayer += 15;
+      // pushStrengthPlayer += 15;
 
 
       let destCell = {
@@ -18136,7 +18154,9 @@ class App extends Component {
         console.log('extra push force. Push player w/o plyr move');
         movePlayer = false;
       }
-      movePlayer = true;
+
+
+      // movePlayer = true;
 
       if(!destCellRef && pushStrengthPlayer >= pushStrengthThreshold) {
 
@@ -18489,7 +18509,6 @@ class App extends Component {
       if (player.prePull.state === true) {
 
         // if (player.prePull.count >= player.prePull.limit) {
-        // if (player.prePull.count >= player.limit) {
         if (player.prePull.count >= limit) {
 
           console.log('pre pull limit. check can pull');
