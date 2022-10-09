@@ -19531,7 +19531,8 @@ class App extends Component {
 
 
         // MOVE TARGET PLAYER
-        if (puller.prePull.direction !== targetPlayer.direction) {
+        // this.getTarget(targetPlayer);
+        if (impactDirection !== targetPlayer.direction) {
           this.players[targetPlayer.number-1].strafing.direction = impactDirection;
           this.players[targetPlayer.number-1].strafing.state = true;
           this.players[targetPlayer.number-1].action = 'strafe moving';
@@ -19605,7 +19606,9 @@ class App extends Component {
           }
 
           if (puller.turning.delayCount === 0) {
-            this.players[puller.number-1].action = 'moving';
+            this.players[puller.number-1].strafing.direction = impactDirection;
+            this.players[puller.number-1].strafing.state = true;
+            this.players[puller.number-1].action = 'strafe moving';
             this.players[puller.number-1].moving = {
               state: true,
               step: 0,
