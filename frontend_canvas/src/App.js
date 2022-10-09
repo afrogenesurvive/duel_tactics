@@ -8731,44 +8731,44 @@ class App extends Component {
 
           if (player.direction === 'south' && this.keyPressed[player.number-1].north === true) {
             if (player.target.occupant.type === "obstacle" && player.pulling.state !== true) {
-              // console.log('pulling obstacle trigger north',player.prePull.state,player.prePull.count);
+              console.log('pulling obstacle trigger north',player.prePull.state,player.prePull.count);
               this.preObstaclePullCheck(player,player.target,'north')
             }
             if (player.target.occupant.type === "player" && player.pulling.state !== true) {
-              // console.log('pulling player trigger north',player.prePull.state,player.prePull.count);
+              console.log('pulling player trigger north',player.prePull.state,player.prePull.count);
               this.prePlayerPullCheck(player,player.target,'north')
             }
           }
           if (player.direction === 'north' && this.keyPressed[player.number-1].south === true) {
 
             if (player.target.occupant.type === "obstacle" && player.pulling.state !== true) {
-              // console.log('pulling obstacle trigger south',player.prePull.state,player.prePull.count);
+              console.log('pulling obstacle trigger south',player.prePull.state,player.prePull.count);
               this.preObstaclePullCheck(player,player.target,'south')
             }
             if (player.target.occupant.type === "player" && player.pulling.state !== true) {
-              // console.log('pulling player trigger south',player.prePull.state,player.prePull.count);
+              console.log('pulling player trigger south',player.prePull.state,player.prePull.count);
               this.prePlayerPullCheck(player,player.target,'south')
             }
           }
           if (player.direction === 'west' && this.keyPressed[player.number-1].east === true) {
 
             if (player.target.occupant.type === "obstacle" && player.pulling.state !== true) {
-              // console.log('pulling obstacle trigger east',player.prePull.state,player.prePull.count);
+              console.log('pulling obstacle trigger east',player.prePull.state,player.prePull.count);
               this.preObstaclePullCheck(player,player.target,'east')
             }
             if (player.target.occupant.type === "player" && player.pulling.state !== true) {
-              // console.log('pulling player trigger east',player.prePull.state,player.prePull.count);
+              console.log('pulling player trigger east',player.prePull.state,player.prePull.count);
               this.prePlayerPullCheck(player,player.target,'east')
             }
           }
           if (player.direction === 'east' && this.keyPressed[player.number-1].west === true) {
 
             if (player.target.occupant.type === "obstacle" && player.pulling.state !== true) {
-              // console.log('pulling obstacle trigger west',player.prePull.state,player.prePull.count);
+              console.log('pulling obstacle trigger west',player.prePull.state,player.prePull.count);
               this.preObstaclePullCheck(player,player.target,'west')
             }
             if (player.target.occupant.type === "player" && player.pulling.state !== true) {
-              // console.log('pulling player trigger west',player.prePull.state,player.prePull.count);
+              console.log('pulling player trigger west',player.prePull.state,player.prePull.count);
               this.prePlayerPullCheck(player,player.target,'west')
             }
           }
@@ -18735,7 +18735,7 @@ class App extends Component {
       if (preMoveSpeed > 4) {
         moveSpeed = .2;
       }
-
+      // pullStrengthThreshold = 100
 
       if (destCellRef) {
 
