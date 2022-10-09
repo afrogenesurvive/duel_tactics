@@ -5952,6 +5952,8 @@ class App extends Component {
 
                 }
 
+
+                // PULLED, PUSHED PLAYERS
                 if (player.pushing.state === true) {
                   player.pushing = {
                     state: false,
@@ -5965,6 +5967,7 @@ class App extends Component {
                     targetCell: undefined,
                     moveSpeed: 0,
                   }
+                  player.postPull.state = true;
                 }
                 let deflectPullPushedPlayer = false;
                 if (player.pulled.state === true) {
@@ -5989,7 +5992,7 @@ class App extends Component {
                   deflectPullPushedPlayer === true &&
                   this.gridInfo.find(x => x.number.x === player.currentPosition.cell.number.x && x.number.y === player.currentPosition.cell.number.y).terrain.type !== "deep"
                 ) {
-                  console.log('pulled pushed player at destination. deflect?');
+                  // console.log('pulled pushed player at destination. deflect?');
 
                   if (this.rnJesus(1,player.crits.guardBreak) === 1) {
                     this.players[player.number-1].action = 'deflected';
@@ -6937,6 +6940,7 @@ class App extends Component {
 
 
         // TURNER!!
+        // OLD TURNER
         // if (player.turning.state === true && player.turning.toDirection === this.players[player.number-1].turnCheckerDirection) {
         //   console.log('player',player.number,' turn-ing');
         //   if (this.keyPressed[this.currentPlayer-1][this.players[player.number-1].turnCheckerDirection] === false) {
@@ -8707,18 +8711,18 @@ class App extends Component {
           }
         }
 
-        // key release prepull check
-        if (player.prePull.state === true && this.keyPressed[player.number-1][player.prePush.direction] !== true) {
-          console.log('mid prePull but key released. reset prePull');
-          player.prePull = {
-            state: false,
-            count: 0,
-            limit: player.prePull.limit,
-            targetCell: undefined,
-            direction: "",
-            puller: undefined,
-          }
-        }
+        // key release prepull check??
+        // if (player.prePull.state === true && this.keyPressed[player.number-1][player.prePush.direction] !== true) {
+        //   console.log('mid prePull but key released. reset prePull');
+        //   player.prePull = {
+        //     state: false,
+        //     count: 0,
+        //     limit: player.prePull.limit,
+        //     targetCell: undefined,
+        //     direction: "",
+        //     puller: undefined,
+        //   }
+        // }
 
 
         // PULL CHECK
@@ -8727,44 +8731,44 @@ class App extends Component {
 
           if (player.direction === 'south' && this.keyPressed[player.number-1].north === true) {
             if (player.target.occupant.type === "obstacle" && player.pulling.state !== true) {
-              console.log('pulling obstacle trigger north',player.prePull.state,player.prePull.count);
+              // console.log('pulling obstacle trigger north',player.prePull.state,player.prePull.count);
               this.preObstaclePullCheck(player,player.target,'north')
             }
             if (player.target.occupant.type === "player" && player.pulling.state !== true) {
-              console.log('pulling player trigger north',player.prePull.state,player.prePull.count);
+              // console.log('pulling player trigger north',player.prePull.state,player.prePull.count);
               this.prePlayerPullCheck(player,player.target,'north')
             }
           }
           if (player.direction === 'north' && this.keyPressed[player.number-1].south === true) {
 
             if (player.target.occupant.type === "obstacle" && player.pulling.state !== true) {
-              console.log('pulling obstacle trigger south',player.prePull.state,player.prePull.count);
+              // console.log('pulling obstacle trigger south',player.prePull.state,player.prePull.count);
               this.preObstaclePullCheck(player,player.target,'south')
             }
             if (player.target.occupant.type === "player" && player.pulling.state !== true) {
-              console.log('pulling player trigger south',player.prePull.state,player.prePull.count);
+              // console.log('pulling player trigger south',player.prePull.state,player.prePull.count);
               this.prePlayerPullCheck(player,player.target,'south')
             }
           }
           if (player.direction === 'west' && this.keyPressed[player.number-1].east === true) {
 
             if (player.target.occupant.type === "obstacle" && player.pulling.state !== true) {
-              console.log('pulling obstacle trigger east',player.prePull.state,player.prePull.count);
+              // console.log('pulling obstacle trigger east',player.prePull.state,player.prePull.count);
               this.preObstaclePullCheck(player,player.target,'east')
             }
             if (player.target.occupant.type === "player" && player.pulling.state !== true) {
-              console.log('pulling player trigger east',player.prePull.state,player.prePull.count);
+              // console.log('pulling player trigger east',player.prePull.state,player.prePull.count);
               this.prePlayerPullCheck(player,player.target,'east')
             }
           }
           if (player.direction === 'east' && this.keyPressed[player.number-1].west === true) {
 
             if (player.target.occupant.type === "obstacle" && player.pulling.state !== true) {
-              console.log('pulling obstacle trigger west',player.prePull.state,player.prePull.count);
+              // console.log('pulling obstacle trigger west',player.prePull.state,player.prePull.count);
               this.preObstaclePullCheck(player,player.target,'west')
             }
             if (player.target.occupant.type === "player" && player.pulling.state !== true) {
-              console.log('pulling player trigger west',player.prePull.state,player.prePull.count);
+              // console.log('pulling player trigger west',player.prePull.state,player.prePull.count);
               this.prePlayerPullCheck(player,player.target,'west')
             }
           }
@@ -8776,7 +8780,7 @@ class App extends Component {
             console.log('post pull count',player.postPull.count);
           }
           if (player.postPull.count >= player.postPull.limit) {
-            console.log('post pull limit');
+            // console.log('post pull limit');
             player.postPull = {
               state: false,
               count: 0,
@@ -9645,7 +9649,7 @@ class App extends Component {
             if (keyPressedDirection !== player.direction && player.strafing.state === false) {
 
               // console.log('change player direction to',keyPressedDirection);
-              console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
+              // console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
               player.turning.state = true;
               player.turning.toDirection = keyPressedDirection;
 
@@ -9906,7 +9910,7 @@ class App extends Component {
                     count: 1,
                     limit: player.attacking.limit,
                   }
-                  console.log('start attack');
+                  // console.log('start attack');
 
                   if (plyrPullPushed === true) {
                     breakPulledPushed = true;
@@ -9945,7 +9949,7 @@ class App extends Component {
 
                 if (player.stamina.current - this.staminaCostRef.defend >= 0) {
 
-                  console.log('start defending');
+                  // console.log('start defending');
 
                   if (plyrPullPushed === true) {
                     breakPulledPushed = true;
@@ -10025,6 +10029,7 @@ class App extends Component {
         }
 
 
+        // BREAK FROM PULLED, PUSHED COMPLETE
         if (breakPulledPushed === true) {
           console.log('player ',player.number,' was being pre-pulled/pushed by ',plyrPullPushedPlyr,' break pulling/pushing and deflect?');
 
@@ -17474,7 +17479,7 @@ class App extends Component {
 
     if (type.split('_')[0] === 'hitPushBolt') {
       impactDirection = type.split('_')[1];
-      console.log('impactDirection',type.split('_')[1]);
+      // console.log('impactDirection',type.split('_')[1]);
     }
     if(type === 'hitPush') {
       impactDirection = player.direction;
@@ -18116,6 +18121,7 @@ class App extends Component {
           destCellOccupant = "obstacle";
           resetPush = true;
         }
+
         if (destCellRef.barrier.state === true) {
           let barrier = false;
           switch (impactDirection) {
@@ -18198,6 +18204,7 @@ class App extends Component {
           }
 
         }
+
         for(const plyr of this.players) {
           if(plyr.currentPosition.cell.number.x === destCell.x && plyr.currentPosition.cell.number.y === destCell.y) {
 
@@ -18334,7 +18341,6 @@ class App extends Component {
         }
         let targetPlyrNextPosition = this.lineCrementer(targetPlayer);
         this.players[targetPlayer.number-1].nextPosition = targetPlyrNextPosition;
-        console.log("!!!player "+targetPlayer.number+" is being pushed out of bounds by "+pusher.number+"!!!");
 
 
         // MOVE PUSHER
@@ -18444,8 +18450,6 @@ class App extends Component {
         let targetPlyrNextPosition = this.lineCrementer(targetPlayer);
         this.players[targetPlayer.number-1].nextPosition = targetPlyrNextPosition;
 
-
-        console.log("!!!player ",targetPlayer.number," is being pushed to",destCellRef.number," by ",pusher.number,"!!!");
 
         // MOVE PUSHER
         this.players[pusher.number-1].prePush = {
@@ -18565,7 +18569,7 @@ class App extends Component {
     }
     else if (refCell.obstacle.moving.pushable === true && myCellCheck === true) {
       if (player.prePull.state !== true && player.prePull.count === 0) {
-        console.log('start pre pull');
+        // console.log('start pre pull');
         player.prePull = {
           state: true,
           count: player.prePull.count++,
@@ -18582,7 +18586,7 @@ class App extends Component {
         // if (player.prePull.count >= player.prePull.limit) {
         if (player.prePull.count >= limit) {
 
-          console.log('pre pull limit. check can pull');
+          // console.log('pre pull limit. check can pull');
           this.players[player.number-1].prePull = player.prePull;
           this.players[player.number-1].pulling = player.pulling;
 
@@ -18602,7 +18606,7 @@ class App extends Component {
              console.log('pre pulling the same obstacle. Continue',player.prePull.count);
            }
            else {
-             console.log('pre pull player, target or direction has changed. Reset prepull');
+             // console.log('pre pull player, target or direction has changed. Reset prepull');
              player.action = 'idle';
              player.prePull = {
                state: false,
@@ -18802,7 +18806,7 @@ class App extends Component {
       }
       if(!destCellRef && pullStrengthPlayer >= pullStrengthThreshold) {
 
-        console.log('ready to pull',moveSpeed);
+        // console.log('ready to pull',moveSpeed);
 
         let voidCenter = {
           x: undefined,
@@ -19170,7 +19174,7 @@ class App extends Component {
 
     if (targetOpen === true && myCellCheck === true) {
       if (puller.prePull.state !== true && puller.prePull.count === 0) {
-        console.log('start player pre pull');
+        // console.log('start player pre pull');
         puller.prePull = {
           state: true,
           count: puller.prePull.count++,
