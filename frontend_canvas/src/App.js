@@ -5968,6 +5968,43 @@ class App extends Component {
                     moveSpeed: 0,
                   }
                   player.postPull.state = true;
+
+                  // this.players[player.number-1].prePull = {
+                  //     state: false,
+                  //     count: 0,
+                  //     limit: player.prePull.limit,
+                  //     targetCell: undefined,
+                  //     direction: "",
+                  //     puller: undefined,
+                  // }
+                  // this.players[player.number-1].pulling = {
+                  //     state: false,
+                  //     targetCell: undefined,
+                  //     moveSpeed: 0,
+                  // }
+                  //
+                  // this.players[player.number-1].defending = {
+                  //   state: false,
+                  //   count: 0,
+                  //   limit: player.defending.limit,
+                  // };
+                  // this.players[player.number-1].defendDecay = {
+                  //   state: false,
+                  //   count: 0,
+                  //   limit: 25,
+                  // };
+                  // // this.players[player.number-1].postPull = {
+                  // //   state: true,
+                  // //   count: 0,
+                  // //   limit: player.postPull.limit
+                  // // }
+                  // player.turning.state = false;
+                  //
+                  // this.keyPressed[player.number-1].defend = false;
+                  // this.keyPressed[player.number-1].north = false;
+                  // this.keyPressed[player.number-1].south = false;
+                  // this.keyPressed[player.number-1].east = false;
+                  // this.keyPressed[player.number-1].west = false;
                 }
                 let deflectPullPushedPlayer = false;
                 if (player.pulled.state === true) {
@@ -18584,6 +18621,7 @@ class App extends Component {
       if (player.prePull.state === true) {
 
         // if (player.prePull.count >= player.prePull.limit) {
+        // if (player.prePull.count >= 25) {
         if (player.prePull.count >= limit) {
 
           // console.log('pre pull limit. check can pull');
@@ -18804,6 +18842,7 @@ class App extends Component {
         }
 
       }
+
       if(!destCellRef && pullStrengthPlayer >= pullStrengthThreshold) {
 
         // console.log('ready to pull',moveSpeed);
@@ -19245,6 +19284,23 @@ class App extends Component {
         direction: "",
         puller: undefined,
       };
+
+      this.players[puller.number-1].defending = {
+        state: false,
+        count: 0,
+        limit: player.defending.limit,
+      };
+      this.players[puller.number-1].defendDecay = {
+        state: false,
+        count: 0,
+        limit: 25,
+      };
+
+      this.keyPressed[puller.number-1].defend = false;
+      this.keyPressed[puller.number-1].north = false;
+      this.keyPressed[puller.number-1].south = false;
+      this.keyPressed[puller.number-1].east = false;
+      this.keyPressed[puller.number-1].west = false;
     }
 
 
@@ -19557,6 +19613,16 @@ class App extends Component {
             direction: "",
             puller: undefined,
         }
+        this.players[puller.number-1].defending = {
+          state: false,
+          count: 0,
+          limit: puller.defending.limit
+        };
+        this.players[puller.number-1].defendDecay = {
+          state: false,
+          count: 0,
+          limit: puller.defendDecay.limit,
+        };
 
         if (movePlayer === true) {
 
