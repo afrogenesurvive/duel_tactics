@@ -2545,15 +2545,62 @@ class App extends Component {
     };
     this.staminaCostRef = {
       attack: {
-        blunt: 2,
-        unarmed: 2,
-        sword: 3,
-        spear: 4,
-        crossbow: 3,
+        unarmed: {
+          blunt: {
+            pre: 1,
+            peak: 2,
+          },
+          normal: {
+            pre: 1,
+            peak: 2,
+          },
+        },
+        sword: {
+          blunt: {
+            pre: 2,
+            peak: 3,
+          },
+          normal: {
+            pre: 2,
+            peak: 3,
+          },
+        },
+        spear: {
+          blunt: {
+            pre: 2,
+            peak: 4,
+          },
+          normal: {
+            pre: 2,
+            peak: 4,
+          },
+        },
+        crossbow: {
+          blunt: {
+            pre: 1,
+            peak: 3,
+          },
+          normal: {
+            pre: 1,
+            peak: 3,
+          },
+        },
       },
-      deflected: 3,
-      defend: 1.5,
-      dodge: 4,
+      deflected: {
+        outOfStamina: 0,
+        attacked: 3,
+        bluntAttacked: 2,
+        defended: 3,
+        attack: 5,
+      },
+      defend: {
+        pre: 1.5,
+        peak: 2,
+      },
+      dodge: {
+        pre: 2,
+        peak: 4
+      },
       flank: 5,
       jump: 6,
       pushBack: 7,
@@ -5608,11 +5655,12 @@ class App extends Component {
 
       player.stamina.current = player.stamina.current + .05;
       player.stamina.current = +(Math.round((player.stamina.current) + "e+" + 3)  + "e-" + 3);
+
       if (player.stamina.current >= player.stamina.max) {
         player.stamina.current = player.stamina.max;
       }
       if (player.stamina.current === 1) {
-        // console.log('out of stamina');
+        console.log('OUT OF STAMINA @ player update');
         player.flanking = {
           checking: false,
           preFlankDirection: '',
@@ -5632,7 +5680,11 @@ class App extends Component {
             end: 10,
           }
         }
+
+        this.attackedCancel(player);
+
         if (player.success.deflected.state !== true) {
+
           this.players[player.number-1].success.deflected = {
             state: true,
             count: 1,
@@ -5647,7 +5699,25 @@ class App extends Component {
           }
         }
 
+        if (!player.popups.find(x => x.msg === 'outOfStamina')) {
+          player.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 10,
+              type: '',
+              position: '',
+              msg: 'outOfStamina',
+              img: '',
+
+            }
+          )
+        }
+
+
       }
+
+      // AI RETREAT ON LOW STAMINA
       if (player.stamina.current <= 4) {
         if (player.ai.state === true) {
           console.log('ai player',player.number,' almost out of stamina. Retreat');
@@ -5681,7 +5751,10 @@ class App extends Component {
       if (player.success.deflected.count === 2) {
         // console.log('count',player.success.deflected.count,'limit',player.success.deflected.limit,'type',player.success.deflected.type);
 
-        if (player.success.deflected.type === 'blunt_attacked' || player.success.deflected.type === 'defended') {
+        if (
+          player.success.deflected.type === 'blunt_attacked' ||
+          player.success.deflected.type === 'defended'
+        ) {
 
           player.popups.push(
             {
@@ -5696,6 +5769,7 @@ class App extends Component {
             }
           )
         }
+
         if (player.success.deflected.type === 'attack') {
           player.popups.push(
             {
@@ -5810,7 +5884,7 @@ class App extends Component {
       // this.aiDeflectedCheck.splice(indx,1)
       let newArr = this.aiDeflectedCheck.filter(x=>x !== player.number)
       this.aiDeflectedCheck = newArr;
-      console.log('this.aiDeflectedCheck',this.aiDeflectedCheck);
+      // console.log('this.aiDeflectedCheck',this.aiDeflectedCheck);
 
 
       // CANCEL AI ATTACK, DEFEND!!
@@ -7040,6 +7114,7 @@ class App extends Component {
             count: 0,
             limit: player.defendDecay.limit,
           }
+          player.stamina.current -= this.staminaCostRef.defend.pre;
 
           if (player.prePull.state === true) {
             console.log('player was pre pulling. reset');
@@ -7051,6 +7126,7 @@ class App extends Component {
               direction: '',
               puller: 0,
             }
+
           }
 
 
@@ -7068,15 +7144,20 @@ class App extends Component {
         if (this.keyPressed[player.number-1].attack === false && player.attacking.state === true) {
 
             let atkPeak;
+            let atkType = player.currentWeapon.type;
+            let blunt = 'normal';
             if (player.currentWeapon.name === "") {
               atkPeak = this.attackAnimRef.peak.unarmed;
             }
             else {
               atkPeak = this.attackAnimRef.peak[player.currentWeapon.type];
             }
+            if (player.bluntAttack === true) {
+              blunt = 'blunt';
+            }
 
             if (player.attacking.count < atkPeak) {
-                console.log('attack windup key release before peak. feinting...');
+                console.log('attack windup key release before peak. feinting. refund stamina part');
                 player.bluntAttack = false
                 player.action = 'idle';
                 player.attacking = {
@@ -7085,10 +7166,29 @@ class App extends Component {
                   limit: player.attacking.limit,
                 }
                 player.attackStrength = 0;
+                player.stamina.current -= this.staminaCostRef.attack[atkType][blunt].pre;
             }
 
         }
 
+        // DODGE RELEASE/FEINT
+        if (player.dodging.countState === true && player.dodging.count <= (player.dodging.peak.start - player.crits.dodge) && this.keyPressed[player.number-1].dodge !== true) {
+          console.log('released dodge key while winding up. cancel dodge. refund stamina');
+          player.stamina.current += this.staminaCostRef.dodge.pre;
+          player.action = 'idle';
+          player.dodging = {
+            countState: false,
+            state: false,
+            count: 0,
+            limit: player.dodging.limit,
+            peak: {
+              start: player.dodging.peak.start,
+              end: player.dodging.peak.end,
+            }
+          }
+        }
+
+        // STRAFE RELEASE
         if (player.strafeReleaseHook === true ) {
           player.strafing.state = false;
           player.strafeReleaseHook = false;
@@ -7164,21 +7264,17 @@ class App extends Component {
         if (player.attacking.state === true) {
 
 
-          let attackPeak = this.attackAnimRef.peak.sword;
-          if (player.currentWeapon.type === 'sword') {
-            this.players[player.number-1].attacking.limit = this.attackAnimRef.limit.sword;
-          }
-          if (player.currentWeapon.type === 'spear') {
-            this.players[player.number-1].attacking.limit = this.attackAnimRef.limit.spear;
-            attackPeak = this.attackAnimRef.peak.spear;
-          }
-          if (player.currentWeapon.type === 'crossbow') {
-            this.players[player.number-1].attacking.limit = this.attackAnimRef.limit.crossbow;
-            attackPeak = this.attackAnimRef.peak.crossbow;
-          }
+          let attackPeak = this.attackAnimRef.peak[player.currentWeapon.type];
+          let stamAtkType = player.currentWeapon.type;
+          this.players[player.number-1].attacking.limit = this.attackAnimRef.limit[player.currentWeapon.type];
           if (player.currentWeapon.type === '') {
             this.players[player.number-1].attacking.limit = this.attackAnimRef.limit.unarmed;
             attackPeak = this.attackAnimRef.peak.unarmed;
+            stamAtkType = 'unarmed';
+          }
+          let blunt = 'normal';
+          if (player.bluntAttack === true) {
+            blunt = 'blunt';
           }
 
 
@@ -7308,424 +7404,392 @@ class App extends Component {
 
           // TIME TO ATTACK IS NOW!
           if (player.attacking.count === attackPeak) {
+
             console.log('attack peak',player.attacking.count,'plyr',player.number);
 
-
             // WEAPON STAMINA COST!!
-            if(player.bluntAttack !== true) {
+            if (player.stamina.current - this.staminaCostRef.attack[stamAtkType][blunt].peak >= 0) {
+                player.stamina.current -= this.staminaCostRef.attack[stamAtkType][blunt].peak;
 
-              let weapon = player.currentWeapon.type
-              if (weapon === '') {
-                weapon = 'unarmed'
-              }
-              this.players[player.number-1].stamina.current = this.players[player.number-1].stamina.current - this.staminaCostRef.attack[weapon];
-            }
+              // CREATE NEW PROJECTILE
+              if (player.currentWeapon.type === 'crossbow' && player.bluntAttack !== true && player.items.ammo > 0) {
+                // console.log('firing crossbow');
 
-
-            // CREATE NEW PROJECTILE
-            if (player.currentWeapon.type === 'crossbow' && player.items.ammo > 0) {
-              // console.log('firing crossbow');
-
-              let plyrX = player;
-              let origin = plyrX.currentPosition.cell;
-              let currentPosition = plyrX.currentPosition.cell;
-              let nextPosition = plyrX.currentPosition.cell.center;
-              let elevation = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y).elevation.number;
+                let plyrX = player;
+                let origin = plyrX.currentPosition.cell;
+                let currentPosition = plyrX.currentPosition.cell;
+                let nextPosition = plyrX.currentPosition.cell.center;
+                let elevation = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y).elevation.number;
 
 
-              let projectileId = this.projectiles.length;
-              let boltx = {
-                id: '000'+projectileId+'',
-                type: 'bolt',
-                owner: plyrX.number,
-                origin: origin,
-                direction: plyrX.direction,
-                moving: {
-                  state: false,
-                  step: 0,
-                  course: '',
-                  origin: {
-                    number: currentPosition.number,
-                    center: currentPosition.center,
-                  },
-                  destination: {
-                    x: 0,
-                    y: 0,
-                  }
-                },
-                currentPosition: {
-                  number: currentPosition.number,
-                  center: currentPosition.center
-                },
-                nextPosition: {
-                  x: nextPosition.x,
-                  y: nextPosition.y,
-                },
-                target: {
-                  path: [],
-                  free: true,
-                  occupant: {
-                    type: '',
-                    player: '',
-                  },
-                  void: false,
-                },
-                speed: this.projectileSpeed,
-                elevation: elevation,
-                kill: false,
-              }
-              this.projectiles.push(boltx)
-              player.items.ammo--
-              player.currentWeapon.effect = 'ammo+0';
-
-              this.getBoltTarget(boltx)
-
-
-              // STAMINA COST!!
-
-              this.players[player.number-1].stamina.current = this.players[player.number-1].stamina.current - this.staminaCostRef.attack.crossbow;
-              // console.log('start projectile',boltx.currentPosition.number, this.players[boltx.owner-1].currentPosition.cell.number,this.projectiles);
-
-              // this.boltCrementer(bolt)
-            }
-            if (player.currentWeapon.type === 'crossbow' && player.items.ammo <= 0) {
-              // console.log('no ammo!');
-              this.players[player.number-1].statusDisplay = {
-                state: true,
-                status: 'out of ammo',
-                count: 1,
-                limit: this.players[player.number-1].statusDisplay.limit,
-              }
-              player.currentWeapon.effect = 'ammo+0'
-
-              if (!player.popups.find(x=>x.msg === 'outOfAmmo')) {
-                player.popups.push(
-                  {
+                let projectileId = this.projectiles.length;
+                let boltx = {
+                  id: '000'+projectileId+'',
+                  type: 'bolt',
+                  owner: plyrX.number,
+                  origin: origin,
+                  direction: plyrX.direction,
+                  moving: {
                     state: false,
-                    count: 0,
-                    limit: 25,
-                    type: '',
-                    position: '',
-                    msg: 'outOfAmmo',
-                    img: '',
+                    step: 0,
+                    course: '',
+                    origin: {
+                      number: currentPosition.number,
+                      center: currentPosition.center,
+                    },
+                    destination: {
+                      x: 0,
+                      y: 0,
+                    }
+                  },
+                  currentPosition: {
+                    number: currentPosition.number,
+                    center: currentPosition.center
+                  },
+                  nextPosition: {
+                    x: nextPosition.x,
+                    y: nextPosition.y,
+                  },
+                  target: {
+                    path: [],
+                    free: true,
+                    occupant: {
+                      type: '',
+                      player: '',
+                    },
+                    void: false,
+                  },
+                  speed: this.projectileSpeed,
+                  elevation: elevation,
+                  kill: false,
+                }
+                this.projectiles.push(boltx)
+                player.items.ammo--
+                player.currentWeapon.effect = 'ammo+0';
 
+                this.getBoltTarget(boltx)
+
+
+                // STAMINA COST!!
+
+                this.players[player.number-1].stamina.current = this.players[player.number-1].stamina.current - this.staminaCostRef.attack.crossbow;
+                // console.log('start projectile',boltx.currentPosition.number, this.players[boltx.owner-1].currentPosition.cell.number,this.projectiles);
+
+                // this.boltCrementer(bolt)
+              }
+              if (player.currentWeapon.type === 'crossbow' && player.bluntAttack !== true && player.items.ammo <= 0) {
+                // console.log('no ammo!');
+                this.players[player.number-1].statusDisplay = {
+                  state: true,
+                  status: 'out of ammo',
+                  count: 1,
+                  limit: this.players[player.number-1].statusDisplay.limit,
+                }
+                player.currentWeapon.effect = 'ammo+0'
+
+                if (!player.popups.find(x=>x.msg === 'outOfAmmo')) {
+                  player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 25,
+                      type: '',
+                      position: '',
+                      msg: 'outOfAmmo',
+                      img: '',
+
+                    }
+                  )
+                }
+
+              }
+              if (player.currentWeapon.type === 'crossbow' && player.bluntAttack === true && player.target.occupant.type === 'player') {
+                console.log('blunt attack w/ crossbow');
+                if (this.players.[player.target.occupant.player-1].defending.state === false || this.players.[player.target.occupant.player-1].direction === player.direction) {
+                  player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: (this.attackAnimRef.limit.crossbow-this.attackAnimRef.peak.crossbow),
+                      type: '',
+                      position: '',
+                      msg: 'attackingBlunt',
+                      img: '',
+
+                    }
+                  )
+
+                  this.players[player.target.occupant.player-1].action = 'deflected';
+
+                  this.players[player.target.occupant.player-1].stamina.current = this.players[player.target.occupant.player-1].stamina.current - 3;
+                  this.players[player.target.occupant.player-1].success.deflected = {
+                    state: true,
+                    count: 1,
+                    limit: this.deflectedLengthRef.bluntAttacked,
+                    predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
+                    type: 'blunt_attacked',
+                  };
+
+
+                  if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
+                    this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
                   }
-                )
+                }
               }
 
-            }
+              // MELEE ATTACK!!
+              else if (player.currentWeapon.type !== 'crossbow' ) {
 
-            // MELEE ATTACK!!
-            else if (player.currentWeapon.type !== 'crossbow' ) {
+                this.getTarget(player)
 
-              this.getTarget(player)
+                // CELLS UNDER ATTACK!
+                let cellUnderAttack1 = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y)
+                let cellUnderAttack2;
+                if (player.currentWeapon.type === 'spear') {
+                  cellUnderAttack2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y)
+                }
+                if (player.currentWeapon.type === 'spear') {
+                  // console.log('spear target',player.target);
 
-              // CELLS UNDER ATTACK!
-              let cellUnderAttack1 = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y)
-              let cellUnderAttack2;
-              if (player.currentWeapon.type === 'spear') {
-                cellUnderAttack2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y)
-              }
-              if (player.currentWeapon.type === 'spear') {
-                // console.log('spear target',player.target);
+                  // if (cellUnderAttack1 && cellUnderAttack1.terrain.type !== 'deep') {
+                  //   this.cellsUnderAttack.push(
+                  //     {
+                  //       number: {
+                  //         x: player.target.cell.number.x,
+                  //         y: player.target.cell.number.y,
+                  //       },
+                  //       count: 1,
+                  //       limit: 8,
+                  //     },
+                  //   )
+                  // }
+                  // if (cellUnderAttack2 && cellUnderAttack2.terrain.type !== 'deep') {
+                  //   this.cellsUnderAttack.push(
+                  //     {
+                  //       number: {
+                  //         x: player.target.cell2.number.x,
+                  //         y: player.target.cell2.number.y,
+                  //       },
+                  //       count: 1,
+                  //       limit: 8,
+                  //     },
+                  //   )
+                  //
+                  // }
 
-                // if (cellUnderAttack1 && cellUnderAttack1.terrain.type !== 'deep') {
-                //   this.cellsUnderAttack.push(
-                //     {
-                //       number: {
-                //         x: player.target.cell.number.x,
-                //         y: player.target.cell.number.y,
-                //       },
-                //       count: 1,
-                //       limit: 8,
-                //     },
-                //   )
-                // }
-                // if (cellUnderAttack2 && cellUnderAttack2.terrain.type !== 'deep') {
-                //   this.cellsUnderAttack.push(
-                //     {
-                //       number: {
-                //         x: player.target.cell2.number.x,
-                //         y: player.target.cell2.number.y,
-                //       },
-                //       count: 1,
-                //       limit: 8,
-                //     },
-                //   )
-                //
-                // }
+                  this.cellsUnderAttack.push(
+                    {
+                      number: {
+                        x: player.target.cell.number.x,
+                        y: player.target.cell.number.y,
+                      },
+                      count: 1,
+                      limit: 8,
+                    },
+                  )
+                  this.cellsUnderAttack.push(
+                    {
+                      number: {
+                        x: player.target.cell2.number.x,
+                        y: player.target.cell2.number.y,
+                      },
+                      count: 1,
+                      limit: 8,
+                    },
+                  )
 
-                this.cellsUnderAttack.push(
-                  {
+
+                }
+                else if (player.currentWeapon.type === 'sword' || player.currentWeapon.type === '') {
+                  // console.log('sword target',player.target);
+
+                  // if (cellUnderAttack1 && cellUnderAttack1.terrain.type !== 'deep') {
+                  //   this.cellsUnderAttack.push({
+                  //     number: {
+                  //       x: player.target.cell.number.x,
+                  //       y: player.target.cell.number.y,
+                  //     },
+                  //     count: 1,
+                  //     limit: 8,
+                  //   })
+                  // }
+                  this.cellsUnderAttack.push({
                     number: {
                       x: player.target.cell.number.x,
                       y: player.target.cell.number.y,
                     },
                     count: 1,
                     limit: 8,
-                  },
-                )
-                this.cellsUnderAttack.push(
-                  {
-                    number: {
-                      x: player.target.cell2.number.x,
-                      y: player.target.cell2.number.y,
-                    },
-                    count: 1,
-                    limit: 8,
-                  },
-                )
+                  })
 
-
-              }
-              else if (player.currentWeapon.type === 'sword' || player.currentWeapon.type === '') {
-                // console.log('sword target',player.target);
-
-                // if (cellUnderAttack1 && cellUnderAttack1.terrain.type !== 'deep') {
-                //   this.cellsUnderAttack.push({
-                //     number: {
-                //       x: player.target.cell.number.x,
-                //       y: player.target.cell.number.y,
-                //     },
-                //     count: 1,
-                //     limit: 8,
-                //   })
-                // }
-                this.cellsUnderAttack.push({
-                  number: {
-                    x: player.target.cell.number.x,
-                    y: player.target.cell.number.y,
-                  },
-                  count: 1,
-                  limit: 8,
-                })
-
-              }
+                }
 
 
 
-              // ATTACK PROJECTILES!!
-              for (const bolt of this.projectiles) {
-                if (player.currentWeapon.type === 'spear') {
-                  if (
-                    cellUnderAttack2.number.x === bolt.currentPosition.number.x &&
-                    cellUnderAttack2.number.y === bolt.currentPosition.number.y
-                  ) {
-                    bolt.kill = true;
+                // ATTACK PROJECTILES!!
+                for (const bolt of this.projectiles) {
+                  if (player.currentWeapon.type === 'spear') {
+                    if (
+                      cellUnderAttack2.number.x === bolt.currentPosition.number.x &&
+                      cellUnderAttack2.number.y === bolt.currentPosition.number.y
+                    ) {
+                      bolt.kill = true;
 
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: '',
-                        position: '',
-                        msg: 'boltKilled',
-                        img: '',
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 25,
+                          type: '',
+                          position: '',
+                          msg: 'boltKilled',
+                          img: '',
 
-                      }
-                    )
+                        }
+                      )
+                    }
+                  }
+                  if (player.currentWeapon.type === 'sword') {
+                    if (
+                      cellUnderAttack1.number.x === bolt.currentPosition.number.x &&
+                      cellUnderAttack1.number.y === bolt.currentPosition.number.y
+                    ) {
+                      bolt.kill = true;
+
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 25,
+                          type: '',
+                          position: '',
+                          msg: 'boltKilled',
+                          img: '',
+
+                        }
+                      )
+                    }
                   }
                 }
-                if (player.currentWeapon.type === 'sword') {
-                  if (
-                    cellUnderAttack1.number.x === bolt.currentPosition.number.x &&
-                    cellUnderAttack1.number.y === bolt.currentPosition.number.y
-                  ) {
-                    bolt.kill = true;
-
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: '',
-                        position: '',
-                        msg: 'boltKilled',
-                        img: '',
-
-                      }
-                    )
-                  }
-                }
-              }
 
 
-              // ATTACK TARGET IS OCCUPIED!!
-              if (player.target.occupant.type === 'player') {
+                // ATTACK TARGET IS OCCUPIED!!
+                if (player.target.occupant.type === 'player') {
 
 
-                // TARGET PLAYER ISN'T DEFENDING, ATTACK SUCCESS!!
-                if (this.players.[player.target.occupant.player-1].defending.state === false || this.players.[player.target.occupant.player-1].direction === player.direction) {
-                  console.log('attack success');
+                  // TARGET PLAYER ISN'T DEFENDING OR BACK TURNED, ATTACK SUCCESS!!
+                  if (this.players.[player.target.occupant.player-1].defending.state === false || this.players.[player.target.occupant.player-1].direction === player.direction) {
+                    console.log('attack success');
 
-                  player.success.attackSuccess = {
-                    state: true,
-                    count: 1,
-                    limit: player.success.attackSuccess.limit
-                  }
-
-
-                  // BACK ATTACK CHECK!
-                  let backAttack = false;
-                  if (this.players.[player.target.occupant.player-1].direction === player.direction) {
-                    // console.log('back attack!!');
-                    backAttack = true;
-                  }
-
-
-                  // CALCULATE ATTACKER DOUBLE HIT!
-                  let doubleHitChance = player.crits.doubleHit;
-                  let singleHitChance = player.crits.singleHit;
-                  if (backAttack === true) {
-                    if (doubleHitChance > 2) {
-                      let diff = doubleHitChance - 2;
-                      doubleHitChance = doubleHitChance - diff;
-                    }
-                  }
-
-
-                  // ATTACK STRENGTH ARMOR MOD CHECK!
-                  if (this.players.[player.target.occupant.player-1].currentArmor.name !== '') {
-                    // console.log('opponent armour found');
-                    switch(this.players.[player.target.occupant.player-1].currentArmor.effect) {
-                      case 'dblhit-5' :
-                        doubleHitChance = player.crits.doubleHit+5;
-                      break;
-                      case 'dblhit-10' :
-                        doubleHitChance = player.crits.doubleHit+10;
-                      break;
-                      case 'dblhit-15' :
-                        doubleHitChance = player.crits.doubleHit+15;
-                      break;
-                      // case 'dblhit-30' :
-                      //   doubleHitChance = player.crits.doubleHit+30;
-                      // break;
-                      case 'snghit-5' :
-                        singleHitChance = player.crits.singleHit+5;
-                      break;
-                      case 'snghit-10' :
-                        singleHitChance = player.crits.singleHit+10;
-                      break;
-                    }
-                  }
-
-                  let doubleHit = this.rnJesus(1,doubleHitChance);
-                  let singleHit = this.rnJesus(1,singleHitChance);
-
-// -----------
-                  // doubleHit = 2
-                  // singleHit = 2
-// ---------------
-
-                  // UNARMED ATTACK!
-                  if ( player.currentWeapon.type === '') {
-                    console.log('unarmed attack');
-                    doubleHit = 2;
-                    if (singleHitChance === 1) {
-                      let singleHit = this.rnJesus(1,2);
-                    }
-
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: (this.attackAnimRef.limit.unarmed-this.attackAnimRef.peak.unarmed),
-                        type: '',
-                        position: '',
-                        msg: 'attackingUnarmed',
-                        img: '',
-
-                      }
-                    )
-                  }
-
-
-                  // BLUNT ATTACK!!
-                  if (player.bluntAttack === true) {
-                    // console.log('blunt attack');
-                    player.stamina.current = player.stamina.current - this.staminaCostRef.attack.blunt;
-
-                    singleHit = 2;
-                    doubleHit = 2;
-
-                    this.players[player.number-1].statusDisplay = {
+                    player.success.attackSuccess = {
                       state: true,
-                      status: 'blunt attack!',
                       count: 1,
-                      limit: this.players[player.number-1].statusDisplay.limit,
+                      limit: player.success.attackSuccess.limit
                     }
 
 
-                    let weapon = player.currentWeapon.type;
-                    if (weapon === '') {
-                      weapon = 'unarmed';
+                    // BACK ATTACK CHECK!
+                    let backAttack = false;
+                    if (this.players.[player.target.occupant.player-1].direction === player.direction) {
+                      // console.log('back attack!!');
+                      backAttack = true;
                     }
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
-                        type: '',
-                        position: '',
-                        msg: 'attackingBlunt',
-                        img: '',
 
+
+                    // CALCULATE ATTACKER DOUBLE HIT!
+                    let doubleHitChance = player.crits.doubleHit;
+                    let singleHitChance = player.crits.singleHit;
+                    if (backAttack === true) {
+                      if (doubleHitChance > 2) {
+                        let diff = doubleHitChance - 2;
+                        doubleHitChance = doubleHitChance - diff;
                       }
-                    )
-                  }
-
-
-                  // DODGED CHECK!
-                  if (this.players[player.target.occupant.player-1].dodging.state === true) {
-
-                    let canDodge = true;
-                    if (backAttack === true && player.crits.dodge < 4) {
-                      canDodge = false
                     }
 
-                    if (canDodge === true) {
 
-                      console.log('opponent has dodged you');
+                    // ATTACK STRENGTH ARMOR MOD CHECK!
+                    if (this.players.[player.target.occupant.player-1].currentArmor.name !== '') {
+                      // console.log('opponent armour found');
+                      switch(this.players.[player.target.occupant.player-1].currentArmor.effect) {
+                        case 'dblhit-5' :
+                          doubleHitChance = player.crits.doubleHit+5;
+                        break;
+                        case 'dblhit-10' :
+                          doubleHitChance = player.crits.doubleHit+10;
+                        break;
+                        case 'dblhit-15' :
+                          doubleHitChance = player.crits.doubleHit+15;
+                        break;
+                        // case 'dblhit-30' :
+                        //   doubleHitChance = player.crits.doubleHit+30;
+                        // break;
+                        case 'snghit-5' :
+                          singleHitChance = player.crits.singleHit+5;
+                        break;
+                        case 'snghit-10' :
+                          singleHitChance = player.crits.singleHit+10;
+                        break;
+                      }
+                    }
+
+                    let doubleHit = this.rnJesus(1,doubleHitChance);
+                    let singleHit = this.rnJesus(1,singleHitChance);
+
+  // -----------
+                    // doubleHit = 2
+                    // singleHit = 2
+  // ---------------
+
+                    // UNARMED ATTACK!
+                    if ( player.currentWeapon.type === '') {
+                      console.log('unarmed attack');
+                      doubleHit = 2;
+                      if (singleHitChance === 1) {
+                        let singleHit = this.rnJesus(1,2);
+                      }
+
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: (this.attackAnimRef.limit.unarmed-this.attackAnimRef.peak.unarmed),
+                          type: '',
+                          position: '',
+                          msg: 'attackingUnarmed',
+                          img: '',
+
+                        }
+                      )
+                    }
+
+
+                    // BLUNT ATTACK!!
+                    if (player.bluntAttack === true) {
+                      // console.log('blunt attack');
+
                       singleHit = 2;
                       doubleHit = 2;
 
+                      this.players[player.number-1].statusDisplay = {
+                        state: true,
+                        status: 'blunt attack!',
+                        count: 1,
+                        limit: this.players[player.number-1].statusDisplay.limit,
+                      }
 
-                    }
-                  }
 
-
-                  // ATTACK LANDED!!
-                  if (doubleHit === 1) {
-                    console.log('double hit attack plyr ',player.number,'against plyr ',player.target.occupant.player);
-                    this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 2;
-                    player.attackStrength = 2;
-                    this.attackedCancel(this.players[player.target.occupant.player-1])
-
-                    if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'alarmed')) {
-                      this.players[player.target.occupant.player-1].popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit:25,
-                          type: '',
-                          position: '',
-                          msg: 'alarmed',
-                          img: '',
-
-                        }
-                      )
-                    }
-
-                    if (!player.popups.find(x=>x.msg === 'attacking2')) {
+                      let weapon = player.currentWeapon.type;
+                      if (weapon === '') {
+                        weapon = 'unarmed';
+                      }
                       player.popups.push(
                         {
                           state: false,
                           count: 0,
-                          limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
+                          limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
                           type: '',
                           position: '',
-                          msg: 'attacking2',
+                          msg: 'attackingBlunt',
                           img: '',
 
                         }
@@ -7733,240 +7797,75 @@ class App extends Component {
                     }
 
 
-                  }
-                  else if (singleHit === 1) {
-                    console.log('single hit attack plyr ',player.number,'against plyr ',player.target.occupant.player);
-                    this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
-                    player.attackStrength = 1;
-                    this.attackedCancel(this.players[player.target.occupant.player-1])
+                    // DODGED CHECK!
+                    if (this.players[player.target.occupant.player-1].dodging.state === true) {
 
-                    let weapon = player.currentWeapon.type;
-                    if (weapon === '') {
-                      weapon = 'unarmed'
-                    }
-
-                    if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'alarmed')) {
-                      this.players[player.target.occupant.player-1].popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit:25,
-                          type: '',
-                          position: '',
-                          msg: 'alarmed',
-                          img: '',
-
-                        }
-                      )
-                    }
-
-                    if (!player.popups.find(x=>x.msg === 'attacking1')) {
-                      player.popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
-                          type: '',
-                          position: '',
-                          msg: 'attacking1',
-                          img: '',
-
-                        }
-                      )
-                    }
-
-                  }
-
-                  // ADJUST TARGET PLYR SPEED ON INJURY
-                  if (doubleHit === 1 || singleHit === 1) {
-                    let currentMoveSpeedIndx = this.players[player.target.occupant.player-1].speed.range.indexOf(this.players[player.target.occupant.player-1].speed.move)
-                    if (currentMoveSpeedIndx > 0) {
-                      this.players[player.target.occupant.player-1].speed.move = this.players[player.target.occupant.player-1].speed.range[currentMoveSpeedIndx-1]
-                    }
-                  }
-
-
-                  // CHECK FOR MISS!
-                  let missed = false;
-                  if (doubleHit !== 1 && singleHit !== 1 && player.bluntAttack !== true) {
-                    console.log('attacked but no damage');
-                    missed = true;
-                    this.players[player.number-1].statusDisplay = {
-                      state: true,
-                      status: 'attack missed!',
-                      count: 1,
-                      limit: this.players[player.number-1].statusDisplay.limit,
-                    }
-
-                    let weapon = player.currentWeapon.type;
-                    if (player.currentWeapon.name === '') {
-                      weapon = 'unarmed';
-                    }
-
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
-                        type: '',
-                        position: '',
-                        msg: 'missedAttack',
-                        img: '',
-
-                      }
-                    )
-                  }
-
-
-                  // REDUCE MOVE SPEED!
-                  if (this.players[player.target.occupant.player-1].hp === 1) {
-                    this.players[player.target.occupant.player-1].speed.move = .05;
-                  }
-
-
-                  // KILL OPPONENT!
-                  if (this.players[player.target.occupant.player-1].hp <= 0) {
-                    this.killPlayer(this.players[player.target.occupant.player-1]);
-
-                    let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                    this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
-
-                    player.points++;
-
-                    this.pointChecker(player)
-
-                    if (player.ai.state === true && player.ai.mode === 'aggressive') {
-                      console.log('check for evidence of retrieval here and resume retrieve if so',player.ai.retrieving,player.ai.mission);
-
-                      if (player.ai.retrieving.checkin) {
-
-                        player.ai.mission = 'retrieve';
-
-                        if (!player.popups.find(x=>x.msg === 'missionRetrieve')) {
-                          player.popups.push(
-                            {
-                              state: false,
-                              count: 0,
-                              limit: 25,
-                              type: '',
-                              position: '',
-                              msg: 'missionRetrieve',
-                              img: '',
-
-                            }
-                          )
-                        }
-
-                        let targetSafeData = this.scanTargetAreaThreat({
-                          player: player.number,
-                          point: {
-                            x: player.ai.retrieving.point.x,
-                            y: player.ai.retrieving.point.y,
-                          },
-                          range: 3,
-                        })
-
-                        player.ai.retrieving.safe = targetSafeData.isSafe;
-
+                      let canDodge = true;
+                      if (backAttack === true && player.crits.dodge < 4) {
+                        canDodge = false
                       }
 
-                    }
+                      if (canDodge === true) {
 
-                  }
-
-                  // ATTACK -> DEFLECT OPPONENT!
-                  else if (missed !== true && player.bluntAttack !== true) {
-                    this.players[player.target.occupant.player-1].action = 'deflected';
-                    this.players[player.target.occupant.player-1].success.deflected = {
-                      state: true,
-                      count: 1,
-                      limit: this.deflectedLengthRef.attacked,
-                      predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
-                      type: 'attacked',
-                    };
-
-
-                    if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
-                      this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
-                    }
-
-
-                  }
-
-                  // BLUNT ATTACK -> DEFLECT/GUARD BREAK -!
-                  else if (player.bluntAttack === true) {
-                    this.players[player.target.occupant.player-1].action = 'deflected';
-
-                    this.players[player.target.occupant.player-1].stamina.current = this.players[player.target.occupant.player-1].stamina.current - 3;
-                    this.players[player.target.occupant.player-1].success.deflected = {
-                      state: true,
-                      count: 1,
-                      limit: this.deflectedLengthRef.bluntAttacked,
-                      predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
-                      type: 'blunt_attacked',
-                    };
-
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: '',
-                        position: '',
-                        msg: 'attackingBlunt',
-                        img: '',
+                        console.log('opponent has dodged you');
+                        singleHit = 2;
+                        doubleHit = 2;
+                        if (player.bluntAttack === true) {
+                          player.bluntAttack = false;
+                        }
 
                       }
-                    )
-
-                    if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
-                      this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
                     }
 
-                  }
 
-                }
+                    // ATTACK LANDED!!
+                    if (doubleHit === 1) {
+                      console.log('double hit attack plyr ',player.number,'against plyr ',player.target.occupant.player);
+                      this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 2;
+                      player.attackStrength = 2;
+                      this.attackedCancel(this.players[player.target.occupant.player-1])
 
-                // ATTACK DEFENDED!!
-                else {
-                  console.log('attack defended by ',player.target.occupant.player,'target defending?',this.players.[player.target.occupant.player-1].defending.state,'against plyr ',player.number);
+                      if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'alarmed')) {
+                        this.players[player.target.occupant.player-1].popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit:25,
+                            type: '',
+                            position: '',
+                            msg: 'alarmed',
+                            img: '',
+
+                          }
+                        )
+                      }
+
+                      if (!player.popups.find(x=>x.msg === 'attacking2')) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
+                            type: '',
+                            position: '',
+                            msg: 'attacking2',
+                            img: '',
+
+                          }
+                        )
+                      }
 
 
-
-                  let shouldDefend = false;
-
-                  // DEFENDER IS UNARMED
-                  if (this.players[player.target.occupant.player-1].currentWeapon.name === "" && this.players[player.target.occupant.player-1].currentWeapon.type === "") {
-
-                    // console.log('target is unarmed');
-                    if (player.currentWeapon.name === "" && player.currentWeapon.type === "") {
-                      console.log('target and attacker unarmed. target defend');
-                      shouldDefend = true;
                     }
-
-                    else {
-                      console.log('armed player attacked unarmed target defense: cancel target defend and attack them');
-                      shouldDefend = false;
-
-                      // console.log('single hit attack plyr ',player.number,'against plyr ',player.target.occupant.player);
+                    else if (singleHit === 1) {
+                      console.log('single hit attack plyr ',player.number,'against plyr ',player.target.occupant.player);
                       this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
                       player.attackStrength = 1;
                       this.attackedCancel(this.players[player.target.occupant.player-1])
 
-                      this.players[player.target.occupant.player-1].success.deflected = {
-                        state: true,
-                        count: 1,
-                        limit: this.deflectedLengthRef.attack,
-                        predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
-                        type: 'attack'
-                      }
-
-                      if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
-                        this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
-                      }
-
-                      if (this.players[player.target.occupant.player-1].hp === 1) {
-                        this.players[player.target.occupant.player-1].speed.move = .05;
+                      let weapon = player.currentWeapon.type;
+                      if (weapon === '') {
+                        weapon = 'unarmed'
                       }
 
                       if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'alarmed')) {
@@ -7999,329 +7898,136 @@ class App extends Component {
                         )
                       }
 
-                      // KILL PLAYER
-                      if (this.players[player.target.occupant.player-1].hp <= 0) {
-                        this.killPlayer(this.players[player.target.occupant.player-1]);
-
-                        let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                        this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
-
-                        player.points++;
-
-                        this.pointChecker(player)
-
-                        if (player.ai.state === true && player.ai.mode === 'aggressive') {
-                          console.log('check for evidence of retrieval here and resume retrieve if so',player.ai.retrieving,player.ai.mission);
-
-                          if (player.ai.retrieving.checkin) {
-
-                            player.ai.mission = 'retrieve';
-
-                            if (!player.popups.find(x=>x.msg === 'missionRetrieve')) {
-                              player.popups.push(
-                                {
-                                  state: false,
-                                  count: 0,
-                                  limit: 25,
-                                  type: '',
-                                  position: '',
-                                  msg: 'missionRetrieve',
-                                  img: '',
-
-                                }
-                              )
-                            }
-
-                            let targetSafeData = this.scanTargetAreaThreat({
-                              player: player.number,
-                              point: {
-                                x: player.ai.retrieving.point.x,
-                                y: player.ai.retrieving.point.y,
-                              },
-                              range: 3,
-                            })
-
-                            player.ai.retrieving.safe = targetSafeData.isSafe;
-
-                          }
-
-                        }
-
-                      }
-
-
                     }
 
-                    // DEFENDER IS ARMED
-                  } else {
-                    // console.log('target is armed');
+                    // ADJUST TARGET PLYR SPEED ON INJURY
+                    if (doubleHit === 1 || singleHit === 1) {
+                      let currentMoveSpeedIndx = this.players[player.target.occupant.player-1].speed.range.indexOf(this.players[player.target.occupant.player-1].speed.move)
+                      if (currentMoveSpeedIndx > 0) {
+                        this.players[player.target.occupant.player-1].speed.move = this.players[player.target.occupant.player-1].speed.range[currentMoveSpeedIndx-1]
+                      }
+                    }
 
-                    // player unarmed
-                    if (player.currentWeapon.name === "" && player.currentWeapon.type === "") {
-                      console.log('player unarmed attacked armed target defense: cancel player attack and check crits or otherwise roll for attacker damage');
-                      shouldDefend = false;
 
-                      // console.log('single hit attack plyr ',player.target.occupant.player,'against plyr ',player.number,);
-
-                      player.hp--;
-                      this.players[player.target.occupant.player-1].attackStrength = 1;
-                      this.attackedCancel(player)
-
-                      player.success.deflected = {
+                    // CHECK FOR MISS!
+                    let missed = false;
+                    if (doubleHit !== 1 && singleHit !== 1 && player.bluntAttack !== true) {
+                      console.log('attacked but no damage');
+                      missed = true;
+                      this.players[player.number-1].statusDisplay = {
                         state: true,
-                        count: 1,
-                        limit: this.deflectedLengthRef.attack,
-                        predeflect: player.success.deflected.predeflect,
-                        type: 'attack'
-                      }
-
-                      if (this.aiDeflectedCheck.includes(player.number) !== true) {
-                        this.aiDeflectedCheck.push(player.number)
-                      }
-
-
-                      if (player.hp === 1) {
-                        player.speed.move = .05;
-                      }
-
-
-                      if (!player.popups.find(x=>x.msg === 'alarmed')) {
-                        player.popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit:25,
-                            type: '',
-                            position: '',
-                            msg: 'alarmed',
-                            img: '',
-
-                          }
-                        )
-                      }
-
-                      if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'attacking1')) {
-                        this.players[player.target.occupant.player-1].popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit: (this.attackAnimRef.limit[this.players[player.target.occupant.player-1].currentWeapon.type]-this.attackAnimRef.peak[this.players[player.target.occupant.player-1].currentWeapon.type]),
-                            type: '',
-                            position: '',
-                            msg: 'attacking1',
-                            img: '',
-
-                          }
-                        )
-                      }
-
-                      if (player.hp <= 0) {
-
-                        let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                        this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
-
-                        this.players[player.target.occupant.player-1].points++;
-
-                        this.pointChecker(this.players[player.target.occupant.player-1])
-
-                        if (this.players[player.target.occupant.player-1].ai.state === true && this.players[player.target.occupant.player-1].ai.mode === 'aggressive') {
-                          console.log('check for evidence of retrieval here and resume retrieve if so',player.ai.retrieving,player.ai.mission);
-
-                          if (this.players[player.target.occupant.player-1].ai.retrieving.checkin) {
-
-                            this.players[player.target.occupant.player-1].ai.mission = 'retrieve';
-
-                            if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'missionRetrieve')) {
-                              this.players[player.target.occupant.player-1].popups.push(
-                                {
-                                  state: false,
-                                  count: 0,
-                                  limit: 25,
-                                  type: '',
-                                  position: '',
-                                  msg: 'missionRetrieve',
-                                  img: '',
-
-                                }
-                              )
-                            }
-
-                            let targetSafeData = this.scanTargetAreaThreat({
-                              player: this.players[player.target.occupant.player-1].number,
-                              point: {
-                                x: this.players[player.target.occupant.player-1].ai.retrieving.point.x,
-                                y: this.players[player.target.occupant.player-1].ai.retrieving.point.y,
-                              },
-                              range: 3,
-                            })
-
-                            this.players[player.target.occupant.player-1].ai.retrieving.safe = targetSafeData.isSafe;
-
-                          }
-
-                        }
-
-                        this.killPlayer(player);
-
-                      }
-
-                    } else {
-                      console.log('target and attacker are armed. target defend');
-                      shouldDefend = true;
-                    }
-                  }
-
-                  // DEFENDER DEFEND SUCCESS, DETERMINE DEFLECT OR PUSHBACK
-                  if (shouldDefend === true) {
-
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: '',
-                        position: '',
-                        msg: 'attackDefended',
-                        img: '',
-
-                      }
-                    )
-                    // if (this.players.[player.target.occupant.player-1].direction === player.direction) {
-                    //   console.log('defend the rear!!');
-                    // }
-
-                    this.moveSpeed = .1;
-
-
-                    // DEFENDED STATUS DISPLAY!
-                    this.players[player.target.occupant.player-1].success.defendSuccess = {
-                      state: true,
-                      count: 1,
-                      limit: this.players[player.target.occupant.player-1].success.defendSuccess.limit
-                    }
-
-                    this.players[player.target.occupant.player-1].popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: '',
-                        position: '',
-                        msg: 'defendSuccess',
-                        img: '',
-
-                      }
-                    )
-
-                    let defenderParry = false;
-                    if (
-                      this.players[player.target.occupant.player-1].defending.state === true &&
-                      this.players[player.target.occupant.player-1].defendDecay.state !== true ||
-                      this.players[player.target.occupant.player-1].defendDecay.state === true &&
-                      this.players[player.target.occupant.player-1].defendDecay.count < 4
-                    ) {
-                      defenderParry = true;
-                      this.players[player.target.occupant.player-1].stamina.current += this.staminaCostRef.defend;
-                    }
-
-
-
-                    // PUSHBACK OPPONENT!
-                    // let shouldPushBackOpponent = 2;
-                    let shouldPushBackOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.pushBack*2);
-                    if (defenderParry === true) {
-                      shouldPushBackOpponent = 0;
-                    }
-                    // shouldPushBackOpponent = 1;
-                    if (shouldPushBackOpponent === 1) {
-                      // console.log('pushback opponent');
-                      let canPushback = this.pushBack(this.players[player.target.occupant.player-1],player.direction);
-
-                    }
-
-                    // DON'T PUSHBACK OPPONENT, JUST DEFLECT/GUARD BREAK
-                    else {
-
-
-                      // OPPONENT GUARD BREAK ROLL!
-                      // let deflectOpponent = this.rnJesus(1,1);
-                      let deflectOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.guardBreak);
-                      if (player.bluntAttack === true && defenderParry !== true) {
-                        deflectOpponent = 1;
-                      }
-                      // deflectOpponent = 1
-                      if (defenderParry === true) {
-                        deflectOpponent = 0;
-                      }
-
-                      // DEFLECT OPPONENT!
-                      if (deflectOpponent === 1) {
-                        console.log('opponent guard break player',player.target.occupant.player);
-                        this.players[player.target.occupant.player-1].breakAnim.defend = {
-                          state: true,
-                          count: 1,
-                          limit: player.breakAnim.defend.limit,
-                        };
-
-                        this.players[player.target.occupant.player-1].defending = {
-                          state: false,
-                          count: 0,
-                          limit: this.players[player.target.occupant.player-1].defending.limit,
-                        }
-                        this.players[player.target.occupant.player-1].attacking = {
-                          state: false,
-                          count: 0,
-                          limit: this.players[player.target.occupant.player-1].attacking.limit,
-                        }
-
-                        this.players[player.target.occupant.player-1].success.deflected = {
-                          state: true,
-                          count: 1,
-                          limit: this.deflectedLengthRef.defended,
-                          predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
-                          type: 'defended',
-                        };
-                        this.players[player.target.occupant.player-1].stamina.current = this.players[player.target.occupant.player-1].stamina.current - 3;
-
-
-                        if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
-                          this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
-                        }
-
-
-                      }
-
-                    }
-
-
-                    // ATTACKER PUSHBACK/DEFLECT!!??
-
-                    let shouldDeflectAttacker;
-
-                    // let shouldDeflectAttacker = this.rnJesus(1,2);
-
-                    let shouldDeflectPushBackAttacker;
-
-                    shouldDeflectAttacker = this.rnJesus(1,player.crits.guardBreak);
-                    shouldDeflectPushBackAttacker = this.rnJesus(1,player.crits.pushBack);
-
-                    // PEAK DEFEND/PARRY!!
-                    if (
-                      this.players[player.target.occupant.player-1].defending.state === true &&
-                      this.players[player.target.occupant.player-1].defendDecay.state !== true ||
-                      this.players[player.target.occupant.player-1].defendDecay.state === true &&
-                      this.players[player.target.occupant.player-1].defendDecay.count < 4
-                    ) {
-                      console.log('peak defend/parry');
-                      shouldDeflectAttacker = this.rnJesus(1,1);
-                      shouldDeflectPushBackAttacker = this.rnJesus(1,1);
-
-                      player.statusDisplay = {
-                        state: true,
-                        status: 'Parry!',
+                        status: 'attack missed!',
                         count: 1,
                         limit: this.players[player.number-1].statusDisplay.limit,
                       }
+
+                      let weapon = player.currentWeapon.type;
+                      if (player.currentWeapon.name === '') {
+                        weapon = 'unarmed';
+                      }
+
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
+                          type: '',
+                          position: '',
+                          msg: 'missedAttack',
+                          img: '',
+
+                        }
+                      )
+                    }
+
+
+                    // REDUCE MOVE SPEED!
+                    if (this.players[player.target.occupant.player-1].hp === 1) {
+                      this.players[player.target.occupant.player-1].speed.move = .05;
+                    }
+
+
+                    // KILL OPPONENT!
+                    if (this.players[player.target.occupant.player-1].hp <= 0) {
+                      this.killPlayer(this.players[player.target.occupant.player-1]);
+
+                      let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+                      this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+                      player.points++;
+
+                      this.pointChecker(player)
+
+                      if (player.ai.state === true && player.ai.mode === 'aggressive') {
+                        console.log('check for evidence of retrieval here and resume retrieve if so',player.ai.retrieving,player.ai.mission);
+
+                        if (player.ai.retrieving.checkin) {
+
+                          player.ai.mission = 'retrieve';
+
+                          if (!player.popups.find(x=>x.msg === 'missionRetrieve')) {
+                            player.popups.push(
+                              {
+                                state: false,
+                                count: 0,
+                                limit: 25,
+                                type: '',
+                                position: '',
+                                msg: 'missionRetrieve',
+                                img: '',
+
+                              }
+                            )
+                          }
+
+                          let targetSafeData = this.scanTargetAreaThreat({
+                            player: player.number,
+                            point: {
+                              x: player.ai.retrieving.point.x,
+                              y: player.ai.retrieving.point.y,
+                            },
+                            range: 3,
+                          })
+
+                          player.ai.retrieving.safe = targetSafeData.isSafe;
+
+                        }
+
+                      }
+
+                    }
+
+                    // ATTACK -> DEFLECT OPPONENT!
+                    else if (missed !== true && player.bluntAttack !== true) {
+                      this.players[player.target.occupant.player-1].action = 'deflected';
+                      this.players[player.target.occupant.player-1].success.deflected = {
+                        state: true,
+                        count: 1,
+                        limit: this.deflectedLengthRef.attacked,
+                        predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
+                        type: 'attacked',
+                      };
+
+
+                      if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
+                        this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
+                      }
+
+
+                    }
+
+                    // BLUNT ATTACK -> DEFLECT/GUARD BREAK -!
+                    else if (player.bluntAttack === true) {
+                      this.players[player.target.occupant.player-1].action = 'deflected';
+
+                      this.players[player.target.occupant.player-1].stamina.current = this.players[player.target.occupant.player-1].stamina.current - 3;
+                      this.players[player.target.occupant.player-1].success.deflected = {
+                        state: true,
+                        count: 1,
+                        limit: this.deflectedLengthRef.bluntAttacked,
+                        predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
+                        type: 'blunt_attacked',
+                      };
 
                       player.popups.push(
                         {
@@ -8330,25 +8036,269 @@ class App extends Component {
                           limit: 25,
                           type: '',
                           position: '',
-                          msg: 'attackParried',
+                          msg: 'attackingBlunt',
                           img: '',
 
                         }
                       )
+
+                      if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
+                        this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
+                      }
+
                     }
 
-                    // OFF PEAK DEFEND
-                    else {
-                      console.log('off peak defend');
-                      shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
-                      shouldDeflectPushBackAttacker = this.rnJesus(1,player.crits.pushBack);
+                  }
 
-                      player.statusDisplay = {
-                        state: true,
-                        status: 'Defend',
-                        count: 1,
-                        limit: this.players[player.number-1].statusDisplay.limit,
+                  // ATTACK DEFENDED!!
+                  else {
+                    console.log('attack defended by ',player.target.occupant.player,'target defending?',this.players.[player.target.occupant.player-1].defending.state,'against plyr ',player.number);
+
+
+
+                    let shouldDefend = false;
+
+                    // DEFENDER IS UNARMED
+                    if (this.players[player.target.occupant.player-1].currentWeapon.name === "" && this.players[player.target.occupant.player-1].currentWeapon.type === "") {
+
+                      // console.log('player is unarmed');
+                      if (player.currentWeapon.name === "" && player.currentWeapon.type === "") {
+                        console.log('target and attacker unarmed. target defend');
+                        shouldDefend = true;
                       }
+
+                      else {
+                        console.log('armed player attacked unarmed target defense: cancel target defend and attack them');
+                        shouldDefend = false;
+
+                        // console.log('single hit attack plyr ',player.number,'against plyr ',player.target.occupant.player);
+                        this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
+                        player.attackStrength = 1;
+                        this.attackedCancel(this.players[player.target.occupant.player-1])
+
+                        this.players[player.target.occupant.player-1].success.deflected = {
+                          state: true,
+                          count: 1,
+                          limit: this.deflectedLengthRef.attack,
+                          predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
+                          type: 'attack'
+                        }
+
+                        if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
+                          this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
+                        }
+
+                        if (this.players[player.target.occupant.player-1].hp === 1) {
+                          this.players[player.target.occupant.player-1].speed.move = .05;
+                        }
+
+                        if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'alarmed')) {
+                          this.players[player.target.occupant.player-1].popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit:25,
+                              type: '',
+                              position: '',
+                              msg: 'alarmed',
+                              img: '',
+
+                            }
+                          )
+                        }
+
+                        if (!player.popups.find(x=>x.msg === 'attacking1')) {
+                          player.popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
+                              type: '',
+                              position: '',
+                              msg: 'attacking1',
+                              img: '',
+
+                            }
+                          )
+                        }
+
+                        // KILL PLAYER
+                        if (this.players[player.target.occupant.player-1].hp <= 0) {
+                          this.killPlayer(this.players[player.target.occupant.player-1]);
+
+                          let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+                          this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+                          player.points++;
+
+                          this.pointChecker(player)
+
+                          if (player.ai.state === true && player.ai.mode === 'aggressive') {
+                            console.log('check for evidence of retrieval here and resume retrieve if so',player.ai.retrieving,player.ai.mission);
+
+                            if (player.ai.retrieving.checkin) {
+
+                              player.ai.mission = 'retrieve';
+
+                              if (!player.popups.find(x=>x.msg === 'missionRetrieve')) {
+                                player.popups.push(
+                                  {
+                                    state: false,
+                                    count: 0,
+                                    limit: 25,
+                                    type: '',
+                                    position: '',
+                                    msg: 'missionRetrieve',
+                                    img: '',
+
+                                  }
+                                )
+                              }
+
+                              let targetSafeData = this.scanTargetAreaThreat({
+                                player: player.number,
+                                point: {
+                                  x: player.ai.retrieving.point.x,
+                                  y: player.ai.retrieving.point.y,
+                                },
+                                range: 3,
+                              })
+
+                              player.ai.retrieving.safe = targetSafeData.isSafe;
+
+                            }
+
+                          }
+
+                        }
+
+
+                      }
+
+
+                    }
+                    // DEFENDER IS ARMED
+                    else {
+
+                      // player unarmed
+                      if (player.currentWeapon.name === "" && player.currentWeapon.type === "") {
+                        console.log('player unarmed attacked armed target defense: cancel player attack and check crits or otherwise roll for attacker damage');
+                        shouldDefend = false;
+
+                        // console.log('single hit attack plyr ',player.target.occupant.player,'against plyr ',player.number,);
+
+                        player.hp--;
+                        this.players[player.target.occupant.player-1].attackStrength = 1;
+                        this.attackedCancel(player)
+
+                        player.success.deflected = {
+                          state: true,
+                          count: 1,
+                          limit: this.deflectedLengthRef.attack,
+                          predeflect: player.success.deflected.predeflect,
+                          type: 'attack'
+                        }
+
+                        if (this.aiDeflectedCheck.includes(player.number) !== true) {
+                          this.aiDeflectedCheck.push(player.number)
+                        }
+
+
+                        if (player.hp === 1) {
+                          player.speed.move = .05;
+                        }
+
+
+                        if (!player.popups.find(x=>x.msg === 'alarmed')) {
+                          player.popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit:25,
+                              type: '',
+                              position: '',
+                              msg: 'alarmed',
+                              img: '',
+
+                            }
+                          )
+                        }
+
+                        if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'attacking1')) {
+                          this.players[player.target.occupant.player-1].popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit: (this.attackAnimRef.limit[this.players[player.target.occupant.player-1].currentWeapon.type]-this.attackAnimRef.peak[this.players[player.target.occupant.player-1].currentWeapon.type]),
+                              type: '',
+                              position: '',
+                              msg: 'attacking1',
+                              img: '',
+
+                            }
+                          )
+                        }
+
+                        if (player.hp <= 0) {
+
+                          let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+                          this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+                          this.players[player.target.occupant.player-1].points++;
+
+                          this.pointChecker(this.players[player.target.occupant.player-1])
+
+                          if (this.players[player.target.occupant.player-1].ai.state === true && this.players[player.target.occupant.player-1].ai.mode === 'aggressive') {
+                            console.log('check for evidence of retrieval here and resume retrieve if so',player.ai.retrieving,player.ai.mission);
+
+                            if (this.players[player.target.occupant.player-1].ai.retrieving.checkin) {
+
+                              this.players[player.target.occupant.player-1].ai.mission = 'retrieve';
+
+                              if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'missionRetrieve')) {
+                                this.players[player.target.occupant.player-1].popups.push(
+                                  {
+                                    state: false,
+                                    count: 0,
+                                    limit: 25,
+                                    type: '',
+                                    position: '',
+                                    msg: 'missionRetrieve',
+                                    img: '',
+
+                                  }
+                                )
+                              }
+
+                              let targetSafeData = this.scanTargetAreaThreat({
+                                player: this.players[player.target.occupant.player-1].number,
+                                point: {
+                                  x: this.players[player.target.occupant.player-1].ai.retrieving.point.x,
+                                  y: this.players[player.target.occupant.player-1].ai.retrieving.point.y,
+                                },
+                                range: 3,
+                              })
+
+                              this.players[player.target.occupant.player-1].ai.retrieving.safe = targetSafeData.isSafe;
+
+                            }
+
+                          }
+
+                          this.killPlayer(player);
+
+                        }
+
+                      }
+                      // player armed
+                      else {
+                        console.log('target and attacker are armed. target defend');
+                        shouldDefend = true;
+                      }
+                    }
+
+                    // DEFENDER DEFEND SUCCESS, DETERMINE DEFLECT OR PUSHBACK
+                    if (shouldDefend === true) {
 
                       player.popups.push(
                         {
@@ -8362,69 +8312,250 @@ class App extends Component {
 
                         }
                       )
-                    }
+                      // if (this.players.[player.target.occupant.player-1].direction === player.direction) {
+                      //   console.log('defend the rear!!');
+                      // }
 
-                    // shouldDeflectPushBackAttacker = 1;
-                    // shouldDeflectAttacker = 1;
+                      this.moveSpeed = .1;
 
-                    if (shouldDeflectPushBackAttacker === 1) {
-                      let pushBackDirection;
-                      switch(player.direction) {
-                        case 'north' :
-                          pushBackDirection = 'south';
-                        break;
-                        case 'south' :
-                          pushBackDirection = 'north';
-                        break;
-                        case 'east' :
-                          pushBackDirection = 'west';
-                        break;
-                        case 'west' :
-                          pushBackDirection = 'east';
-                        break;
-                        case 'northEast' :
-                          pushBackDirection = 'southWest';
-                        break;
-                        case 'northWest' :
-                          pushBackDirection = 'southEast';
-                        break;
-                        case 'southWest' :
-                          pushBackDirection = 'northEast';
-                        break;
-                        case 'southEast' :
-                          pushBackDirection = 'northWest';
-                        break;
+
+                      // DEFENDED STATUS DISPLAY!
+                      this.players[player.target.occupant.player-1].success.defendSuccess = {
+                        state: true,
+                        count: 1,
+                        limit: this.players[player.target.occupant.player-1].success.defendSuccess.limit
                       }
-
-                      let canPushback = this.pushBack(player,pushBackDirection);
-                      // console.log('canPushback',canPushback);
-
-                      if (canPushback === true && shouldDeflectAttacker === 1) {
-                        // console.log('predeflect --> pushback');
-                        player.success.deflected.predeflect = true;
-                      }
-                      else if (canPushback === false && shouldDeflectAttacker === 1) {
-                        // console.log('no pushback ---> just deflect');
-
-                        player.defending = {
+                      this.players[player.target.occupant.player-1].popups.push(
+                        {
                           state: false,
                           count: 0,
-                          limit: player.defending.limit,
-                          // limit: this.players[player.target.occupant.player-1].defending.limit,
+                          limit: 25,
+                          type: '',
+                          position: '',
+                          msg: 'defendSuccess',
+                          img: '',
+
                         }
-                        player.attacking = {
-                          state: false,
-                          count: 0,
-                          limit: player.attacking.limit,
-                          // limit: this.players[player.target.occupant.player-1].attacking.limit,
+                      )
+
+                      let defenderParry = false;
+                      if (
+                        this.players[player.target.occupant.player-1].defending.state === true &&
+                        this.players[player.target.occupant.player-1].defendDecay.state !== true ||
+                        this.players[player.target.occupant.player-1].defendDecay.state === true &&
+                        this.players[player.target.occupant.player-1].defendDecay.count < 4
+                      ) {
+                        defenderParry = true;
+                        this.players[player.target.occupant.player-1].stamina.current += this.staminaCostRef.defend.peak;
+                      }
+
+
+                      // PUSHBACK OPPONENT!
+                      // let shouldPushBackOpponent = 2;
+                      let shouldPushBackOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.pushBack*2);
+                      if (defenderParry === true) {
+                        shouldPushBackOpponent = 0;
+                      }
+                      // shouldPushBackOpponent = 1;
+                      if (shouldPushBackOpponent === 1) {
+                        // console.log('pushback opponent');
+                        let canPushback = this.pushBack(this.players[player.target.occupant.player-1],player.direction);
+
+                      }
+
+                      // DON'T PUSHBACK OPPONENT, JUST DEFLECT/GUARD BREAK
+                      else {
+
+
+                        // OPPONENT GUARD BREAK ROLL!
+                        // let deflectOpponent = this.rnJesus(1,1);
+                        let deflectOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.guardBreak);
+                        if (player.bluntAttack === true && defenderParry !== true) {
+                          deflectOpponent = 1;
+                        }
+                        // deflectOpponent = 1
+                        if (defenderParry === true) {
+                          deflectOpponent = 0;
                         }
 
-                        player.success.deflected = {
+                        // DEFLECT OPPONENT!
+                        if (deflectOpponent === 1) {
+                          console.log('opponent guard break player',player.target.occupant.player);
+                          this.players[player.target.occupant.player-1].breakAnim.defend = {
+                            state: true,
+                            count: 1,
+                            limit: player.breakAnim.defend.limit,
+                          };
+
+                          this.players[player.target.occupant.player-1].defending = {
+                            state: false,
+                            count: 0,
+                            limit: this.players[player.target.occupant.player-1].defending.limit,
+                          }
+                          this.players[player.target.occupant.player-1].attacking = {
+                            state: false,
+                            count: 0,
+                            limit: this.players[player.target.occupant.player-1].attacking.limit,
+                          }
+
+                          this.players[player.target.occupant.player-1].success.deflected = {
+                            state: true,
+                            count: 1,
+                            limit: this.deflectedLengthRef.defended,
+                            predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
+                            type: 'defended',
+                          };
+                          this.players[player.target.occupant.player-1].stamina.current = this.players[player.target.occupant.player-1].stamina.current - 3;
+
+
+                          if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
+                            this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
+                          }
+
+
+                        }
+
+                      }
+
+
+                      // ATTACKER PUSHBACK/DEFLECT!!??
+
+                      let shouldDeflectAttacker;
+
+                      // let shouldDeflectAttacker = this.rnJesus(1,2);
+
+                      let shouldDeflectPushBackAttacker;
+
+                      shouldDeflectAttacker = this.rnJesus(1,player.crits.guardBreak);
+                      shouldDeflectPushBackAttacker = this.rnJesus(1,player.crits.pushBack);
+
+                      // PEAK DEFEND/PARRY!!
+                      if (
+                        this.players[player.target.occupant.player-1].defending.state === true &&
+                        this.players[player.target.occupant.player-1].defendDecay.state !== true ||
+                        this.players[player.target.occupant.player-1].defendDecay.state === true &&
+                        this.players[player.target.occupant.player-1].defendDecay.count < 4
+                      ) {
+                        console.log('peak defend/parry attacker',player.number,'defender',player.target.occupant.player);
+                        shouldDeflectAttacker = this.rnJesus(1,1);
+                        shouldDeflectPushBackAttacker = this.rnJesus(1,1);
+
+                        player.statusDisplay = {
                           state: true,
+                          status: 'Parry!',
                           count: 1,
-                          limit: this.deflectedLengthRef.attack,
-                          predeflect: player.success.deflected.predeflect,
-                          type: 'attack'
+                          limit: this.players[player.number-1].statusDisplay.limit,
+                        }
+
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 25,
+                            type: '',
+                            position: '',
+                            msg: 'attackParried',
+                            img: '',
+
+                          }
+                        )
+                      }
+
+                      // OFF PEAK DEFEND
+                      else {
+                        console.log('off peak defend');
+                        shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
+                        shouldDeflectPushBackAttacker = this.rnJesus(1,player.crits.pushBack);
+
+                        player.statusDisplay = {
+                          state: true,
+                          status: 'Defend',
+                          count: 1,
+                          limit: this.players[player.number-1].statusDisplay.limit,
+                        }
+
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 25,
+                            type: '',
+                            position: '',
+                            msg: 'attackDefended',
+                            img: '',
+
+                          }
+                        )
+                      }
+
+                      // shouldDeflectPushBackAttacker = 1;
+                      // shouldDeflectAttacker = 1;
+
+                      if (shouldDeflectPushBackAttacker === 1) {
+                        let pushBackDirection;
+                        switch(player.direction) {
+                          case 'north' :
+                            pushBackDirection = 'south';
+                          break;
+                          case 'south' :
+                            pushBackDirection = 'north';
+                          break;
+                          case 'east' :
+                            pushBackDirection = 'west';
+                          break;
+                          case 'west' :
+                            pushBackDirection = 'east';
+                          break;
+                          case 'northEast' :
+                            pushBackDirection = 'southWest';
+                          break;
+                          case 'northWest' :
+                            pushBackDirection = 'southEast';
+                          break;
+                          case 'southWest' :
+                            pushBackDirection = 'northEast';
+                          break;
+                          case 'southEast' :
+                            pushBackDirection = 'northWest';
+                          break;
+                        }
+
+                        let canPushback = this.pushBack(player,pushBackDirection);
+                        // console.log('canPushback',canPushback);
+
+                        if (canPushback === true && shouldDeflectAttacker === 1) {
+                          // console.log('predeflect --> pushback');
+                          player.success.deflected.predeflect = true;
+                        }
+                        else if (canPushback === false && shouldDeflectAttacker === 1) {
+                          // console.log('no pushback ---> just deflect');
+
+                          player.defending = {
+                            state: false,
+                            count: 0,
+                            limit: player.defending.limit,
+                            // limit: this.players[player.target.occupant.player-1].defending.limit,
+                          }
+                          player.attacking = {
+                            state: false,
+                            count: 0,
+                            limit: player.attacking.limit,
+                            // limit: this.players[player.target.occupant.player-1].attacking.limit,
+                          }
+
+                          player.success.deflected = {
+                            state: true,
+                            count: 1,
+                            limit: this.deflectedLengthRef.attack,
+                            predeflect: player.success.deflected.predeflect,
+                            type: 'attack'
+                          }
+
+
+                          if (this.aiDeflectedCheck.includes(player.number) !== true) {
+                            this.aiDeflectedCheck.push(player.number)
+                          }
+
                         }
 
 
@@ -8434,145 +8565,88 @@ class App extends Component {
 
                       }
 
+                      // ATTACKER NO PUSHBACK, JUST DEFLECT!
+                      else if (shouldDeflectPushBackAttacker !== 1 && shouldDeflectAttacker === 1) {
+                        console.log('no pushback ---> just deflect');
 
-                      if (this.aiDeflectedCheck.includes(player.number) !== true) {
-                        this.aiDeflectedCheck.push(player.number)
+                        player.defending = {
+                          state: false,
+                          count: 0,
+                          limit: this.players[player.target.occupant.player-1].defending.limit,
+                        }
+                        player.attacking = {
+                          state: false,
+                          count: 0,
+                          limit: this.players[player.target.occupant.player-1].attacking.limit,
+                        }
+
+                        player.success.deflected = {
+                          state: true,
+                          count: 1,
+                          limit: this.deflectedLengthRef.attack,
+                          predeflect: player.success.deflected.predeflect,
+                          type: 'attack'
+                        }
+                        player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+
+
+                        if (this.aiDeflectedCheck.includes(player.number) !== true) {
+                          this.aiDeflectedCheck.push(player.number)
+                        }
+
                       }
 
-                    }
-
-                    // ATTACKER NO PUSHBACK, JUST DEFLECT!
-                    else if (shouldDeflectPushBackAttacker !== 1 && shouldDeflectAttacker === 1) {
-                      console.log('no pushback ---> just deflect');
-
-                      player.defending = {
-                        state: false,
-                        count: 0,
-                        limit: this.players[player.target.occupant.player-1].defending.limit,
-                      }
-                      player.attacking = {
-                        state: false,
-                        count: 0,
-                        limit: this.players[player.target.occupant.player-1].attacking.limit,
+                      // ATTACKER NO DEFLECT NO PUSHBACK!
+                      else if (shouldDeflectPushBackAttacker !== 1 && shouldDeflectAttacker !== 1) {
+                        // console.log('attacker not deflected or pushed back');
                       }
 
-                      player.success.deflected = {
-                        state: true,
-                        count: 1,
-                        limit: this.deflectedLengthRef.attack,
-                        predeflect: player.success.deflected.predeflect,
-                        type: 'attack'
-                      }
-                      player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
-
-
-                      if (this.aiDeflectedCheck.includes(player.number) !== true) {
-                        this.aiDeflectedCheck.push(player.number)
-                      }
-
-                    }
-
-                    // ATTACKER NO DEFLECT NO PUSHBACK!
-                    else if (shouldDeflectPushBackAttacker !== 1 && shouldDeflectAttacker !== 1) {
-                      // console.log('attacker not deflected or pushed back');
                     }
 
                   }
+                }
 
+                // ATTACK BARRIERS, OBSTACLES, ITEMS!
+
+                if (player.target.occupant.type !== 'player' && player.target.free !== true) {
+
+
+                  let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y );
+                  let targetCell2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y );
+                  let myCell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y );
+
+                  this.attackCellContents('melee',player,targetCell,targetCell2,myCell,undefined)
+
+                }
+
+                if (player.target.free === true) {
+                  player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 25,
+                      type: '',
+                      position: '',
+                      msg: 'missedAttack',
+                      img: '',
+
+                    }
+                  )
                 }
               }
 
-              // EMPTY TARGET STAMINA COST! CHECK FOR OBSTACLE/BARRIER/ITEM
-              else {
-
-                let weapon = player.currentWeapon.type
-                if (player.bluntAttack === true) {
-
-                  player.stamina.current = player.stamina.current - this.staminaCostRef.attack.blunt;
-
-                  if (weapon === '') {
-
-                    weapon = 'unarmed';
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
-                        type: '',
-                        position: '',
-                        msg: 'attackingBlunt',
-                        img: '',
-
-                      }
-                    )
-                  }
-                  else {
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
-                        type: '',
-                        position: '',
-                        msg: 'attackingBlunt',
-                        img: '',
-
-                      }
-                    )
-                  }
-
-                } else {
-
-                  if (weapon === '') {
-                    weapon = 'unarmed';
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
-                        type: '',
-                        position: '',
-                        msg: 'attackingUnarmed',
-                        img: '',
-
-                      }
-                    )
-                  } else {
-
-
-                    // player.popups.push(
-                    //   {
-                    //     state: false,
-                    //     count: 0,
-                    //     limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
-                    //     type: '',
-                    //     position: '',
-                    //     msg: 'missedAttack',
-                    //     img: '',
-                    //
-                    //   }
-                    // )
-                  }
-                  player.stamina.current = player.stamina.current - this.staminaCostRef.attack[weapon];
-
-
-                }
-                }
-
-
-              // DESTROY ITEMS!
-
-              if (player.target.occupant.type !== 'player') {
-
-
-                let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y );
-                let targetCell2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y );
-                let myCell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y );
-
-                this.attackCellContents('melee',player,targetCell,targetCell2,myCell,undefined)
-
+            }
+            else {
+              player.attacking.count = attackPeak+1;
+              player.stamina.current = 0;
+              player.statusDisplay = {
+                state: true,
+                status: "Out of Stamina",
+                count: 1,
+                limit: player.statusDisplay.limit,
               }
             }
+
 
           }
 
@@ -8614,7 +8688,6 @@ class App extends Component {
 
         // DEFENSE!!
 
-        // DECAYING DEF
         // if (player.defending.count > 0 && player.defending.count < player.defending.limit+1 && player.defendDecay.state !== true && player.prePull.state !== true && player.pulling.state !== true) {
         if (player.defending.count > 0 && player.defending.count < player.defending.limit+1 && player.defendDecay.state !== true) {
           player.defending.count++;
@@ -8623,14 +8696,14 @@ class App extends Component {
         } else if (player.defending.count >= player.defending.limit+1 && player.defending.state === false && player.defendDecay.state !== true) {
           console.log('peak defend player',player.number,'defending true if stamina ok');
 
-          if (player.stamina.current - this.staminaCostRef.defend >= 0) {
+          if (player.stamina.current - this.staminaCostRef.defend.peak >= 0) {
 
             player.defending = {
               state: true,
               count: 0,
               limit: player.defending.limit,
             }
-            player.stamina.current = player.stamina.current - this.staminaCostRef.defend;
+            player.stamina.current = player.stamina.current - this.staminaCostRef.defend.peak;
             player.defendDecay = {
               state: true,
               count: 0,
@@ -8651,6 +8724,14 @@ class App extends Component {
             )
 
           } else {
+
+            console.log('not enough stamina for peak defend. set defend decay and move close to drop defense count');
+            player.defendDecay = {
+              state: true,
+              count: player.defendDecay.limit-7,
+              limit: player.defendDecay.limit,
+            }
+            player.stamina.current = 0;
             player.statusDisplay = {
               state: true,
               status: "Out of Stamina",
@@ -8679,6 +8760,7 @@ class App extends Component {
           if (player.defendDecay.count < player.defendDecay.limit) {
             player.defendDecay.count++;
 
+            // CHANGE TO USE FRACTIONS(DECIMAL) INSTEAD OF STATIC NUMBERS
             if (player.popups.find(x=>x.msg.split("_")[0] === 'defending')) {
 
               if (player.defendDecay.count > 4 && player.defendDecay.count < 15) {
@@ -8716,7 +8798,6 @@ class App extends Component {
             }
 
         }
-
 
 
         // PUSHING
@@ -8813,105 +8894,35 @@ class App extends Component {
 
 
         // // DODGE STEPPER!
-        if (player.dodging.countState === true) {
+        let dodgeCondition = false;
+        if (player.crits.dodge > 4) {
+          player.crits.dodge = 4;
+        }
+        if (player.dodging.countState === true && player.dodging.count <= (player.dodging.peak.start - player.crits.dodge) && this.keyPressed[player.number-1].dodge === true) {
+          dodgeCondition = true;
+        }
+        if (player.dodging.countState === true && player.dodging.count > (player.dodging.peak.start - player.crits.dodge)) {
+          dodgeCondition = true;
+        }
+        if (dodgeCondition === true) {
 
           let startMod = player.crits.dodge;
           let endMod = player.crits.dodge;
-          if (player.crits.dodge > 4) {
-            player.crits.dodge = 4;
-          }
+          // if (player.crits.dodge > 4) {
+          //   player.crits.dodge = 4;
+          // }
 
           // HAVE STAMIN FOR DODGE
-          if (player.stamina.current - this.staminaCostRef.dodge >= 0) {
+          if (player.dodging.count === 0) {
 
-            if (player.dodging.count === 1) {
-              player.stamina.current = player.stamina.current - this.staminaCostRef.dodge;
-
-              // player.popups.push(
-              //   {
-              //     state: false,
-              //     count: 0,
-              //     limit: 5,
-              //     type: '',
-              //     position: '',
-              //     msg: 'dodgeStart',
-              //     img: '',
-              //
-              //   }
-              // )
-
-            }
-            if (player.dodging.count < player.dodging.limit) {
-              player.dodging.count++
-              player.action = 'dodging';
-              // console.log('dodge count',player.dodging.count);
-            }
-            if (player.dodging.count === (player.dodging.peak.start - startMod)) {
-
-              player.popups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit: (player.dodging.peak.end + endMod)-(player.dodging.peak.start + startMod),
-                  type: '',
-                  position: '',
-                  msg: 'dodgeSuccess',
-                  img: '',
-
-                }
-              )
-            }
-            if (player.dodging.count > (player.dodging.peak.start - startMod) && player.dodging.count < (player.dodging.peak.end + endMod)) {
-              player.dodging.state = true;
-
-              // console.log('dodge peak',player.dodging.count,'crit',player.crits.dodge);
+            if (player.stamina.current - this.staminaCostRef.dodge.peak >= 0) {
+              player.stamina.current = player.stamina.current - this.staminaCostRef.dodge.peak;
+              player.dodging.count++;
             }
 
-            // CHOOSE DODGE DIRECTION
-            if (player.dodging.count === player.dodging.peak.start) {
-              let whichDirection = this.rnJesus(1,2);
-              let dodgeDirection;
-              switch(player.direction) {
-                  case 'north':
-                  if (whichDirection === 1) {
-                    dodgeDirection = 'east';
-                  } else {
-                    dodgeDirection = 'west';
-                  }
-                  break;
-                  case 'south':
-                  if (whichDirection === 1) {
-                    dodgeDirection = 'east';
-                  } else {
-                    dodgeDirection = 'west';
-                  }
-                  break;
-                  case 'east':
-                  if (whichDirection === 1) {
-                    dodgeDirection = 'north';
-                  } else {
-                    dodgeDirection = 'south';
-                  }
-                  break;
-                  case 'west':
-                  if (whichDirection === 1) {
-                    dodgeDirection = 'north';
-                  } else {
-                    dodgeDirection = 'south';
-                  }
-                  break;
-              }
-              player.dodgeDirection = dodgeDirection;
-            }
+            else {
 
-            // IF DODGE IS BEFORE OR AFTER PEAK, STATE OFF
-            if (player.dodging.count < (player.dodging.peak.start - startMod) || player.dodging.count > (player.dodging.peak.end + endMod)) {
-              player.dodging.state = false;
-              player.dodgeDirection = '';
-              // console.log('dodge peak off');
-            }
-            if (player.dodging.count >= player.dodging.limit) {
-              player.action = 'idle';
+              player.stamina.current = 0;
               player.dodging = {
                 countState: false,
                 state: false,
@@ -8922,13 +8933,102 @@ class App extends Component {
                   end: player.dodging.peak.end,
                 }
               }
+              player.action = 'idle';
+              player.statusDisplay = {
+                state: true,
+                status: "Out of Stamina",
+                count: 1,
+                limit: player.statusDisplay.limit,
+              }
             }
 
+
+            // player.popups.push(
+            //   {
+            //     state: false,
+            //     count: 0,
+            //     limit: 5,
+            //     type: '',
+            //     position: '',
+            //     msg: 'dodgeStart',
+            //     img: '',
+            //
+            //   }
+            // )
+
+          }
+          if (player.dodging.count >= 1 && player.dodging.count < player.dodging.limit) {
+            player.dodging.count++
+            player.action = 'dodging';
+            console.log('dodge count',player.dodging.count);
+          }
+          // PEAK START
+          if (player.dodging.count === (player.dodging.peak.start - startMod)) {
+
+            player.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: (player.dodging.peak.end + endMod)-(player.dodging.peak.start + startMod),
+                type: '',
+                position: '',
+                msg: 'dodgeSuccess',
+                img: '',
+
+              }
+            )
+          }
+          if (player.dodging.count > (player.dodging.peak.start - startMod) && player.dodging.count < (player.dodging.peak.end + endMod)) {
+            player.dodging.state = true;
+
+            console.log('dodge peak',player.dodging.count,'crit',player.crits.dodge);
           }
 
-          // CAN'T DODGE. OUT OF STAMINA
-          else {
+          // CHOOSE DODGE DIRECTION
+          if (player.dodging.count === player.dodging.peak.start) {
+            let whichDirection = this.rnJesus(1,2);
+            let dodgeDirection;
+            switch(player.direction) {
+                case 'north':
+                if (whichDirection === 1) {
+                  dodgeDirection = 'east';
+                } else {
+                  dodgeDirection = 'west';
+                }
+                break;
+                case 'south':
+                if (whichDirection === 1) {
+                  dodgeDirection = 'east';
+                } else {
+                  dodgeDirection = 'west';
+                }
+                break;
+                case 'east':
+                if (whichDirection === 1) {
+                  dodgeDirection = 'north';
+                } else {
+                  dodgeDirection = 'south';
+                }
+                break;
+                case 'west':
+                if (whichDirection === 1) {
+                  dodgeDirection = 'north';
+                } else {
+                  dodgeDirection = 'south';
+                }
+                break;
+            }
+            player.dodgeDirection = dodgeDirection;
+          }
 
+          // IF DODGE IS BEFORE OR AFTER PEAK, STATE OFF
+          if (player.dodging.count < (player.dodging.peak.start - startMod) || player.dodging.count > (player.dodging.peak.end + endMod)) {
+            player.dodging.state = false;
+            player.dodgeDirection = '';
+            // console.log('dodge peak off');
+          }
+          if (player.dodging.count >= player.dodging.limit) {
+            player.action = 'idle';
             player.dodging = {
               countState: false,
               state: false,
@@ -8939,29 +9039,12 @@ class App extends Component {
                 end: player.dodging.peak.end,
               }
             }
-
-            player.statusDisplay = {
-              state: true,
-              status: "Out of Stamina",
-              count: 1,
-              limit: player.statusDisplay.limit,
-            }
-
-            // player.popups.push(
-            //   {
-            //     state: false,
-            //     count: 0,
-            //     limit: 15,
-            //     type: '',
-            //     position: '',
-            //     msg: 'outOfStamina',
-            //     img: '',
-            //
-            //   }
-            // )
           }
 
+
+
         }
+
 
 
         // COMPLETE PUSHBACK DEFLECT FLOW!
@@ -9894,69 +9977,46 @@ class App extends Component {
               if (this.keyPressed[player.number-1].attack === true && player.success.deflected.state !== true) {
 
                 let atkType = player.currentWeapon.type;
-
+                let blunt = 'normal';
                 if (player.bluntAttack === true) {
                   atkType = 'blunt';
+                  blunt = 'blunt';
                 }
                 if (player.currentWeapon.name === "") {
                   atkType = 'unarmed';
                 }
 
-                if (player.stamina.current - this.staminaCostRef.attack[atkType] >= 0) {
-
-
-                  // BLUNT ATTACK!!
-                  if (this.keyPressed[player.number-1].dodge === true) {
-                    if (player.dodging.countState === true || player.dodging.state === true) {
-                      player.dodging = {
-                        countState: false,
-                        state: false,
-                        count: 0,
-                        limit: 20,
-                        peak: {
-                          start: 5,
-                          end: 10,
-                        }
-                      };
-                    }
-                    player.stamina.current = player.stamina.current + this.staminaCostRef.attack.blunt;
-                    player.bluntAttack = true;
+                // BLUNT ATTACK!!
+                if (this.keyPressed[player.number-1].dodge === true) {
+                  // console.log('start blunt attack');
+                  if (player.dodging.countState === true || player.dodging.state === true) {
+                    console.log('was dodging, now blunt attacking. cancel dodge. return dodge stamina');
+                    player.stamina.current += this.staminaCostRef.dodge.peak;
+                    player.dodging = {
+                      countState: false,
+                      state: false,
+                      count: 0,
+                      limit: 20,
+                      peak: {
+                        start: 5,
+                        end: 10,
+                      }
+                    };
                   }
-
-                  player.action = 'attacking';
-                  player.attacking = {
-                    state: true,
-                    count: 1,
-                    limit: player.attacking.limit,
-                  }
-                  // console.log('start attack');
-
-                  if (plyrPullPushed === true) {
-                    breakPulledPushed = true;
-                  }
-
+                  player.bluntAttack = true;
+                  atkType = 'blunt';
                 }
-                else {
-                  player.statusDisplay = {
-                    state: true,
-                    status: "Out of Stamina",
-                    count: 1,
-                    limit: player.statusDisplay.limit,
-                  }
 
+                player.action = 'attacking';
+                player.attacking = {
+                  state: true,
+                  count: 1,
+                  limit: player.attacking.limit,
+                }
+                // console.log('start attack');
 
-                  // player.popups.push(
-                  //   {
-                  //     state: false,
-                  //     count: 0,
-                  //     limit: 10,
-                  //     type: '',
-                  //     position: '',
-                  //     msg: 'outOfStamina',
-                  //     img: '',
-                  //
-                  //   }
-                  // )
+                if (plyrPullPushed === true) {
+                  breakPulledPushed = true;
                 }
 
               }
@@ -9964,67 +10024,35 @@ class App extends Component {
               if (this.keyPressed[player.number-1].defend === true && player.defendDecay.state !== true) {
                 // console.log('start defending',player.number);
 
-
-
-                if (player.stamina.current - this.staminaCostRef.defend >= 0) {
-
-                  // console.log('start defending');
-
-                  if (plyrPullPushed === true) {
-                    breakPulledPushed = true;
-                  }
-
-                  if (player.defending.count === 0 && player.defendDecay.state !== true) {
-                    player.defending = {
-                      state: false,
-                      count: 1,
-                      limit: player.defending.limit,
-                    }
-
-                    if (!player.popups.find(x=>x.msg === 'preAction1')) {
-                      player.popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit: 5,
-                          type: '',
-                          position: '',
-                          msg: 'preAction1',
-                          img: '',
-
-                        }
-                      )
-                    }
-
-                  } else {
-                    // console.log('cant start defend. might already be in progress');
-                  }
-
+                // console.log('start defending');
+                if (plyrPullPushed === true) {
+                  breakPulledPushed = true;
                 }
-                else {
 
-                  player.statusDisplay = {
-                    state: true,
-                    status: "Out of Stamina",
+                if (player.defending.count === 0 && player.defendDecay.state !== true) {
+                  player.defending = {
+                    state: false,
                     count: 1,
-                    limit: player.statusDisplay.limit,
+                    limit: player.defending.limit,
                   }
 
-                  if (!player.popups.find(x => x.msg === 'outOfStamina')) {
+                  if (!player.popups.find(x=>x.msg === 'preAction1')) {
                     player.popups.push(
                       {
                         state: false,
                         count: 0,
-                        limit: 15,
+                        limit: 5,
                         type: '',
                         position: '',
-                        msg: 'outOfStamina',
+                        msg: 'preAction1',
                         img: '',
 
                       }
                     )
                   }
 
+                } else {
+                  // console.log('cant start defend. might already be in progress');
                 }
 
 
