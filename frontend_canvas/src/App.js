@@ -2606,6 +2606,9 @@ class App extends Component {
       pushBack: 7,
       push: 3,
       pull: 4,
+      move: .1,
+      strafe: .5,
+      turn: .5,
     }
     this.deflectedLengthRef = {
       outOfStamina: 50,
@@ -6039,6 +6042,7 @@ class App extends Component {
 
                   // CONTINUOUS STRAFING CHECK
                   if (this.keyPressed[player.number-1].strafe !== true) {
+                    console.log('continuous strafe check');
                     player.strafing.state = false;
                   }
                   else {
@@ -7173,8 +7177,8 @@ class App extends Component {
 
         // DODGE RELEASE/FEINT
         if (player.dodging.countState === true && player.dodging.count <= (player.dodging.peak.start - player.crits.dodge) && this.keyPressed[player.number-1].dodge !== true) {
-          console.log('released dodge key while winding up. cancel dodge. refund stamina');
-          player.stamina.current += this.staminaCostRef.dodge.pre;
+          console.log('released dodge key while winding up. cancel dodge.');
+          player.stamina.current -= this.staminaCostRef.dodge.pre;
           player.action = 'idle';
           player.dodging = {
             countState: false,
@@ -8726,6 +8730,7 @@ class App extends Component {
           } else {
 
             console.log('not enough stamina for peak defend. set defend decay and move close to drop defense count');
+
             player.defendDecay = {
               state: true,
               count: player.defendDecay.limit-7,
@@ -8960,7 +8965,7 @@ class App extends Component {
           if (player.dodging.count >= 1 && player.dodging.count < player.dodging.limit) {
             player.dodging.count++
             player.action = 'dodging';
-            console.log('dodge count',player.dodging.count);
+            // console.log('dodge count',player.dodging.count);
           }
           // PEAK START
           if (player.dodging.count === (player.dodging.peak.start - startMod)) {
@@ -8981,7 +8986,7 @@ class App extends Component {
           if (player.dodging.count > (player.dodging.peak.start - startMod) && player.dodging.count < (player.dodging.peak.end + endMod)) {
             player.dodging.state = true;
 
-            console.log('dodge peak',player.dodging.count,'crit',player.crits.dodge);
+            // console.log('dodge peak',player.dodging.count,'crit',player.crits.dodge);
           }
 
           // CHOOSE DODGE DIRECTION
@@ -9484,41 +9489,41 @@ class App extends Component {
           }
 
 
-          if (player.stamina.current - 4 >= 0) {
+          if (player.dodging.countState === true || player.dodging.state === true) {
 
-            if (player.dodging.countState === true || player.dodging.state === true) {
+            this.players[player.number-1].stamina.current += this.staminaCostRef.dodge.pre;
 
-              this.players[player.number-1].stamina.current = player.stamina.current + 4;
+          }
 
+          if (keyPressedDirection !== player.direction) {
+
+            let canFlank = false;
+            switch(player.direction) {
+              case 'north' :
+                if (keyPressedDirection === 'east' || keyPressedDirection === 'west') {
+                  canFlank = true;
+                }
+              break;
+              case 'south' :
+                if (keyPressedDirection === 'east' || keyPressedDirection === 'west') {
+                  canFlank = true;
+                }
+              break;
+              case 'west' :
+                if (keyPressedDirection === 'north' || keyPressedDirection === 'south') {
+                  canFlank = true;
+                }
+              break;
+              case 'east' :
+                if (keyPressedDirection === 'north' || keyPressedDirection === 'south') {
+                  canFlank = true;
+                }
+              break;
             }
 
-            if (keyPressedDirection !== player.direction) {
+            if (canFlank === true) {
 
-              let canFlank = false;
-              switch(player.direction) {
-                case 'north' :
-                  if (keyPressedDirection === 'east' || keyPressedDirection === 'west') {
-                    canFlank = true;
-                  }
-                break;
-                case 'south' :
-                  if (keyPressedDirection === 'east' || keyPressedDirection === 'west') {
-                    canFlank = true;
-                  }
-                break;
-                case 'west' :
-                  if (keyPressedDirection === 'north' || keyPressedDirection === 'south') {
-                    canFlank = true;
-                  }
-                break;
-                case 'east' :
-                  if (keyPressedDirection === 'north' || keyPressedDirection === 'south') {
-                    canFlank = true;
-                  }
-                break;
-              }
-
-              if (canFlank === true) {
+              if (player.stamina.current - this.staminaCostRef.flank >= 0) {
 
                 // console.log('flanking step',keyPressedDirection,player.direction);
                 this.players[player.number-1].flanking.checking = true;
@@ -9584,34 +9589,42 @@ class App extends Component {
                 } else {
                   // console.log('cancel flanking');
                 }
-              } else {
-                // console.log('cant flank2');
+
+
               }
+              else {
+                player.action = 'idle';
+                player.stamina.current = 0;
+                player.statusDisplay = {
+                  state: true,
+                  status: "Out of Stamina",
+                  count: 1,
+                  limit: player.statusDisplay.limit,
+                }
+
+                // player.popups.push(
+                //   {
+                //     state: false,
+                //     count: 0,
+                //     limit: 10,
+                //     type: '',
+                //     position: '',
+                //     msg: 'outOfStamina',
+                //     img: '',
+                //   }
+                // )
+              }
+
 
             } else {
               // console.log('cant flank2');
             }
 
           } else {
-            player.statusDisplay = {
-              state: true,
-              status: "Out of Stamina",
-              count: 1,
-              limit: player.statusDisplay.limit,
-            }
-
-            // player.popups.push(
-            //   {
-            //     state: false,
-            //     count: 0,
-            //     limit: 10,
-            //     type: '',
-            //     position: '',
-            //     msg: 'outOfStamina',
-            //     img: '',
-            //   }
-            // )
+            // console.log('cant flank2');
           }
+
+
 
         }
 
@@ -9638,6 +9651,8 @@ class App extends Component {
             }
           }
         }
+
+
 
         // CAN READ MOVE INPUTS!!
         if (
@@ -9685,26 +9700,46 @@ class App extends Component {
                       y: -30,
                     }
 
-                  } else if (player.turning.delayCount === 0) {
-                    player.action = 'moving';
-                    player.moving = {
-                      state: true,
-                      step: 0,
-                      course: '',
-                      origin: {
-                        number: {
-                          x: player.currentPosition.cell.number.x,
-                          y: player.currentPosition.cell.number.y
+                  }
+                  else if (player.turning.delayCount === 0) {
+
+                    if (player.stamina.current - this.staminaCostRef.move >= 0) {
+
+                      player.stamina.current -= this.staminaCostRef.move;
+
+                      player.action = 'moving';
+                      player.moving = {
+                        state: true,
+                        step: 0,
+                        course: '',
+                        origin: {
+                          number: {
+                            x: player.currentPosition.cell.number.x,
+                            y: player.currentPosition.cell.number.y
+                          },
+                          center: {
+                            x: player.currentPosition.cell.center,
+                            y: player.currentPosition.cell.center
+                          },
                         },
-                        center: {
-                          x: player.currentPosition.cell.center,
-                          y: player.currentPosition.cell.center
-                        },
-                      },
-                      destination: target.cell.center
+                        destination: target.cell.center
+                      }
+                      nextPosition = this.lineCrementer(player);
+                      player.nextPosition = nextPosition;
+
                     }
-                    nextPosition = this.lineCrementer(player);
-                    player.nextPosition = nextPosition;
+                    else {
+
+                      player.stamina.current = 0;
+                      player.statusDisplay = {
+                        state: true,
+                        status: 'Out of Stamina',
+                        count: 0,
+                        limit: player.statusDisplay.limit,
+                      }
+
+                    }
+
 
                   }
 
@@ -9722,24 +9757,45 @@ class App extends Component {
                     // console.log('You are already pushing something');
                   }
                 }
+
                 if (player.target.void === true) {
                   // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
 
-                  this.moveSpeed = player.speed.move;
 
-                  player.moving = {
-                    state: true,
-                    step: 0,
-                    course: '',
-                    origin: {
-                      number: player.currentPosition.cell.number,
-                      center: player.currentPosition.cell.center,
-                    },
-                    destination: target.cell.center
+                  if (player.stamina.current - this.staminaCostRef.move >= 0) {
+
+                    player.stamina.current -= this.staminaCostRef.move;
+
+                    this.moveSpeed = player.speed.move;
+
+                    player.moving = {
+                      state: true,
+                      step: 0,
+                      course: '',
+                      origin: {
+                        number: player.currentPosition.cell.number,
+                        center: player.currentPosition.cell.center,
+                      },
+                      destination: target.cell.center
+                    }
+
+                    nextPosition = this.lineCrementer(player);
+                    player.nextPosition = nextPosition;
+
+                  }
+                  else {
+
+                    player.stamina.current = 0;
+                    player.statusDisplay = {
+                      state: true,
+                      status: 'Out of Stamina',
+                      count: 0,
+                      limit: player.statusDisplay.limit,
+                    }
+
                   }
 
-                  nextPosition = this.lineCrementer(player);
-                  player.nextPosition = nextPosition;
+
                 }
 
               }
@@ -9752,8 +9808,28 @@ class App extends Component {
 
               // console.log('change player direction to',keyPressedDirection);
               // console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
-              player.turning.state = true;
-              player.turning.toDirection = keyPressedDirection;
+
+              if (player.stamina.current - this.staminaCostRef.turn >= 0) {
+
+                player.stamina.current -= this.staminaCostRef.turn;
+
+                // console.log('start turning');
+                player.turning.state = true;
+                player.turning.toDirection = keyPressedDirection;
+
+              }
+              else {
+
+                player.stamina.current = 0;
+                player.statusDisplay = {
+                  state: true,
+                  status: 'Out of Stamina',
+                  count: 0,
+                  limit: player.statusDisplay.limit,
+                }
+
+              }
+
 
             }
 
@@ -9768,29 +9844,45 @@ class App extends Component {
 
                 if (target.free === true) {
 
+                  if (player.stamina.current - this.staminaCostRef.strafe >= 0) {
 
-                  this.moveSpeed = player.speed.move;
+                    player.stamina.current -= this.staminaCostRef.strafe;
+                    this.moveSpeed = player.speed.move;
 
-                  // console.log('start strafing');
-                  player.action = 'strafe moving';
-                  player.moving = {
-                    state: true,
-                    step: 0,
-                    course: '',
-                    origin: {
-                      number: {
-                        x: player.currentPosition.cell.number.x,
-                        y: player.currentPosition.cell.number.y
+                    // console.log('start strafing');
+                    player.action = 'strafe moving';
+                    player.moving = {
+                      state: true,
+                      step: 0,
+                      course: '',
+                      origin: {
+                        number: {
+                          x: player.currentPosition.cell.number.x,
+                          y: player.currentPosition.cell.number.y
+                        },
+                        center: {
+                          x: player.currentPosition.cell.center.x,
+                          y: player.currentPosition.cell.center.y
+                        },
                       },
-                      center: {
-                        x: player.currentPosition.cell.center.x,
-                        y: player.currentPosition.cell.center.y
-                      },
-                    },
-                    destination: target.cell.center
+                      destination: target.cell.center
+                    }
+                    nextPosition = this.lineCrementer(player);
+                    player.nextPosition = nextPosition;
+
                   }
-                  nextPosition = this.lineCrementer(player);
-                  player.nextPosition = nextPosition;
+                  else {
+
+                    player.stamina.current = 0;
+                    player.statusDisplay = {
+                      state: true,
+                      status: 'Out of Stamina',
+                      count: 0,
+                      limit: player.statusDisplay.limit,
+                    }
+
+                  }
+
                 }
 
                 if (target.free === false) {
@@ -9824,7 +9916,7 @@ class App extends Component {
                   }
                 }
 
-                if (player.stamina.current - 6 >= 0) {
+                if (player.stamina.current - this.staminaCostRef.jump >= 0) {
 
                   if (cellsWithinBounds === true) {
                     if (
@@ -9936,7 +10028,8 @@ class App extends Component {
 
                 }
                 else {
-                  console.log('out of stamina');
+                  player.action = 'idle';
+                  player.stamina.current = 0;
                   player.statusDisplay = {
                     state: true,
                     status: 'Out of Stamina',
@@ -9951,7 +10044,6 @@ class App extends Component {
 
           }
         }
-
 
 
         // CAN READ NON-MOVE INPUTS!!
@@ -10076,6 +10168,7 @@ class App extends Component {
         }
 
 
+
         // BREAK FROM PULLED, PUSHED COMPLETE
         if (breakPulledPushed === true) {
           console.log('player ',player.number,' was being pre-pulled/pushed by ',plyrPullPushedPlyr,' break pulling/pushing and deflect?');
@@ -10127,9 +10220,7 @@ class App extends Component {
         }
 
 
-
       }
-
 
 
 
@@ -17950,6 +18041,7 @@ class App extends Component {
     }
     else {
 
+      player.stamina.current = 0;
       resetPush = true;
       player.statusDisplay = {
         state: true,
@@ -18549,6 +18641,7 @@ class App extends Component {
     }
     else {
 
+      pusher.stamina.current = 0;
       resetPush = true;
       pusher.statusDisplay = {
         state: true,
@@ -19121,6 +19214,7 @@ class App extends Component {
     }
     else {
 
+      player.stamina.current = 0;
       resetPull = true;
       player.statusDisplay = {
         state: true,
@@ -19793,6 +19887,7 @@ class App extends Component {
     }
     else {
 
+      puller.stamina.current = 0;
       resetPull = true;
       puller.statusDisplay = {
         state: true,
