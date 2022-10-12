@@ -294,11 +294,11 @@ class App extends Component {
       row12: ['**_*_12.0_a_0a*','**_*_12.1_a_0a*','**_*_12.2_a_0a*','**_*_12.3_a_0a*','**_*_12.4_a_0a*','**_*_12.5_a_0a*','**_*_12.6_a_0a*','**_*_12.7_a_0a*','**_*_12.8_a_0a*','**_*_12.9_a_0a*','**_*_12.10_a_0a*','**_*_12.11_a_0a*','**_*_12.12_a_0a*'],
     };
     this.levelData9 = {
-      row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_a_0.5_a_0a*','**_*_0.6_a_0a*','**_*_0.7_a_0a*','**_*_0.8_a_0a*','**_*_0.9_a_0a*'],
-      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_a_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_a_1.9_a_0a*'],
-      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_a_2.5_a_0a*','**_*_2.6_k_0a*','**_a_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
-      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_h_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_a_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
-      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','cs_h_4.4_a_0a*','cs_b_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
+      row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*','**_*_0.7_a_0a*','**_*_0.8_a_0a*','**_*_0.9_a_0a*'],
+      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
+      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_k_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
+      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_h_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
+      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','cs_h_4.4_a_0a*','**_b_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','cn_*_5.2_a_0a*','**_*_5.3_a_0a*','**_*_5.4_k_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','cs_*_5.8_a_0a*','**_*_5.9_a_0a*'],
       row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_b_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_b_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
       row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','**_*_7.5_a_0a*','**_i_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
@@ -1188,16 +1188,17 @@ class App extends Component {
     ];
     this.disableInitItems = true;
     this.initItemList = [
-      {
-        name: 'moveSpeedUp',
-        type: 'item',
-        effect: 'speedUp',
-      },
-      {
-        name: 'moveSpeedDown',
-        type: 'item',
-        effect: 'speedDown',
-      },
+      // {
+      //   name: 'moveSpeedUp',
+      //   type: 'item',
+      //   effect: 'speedUp',
+      // },
+      // {
+      //   name: 'moveSpeedDown',
+      //   type: 'item',
+      //   effect: 'speedDown',
+      // },
+
       {
         name: 'ammo5',
         type: 'item',
@@ -1208,16 +1209,16 @@ class App extends Component {
       //   type: 'item',
       //   effect: '',
       // },
-      {
-        name: 'hpUp',
-        type: 'item',
-        effect: 'hpUp',
-      },
-      {
-        name: 'hpDown',
-        type: 'item',
-        effect: 'hpDown',
-      },
+      // {
+      //   name: 'hpUp',
+      //   type: 'item',
+      //   effect: 'hpUp',
+      // },
+      // {
+      //   name: 'hpDown',
+      //   type: 'item',
+      //   effect: 'hpDown',
+      // },
       {
         name: 'spear1',
         type: 'weapon',
@@ -1266,19 +1267,39 @@ class App extends Component {
       //   subType: 'helmet',
       //   effect: '',
       // },
+      {
+        name: 'strengthUp',
+        type: 'item',
+        effect: 'strengthUp',
+      },
+      {
+        name: 'strengthUp',
+        type: 'item',
+        effect: 'strengthUp',
+      },
+      {
+        name: 'strengthUp',
+        type: 'item',
+        effect: 'strengthUp',
+      },
+      {
+        name: 'strengthUp',
+        type: 'item',
+        effect: 'strengthUp',
+      },
     ];
     this.customItemPlacement = {
       state: true,
       cells: [
-        {x:0 ,y:0 },
-        {x:1 ,y:0 },
-        {x:2 ,y:0 },
-        {x:3 ,y:0 },
-        {x:0 ,y:3 },
-        {x:1 ,y:3 },
-        {x:2 ,y:3 },
-        {x:4 ,y:3 },
-        {x:4 ,y:4 },
+        {x:0 ,y:9 },
+        {x:0 ,y:8 },
+        {x:0 ,y:7 },
+        {x:0 ,y:6 },
+        {x:1 ,y:9 },
+        {x:1 ,y:8 },
+        {x:1 ,y:7 },
+        {x:1 ,y:6 },
+        {x:2 ,y:9 },
       ]
     };
 
@@ -5968,43 +5989,6 @@ class App extends Component {
                     moveSpeed: 0,
                   }
                   player.postPull.state = true;
-                  console.log('kk',player.direction,this.getTarget(player).occupant,player.strafing);
-                  // this.players[player.number-1].prePull = {
-                  //     state: false,
-                  //     count: 0,
-                  //     limit: player.prePull.limit,
-                  //     targetCell: undefined,
-                  //     direction: "",
-                  //     puller: undefined,
-                  // }
-                  // this.players[player.number-1].pulling = {
-                  //     state: false,
-                  //     targetCell: undefined,
-                  //     moveSpeed: 0,
-                  // }
-                  //
-                  // this.players[player.number-1].defending = {
-                  //   state: false,
-                  //   count: 0,
-                  //   limit: player.defending.limit,
-                  // };
-                  // this.players[player.number-1].defendDecay = {
-                  //   state: false,
-                  //   count: 0,
-                  //   limit: 25,
-                  // };
-                  // this.players[player.number-1].postPull = {
-                  //   state: true,
-                  //   count: 0,
-                  //   limit: player.postPull.limit
-                  // }
-                  // player.turning.state = false;
-                  //
-                  // this.keyPressed[player.number-1].defend = false;
-                  // this.keyPressed[player.number-1].north = false;
-                  // this.keyPressed[player.number-1].south = false;
-                  // this.keyPressed[player.number-1].east = false;
-                  // this.keyPressed[player.number-1].west = false;
 
                 }
                 let deflectPullPushedPlayer = false;
@@ -17505,7 +17489,7 @@ class App extends Component {
     if (type === 'hitPush' || type.split('_')[0] === 'hitPushBolt') {
       movePlayer = false;
       pushStrengthPlayer += 1;
-      console.log('obstacle hit push');
+      // console.log('obstacle hit push');
     }
 
     if (type.split('_')[0] === 'hitPushBolt') {
@@ -17679,13 +17663,13 @@ class App extends Component {
       if (pushStrengthPlayer >= pushStrengthThreshold && obstacleCell.obstacle.moving.pushable === true) {
         canPushStrength = true;
         extraPush = pushStrengthPlayer - pushStrengthThreshold;
-        console.log('you are strongh enough to push this obstacle',pushStrengthPlayer,pushStrengthThreshold,'extra',extraPush);
+        console.log('you are strongh enough to push this obstacle',pushStrengthPlayer,pushStrengthThreshold,player.crits.guardBreak-2,player.crits.pushBack-2,'extra',extraPush);
       }
       else {
-        console.log('you are NOT strong enough to push this obstacle',pushStrengthPlayer,pushStrengthThreshold);
+        console.log('you are NOT strong enough to push this obstacle',pushStrengthPlayer,pushStrengthThreshold,player.crits.guardBreak-2,player.crits.pushBack-2);
         resetPush = true;
       }
-      if (extraPush > 3) {
+      if (extraPush > 5) {
         console.log('extra push force. Push obstacle w/o plyr move');
         movePlayer = false;
       }
@@ -18038,7 +18022,7 @@ class App extends Component {
            ) {
 
              pusher.prePush.count++;
-             console.log('pre pushing the same player. Continue',pusher.prePush.count);
+             // console.log('pre pushing the same player. Continue',pusher.prePush.count);
            }
            else {
              // console.log('pre push player, target or direction has changed. Reset prepush');
@@ -18104,7 +18088,7 @@ class App extends Component {
       }
       pushStrengthPlayer += (pusher.crits.pushBack-3);
       pushStrengthPlayer += (pusher.crits.guardBreak-2);
-      pushStrengthPlayer += 15;
+      // pushStrengthPlayer += 15;
 
 
       let destCell = {
@@ -18252,10 +18236,10 @@ class App extends Component {
       if (pushStrengthPlayer >= pushStrengthThreshold) {
         canPushStrength = true;
         extraPush = pushStrengthPlayer - pushStrengthThreshold;
-        console.log('you are strongh enough to push this player',pushStrengthPlayer,pushStrengthThreshold,'extra',extraPush);
+        console.log('you are strongh enough to push this player',pushStrengthPlayer,pushStrengthThreshold,pusher.crits.guardBreak-2,pusher.crits.pushBack-2,'extra',extraPush);
       }
       else {
-        console.log('you are NOT strong enough to push this player',pushStrengthPlayer,pushStrengthThreshold);
+        console.log('you are NOT strong enough to push this player',pushStrengthPlayer,pushStrengthThreshold,pusher.crits.guardBreak-2,pusher.crits.pushBack-2);
         resetPush = true;
       }
       if (extraPush > 3) {
@@ -18717,8 +18701,6 @@ class App extends Component {
     let impactDirection = player.prePull.direction;
 
 
-
-
     if (player.stamina.current - this.staminaCostRef.pull >= 0) {
 
       player.stamina.current = player.stamina.current - this.staminaCostRef.pull;
@@ -18998,10 +18980,10 @@ class App extends Component {
 
       if (pullStrengthPlayer >= pullStrengthThreshold && obstacleCell.obstacle.moving.pushable === true) {
         canPullStrength = true;
-        console.log('you are strongh enough to pull this obstacle',pullStrengthPlayer,pullStrengthThreshold);
+        console.log('you are strongh enough to pull this obstacle',pullStrengthPlayer,pullStrengthThreshold,player.crits.guardBreak-2,player.crits.pushBack-2);
       }
       else {
-        console.log('you are NOT strong enough to pull this obstacle',pullStrengthPlayer,pullStrengthThreshold);
+        console.log('you are NOT strong enough to pull this obstacle',pullStrengthPlayer,pullStrengthThreshold,player.crits.guardBreak-2,player.crits.pushBack-2);
         resetPull = true;
       }
 
@@ -19073,12 +19055,6 @@ class App extends Component {
           count: 0,
           limit: player.defendDecay.limit,
         };
-
-        // this.players[player.number-1].postPull = {
-        //   state: true,
-        //   count: 0,
-        //   limit: player.postPull.limit
-        // }
 
         this.getTarget(player);
 
@@ -19325,7 +19301,7 @@ class App extends Component {
       }
       pullStrengthPlayer += (puller.crits.pushBack-3);
       pullStrengthPlayer += (puller.crits.guardBreak-2);
-      pullStrengthPlayer += 15;
+      // pullStrengthPlayer += 15;
 
 
       let destCell = {
@@ -19473,10 +19449,10 @@ class App extends Component {
 
       if (pullStrengthPlayer >= pullStrengthThreshold) {
         canPullStrength = true;
-        console.log('you are strongh enough to pull this player',pullStrengthPlayer,pullStrengthThreshold);
+        console.log('you are strongh enough to pull this player',pullStrengthPlayer,pullStrengthThreshold,puller.crits.guardBreak-2,puller.crits.pushBack-2);
       }
       else {
-        console.log('you are NOT strong enough to pull this player',pullStrengthPlayer,pullStrengthThreshold);
+        console.log('you are NOT strong enough to pull this player',pullStrengthPlayer,pullStrengthThreshold,puller.crits.guardBreak-2,puller.crits.pushBack-2);
         resetPull = true;
       }
 
@@ -19719,12 +19695,6 @@ class App extends Component {
         }
         let targetPlyrNextPosition = this.lineCrementer(targetPlayer);
         this.players[targetPlayer.number-1].nextPosition = targetPlyrNextPosition;
-        //
-        // console.log("!!!player ",targetPlayer.number," is being pulled to",pullerCellRef.number," by ",puller.number,"!!!");
-
-
-
-
 
 
         // MOVE PULLER
