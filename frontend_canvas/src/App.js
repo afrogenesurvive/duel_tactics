@@ -7311,6 +7311,17 @@ class App extends Component {
             console.log('attack peak',player.attacking.count,'plyr',player.number);
 
 
+            // WEAPON STAMINA COST!!
+            if(player.bluntAttack !== true) {
+
+              let weapon = player.currentWeapon.type
+              if (weapon === '') {
+                weapon = 'unarmed'
+              }
+              this.players[player.number-1].stamina.current = this.players[player.number-1].stamina.current - this.staminaCostRef.attack[weapon];
+            }
+
+
             // CREATE NEW PROJECTILE
             if (player.currentWeapon.type === 'crossbow' && player.items.ammo > 0) {
               // console.log('firing crossbow');
@@ -7664,17 +7675,6 @@ class App extends Component {
                     )
                   }
 
-                  // WEAPON STAMINA COST!!
-                  else {
-
-
-                    let weapon = player.currentWeapon.type
-                    if (weapon === '') {
-                      weapon = 'unarmed'
-                    }
-                    this.players[player.number-1].stamina.current = this.players[player.number-1].stamina.current - this.staminaCostRef.attack[weapon];
-                  }
-
 
                   // DODGED CHECK!
                   if (this.players[player.target.occupant.player-1].dodging.state === true) {
@@ -7930,6 +7930,8 @@ class App extends Component {
                 // ATTACK DEFENDED!!
                 else {
                   console.log('attack defended by ',player.target.occupant.player,'target defending?',this.players.[player.target.occupant.player-1].defending.state,'against plyr ',player.number);
+
+
 
                   let shouldDefend = false;
 
@@ -8219,6 +8221,7 @@ class App extends Component {
                       this.players[player.target.occupant.player-1].defendDecay.count < 4
                     ) {
                       defenderParry = true;
+                      this.players[player.target.occupant.player-1].stamina.current += this.staminaCostRef.defend;
                     }
 
 
@@ -20939,9 +20942,10 @@ class App extends Component {
 
 
 
-    let dropWhat = this.rnJesus(1,2);
+    let dropWhat = this.rnJesus(1,5);
     dropWhat = 1
     let shouldDrop = false;
+    let dropped = false;
 
     // let dropChance = this.rnJesus(1,1*player.crits.pushBack);
 
@@ -20956,9 +20960,12 @@ class App extends Component {
 
       if (dropWhat === 1) {
 
-        if (player.items.weapons.length > 0) {
+        if (player.items.weapons.length > 0 && player.currentWeapon.name !== "") {
+
+          dropped = true;
+
           let index = player.items.weapons.findIndex(weapon => weapon.name === player.currentWeapon.name);
-          // console.log("dropping weapon player ",player.number,this.players[player.number-1].items.weapons[index].name);
+          // console.log("dropping weapon player ",player.number,this.players[player.number-1].items.weapons[index].name,index,);
 
           item.name = this.players[player.number-1].items.weapons[index].name;
           item.subType = this.players[player.number-1].items.weapons[index].type;
@@ -20999,8 +21006,11 @@ class App extends Component {
           }
 
 
-          if (player.currentArmor === {} || !player.currentArmor || player.currentArmor.name === '') {
-
+          // CURRENT WEAPON DROPPED, DROP DEFENSE
+          // if (player.currentArmor === {} || !player.currentArmor || player.currentArmor.name === '') {
+          //
+          // }
+          if (player.defending.state === true) {
             this.players[player.number-1].defending = {
               state: false,
               count: 0,
@@ -21008,7 +21018,6 @@ class App extends Component {
             }
             this.players[player.number-1].action = "idle";
           }
-
 
           this.players[player.number-1].statusDisplay = {
             state: true,
@@ -21022,7 +21031,9 @@ class App extends Component {
       }
       else {
 
-        if (player.items.armor.length > 0) {
+        if (player.items.armor.length > 0 && player.currentArmor.name !== "") {
+
+          dropped = true;
           let index = player.items.armor.findIndex(armor => armor.name === player.currentArmor.name);
           // console.log("dropping armor player ",player.number,this.players[player.number-1].items.armor[index].name);
           item.name = this.players[player.number-1].items.armor[index].name;
@@ -21103,35 +21114,42 @@ class App extends Component {
         }
       }
 
+      if (player.currentWeapon.name === "" || player.currentArmor.name === "") {
+        console.log('currently unarmed and/or unarmored. Nothing to drop');
+      }
+
       // console.log('postDropItems', player.items, player.currentPosition.cell.number.x,player.currentPosition.cell.number.y);
 
-      let dropCellIndex = this.gridInfo.findIndex(cell => cell.number.x === player.currentPosition.cell.number.x && cell.number.y === player.currentPosition.cell.number.y);
-      this.gridInfo[dropCellIndex].item = item;
+      if (dropped === true) {
+        let dropCellIndex = this.gridInfo.findIndex(cell => cell.number.x === player.currentPosition.cell.number.x && cell.number.y === player.currentPosition.cell.number.y);
+        this.gridInfo[dropCellIndex].item = item;
 
 
-      if (player.ai.state === true && item.name !== "" && player.ai.organizing.dropped.state !== true) {
-        if (dropWhat === 1) {
-          // console.log('ai dropping weapon');
-          player.ai.organizing.dropped.state = true;
-          player.ai.organizing.dropped.gear = {
-            name: item.name,
-            type: item.type,
-            subType: item.subType,
-            effect: item.effect
-          };
+        if (player.ai.state === true && item.name !== "" && player.ai.organizing.dropped.state !== true) {
+          if (dropWhat === 1) {
+            // console.log('ai dropping weapon');
+            player.ai.organizing.dropped.state = true;
+            player.ai.organizing.dropped.gear = {
+              name: item.name,
+              type: item.type,
+              subType: item.subType,
+              effect: item.effect
+            };
+          }
+          else {
+            // console.log('ai dropping armor');
+            player.ai.organizing.dropped.state = true;
+            player.ai.organizing.dropped.gear = {
+              name: item.name,
+              type: item.type,
+              subType: item.subType,
+              effect: item.effect
+            };
+          }
+
         }
-        else {
-          // console.log('ai dropping armor');
-          player.ai.organizing.dropped.state = true;
-          player.ai.organizing.dropped.gear = {
-            name: item.name,
-            type: item.type,
-            subType: item.subType,
-            effect: item.effect
-          };
-        }
-
       }
+
 
 
     }
