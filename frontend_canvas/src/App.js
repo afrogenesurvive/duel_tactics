@@ -2657,6 +2657,7 @@ class App extends Component {
     this.obstacleBarrierToDestroy = [];
     this.obstacleItemsToDrop = [];
     this.obstaclesOutOfBoundsFall = [];
+    this.cellPopups = [];
 
 
     // CAMERA
@@ -10255,6 +10256,8 @@ class App extends Component {
     }
 
 
+
+
     // STATUS DISPLAY STEPPER!!
     if (player.statusDisplay.state === true && player.statusDisplay.count < player.statusDisplay.limit) {
       // console.log('stepping status display');
@@ -10298,6 +10301,63 @@ class App extends Component {
       for (const popup2 of player.popups) {
         if (currentPopupCount < 8) {
           let indx = player.popups.findIndex(x=>x===popup2);
+          if (popup2.state === false) {
+            popup2.state = true;
+            currentPopupCount++;
+            // console.log('turn on new popup',popup2.msg);
+          }
+        } else {
+          // console.log('currentPopup display full..',popup2.msg);
+        }
+      }
+
+    }
+
+
+
+
+    // CELL POPUPS
+    if (this.time === 200 && !this.cellPopups.find(x => x.msg === 'dodgeStart' && x.cell.number.x === 3 && x.cell.number.y === 3)) {
+      this.cellPopups.push(
+        {
+            state: false,
+            count: 0,
+            limit: 25,
+            type: '',
+            position: '',
+            msg: 'dodgeStart',
+            img: '',
+            cell: this.gridInfo.find(x => x.number.x === 3 && x.number.y === 3)
+          }
+      )
+    }
+
+    if (this.cellPopups.length > 0) {
+
+      for (const popup of this.cellPopups) {
+        let indx = this.cellPopups.findIndex(x=>x===popup);
+        if (popup.state === true) {
+          if (popup.limit > 0) {
+            if (popup.state === true && popup.count < popup.limit) {
+              popup.count++
+            }
+            if (popup.count >= popup.limit) {
+              this.cellPopups.splice(indx,1)
+            }
+          }
+          if (popup.limit === 0) {
+            // check if the player state it relates to is true, if not remove it
+          }
+
+        }
+
+
+      }
+
+      let currentPopupCount = this.cellPopups.filter(x=>x.state === true).length;
+      for (const popup2 of this.cellPopups) {
+        if (currentPopupCount < 8) {
+          let indx = this.cellPopups.findIndex(x=>x===popup2);
           if (popup2.state === false) {
             popup2.state = true;
             currentPopupCount++;
@@ -12749,6 +12809,314 @@ class App extends Component {
         }
 
 
+
+        // CELL POPUPS
+        if (x === this.gridWidth && y === this.gridWidth ) {
+          // console.log(this.refs.pickupAmmo);
+
+          let popupImageRef = {
+            attackStart: this.refs.preAttackIndicate,
+            preAction1: this.refs.preAction1Indicate,
+            preAction2: this.refs.preAction2Indicate,
+            attacking1: this.refs.attack1Indicate,
+            attacking2: this.refs.attack2Indicate,
+            missedAttack: this.refs.missedIndicate,
+            attackingBlunt: this.refs.attackBluntIndicate2,
+            attackingUnarmed: this.refs.attackUnarmedIndicate,
+            attacked1: this.refs.attack1Indicate,
+            attacked2: this.refs.attack2Indicate,
+            attackDefended: this.refs.attackBreakIndicate,
+            attackParried: this.refs.attackParriedIndicate,
+            boltKilled: this.refs.boltKilledIndicate,
+            attackCancelled: this.refs.attackBreakIndicate,
+            injured: this.refs.deflectInjuredIndicate,
+            defending_1: this.refs.defendIndicate1,
+            defending_2: this.refs.defendIndicate2,
+            defending_3: this.refs.defendIndicate3,
+            defending_4: this.refs.defendIndicate4,
+            defendSuccess: this.refs.defendSuccessIndicate,
+            guardBroken: this.refs.defendBreakIndicate,
+            deflected: this.refs.deflectBluntIndicate,
+            dodgeStart: this.refs.preAction2Indicate,
+            dodgeSuccess: this.refs.dodgeIndicate,
+            flanking: this.refs.flankIndicate,
+            pushedBack: this.refs.pushbackIndicate,
+            falling: this.refs.fallingIndicate,
+            outOfStamina: this.refs.outOfStaminaIndicate,
+            outOfAmmo: this.refs.outOfAmmoIndicate,
+            missionEngage: this.refs.deflectIndicate2,
+            missionPursue: this.refs.pursueMissionIndicate2,
+            missionRetrieve: this.refs.retrieveMissionIndicate,
+            missionDefend: this.refs.defendMissionIndicate,
+            missionPatrol: this.refs.patrolMissionIndicate,
+            missionRetreat: this.refs.retreatIndicate,
+            missionEnroute: this.refs.enrouteIndicate,
+            missionComplete: this.refs.completeMissionIndicate,
+            thinking: this.refs.thinkingIndicate,
+            alarmed: this.refs.preAttack2Indicate,
+            pathSwitch: this.refs.pathSwitchIndicate,
+            targetSwitch: this.refs.targetSwitchIndicate,
+            aggressiveMode: this.refs.aggressiveModeIndicate,
+            passiveMode: this.refs.passiveModeIndicate,
+            pickupWeapon: this.refs.pickupWeaponIndicate,
+            pickupArmor: this.refs.pickupArmorIndicate,
+            dropWeapon: this.refs.dropWeaponIndicate,
+            dropArmor: this.refs.dropArmorIndicate,
+            pickupBuff: this.refs.pickupBuffIndicate,
+            pickupDebuff: this.refs.pickupDebuffIndicate,
+            pickupAmmo: this.refs.pickupAmmoIndicate,
+            inventoryFull: this.refs.inventoryFullIndicate,
+            stop: this.refs.boltDefendIndicate,
+            dropWeapon: this.refs.dropWeaponIndicate,
+            dropArmor: this.refs.dropArmorIndicate,
+            drowning: this.refs.drowningIndicate,
+            terrainSlowdown: this.refs.terrainSlowdownIndicate,
+            terrainSpeedup: this.refs.terrainSpeedupIndicate,
+            terrainInjured: this.refs.terrainInjuredIndicate,
+            destroyedItem: this.refs.destroyedItemIndicate,
+            sword: this.refs.itemSword,
+            spear: this.refs.itemSpear,
+            crossbow: this.refs.itemCrossbow,
+            longbow: this.refs.itemBow,
+            helmet: this.refs.itemHelmet1,
+            mail: this.refs.itemMail1,
+            greaves: this.refs.itemGreaves1,
+          };
+          // context.beginPath();
+          // context.lineWidth = "2"
+          // context.rect(point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
+          // context.strokeStyle = 'white';
+          // context.stroke();
+
+          let popupBorderColor = 'black';
+
+          let drawBubble = (ctx,x,y,w,h,radius,px,py,color) => {
+
+             var r = x + w;
+             var b = y + h;
+             if(py<y || py>y+h){
+              var con1 = Math.min(Math.max(x+radius,px-10),r-radius-20);
+              var con2 = Math.min(Math.max(x+radius+20,px+10),r-radius);
+             }
+             else{
+              var con1 = Math.min(Math.max(y+radius,py-10),b-radius-20);
+              var con2 = Math.min(Math.max(y+radius+20,py+10),b-radius);
+             }
+             var dir;
+             if(py < y) dir = 2;
+             if(py > y) dir = 3;
+             if(px < x && py>=y && py<=b) dir = 0;
+             if(px > x && py>=y && py<=b) dir = 1;
+             if(px >= x && px <= r && py >= y && py <= b) dir = -1;
+             ctx.clearRect(x,y,this.popupSize,this.popupSize);
+             ctx.beginPath();
+             ctx.strokeStyle=color;
+             ctx.lineWidth="1";
+             ctx.moveTo(x+radius,y);
+             if(dir==2){
+              ctx.lineTo(con1,y);
+              ctx.lineTo(px,py);
+              ctx.lineTo(con2,y);
+              ctx.lineTo(r-radius,y);
+             }
+             else ctx.lineTo(r-radius,y);
+             ctx.quadraticCurveTo(r,y,r,y+radius);
+             if(dir==1){
+              ctx.lineTo(r,con1);
+              ctx.lineTo(px,py);
+              ctx.lineTo(r,con2);
+              ctx.lineTo(r,b-radius);
+             }
+             else ctx.lineTo(r,b-radius);
+             ctx.quadraticCurveTo(r, b, r-radius, b);
+             if(dir==3){
+              ctx.lineTo(con2,b);
+              ctx.lineTo(px,py);
+              ctx.lineTo(con1,b);
+              ctx.lineTo(x+radius,b);
+             }
+             else ctx.lineTo(x+radius,b);
+             ctx.quadraticCurveTo(x, b, x, b-radius);
+             if(dir==0){
+              ctx.lineTo(x,con2);
+              ctx.lineTo(px,py);
+              ctx.lineTo(x,con1);
+              ctx.lineTo(x,y+radius);
+             }
+             else ctx.lineTo(x,y+radius);
+             ctx.quadraticCurveTo(x, y, x+radius, y);
+             context.fillStyle = 'white';
+             ctx.fill();
+             ctx.stroke();
+             // ctx.globalCompositeOperation = "source-over";
+             ctx.closePath();
+          }
+
+          for (const popup of this.cellPopups) {
+            if (popup.state === true) {
+              // console.log('drawing a popup');
+              let popupDrawCoords;
+              if (popup.position === '' || !popup.position) {
+                let currentPopups = this.cellPopups.filter(x=>x.state === true);
+                let positions = ['north','east','south','west','northEast','northWest','southEast','southWest']
+
+                for (const popup2 of currentPopups) {
+                  if (popup2.position && popup2.position !== '') {
+
+                    let indx = positions.indexOf(popup2.position);
+                    positions.splice(indx,1)
+                  }
+
+                }
+
+                let dir = undefined;
+
+                for (const plyr2 of this.players) {
+                  if (plyr2.ai.state !== true) {
+                    let myPos = popup.cell.number;
+                    let invalidPos = this.players[plyr2.number-1].currentPosition.cell.number;
+
+                    // invalidpostions push plyr2 position
+                    // for player popups
+                    //   invalid cell = pop.cell.number + popup position mod, invalposits push invalidcell
+                    //
+                    // for each invalid pos, set dir w/ code below
+                    //   splce from postions as required
+
+
+                    if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
+                      dir = 'north';
+                    }
+                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y-1) {
+                      dir = 'northWest';
+                    }
+                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y) {
+                      dir = 'west';
+                    }
+                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y+1) {
+                      dir = 'southWest';
+                    }
+                    if (invalidPos.x === myPos.x && invalidPos.y === myPos.y+1) {
+                      dir = 'south';
+                    }
+                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y+1) {
+                      dir = 'southEast';
+                    }
+                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y) {
+                      dir = 'east';
+                    }
+                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y-1) {
+                      dir = 'northEast';
+                    }
+                    if (dir && positions.includes(dir) === true) {
+                      positions.splice(positions.indexOf(dir),1);
+                      // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                    }
+
+
+                  }
+                }
+
+                // for pop of cell popups not this cell.number and not msg,
+                // invalid cell = pop.cell.number + popup position mod, invalposits2 push invalidcell
+                // for each invalid pos, set dir w/ code above, splce from postions as required
+
+                if (!positions[0]) {
+                  // console.log('no open positions for', popup.msg);
+                  popup.state = false;
+                  popup.count = 0;
+                } else {
+                  popup.position = positions[0];
+                }
+
+
+                popup.img = popupImageRef[popup.msg]
+
+                popupDrawCoords = this.popupDrawCalc(popup,{x:popup.cell.center.x-25,y:popup.cell.center.y-25},0);
+                // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
+                drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor)
+                // context.fillStyle = 'black';
+                // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
+                // console.log('popup.msg',popup.msg,popup.img);
+                context.drawImage(popup.img, popupDrawCoords.origin.x+5,popupDrawCoords.origin.y+5,26,26);
+              }
+              else {
+
+                let dir = undefined;
+                let dirs = [];
+
+                for (const plyr2 of this.players) {
+                  if (plyr2.ai.state !== true) {
+                    let myPos = popup.cell.number;
+                    let invalidPos = this.players[plyr2.number-1].currentPosition.cell.number;
+
+                    // invalidpostions2 push plyr2 position
+                    // for player popups
+                    //   invalid cell = pop.cell.number + popup position mod, invalposits2 push invalidcell
+                    //
+
+
+                    if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
+                      dir = 'north';
+                    }
+                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y-1) {
+                      dir = 'northWest';
+                    }
+                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y) {
+                      dir = 'west';
+                    }
+                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y+1) {
+                      dir = 'southWest';
+                    }
+                    if (invalidPos.x === myPos.x && invalidPos.y === myPos.y+1) {
+                      dir = 'south';
+                    }
+                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y+1) {
+                      dir = 'southEast';
+                    }
+                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y) {
+                      dir = 'east';
+                    }
+                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y-1) {
+                      dir = 'northEast';
+                    }
+
+                  }
+                }
+
+                // for pop of cell popups not this cell.number and not msg,
+                // invalid cell = pop.cell.number + popup position mod, invalposits2 push invalidcell
+                // for each invalid pos, set dir w/ code above
+                //   push dir to dirs
+
+                // for all dirs, if dir === pop position, set let reconsider
+                // if reconsider === true....
+                if (popup.position === dir ) {
+                  for (const pop of this.cellPopups) {
+                    pop.position = '';
+                    pop.state = false;
+                  }
+                  // console.log('reconsidering...',popup.msg);
+                }
+                else {
+                  popup.img = popupImageRef[popup.msg]
+                  popupDrawCoords = this.popupDrawCalc(popup,{x:popup.cell.center.x-25,y:popup.cell.center.y-25},0);
+                  // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
+                  drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor)
+                  // context.fillStyle = 'black';
+                  // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
+                  // console.log('popup.msg',popup.msg);
+                context.drawImage(popup.img, popupDrawCoords.origin.x+5,popupDrawCoords.origin.y+5,26,26);
+                }
+
+
+              }
+            }
+          }
+
+        }
+
+
         function playerDrawLog (x,y,plyr) {
           console.log('** playerDrawLog **');
           console.log('-- player --',plyr.number);
@@ -14140,7 +14508,7 @@ class App extends Component {
           this.players[plyr.number-1] = plyr;
 
 
-          // POPUPS
+          // PLAYER POPUPS
 
           if (x === this.gridWidth && y === this.gridWidth ) {
             // console.log(this.refs.pickupAmmo);
