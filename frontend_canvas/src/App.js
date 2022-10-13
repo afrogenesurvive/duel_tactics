@@ -8325,6 +8325,7 @@ class App extends Component {
 
                     if (bluntAttackBreakDefense === true) {
                       shouldDefend = false;
+                      this.attackedCancel(this.players[player.target.occupant.player-1])
                       this.players[player.target.occupant.player-1].action = 'deflected';
 
                       this.players[player.target.occupant.player-1].stamina.current = this.players[player.target.occupant.player-1].stamina.current - 3;
@@ -20418,7 +20419,10 @@ class App extends Component {
 
     switch(player.action) {
       case 'attacking':
-        player.action = 'idle';
+        if (player.success.deflected.state !== true) {
+          player.action = 'idle';
+        }
+
         player.attacking = {
           state: false,
           count: 0,
@@ -20455,7 +20459,9 @@ class App extends Component {
         )
         break;
       case 'defending':
-        player.action = 'idle';
+        if (player.success.deflected.state !== true) {
+          player.action = 'idle';
+        }
         player.defending = {
           state: false,
           count: 0,
@@ -20498,7 +20504,9 @@ class App extends Component {
         )
         break;
       case 'strafe moving':
-        player.action = 'idle';
+        if (player.success.deflected.state !== true) {
+          player.action = 'idle';
+        }
         player.idleAnim = {
           state: false,
           count: 0,
@@ -20528,7 +20536,9 @@ class App extends Component {
         )
       break;
       case 'dodging':
-        player.action = 'idle';
+        if (player.success.deflected.state !== true) {
+          player.action = 'idle';
+        }
         player.idleAnim = {
           state: false,
           count: 0,
@@ -20565,7 +20575,9 @@ class App extends Component {
         )
       break;
       case 'flanking':
-        player.action = 'idle';
+        if (player.success.deflected.state !== true) {
+          player.action = 'idle';
+        }
         player.idleAnim = {
           state: false,
           count: 0,
