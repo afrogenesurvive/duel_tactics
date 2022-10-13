@@ -10120,7 +10120,7 @@ class App extends Component {
             // START ATTACK/DEFEND!!
             if (player.attacking.state === false && player.defending.state === false && player.defendDecay.state !== true) {
 
-              if (this.keyPressed[player.number-1].attack === true && player.success.deflected.state !== true) {
+              if (this.keyPressed[player.number-1].attack === true && player.success.deflected.state !== true && this.keyPressed[player.number-1].defend !== true) {
 
                 let atkType = player.currentWeapon.type;
                 let blunt = 'normal';
@@ -10167,7 +10167,7 @@ class App extends Component {
 
               }
 
-              if (this.keyPressed[player.number-1].defend === true && player.defendDecay.state !== true) {
+              if (this.keyPressed[player.number-1].defend === true && player.defendDecay.state !== true && this.keyPressed[player.number-1].attack !== true) {
                 // console.log('start defending',player.number);
 
                 // console.log('start defending');
