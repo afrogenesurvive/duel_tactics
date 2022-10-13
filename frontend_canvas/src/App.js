@@ -384,6 +384,9 @@ class App extends Component {
       },
     }
 
+
+
+
     // OBSTACLES HAVE MAX 5 ITEMS
     this.obstacleLevelDataRef = {
       a: {
@@ -8062,6 +8065,7 @@ class App extends Component {
 
 
                     let shouldDefend = false;
+                    let bluntAttackBreakDefense = false;
 
                     // DEFENDER IS UNARMED
                     if (this.players[player.target.occupant.player-1].currentWeapon.name === "" && this.players[player.target.occupant.player-1].currentWeapon.type === "") {
@@ -8070,113 +8074,123 @@ class App extends Component {
                       if (player.currentWeapon.name === "" && player.currentWeapon.type === "") {
                         console.log('target and attacker unarmed. target defend');
                         shouldDefend = true;
+                        if (player.bluntAttack === true) {
+                          bluntAttackBreakDefense = true;
+                        }
                       }
 
+                      // player is armed
                       else {
                         console.log('armed player attacked unarmed target defense: cancel target defend and attack them');
                         shouldDefend = false;
 
-                        // console.log('single hit attack plyr ',player.number,'against plyr ',player.target.occupant.player);
-                        this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
-                        player.attackStrength = 1;
-                        this.attackedCancel(this.players[player.target.occupant.player-1])
-
-                        this.players[player.target.occupant.player-1].success.deflected = {
-                          state: true,
-                          count: 1,
-                          limit: this.deflectedLengthRef.attack,
-                          predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
-                          type: 'attack'
+                        if (player.bluntAttack === true) {
+                          bluntAttackBreakDefense = true;
                         }
+                        else {
 
-                        if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
-                          this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
-                        }
+                          // console.log('single hit attack plyr ',player.number,'against plyr ',player.target.occupant.player);
+                          this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
+                          player.attackStrength = 1;
+                          this.attackedCancel(this.players[player.target.occupant.player-1])
 
-                        if (this.players[player.target.occupant.player-1].hp === 1) {
-                          this.players[player.target.occupant.player-1].speed.move = .05;
-                        }
+                          this.players[player.target.occupant.player-1].success.deflected = {
+                            state: true,
+                            count: 1,
+                            limit: this.deflectedLengthRef.attack,
+                            predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
+                            type: 'attack'
+                          }
 
-                        if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'alarmed')) {
-                          this.players[player.target.occupant.player-1].popups.push(
-                            {
-                              state: false,
-                              count: 0,
-                              limit:25,
-                              type: '',
-                              position: '',
-                              msg: 'alarmed',
-                              img: '',
+                          if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
+                            this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
+                          }
 
-                            }
-                          )
-                        }
+                          if (this.players[player.target.occupant.player-1].hp === 1) {
+                            this.players[player.target.occupant.player-1].speed.move = .05;
+                          }
 
-                        if (!player.popups.find(x=>x.msg === 'attacking1')) {
-                          player.popups.push(
-                            {
-                              state: false,
-                              count: 0,
-                              limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
-                              type: '',
-                              position: '',
-                              msg: 'attacking1',
-                              img: '',
+                          if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'alarmed')) {
+                            this.players[player.target.occupant.player-1].popups.push(
+                              {
+                                state: false,
+                                count: 0,
+                                limit:25,
+                                type: '',
+                                position: '',
+                                msg: 'alarmed',
+                                img: '',
 
-                            }
-                          )
-                        }
-
-                        // KILL PLAYER
-                        if (this.players[player.target.occupant.player-1].hp <= 0) {
-                          this.killPlayer(this.players[player.target.occupant.player-1]);
-
-                          let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                          this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
-
-                          player.points++;
-
-                          this.pointChecker(player)
-
-                          if (player.ai.state === true && player.ai.mode === 'aggressive') {
-                            console.log('check for evidence of retrieval here and resume retrieve if so',player.ai.retrieving,player.ai.mission);
-
-                            if (player.ai.retrieving.checkin) {
-
-                              player.ai.mission = 'retrieve';
-
-                              if (!player.popups.find(x=>x.msg === 'missionRetrieve')) {
-                                player.popups.push(
-                                  {
-                                    state: false,
-                                    count: 0,
-                                    limit: 25,
-                                    type: '',
-                                    position: '',
-                                    msg: 'missionRetrieve',
-                                    img: '',
-
-                                  }
-                                )
                               }
+                            )
+                          }
 
-                              let targetSafeData = this.scanTargetAreaThreat({
-                                player: player.number,
-                                point: {
-                                  x: player.ai.retrieving.point.x,
-                                  y: player.ai.retrieving.point.y,
-                                },
-                                range: 3,
-                              })
+                          if (!player.popups.find(x=>x.msg === 'attacking1')) {
+                            player.popups.push(
+                              {
+                                state: false,
+                                count: 0,
+                                limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
+                                type: '',
+                                position: '',
+                                msg: 'attacking1',
+                                img: '',
 
-                              player.ai.retrieving.safe = targetSafeData.isSafe;
+                              }
+                            )
+                          }
+
+                          // KILL PLAYER
+                          if (this.players[player.target.occupant.player-1].hp <= 0) {
+                            this.killPlayer(this.players[player.target.occupant.player-1]);
+
+                            let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+                            this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+                            player.points++;
+
+                            this.pointChecker(player)
+
+                            if (player.ai.state === true && player.ai.mode === 'aggressive') {
+                              console.log('check for evidence of retrieval here and resume retrieve if so',player.ai.retrieving,player.ai.mission);
+
+                              if (player.ai.retrieving.checkin) {
+
+                                player.ai.mission = 'retrieve';
+
+                                if (!player.popups.find(x=>x.msg === 'missionRetrieve')) {
+                                  player.popups.push(
+                                    {
+                                      state: false,
+                                      count: 0,
+                                      limit: 25,
+                                      type: '',
+                                      position: '',
+                                      msg: 'missionRetrieve',
+                                      img: '',
+
+                                    }
+                                  )
+                                }
+
+                                let targetSafeData = this.scanTargetAreaThreat({
+                                  player: player.number,
+                                  point: {
+                                    x: player.ai.retrieving.point.x,
+                                    y: player.ai.retrieving.point.y,
+                                  },
+                                  range: 3,
+                                })
+
+                                player.ai.retrieving.safe = targetSafeData.isSafe;
+
+                              }
 
                             }
 
                           }
 
                         }
-
 
                       }
 
@@ -8297,11 +8311,49 @@ class App extends Component {
                       }
                       // player armed
                       else {
-                        console.log('target and attacker are armed. target defend');
-                        shouldDefend = true;
+
+                        if (player.bluntAttack === true) {
+                          console.log('target and attacker are armed but blunt atk. target defend break');
+                          bluntAttackBreakDefense = true;
+                        }
+                        else {
+                          console.log('target and attacker are armed. target defend');
+                          shouldDefend = true;
+                        }
                       }
                     }
 
+                    if (bluntAttackBreakDefense === true) {
+                      shouldDefend = false;
+                      this.players[player.target.occupant.player-1].action = 'deflected';
+
+                      this.players[player.target.occupant.player-1].stamina.current = this.players[player.target.occupant.player-1].stamina.current - 3;
+                      this.players[player.target.occupant.player-1].success.deflected = {
+                        state: true,
+                        count: 1,
+                        limit: this.deflectedLengthRef.bluntAttacked,
+                        predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
+                        type: 'blunt_attacked',
+                      };
+
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 25,
+                          type: '',
+                          position: '',
+                          msg: 'attackingBlunt',
+                          img: '',
+
+                        }
+                      )
+
+                      if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
+                        this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
+                      }
+
+                    }
                     // DEFENDER DEFEND SUCCESS, DETERMINE DEFLECT OR PUSHBACK
                     if (shouldDefend === true) {
 
