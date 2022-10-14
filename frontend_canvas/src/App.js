@@ -10370,12 +10370,12 @@ class App extends Component {
 
 
     // CELL POPUPS
-    if (this.time === 200 && !this.cellPopups.find(x => x.msg === 'dodgeStart' && x.cell.number.x === 3 && x.cell.number.y === 3)) {
+    if (this.time === 100 && !this.cellPopups.find(x => x.msg === 'dodgeStart' && x.cell.number.x === 3 && x.cell.number.y === 3)) {
       this.cellPopups.push(
         {
             state: false,
             count: 0,
-            limit: 25,
+            limit: 35,
             type: '',
             position: '',
             msg: 'dodgeStart',
@@ -13013,30 +13013,25 @@ class App extends Component {
                 let currentPopups = this.cellPopups.filter(x=>x.state === true);
                 let positions = ['north','east','south','west','northEast','northWest','southEast','southWest']
 
-                for (const popup2 of currentPopups) {
-                  if (popup2.position && popup2.position !== '') {
-
-                    let indx = positions.indexOf(popup2.position);
-                    positions.splice(indx,1)
-                  }
-
-                }
+                // for (const popup2 of currentPopups) {
+                //   if (popup2.position && popup2.position !== '') {
+                //
+                //     let indx = positions.indexOf(popup2.position);
+                //     positions.splice(indx,1)
+                //   }
+                //
+                // }
 
                 let dir = undefined;
+                let dirs = [];
 
                 for (const plyr2 of this.players) {
                   if (plyr2.ai.state !== true) {
                     let myPos = popup.cell.number;
                     let invalidPos = this.players[plyr2.number-1].currentPosition.cell.number;
+                    // let invalidPositions = [invalidPos];
 
-                    // invalidpostions push plyr2 position
-                    // for player popups
-                    //   invalid cell = pop.cell.number + popup position mod, invalposits push invalidcell
-                    //
-                    // for each invalid pos, set dir w/ code below
-                    //   splce from postions as required
-
-
+                    // GET DIRECTION OF PLAYER CELL RELATIVE TO ME
                     if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
                       dir = 'north';
                     }
@@ -13067,15 +13062,215 @@ class App extends Component {
                     }
 
 
+                    // GET DIRECTION OF ALL CELLS PLAYER'S POPUPS OCCUPY, RELATIVE TO ME
+                    for(const pop of plyr2.popups) {
+
+                      dir = undefined;
+
+                      let invalidPos2 = {
+                        x: undefined,
+                        y: undefined,
+                      }
+
+                      switch (pop.position) {
+                        case 'north':
+                          invalidPos2 = {
+                            x: invalidPos.x,
+                            y: invalidPos.y-1,
+                          }
+                          break;
+                        case 'northEast':
+                          invalidPos2 = {
+                            x: invalidPos.x+1,
+                            y: invalidPos.y-1,
+                          }
+                          break;
+                        case 'northWest':
+                          invalidPos2 = {
+                            x: invalidPos.x-1,
+                            y: invalidPos.y-1,
+                          }
+                          break;
+                        case 'south':
+                          invalidPos2 = {
+                            x: invalidPos.x,
+                            y: invalidPos.y+1,
+                          }
+                          break;
+                        case 'southEast':
+                          invalidPos2 = {
+                            x: invalidPos.x+1,
+                            y: invalidPos.y+1,
+                          }
+                          break;
+                        case 'southWest':
+                          invalidPos2 = {
+                            x: invalidPos.x-1,
+                            y: invalidPos.y+1,
+                          }
+                          break;
+                        case 'east':
+                          invalidPos2 = {
+                            x: invalidPos.x-1,
+                            y: invalidPos.y,
+                          }
+                          break;
+                        case 'west':
+                          invalidPos2 = {
+                            x: invalidPos.x+1,
+                            y: invalidPos.y,
+                          }
+                          break;
+                        default:
+
+                      }
+
+                      // let dir = undefined;
+
+                      if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
+                        dir = 'north';
+                      }
+                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
+                        dir = 'northWest';
+                      }
+                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
+                        dir = 'west';
+                      }
+                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
+                        dir = 'southWest';
+                      }
+                      if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
+                        dir = 'south';
+                      }
+                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
+                        dir = 'southEast';
+                      }
+                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
+                        dir = 'east';
+                      }
+                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
+                        dir = 'northEast';
+                      }
+                      if (dir && positions.includes(dir) === true) {
+                        positions.splice(positions.indexOf(dir),1);
+                        // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                      }
+
+
+                    }
+
+
                   }
                 }
 
-                // for pop of cell popups not this cell.number and not msg,
-                // invalid cell = pop.cell.number + popup position mod, invalposits2 push invalidcell
-                // for each invalid pos, set dir w/ code above, splce from postions as required
+
+                // GET DIRECTION OF CELL POPUPS' POPUPS  CELLS RELATIVE TO ME
+                for (const popup2 of currentPopups) {
+
+                  dir = undefined;
+
+                  if (popup2.msg !== popup.msg) {
+
+                    let myPos = popup.cell.number;
+                    let cellPos = popup2.cell.number;
+                    let invalidPos2 = {
+                      x: undefined,
+                      y: undefined,
+                    }
+
+
+                    switch (popup2.position) {
+                      case 'north':
+                        invalidPos2 = {
+                          x: cellPos.x,
+                          y: cellPos.y-1,
+                        }
+                        break;
+                      case 'northEast':
+                        invalidPos2 = {
+                          x: cellPos.x+1,
+                          y: cellPos.y-1,
+                        }
+                        break;
+                      case 'northWest':
+                        invalidPos2 = {
+                          x: cellPos.x-1,
+                          y: cellPos.y-1,
+                        }
+                        break;
+                      case 'south':
+                        invalidPos2 = {
+                          x: cellPos.x,
+                          y: cellPos.y+1,
+                        }
+                        break;
+                      case 'southEast':
+                        invalidPos2 = {
+                          x: cellPos.x+1,
+                          y: cellPos.y+1,
+                        }
+                        break;
+                      case 'southWest':
+                        invalidPos2 = {
+                          x: cellPos.x-1,
+                          y: cellPos.y+1,
+                        }
+                        break;
+                      case 'east':
+                        invalidPos2 = {
+                          x: cellPos.x-1,
+                          y: cellPos.y,
+                        }
+                        break;
+                      case 'west':
+                        invalidPos2 = {
+                          x: cellPos.x+1,
+                          y: cellPos.y,
+                        }
+                        break;
+                      default:
+
+                    }
+
+                    if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
+                      dir = 'north';
+                    }
+                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
+                      dir = 'northWest';
+                    }
+                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
+                      dir = 'west';
+                    }
+                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
+                      dir = 'southWest';
+                    }
+                    if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
+                      dir = 'south';
+                    }
+                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
+                      dir = 'southEast';
+                    }
+                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
+                      dir = 'east';
+                    }
+                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
+                      dir = 'northEast';
+                    }
+                    if (dir && positions.includes(dir) === true) {
+                      positions.splice(positions.indexOf(dir),1);
+                      // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                    }
+
+
+                    // let indx = positions.indexOf(popup2.position);
+                    // positions.splice(indx,1)
+                  }
+
+                }
+
 
                 if (!positions[0]) {
-                  // console.log('no open positions for', popup.msg);
+                  console.log('no open positions for', popup.msg);
                   popup.state = false;
                   popup.count = 0;
                 } else {
@@ -13098,10 +13293,13 @@ class App extends Component {
                 let dir = undefined;
                 let dirs = [];
 
+                let currentPopups = this.cellPopups.filter(x=>x.state === true);
+
                 for (const plyr2 of this.players) {
                   if (plyr2.ai.state !== true) {
                     let myPos = popup.cell.number;
                     let invalidPos = this.players[plyr2.number-1].currentPosition.cell.number;
+
 
                     // invalidpostions2 push plyr2 position
                     // for player popups
@@ -13134,17 +13332,210 @@ class App extends Component {
                       dir = 'northEast';
                     }
 
+                    dirs.push(dir);
+
+
+                    for(const pop of plyr2.popups) {
+                      let invalidPos2 = {
+                        x: undefined,
+                        y: undefined,
+                      }
+
+                      switch (pop.position) {
+                        case 'north':
+                          invalidPos2 = {
+                            x: invalidPos.x,
+                            y: invalidPos.y-1,
+                          }
+                          break;
+                        case 'northEast':
+                          invalidPos2 = {
+                            x: invalidPos.x+1,
+                            y: invalidPos.y-1,
+                          }
+                          break;
+                        case 'northWest':
+                          invalidPos2 = {
+                            x: invalidPos.x-1,
+                            y: invalidPos.y-1,
+                          }
+                          break;
+                        case 'south':
+                          invalidPos2 = {
+                            x: invalidPos.x,
+                            y: invalidPos.y+1,
+                          }
+                          break;
+                        case 'southEast':
+                          invalidPos2 = {
+                            x: invalidPos.x+1,
+                            y: invalidPos.y+1,
+                          }
+                          break;
+                        case 'southWest':
+                          invalidPos2 = {
+                            x: invalidPos.x-1,
+                            y: invalidPos.y+1,
+                          }
+                          break;
+                        case 'east':
+                          invalidPos2 = {
+                            x: invalidPos.x-1,
+                            y: invalidPos.y,
+                          }
+                          break;
+                        case 'west':
+                          invalidPos2 = {
+                            x: invalidPos.x+1,
+                            y: invalidPos.y,
+                          }
+                          break;
+                        default:
+
+                      }
+
+
+                      if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
+                        dir = 'north';
+                      }
+                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
+                        dir = 'northWest';
+                      }
+                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
+                        dir = 'west';
+                      }
+                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
+                        dir = 'southWest';
+                      }
+                      if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
+                        dir = 'south';
+                      }
+                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
+                        dir = 'southEast';
+                      }
+                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
+                        dir = 'east';
+                      }
+                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
+                        dir = 'northEast';
+                      }
+                      // if (dir && positions.includes(dir) === true) {
+                      //   positions.splice(positions.indexOf(dir),1);
+                      //   // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                      // }
+                      dirs.push(dir);
+
+                    }
+
+
                   }
                 }
 
-                // for pop of cell popups not this cell.number and not msg,
-                // invalid cell = pop.cell.number + popup position mod, invalposits2 push invalidcell
-                // for each invalid pos, set dir w/ code above
-                //   push dir to dirs
+                for (const popup2 of currentPopups) {
 
-                // for all dirs, if dir === pop position, set let reconsider
-                // if reconsider === true....
-                if (popup.position === dir ) {
+                  dir = undefined;
+
+                  if (popup2.msg !== popup.msg) {
+
+                    let myPos = popup.cell.number;
+
+                    let cellPos = popup2.cell.number;
+                    let invalidPos2 = {
+                      x: undefined,
+                      y: undefined,
+                    }
+
+
+                    switch (popup2.position) {
+                      case 'north':
+                        invalidPos2 = {
+                          x: cellPos.x,
+                          y: cellPos.y-1,
+                        }
+                        break;
+                      case 'northEast':
+                        invalidPos2 = {
+                          x: cellPos.x+1,
+                          y: cellPos.y-1,
+                        }
+                        break;
+                      case 'northWest':
+                        invalidPos2 = {
+                          x: cellPos.x-1,
+                          y: cellPos.y-1,
+                        }
+                        break;
+                      case 'south':
+                        invalidPos2 = {
+                          x: cellPos.x,
+                          y: cellPos.y+1,
+                        }
+                        break;
+                      case 'southEast':
+                        invalidPos2 = {
+                          x: cellPos.x+1,
+                          y: cellPos.y+1,
+                        }
+                        break;
+                      case 'southWest':
+                        invalidPos2 = {
+                          x: cellPos.x-1,
+                          y: cellPos.y+1,
+                        }
+                        break;
+                      case 'east':
+                        invalidPos2 = {
+                          x: cellPos.x-1,
+                          y: cellPos.y,
+                        }
+                        break;
+                      case 'west':
+                        invalidPos2 = {
+                          x: cellPos.x+1,
+                          y: cellPos.y,
+                        }
+                        break;
+                      default:
+
+                    }
+
+                    if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
+                      dir = 'north';
+                    }
+                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
+                      dir = 'northWest';
+                    }
+                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
+                      dir = 'west';
+                    }
+                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
+                      dir = 'southWest';
+                    }
+                    if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
+                      dir = 'south';
+                    }
+                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
+                      dir = 'southEast';
+                    }
+                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
+                      dir = 'east';
+                    }
+                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
+                      dir = 'northEast';
+                    }
+
+                    dirs.push(dir);
+
+
+                    // let indx = positions.indexOf(popup2.position);
+                    // positions.splice(indx,1)
+                  }
+
+                }
+
+
+                // if (popup.position === dir ) {
+                if (dirs.find(x => x === popup.position) ) {
                   for (const pop of this.cellPopups) {
                     pop.position = '';
                     pop.state = false;
@@ -13217,6 +13608,18 @@ class App extends Component {
           //       if (plyr.terrainMoveSpeed.state === true) {
           //         moveSpeed = plyr.terrainMoveSpeed.speed;
           //       }
+          //       if (plyr.pushing.state === true) {
+          //         moveSpeed = plyr.pushing.moveSpeed;
+          //       }
+          //       if (plyr.pulling.state === true) {
+          //         moveSpeed = plyr.pulling.moveSpeed;
+          //       }
+          //       if (plyr.pushed.state === true) {
+          //         moveSpeed = plyr.pushed.moveSpeed;
+          //       }
+          //       if (plyr.pulled.state === true) {
+          //         moveSpeed = plyr.pulled.moveSpeed;
+          //       }
           //       let rangeIndex = plyr.speed.range.indexOf(moveSpeed)
           //       let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
           //       finalAnimIndex = moveAnimIndex;
@@ -13239,7 +13642,20 @@ class App extends Component {
           //         finalAnimIndex = moveAnimIndex3;
           //         // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
           //       } else {
-          //         let rangeIndex2 = plyr.speed.range.indexOf(plyr.speed.move)
+          //         let moveSpeed = plyr.speed.move;
+          //         if (plyr.pushing.state === true) {
+          //           moveSpeed = plyr.pushing.moveSpeed;
+          //         }
+          //         if (plyr.pulling.state === true) {
+          //           moveSpeed = plyr.pulling.moveSpeed;
+          //         }
+          //         if (plyr.pushed.state === true) {
+          //           moveSpeed = plyr.pushed.moveSpeed;
+          //         }
+          //         if (plyr.pulled.state === true) {
+          //           moveSpeed = plyr.pulled.moveSpeed;
+          //         }
+          //         let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed)
           //         let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
           //         finalAnimIndex = moveAnimIndex2;
           //         // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
@@ -14728,17 +15144,17 @@ class App extends Component {
                   // console.log('drawing a popup');
                   let popupDrawCoords;
                   if (popup.position === '' || !popup.position) {
-                    let currentPopups = player.popups.filter(x=>x.state === true);
+                    let currentPopups = plyr.popups.filter(x=>x.state === true);
                     let positions = ['north','east','south','west','northEast','northWest','southEast','southWest']
 
-                    for (const popup2 of currentPopups) {
-                      if (popup2.position && popup2.position !== '') {
-
-                        let indx = positions.indexOf(popup2.position);
-                        positions.splice(indx,1)
-                      }
-
-                    }
+                    // for (const popup2 of currentPopups) {
+                    //   if (popup2.position && popup2.position !== '') {
+                    //
+                    //     let indx = positions.indexOf(popup2.position);
+                    //     positions.splice(indx,1)
+                    //   }
+                    //
+                    // }
 
                     let dir = undefined;
 
@@ -14779,6 +15195,256 @@ class App extends Component {
                       }
                     }
 
+
+
+
+                    for (const plyr2 of this.players) {
+                      if (plyr2.ai.state !== true) {
+                        let myPos = plyr.currentPosition.cell.number;
+                        let invalidPos = this.players[plyr2.number-1].currentPosition.cell.number;
+
+                        dir = undefined;
+                        // let invalidPositions = [invalidPos];
+
+                        // GET DIRECTION OF PLAYER CELL RELATIVE TO ME
+                        if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
+                          dir = 'north';
+                        }
+                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y-1) {
+                          dir = 'northWest';
+                        }
+                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y) {
+                          dir = 'west';
+                        }
+                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y+1) {
+                          dir = 'southWest';
+                        }
+                        if (invalidPos.x === myPos.x && invalidPos.y === myPos.y+1) {
+                          dir = 'south';
+                        }
+                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y+1) {
+                          dir = 'southEast';
+                        }
+                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y) {
+                          dir = 'east';
+                        }
+                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y-1) {
+                          dir = 'northEast';
+                        }
+                        if (dir && positions.includes(dir) === true) {
+                          positions.splice(positions.indexOf(dir),1);
+                          // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                        }
+
+
+                        // GET DIRECTION OF ALL CELLS PLAYER'S POPUPS OCCUPY, RELATIVE TO ME
+                        for(const pop of plyr2.popups) {
+
+                          dir = undefined;
+
+                          let invalidPos2 = {
+                            x: undefined,
+                            y: undefined,
+                          }
+
+                          switch (pop.position) {
+                            case 'north':
+                              invalidPos2 = {
+                                x: invalidPos.x,
+                                y: invalidPos.y-1,
+                              }
+                              break;
+                            case 'northEast':
+                              invalidPos2 = {
+                                x: invalidPos.x+1,
+                                y: invalidPos.y-1,
+                              }
+                              break;
+                            case 'northWest':
+                              invalidPos2 = {
+                                x: invalidPos.x-1,
+                                y: invalidPos.y-1,
+                              }
+                              break;
+                            case 'south':
+                              invalidPos2 = {
+                                x: invalidPos.x,
+                                y: invalidPos.y+1,
+                              }
+                              break;
+                            case 'southEast':
+                              invalidPos2 = {
+                                x: invalidPos.x+1,
+                                y: invalidPos.y+1,
+                              }
+                              break;
+                            case 'southWest':
+                              invalidPos2 = {
+                                x: invalidPos.x-1,
+                                y: invalidPos.y+1,
+                              }
+                              break;
+                            case 'east':
+                              invalidPos2 = {
+                                x: invalidPos.x-1,
+                                y: invalidPos.y,
+                              }
+                              break;
+                            case 'west':
+                              invalidPos2 = {
+                                x: invalidPos.x+1,
+                                y: invalidPos.y,
+                              }
+                              break;
+                            default:
+
+                          }
+
+                          // let dir = undefined;
+
+                          if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
+                            dir = 'north';
+                          }
+                          if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
+                            dir = 'northWest';
+                          }
+                          if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
+                            dir = 'west';
+                          }
+                          if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
+                            dir = 'southWest';
+                          }
+                          if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
+                            dir = 'south';
+                          }
+                          if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
+                            dir = 'southEast';
+                          }
+                          if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
+                            dir = 'east';
+                          }
+                          if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
+                            dir = 'northEast';
+                          }
+                          if (dir && positions.includes(dir) === true) {
+                            positions.splice(positions.indexOf(dir),1);
+                            // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                          }
+
+
+                        }
+
+
+                      }
+                    }
+
+
+                    // GET DIRECTION OF CELL POPUPS' POPUPS  CELLS RELATIVE TO ME
+                    for (const popup2 of this.cellPopups) {
+
+                      dir = undefined;
+
+                      if (popup2.msg !== popup.msg) {
+
+                        let myPos = plyr.currentPosition.cell.number;
+                        let cellPos = popup2.cell.number;
+                        let invalidPos2 = {
+                          x: undefined,
+                          y: undefined,
+                        }
+
+
+                        switch (popup2.position) {
+                          case 'north':
+                            invalidPos2 = {
+                              x: cellPos.x,
+                              y: cellPos.y-1,
+                            }
+                            break;
+                          case 'northEast':
+                            invalidPos2 = {
+                              x: cellPos.x+1,
+                              y: cellPos.y-1,
+                            }
+                            break;
+                          case 'northWest':
+                            invalidPos2 = {
+                              x: cellPos.x-1,
+                              y: cellPos.y-1,
+                            }
+                            break;
+                          case 'south':
+                            invalidPos2 = {
+                              x: cellPos.x,
+                              y: cellPos.y+1,
+                            }
+                            break;
+                          case 'southEast':
+                            invalidPos2 = {
+                              x: cellPos.x+1,
+                              y: cellPos.y+1,
+                            }
+                            break;
+                          case 'southWest':
+                            invalidPos2 = {
+                              x: cellPos.x-1,
+                              y: cellPos.y+1,
+                            }
+                            break;
+                          case 'east':
+                            invalidPos2 = {
+                              x: cellPos.x-1,
+                              y: cellPos.y,
+                            }
+                            break;
+                          case 'west':
+                            invalidPos2 = {
+                              x: cellPos.x+1,
+                              y: cellPos.y,
+                            }
+                            break;
+                          default:
+
+                        }
+
+                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
+                          dir = 'north';
+                        }
+                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
+                          dir = 'northWest';
+                        }
+                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
+                          dir = 'west';
+                        }
+                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
+                          dir = 'southWest';
+                        }
+                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
+                          dir = 'south';
+                        }
+                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
+                          dir = 'southEast';
+                        }
+                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
+                          dir = 'east';
+                        }
+                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
+                          dir = 'northEast';
+                        }
+                        if (dir && positions.includes(dir) === true) {
+                          positions.splice(positions.indexOf(dir),1);
+                          // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                        }
+
+
+                        // let indx = positions.indexOf(popup2.position);
+                        // positions.splice(indx,1)
+                      }
+
+                    }
+
+
+
                     if (!positions[0]) {
                       // console.log('no open positions for', popup.msg);
                       popup.state = false;
@@ -14800,12 +15466,23 @@ class App extends Component {
                   }
                   else {
 
+
                     let dir = undefined;
+                    let dirs = [];
+
+                    let currentPopups = this.cellPopups.filter(x=>x.state === true);
 
                     for (const plyr2 of this.players) {
                       if (plyr2.ai.state !== true) {
                         let myPos = plyr.currentPosition.cell.number;
                         let invalidPos = this.players[plyr2.number-1].currentPosition.cell.number;
+
+
+                        // invalidpostions2 push plyr2 position
+                        // for player popups
+                        //   invalid cell = pop.cell.number + popup position mod, invalposits2 push invalidcell
+                        //
+
 
                         if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
                           dir = 'north';
@@ -14832,10 +15509,210 @@ class App extends Component {
                           dir = 'northEast';
                         }
 
+                        dirs.push(dir);
+
+
+                        for(const pop of plyr2.popups) {
+                          let invalidPos2 = {
+                            x: undefined,
+                            y: undefined,
+                          }
+
+                          switch (pop.position) {
+                            case 'north':
+                              invalidPos2 = {
+                                x: invalidPos.x,
+                                y: invalidPos.y-1,
+                              }
+                              break;
+                            case 'northEast':
+                              invalidPos2 = {
+                                x: invalidPos.x+1,
+                                y: invalidPos.y-1,
+                              }
+                              break;
+                            case 'northWest':
+                              invalidPos2 = {
+                                x: invalidPos.x-1,
+                                y: invalidPos.y-1,
+                              }
+                              break;
+                            case 'south':
+                              invalidPos2 = {
+                                x: invalidPos.x,
+                                y: invalidPos.y+1,
+                              }
+                              break;
+                            case 'southEast':
+                              invalidPos2 = {
+                                x: invalidPos.x+1,
+                                y: invalidPos.y+1,
+                              }
+                              break;
+                            case 'southWest':
+                              invalidPos2 = {
+                                x: invalidPos.x-1,
+                                y: invalidPos.y+1,
+                              }
+                              break;
+                            case 'east':
+                              invalidPos2 = {
+                                x: invalidPos.x-1,
+                                y: invalidPos.y,
+                              }
+                              break;
+                            case 'west':
+                              invalidPos2 = {
+                                x: invalidPos.x+1,
+                                y: invalidPos.y,
+                              }
+                              break;
+                            default:
+
+                          }
+
+
+                          if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
+                            dir = 'north';
+                          }
+                          if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
+                            dir = 'northWest';
+                          }
+                          if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
+                            dir = 'west';
+                          }
+                          if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
+                            dir = 'southWest';
+                          }
+                          if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
+                            dir = 'south';
+                          }
+                          if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
+                            dir = 'southEast';
+                          }
+                          if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
+                            dir = 'east';
+                          }
+                          if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
+                            dir = 'northEast';
+                          }
+                          // if (dir && positions.includes(dir) === true) {
+                          //   positions.splice(positions.indexOf(dir),1);
+                          //   // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                          // }
+                          dirs.push(dir);
+
+                        }
+
+
                       }
                     }
 
-                    if (popup.position === dir ) {
+                    for (const popup2 of currentPopups) {
+
+                      dir = undefined;
+
+                      if (popup2.msg !== popup.msg) {
+
+                        let myPos = plyr.currentPosition.cell.number;
+
+                        let cellPos = popup2.cell.number;
+                        let invalidPos2 = {
+                          x: undefined,
+                          y: undefined,
+                        }
+
+
+                        switch (popup2.position) {
+                          case 'north':
+                            invalidPos2 = {
+                              x: cellPos.x,
+                              y: cellPos.y-1,
+                            }
+                            break;
+                          case 'northEast':
+                            invalidPos2 = {
+                              x: cellPos.x+1,
+                              y: cellPos.y-1,
+                            }
+                            break;
+                          case 'northWest':
+                            invalidPos2 = {
+                              x: cellPos.x-1,
+                              y: cellPos.y-1,
+                            }
+                            break;
+                          case 'south':
+                            invalidPos2 = {
+                              x: cellPos.x,
+                              y: cellPos.y+1,
+                            }
+                            break;
+                          case 'southEast':
+                            invalidPos2 = {
+                              x: cellPos.x+1,
+                              y: cellPos.y+1,
+                            }
+                            break;
+                          case 'southWest':
+                            invalidPos2 = {
+                              x: cellPos.x-1,
+                              y: cellPos.y+1,
+                            }
+                            break;
+                          case 'east':
+                            invalidPos2 = {
+                              x: cellPos.x-1,
+                              y: cellPos.y,
+                            }
+                            break;
+                          case 'west':
+                            invalidPos2 = {
+                              x: cellPos.x+1,
+                              y: cellPos.y,
+                            }
+                            break;
+                          default:
+
+                        }
+
+                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
+                          dir = 'north';
+                        }
+                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
+                          dir = 'northWest';
+                        }
+                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
+                          dir = 'west';
+                        }
+                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
+                          dir = 'southWest';
+                        }
+                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
+                          dir = 'south';
+                        }
+                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
+                          dir = 'southEast';
+                        }
+                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
+                          dir = 'east';
+                        }
+                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
+                          dir = 'northEast';
+                        }
+
+                        dirs.push(dir);
+
+
+                        // let indx = positions.indexOf(popup2.position);
+                        // positions.splice(indx,1)
+                      }
+
+                    }
+
+
+                    // if (popup.position === dir ) {
+                    if (dirs.find(x => x === popup.position) ) {
                       for (const pop of plyr.popups) {
                         pop.position = '';
                         pop.state = false;
