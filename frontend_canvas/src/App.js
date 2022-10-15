@@ -2661,6 +2661,7 @@ class App extends Component {
     this.obstacleItemsToDrop = [];
     this.obstaclesOutOfBoundsFall = [];
     this.cellPopups = [];
+    this.popupImageRef = {};
 
 
     // CAMERA
@@ -10370,7 +10371,15 @@ class App extends Component {
 
 
     // CELL POPUPS
-    if (this.time === 100 && !this.cellPopups.find(x => x.msg === 'dodgeStart' && x.cell.number.x === 3 && x.cell.number.y === 3)) {
+    if (this.time === 100 && x.cell.number.x === 3 && x.cell.number.y === 3)) {
+
+      for (var i = 0; i < 20; i++) {
+        array[i]
+      }
+
+      if (!this.cellPopups.find(x => x.msg === this.popupImageRef) {
+
+      }
       this.cellPopups.push(
         {
             state: false,
@@ -12867,74 +12876,74 @@ class App extends Component {
         if (x === this.gridWidth && y === this.gridWidth ) {
           // console.log(this.refs.pickupAmmo);
 
-          let popupImageRef = {
-            attackStart: this.refs.preAttackIndicate,
-            preAction1: this.refs.preAction1Indicate,
-            preAction2: this.refs.preAction2Indicate,
-            attacking1: this.refs.attack1Indicate,
-            attacking2: this.refs.attack2Indicate,
-            missedAttack: this.refs.missedIndicate,
-            attackingBlunt: this.refs.attackBluntIndicate2,
-            attackingUnarmed: this.refs.attackUnarmedIndicate,
-            attacked1: this.refs.attack1Indicate,
-            attacked2: this.refs.attack2Indicate,
-            attackDefended: this.refs.attackBreakIndicate,
-            attackParried: this.refs.attackParriedIndicate,
-            boltKilled: this.refs.boltKilledIndicate,
-            attackCancelled: this.refs.attackBreakIndicate,
-            injured: this.refs.deflectInjuredIndicate,
-            defending_1: this.refs.defendIndicate1,
-            defending_2: this.refs.defendIndicate2,
-            defending_3: this.refs.defendIndicate3,
-            defending_4: this.refs.defendIndicate4,
-            defendSuccess: this.refs.defendSuccessIndicate,
-            guardBroken: this.refs.defendBreakIndicate,
-            deflected: this.refs.deflectBluntIndicate,
-            dodgeStart: this.refs.preAction2Indicate,
-            dodgeSuccess: this.refs.dodgeIndicate,
-            flanking: this.refs.flankIndicate,
-            pushedBack: this.refs.pushbackIndicate,
-            falling: this.refs.fallingIndicate,
-            outOfStamina: this.refs.outOfStaminaIndicate,
-            outOfAmmo: this.refs.outOfAmmoIndicate,
-            missionEngage: this.refs.deflectIndicate2,
-            missionPursue: this.refs.pursueMissionIndicate2,
-            missionRetrieve: this.refs.retrieveMissionIndicate,
-            missionDefend: this.refs.defendMissionIndicate,
-            missionPatrol: this.refs.patrolMissionIndicate,
-            missionRetreat: this.refs.retreatIndicate,
-            missionEnroute: this.refs.enrouteIndicate,
-            missionComplete: this.refs.completeMissionIndicate,
-            thinking: this.refs.thinkingIndicate,
-            alarmed: this.refs.preAttack2Indicate,
-            pathSwitch: this.refs.pathSwitchIndicate,
-            targetSwitch: this.refs.targetSwitchIndicate,
-            aggressiveMode: this.refs.aggressiveModeIndicate,
-            passiveMode: this.refs.passiveModeIndicate,
-            pickupWeapon: this.refs.pickupWeaponIndicate,
-            pickupArmor: this.refs.pickupArmorIndicate,
-            dropWeapon: this.refs.dropWeaponIndicate,
-            dropArmor: this.refs.dropArmorIndicate,
-            pickupBuff: this.refs.pickupBuffIndicate,
-            pickupDebuff: this.refs.pickupDebuffIndicate,
-            pickupAmmo: this.refs.pickupAmmoIndicate,
-            inventoryFull: this.refs.inventoryFullIndicate,
-            stop: this.refs.boltDefendIndicate,
-            dropWeapon: this.refs.dropWeaponIndicate,
-            dropArmor: this.refs.dropArmorIndicate,
-            drowning: this.refs.drowningIndicate,
-            terrainSlowdown: this.refs.terrainSlowdownIndicate,
-            terrainSpeedup: this.refs.terrainSpeedupIndicate,
-            terrainInjured: this.refs.terrainInjuredIndicate,
-            destroyedItem: this.refs.destroyedItemIndicate,
-            sword: this.refs.itemSword,
-            spear: this.refs.itemSpear,
-            crossbow: this.refs.itemCrossbow,
-            longbow: this.refs.itemBow,
-            helmet: this.refs.itemHelmet1,
-            mail: this.refs.itemMail1,
-            greaves: this.refs.itemGreaves1,
-          };
+          // let popupImageRef = {
+          //   attackStart: this.refs.preAttackIndicate,
+          //   preAction1: this.refs.preAction1Indicate,
+          //   preAction2: this.refs.preAction2Indicate,
+          //   attacking1: this.refs.attack1Indicate,
+          //   attacking2: this.refs.attack2Indicate,
+          //   missedAttack: this.refs.missedIndicate,
+          //   attackingBlunt: this.refs.attackBluntIndicate2,
+          //   attackingUnarmed: this.refs.attackUnarmedIndicate,
+          //   attacked1: this.refs.attack1Indicate,
+          //   attacked2: this.refs.attack2Indicate,
+          //   attackDefended: this.refs.attackBreakIndicate,
+          //   attackParried: this.refs.attackParriedIndicate,
+          //   boltKilled: this.refs.boltKilledIndicate,
+          //   attackCancelled: this.refs.attackBreakIndicate,
+          //   injured: this.refs.deflectInjuredIndicate,
+          //   defending_1: this.refs.defendIndicate1,
+          //   defending_2: this.refs.defendIndicate2,
+          //   defending_3: this.refs.defendIndicate3,
+          //   defending_4: this.refs.defendIndicate4,
+          //   defendSuccess: this.refs.defendSuccessIndicate,
+          //   guardBroken: this.refs.defendBreakIndicate,
+          //   deflected: this.refs.deflectBluntIndicate,
+          //   dodgeStart: this.refs.preAction2Indicate,
+          //   dodgeSuccess: this.refs.dodgeIndicate,
+          //   flanking: this.refs.flankIndicate,
+          //   pushedBack: this.refs.pushbackIndicate,
+          //   falling: this.refs.fallingIndicate,
+          //   outOfStamina: this.refs.outOfStaminaIndicate,
+          //   outOfAmmo: this.refs.outOfAmmoIndicate,
+          //   missionEngage: this.refs.deflectIndicate2,
+          //   missionPursue: this.refs.pursueMissionIndicate2,
+          //   missionRetrieve: this.refs.retrieveMissionIndicate,
+          //   missionDefend: this.refs.defendMissionIndicate,
+          //   missionPatrol: this.refs.patrolMissionIndicate,
+          //   missionRetreat: this.refs.retreatIndicate,
+          //   missionEnroute: this.refs.enrouteIndicate,
+          //   missionComplete: this.refs.completeMissionIndicate,
+          //   thinking: this.refs.thinkingIndicate,
+          //   alarmed: this.refs.preAttack2Indicate,
+          //   pathSwitch: this.refs.pathSwitchIndicate,
+          //   targetSwitch: this.refs.targetSwitchIndicate,
+          //   aggressiveMode: this.refs.aggressiveModeIndicate,
+          //   passiveMode: this.refs.passiveModeIndicate,
+          //   pickupWeapon: this.refs.pickupWeaponIndicate,
+          //   pickupArmor: this.refs.pickupArmorIndicate,
+          //   dropWeapon: this.refs.dropWeaponIndicate,
+          //   dropArmor: this.refs.dropArmorIndicate,
+          //   pickupBuff: this.refs.pickupBuffIndicate,
+          //   pickupDebuff: this.refs.pickupDebuffIndicate,
+          //   pickupAmmo: this.refs.pickupAmmoIndicate,
+          //   inventoryFull: this.refs.inventoryFullIndicate,
+          //   stop: this.refs.boltDefendIndicate,
+          //   dropWeapon: this.refs.dropWeaponIndicate,
+          //   dropArmor: this.refs.dropArmorIndicate,
+          //   drowning: this.refs.drowningIndicate,
+          //   terrainSlowdown: this.refs.terrainSlowdownIndicate,
+          //   terrainSpeedup: this.refs.terrainSpeedupIndicate,
+          //   terrainInjured: this.refs.terrainInjuredIndicate,
+          //   destroyedItem: this.refs.destroyedItemIndicate,
+          //   sword: this.refs.itemSword,
+          //   spear: this.refs.itemSpear,
+          //   crossbow: this.refs.itemCrossbow,
+          //   longbow: this.refs.itemBow,
+          //   helmet: this.refs.itemHelmet1,
+          //   mail: this.refs.itemMail1,
+          //   greaves: this.refs.itemGreaves1,
+          // };
           // context.beginPath();
           // context.lineWidth = "2"
           // context.rect(point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
@@ -13270,7 +13279,7 @@ class App extends Component {
 
 
                 if (!positions[0]) {
-                  console.log('no open positions for', popup.msg);
+                  // console.log('no open positions for', popup.msg);
                   popup.state = false;
                   popup.count = 0;
                 } else {
@@ -13278,7 +13287,7 @@ class App extends Component {
                 }
 
 
-                popup.img = popupImageRef[popup.msg]
+                popup.img = this.popupImageRef[popup.msg]
 
                 popupDrawCoords = this.popupDrawCalc(popup,{x:popup.cell.center.x-25,y:popup.cell.center.y-25},0);
                 // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
@@ -13543,7 +13552,7 @@ class App extends Component {
                   // console.log('reconsidering...',popup.msg);
                 }
                 else {
-                  popup.img = popupImageRef[popup.msg]
+                  popup.img = this.popupImageRef[popup.msg]
                   popupDrawCoords = this.popupDrawCalc(popup,{x:popup.cell.center.x-25,y:popup.cell.center.y-25},0);
                   // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
                   drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor)
@@ -14982,74 +14991,74 @@ class App extends Component {
           if (x === this.gridWidth && y === this.gridWidth ) {
             // console.log(this.refs.pickupAmmo);
 
-            let popupImageRef = {
-              attackStart: this.refs.preAttackIndicate,
-              preAction1: this.refs.preAction1Indicate,
-              preAction2: this.refs.preAction2Indicate,
-              attacking1: this.refs.attack1Indicate,
-              attacking2: this.refs.attack2Indicate,
-              missedAttack: this.refs.missedIndicate,
-              attackingBlunt: this.refs.attackBluntIndicate2,
-              attackingUnarmed: this.refs.attackUnarmedIndicate,
-              attacked1: this.refs.attack1Indicate,
-              attacked2: this.refs.attack2Indicate,
-              attackDefended: this.refs.attackBreakIndicate,
-              attackParried: this.refs.attackParriedIndicate,
-              boltKilled: this.refs.boltKilledIndicate,
-              attackCancelled: this.refs.attackBreakIndicate,
-              injured: this.refs.deflectInjuredIndicate,
-              defending_1: this.refs.defendIndicate1,
-              defending_2: this.refs.defendIndicate2,
-              defending_3: this.refs.defendIndicate3,
-              defending_4: this.refs.defendIndicate4,
-              defendSuccess: this.refs.defendSuccessIndicate,
-              guardBroken: this.refs.defendBreakIndicate,
-              deflected: this.refs.deflectBluntIndicate,
-              dodgeStart: this.refs.preAction2Indicate,
-              dodgeSuccess: this.refs.dodgeIndicate,
-              flanking: this.refs.flankIndicate,
-              pushedBack: this.refs.pushbackIndicate,
-              falling: this.refs.fallingIndicate,
-              outOfStamina: this.refs.outOfStaminaIndicate,
-              outOfAmmo: this.refs.outOfAmmoIndicate,
-              missionEngage: this.refs.deflectIndicate2,
-              missionPursue: this.refs.pursueMissionIndicate2,
-              missionRetrieve: this.refs.retrieveMissionIndicate,
-              missionDefend: this.refs.defendMissionIndicate,
-              missionPatrol: this.refs.patrolMissionIndicate,
-              missionRetreat: this.refs.retreatIndicate,
-              missionEnroute: this.refs.enrouteIndicate,
-              missionComplete: this.refs.completeMissionIndicate,
-              thinking: this.refs.thinkingIndicate,
-              alarmed: this.refs.preAttack2Indicate,
-              pathSwitch: this.refs.pathSwitchIndicate,
-              targetSwitch: this.refs.targetSwitchIndicate,
-              aggressiveMode: this.refs.aggressiveModeIndicate,
-              passiveMode: this.refs.passiveModeIndicate,
-              pickupWeapon: this.refs.pickupWeaponIndicate,
-              pickupArmor: this.refs.pickupArmorIndicate,
-              dropWeapon: this.refs.dropWeaponIndicate,
-              dropArmor: this.refs.dropArmorIndicate,
-              pickupBuff: this.refs.pickupBuffIndicate,
-              pickupDebuff: this.refs.pickupDebuffIndicate,
-              pickupAmmo: this.refs.pickupAmmoIndicate,
-              inventoryFull: this.refs.inventoryFullIndicate,
-              stop: this.refs.boltDefendIndicate,
-              dropWeapon: this.refs.dropWeaponIndicate,
-              dropArmor: this.refs.dropArmorIndicate,
-              drowning: this.refs.drowningIndicate,
-              terrainSlowdown: this.refs.terrainSlowdownIndicate,
-              terrainSpeedup: this.refs.terrainSpeedupIndicate,
-              terrainInjured: this.refs.terrainInjuredIndicate,
-              destroyedItem: this.refs.destroyedItemIndicate,
-              sword: this.refs.itemSword,
-              spear: this.refs.itemSpear,
-              crossbow: this.refs.itemCrossbow,
-              longbow: this.refs.itemBow,
-              helmet: this.refs.itemHelmet1,
-              mail: this.refs.itemMail1,
-              greaves: this.refs.itemGreaves1,
-            };
+            // let popupImageRef = {
+            //   attackStart: this.refs.preAttackIndicate,
+            //   preAction1: this.refs.preAction1Indicate,
+            //   preAction2: this.refs.preAction2Indicate,
+            //   attacking1: this.refs.attack1Indicate,
+            //   attacking2: this.refs.attack2Indicate,
+            //   missedAttack: this.refs.missedIndicate,
+            //   attackingBlunt: this.refs.attackBluntIndicate2,
+            //   attackingUnarmed: this.refs.attackUnarmedIndicate,
+            //   attacked1: this.refs.attack1Indicate,
+            //   attacked2: this.refs.attack2Indicate,
+            //   attackDefended: this.refs.attackBreakIndicate,
+            //   attackParried: this.refs.attackParriedIndicate,
+            //   boltKilled: this.refs.boltKilledIndicate,
+            //   attackCancelled: this.refs.attackBreakIndicate,
+            //   injured: this.refs.deflectInjuredIndicate,
+            //   defending_1: this.refs.defendIndicate1,
+            //   defending_2: this.refs.defendIndicate2,
+            //   defending_3: this.refs.defendIndicate3,
+            //   defending_4: this.refs.defendIndicate4,
+            //   defendSuccess: this.refs.defendSuccessIndicate,
+            //   guardBroken: this.refs.defendBreakIndicate,
+            //   deflected: this.refs.deflectBluntIndicate,
+            //   dodgeStart: this.refs.preAction2Indicate,
+            //   dodgeSuccess: this.refs.dodgeIndicate,
+            //   flanking: this.refs.flankIndicate,
+            //   pushedBack: this.refs.pushbackIndicate,
+            //   falling: this.refs.fallingIndicate,
+            //   outOfStamina: this.refs.outOfStaminaIndicate,
+            //   outOfAmmo: this.refs.outOfAmmoIndicate,
+            //   missionEngage: this.refs.deflectIndicate2,
+            //   missionPursue: this.refs.pursueMissionIndicate2,
+            //   missionRetrieve: this.refs.retrieveMissionIndicate,
+            //   missionDefend: this.refs.defendMissionIndicate,
+            //   missionPatrol: this.refs.patrolMissionIndicate,
+            //   missionRetreat: this.refs.retreatIndicate,
+            //   missionEnroute: this.refs.enrouteIndicate,
+            //   missionComplete: this.refs.completeMissionIndicate,
+            //   thinking: this.refs.thinkingIndicate,
+            //   alarmed: this.refs.preAttack2Indicate,
+            //   pathSwitch: this.refs.pathSwitchIndicate,
+            //   targetSwitch: this.refs.targetSwitchIndicate,
+            //   aggressiveMode: this.refs.aggressiveModeIndicate,
+            //   passiveMode: this.refs.passiveModeIndicate,
+            //   pickupWeapon: this.refs.pickupWeaponIndicate,
+            //   pickupArmor: this.refs.pickupArmorIndicate,
+            //   dropWeapon: this.refs.dropWeaponIndicate,
+            //   dropArmor: this.refs.dropArmorIndicate,
+            //   pickupBuff: this.refs.pickupBuffIndicate,
+            //   pickupDebuff: this.refs.pickupDebuffIndicate,
+            //   pickupAmmo: this.refs.pickupAmmoIndicate,
+            //   inventoryFull: this.refs.inventoryFullIndicate,
+            //   stop: this.refs.boltDefendIndicate,
+            //   dropWeapon: this.refs.dropWeaponIndicate,
+            //   dropArmor: this.refs.dropArmorIndicate,
+            //   drowning: this.refs.drowningIndicate,
+            //   terrainSlowdown: this.refs.terrainSlowdownIndicate,
+            //   terrainSpeedup: this.refs.terrainSpeedupIndicate,
+            //   terrainInjured: this.refs.terrainInjuredIndicate,
+            //   destroyedItem: this.refs.destroyedItemIndicate,
+            //   sword: this.refs.itemSword,
+            //   spear: this.refs.itemSpear,
+            //   crossbow: this.refs.itemCrossbow,
+            //   longbow: this.refs.itemBow,
+            //   helmet: this.refs.itemHelmet1,
+            //   mail: this.refs.itemMail1,
+            //   greaves: this.refs.itemGreaves1,
+            // };
             // context.beginPath();
             // context.lineWidth = "2"
             // context.rect(point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
@@ -15159,7 +15168,7 @@ class App extends Component {
                     let dir = undefined;
 
                     for (const plyr2 of this.players) {
-                      if (plyr2.ai.state !== true) {
+                      if (plyr2.ai.state !== true && plyr2.number !== plyr.number) {
                         let myPos = plyr.currentPosition.cell.number;
                         let invalidPos = this.players[plyr2.number-1].currentPosition.cell.number;
 
@@ -15196,8 +15205,6 @@ class App extends Component {
                     }
 
 
-
-
                     for (const plyr2 of this.players) {
                       if (plyr2.ai.state !== true) {
                         let myPos = plyr.currentPosition.cell.number;
@@ -15231,6 +15238,7 @@ class App extends Component {
                         if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y-1) {
                           dir = 'northEast';
                         }
+
                         if (dir && positions.includes(dir) === true) {
                           positions.splice(positions.indexOf(dir),1);
                           // console.log('dont draw over player @',dir,'choose frome these position',positions);
@@ -15300,7 +15308,6 @@ class App extends Component {
 
                           }
 
-                          // let dir = undefined;
 
                           if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
                             dir = 'north';
@@ -15326,6 +15333,7 @@ class App extends Component {
                           if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
                             dir = 'northEast';
                           }
+
                           if (dir && positions.includes(dir) === true) {
                             positions.splice(positions.indexOf(dir),1);
                             // console.log('dont draw over player @',dir,'choose frome these position',positions);
@@ -15443,7 +15451,7 @@ class App extends Component {
 
                     }
 
-
+                    // console.log('positions',positions[0]);
 
                     if (!positions[0]) {
                       // console.log('no open positions for', popup.msg);
@@ -15454,7 +15462,7 @@ class App extends Component {
                     }
 
 
-                    popup.img = popupImageRef[popup.msg]
+                    popup.img = this.popupImageRef[popup.msg]
 
                     popupDrawCoords = this.popupDrawCalc(popup,{x:point.x-25,y:point.y-25},plyr.number);
                     // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
@@ -15473,15 +15481,9 @@ class App extends Component {
                     let currentPopups = this.cellPopups.filter(x=>x.state === true);
 
                     for (const plyr2 of this.players) {
-                      if (plyr2.ai.state !== true) {
+                      if (plyr2.ai.state !== true && plyr2.number !== plyr.number) {
                         let myPos = plyr.currentPosition.cell.number;
                         let invalidPos = this.players[plyr2.number-1].currentPosition.cell.number;
-
-
-                        // invalidpostions2 push plyr2 position
-                        // for player popups
-                        //   invalid cell = pop.cell.number + popup position mod, invalposits2 push invalidcell
-                        //
 
 
                         if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
@@ -15509,10 +15511,14 @@ class App extends Component {
                           dir = 'northEast';
                         }
 
-                        dirs.push(dir);
+                        if (dir) {
+                          dirs.push(dir);
+                        }
 
 
                         for(const pop of plyr2.popups) {
+
+                          dir = undefined;
                           let invalidPos2 = {
                             x: undefined,
                             y: undefined,
@@ -15600,7 +15606,9 @@ class App extends Component {
                           //   positions.splice(positions.indexOf(dir),1);
                           //   // console.log('dont draw over player @',dir,'choose frome these position',positions);
                           // }
-                          dirs.push(dir);
+                          if (dir) {
+                            dirs.push(dir);
+                          }
 
                         }
 
@@ -15612,105 +15620,199 @@ class App extends Component {
 
                       dir = undefined;
 
-                      if (popup2.msg !== popup.msg) {
+                      let myPos = plyr.currentPosition.cell.number;
 
-                        let myPos = plyr.currentPosition.cell.number;
-
-                        let cellPos = popup2.cell.number;
-                        let invalidPos2 = {
-                          x: undefined,
-                          y: undefined,
-                        }
-
-
-                        switch (popup2.position) {
-                          case 'north':
-                            invalidPos2 = {
-                              x: cellPos.x,
-                              y: cellPos.y-1,
-                            }
-                            break;
-                          case 'northEast':
-                            invalidPos2 = {
-                              x: cellPos.x+1,
-                              y: cellPos.y-1,
-                            }
-                            break;
-                          case 'northWest':
-                            invalidPos2 = {
-                              x: cellPos.x-1,
-                              y: cellPos.y-1,
-                            }
-                            break;
-                          case 'south':
-                            invalidPos2 = {
-                              x: cellPos.x,
-                              y: cellPos.y+1,
-                            }
-                            break;
-                          case 'southEast':
-                            invalidPos2 = {
-                              x: cellPos.x+1,
-                              y: cellPos.y+1,
-                            }
-                            break;
-                          case 'southWest':
-                            invalidPos2 = {
-                              x: cellPos.x-1,
-                              y: cellPos.y+1,
-                            }
-                            break;
-                          case 'east':
-                            invalidPos2 = {
-                              x: cellPos.x-1,
-                              y: cellPos.y,
-                            }
-                            break;
-                          case 'west':
-                            invalidPos2 = {
-                              x: cellPos.x+1,
-                              y: cellPos.y,
-                            }
-                            break;
-                          default:
-
-                        }
-
-                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
-                          dir = 'north';
-                        }
-                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
-                          dir = 'northWest';
-                        }
-                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
-                          dir = 'west';
-                        }
-                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
-                          dir = 'southWest';
-                        }
-                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
-                          dir = 'south';
-                        }
-                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
-                          dir = 'southEast';
-                        }
-                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
-                          dir = 'east';
-                        }
-                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
-                          dir = 'northEast';
-                        }
-
-                        dirs.push(dir);
-
-
-                        // let indx = positions.indexOf(popup2.position);
-                        // positions.splice(indx,1)
+                      let cellPos = popup2.cell.number;
+                      let invalidPos2 = {
+                        x: undefined,
+                        y: undefined,
                       }
+
+
+                      switch (popup2.position) {
+                        case 'north':
+                          invalidPos2 = {
+                            x: cellPos.x,
+                            y: cellPos.y-1,
+                          }
+                          break;
+                        case 'northEast':
+                          invalidPos2 = {
+                            x: cellPos.x+1,
+                            y: cellPos.y-1,
+                          }
+                          break;
+                        case 'northWest':
+                          invalidPos2 = {
+                            x: cellPos.x-1,
+                            y: cellPos.y-1,
+                          }
+                          break;
+                        case 'south':
+                          invalidPos2 = {
+                            x: cellPos.x,
+                            y: cellPos.y+1,
+                          }
+                          break;
+                        case 'southEast':
+                          invalidPos2 = {
+                            x: cellPos.x+1,
+                            y: cellPos.y+1,
+                          }
+                          break;
+                        case 'southWest':
+                          invalidPos2 = {
+                            x: cellPos.x-1,
+                            y: cellPos.y+1,
+                          }
+                          break;
+                        case 'east':
+                          invalidPos2 = {
+                            x: cellPos.x-1,
+                            y: cellPos.y,
+                          }
+                          break;
+                        case 'west':
+                          invalidPos2 = {
+                            x: cellPos.x+1,
+                            y: cellPos.y,
+                          }
+                          break;
+                        default:
+
+                      }
+
+                      if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
+                        dir = 'north';
+                      }
+                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
+                        dir = 'northWest';
+                      }
+                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
+                        dir = 'west';
+                      }
+                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
+                        dir = 'southWest';
+                      }
+                      if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
+                        dir = 'south';
+                      }
+                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
+                        dir = 'southEast';
+                      }
+                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
+                        dir = 'east';
+                      }
+                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
+                        dir = 'northEast';
+                      }
+
+                      if (dir) {
+                        dirs.push(dir);
+                      }
+
+                      // if (popup2.msg !== popup.msg) {
+                      //
+                      //   let myPos = plyr.currentPosition.cell.number;
+                      //
+                      //   let cellPos = popup2.cell.number;
+                      //   let invalidPos2 = {
+                      //     x: undefined,
+                      //     y: undefined,
+                      //   }
+                      //
+                      //
+                      //   switch (popup2.position) {
+                      //     case 'north':
+                      //       invalidPos2 = {
+                      //         x: cellPos.x,
+                      //         y: cellPos.y-1,
+                      //       }
+                      //       break;
+                      //     case 'northEast':
+                      //       invalidPos2 = {
+                      //         x: cellPos.x+1,
+                      //         y: cellPos.y-1,
+                      //       }
+                      //       break;
+                      //     case 'northWest':
+                      //       invalidPos2 = {
+                      //         x: cellPos.x-1,
+                      //         y: cellPos.y-1,
+                      //       }
+                      //       break;
+                      //     case 'south':
+                      //       invalidPos2 = {
+                      //         x: cellPos.x,
+                      //         y: cellPos.y+1,
+                      //       }
+                      //       break;
+                      //     case 'southEast':
+                      //       invalidPos2 = {
+                      //         x: cellPos.x+1,
+                      //         y: cellPos.y+1,
+                      //       }
+                      //       break;
+                      //     case 'southWest':
+                      //       invalidPos2 = {
+                      //         x: cellPos.x-1,
+                      //         y: cellPos.y+1,
+                      //       }
+                      //       break;
+                      //     case 'east':
+                      //       invalidPos2 = {
+                      //         x: cellPos.x-1,
+                      //         y: cellPos.y,
+                      //       }
+                      //       break;
+                      //     case 'west':
+                      //       invalidPos2 = {
+                      //         x: cellPos.x+1,
+                      //         y: cellPos.y,
+                      //       }
+                      //       break;
+                      //     default:
+                      //
+                      //   }
+                      //
+                      //   if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
+                      //     dir = 'north';
+                      //   }
+                      //   if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
+                      //     dir = 'northWest';
+                      //   }
+                      //   if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
+                      //     dir = 'west';
+                      //   }
+                      //   if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
+                      //     dir = 'southWest';
+                      //   }
+                      //   if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
+                      //     dir = 'south';
+                      //   }
+                      //   if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
+                      //     dir = 'southEast';
+                      //   }
+                      //   if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
+                      //     dir = 'east';
+                      //   }
+                      //   if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
+                      //     dir = 'northEast';
+                      //   }
+                      //
+                      //   if (dir) {
+                      //     dirs.push(dir);
+                      //   }
+                      //
+                      //
+                      //
+                      //   // let indx = positions.indexOf(popup2.position);
+                      //   // positions.splice(indx,1)
+                      // }
 
                     }
 
-
+                    // console.log('dirs',dirs,'popup.position',popup.position);
                     // if (popup.position === dir ) {
                     if (dirs.find(x => x === popup.position) ) {
                       for (const pop of plyr.popups) {
@@ -15720,7 +15822,7 @@ class App extends Component {
                       // console.log('reconsidering...',popup.msg);
                     }
                     else {
-                      popup.img = popupImageRef[popup.msg]
+                      popup.img = this.popupImageRef[popup.msg]
                       popupDrawCoords = this.popupDrawCalc(popup,{x:point.x-25,y:point.y-25},plyr.number);
                       // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
                       drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor)
@@ -27779,6 +27881,75 @@ class App extends Component {
     if (this.showSettingsCanvasData.state === true) {
       this.settingsFormGridWidthUpdate(this.settingsGridWidth)
     }
+
+    this.popupImageRef = {
+      attackStart: this.refs.preAttackIndicate,
+      preAction1: this.refs.preAction1Indicate,
+      preAction2: this.refs.preAction2Indicate,
+      attacking1: this.refs.attack1Indicate,
+      attacking2: this.refs.attack2Indicate,
+      missedAttack: this.refs.missedIndicate,
+      attackingBlunt: this.refs.attackBluntIndicate2,
+      attackingUnarmed: this.refs.attackUnarmedIndicate,
+      attacked1: this.refs.attack1Indicate,
+      attacked2: this.refs.attack2Indicate,
+      attackDefended: this.refs.attackBreakIndicate,
+      attackParried: this.refs.attackParriedIndicate,
+      boltKilled: this.refs.boltKilledIndicate,
+      attackCancelled: this.refs.attackBreakIndicate,
+      injured: this.refs.deflectInjuredIndicate,
+      defending_1: this.refs.defendIndicate1,
+      defending_2: this.refs.defendIndicate2,
+      defending_3: this.refs.defendIndicate3,
+      defending_4: this.refs.defendIndicate4,
+      defendSuccess: this.refs.defendSuccessIndicate,
+      guardBroken: this.refs.defendBreakIndicate,
+      deflected: this.refs.deflectBluntIndicate,
+      dodgeStart: this.refs.preAction2Indicate,
+      dodgeSuccess: this.refs.dodgeIndicate,
+      flanking: this.refs.flankIndicate,
+      pushedBack: this.refs.pushbackIndicate,
+      falling: this.refs.fallingIndicate,
+      outOfStamina: this.refs.outOfStaminaIndicate,
+      outOfAmmo: this.refs.outOfAmmoIndicate,
+      missionEngage: this.refs.deflectIndicate2,
+      missionPursue: this.refs.pursueMissionIndicate2,
+      missionRetrieve: this.refs.retrieveMissionIndicate,
+      missionDefend: this.refs.defendMissionIndicate,
+      missionPatrol: this.refs.patrolMissionIndicate,
+      missionRetreat: this.refs.retreatIndicate,
+      missionEnroute: this.refs.enrouteIndicate,
+      missionComplete: this.refs.completeMissionIndicate,
+      thinking: this.refs.thinkingIndicate,
+      alarmed: this.refs.preAttack2Indicate,
+      pathSwitch: this.refs.pathSwitchIndicate,
+      targetSwitch: this.refs.targetSwitchIndicate,
+      aggressiveMode: this.refs.aggressiveModeIndicate,
+      passiveMode: this.refs.passiveModeIndicate,
+      pickupWeapon: this.refs.pickupWeaponIndicate,
+      pickupArmor: this.refs.pickupArmorIndicate,
+      dropWeapon: this.refs.dropWeaponIndicate,
+      dropArmor: this.refs.dropArmorIndicate,
+      pickupBuff: this.refs.pickupBuffIndicate,
+      pickupDebuff: this.refs.pickupDebuffIndicate,
+      pickupAmmo: this.refs.pickupAmmoIndicate,
+      inventoryFull: this.refs.inventoryFullIndicate,
+      stop: this.refs.boltDefendIndicate,
+      dropWeapon: this.refs.dropWeaponIndicate,
+      dropArmor: this.refs.dropArmorIndicate,
+      drowning: this.refs.drowningIndicate,
+      terrainSlowdown: this.refs.terrainSlowdownIndicate,
+      terrainSpeedup: this.refs.terrainSpeedupIndicate,
+      terrainInjured: this.refs.terrainInjuredIndicate,
+      destroyedItem: this.refs.destroyedItemIndicate,
+      sword: this.refs.itemSword,
+      spear: this.refs.itemSpear,
+      crossbow: this.refs.itemCrossbow,
+      longbow: this.refs.itemBow,
+      helmet: this.refs.itemHelmet1,
+      mail: this.refs.itemMail1,
+      greaves: this.refs.itemGreaves1,
+    };
 
     let itemImgs = {
       moveSpeedUp: this.refs.itemSpdUp,
