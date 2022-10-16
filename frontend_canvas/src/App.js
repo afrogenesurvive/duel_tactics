@@ -5638,6 +5638,7 @@ class App extends Component {
       // console.log('void off');
     }
 
+
     // BLOOD SACRIFICE!!
     if (this.bloodSacrificeEvent.state === true) {
 
@@ -6514,9 +6515,6 @@ class App extends Component {
         // }
 
 
-
-
-
         // OBSTACLE/BARRIER DAMAGE/DESTROY
         for(const cell of this.obstacleBarrierToDestroy) {
           if (cell.limit > 0) {
@@ -6545,9 +6543,7 @@ class App extends Component {
         }
 
 
-
         // OBSTACLE MOVING & FALLING
-
         for(const cell of this.gridInfo) {
 
 
@@ -6989,7 +6985,6 @@ class App extends Component {
             }
           }
         }
-
         for(const elem of this.obstaclesOutOfBoundsFall) {
           if (elem.moving.falling.count < elem.moving.falling.limit) {
             elem.moving.falling.count++;
@@ -7002,8 +6997,6 @@ class App extends Component {
             this.obstaclesOutOfBoundsFall.splice(index,1)
           }
         }
-
-
 
 
         // // IDLE ANIM STEPPER!
@@ -7130,7 +7123,7 @@ class App extends Component {
             count: 0,
             limit: player.defendDecay.limit,
           }
-          player.stamina.current -= this.staminaCostRef.defend.pre;
+          player.stamina.current += this.staminaCostRef.defend.pre;
 
           if (player.prePull.state === true) {
             console.log('player was pre pulling. reset');
@@ -7155,6 +7148,7 @@ class App extends Component {
           }
 
         }
+
 
         // ATTACK FEINT
         if (this.keyPressed[player.number-1].attack === false && player.attacking.state === true) {
@@ -7182,15 +7176,16 @@ class App extends Component {
                   limit: player.attacking.limit,
                 }
                 player.attackStrength = 0;
-                player.stamina.current -= this.staminaCostRef.attack[atkType][blunt].pre;
+                player.stamina.current += this.staminaCostRef.attack[atkType][blunt].pre;
             }
 
         }
 
+
         // DODGE RELEASE/FEINT
         if (player.dodging.countState === true && player.dodging.count <= (player.dodging.peak.start - player.crits.dodge) && this.keyPressed[player.number-1].dodge !== true) {
           console.log('released dodge key while winding up. cancel dodge.');
-          player.stamina.current -= this.staminaCostRef.dodge.pre;
+          player.stamina.current += this.staminaCostRef.dodge.pre;
           player.action = 'idle';
           player.dodging = {
             countState: false,
@@ -7204,12 +7199,14 @@ class App extends Component {
           }
         }
 
+
         // STRAFE RELEASE
         if (player.strafeReleaseHook === true ) {
           player.strafing.state = false;
           player.strafeReleaseHook = false;
           this.getTarget(player);
         }
+
 
         // RESET MOVE SPEED POST PUSHBACK
         if (player.pushBack.state !== true && player.pushBack.prePushBackMoveSpeed !== 0) {
@@ -7401,6 +7398,7 @@ class App extends Component {
 
                 // console.log('this.cellsUnderPreAttack',this.cellsUnderPreAttack[0],this.cellsUnderPreAttack[1]);
 
+                // CAMERA ATTACK FOCUS
                 if (
                   this.settingAutoCamera === false &&
                   player.ai.state !== true &&
@@ -7426,6 +7424,7 @@ class App extends Component {
             // WEAPON STAMINA COST!!
             if (player.stamina.current - this.staminaCostRef.attack[stamAtkType][blunt].peak >= 0) {
                 player.stamina.current -= this.staminaCostRef.attack[stamAtkType][blunt].peak;
+
 
               // CREATE NEW PROJECTILE
               if (player.currentWeapon.type === 'crossbow' && player.bluntAttack !== true && player.items.ammo > 0) {
@@ -7488,7 +7487,7 @@ class App extends Component {
 
                 // STAMINA COST!!
 
-                this.players[player.number-1].stamina.current = this.players[player.number-1].stamina.current - this.staminaCostRef.attack.crossbow;
+                // this.players[player.number-1].stamina.current = this.players[player.number-1].stamina.current - this.staminaCostRef.attack.crossbow;
                 // console.log('start projectile',boltx.currentPosition.number, this.players[boltx.owner-1].currentPosition.cell.number,this.projectiles);
 
                 // this.boltCrementer(bolt)
@@ -8753,7 +8752,6 @@ class App extends Component {
 
 
         // DEFENSE!!
-
         // if (player.defending.count > 0 && player.defending.count < player.defending.limit+1 && player.defendDecay.state !== true && player.prePull.state !== true && player.pulling.state !== true) {
         if (player.defending.count > 0 && player.defending.count < player.defending.limit+1 && player.defendDecay.state !== true) {
           player.defending.count++;
@@ -9113,7 +9111,6 @@ class App extends Component {
         }
 
 
-
         // COMPLETE PUSHBACK DEFLECT FLOW!
         if (player.pushBack.state === false && player.success.deflected.predeflect === true && player.moving.state === false) {
           // console.log('predefelct --> pushback ---> deflect');
@@ -9153,7 +9150,6 @@ class App extends Component {
             this.discardGear(player,"armor")
             player.discardGear.state = true;
         }
-
         // DISCARD GEAR STEPPER!!
         if (player.discardGear.state === true) {
           if (player.discardGear.count < player.discardGear.limit) {
@@ -9442,7 +9438,7 @@ class App extends Component {
 
 
           if (player.flanking.step === 2) {
-            console.log('flanking step 2',player.direction,'flank dir',player.flanking.direction);
+            // console.log('flanking step 2',player.direction,'flank dir',player.flanking.direction);
             switch(player.flanking.direction) {
               case 'north' :
                 player.direction = 'south';
@@ -9596,7 +9592,7 @@ class App extends Component {
                 if (target.free === true ) {
 
                   player.stamina.current = player.stamina.current - this.staminaCostRef.flank;
-
+                  // console.log('flank stam check1. cost',this.staminaCostRef.flank,'stam',player.stamina.current);
 
                   // this.players[player.number-1].dodging = {
                   //   countState: false,
@@ -9655,6 +9651,7 @@ class App extends Component {
 
               }
               else {
+                // console.log('flank stam check. cost',this.staminaCostRef.flank,'stam',player.stamina.current);
                 player.action = 'idle';
                 player.stamina.current = 0;
                 player.statusDisplay = {
@@ -9693,7 +9690,7 @@ class App extends Component {
         }
 
 
-        // BREAK FROM PULLED/PUSHED
+        // BREAK FROM PULLED/PUSHED CHECK
         let plyrPullPushed = false;
         let plyrPullPushedPlyr = 0;
         let breakPulledPushed = false;
