@@ -10336,8 +10336,7 @@ class App extends Component {
 
 
     // POPUPS
-    // if (this.time === 100 && x.cell.number.x === 3 && x.cell.number.y === 3)) {
-    // if (this.time === 100 || this.time === 300 && player.number === 1) {
+    // Testing
     if (this.time === 100 || this.time === 300) {
 
       let newArray = [];
@@ -10346,18 +10345,6 @@ class App extends Component {
       for (const [key, value] of Object.entries(this.popupImageRef)) {
         newArray.push(key);
       }
-      // player.popups.push(
-      //   {
-      //     state: false,
-      //     count: 0,
-      //     limit: 35,
-      //     type: '',
-      //     position: '',
-      //     msg: this.popupImageRef[0],
-      //     img: '',
-      //     // cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
-      //   }
-      // )
       for (var i = 0; i < 20; i++) {
         // if (!player.popups.find(x => x.msg === newArray[i])) {
         //   player.popups.push(
@@ -12531,7 +12518,7 @@ class App extends Component {
               }
             }
 
-            context.drawImage(this.itemImg, center.x-15, center.y-15);
+            context.drawImage(itemImg, center.x-15, center.y-15);
 
             // context.fillStyle = fillClr;
             // context.beginPath();
@@ -22318,7 +22305,9 @@ class App extends Component {
     }
 
     if (cellFree === true) {
+
       if (type === 'weapon' && player.items.weapons.length > 0) {
+
 
         let index = player.items.weapons.findIndex(weapon => weapon.name === player.currentWeapon.name);
 
