@@ -719,7 +719,7 @@ const Settings = (props) => {
 
         {
           props.showCanvasData.state === true &&  (
-          <div class="settingsCanvasContainer">
+          <div className="settingsCanvasContainer">
 
             <h3 className="settingsHeading">
               Choose Plyr {props.showCanvasData.plyrNo} {props.showCanvasData.type} Position:
@@ -865,7 +865,7 @@ const Settings = (props) => {
 
         {
           props.showCanvasData.state === true && props.showCanvasData.field.split("_")[0] === 'ai' && (
-          <div class="settingsCanvasContainer">
+          <div className="settingsCanvasContainer">
 
             <h3 className="settingsHeading">
               Choose Plyr {props.showCanvasData.plyrNo} {props.showCanvasData.type} Position:

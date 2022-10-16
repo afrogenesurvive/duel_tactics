@@ -2662,6 +2662,14 @@ class App extends Component {
     this.obstaclesOutOfBoundsFall = [];
     this.cellPopups = [];
     this.popupImageRef = {};
+    this.indicatorImgs = {}
+    this.playerImgs = [];
+    this.itemImgs = {}
+    this.boltImgs = {}
+    this.floorImgs = {}
+    this.obstacleImgs = {}
+    this.barrierImgs = {}
+
 
 
     // CAMERA
@@ -6399,7 +6407,6 @@ class App extends Component {
 
         // COLLISION/ MOVEMENT OVERLAP PUSHBACK!!
           // if neither is pulling/pushng or pulled/pushed
-
         for (const plyr4 of this.players) {
 
           if (
@@ -10328,7 +10335,40 @@ class App extends Component {
     }
 
 
-    //PLAYER POPUPS
+    // POPUPS
+    // if (this.time === 100 && x.cell.number.x === 3 && x.cell.number.y === 3)) {
+    if (this.time === 100) {
+
+      let newArray = [];
+      let x = 0;
+      let y = 0;
+      for (const [key, value] of Object.entries(this.popupImageRef)) {
+        newArray.push(key);
+      }
+      for (var i = 0; i < 20; i++) {
+        if (player.popups.find(x => x.msg === newArray[i])) {
+        // if (!this.cellPopups.find(x => x.msg === newArray[i])) {
+          player.popups.push(
+          // this.cellPopups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 35,
+              type: '',
+              position: '',
+              msg: newArray[i],
+              img: '',
+              // cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
+            }
+          )
+          if (i % 3 === 0) {
+            x++;
+            y++
+          }
+        }
+      }
+    }
+    //PLAYER
     if (player.popups.length > 0) {
 
       for (const popup of player.popups) {
@@ -10366,47 +10406,7 @@ class App extends Component {
       }
 
     }
-
-
-
-
-    // CELL POPUPS
-    // if (this.time === 100 && x.cell.number.x === 3 && x.cell.number.y === 3)) {
-    if (this.time === 100) {
-
-      let newArray = [];
-      let x = 0;
-      let y = 0;
-      for (const [key, value] of Object.entries(this.popupImageRef)) {
-        newArray.push(key);
-      }
-      for (var i = 0; i < 20; i++) {
-        if (!this.cellPopups.find(x => x.msg === newArray[i])) {
-          player.popups.push(
-          // this.cellPopups.push(
-            {
-                state: false,
-                count: 0,
-                limit: 35,
-                type: '',
-                position: '',
-                msg: newArray[i],
-                img: '',
-                // cell: this.gridInfo.find(x => x.number.x === 1 && x.number.y === 3)
-              }
-          )
-          if (i % 3 === 0) {
-            x++;
-            y++
-          }
-
-        }
-      }
-
-
-
-    }
-
+    // CELL
     if (this.cellPopups.length > 0) {
 
       for (const popup of this.cellPopups) {
@@ -12190,479 +12190,6 @@ class App extends Component {
 
     let player = this.players[playerNumber-1]
 
-    let indicatorImgs = {
-      preAttack: this.refs.preAttackIndicate,
-      preAttack2: this.refs.preAttack2Indicate,
-      attack1: this.refs.attack1Indicate,
-      attack2: this.refs.attack2Indicate,
-      attack3: this.refs.attack3Indicate,
-      attackUnarmed: this.refs.attackUnarmedIndicate,
-      attackBlunt: this.refs.attackBluntIndicate,
-      attackSuccess: this.refs.attackSuccessIndicate,
-      defend: this.refs.defendIndicate,
-      deflect: this.refs.deflectIndicate,
-      deflectInjured: this.refs.deflectInjuredIndicate,
-      deflectBlunt: this.refs.deflectBluntIndicate,
-      pushback: this.refs.pushbackIndicate,
-      ghost: this.refs.ghostIndicate,
-      death: this.refs.deathIndicate,
-      attackBreak: this.refs.attackBreakIndicate,
-      defendBreak: this.refs.defendBreakIndicate,
-      dodge: this.refs.dodgeIndicate,
-    }
-
-    // SPRITE SHEET ARRAY!!
-    let playerImgs = [
-      {
-        idle: {
-          unarmed: this.refs.playerImgIdleSheet,
-          sword: this.refs.playerImgIdleSheet,
-          spear: this.refs.playerImgIdleSheet,
-          crossbow: this.refs.playerImgIdleSheet,
-        },
-        walking: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        jumping: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        dodging: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        flanking: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        strafing: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        attacking: {
-          unarmed: this.refs.player1ImgAttackSheet,
-          sword: this.refs.player1ImgAttackSheet,
-          spear: this.refs.player1ImgAttackSheet,
-          crossbow: this.refs.player1ImgAttackSheet,
-        },
-        defending: {
-          unarmed: this.refs.player1ImgDefendSheet,
-          sword: this.refs.player1ImgDefendSheet,
-          spear: this.refs.player1ImgDefendSheet,
-          crossbow: this.refs.player1ImgDefendSheet,
-        },
-        deflected: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        pushBack: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        falling: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        pushing: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        pulling: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        pushed: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        pulled: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-      },
-      {
-        idle: {
-          unarmed: this.refs.player2ImgIdleSheet,
-          sword: this.refs.player2ImgIdleSheet,
-          spear: this.refs.player2ImgIdleSheet,
-          crossbow: this.refs.player2ImgIdleSheet,
-        },
-        walking: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        jumping: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        dodging: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        flanking: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        strafing: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        attacking: {
-          unarmed: this.refs.player2ImgAttackSheet,
-          sword: this.refs.player2ImgAttackSheet,
-          spear: this.refs.player2ImgAttackSheet,
-          crossbow: this.refs.player2ImgAttackSheet,
-        },
-        defending: {
-          unarmed: this.refs.player2ImgDefendSheet,
-          sword: this.refs.player2ImgDefendSheet,
-          spear: this.refs.player2ImgDefendSheet,
-          crossbow: this.refs.player2ImgDefendSheet,
-        },
-        deflected: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        pushBack: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        falling: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        pushing: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        pulling: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        pushed: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        pulled: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-      },
-      {
-        idle: {
-          unarmed: this.refs.playerComAImgIdleSheet,
-          sword: this.refs.playerComAImgIdleSheet,
-          spear: this.refs.playerComAImgIdleSheet,
-          crossbow: this.refs.playerComAImgIdleSheet,
-        },
-        walking: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        jumping: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        dodging: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        flanking: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        strafing: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        attacking: {
-          unarmed: this.refs.comAImgAttackSheet,
-          sword: this.refs.comAImgAttackSheet,
-          spear: this.refs.comAImgAttackSheet,
-          crossbow: this.refs.comAImgAttackSheet,
-        },
-        defending: {
-          unarmed: this.refs.comAImgDefendSheet,
-          sword: this.refs.comAImgDefendSheet,
-          spear: this.refs.comAImgDefendSheet,
-          crossbow: this.refs.comAImgDefendSheet,
-        },
-        deflected: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        pushBack: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        falling: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        pushing: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        pulling: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        pushed: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        pulled: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-      },
-      {
-        idle: {
-          unarmed: this.refs.playerComBImgIdleSheet,
-          sword: this.refs.playerComBImgIdleSheet,
-          spear: this.refs.playerComBImgIdleSheet,
-          crossbow: this.refs.playerComBImgIdleSheet,
-        },
-        walking: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        jumping: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        dodging: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        flanking: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        strafing: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        attacking: {
-          unarmed: this.refs.comBImgAttackSheet,
-          sword: this.refs.comBImgAttackSheet,
-          spear: this.refs.comBImgAttackSheet,
-          crossbow: this.refs.comBImgAttackSheet,
-        },
-        defending: {
-          unarmed: this.refs.comBImgDefendSheet,
-          sword: this.refs.comBImgDefendSheet,
-          spear: this.refs.comBImgDefendSheet,
-          crossbow: this.refs.comBImgDefendSheet,
-        },
-        deflected: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        pushBack: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        falling: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        pushing: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        pulling: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        pushed: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        pulled: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-      },
-    ]
-    let itemImgs = {
-      moveSpeedUp: this.refs.itemSpdUp,
-      moveSpeedDown: this.refs.itemSpdDown,
-      hpUp: this.refs.itemHpUp,
-      hpDown: this.refs.itemHpDown,
-      focusUp: this.refs.itemFocusUp,
-      focusDown: this.refs.itemFocusDown,
-      strengthUp: this.refs.itemStrUp,
-      strengthDown: this.refs.itemStrDown,
-      sword: this.refs.itemSword,
-      spear: this.refs.itemSpear,
-      crossbow: this.refs.itemBow,
-      helmet: this.refs.itemHelmet1,
-      ammo5: this.refs.itemAmmo,
-      ammo10: this.refs.itemAmmo,
-      mail: this.refs.itemMail1,
-      greaves: this.refs.itemGreaves1,
-    };
-    let boltImgs = {
-      north: this.refs.itemBoltNorth,
-      south: this.refs.itemBoltSouth,
-      east: this.refs.itemBoltEast,
-      west: this.refs.itemBoltWest,
-    }
-    let floorImgs = {
-      grass: this.refs.floorGrass,
-      stone: this.refs.floorStone,
-      dirt: this.refs.floorDirt,
-      pond: this.refs.floorPond,
-      mud: this.refs.floorMud,
-      sand: this.refs.floorSand,
-      ice: this.refs.floorIce,
-      lava: this.refs.floorLava,
-      bramble: this.refs.floorBramble,
-      river: this.refs.floorRiver,
-      void: this.refs.floorVoid,
-      void2: this.refs.floorVoid2,
-      void3: this.refs.floorVoid3,
-      rubble: this.refs.floorRubble,
-    }
-    let obstacleImgs = {
-      table: this.refs.obstacleAHalf,
-      closet: this.refs.obstacleAFull,
-      chair: this.refs.obstacleBHalf,
-      shelf: this.refs.obstacleBFull,
-      smallBox: this.refs.obstacleCHalf,
-      largeBox: this.refs.obstacleCFull,
-      counter: this.refs.obstacleDHalf,
-      chest: this.refs.obstacleEHalf,
-      crate: this.refs.obstacleCrate,
-      barrel: this.refs.obstacleBarrel,
-      chest: this.refs.obstacleCrate,
-      table: this.refs.obstacleCrate,
-      chair: this.refs.obstacleCrate,
-      shelf: this.refs.obstacleCrate,
-      counter: this.refs.obstacleCrate,
-      smallBox: this.refs.obstacleCrate,
-      largeBox: this.refs.obstacleBarrel,
-    }
-    let barrierImgs = {
-      wall: {
-        north: this.refs.barrierANorth,
-        south: this.refs.barrierASouth,
-        east: this.refs.barrierAEast,
-        west: this.refs.barrierAWest,
-      },
-      door: {
-        north: this.refs.barrierANorth,
-        south: this.refs.barrierASouth,
-        east: this.refs.barrierAEast,
-        west: this.refs.barrierAWest,
-      },
-      balcony: {
-        north: this.refs.barrierANorth,
-        south: this.refs.barrierASouth,
-        east: this.refs.barrierAEast,
-        west: this.refs.barrierAWest,
-      },
-    }
-
-
     let updatedPlayerImg;
     let newDirection;
 
@@ -12704,14 +12231,14 @@ class App extends Component {
         let gridInfoCell = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
         gridInfoCell.center = center;
         gridInfoCell.drawCenter = center;
-        floor = floorImgs[gridInfoCell.terrain.name]
+        floor = this.floorImgs[gridInfoCell.terrain.name]
 
 
         // VOID
         // FLOOR
         if (gridInfoCell.void.state === true) {
           // drawFloor = false;
-          floor = floorImgs.void3
+          floor = this.floorImgs.void3
         }
         //BLINKER!!
         if (
@@ -12720,10 +12247,10 @@ class App extends Component {
           this.cellToVoid.y === y
         ) {
           if(this.cellToVoid.count % 5 === 0) {
-            floor = floorImgs.void3;
+            floor = this.floorImgs.void3;
             // drawFloor = false;
           } else {
-            floor = floorImgs.void2;
+            floor = this.floorImgs.void2;
             // drawFloor = true;
           }
         }
@@ -12738,10 +12265,10 @@ class App extends Component {
               // console.log('player',plyrb.number,'drowning count',plyrb.falling.count,'position',plyrb.nextPosition);
               if(plyrb.falling.count % 2 === 0) {
                 // drawFloor = false;
-                floor = floorImgs.void3;
+                floor = this.floorImgs.void3;
               } else {
                 // floor = floorImgs.stone
-                floor = floorImgs[gridInfoCell.terrain.name]
+                floor = this.floorImgs[gridInfoCell.terrain.name]
               }
             }
           }
@@ -12750,9 +12277,9 @@ class App extends Component {
         // FALLING OBSTACLE DEEP BLINKER
         if (gridInfoCell.obstacle.state === true && gridInfoCell.obstacle.moving.falling.state === true && gridInfoCell.terrain.type === "deep") {
           if(gridInfoCell.obstacle.moving.falling.count % 3 === 0) {
-            floor = floorImgs.void3;
+            floor = this.floorImgs.void3;
           } else {
-            floor = floorImgs[gridInfoCell.terrain.name]
+            floor = this.floorImgs[gridInfoCell.terrain.name]
           }
         }
 
@@ -12810,7 +12337,7 @@ class App extends Component {
 
         // RUBBLE
         if (gridInfoCell.rubble === true) {
-          context.drawImage(floorImgs.rubble, iso.x - offset.x, iso.y - offset.y);
+          context.drawImage(this.floorImgs.rubble, iso.x - offset.x, iso.y - offset.y);
         }
 
 
@@ -12891,43 +12418,43 @@ class App extends Component {
               switch(gridInfoCell.item.name) {
                 case 'moveSpeedUp' :
                   fillClr = "purple";
-                  itemImg = itemImgs[gridInfoCell.item.name];
+                  itemImg = this.itemImgs[gridInfoCell.item.name];
                 break;
                 case 'moveSpeedDown' :
                   fillClr = "blue";
-                  itemImg = itemImgs[gridInfoCell.item.name];
+                  itemImg = this.itemImgs[gridInfoCell.item.name];
                 break;
                 case 'hpUp' :
                   fillClr = "yellow";
-                  itemImg = itemImgs[gridInfoCell.item.name];
+                  itemImg = this.itemImgs[gridInfoCell.item.name];
                 break;
                 case 'hpDown' :
                   fillClr = "brown";
-                  itemImg = itemImgs[gridInfoCell.item.name];
+                  itemImg = this.itemImgs[gridInfoCell.item.name];
                 break;
                 case 'focusUp' :
                   fillClr = "white";
-                  itemImg = itemImgs[gridInfoCell.item.name];
+                  itemImg = this.itemImgs[gridInfoCell.item.name];
                 break;
                 case 'focusDown' :
                   fillClr = "black";
-                  itemImg = itemImgs[gridInfoCell.item.name];
+                  itemImg = this.itemImgs[gridInfoCell.item.name];
                 break;
                 case 'strengthUp' :
                   fillClr = "green";
-                  itemImg = itemImgs[gridInfoCell.item.name];
+                  itemImg = this.itemImgs[gridInfoCell.item.name];
                 break;
                 case 'strengthDown' :
                   fillClr = "red";
-                  itemImg = itemImgs[gridInfoCell.item.name];
+                  itemImg = this.itemImgs[gridInfoCell.item.name];
                 break;
                 case 'ammo5' :
                   fillClr = "#283618";
-                  itemImg = itemImgs[gridInfoCell.item.name];
+                  itemImg = this.itemImgs[gridInfoCell.item.name];
                 break;
                 case 'ammo10' :
                   fillClr = "#283618";
-                  itemImg = itemImgs[gridInfoCell.item.name];
+                  itemImg = this.itemImgs[gridInfoCell.item.name];
                 break;
               }
             }
@@ -12935,15 +12462,15 @@ class App extends Component {
               switch(gridInfoCell.item.subType) {
                 case 'sword' :
                   fillClr = "orange";
-                  itemImg = itemImgs[gridInfoCell.item.subType];
+                  itemImg = this.itemImgs[gridInfoCell.item.subType];
                 break;
                 case 'spear' :
                   fillClr = "maroon";
-                  itemImg = itemImgs[gridInfoCell.item.subType];
+                  itemImg = this.itemImgs[gridInfoCell.item.subType];
                 break;
                 case 'crossbow' :
                   fillClr = "navy";
-                  itemImg = itemImgs[gridInfoCell.item.subType];
+                  itemImg = this.itemImgs[gridInfoCell.item.subType];
                 break;
               }
             }
@@ -12951,20 +12478,20 @@ class App extends Component {
               switch(gridInfoCell.item.subType) {
                 case 'helmet' :
                   fillClr = "grey";
-                  itemImg = itemImgs[gridInfoCell.item.subType];
+                  itemImg = this.itemImgs[gridInfoCell.item.subType];
                 break;
                 case 'mail' :
                   fillClr = "olive";
-                  itemImg = itemImgs[gridInfoCell.item.subType];
+                  itemImg = this.itemImgs[gridInfoCell.item.subType];
                 break;
                 case 'greaves' :
                   fillClr = "#b5179e";
-                  itemImg = itemImgs[gridInfoCell.item.subType];
+                  itemImg = this.itemImgs[gridInfoCell.item.subType];
                 break;
               }
             }
 
-            context.drawImage(itemImg, center.x-15, center.y-15);
+            context.drawImage(this.itemImg, center.x-15, center.y-15);
 
             // context.fillStyle = fillClr;
             // context.beginPath();
@@ -13958,63 +13485,63 @@ class App extends Component {
           if (plyr.ai.state === false) {
             switch(plyr.action) {
               case 'idle':
-                updatedPlayerImg = playerImgs[plyr.number-1].idle[weapon];
+                updatedPlayerImg = this.playerImgs[plyr.number-1].idle[weapon];
               break;
               case 'moving':
               if (plyr.pushing.state === true) {
-                updatedPlayerImg = playerImgs[plyr.number-1].pushing[weapon];
+                updatedPlayerImg = this.playerImgs[plyr.number-1].pushing[weapon];
               }
               if (plyr.pulled.state === true) {
-                updatedPlayerImg = playerImgs[plyr.number-1].pulled[weapon];
+                updatedPlayerImg = this.playerImgs[plyr.number-1].pulled[weapon];
               }
               if (plyr.pushed.state === true) {
-                updatedPlayerImg = playerImgs[plyr.number-1].pushed[weapon];
+                updatedPlayerImg = this.playerImgs[plyr.number-1].pushed[weapon];
               }
               else {
-                updatedPlayerImg = playerImgs[plyr.number-1].walking[weapon];
+                updatedPlayerImg = this.playerImgs[plyr.number-1].walking[weapon];
               }
 
               break;
               case 'jumping':
-                updatedPlayerImg = playerImgs[plyr.number-1].jumping[weapon];
+                updatedPlayerImg = this.playerImgs[plyr.number-1].jumping[weapon];
               break;
               case 'flanking':
-                updatedPlayerImg = playerImgs[plyr.number-1].flanking[weapon];
+                updatedPlayerImg = this.playerImgs[plyr.number-1].flanking[weapon];
               break;
               case 'strafe moving':
                 if (plyr.pushBack.state === true) {
-                  updatedPlayerImg = playerImgs[plyr.number-1].pushBack[weapon];
+                  updatedPlayerImg = this.playerImgs[plyr.number-1].pushBack[weapon];
                 }
                 if (plyr.pulling.state === true) {
-                  updatedPlayerImg = playerImgs[plyr.number-1].pulling[weapon];
+                  updatedPlayerImg = this.playerImgs[plyr.number-1].pulling[weapon];
                 }
                 if (plyr.pulled.state === true) {
-                  updatedPlayerImg = playerImgs[plyr.number-1].pulled[weapon];
+                  updatedPlayerImg = this.playerImgs[plyr.number-1].pulled[weapon];
                 }
                 if (plyr.pushed.state === true) {
-                  updatedPlayerImg = playerImgs[plyr.number-1].pushed[weapon];
+                  updatedPlayerImg = this.playerImgs[plyr.number-1].pushed[weapon];
                 }
                 else {
-                   updatedPlayerImg = playerImgs[plyr.number-1].strafing[weapon];
+                   updatedPlayerImg = this.playerImgs[plyr.number-1].strafing[weapon];
                 }
               break;
               case 'falling':
-                updatedPlayerImg = playerImgs[plyr.number-1].falling[weapon];
+                updatedPlayerImg = this.playerImgs[plyr.number-1].falling[weapon];
               break;
               case 'attacking':
-                updatedPlayerImg = playerImgs[plyr.number-1].attacking[weapon];
+                updatedPlayerImg = this.playerImgs[plyr.number-1].attacking[weapon];
               break;
               case 'defending':
-                updatedPlayerImg = playerImgs[plyr.number-1].defending[weapon];
+                updatedPlayerImg = this.playerImgs[plyr.number-1].defending[weapon];
               break;
               case 'deflected' :
-                updatedPlayerImg = playerImgs[plyr.number-1].deflected[weapon];
+                updatedPlayerImg = this.playerImgs[plyr.number-1].deflected[weapon];
               break;
               case 'dodging' :
-                updatedPlayerImg = playerImgs[plyr.number-1].dodging[weapon];
+                updatedPlayerImg = this.playerImgs[plyr.number-1].dodging[weapon];
               break;
               case 'dead':
-                updatedPlayerImg = playerImgs[plyr.number-1].idle[weapon];
+                updatedPlayerImg = this.playerImgs[plyr.number-1].idle[weapon];
               break;
             }
           }
@@ -14029,62 +13556,62 @@ class App extends Component {
 
             switch(plyr.action) {
               case 'idle':
-                updatedPlayerImg = playerImgs[plyrImgIndex].idle[weapon];
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].idle[weapon];
               break;
               case 'moving':
                 if (plyr.pushing.state === true) {
-                  updatedPlayerImg = playerImgs[plyrImgIndex].pushing[weapon];
+                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pushing[weapon];
                 }
                 if (plyr.pulled.state === true) {
-                  updatedPlayerImg = playerImgs[plyrImgIndex].pulled[weapon];
+                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pulled[weapon];
                 }
                 if (plyr.pushed.state === true) {
-                  updatedPlayerImg = playerImgs[plyrImgIndex].pushed[weapon];
+                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pushed[weapon];
                 }
                 else {
-                  updatedPlayerImg = playerImgs[plyrImgIndex].walking[weapon];
+                  updatedPlayerImg = this.playerImgs[plyrImgIndex].walking[weapon];
                 }
               break;
               case 'jumping':
-                updatedPlayerImg = playerImgs[plyrImgIndex].jumping[weapon];
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].jumping[weapon];
               break;
               case 'flanking':
-                updatedPlayerImg = playerImgs[plyrImgIndex].flanking[weapon];
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].flanking[weapon];
               break;
               case 'strafe moving':
               if (plyr.pushBack.state === true) {
-                updatedPlayerImg = playerImgs[plyrImgIndex].pushBack[weapon];
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].pushBack[weapon];
               }
               if (plyr.pulling.state === true) {
-                updatedPlayerImg = playerImgs[plyrImgIndex].pulling[weapon];
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].pulling[weapon];
               }
               if (plyr.pulled.state === true) {
-                updatedPlayerImg = playerImgs[plyrImgIndex].pulled[weapon];
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].pulled[weapon];
               }
               if (plyr.pushed.state === true) {
-                updatedPlayerImg = playerImgs[plyrImgIndex].pushed[weapon];
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].pushed[weapon];
               }
               else {
-                 updatedPlayerImg = playerImgs[plyrImgIndex].strafing[weapon];
+                 updatedPlayerImg = this.playerImgs[plyrImgIndex].strafing[weapon];
               }
               break;
               case 'falling':
-                updatedPlayerImg = playerImgs[plyrImgIndex].falling[weapon];
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].falling[weapon];
               break;
               case 'attacking':
-                updatedPlayerImg = playerImgs[plyrImgIndex].attacking[weapon];
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].attacking[weapon];
               break;
               case 'defending':
-                updatedPlayerImg = playerImgs[plyrImgIndex].defending[weapon];
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].defending[weapon];
               break;
               case 'deflected' :
-                updatedPlayerImg = playerImgs[plyrImgIndex].deflected[weapon];
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].deflected[weapon];
               break;
               case 'dodging' :
-                updatedPlayerImg = playerImgs[plyrImgIndex].dodging[weapon];
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].dodging[weapon];
               break;
               case 'dead':
-                updatedPlayerImg = playerImgs[plyrImgIndex].idle[weapon];
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].idle[weapon];
               break;
             }
           }
@@ -14287,10 +13814,10 @@ class App extends Component {
               }
 
               if (plyr.defending.state === true) {
-                context.drawImage(indicatorImgs.defend, point.x-35, point.y-35, 35,35);
+                context.drawImage(this.indicatorImgs.defend, point.x-35, point.y-35, 35,35);
               }
               if (plyr.success.attackSuccess === true) {
-                context.drawImage(indicatorImgs.attackSuccess, point.x-35, point.y-35, 35,35);
+                context.drawImage(this.indicatorImgs.attackSuccess, point.x-35, point.y-35, 35,35);
               }
               if (plyr.dodging.countState === true && plyr.dodging.count < 3) {
                 // context.drawImage(indicatorImgs.preAttack2, point.x-45, point.y-35, 35,35);
@@ -14912,13 +14439,13 @@ class App extends Component {
               y === plyr.ghost.position.cell.number.y
             ) {
               // console.log('player',plyr.number,'dying',player.dead.count);
-              context.drawImage(indicatorImgs.death, plyr.ghost.position.cell.center.x-15, plyr.ghost.position.cell.center.y-15, 25,25);
+              context.drawImage(this.indicatorImgs.death, plyr.ghost.position.cell.center.x-15, plyr.ghost.position.cell.center.y-15, 25,25);
             }
           }
           if (plyr.ghost.state === true && player.dead.count === 0) {
             if (x === plyr.ghost.position.cell.number.x && y === plyr.ghost.position.cell.number.y) {
               // console.log('player ',plyr.number,'ghost @',plyr.ghost.position.cell.number,plyr.ghost.position.cell.center);
-              context.drawImage(indicatorImgs.ghost, plyr.ghost.position.cell.center.x-20, plyr.ghost.position.cell.center.y-20, 25,25);
+              context.drawImage(this.indicatorImgs.ghost, plyr.ghost.position.cell.center.x-20, plyr.ghost.position.cell.center.y-20, 25,25);
             }
           }
 
@@ -15138,79 +14665,6 @@ class App extends Component {
           if (x === this.gridWidth && y === this.gridWidth ) {
             // console.log(this.refs.pickupAmmo);
 
-            // let popupImageRef = {
-            //   attackStart: this.refs.preAttackIndicate,
-            //   preAction1: this.refs.preAction1Indicate,
-            //   preAction2: this.refs.preAction2Indicate,
-            //   attacking1: this.refs.attack1Indicate,
-            //   attacking2: this.refs.attack2Indicate,
-            //   missedAttack: this.refs.missedIndicate,
-            //   attackingBlunt: this.refs.attackBluntIndicate2,
-            //   attackingUnarmed: this.refs.attackUnarmedIndicate,
-            //   attacked1: this.refs.attack1Indicate,
-            //   attacked2: this.refs.attack2Indicate,
-            //   attackDefended: this.refs.attackBreakIndicate,
-            //   attackParried: this.refs.attackParriedIndicate,
-            //   boltKilled: this.refs.boltKilledIndicate,
-            //   attackCancelled: this.refs.attackBreakIndicate,
-            //   injured: this.refs.deflectInjuredIndicate,
-            //   defending_1: this.refs.defendIndicate1,
-            //   defending_2: this.refs.defendIndicate2,
-            //   defending_3: this.refs.defendIndicate3,
-            //   defending_4: this.refs.defendIndicate4,
-            //   defendSuccess: this.refs.defendSuccessIndicate,
-            //   guardBroken: this.refs.defendBreakIndicate,
-            //   deflected: this.refs.deflectBluntIndicate,
-            //   dodgeStart: this.refs.preAction2Indicate,
-            //   dodgeSuccess: this.refs.dodgeIndicate,
-            //   flanking: this.refs.flankIndicate,
-            //   pushedBack: this.refs.pushbackIndicate,
-            //   falling: this.refs.fallingIndicate,
-            //   outOfStamina: this.refs.outOfStaminaIndicate,
-            //   outOfAmmo: this.refs.outOfAmmoIndicate,
-            //   missionEngage: this.refs.deflectIndicate2,
-            //   missionPursue: this.refs.pursueMissionIndicate2,
-            //   missionRetrieve: this.refs.retrieveMissionIndicate,
-            //   missionDefend: this.refs.defendMissionIndicate,
-            //   missionPatrol: this.refs.patrolMissionIndicate,
-            //   missionRetreat: this.refs.retreatIndicate,
-            //   missionEnroute: this.refs.enrouteIndicate,
-            //   missionComplete: this.refs.completeMissionIndicate,
-            //   thinking: this.refs.thinkingIndicate,
-            //   alarmed: this.refs.preAttack2Indicate,
-            //   pathSwitch: this.refs.pathSwitchIndicate,
-            //   targetSwitch: this.refs.targetSwitchIndicate,
-            //   aggressiveMode: this.refs.aggressiveModeIndicate,
-            //   passiveMode: this.refs.passiveModeIndicate,
-            //   pickupWeapon: this.refs.pickupWeaponIndicate,
-            //   pickupArmor: this.refs.pickupArmorIndicate,
-            //   dropWeapon: this.refs.dropWeaponIndicate,
-            //   dropArmor: this.refs.dropArmorIndicate,
-            //   pickupBuff: this.refs.pickupBuffIndicate,
-            //   pickupDebuff: this.refs.pickupDebuffIndicate,
-            //   pickupAmmo: this.refs.pickupAmmoIndicate,
-            //   inventoryFull: this.refs.inventoryFullIndicate,
-            //   stop: this.refs.boltDefendIndicate,
-            //   dropWeapon: this.refs.dropWeaponIndicate,
-            //   dropArmor: this.refs.dropArmorIndicate,
-            //   drowning: this.refs.drowningIndicate,
-            //   terrainSlowdown: this.refs.terrainSlowdownIndicate,
-            //   terrainSpeedup: this.refs.terrainSpeedupIndicate,
-            //   terrainInjured: this.refs.terrainInjuredIndicate,
-            //   destroyedItem: this.refs.destroyedItemIndicate,
-            //   sword: this.refs.itemSword,
-            //   spear: this.refs.itemSpear,
-            //   crossbow: this.refs.itemCrossbow,
-            //   longbow: this.refs.itemBow,
-            //   helmet: this.refs.itemHelmet1,
-            //   mail: this.refs.itemMail1,
-            //   greaves: this.refs.itemGreaves1,
-            // };
-            // context.beginPath();
-            // context.lineWidth = "2"
-            // context.rect(point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
-            // context.strokeStyle = 'white';
-            // context.stroke();
 
             let popupBorderColor = this.playerColourRef['player'+plyr.number+'']
 
@@ -15275,24 +14729,6 @@ class App extends Component {
                // ctx.globalCompositeOperation = "source-over";
                ctx.closePath();
             }
-            // let drawBubble2 = (ctx, x, y, width, height, radius) => {
-            //   if (width < 2 * radius) radius = width / 2;
-            //   if (height < 2 * radius) radius = height / 2;
-            //   ctx.clearRect(x,y,this.popupSize,this.popupSize);
-            //   ctx.beginPath();
-            //   ctx.strokeStyle="black";
-            //   ctx.lineWidth="2";
-            //   ctx.moveTo(x + radius, y);
-            //   ctx.arcTo(x + width, y, x + width, y + height, radius);
-            //   ctx.arcTo(x + width, y + height, x, y + height, radius);
-            //   ctx.arcTo(x, y + height, x, y, radius);
-            //   ctx.arcTo(x, y, x + width, y, radius);
-            //   // ctx.clip();
-            //   ctx.fillStyle = 'white';
-            //   ctx.fill();
-            //   ctx.stroke();
-            //   ctx.closePath();
-            // }
 
             if (plyr.dead.state !== true && plyr.popups.length > 0) {
               for (const popup of plyr.popups) {
@@ -15994,7 +15430,7 @@ class App extends Component {
         // FALLING
         if (gridInfoCell.obstacle.state === true && gridInfoCell.obstacle.moving.falling.state === true) {
 
-          let obstacleImg = obstacleImgs[gridInfoCell.obstacle.type]
+          let obstacleImg = this.obstacleImgs[gridInfoCell.obstacle.type]
 
           context.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x, gridInfoCell.obstacle.moving.nextPosition.y);
           gridInfoCell.obstacle.moving.nextPosition.y += 2
@@ -16006,7 +15442,7 @@ class App extends Component {
           // if (x === 0 && y === 0) {
           if (x === obstacle.moving.origin.number.x && y === obstacle.moving.origin.number.y) {
             // console.log('obstacle falling out of bounds b count',obstacle.moving.origin.center,'position',obstacle.moving.nextPosition);
-            let obstacleImg = obstacleImgs[obstacle.type]
+            let obstacleImg = this.obstacleImgs[obstacle.type]
             context.drawImage(obstacleImg, obstacle.moving.nextPosition.x, obstacle.moving.nextPosition.y);
             obstacle.moving.nextPosition = {
               x: obstacle.moving.nextPosition.x,
@@ -16031,7 +15467,7 @@ class App extends Component {
           }
 
           if (hide !== true) {
-            let obstacleImg = obstacleImgs[gridInfoCell.obstacle.type]
+            let obstacleImg = this.obstacleImgs[gridInfoCell.obstacle.type]
 
             if (gridInfoCell.obstacle.moving.state !== true) {
               context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
@@ -16083,7 +15519,7 @@ class App extends Component {
             if (x === drawHere.x && y === drawHere.y ) {
               // console.log('x/y',x,y,direction,cell.obstacle.moving.step);
 
-              let obstacleImg = obstacleImgs[cell.obstacle.type];
+              let obstacleImg = this.obstacleImgs[cell.obstacle.type];
               context.drawImage(obstacleImg, cell.obstacle.moving.nextPosition.x-offset.x, cell.obstacle.moving.nextPosition.y- Math.ceil(obstacleImg.height/2, 30, 30));
 
             }
@@ -16098,11 +15534,11 @@ class App extends Component {
           // if (gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y) {
             if(cell.count % 3 === 0) {
               if (cell.type === "obstacle") {
-                let obstacleImg = obstacleImgs[cell.cell.obstacle.type];
+                let obstacleImg = this.obstacleImgs[cell.cell.obstacle.type];
                 context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
               }
               if (cell.type === "barrier") {
-                let barrierImg = barrierImgs[cell.cell.barrier.type][cell.cell.barrier.position];
+                let barrierImg = this.barrierImgs[cell.cell.barrier.type][cell.cell.barrier.position];
                 context.drawImage(barrierImg, iso.x - offset.x, iso.y - barrierImg.height, barrierImg.width, barrierImg.height);
               }
 
@@ -16117,10 +15553,10 @@ class App extends Component {
             if(cell.count % 3 === 0) {
               let itemImg;
               if (cell.item.type === "item") {
-                itemImg = itemImgs[cell.item.name];
+                itemImg = this.itemImgs[cell.item.name];
               }
               if (cell.item.type === "weapon" || cell.item.type === "armor") {
-                itemImg = itemImgs[cell.item.subType];
+                itemImg = this.itemImgs[cell.item.subType];
               }
               context.drawImage(itemImg, center.x-15, center.y-15);
             }
@@ -16139,16 +15575,16 @@ class App extends Component {
             let boltImg;
             switch(bolt.direction) {
               case 'north':
-                boltImg = boltImgs[bolt.direction]
+                boltImg = this.boltImgs[bolt.direction]
               break;
               case 'south':
-                boltImg = boltImgs[bolt.direction]
+                boltImg = this.boltImgs[bolt.direction]
               break;
               case 'east':
-                boltImg = boltImgs[bolt.direction]
+                boltImg = this.boltImgs[bolt.direction]
               break;
               case 'west':
-                boltImg = boltImgs[bolt.direction]
+                boltImg = this.boltImgs[bolt.direction]
               break;
             }
             // console.log('dd',boltImg,bolt.direction);
@@ -27929,6 +27365,544 @@ class App extends Component {
         }
     }
 
+    this.popupImageRef = {
+      attackStart: this.refs.preAttackIndicate,
+      preAction1: this.refs.preAction1Indicate,
+      preAction2: this.refs.preAction2Indicate,
+      attacking1: this.refs.attack1Indicate,
+      attacking2: this.refs.attack2Indicate,
+      missedAttack: this.refs.missedIndicate,
+      attackingBlunt: this.refs.attackBluntIndicate2,
+      attackingUnarmed: this.refs.attackUnarmedIndicate,
+      attacked1: this.refs.attack1Indicate,
+      attacked2: this.refs.attack2Indicate,
+      attackDefended: this.refs.attackBreakIndicate,
+      attackParried: this.refs.attackParriedIndicate,
+      boltKilled: this.refs.boltKilledIndicate,
+      attackCancelled: this.refs.attackBreakIndicate,
+      injured: this.refs.deflectInjuredIndicate,
+      defending_1: this.refs.defendIndicate1,
+      defending_2: this.refs.defendIndicate2,
+      defending_3: this.refs.defendIndicate3,
+      defending_4: this.refs.defendIndicate4,
+      defendSuccess: this.refs.defendSuccessIndicate,
+      guardBroken: this.refs.defendBreakIndicate,
+      deflected: this.refs.deflectBluntIndicate,
+      dodgeStart: this.refs.preAction2Indicate,
+      dodgeSuccess: this.refs.dodgeIndicate,
+      flanking: this.refs.flankIndicate,
+      pushedBack: this.refs.pushbackIndicate,
+      falling: this.refs.fallingIndicate,
+      outOfStamina: this.refs.outOfStaminaIndicate,
+      outOfAmmo: this.refs.outOfAmmoIndicate,
+      missionEngage: this.refs.deflectIndicate2,
+      missionPursue: this.refs.pursueMissionIndicate2,
+      missionRetrieve: this.refs.retrieveMissionIndicate,
+      missionDefend: this.refs.defendMissionIndicate,
+      missionPatrol: this.refs.patrolMissionIndicate,
+      missionRetreat: this.refs.retreatIndicate,
+      missionEnroute: this.refs.enrouteIndicate,
+      missionComplete: this.refs.completeMissionIndicate,
+      thinking: this.refs.thinkingIndicate,
+      alarmed: this.refs.preAttack2Indicate,
+      pathSwitch: this.refs.pathSwitchIndicate,
+      targetSwitch: this.refs.targetSwitchIndicate,
+      aggressiveMode: this.refs.aggressiveModeIndicate,
+      passiveMode: this.refs.passiveModeIndicate,
+      pickupWeapon: this.refs.pickupWeaponIndicate,
+      pickupArmor: this.refs.pickupArmorIndicate,
+      dropWeapon: this.refs.dropWeaponIndicate,
+      dropArmor: this.refs.dropArmorIndicate,
+      pickupBuff: this.refs.pickupBuffIndicate,
+      pickupDebuff: this.refs.pickupDebuffIndicate,
+      pickupAmmo: this.refs.pickupAmmoIndicate,
+      inventoryFull: this.refs.inventoryFullIndicate,
+      stop: this.refs.boltDefendIndicate,
+      dropWeapon: this.refs.dropWeaponIndicate,
+      dropArmor: this.refs.dropArmorIndicate,
+      drowning: this.refs.drowningIndicate,
+      terrainSlowdown: this.refs.terrainSlowdownIndicate,
+      terrainSpeedup: this.refs.terrainSpeedupIndicate,
+      terrainInjured: this.refs.terrainInjuredIndicate,
+      destroyedItem: this.refs.destroyedItemIndicate,
+      sword: this.refs.itemSword,
+      spear: this.refs.itemSpear,
+      crossbow: this.refs.itemCrossbow,
+      longbow: this.refs.itemBow,
+      helmet: this.refs.itemHelmet1,
+      mail: this.refs.itemMail1,
+      greaves: this.refs.itemGreaves1,
+    };
+    this.indicatorImgs = {
+      preAttack: this.refs.preAttackIndicate,
+      preAttack2: this.refs.preAttack2Indicate,
+      attack1: this.refs.attack1Indicate,
+      attack2: this.refs.attack2Indicate,
+      attack3: this.refs.attack3Indicate,
+      attackUnarmed: this.refs.attackUnarmedIndicate,
+      attackBlunt: this.refs.attackBluntIndicate,
+      attackSuccess: this.refs.attackSuccessIndicate,
+      defend: this.refs.defendIndicate,
+      deflect: this.refs.deflectIndicate,
+      deflectInjured: this.refs.deflectInjuredIndicate,
+      deflectBlunt: this.refs.deflectBluntIndicate,
+      pushback: this.refs.pushbackIndicate,
+      ghost: this.refs.ghostIndicate,
+      death: this.refs.deathIndicate,
+      attackBreak: this.refs.attackBreakIndicate,
+      defendBreak: this.refs.defendBreakIndicate,
+      dodge: this.refs.dodgeIndicate,
+    }
+    this.playerImgs = [
+      {
+        idle: {
+          unarmed: this.refs.playerImgIdleSheet,
+          sword: this.refs.playerImgIdleSheet,
+          spear: this.refs.playerImgIdleSheet,
+          crossbow: this.refs.playerImgIdleSheet,
+        },
+        walking: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        jumping: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        dodging: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        flanking: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        strafing: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        attacking: {
+          unarmed: this.refs.player1ImgAttackSheet,
+          sword: this.refs.player1ImgAttackSheet,
+          spear: this.refs.player1ImgAttackSheet,
+          crossbow: this.refs.player1ImgAttackSheet,
+        },
+        defending: {
+          unarmed: this.refs.player1ImgDefendSheet,
+          sword: this.refs.player1ImgDefendSheet,
+          spear: this.refs.player1ImgDefendSheet,
+          crossbow: this.refs.player1ImgDefendSheet,
+        },
+        deflected: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        pushBack: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        falling: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        pushing: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        pulling: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        pushed: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        pulled: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+      },
+      {
+        idle: {
+          unarmed: this.refs.player2ImgIdleSheet,
+          sword: this.refs.player2ImgIdleSheet,
+          spear: this.refs.player2ImgIdleSheet,
+          crossbow: this.refs.player2ImgIdleSheet,
+        },
+        walking: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        jumping: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        dodging: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        flanking: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        strafing: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        attacking: {
+          unarmed: this.refs.player2ImgAttackSheet,
+          sword: this.refs.player2ImgAttackSheet,
+          spear: this.refs.player2ImgAttackSheet,
+          crossbow: this.refs.player2ImgAttackSheet,
+        },
+        defending: {
+          unarmed: this.refs.player2ImgDefendSheet,
+          sword: this.refs.player2ImgDefendSheet,
+          spear: this.refs.player2ImgDefendSheet,
+          crossbow: this.refs.player2ImgDefendSheet,
+        },
+        deflected: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        pushBack: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        falling: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        pushing: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        pulling: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        pushed: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        pulled: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+      },
+      {
+        idle: {
+          unarmed: this.refs.playerComAImgIdleSheet,
+          sword: this.refs.playerComAImgIdleSheet,
+          spear: this.refs.playerComAImgIdleSheet,
+          crossbow: this.refs.playerComAImgIdleSheet,
+        },
+        walking: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        jumping: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        dodging: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        flanking: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        strafing: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        attacking: {
+          unarmed: this.refs.comAImgAttackSheet,
+          sword: this.refs.comAImgAttackSheet,
+          spear: this.refs.comAImgAttackSheet,
+          crossbow: this.refs.comAImgAttackSheet,
+        },
+        defending: {
+          unarmed: this.refs.comAImgDefendSheet,
+          sword: this.refs.comAImgDefendSheet,
+          spear: this.refs.comAImgDefendSheet,
+          crossbow: this.refs.comAImgDefendSheet,
+        },
+        deflected: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        pushBack: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        falling: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        pushing: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        pulling: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        pushed: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        pulled: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+      },
+      {
+        idle: {
+          unarmed: this.refs.playerComBImgIdleSheet,
+          sword: this.refs.playerComBImgIdleSheet,
+          spear: this.refs.playerComBImgIdleSheet,
+          crossbow: this.refs.playerComBImgIdleSheet,
+        },
+        walking: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        jumping: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        dodging: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        flanking: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        strafing: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        attacking: {
+          unarmed: this.refs.comBImgAttackSheet,
+          sword: this.refs.comBImgAttackSheet,
+          spear: this.refs.comBImgAttackSheet,
+          crossbow: this.refs.comBImgAttackSheet,
+        },
+        defending: {
+          unarmed: this.refs.comBImgDefendSheet,
+          sword: this.refs.comBImgDefendSheet,
+          spear: this.refs.comBImgDefendSheet,
+          crossbow: this.refs.comBImgDefendSheet,
+        },
+        deflected: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        pushBack: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        falling: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        pushing: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        pulling: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        pushed: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        pulled: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+      },
+    ]
+    this.itemImgs = {
+      moveSpeedUp: this.refs.itemSpdUp,
+      moveSpeedDown: this.refs.itemSpdDown,
+      hpUp: this.refs.itemHpUp,
+      hpDown: this.refs.itemHpDown,
+      focusUp: this.refs.itemFocusUp,
+      focusDown: this.refs.itemFocusDown,
+      strengthUp: this.refs.itemStrUp,
+      strengthDown: this.refs.itemStrDown,
+      sword: this.refs.itemSword,
+      spear: this.refs.itemSpear,
+      crossbow: this.refs.itemBow,
+      helmet: this.refs.itemHelmet1,
+      ammo5: this.refs.itemAmmo,
+      ammo10: this.refs.itemAmmo,
+      mail: this.refs.itemMail1,
+      greaves: this.refs.itemGreaves1,
+    };
+    this.boltImgs = {
+      north: this.refs.itemBoltNorth,
+      south: this.refs.itemBoltSouth,
+      east: this.refs.itemBoltEast,
+      west: this.refs.itemBoltWest,
+    }
+    this.floorImgs = {
+      grass: this.refs.floorGrass,
+      stone: this.refs.floorStone,
+      dirt: this.refs.floorDirt,
+      pond: this.refs.floorPond,
+      mud: this.refs.floorMud,
+      sand: this.refs.floorSand,
+      ice: this.refs.floorIce,
+      lava: this.refs.floorLava,
+      bramble: this.refs.floorBramble,
+      river: this.refs.floorRiver,
+      void: this.refs.floorVoid,
+      void2: this.refs.floorVoid2,
+      void3: this.refs.floorVoid3,
+      rubble: this.refs.floorRubble,
+    }
+    this.obstacleImgs = {
+      table: this.refs.obstacleAHalf,
+      closet: this.refs.obstacleAFull,
+      chair: this.refs.obstacleBHalf,
+      shelf: this.refs.obstacleBFull,
+      smallBox: this.refs.obstacleCHalf,
+      largeBox: this.refs.obstacleCFull,
+      counter: this.refs.obstacleDHalf,
+      chest: this.refs.obstacleEHalf,
+      crate: this.refs.obstacleCrate,
+      barrel: this.refs.obstacleBarrel,
+      chest: this.refs.obstacleCrate,
+      table: this.refs.obstacleCrate,
+      chair: this.refs.obstacleCrate,
+      shelf: this.refs.obstacleCrate,
+      counter: this.refs.obstacleCrate,
+      smallBox: this.refs.obstacleCrate,
+      largeBox: this.refs.obstacleBarrel,
+    }
+    this.barrierImgs = {
+      wall: {
+        north: this.refs.barrierANorth,
+        south: this.refs.barrierASouth,
+        east: this.refs.barrierAEast,
+        west: this.refs.barrierAWest,
+      },
+      door: {
+        north: this.refs.barrierANorth,
+        south: this.refs.barrierASouth,
+        east: this.refs.barrierAEast,
+        west: this.refs.barrierAWest,
+      },
+      balcony: {
+        north: this.refs.barrierANorth,
+        south: this.refs.barrierASouth,
+        east: this.refs.barrierAEast,
+        west: this.refs.barrierAWest,
+      },
+    }
+
     // LOAD CROSSBOW AMMO
     for (const plyr of this.players) {
       if (plyr.currentWeapon.type === 'crossbow') {
@@ -28002,147 +27976,6 @@ class App extends Component {
       this.settingsFormGridWidthUpdate(this.settingsGridWidth)
     }
 
-    this.popupImageRef = {
-      attackStart: this.refs.preAttackIndicate,
-      preAction1: this.refs.preAction1Indicate,
-      preAction2: this.refs.preAction2Indicate,
-      attacking1: this.refs.attack1Indicate,
-      attacking2: this.refs.attack2Indicate,
-      missedAttack: this.refs.missedIndicate,
-      attackingBlunt: this.refs.attackBluntIndicate2,
-      attackingUnarmed: this.refs.attackUnarmedIndicate,
-      attacked1: this.refs.attack1Indicate,
-      attacked2: this.refs.attack2Indicate,
-      attackDefended: this.refs.attackBreakIndicate,
-      attackParried: this.refs.attackParriedIndicate,
-      boltKilled: this.refs.boltKilledIndicate,
-      attackCancelled: this.refs.attackBreakIndicate,
-      injured: this.refs.deflectInjuredIndicate,
-      defending_1: this.refs.defendIndicate1,
-      defending_2: this.refs.defendIndicate2,
-      defending_3: this.refs.defendIndicate3,
-      defending_4: this.refs.defendIndicate4,
-      defendSuccess: this.refs.defendSuccessIndicate,
-      guardBroken: this.refs.defendBreakIndicate,
-      deflected: this.refs.deflectBluntIndicate,
-      dodgeStart: this.refs.preAction2Indicate,
-      dodgeSuccess: this.refs.dodgeIndicate,
-      flanking: this.refs.flankIndicate,
-      pushedBack: this.refs.pushbackIndicate,
-      falling: this.refs.fallingIndicate,
-      outOfStamina: this.refs.outOfStaminaIndicate,
-      outOfAmmo: this.refs.outOfAmmoIndicate,
-      missionEngage: this.refs.deflectIndicate2,
-      missionPursue: this.refs.pursueMissionIndicate2,
-      missionRetrieve: this.refs.retrieveMissionIndicate,
-      missionDefend: this.refs.defendMissionIndicate,
-      missionPatrol: this.refs.patrolMissionIndicate,
-      missionRetreat: this.refs.retreatIndicate,
-      missionEnroute: this.refs.enrouteIndicate,
-      missionComplete: this.refs.completeMissionIndicate,
-      thinking: this.refs.thinkingIndicate,
-      alarmed: this.refs.preAttack2Indicate,
-      pathSwitch: this.refs.pathSwitchIndicate,
-      targetSwitch: this.refs.targetSwitchIndicate,
-      aggressiveMode: this.refs.aggressiveModeIndicate,
-      passiveMode: this.refs.passiveModeIndicate,
-      pickupWeapon: this.refs.pickupWeaponIndicate,
-      pickupArmor: this.refs.pickupArmorIndicate,
-      dropWeapon: this.refs.dropWeaponIndicate,
-      dropArmor: this.refs.dropArmorIndicate,
-      pickupBuff: this.refs.pickupBuffIndicate,
-      pickupDebuff: this.refs.pickupDebuffIndicate,
-      pickupAmmo: this.refs.pickupAmmoIndicate,
-      inventoryFull: this.refs.inventoryFullIndicate,
-      stop: this.refs.boltDefendIndicate,
-      dropWeapon: this.refs.dropWeaponIndicate,
-      dropArmor: this.refs.dropArmorIndicate,
-      drowning: this.refs.drowningIndicate,
-      terrainSlowdown: this.refs.terrainSlowdownIndicate,
-      terrainSpeedup: this.refs.terrainSpeedupIndicate,
-      terrainInjured: this.refs.terrainInjuredIndicate,
-      destroyedItem: this.refs.destroyedItemIndicate,
-      sword: this.refs.itemSword,
-      spear: this.refs.itemSpear,
-      crossbow: this.refs.itemCrossbow,
-      longbow: this.refs.itemBow,
-      helmet: this.refs.itemHelmet1,
-      mail: this.refs.itemMail1,
-      greaves: this.refs.itemGreaves1,
-    };
-
-    let itemImgs = {
-      moveSpeedUp: this.refs.itemSpdUp,
-      moveSpeedDown: this.refs.itemSpdDown,
-      hpUp: this.refs.itemHpUp,
-      hpDown: this.refs.itemHpDown,
-      focusUp: this.refs.itemFocusUp,
-      focusDown: this.refs.itemFocusDown,
-      strengthUp: this.refs.itemStrUp,
-      strengthDown: this.refs.itemStrDown,
-      sword: this.refs.itemSword,
-      spear: this.refs.itemSpear,
-      crossbow: this.refs.itemBow,
-      helmet: this.refs.itemHelmet1,
-      ammo5: this.refs.itemAmmo,
-      ammo10: this.refs.itemAmmo,
-      mail: this.refs.itemMail1,
-      greaves: this.refs.itemGreaves1,
-    };
-    let floorImgs = {
-      grass: this.refs.floorGrass,
-      stone: this.refs.floorStone,
-      dirt: this.refs.floorDirt,
-      pond: this.refs.floorPond,
-      mud: this.refs.floorMud,
-      sand: this.refs.floorSand,
-      ice: this.refs.floorIce,
-      lava: this.refs.floorLava,
-      bramble: this.refs.floorBramble,
-      river: this.refs.floorRiver,
-      void: this.refs.floorVoid,
-      void2: this.refs.floorVoid2,
-      void3: this.refs.floorVoid3,
-    };
-    let obstacleImgs = {
-      table: this.refs.obstacleAHalf,
-      closet: this.refs.obstacleAFull,
-      chair: this.refs.obstacleBHalf,
-      shelf: this.refs.obstacleBFull,
-      smallBox: this.refs.obstacleCHalf,
-      largeBox: this.refs.obstacleCFull,
-      counter: this.refs.obstacleDHalf,
-      chest: this.refs.obstacleEHalf,
-      crate: this.refs.obstacleCrate,
-      barrel: this.refs.obstacleBarrel,
-      chest: this.refs.obstacleCrate,
-      table: this.refs.obstacleCrate,
-      chair: this.refs.obstacleCrate,
-      shelf: this.refs.obstacleCrate,
-      counter: this.refs.obstacleCrate,
-      smallBox: this.refs.obstacleCrate,
-      largeBox: this.refs.obstacleBarrel,
-    }
-    let barrierImgs = {
-      wall: {
-        north: this.refs.barrierANorth,
-        south: this.refs.barrierASouth,
-        east: this.refs.barrierAEast,
-        west: this.refs.barrierAWest,
-      },
-      door: {
-        north: this.refs.barrierANorth,
-        south: this.refs.barrierASouth,
-        east: this.refs.barrierAEast,
-        west: this.refs.barrierAWest,
-      },
-      balcony: {
-        north: this.refs.barrierANorth,
-        south: this.refs.barrierASouth,
-        east: this.refs.barrierAEast,
-        west: this.refs.barrierAWest,
-      },
-    }
 
     this.placeItems({init: true, items: ''});
 
@@ -28170,11 +28003,11 @@ class App extends Component {
         let cellLevelData = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y).levelData;
 
 
-        floor = floorImgs[cell.terrain.name]
+        floor = this.floorImgs[cell.terrain.name]
 
         if (cell.void.state === true) {
           // drawFloor = false;
-          floor = floorImgs.void3
+          floor = this.floorImgs.void3
         }
 
 
@@ -28200,43 +28033,43 @@ class App extends Component {
               switch(cell2.item.name) {
                 case 'moveSpeedUp' :
                   fillClr = "purple";
-                  itemImg = itemImgs[cell2.item.name];
+                  itemImg = this.itemImgs[cell2.item.name];
                 break;
                 case 'moveSpeedDown' :
                   fillClr = "blue";
-                  itemImg = itemImgs[cell2.item.name];
+                  itemImg = this.itemImgs[cell2.item.name];
                 break;
                 case 'hpUp' :
                   fillClr = "yellow";
-                  itemImg = itemImgs[cell2.item.name];
+                  itemImg = this.itemImgs[cell2.item.name];
                 break;
                 case 'hpDown' :
                   fillClr = "brown";
-                  itemImg = itemImgs[cell2.item.name];
+                  itemImg = this.itemImgs[cell2.item.name];
                 break;
                 case 'focusUp' :
                   fillClr = "white";
-                  itemImg = itemImgs[cell2.item.name];
+                  itemImg = this.itemImgs[cell2.item.name];
                 break;
                 case 'focusDown' :
                   fillClr = "black";
-                  itemImg = itemImgs[cell2.item.name];
+                  itemImg = this.itemImgs[cell2.item.name];
                 break;
                 case 'strengthUp' :
                   fillClr = "green";
-                  itemImg = itemImgs[cell2.item.name];
+                  itemImg = this.itemImgs[cell2.item.name];
                 break;
                 case 'strengthDown' :
                   fillClr = "red";
-                  itemImg = itemImgs[cell2.item.name];
+                  itemImg = this.itemImgs[cell2.item.name];
                 break;
                 case 'ammo5' :
                   fillClr = '#283618';
-                  itemImg = itemImgs[cell2.item.name];
+                  itemImg = this.itemImgs[cell2.item.name];
                 break;
                 case 'ammo10' :
                   fillClr = '#283618';
-                  itemImg = itemImgs[cell2.item.name];
+                  itemImg = this.itemImgs[cell2.item.name];
                 break;
               }
             }
@@ -28244,15 +28077,15 @@ class App extends Component {
               switch(cell2.item.subType) {
                 case 'sword' :
                   fillClr = "orange";
-                  itemImg = itemImgs[cell2.item.subType];
+                  itemImg = this.itemImgs[cell2.item.subType];
                 break;
                 case 'spear' :
                   fillClr = "maroon";
-                  itemImg = itemImgs[cell2.item.subType];
+                  itemImg = this.itemImgs[cell2.item.subType];
                 break;
                 case 'crossbow' :
                   fillClr = "navy";
-                  itemImg = itemImgs[cell2.item.subType];
+                  itemImg = this.itemImgs[cell2.item.subType];
                 break;
               }
             }
@@ -28260,15 +28093,15 @@ class App extends Component {
               switch(cell2.item.subType) {
                 case 'helmet' :
                   fillClr = "grey";
-                  itemImg = itemImgs[cell2.item.subType];
+                  itemImg = this.itemImgs[cell2.item.subType];
                 break;
                 case 'mail' :
                   fillClr = "olive";
-                  itemImg = itemImgs[cell2.item.subType];
+                  itemImg = this.itemImgs[cell2.item.subType];
                 break;
                 case 'greaves' :
                   fillClr = "#b5179e";
-                  itemImg = itemImgs[cell2.item.subType];
+                  itemImg = this.itemImgs[cell2.item.subType];
                 break;
               }
             }
@@ -28296,13 +28129,6 @@ class App extends Component {
         }
 
 
-        let playerImgs = [
-          this.refs.playerImgIdleSheet,
-          this.refs.player2ImgIdleSheet,
-          this.refs.playerComAImgIdleSheet,
-          this.refs.playerComBImgIdleSheet,
-        ]
-
         for (const player of this.players) {
 
           if (
@@ -28311,9 +28137,14 @@ class App extends Component {
           ) {
 
             let playerImg;
+            let playerImgIndex;
+            let atkType = player.currentWeapon.type;
+            if (player.currentWeapon.name === "") {
+              atkType = "unarmed";
+            }
 
             if (player.ai.state === true) {
-              let playerImgIndex;
+
               if (player.ai.imgType === "A") {
                 playerImgIndex = 2;
               }
@@ -28321,9 +28152,9 @@ class App extends Component {
                 playerImgIndex = 3;
               }
 
-              playerImg = playerImgs[playerImgIndex];
+              playerImg = this.playerImgs[playerImgIndex].idle[atkType];
             } else {
-              playerImg = playerImgs[player.number-1];
+              playerImg = this.playerImgs[player.number-1].idle[atkType];
             }
 
 
@@ -28343,7 +28174,6 @@ class App extends Component {
               x: 0,
               y: 0,
             };
-
 
             let cell = this.gridInfo.find(elem => elem.number.x === player.startPosition.cell.number.x && elem.number.y === player.startPosition.cell.number.y)
             point.x = cell.center.x;
@@ -28387,6 +28217,8 @@ class App extends Component {
 
             this.getTarget(player);
 
+
+
             context.drawImage(playerImg, sx, sy, sWidth, sHeight, point.x-30, point.y-30, this.playerDrawWidth, this.playerDrawHeight);
 
           }
@@ -28394,7 +28226,7 @@ class App extends Component {
         }
 
         if (cell.barrier.state === true && cell.void.state !== true) {
-          let barrierImg = barrierImgs[cell.barrier.type][cell.barrier.position];
+          let barrierImg = this.barrierImgs[cell.barrier.type][cell.barrier.position];
 
           context.drawImage(barrierImg, iso.x - offset.x, iso.y - barrierImg.height, barrierImg.width, barrierImg.height);
           // context.drawImage(barrierImg, iso.x - offset.x, iso.y - offset.y);
@@ -28405,7 +28237,7 @@ class App extends Component {
         // OBSTACLES
         if (cell.obstacle.state === true && cell.void.state !== true) {
           // let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
-          let obstacleImg = obstacleImgs[cell.obstacle.type]
+          let obstacleImg = this.obstacleImgs[cell.obstacle.type]
 
 
           context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
