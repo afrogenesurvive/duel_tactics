@@ -2662,13 +2662,14 @@ class App extends Component {
     this.obstaclesOutOfBoundsFall = [];
     this.cellPopups = [];
     this.popupImageRef = {};
-    this.indicatorImgs = {}
+    this.indicatorImgs = {};
     this.playerImgs = [];
-    this.itemImgs = {}
-    this.boltImgs = {}
-    this.floorImgs = {}
-    this.obstacleImgs = {}
-    this.barrierImgs = {}
+    this.itemImgs = {};
+    this.boltImgs = {};
+    this.floorImgs = {};
+    this.obstacleImgs = {};
+    this.barrierImgs = {};
+    this.cellColorRef = [];
 
 
 
@@ -7114,7 +7115,6 @@ class App extends Component {
 
         // KEY PRESS RELEASE CHECKS!!
 
-
         // DEFEND FEINT
         if (this.keyPressed[player.number-1].defend === false && player.defending.state === true) {
           console.log('player',player.number,' defend key release');
@@ -10337,7 +10337,8 @@ class App extends Component {
 
     // POPUPS
     // if (this.time === 100 && x.cell.number.x === 3 && x.cell.number.y === 3)) {
-    if (this.time === 100) {
+    // if (this.time === 100 || this.time === 300 && player.number === 1) {
+    if (this.time === 100 || this.time === 300) {
 
       let newArray = [];
       let x = 0;
@@ -10345,11 +10346,49 @@ class App extends Component {
       for (const [key, value] of Object.entries(this.popupImageRef)) {
         newArray.push(key);
       }
+      // player.popups.push(
+      //   {
+      //     state: false,
+      //     count: 0,
+      //     limit: 35,
+      //     type: '',
+      //     position: '',
+      //     msg: this.popupImageRef[0],
+      //     img: '',
+      //     // cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
+      //   }
+      // )
       for (var i = 0; i < 20; i++) {
-        if (player.popups.find(x => x.msg === newArray[i])) {
-        // if (!this.cellPopups.find(x => x.msg === newArray[i])) {
-          player.popups.push(
-          // this.cellPopups.push(
+        // if (!player.popups.find(x => x.msg === newArray[i])) {
+        //   player.popups.push(
+        //     {
+        //       state: false,
+        //       count: 0,
+        //       limit: 35,
+        //       type: '',
+        //       position: '',
+        //       msg: newArray[i],
+        //       img: '',
+        //       // cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
+        //     }
+        //   )
+        // }
+        // if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 4 && x.cell.number.x === 4)) {
+        //   this.cellPopups.push(
+        //     {
+        //       state: false,
+        //       count: 0,
+        //       limit: 35,
+        //       type: '',
+        //       position: '',
+        //       msg: newArray[i],
+        //       img: '',
+        //       cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
+        //     }
+        //   )
+        // }
+        if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 4 && x.cell.number.x === 3)) {
+          this.cellPopups.push(
             {
               state: false,
               count: 0,
@@ -10357,16 +10396,15 @@ class App extends Component {
               type: '',
               position: '',
               msg: newArray[i],
+              color: '',
               img: '',
-              // cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
+              cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 3)
             }
           )
-          if (i % 3 === 0) {
-            x++;
-            y++
-          }
         }
+
       }
+      // console.log('set popups',player.popups);
     }
     //PLAYER
     if (player.popups.length > 0) {
@@ -10446,6 +10484,7 @@ class App extends Component {
     }
 
 
+    // CAMERA
     if (this.setInitZoom.state === true) {
 
 
@@ -12330,6 +12369,7 @@ class App extends Component {
         }
 
 
+        // FLOOR
         if (drawFloor === true) {
           context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
         }
@@ -12348,7 +12388,7 @@ class App extends Component {
         context.fillRect(center.x, center.y,5,5);
 
 
-        // CELL VERTICES
+        // CELL VERTEX POINTS
         let vertices = [
           {x:center.x, y:center.y+tileWidth/2},
           {x:center.x+tileWidth, y:center.y},
@@ -12504,6 +12544,20 @@ class App extends Component {
         }
 
 
+        //POPUPS
+        // CELL HIGHLIGHT
+        for(const popup of this.cellPopups) {
+          if (popup.state === true && x === popup.cell.number.x && y === popup.cell.number.y) {
+            context.lineWidth = 5;
+            context.beginPath();
+            for (const vertex of vertices) {
+              context.strokeStyle = popup.color;
+              context.lineTo(vertex.x, vertex.y);
+            }
+            context.closePath();
+            context.stroke();
+          }
+        }
         // CELL POPUPS
         if (x === this.gridWidth && y === this.gridWidth ) {
           // console.log(this.refs.pickupAmmo);
@@ -12582,7 +12636,7 @@ class App extends Component {
           // context.strokeStyle = 'white';
           // context.stroke();
 
-          let popupBorderColor = 'black';
+
 
           let drawBubble = (ctx,x,y,w,h,radius,px,py,color) => {
 
@@ -12647,21 +12701,31 @@ class App extends Component {
           }
 
           for (const popup of this.cellPopups) {
+
+            let popupBorderColor = 'black';
             if (popup.state === true) {
               // console.log('drawing a popup');
               let popupDrawCoords;
               if (popup.position === '' || !popup.position) {
                 let currentPopups = this.cellPopups.filter(x=>x.state === true);
-                let positions = ['north','east','south','west','northEast','northWest','southEast','southWest']
+                let currentPopupsThisCell = this.cellPopups.filter(x=>x.state === true && x.cell.number.x === popup.cell.number.x && x.cell.number.y === popup.cell.number.y);
+                let positions = ['north','east','south','west','northEast','northWest','southEast','southWest'];
 
-                // for (const popup2 of currentPopups) {
-                //   if (popup2.position && popup2.position !== '') {
-                //
-                //     let indx = positions.indexOf(popup2.position);
-                //     positions.splice(indx,1)
-                //   }
-                //
-                // }
+
+                if (popup.color === '') {
+                    popup.color = this.cellColorRef.find(x => x.x === popup.cell.number.x && x.y === popup.cell.number.y).color;
+                }
+
+
+                // REMOVE POSITIONS OF POPUPS ALREADY DRAWN FOR THIS CELL
+                for (const popup2 of currentPopupsThisCell) {
+                  if (popup2.position && popup2.position !== '') {
+
+                    let indx = positions.indexOf(popup2.position);
+                    positions.splice(indx,1)
+                  }
+
+                }
 
                 let dir = undefined;
                 let dirs = [];
@@ -12703,100 +12767,103 @@ class App extends Component {
                     }
 
 
-                    // GET DIRECTION OF ALL CELLS PLAYER'S POPUPS OCCUPY, RELATIVE TO ME
+                    // GET DIRECTION THAT ALL OTHER PLAYER'S POPUPS OCCUPY, RELATIVE TO ME
                     for(const pop of plyr2.popups) {
 
                       dir = undefined;
 
-                      let invalidPos2 = {
-                        x: undefined,
-                        y: undefined,
-                      }
+                      if (pop.state === true) {
 
-                      switch (pop.position) {
-                        case 'north':
-                          invalidPos2 = {
-                            x: invalidPos.x,
-                            y: invalidPos.y-1,
-                          }
-                          break;
-                        case 'northEast':
-                          invalidPos2 = {
-                            x: invalidPos.x+1,
-                            y: invalidPos.y-1,
-                          }
-                          break;
-                        case 'northWest':
-                          invalidPos2 = {
-                            x: invalidPos.x-1,
-                            y: invalidPos.y-1,
-                          }
-                          break;
-                        case 'south':
-                          invalidPos2 = {
-                            x: invalidPos.x,
-                            y: invalidPos.y+1,
-                          }
-                          break;
-                        case 'southEast':
-                          invalidPos2 = {
-                            x: invalidPos.x+1,
-                            y: invalidPos.y+1,
-                          }
-                          break;
-                        case 'southWest':
-                          invalidPos2 = {
-                            x: invalidPos.x-1,
-                            y: invalidPos.y+1,
-                          }
-                          break;
-                        case 'east':
-                          invalidPos2 = {
-                            x: invalidPos.x-1,
-                            y: invalidPos.y,
-                          }
-                          break;
-                        case 'west':
-                          invalidPos2 = {
-                            x: invalidPos.x+1,
-                            y: invalidPos.y,
-                          }
-                          break;
-                        default:
+                        let invalidPos2 = {
+                          x: undefined,
+                          y: undefined,
+                        }
+
+                        switch (pop.position) {
+                          case 'north':
+                            invalidPos2 = {
+                              x: invalidPos.x,
+                              y: invalidPos.y-1,
+                            }
+                            break;
+                          case 'northEast':
+                            invalidPos2 = {
+                              x: invalidPos.x+1,
+                              y: invalidPos.y-1,
+                            }
+                            break;
+                          case 'northWest':
+                            invalidPos2 = {
+                              x: invalidPos.x-1,
+                              y: invalidPos.y-1,
+                            }
+                            break;
+                          case 'south':
+                            invalidPos2 = {
+                              x: invalidPos.x,
+                              y: invalidPos.y+1,
+                            }
+                            break;
+                          case 'southEast':
+                            invalidPos2 = {
+                              x: invalidPos.x+1,
+                              y: invalidPos.y+1,
+                            }
+                            break;
+                          case 'southWest':
+                            invalidPos2 = {
+                              x: invalidPos.x-1,
+                              y: invalidPos.y+1,
+                            }
+                            break;
+                          case 'east':
+                            invalidPos2 = {
+                              x: invalidPos.x-1,
+                              y: invalidPos.y,
+                            }
+                            break;
+                          case 'west':
+                            invalidPos2 = {
+                              x: invalidPos.x+1,
+                              y: invalidPos.y,
+                            }
+                            break;
+                          default:
+
+                        }
+
+                        // let dir = undefined;
+
+                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
+                          dir = 'north';
+                        }
+                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
+                          dir = 'northWest';
+                        }
+                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
+                          dir = 'west';
+                        }
+                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
+                          dir = 'southWest';
+                        }
+                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
+                          dir = 'south';
+                        }
+                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
+                          dir = 'southEast';
+                        }
+                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
+                          dir = 'east';
+                        }
+                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
+                          dir = 'northEast';
+                        }
+                        if (dir && positions.includes(dir) === true) {
+                          positions.splice(positions.indexOf(dir),1);
+                          // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                        }
 
                       }
-
-                      // let dir = undefined;
-
-                      if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
-                        dir = 'north';
-                      }
-                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
-                        dir = 'northWest';
-                      }
-                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
-                        dir = 'west';
-                      }
-                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
-                        dir = 'southWest';
-                      }
-                      if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
-                        dir = 'south';
-                      }
-                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
-                        dir = 'southEast';
-                      }
-                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
-                        dir = 'east';
-                      }
-                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
-                        dir = 'northEast';
-                      }
-                      if (dir && positions.includes(dir) === true) {
-                        positions.splice(positions.indexOf(dir),1);
-                        // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                      }
-
 
                     }
 
@@ -12804,13 +12871,18 @@ class App extends Component {
                   }
                 }
 
-
-                // GET DIRECTION OF CELL POPUPS' POPUPS  CELLS RELATIVE TO ME
+                // GET DIRECTION OF CELLS THAT AREN'T THIS CELL'S POPUPS' POPUPS CELLS RELATIVE TO ME
                 for (const popup2 of currentPopups) {
 
                   dir = undefined;
 
-                  if (popup2.msg !== popup.msg) {
+
+                  if (
+                    popup.cell.number.x !== popup2.cell.number.x &&
+                    popup.cell.number.y !== popup2.cell.number.y &&
+                    popup2.msg !== popup.msg &&
+                    popup2.state === true
+                  ) {
 
                     let myPos = popup.cell.number;
                     let cellPos = popup2.cell.number;
@@ -12818,7 +12890,6 @@ class App extends Component {
                       x: undefined,
                       y: undefined,
                     }
-
 
                     switch (popup2.position) {
                       case 'north':
@@ -12902,13 +12973,9 @@ class App extends Component {
                       // console.log('dont draw over player @',dir,'choose frome these position',positions);
                     }
 
-
-                    // let indx = positions.indexOf(popup2.position);
-                    // positions.splice(indx,1)
                   }
 
                 }
-
 
                 if (!positions[0]) {
                   // console.log('no open positions for', popup.msg);
@@ -12921,20 +12988,24 @@ class App extends Component {
 
                 popup.img = this.popupImageRef[popup.msg]
 
-                popupDrawCoords = this.popupDrawCalc(popup,{x:popup.cell.center.x-25,y:popup.cell.center.y-25},0);
+                popupDrawCoords = this.popupDrawCalc(popup,{x:popup.cell.center.x-25,y:popup.cell.center.y-15},0);
                 // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
-                drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor)
+                drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popup.color)
                 // context.fillStyle = 'black';
                 // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
                 // console.log('popup.msg',popup.msg,popup.img);
                 context.drawImage(popup.img, popupDrawCoords.origin.x+5,popupDrawCoords.origin.y+5,26,26);
+
+
+
               }
               else {
 
                 let dir = undefined;
                 let dirs = [];
 
-                let currentPopups = this.cellPopups.filter(x=>x.state === true);
+
+                let currentPopupsNotThis = this.cellPopups.filter(x=>x.state === true && x.msg !== popup.msg && x.cell.number.x !== popup.cell.number.x && x.cell.number.y !== popup.cell.number.y);
 
                 for (const plyr2 of this.players) {
                   if (plyr2.ai.state !== true) {
@@ -12977,94 +13048,99 @@ class App extends Component {
 
 
                     for(const pop of plyr2.popups) {
-                      let invalidPos2 = {
-                        x: undefined,
-                        y: undefined,
-                      }
 
-                      switch (pop.position) {
-                        case 'north':
-                          invalidPos2 = {
-                            x: invalidPos.x,
-                            y: invalidPos.y-1,
-                          }
-                          break;
-                        case 'northEast':
-                          invalidPos2 = {
-                            x: invalidPos.x+1,
-                            y: invalidPos.y-1,
-                          }
-                          break;
-                        case 'northWest':
-                          invalidPos2 = {
-                            x: invalidPos.x-1,
-                            y: invalidPos.y-1,
-                          }
-                          break;
-                        case 'south':
-                          invalidPos2 = {
-                            x: invalidPos.x,
-                            y: invalidPos.y+1,
-                          }
-                          break;
-                        case 'southEast':
-                          invalidPos2 = {
-                            x: invalidPos.x+1,
-                            y: invalidPos.y+1,
-                          }
-                          break;
-                        case 'southWest':
-                          invalidPos2 = {
-                            x: invalidPos.x-1,
-                            y: invalidPos.y+1,
-                          }
-                          break;
-                        case 'east':
-                          invalidPos2 = {
-                            x: invalidPos.x-1,
-                            y: invalidPos.y,
-                          }
-                          break;
-                        case 'west':
-                          invalidPos2 = {
-                            x: invalidPos.x+1,
-                            y: invalidPos.y,
-                          }
-                          break;
-                        default:
+                      if (pop.state === true) {
+
+                        let invalidPos2 = {
+                          x: undefined,
+                          y: undefined,
+                        }
+
+                        switch (pop.position) {
+                          case 'north':
+                            invalidPos2 = {
+                              x: invalidPos.x,
+                              y: invalidPos.y-1,
+                            }
+                            break;
+                          case 'northEast':
+                            invalidPos2 = {
+                              x: invalidPos.x+1,
+                              y: invalidPos.y-1,
+                            }
+                            break;
+                          case 'northWest':
+                            invalidPos2 = {
+                              x: invalidPos.x-1,
+                              y: invalidPos.y-1,
+                            }
+                            break;
+                          case 'south':
+                            invalidPos2 = {
+                              x: invalidPos.x,
+                              y: invalidPos.y+1,
+                            }
+                            break;
+                          case 'southEast':
+                            invalidPos2 = {
+                              x: invalidPos.x+1,
+                              y: invalidPos.y+1,
+                            }
+                            break;
+                          case 'southWest':
+                            invalidPos2 = {
+                              x: invalidPos.x-1,
+                              y: invalidPos.y+1,
+                            }
+                            break;
+                          case 'east':
+                            invalidPos2 = {
+                              x: invalidPos.x-1,
+                              y: invalidPos.y,
+                            }
+                            break;
+                          case 'west':
+                            invalidPos2 = {
+                              x: invalidPos.x+1,
+                              y: invalidPos.y,
+                            }
+                            break;
+                          default:
+
+                        }
+
+
+                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
+                          dir = 'north';
+                        }
+                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
+                          dir = 'northWest';
+                        }
+                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
+                          dir = 'west';
+                        }
+                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
+                          dir = 'southWest';
+                        }
+                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
+                          dir = 'south';
+                        }
+                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
+                          dir = 'southEast';
+                        }
+                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
+                          dir = 'east';
+                        }
+                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
+                          dir = 'northEast';
+                        }
+                        // if (dir && positions.includes(dir) === true) {
+                        //   positions.splice(positions.indexOf(dir),1);
+                        //   // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                        // }
+                        dirs.push(dir);
 
                       }
-
-
-                      if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
-                        dir = 'north';
-                      }
-                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
-                        dir = 'northWest';
-                      }
-                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
-                        dir = 'west';
-                      }
-                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
-                        dir = 'southWest';
-                      }
-                      if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
-                        dir = 'south';
-                      }
-                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
-                        dir = 'southEast';
-                      }
-                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
-                        dir = 'east';
-                      }
-                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
-                        dir = 'northEast';
-                      }
-                      // if (dir && positions.includes(dir) === true) {
-                      //   positions.splice(positions.indexOf(dir),1);
-                      //   // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                      // }
-                      dirs.push(dir);
 
                     }
 
@@ -13072,11 +13148,11 @@ class App extends Component {
                   }
                 }
 
-                for (const popup2 of currentPopups) {
+                for (const popup2 of currentPopupsNotThis) {
 
                   dir = undefined;
 
-                  if (popup2.msg !== popup.msg) {
+                  if (popup2.msg !== popup.msg && popup2.state === true) {
 
                     let myPos = popup.cell.number;
 
@@ -13167,9 +13243,6 @@ class App extends Component {
 
                     dirs.push(dir);
 
-
-                    // let indx = positions.indexOf(popup2.position);
-                    // positions.splice(indx,1)
                   }
 
                 }
@@ -13177,21 +13250,24 @@ class App extends Component {
 
                 // if (popup.position === dir ) {
                 if (dirs.find(x => x === popup.position) ) {
-                  for (const pop of this.cellPopups) {
-                    pop.position = '';
-                    pop.state = false;
-                  }
+                  // for (const pop of this.cellPopups) {
+                  //   pop.position = '';
+                  //   pop.state = false;
+                  // }
+                  this.cellPopups.find(x => x.msg === popup.msg && x.cell.number.x === popup.cell.number.x && x.cell.number.x === popup.cell.number.x).state = false;
+                  this.cellPopups.find(x => x.msg === popup.msg && x.cell.number.x === popup.cell.number.x && x.cell.number.x === popup.cell.number.x).position = '';
                   // console.log('reconsidering...',popup.msg);
                 }
                 else {
                   popup.img = this.popupImageRef[popup.msg]
-                  popupDrawCoords = this.popupDrawCalc(popup,{x:popup.cell.center.x-25,y:popup.cell.center.y-25},0);
+                  popupDrawCoords = this.popupDrawCalc(popup,{x:popup.cell.center.x-25,y:popup.cell.center.y-15},0);
                   // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
-                  drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor)
+                  drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popup.color)
                   // context.fillStyle = 'black';
                   // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
                   // console.log('popup.msg',popup.msg);
-                context.drawImage(popup.img, popupDrawCoords.origin.x+5,popupDrawCoords.origin.y+5,26,26);
+                  context.drawImage(popup.img, popupDrawCoords.origin.x+5,popupDrawCoords.origin.y+5,26,26);
+
                 }
 
 
@@ -14661,13 +14737,11 @@ class App extends Component {
 
 
           // PLAYER POPUPS
-
           if (x === this.gridWidth && y === this.gridWidth ) {
             // console.log(this.refs.pickupAmmo);
 
 
             let popupBorderColor = this.playerColourRef['player'+plyr.number+'']
-
             let drawBubble = (ctx,x,y,w,h,radius,px,py,color) => {
 
                var r = x + w;
@@ -14731,6 +14805,7 @@ class App extends Component {
             }
 
             if (plyr.dead.state !== true && plyr.popups.length > 0) {
+
               for (const popup of plyr.popups) {
                 if (popup.state === true) {
                   // console.log('drawing a popup');
@@ -14739,14 +14814,15 @@ class App extends Component {
                     let currentPopups = plyr.popups.filter(x=>x.state === true);
                     let positions = ['north','east','south','west','northEast','northWest','southEast','southWest']
 
-                    // for (const popup2 of currentPopups) {
-                    //   if (popup2.position && popup2.position !== '') {
-                    //
-                    //     let indx = positions.indexOf(popup2.position);
-                    //     positions.splice(indx,1)
-                    //   }
-                    //
-                    // }
+                    // REMOVE POSITIONS ALREADY TAKEN BY PLAYERS' OTHER POPUPS
+                    for (const popup2 of currentPopups) {
+                      if (popup2.position && popup2.position !== '') {
+
+                        let indx = positions.indexOf(popup2.position);
+                        positions.splice(indx,1)
+                      }
+
+                    }
 
                     let dir = undefined;
 
@@ -14755,48 +14831,10 @@ class App extends Component {
                         let myPos = plyr.currentPosition.cell.number;
                         let invalidPos = this.players[plyr2.number-1].currentPosition.cell.number;
 
-                        if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
-                          dir = 'north';
-                        }
-                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y-1) {
-                          dir = 'northWest';
-                        }
-                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y) {
-                          dir = 'west';
-                        }
-                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y+1) {
-                          dir = 'southWest';
-                        }
-                        if (invalidPos.x === myPos.x && invalidPos.y === myPos.y+1) {
-                          dir = 'south';
-                        }
-                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y+1) {
-                          dir = 'southEast';
-                        }
-                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y) {
-                          dir = 'east';
-                        }
-                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y-1) {
-                          dir = 'northEast';
-                        }
-
-                        if (dir && positions.includes(dir) === true) {
-                          positions.splice(positions.indexOf(dir),1);
-                          // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                        }
-                      }
-                    }
-
-
-                    for (const plyr2 of this.players) {
-                      if (plyr2.ai.state !== true) {
-                        let myPos = plyr.currentPosition.cell.number;
-                        let invalidPos = this.players[plyr2.number-1].currentPosition.cell.number;
-
                         dir = undefined;
                         // let invalidPositions = [invalidPos];
 
-                        // GET DIRECTION OF PLAYER CELL RELATIVE TO ME
+                        // GET DIRECTION OF OTHER PLAYER CELL RELATIVE TO ME
                         if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
                           dir = 'north';
                         }
@@ -14824,104 +14862,109 @@ class App extends Component {
 
                         if (dir && positions.includes(dir) === true) {
                           positions.splice(positions.indexOf(dir),1);
+                          // console.log('player popups (unset): human player position is close to player',plyr.number,' @ ',invalidPos,'dir',dir);
                           // console.log('dont draw over player @',dir,'choose frome these position',positions);
                         }
 
 
-                        // GET DIRECTION OF ALL CELLS PLAYER'S POPUPS OCCUPY, RELATIVE TO ME
+                        // GET DIRECTION OF ALL OTHER PLAYERS' POPUPS OCCUPY, RELATIVE TO ME
                         for(const pop of plyr2.popups) {
 
                           dir = undefined;
 
-                          let invalidPos2 = {
-                            x: undefined,
-                            y: undefined,
-                          }
+                          if (pop.state === true) {
 
-                          switch (pop.position) {
-                            case 'north':
-                              invalidPos2 = {
-                                x: invalidPos.x,
-                                y: invalidPos.y-1,
-                              }
-                              break;
-                            case 'northEast':
-                              invalidPos2 = {
-                                x: invalidPos.x+1,
-                                y: invalidPos.y-1,
-                              }
-                              break;
-                            case 'northWest':
-                              invalidPos2 = {
-                                x: invalidPos.x-1,
-                                y: invalidPos.y-1,
-                              }
-                              break;
-                            case 'south':
-                              invalidPos2 = {
-                                x: invalidPos.x,
-                                y: invalidPos.y+1,
-                              }
-                              break;
-                            case 'southEast':
-                              invalidPos2 = {
-                                x: invalidPos.x+1,
-                                y: invalidPos.y+1,
-                              }
-                              break;
-                            case 'southWest':
-                              invalidPos2 = {
-                                x: invalidPos.x-1,
-                                y: invalidPos.y+1,
-                              }
-                              break;
-                            case 'east':
-                              invalidPos2 = {
-                                x: invalidPos.x-1,
-                                y: invalidPos.y,
-                              }
-                              break;
-                            case 'west':
-                              invalidPos2 = {
-                                x: invalidPos.x+1,
-                                y: invalidPos.y,
-                              }
-                              break;
-                            default:
+                            let invalidPos2 = {
+                              x: undefined,
+                              y: undefined,
+                            }
+
+                            switch (pop.position) {
+                              case 'north':
+                                invalidPos2 = {
+                                  x: invalidPos.x,
+                                  y: invalidPos.y-1,
+                                }
+                                break;
+                              case 'northEast':
+                                invalidPos2 = {
+                                  x: invalidPos.x+1,
+                                  y: invalidPos.y-1,
+                                }
+                                break;
+                              case 'northWest':
+                                invalidPos2 = {
+                                  x: invalidPos.x-1,
+                                  y: invalidPos.y-1,
+                                }
+                                break;
+                              case 'south':
+                                invalidPos2 = {
+                                  x: invalidPos.x,
+                                  y: invalidPos.y+1,
+                                }
+                                break;
+                              case 'southEast':
+                                invalidPos2 = {
+                                  x: invalidPos.x+1,
+                                  y: invalidPos.y+1,
+                                }
+                                break;
+                              case 'southWest':
+                                invalidPos2 = {
+                                  x: invalidPos.x-1,
+                                  y: invalidPos.y+1,
+                                }
+                                break;
+                              case 'east':
+                                invalidPos2 = {
+                                  x: invalidPos.x-1,
+                                  y: invalidPos.y,
+                                }
+                                break;
+                              case 'west':
+                                invalidPos2 = {
+                                  x: invalidPos.x+1,
+                                  y: invalidPos.y,
+                                }
+                                break;
+                              default:
+
+                            }
+
+
+                            if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
+                              dir = 'north';
+                            }
+                            if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
+                              dir = 'northWest';
+                            }
+                            if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
+                              dir = 'west';
+                            }
+                            if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
+                              dir = 'southWest';
+                            }
+                            if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
+                              dir = 'south';
+                            }
+                            if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
+                              dir = 'southEast';
+                            }
+                            if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
+                              dir = 'east';
+                            }
+                            if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
+                              dir = 'northEast';
+                            }
+
+                            if (dir && positions.includes(dir) === true) {
+                              positions.splice(positions.indexOf(dir),1);
+                              // console.log('player popups (unset): human player popup position is close to player',plyr.number,' @ ',invalidPos2,'dir',dir);
+                              // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                            }
 
                           }
-
-
-                          if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
-                            dir = 'north';
-                          }
-                          if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
-                            dir = 'northWest';
-                          }
-                          if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
-                            dir = 'west';
-                          }
-                          if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
-                            dir = 'southWest';
-                          }
-                          if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
-                            dir = 'south';
-                          }
-                          if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
-                            dir = 'southEast';
-                          }
-                          if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
-                            dir = 'east';
-                          }
-                          if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
-                            dir = 'northEast';
-                          }
-
-                          if (dir && positions.includes(dir) === true) {
-                            positions.splice(positions.indexOf(dir),1);
-                            // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                          }
-
 
                         }
 
@@ -14935,7 +14978,7 @@ class App extends Component {
 
                       dir = undefined;
 
-                      if (popup2.msg !== popup.msg) {
+                      if (popup2.state === true) {
 
                         let myPos = plyr.currentPosition.cell.number;
                         let cellPos = popup2.cell.number;
@@ -15024,6 +15067,7 @@ class App extends Component {
                         }
                         if (dir && positions.includes(dir) === true) {
                           positions.splice(positions.indexOf(dir),1);
+                          // console.log('player popups (unset): cell popup position is close to player',plyr.number,' @ ',invalidPos2,'dir',dir);
                           // console.log('dont draw over player @',dir,'choose frome these position',positions);
                         }
 
@@ -15034,10 +15078,11 @@ class App extends Component {
 
                     }
 
-                    // console.log('positions',positions[0]);
+
+                    // console.log('new or postponed popup ',popup.msg,'position',positions[0]);
 
                     if (!positions[0]) {
-                      // console.log('no open positions for', popup.msg);
+                      // console.log('no open positions for new or postponed popup', popup.msg);
                       popup.state = false;
                       popup.count = 0;
                     } else {
@@ -15063,6 +15108,7 @@ class App extends Component {
 
                     let currentPopups = this.cellPopups.filter(x=>x.state === true);
 
+                    // HAVE ANY OTHER PLAYERS OR OTHER PLAYERS' POPUPS MOVED TO INVALID POSITIONS SINCE POPUP'S 1ST DRAW
                     for (const plyr2 of this.players) {
                       if (plyr2.ai.state !== true && plyr2.number !== plyr.number) {
                         let myPos = plyr.currentPosition.cell.number;
@@ -15095,11 +15141,13 @@ class App extends Component {
                         }
 
                         if (dir) {
+                          // console.log('player popups (set): human player position is close to player',plyr.number,' @ ',invalidPos,' dir ',dir);
                           dirs.push(dir);
                         }
 
 
                         for(const pop of plyr2.popups) {
+
 
                           dir = undefined;
                           let invalidPos2 = {
@@ -15190,15 +15238,16 @@ class App extends Component {
                           //   // console.log('dont draw over player @',dir,'choose frome these position',positions);
                           // }
                           if (dir) {
+                            // console.log('player popups (set): human player popup position is close to player',plyr.number,' @ ',invalidPos2,' dir ',dir);
                             dirs.push(dir);
                           }
 
                         }
 
-
                       }
                     }
 
+                    // HAVE ANY CELL POPUPS MOVED TO A NEARBY CELL TO ME
                     for (const popup2 of currentPopups) {
 
                       dir = undefined;
@@ -15291,6 +15340,7 @@ class App extends Component {
                       }
 
                       if (dir) {
+                        // console.log('player popups (set): cell popup position is close to player',plyr.number,' @ ',invalidPos2,' dir ',dir);
                         dirs.push(dir);
                       }
 
@@ -15398,11 +15448,14 @@ class App extends Component {
                     // console.log('dirs',dirs,'popup.position',popup.position);
                     // if (popup.position === dir ) {
                     if (dirs.find(x => x === popup.position) ) {
-                      for (const pop of plyr.popups) {
-                        pop.position = '';
-                        pop.state = false;
-                      }
-                      // console.log('reconsidering...',popup.msg);
+
+                      // for (const pop of plyr.popups) {
+                      //   pop.position = '';
+                      //   pop.state = false;
+                      // }
+                      plyr.popups.find(x => x.msg === popup.msg).position = '';
+                      plyr.popups.find(x => x.msg === popup.msg).state = false;
+                      // console.log("A new invalid direction === popup's position. reconsidering...",popup.msg);
                     }
                     else {
                       popup.img = this.popupImageRef[popup.msg]
@@ -15428,6 +15481,7 @@ class App extends Component {
 
         // OBSTACLES & BARRIERS
         // FALLING
+        // IN BOUNDS
         if (gridInfoCell.obstacle.state === true && gridInfoCell.obstacle.moving.falling.state === true) {
 
           let obstacleImg = this.obstacleImgs[gridInfoCell.obstacle.type]
@@ -15437,6 +15491,7 @@ class App extends Component {
 
           // console.log('falling obstacle',gridInfoCell.obstacle.moving.nextPosition,'x/y',x,y);
         }
+        // OUT OF BOUNDS
         for(const obstacle of this.obstaclesOutOfBoundsFall) {
           // here!! draw at origin cell x/y
           // if (x === 0 && y === 0) {
@@ -27979,6 +28034,27 @@ class App extends Component {
 
     this.placeItems({init: true, items: ''});
 
+
+    // CELL COLOR REF
+    let preCellColorRef = this.gridInfo.map(x => x = {x:x.number.x,y:x.number.y,color:''});
+    for(const cell of preCellColorRef) {
+      let colorCheckPass = false;
+      while (colorCheckPass === false) {
+        let randomColor = `rgb(${this.rnJesus(0,255)},${this.rnJesus(0,255)},${this.rnJesus(0,255)})`;
+        let colorsInUse = preCellColorRef.filter(x => x.color !== '').map(y => y === y.color);
+        if (colorsInUse.find(x => x === randomColor)) {
+          colorCheckPass = false;
+        }
+        else {
+          cell.color = randomColor;
+          colorCheckPass = true;
+        }
+      }
+    };
+    this.cellColorRef = preCellColorRef;
+
+
+
     for (var x = 0; x < this.gridWidth+1; x++) {
       for (var y = 0; y < this.gridWidth+1; y++) {
         let p = new Point();
@@ -34766,6 +34842,7 @@ class App extends Component {
 
   }
 
+
   toggleCameraModeUI = (mode) => {
 
     this.camera.mode = mode;
@@ -35602,6 +35679,7 @@ class App extends Component {
     this.camera.state = true;
     this.camera.fixed = true;
   }
+
 
   render() {
     return (
