@@ -2521,7 +2521,7 @@ class App extends Component {
     this.mouseOverCellSwitchOff = {
       state: false,
       count: 0,
-      limit: 50,
+      limit: 80,
     }
 
 
@@ -5794,14 +5794,14 @@ class App extends Component {
     // STAMINA!!
     if (player.stamina.current < player.stamina.max) {
 
-      player.stamina.current = player.stamina.current + .05;
+      player.stamina.current += .05;
       player.stamina.current = +(Math.round((player.stamina.current) + "e+" + 3)  + "e-" + 3);
 
       if (player.stamina.current >= player.stamina.max) {
         player.stamina.current = player.stamina.max;
       }
       if (player.stamina.current === 1) {
-        console.log('OUT OF STAMINA @ player update');
+        // console.log('OUT OF STAMINA @ player update');
         player.flanking = {
           checking: false,
           preFlankDirection: '',
@@ -6096,7 +6096,7 @@ class App extends Component {
         }
         this.showCellInfoBox = true;
       }
-    }
+    };
     // SWITCH OFF ATER TIME IF MOUSE MOVED OUT OF GRID
     if (this.mouseOverCellSwitchOff.state === true) {
       if (this.mouseOverCellSwitchOff.count < this.mouseOverCellSwitchOff.limit) {
@@ -6110,7 +6110,7 @@ class App extends Component {
         }
         this.showCellInfoBox = false;
       }
-    }
+    };
 
     // DEFLECTED PLAYER CAN'T DO ANYTHING!!
     if (player.success.deflected.state === false && player.dead.state !== true && this.camera.state !== true) {
@@ -8227,7 +8227,7 @@ class App extends Component {
 
                   // ATTACK DEFENDED!!
                   else {
-                    console.log('attack defended by ',player.target.occupant.player,'target defending?',this.players.[player.target.occupant.player-1].defending.state,'against plyr ',player.number);
+                    // console.log('attack defended by ',player.target.occupant.player,'target defending?',this.players.[player.target.occupant.player-1].defending.state,'against plyr ',player.number);
 
 
 
@@ -8576,13 +8576,13 @@ class App extends Component {
 
 
                       // PUSHBACK OPPONENT!
-                      // let shouldPushBackOpponent = 2;
-                      let shouldPushBackOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.pushBack*2);
+                      // let shouldPushBackDefender = 2;
+                      let shouldPushBackDefender = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.pushBack*2);
                       if (defenderParry === true) {
-                        shouldPushBackOpponent = 0;
+                        shouldPushBackDefender = 0;
                       }
-                      // shouldPushBackOpponent = 1;
-                      if (shouldPushBackOpponent === 1) {
+                      // shouldPushBackDefender = 1;
+                      if (shouldPushBackDefender === 1) {
                         // console.log('pushback opponent');
                         let canPushback = this.pushBack(this.players[player.target.occupant.player-1],player.direction);
 
@@ -8593,18 +8593,18 @@ class App extends Component {
 
 
                         // OPPONENT GUARD BREAK ROLL!
-                        // let deflectOpponent = this.rnJesus(1,1);
-                        let deflectOpponent = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.guardBreak);
+                        // let deflectDefender = this.rnJesus(1,1);
+                        let deflectDefender = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.guardBreak);
                         if (player.bluntAttack === true && defenderParry !== true) {
-                          deflectOpponent = 1;
+                          deflectDefender = 1;
                         }
-                        // deflectOpponent = 1
+                        // deflectDefender = 1
                         if (defenderParry === true) {
-                          deflectOpponent = 0;
+                          deflectDefender = 0;
                         }
 
                         // DEFLECT OPPONENT!
-                        if (deflectOpponent === 1) {
+                        if (deflectDefender === 1) {
                           console.log('opponent guard break player',player.target.occupant.player);
                           this.players[player.target.occupant.player-1].breakAnim.defend = {
                             state: true,
@@ -8612,16 +8612,7 @@ class App extends Component {
                             limit: player.breakAnim.defend.limit,
                           };
 
-                          this.players[player.target.occupant.player-1].defending = {
-                            state: false,
-                            count: 0,
-                            limit: this.players[player.target.occupant.player-1].defending.limit,
-                          }
-                          this.players[player.target.occupant.player-1].attacking = {
-                            state: false,
-                            count: 0,
-                            limit: this.players[player.target.occupant.player-1].attacking.limit,
-                          }
+                          this.attackedCancel(player);
 
                           this.players[player.target.occupant.player-1].success.deflected = {
                             state: true,
@@ -8918,7 +8909,7 @@ class App extends Component {
           player.action = 'defending';
           console.log('defend winding up',player.defending.count, 'player',player.number);
         } else if (player.defending.count >= player.defending.limit+1 && player.defending.state === false && player.defendDecay.state !== true) {
-          console.log('peak defend player',player.number,'defending true if stamina ok');
+          console.log('peak defend player',player.number);
 
           if (player.stamina.current - this.staminaCostRef.defend.peak >= 0) {
 
@@ -8978,8 +8969,7 @@ class App extends Component {
             // )
           }
 
-        }
-
+        };
         // DEFENSE DECAY!!
         if (player.defendDecay.state === true) {
           if (player.defendDecay.count < player.defendDecay.limit) {
@@ -9025,8 +9015,8 @@ class App extends Component {
         }
 
 
-        // PUSHING
-        // key release prepush check
+        // PUSHING/PULLING
+        // PUSH KEY RELEASE
         if (player.prePush.state === true && this.keyPressed[player.number-1][player.prePush.direction] !== true) {
           console.log('mid prePush but key released. reset prePush');
           player.prePush = {
@@ -9038,7 +9028,6 @@ class App extends Component {
             pusher: undefined,
           }
         }
-
         // key release prepull check??
         // if (player.prePull.state === true && this.keyPressed[player.number-1][player.prePush.direction] !== true) {
         //   console.log('mid prePull but key released. reset prePull');
@@ -10529,56 +10518,54 @@ class App extends Component {
       let newArray = [];
       let x = 0;
       let y = 0;
-      for (const [key, value] of Object.entries(this.popupImageRef)) {
-        newArray.push(key);
-      }
-      for (var i = 0; i < 20; i++) {
-        // if (!player.popups.find(x => x.msg === newArray[i])) {
-        //   player.popups.push(
-        //     {
-        //       state: false,
-        //       count: 0,
-        //       limit: 35,
-        //       type: '',
-        //       position: '',
-        //       msg: newArray[i],
-        //       img: '',
-        //       // cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
-        //     }
-        //   )
-        // }
-        // if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 4 && x.cell.number.x === 4)) {
-        //   this.cellPopups.push(
-        //     {
-        //       state: false,
-        //       count: 0,
-        //       limit: 35,
-        //       type: '',
-        //       position: '',
-        //       msg: newArray[i],
-        //       img: '',
-        //       cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
-        //     }
-        //   )
-        // }
-        if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 4 && x.cell.number.x === 3)) {
-          this.cellPopups.push(
-            {
-              state: false,
-              count: 0,
-              limit: 35,
-              type: '',
-              position: '',
-              msg: newArray[i],
-              color: '',
-              img: '',
-              cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 3)
-            }
-          )
-        }
-
-      }
-      // console.log('set popups',player.popups);
+      // for (const [key, value] of Object.entries(this.popupImageRef)) {
+      //   newArray.push(key);
+      // }
+      // for (var i = 0; i < 20; i++) {
+      //   // if (!player.popups.find(x => x.msg === newArray[i])) {
+      //   //   player.popups.push(
+      //   //     {
+      //   //       state: false,
+      //   //       count: 0,
+      //   //       limit: 35,
+      //   //       type: '',
+      //   //       position: '',
+      //   //       msg: newArray[i],
+      //   //       img: '',
+      //   //       // cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
+      //   //     }
+      //   //   )
+      //   // }
+      //   // if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 4 && x.cell.number.x === 4)) {
+      //   //   this.cellPopups.push(
+      //   //     {
+      //   //       state: false,
+      //   //       count: 0,
+      //   //       limit: 35,
+      //   //       type: '',
+      //   //       position: '',
+      //   //       msg: newArray[i],
+      //   //       img: '',
+      //   //       cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
+      //   //     }
+      //   //   )
+      //   // }
+      //   if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 4 && x.cell.number.x === 3)) {
+      //     this.cellPopups.push(
+      //       {
+      //         state: false,
+      //         count: 0,
+      //         limit: 35,
+      //         type: '',
+      //         position: '',
+      //         msg: newArray[i],
+      //         color: '',
+      //         img: '',
+      //         cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 3)
+      //       }
+      //     )
+      //   }
+      // };
     }
     //PLAYER
     if (player.popups.length > 0) {
@@ -11962,6 +11949,7 @@ class App extends Component {
 
 
                     }
+
                     // ATTACK DEFENDED!!
                     else {
 
@@ -12149,8 +12137,8 @@ class App extends Component {
 
 
                         // GUARD BREAK!
-                        // let deflectOpponent = this.rnJesus(1,3);
-                        let deflectOpponent = 0;
+                        // let deflectDefender = this.rnJesus(1,3);
+                        let deflectDefender = 0;
 
                         // PEAK DEFEND/PARRY!!
                         if (
@@ -12160,7 +12148,7 @@ class App extends Component {
                           this.players.[plyr.number-1].defendDecay.count < 4
                         ) {
                           console.log('peak bolt defend/parry');
-                          deflectOpponent = this.rnJesus(1,1);
+                          deflectDefender = 0;
 
 
                           this.players.[plyr.number-1].statusDisplay = {
@@ -12187,7 +12175,7 @@ class App extends Component {
                         // OFF PEAK DEFEND
                         else {
                           console.log('off peak bolt defend');
-                          deflectOpponent = this.rnJesus(1,this.players[plyr.number-1].crits.guardBreak);
+                          deflectDefender = this.rnJesus(1,this.players[plyr.number-1].crits.guardBreak);
 
                           this.players.[plyr.number-1].statusDisplay = {
                             state: true,
@@ -12211,7 +12199,7 @@ class App extends Component {
                         }
 
 
-                        if (deflectOpponent === 1) {
+                        if (deflectDefender === 1) {
                           this.players[plyr.number-1].breakAnim.defend = {
                             state: true,
                             count: 1,
@@ -36029,7 +36017,7 @@ class App extends Component {
                   overlay={
                     <Popover id={`popover-positioned-${'top'}`}>
                       <Popover.Content>
-                        <strong>Cell Info. Click a cell to show details.</strong>
+                        <strong>Click or mouse over a cell to get more info</strong>
                       </Popover.Content>
                     </Popover>
                   }
