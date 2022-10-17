@@ -2511,13 +2511,18 @@ class App extends Component {
       state: false,
       cell: undefined,
       count: 0,
-      threshold: 60,
+      threshold: 40,
     };
     this.mousedOverCellCoords = {
       x: undefined,
       y: undefined
     };
     this.mouseMoving = false;
+    this.mouseOverCellSwitchOff = {
+      state: false,
+      count: 0,
+      limit: 50,
+    }
 
 
     //LOOP & ANIMATION
@@ -3753,7 +3758,6 @@ class App extends Component {
                   this.clicked.cell = cell;
                   if (player) {
                     this.clicked.player = player;
-                    console.log('vvs1',player.number);
                   }
                   else {
                     this.clicked.player = undefined;
@@ -3770,7 +3774,6 @@ class App extends Component {
                 count: 0,
                 threshold: this.mouseOverCell.threshold,
               };
-              // this.clicked.player = undefined;
             }
           }
           else {
@@ -3781,7 +3784,6 @@ class App extends Component {
               count: 0,
               threshold: this.mouseOverCell.threshold,
             };
-            // this.clicked.player = undefined;
           }
 
 
@@ -3795,6 +3797,30 @@ class App extends Component {
       if (type === "click") {
           this.showCellInfoBox = false;
       }
+      else {
+        if (this.showCellInfoBox === true) {
+          if (this.mouseOverCellSwitchOff.state !== true) {
+            this.mouseOverCellSwitchOff.state = true;
+          }
+          // if (this.mouseOverCellSwitchOff.state === true) {
+          //   if (this.mouseOverCellSwitchOff.count < this.mouseOverCellSwitchOff.limit) {
+          //     this.mouseOverCellSwitchOff.count++;
+          //   }
+          //   if (this.mouseOverCellSwitchOff.count >= this.mouseOverCellSwitchOff.limit) {
+          //     this.mouseOverCellSwitchOff = {
+          //       state: false,
+          //       count: 0,
+          //       limit: this.mouseOverCellSwitchOff.limit,
+          //     }
+          //     this.showCellInfoBox = false;
+          //   }
+          // }
+        }
+
+
+
+      }
+      // this.showCellInfoBox = false;
 
       // this.clicked.cell = {
       //   number:{
@@ -6058,19 +6084,33 @@ class App extends Component {
         this.mouseOverCell.count = 0;
         this.mouseOverCell.state = true;
         this.clicked.cell = this.mouseOverCell.cell;
+        let plyrPresent = false;
         for(const plyr of this.players) {
           if (plyr.currentPosition.cell.number.x === this.mouseOverCell.cell.number.x && plyr.currentPosition.cell.number.y === this.mouseOverCell.cell.number.y) {
             this.clicked.player = plyr;
-            console.log('vvs2',plyr.number);
+            plyrPresent = true;
           }
-          else {
-            this.clicked.player = undefined;
-          }
+        }
+        if (plyrPresent !== true) {
+          this.clicked.player = undefined;
         }
         this.showCellInfoBox = true;
       }
     }
-
+    // SWITCH OFF ATER TIME IF MOUSE MOVED OUT OF GRID
+    if (this.mouseOverCellSwitchOff.state === true) {
+      if (this.mouseOverCellSwitchOff.count < this.mouseOverCellSwitchOff.limit) {
+        this.mouseOverCellSwitchOff.count++;
+      }
+      if (this.mouseOverCellSwitchOff.count >= this.mouseOverCellSwitchOff.limit) {
+        this.mouseOverCellSwitchOff = {
+          state: false,
+          count: 0,
+          limit: this.mouseOverCellSwitchOff.limit,
+        }
+        this.showCellInfoBox = false;
+      }
+    }
 
     // DEFLECTED PLAYER CAN'T DO ANYTHING!!
     if (player.success.deflected.state === false && player.dead.state !== true && this.camera.state !== true) {
@@ -9842,7 +9882,6 @@ class App extends Component {
         }
 
 
-
         // CAN READ MOVE INPUTS!!
         if (
           player.attacking.state === false &&
@@ -10382,7 +10421,6 @@ class App extends Component {
         }
 
 
-
         // BREAK FROM PULLED, PUSHED COMPLETE
         if (breakPulledPushed === true) {
           console.log('player ',player.number,' was being pre-pulled/pushed by ',plyrPullPushedPlyr,' break pulling/pushing and deflect?');
@@ -10437,7 +10475,6 @@ class App extends Component {
       }
 
 
-
       // DISPLAY ATTACK AND DEFENSE SUCCESS!
       if (player.success.attackSuccess.state === true) {
         if (player.success.attackSuccess.count < player.success.attackSuccess.limit) {
@@ -10467,8 +10504,6 @@ class App extends Component {
     } else {
       // console.log('sorry no key presses right now');
     }
-
-
 
 
     // STATUS DISPLAY STEPPER!!
@@ -10624,6 +10659,7 @@ class App extends Component {
 
 
     // CAMERA
+    // SWITCH ON
     if (this.setInitZoom.state === true) {
 
 
@@ -10658,8 +10694,7 @@ class App extends Component {
         }
 
     }
-
-    //CAMERA INPUT MODE SWITCH
+    //INPUT MODE SWITCH
     if (this.toggleCameraMode === false && this.camera.state === true) {
       this.camera.startCount = 0;
     }
@@ -10689,15 +10724,13 @@ class App extends Component {
 
 
     }
-
-
-    // CAMERA INDICATOR COUNTER
+    //INDICATOR COUNTER
     if (this.camera.limits.state.zoom === true || this.camera.limits.state.pan === true) {
       if (this.camera.limits.state.count < this.camera.limits.state.limit) {
         this.camera.limits.state.count++
       }
 
-    }
+    };
     if (this.camera.limits.state.zoom === true || this.camera.limits.state.pan === true) {
       if (this.camera.limits.state.count >= this.camera.limits.state.limit) {
         this.camera.limits.state.count = 0;
@@ -10705,10 +10738,8 @@ class App extends Component {
         this.camera.limits.state.pan = false;
       }
 
-    }
-
-
-    //CAMERA INPUT MODE CONTROLS
+    };
+    //INPUT MODE CONTROLS
     if (this.camera.state === true && this.camera.instructionType === 'default') {
 
       let setFocus = false;
@@ -11042,10 +11073,8 @@ class App extends Component {
       }
 
 
-    }
-
-
-    // RESET CAMERA
+    };
+    // RESET
     if (this.resetCameraSwitch === true) {
       // console.log('resetting camera');
 
@@ -11127,9 +11156,7 @@ class App extends Component {
 
       // this.setCameraFocus('reset', canvas, context, canvas2, context2);
 
-    }
-
-
+    };
     // AUTO CAMERA
     if (this.camera.state !== true && this.camera.fixed !== true) {
 
@@ -11696,6 +11723,7 @@ class App extends Component {
 
 
     // MENU
+    // add count up then turn on
     if (player.ai.state !== true && this.keyPressed[player.number-1].cycleWeapon === true && this.keyPressed[player.number-1].cycleArmor === true) {
       // toggle the menu here
     }
