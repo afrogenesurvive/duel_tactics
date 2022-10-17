@@ -16,18 +16,7 @@ const CellInfo = props => {
 
   // console.log('cell info :',props.cell);
 
-  let lvlData;
-  switch (props.cell.levelData.charAt(0)) {
-    case "x":
-      lvlData = "free space"
-    break;
-    case "y":
-      lvlData = "obstacle height 1"
-    break;
-    case "z":
-      lvlData = "obstacle height 2"
-    break;
-  }
+
 
   return (
     <div className="cellInfoBox">
@@ -45,28 +34,65 @@ const CellInfo = props => {
       <ul className="cellInfoList">
         <li className="cellInfoListItem">
           <p className="cellInfoText">
-            Coords: {props.cell.center.x.toFixed(2)}, {props.cell.center.y.toFixed(2)}
+            Coords: {props.clicked.cell.center.x.toFixed(2)}, {props.clicked.cell.center.y.toFixed(2)}
           </p>
         </li>
         <li className="cellInfoListItem">
           <p className="cellInfoText">
-            No: {props.cell.number.x}, {props.cell.number.y}
+            No: {props.clicked.cell.number.x}, {props.clicked.cell.number.y}
           </p>
         </li>
-        {props.cell.item.name !== "" && (
+
+        {props.clicked.player && (
+          <li className="cellInfoListItem">
+            <OverlayTrigger
+              placement={'left'}
+              overlay={
+                <Popover id={`popover-positioned-${'left'}`}>
+                  <Popover.Content>
+
+                    <ul className="popoverList">
+                      <li>
+                        <p>No: {props.clicked.player.number}</p>
+                      </li>
+                      <li>
+                        <p>HP: {props.clicked.player.hp}</p>
+                      </li>
+                      <li>
+                        <p>A.I: {props.clicked.player.ai.state.toString()}</p>
+                      </li>
+                      {props.clicked.player.ai.state === true && (
+                        <li>
+                          <p>Mission: {props.clicked.player.ai.mission}</p>
+                        </li>
+                      )}
+                    </ul>
+                  </Popover.Content>
+                </Popover>
+              }
+            >
+            <p className="cellInfoText">
+              Player: #{props.clicked.player.number}
+            </p>
+            </OverlayTrigger>
+
+          </li>
+        )}
+
+        {props.clicked.cell.item.name !== "" && (
           <li className="cellInfoListItem">
           <OverlayTrigger
             placement={'left'}
             overlay={
               <Popover id={`popover-positioned-${'left'}`}>
                 <Popover.Content>
-                  <strong className="popoverHead">{props.cell.item.name} :</strong>
+                  <strong className="popoverHead">{props.clicked.cell.item.name} :</strong>
                   <ul className="popoverList">
                     <li>
-                      <p>Type: {props.cell.item.type}</p>
+                      <p>Type: {props.clicked.cell.item.type}</p>
                     </li>
                     <li>
-                      <p>Effect: {props.cell.item.effect}</p>
+                      <p>Effect: {props.clicked.cell.item.effect}</p>
                     </li>
                   </ul>
                 </Popover.Content>
@@ -74,7 +100,7 @@ const CellInfo = props => {
             }
           >
           <p className="cellInfoText">
-            Item: {props.cell.item.name}
+            Item: {props.clicked.cell.item.name}
           </p>
           </OverlayTrigger>
 
@@ -84,12 +110,12 @@ const CellInfo = props => {
 
         <li className="cellInfoListItem">
           <p className="cellInfoText">
-            Level Data: {props.cell.levelData}
+            Level Data: {props.clicked.cell.levelData}
           </p>
         </li>
         <li className="cellInfoListItem">
           <p className="cellInfoText">
-            Terrain: {props.cell.terrain.name}
+            Terrain: {props.clicked.cell.terrain.name}
           </p>
         </li>
         <li className="cellInfoListItem">
@@ -98,45 +124,45 @@ const CellInfo = props => {
             overlay={
               <Popover id={`popover-positioned-${'left'}`}>
                 <Popover.Content>
-                  <strong>{props.cell.elevation.type}</strong>
+                  <strong>{props.clicked.cell.elevation.type}</strong>
                 </Popover.Content>
               </Popover>
             }
           >
           <p className="cellInfoText">
-            Elevation: {props.cell.elevation.number}
+            Elevation: {props.clicked.cell.elevation.number}
           </p>
           </OverlayTrigger>
 
         </li>
         <li className="cellInfoListItem">
           <p className="cellInfoText">
-            Void: {props.cell.void.state.toString()}
+            Void: {props.clicked.cell.void.state.toString()}
           </p>
         </li>
-        {props.cell.obstacle.state === true && (
+        {props.clicked.cell.obstacle.state === true && (
           <li className="cellInfoListItem">
             <OverlayTrigger
               placement={'left'}
               overlay={
                 <Popover id={`popover-positioned-${'left'}`}>
                   <Popover.Content>
-                    <strong className="popoverHead">{props.cell.obstacle.name} :</strong>
+                    <strong className="popoverHead">{props.clicked.cell.obstacle.name} :</strong>
                     <ul className="popoverList">
                       <li>
-                        <p>Type: {props.cell.obstacle.type}</p>
+                        <p>Type: {props.clicked.cell.obstacle.type}</p>
                       </li>
                       <li>
-                        <p>HP: {props.cell.obstacle.hp}</p>
+                        <p>HP: {props.clicked.cell.obstacle.hp}</p>
                       </li>
                       <li>
-                        <p>Height: {props.cell.obstacle.height}</p>
+                        <p>Height: {props.clicked.cell.obstacle.height}</p>
                       </li>
                       <li>
-                        <p>Weight: {props.cell.obstacle.weight}</p>
+                        <p>Weight: {props.clicked.cell.obstacle.weight}</p>
                       </li>
                       <li>
-                        <p>Destruct: {props.cell.obstacle.destructible.state.toString()}</p>
+                        <p>Destruct: {props.clicked.cell.obstacle.destructible.state.toString()}</p>
                       </li>
                     </ul>
                   </Popover.Content>
@@ -144,36 +170,36 @@ const CellInfo = props => {
               }
             >
             <p className="cellInfoText">
-              Obstacle: {props.cell.obstacle.name}
+              Obstacle: {props.clicked.cell.obstacle.name}
             </p>
             </OverlayTrigger>
 
           </li>
         )}
 
-        {props.cell.barrier.state === true && (
+        {props.clicked.cell.barrier.state === true && (
           <li className="cellInfoListItem">
             <OverlayTrigger
               placement={'left'}
               overlay={
                 <Popover id={`popover-positioned-${'left'}`}>
                   <Popover.Content>
-                    <strong className="popoverHead">{props.cell.barrier.name} :</strong>
+                    <strong className="popoverHead">{props.clicked.cell.barrier.name} :</strong>
                     <ul className="popoverList">
                       <li>
-                        <p>Type: {props.cell.barrier.type}</p>
+                        <p>Type: {props.clicked.cell.barrier.type}</p>
                       </li>
                       <li>
-                        <p>Position: {props.cell.barrier.position}</p>
+                        <p>Position: {props.clicked.cell.barrier.position}</p>
                       </li>
                       <li>
-                        <p>HP: {props.cell.barrier.hp}</p>
+                        <p>HP: {props.clicked.cell.barrier.hp}</p>
                       </li>
                       <li>
-                        <p>Height: {props.cell.barrier.height}</p>
+                        <p>Height: {props.clicked.cell.barrier.height}</p>
                       </li>
                       <li>
-                        <p>Destruct: {props.cell.barrier.destructible.state.toString()}</p>
+                        <p>Destruct: {props.clicked.cell.barrier.destructible.state.toString()}</p>
                       </li>
                     </ul>
                   </Popover.Content>
@@ -181,7 +207,7 @@ const CellInfo = props => {
               }
             >
             <p className="cellInfoText">
-              Barrier: {props.cell.barrier.name}
+              Barrier: {props.clicked.cell.barrier.name}
             </p>
 
 
@@ -190,10 +216,10 @@ const CellInfo = props => {
           </li>
         )}
 
-        {props.cell.rubble == true && (
+        {props.clicked.cell.rubble == true && (
           <li className="cellInfoListItem">
             <p className="cellInfoText">
-              Rubble: {props.cell.rubble.toString()}
+              Rubble: {props.clicked.cell.rubble.toString()}
             </p>
           </li>
         )}

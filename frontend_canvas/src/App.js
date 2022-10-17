@@ -2207,140 +2207,143 @@ class App extends Component {
       },
     ]
     this.clicked = {
-      number:{
-        x:0,
-        y:0
-      },
-      center:{
-        x:0,
-        y:0
-      },
-      drawCenter:{
-        x:0,
-        y:0
-      },
-      vertices: [
-        {
+      cell: {
+        number:{
           x:0,
           y:0
         },
-        {
+        center:{
           x:0,
           y:0
         },
-        {
+        drawCenter:{
           x:0,
           y:0
         },
-        {
-          x:0,
-          y:0
-        },
-      ],
-      side: 0,
-      levelData: '',
-      edge: {
-        state: false,
-        side: ''
-      },
-      terrain: {
-        name: '',
-        type: '',
-        effect: ''
-      },
-      item: {
-        name: '',
-        type: '',
-        subType: '',
-        effect: '',
-        initDrawn: false
-      },
-      void: {
-        state: false
-      },
-      obstacle: {
-        state: false,
-        name: '',
-        type: '',
-        hp: 2,
-        destructible: {
+        vertices: [
+          {
+            x:0,
+            y:0
+          },
+          {
+            x:0,
+            y:0
+          },
+          {
+            x:0,
+            y:0
+          },
+          {
+            x:0,
+            y:0
+          },
+        ],
+        side: 0,
+        levelData: '',
+        edge: {
           state: false,
-          weapons: [],
-          leaveRubble: false,
+          side: ''
         },
-        locked: {
-          state: false,
-          key: '',
+        terrain: {
+          name: '',
+          type: '',
+          effect: ''
         },
-        weight: 1,
-        height: 0.5,
-        items: [],
-        effects: [],
-        moving: {
+        item: {
+          name: '',
+          type: '',
+          subType: '',
+          effect: '',
+          initDrawn: false
+        },
+        void: {
+          state: false
+        },
+        obstacle: {
           state: false,
-          step: 0,
-          origin: {
-            number: {
-              x: undefined,
-              y: undefined,
-            },
-            center: {
-              x: undefined,
-              y: undefined,
-            },
-          },
-          destination: {
-            number: {
-              x: undefined,
-              y: undefined,
-            },
-            center: {
-              x: undefined,
-              y: undefined,
-            },
-          },
-          currentPosition: {
-            x: undefined,
-            y: undefined,
-          },
-          nextPosition: {
-            x: undefined,
-            y: undefined,
-          },
-          moveSpeed: 0,
-          pushable: true,
-          pushed: false,
-          pusher: undefined,
-          falling: {
+          name: '',
+          type: '',
+          hp: 2,
+          destructible: {
             state: false,
-            count: 0,
-            limit: 10,
+            weapons: [],
+            leaveRubble: false,
           },
-        }
-      },
-      barrier: {
-        state: false,
-        name: '',
-        type: '',
-        hp: 2,
-        destructible: {
-          state: false,
-          weapons: [],
-          leaveRubble: false,
+          locked: {
+            state: false,
+            key: '',
+          },
+          weight: 1,
+          height: 0.5,
+          items: [],
+          effects: [],
+          moving: {
+            state: false,
+            step: 0,
+            origin: {
+              number: {
+                x: undefined,
+                y: undefined,
+              },
+              center: {
+                x: undefined,
+                y: undefined,
+              },
+            },
+            destination: {
+              number: {
+                x: undefined,
+                y: undefined,
+              },
+              center: {
+                x: undefined,
+                y: undefined,
+              },
+            },
+            currentPosition: {
+              x: undefined,
+              y: undefined,
+            },
+            nextPosition: {
+              x: undefined,
+              y: undefined,
+            },
+            moveSpeed: 0,
+            pushable: true,
+            pushed: false,
+            pusher: undefined,
+            falling: {
+              state: false,
+              count: 0,
+              limit: 10,
+            },
+          }
         },
-        locked: {
+        barrier: {
           state: false,
-          key: '',
+          name: '',
+          type: '',
+          hp: 2,
+          destructible: {
+            state: false,
+            weapons: [],
+            leaveRubble: false,
+          },
+          locked: {
+            state: false,
+            key: '',
+          },
+          position: '',
+          height: 1,
         },
-        position: '',
-        height: 1,
+        elevation: {
+          number: 0,
+          type: '',
+          position: '',
+        },
+        rubble: false,
       },
-      elevation: {
-        number: 0,
-        type: '',
-        position: '',
-      },
-      rubble: false,
+      player: undefined,
     };
     this.turnCheckerDirection = '';
 
@@ -2504,6 +2507,17 @@ class App extends Component {
       type: 'start',
     }
     this.showCellInfoBox = false;
+    this.mouseOverCell = {
+      state: false,
+      cell: undefined,
+      count: 0,
+      threshold: 60,
+    };
+    this.mousedOverCellCoords = {
+      x: undefined,
+      y: undefined
+    };
+    this.mouseMoving = false;
 
 
     //LOOP & ANIMATION
@@ -2670,7 +2684,6 @@ class App extends Component {
     this.obstacleImgs = {};
     this.barrierImgs = {};
     this.cellColorRef = [];
-
 
 
     // CAMERA
@@ -3654,7 +3667,7 @@ class App extends Component {
 
     canvas2.addEventListener("mousemove", e => {
 
-      // this.getCanvasClick(canvas2, e,"mousemove")
+      this.getCanvasClick(canvas2, e,"mousemove")
     });
 
 
@@ -3689,163 +3702,247 @@ class App extends Component {
       if (pip === true) {
         insideGrid = true;
         // console.log("clicked a cell",cell.center,"x: " + x + " y: " + y);
-        this.clicked = cell;
-        this.showCellInfoBox = true;
+        let player = undefined;
+        for(const plyr of this.players) {
+          if (plyr.currentPosition.cell.number.x === cell.number.x && plyr.currentPosition.cell.number.y === cell.number.y) {
+            player = plyr;
+          }
+        }
+        if (type === 'click') {
+            this.clicked.cell = cell;
+            if (player) {
+              this.clicked.player = player;
+            }
+            else {
+              this.clicked.player = undefined;
+            }
+            this.showCellInfoBox = true;
+            this.mouseOverCell = {
+              state: true,
+              // state: false,
+              cell: cell,
+              // cell: undefined,
+              count: 0,
+              threshold: this.mouseOverCell.threshold,
+            };
+        }
+
 
         if (type === "mousemove") {
-          this.cellsToHighlight2.push(
-            {
-              number: {
-                x: cell.number.x,
-                y: cell.number.y,
-              },
+          this.mouseMoving = true;
+          this.mousedOverCellCoords = {
+            x: newX,
+            y: newY
+          }
+
+          if (this.mouseOverCell.cell !== undefined) {
+            if (this.mouseOverCell.cell.number.x === cell.number.x && this.mouseOverCell.cell.number.y === cell.number.y) {
+
+              if (this.mouseOverCell.state === true) {
+                // console.log('new moused over cell is the same as previous but already true. do thing');
+              }
+              else {
+
+                if (this.mouseOverCell.count < this.mouseOverCell.threshold) {
+                  this.mouseOverCell.count++;
+
+                }
+                if (this.mouseOverCell.count >= this.mouseOverCell.threshold) {
+                  this.mouseOverCell.count = 0;
+                  this.mouseOverCell.state = true;
+                  this.clicked.cell = cell;
+                  if (player) {
+                    this.clicked.player = player;
+                    console.log('vvs1',player.number);
+                  }
+                  else {
+                    this.clicked.player = undefined;
+                  }
+                  this.showCellInfoBox = true;
+                }
+              }
+            }
+            else {
+
+              this.mouseOverCell = {
+                state: false,
+                cell: cell,
+                count: 0,
+                threshold: this.mouseOverCell.threshold,
+              };
+              // this.clicked.player = undefined;
+            }
+          }
+          else {
+
+            this.mouseOverCell = {
+              state: false,
+              cell: cell,
               count: 0,
-              limit: 15,
-            },
-          )
+              threshold: this.mouseOverCell.threshold,
+            };
+            // this.clicked.player = undefined;
+          }
+
+
+
         }
       }
     }
     if ( insideGrid === false ) {
-      console.log("clicked the canvas out of bounds", 'x: ',x,'y: ',y);
-      // console.log('clicked outside the grid');
-      this.showCellInfoBox = false;
-      this.clicked = {
-        number:{
-          x:0,
-          y:0
-        },
-        center:{
-          x:0,
-          y:0
-        },
-        drawCenter:{
-          x:0,
-          y:0
-        },
-        vertices: [
-          {
-            x:0,
-            y:0
-          },
-          {
-            x:0,
-            y:0
-          },
-          {
-            x:0,
-            y:0
-          },
-          {
-            x:0,
-            y:0
-          },
-        ],
-        side: 0,
-        levelData: '',
-        edge: {
-          state: false,
-          side: ''
-        },
-        terrain: {
-          name: '',
-          type: '',
-          effect: ''
-        },
-        item: {
-          name: '',
-          type: '',
-          subType: '',
-          effect: '',
-          initDrawn: false
-        },
-        void: {
-          state: false
-        },
-        obstacle: {
-          state: false,
-          name: '',
-          type: '',
-          hp: 2,
-          destructible: {
-            state: false,
-            weapons: [],
-            leaveRubble: false,
-          },
-          locked: {
-            state: false,
-            key: '',
-          },
-          weight: 1,
-          height: 0.5,
-          items: [],
-          effects: [],
-          moving: {
-            state: false,
-            step: 0,
-            origin: {
-              number: {
-                x: undefined,
-                y: undefined,
-              },
-              center: {
-                x: undefined,
-                y: undefined,
-              },
-            },
-            destination: {
-              number: {
-                x: undefined,
-                y: undefined,
-              },
-              center: {
-                x: undefined,
-                y: undefined,
-              },
-            },
-            currentPosition: {
-              x: undefined,
-              y: undefined,
-            },
-            nextPosition: {
-              x: undefined,
-              y: undefined,
-            },
-            moveSpeed: 0,
-            pushable: true,
-            pushed: false,
-            pusher: undefined,
-            falling: {
-              state: false,
-              count: 0,
-              limit: 10,
-            },
-          }
-        },
-        barrier: {
-          state: false,
-          name: '',
-          type: '',
-          hp: 2,
-          destructible: {
-            state: false,
-            weapons: [],
-            leaveRubble: false,
-          },
-          locked: {
-            state: false,
-            key: '',
-          },
-          position: '',
-          height: 1,
-        },
-        elevation: {
-          number: 0,
-          type: '',
-          position: '',
-        },
-        rubble: false,
+      // console.log("clicked or moused over the canvas out of bounds", 'x: ',x,'y: ',y);
+      // console.log('clicked or mouse moved outside the grid');
+      if (type === "click") {
+          this.showCellInfoBox = false;
       }
+
+      // this.clicked.cell = {
+      //   number:{
+      //     x:0,
+      //     y:0
+      //   },
+      //   center:{
+      //     x:0,
+      //     y:0
+      //   },
+      //   drawCenter:{
+      //     x:0,
+      //     y:0
+      //   },
+      //   vertices: [
+      //     {
+      //       x:0,
+      //       y:0
+      //     },
+      //     {
+      //       x:0,
+      //       y:0
+      //     },
+      //     {
+      //       x:0,
+      //       y:0
+      //     },
+      //     {
+      //       x:0,
+      //       y:0
+      //     },
+      //   ],
+      //   side: 0,
+      //   levelData: '',
+      //   edge: {
+      //     state: false,
+      //     side: ''
+      //   },
+      //   terrain: {
+      //     name: '',
+      //     type: '',
+      //     effect: ''
+      //   },
+      //   item: {
+      //     name: '',
+      //     type: '',
+      //     subType: '',
+      //     effect: '',
+      //     initDrawn: false
+      //   },
+      //   void: {
+      //     state: false
+      //   },
+      //   obstacle: {
+      //     state: false,
+      //     name: '',
+      //     type: '',
+      //     hp: 2,
+      //     destructible: {
+      //       state: false,
+      //       weapons: [],
+      //       leaveRubble: false,
+      //     },
+      //     locked: {
+      //       state: false,
+      //       key: '',
+      //     },
+      //     weight: 1,
+      //     height: 0.5,
+      //     items: [],
+      //     effects: [],
+      //     moving: {
+      //       state: false,
+      //       step: 0,
+      //       origin: {
+      //         number: {
+      //           x: undefined,
+      //           y: undefined,
+      //         },
+      //         center: {
+      //           x: undefined,
+      //           y: undefined,
+      //         },
+      //       },
+      //       destination: {
+      //         number: {
+      //           x: undefined,
+      //           y: undefined,
+      //         },
+      //         center: {
+      //           x: undefined,
+      //           y: undefined,
+      //         },
+      //       },
+      //       currentPosition: {
+      //         x: undefined,
+      //         y: undefined,
+      //       },
+      //       nextPosition: {
+      //         x: undefined,
+      //         y: undefined,
+      //       },
+      //       moveSpeed: 0,
+      //       pushable: true,
+      //       pushed: false,
+      //       pusher: undefined,
+      //       falling: {
+      //         state: false,
+      //         count: 0,
+      //         limit: 10,
+      //       },
+      //     }
+      //   },
+      //   barrier: {
+      //     state: false,
+      //     name: '',
+      //     type: '',
+      //     hp: 2,
+      //     destructible: {
+      //       state: false,
+      //       weapons: [],
+      //       leaveRubble: false,
+      //     },
+      //     locked: {
+      //       state: false,
+      //       key: '',
+      //     },
+      //     position: '',
+      //     height: 1,
+      //   },
+      //   elevation: {
+      //     number: 0,
+      //     type: '',
+      //     position: '',
+      //   },
+      //   rubble: false,
+      // };
+      // this.clicked.player = undefined;
+      this.mouseOverCell = {
+        state: false,
+        cell: undefined,
+        count: 0,
+        threshold: this.mouseOverCell.threshold,
+      };
+    }
+
+    if (type === "mousemove") {
+      this.mouseMoving = false;
     }
 
   }
@@ -5948,6 +6045,29 @@ class App extends Component {
           let index = this.cellsToHighlight2.indexOf(cell3)
           this.cellsToHighlight2.splice(index,1)
         }
+      }
+    };
+    // MOUSED OVER CELL
+    if (this.mouseOverCell.cell && this.mouseOverCell.state === false && this.mouseMoving !== true) {
+
+      if (this.mouseOverCell.count < this.mouseOverCell.threshold) {
+        this.mouseOverCell.count++;
+        // console.log('mouse not moving but moused over cell is counting',this.mouseOverCell.count);
+      }
+      if (this.mouseOverCell.count >= this.mouseOverCell.threshold) {
+        this.mouseOverCell.count = 0;
+        this.mouseOverCell.state = true;
+        this.clicked.cell = this.mouseOverCell.cell;
+        for(const plyr of this.players) {
+          if (plyr.currentPosition.cell.number.x === this.mouseOverCell.cell.number.x && plyr.currentPosition.cell.number.y === this.mouseOverCell.cell.number.y) {
+            this.clicked.player = plyr;
+            console.log('vvs2',plyr.number);
+          }
+          else {
+            this.clicked.player = undefined;
+          }
+        }
+        this.showCellInfoBox = true;
       }
     }
 
@@ -9644,7 +9764,17 @@ class App extends Component {
                   }
                   nextPosition = this.lineCrementer(player);
                   player.nextPosition = nextPosition;
-                } else {
+
+                  if (
+                    this.mouseOverCell.state === true &&
+                    this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
+                    this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
+                  ) {
+                    this.clicked.player = undefined;
+                  }
+
+                }
+                else {
                   // console.log('cancel flanking');
                 }
 
@@ -9785,6 +9915,14 @@ class App extends Component {
                       }
                       nextPosition = this.lineCrementer(player);
                       player.nextPosition = nextPosition;
+
+                      if (
+                        this.mouseOverCell.state === true &&
+                        this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
+                        this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
+                      ) {
+                        this.clicked.player = undefined;
+                      }
 
                     }
                     else {
@@ -9929,6 +10067,14 @@ class App extends Component {
                     nextPosition = this.lineCrementer(player);
                     player.nextPosition = nextPosition;
 
+                    if (
+                      this.mouseOverCell.state === true &&
+                      this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
+                      this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
+                    ) {
+                      this.clicked.player = undefined;
+                    }
+
                   }
                   else {
 
@@ -10019,6 +10165,15 @@ class App extends Component {
                           nextPosition = this.lineCrementer(player);
                           // nextPosition = this.jumpCrementer(player);
                           player.nextPosition = nextPosition;
+
+                          if (
+                            this.mouseOverCell.state === true &&
+                            this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
+                            this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
+                          ) {
+                            this.clicked.player = undefined;
+                          }
+
                         } else {
                           // console.log('can only jump over voids or deep water cell 2');
                           this.players[player.number-1].jumping.checking = false;
@@ -12418,6 +12573,18 @@ class App extends Component {
               context.stroke();
             }
           }
+        }
+
+        // MOUSED OVER CELL
+        if (this.mouseOverCell.state === true && x === this.mouseOverCell.cell.number.x && y === this.mouseOverCell.cell.number.y) {
+          context.lineWidth = 5;
+          context.beginPath();
+          for (const vertex of vertices) {
+            context.strokeStyle = 'orange';
+            context.lineTo(vertex.x, vertex.y);
+          }
+          context.closePath();
+          context.stroke();
         }
 
 
@@ -15584,8 +15751,6 @@ class App extends Component {
             }
           }
         }
-
-        // STATIONARY BARRIERS
         for(const cell of this.obstacleItemsToDrop) {
           // console.log('obstacleItemsToDrop',cell);
           if (gridInfoCell.number.x === cell.target.x && gridInfoCell.number.y === cell.target.y) {
@@ -15602,6 +15767,30 @@ class App extends Component {
           }
         }
 
+        // STATIONARY BARRIERS
+        if (gridInfoCell.barrier.state === true && gridInfoCell.void.state !== true) {
+
+
+          let hide = false;
+
+          if (this.obstacleBarrierToDestroy.length > 0) {
+            for(const cell of this.obstacleBarrierToDestroy) {
+              if (cell.type === 'barrier' && gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y && gridInfoCell.barrier.name === cell.cell.barrier.name) {
+                hide = true;
+              }
+            }
+          }
+
+          if (hide !== true) {
+
+            let barrierImg = this.barrierImgs[gridInfoCell.barrier.type][gridInfoCell.barrier.position];
+            context.drawImage(barrierImg, iso.x - offset.x, iso.y - barrierImg.height, barrierImg.width, barrierImg.height);
+
+          }
+
+
+
+        }
 
 
         // PROJECTILES
@@ -35824,7 +36013,7 @@ class App extends Component {
             )}
             {this.showCellInfoBox === true && (
               <CellInfo
-                cell={this.clicked}
+                clicked={this.clicked}
                 close={this.toggleCellInfoBox}
               />
             )}
