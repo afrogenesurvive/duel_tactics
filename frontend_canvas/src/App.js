@@ -3817,7 +3817,14 @@ class App extends Component {
           // }
         }
 
-
+        if (this.mouseOverCell.state !== true && this.mouseOverCell.count > 1) {
+          this.mouseOverCell = {
+            state: false,
+            cell: undefined,
+            count: 0,
+            threshold: this.mouseOverCell.threshold,
+          };
+        }
 
       }
       // this.showCellInfoBox = false;
