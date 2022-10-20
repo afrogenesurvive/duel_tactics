@@ -8810,7 +8810,7 @@ class App extends Component {
                           predeflect: player.success.deflected.predeflect,
                           type: 'attack'
                         }
-                        player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+                        player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
 
 
                         if (this.aiDeflectedCheck.includes(player.number) !== true) {
@@ -23469,7 +23469,7 @@ class App extends Component {
                          predeflect: player.success.deflected.predeflect,
                          type: 'attack'
                        }
-                       player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+                       player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
 
 
                        if (this.aiDeflectedCheck.includes(player.number) !== true) {
@@ -23514,7 +23514,7 @@ class App extends Component {
                        predeflect: player.success.deflected.predeflect,
                        type: 'attack'
                      }
-                     player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+                     player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
 
 
                      if (this.aiDeflectedCheck.includes(player.number) !== true) {
@@ -23697,7 +23697,7 @@ class App extends Component {
                      predeflect: player.success.deflected.predeflect,
                      type: 'attack'
                    }
-                   player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+                   player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
 
 
                    if (this.aiDeflectedCheck.includes(player.number) !== true) {
@@ -23742,7 +23742,7 @@ class App extends Component {
                    predeflect: player.success.deflected.predeflect,
                    type: 'attack'
                  }
-                 player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+                 player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
 
 
                  if (this.aiDeflectedCheck.includes(player.number) !== true) {
@@ -23937,7 +23937,7 @@ class App extends Component {
                        predeflect: player.success.deflected.predeflect,
                        type: 'attack'
                      }
-                     player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+                     player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
 
 
                      if (this.aiDeflectedCheck.includes(player.number) !== true) {
@@ -23992,7 +23992,7 @@ class App extends Component {
                    }
 
 
-                   player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+                   player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
 
 
                    if (this.aiDeflectedCheck.includes(player.number) !== true) {
@@ -24218,7 +24218,7 @@ class App extends Component {
                          predeflect: player.success.deflected.predeflect,
                          type: 'attack'
                        }
-                       player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+                       player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
 
 
                        if (this.aiDeflectedCheck.includes(player.number) !== true) {
@@ -24263,7 +24263,7 @@ class App extends Component {
                        predeflect: player.success.deflected.predeflect,
                        type: 'attack'
                      }
-                     player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+                     player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
 
 
                      if (this.aiDeflectedCheck.includes(player.number) !== true) {
@@ -24445,7 +24445,7 @@ class App extends Component {
                      predeflect: player.success.deflected.predeflect,
                      type: 'attack'
                    }
-                   player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+                   player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
 
 
                    if (this.aiDeflectedCheck.includes(player.number) !== true) {
@@ -24472,7 +24472,7 @@ class App extends Component {
                    predeflect: player.success.deflected.predeflect,
                    type: 'attack'
                  }
-                 player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+                 player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
 
 
                  if (this.aiDeflectedCheck.includes(player.number) !== true) {
@@ -24645,7 +24645,7 @@ class App extends Component {
                        predeflect: player.success.deflected.predeflect,
                        type: 'attack'
                      }
-                     player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+                     player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
 
 
                      if (this.aiDeflectedCheck.includes(player.number) !== true) {
@@ -24675,7 +24675,7 @@ class App extends Component {
                      predeflect: player.success.deflected.predeflect,
                      type: 'attack'
                    }
-                   player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+                   player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
 
 
                    if (this.aiDeflectedCheck.includes(player.number) !== true) {
@@ -25013,7 +25013,7 @@ class App extends Component {
                          predeflect: player.success.deflected.predeflect,
                          type: 'attack'
                        }
-                       player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+                       player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
 
 
                        if (this.aiDeflectedCheck.includes(player.number) !== true) {
@@ -25058,7 +25058,7 @@ class App extends Component {
                        predeflect: player.success.deflected.predeflect,
                        type: 'attack'
                      }
-                     player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+                     player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
 
 
                      if (this.aiDeflectedCheck.includes(player.number) !== true) {
@@ -25235,7 +25235,7 @@ class App extends Component {
                      predeflect: player.success.deflected.predeflect,
                      type: 'attack'
                    }
-                   player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+                   player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
 
 
                    if (this.aiDeflectedCheck.includes(player.number) !== true) {
@@ -25262,7 +25262,7 @@ class App extends Component {
                    predeflect: player.success.deflected.predeflect,
                    type: 'attack'
                  }
-                 player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+                 player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
 
 
                  if (this.aiDeflectedCheck.includes(player.number) !== true) {
@@ -25430,7 +25430,8 @@ class App extends Component {
                        predeflect: player.success.deflected.predeflect,
                        type: 'attack'
                      }
-                     player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+                     player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
+
 
 
                      if (this.aiDeflectedCheck.includes(player.number) !== true) {
@@ -25449,7 +25450,8 @@ class App extends Component {
               // INDESTRUCTIBLE OBSTACLE
               else {
                 console.log('attacking invurnerable obstacle, deflect player?');
-                 let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+                 // let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+                 let shouldDeflect = this.rnJesus(1,1)
                  if (shouldDeflect === 1) {
                    this.attackedCancel(this.players[player.number-1]);
 
@@ -25460,7 +25462,7 @@ class App extends Component {
                      predeflect: player.success.deflected.predeflect,
                      type: 'attack'
                    }
-                   player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+                   player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
 
 
                    if (this.aiDeflectedCheck.includes(player.number) !== true) {
@@ -25694,7 +25696,7 @@ class App extends Component {
       //                predeflect: player.success.deflected.predeflect,
       //                type: 'attack'
       //              }
-      //              player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+      //              player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
       //
       //
       //              if (this.aiDeflectedCheck.includes(player.number) !== true) {
@@ -25739,7 +25741,7 @@ class App extends Component {
       //              predeflect: player.success.deflected.predeflect,
       //              type: 'attack'
       //            }
-      //            player.stamina.current = player.stamina.current - this.staminaCostRef.deflected;
+      //            player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
       //
       //
       //            if (this.aiDeflectedCheck.includes(player.number) !== true) {
