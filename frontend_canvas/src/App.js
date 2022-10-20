@@ -8831,30 +8831,44 @@ class App extends Component {
 
                 // ATTACK BARRIERS, OBSTACLES, ITEMS!
 
-                if (player.target.occupant.type !== 'player' && player.target.free !== true) {
+                let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y );
+                let targetCell2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y );
+                let myCell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y );
+
+                 if (player.target.occupant.type !== 'player' && player.target.free !== true) {
 
 
-                  let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y );
-                  let targetCell2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y );
-                  let myCell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y );
+                  // let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y );
+                  // let targetCell2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y );
+                  // let myCell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y );
 
                   this.attackCellContents('melee',player,targetCell,targetCell2,myCell,undefined)
 
                 }
 
                 if (player.target.free === true) {
-                  player.popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit: 25,
-                      type: '',
-                      position: '',
-                      msg: 'missedAttack',
-                      img: '',
+                  if (
+                    targetCell.rubble === true ||
+                    targetCell2.rubble === true ||
+                    targetCell.item.name !== "" ||
+                    targetCell2.item.name !== ""
+                  ) {
+                    this.attackCellContents('melee',player,targetCell,targetCell2,myCell,undefined)
+                  }
+                  else {
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 25,
+                        type: '',
+                        position: '',
+                        msg: 'missedAttack',
+                        img: '',
 
-                    }
-                  )
+                      }
+                    )
+                  }
                 }
               }
 
