@@ -228,7 +228,10 @@ class App extends Component {
     this.selectedTileY = -1;
 
     this.canvasWidth = 1300;
-    this.canvasHeight = 800;
+    this.canvasHeight = 790;
+
+    // this.canvasWidth = 1000;
+    // this.canvasHeight = 600;
 
     this.floorImageWidth = 103;
     this.floorImageHeight = 53;
@@ -2883,7 +2886,7 @@ class App extends Component {
       this.canvasHeight = 600;
 
     }
-
+    console.log('xxx',window.innerHeight);
 
     let canvas = this.canvasRef.current;
     let context = canvas.getContext('2d');
@@ -20447,6 +20450,7 @@ class App extends Component {
 
 
     if (resetPull === true) {
+      puller.action = 'idle';
       puller.prePull = {
         state: false,
         count: 0,
@@ -25450,8 +25454,8 @@ class App extends Component {
               // INDESTRUCTIBLE OBSTACLE
               else {
                 console.log('attacking invurnerable obstacle, deflect player?');
-                 // let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
-                 let shouldDeflect = this.rnJesus(1,1)
+                 let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+                 // let shouldDeflect = this.rnJesus(1,1)
                  if (shouldDeflect === 1) {
                    this.attackedCancel(this.players[player.number-1]);
 
