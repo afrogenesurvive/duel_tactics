@@ -297,8 +297,8 @@ class App extends Component {
       row12: ['**_*_12.0_a_0a*','**_*_12.1_a_0a*','**_*_12.2_a_0a*','**_*_12.3_a_0a*','**_*_12.4_a_0a*','**_*_12.5_a_0a*','**_*_12.6_a_0a*','**_*_12.7_a_0a*','**_*_12.8_a_0a*','**_*_12.9_a_0a*','**_*_12.10_a_0a*','**_*_12.11_a_0a*','**_*_12.12_a_0a*'],
     };
     this.levelData9 = {
-      row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*','**_*_0.7_a_0a*','**_*_0.8_h_0a*','**_*_0.9_h_0a*'],
-      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
+      row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*','**_i_0.7_a_0a*','**_*_0.8_h_0a*','**_*_0.9_h_0a*'],
+      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_i_1.5_a_0a*','**_*_1.6_i_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_k_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_h_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
       row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_*_4.3_f_0a*','cs_h_4.4_a_0a*','**_b_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
@@ -2681,7 +2681,7 @@ class App extends Component {
     };
     this.playerDrawWidth = 40;
     this.playerDrawHeight = 40;
-    this.popupSize = 35;
+    this.popupSize = 40;
     this.movingObstacles = [];
     this.obstacleBarrierToDestroy = [];
     this.obstacleItemsToDrop = [];
@@ -2890,7 +2890,6 @@ class App extends Component {
       this.canvasHeight = 600;
 
     }
-    console.log('xxx',window.innerHeight);
 
     let canvas = this.canvasRef.current;
     let context = canvas.getContext('2d');
@@ -6689,35 +6688,8 @@ class App extends Component {
         // }
 
 
-        // OBSTACLE/BARRIER DAMAGE/DESTROY
-        for(const cell of this.obstacleBarrierToDestroy) {
-          if (cell.limit > 0) {
-            if (cell.count < cell.limit) {
-              cell.count++
-            }
-            else if (cell.count >= cell.limit) {
-              let index = this.obstacleBarrierToDestroy.indexOf(cell)
-              this.obstacleBarrierToDestroy.splice(index,1)
-            }
-          }
-        }
-
-        // ITEMS TO DROP
-        // -call itemdrop crementer and set position like w/ movement
-        for(const cell of this.obstacleItemsToDrop) {
-          if (cell.limit > 0) {
-            if (cell.count < cell.limit) {
-              cell.count++
-            }
-            else if (cell.count >= cell.limit) {
-              let index = this.obstacleItemsToDrop.indexOf(cell)
-              this.obstacleItemsToDrop.splice(index,1)
-            }
-          }
-        }
-
-
-        // OBSTACLE MOVING & FALLING
+        // OBSTACLE
+        // MOVING & FALLING
         for(const cell of this.gridInfo) {
 
 
@@ -6983,7 +6955,7 @@ class App extends Component {
                     }
                   };
 
-                  this.obstacleCheckDestination(destCellRef);
+                  this.obstacleCheckDestination(destCellRef,player);
 
 
                 }
@@ -7171,6 +7143,32 @@ class App extends Component {
             // console.log('obstacle falling out of bounds over');
             let index = this.obstaclesOutOfBoundsFall.indexOf(elem)
             this.obstaclesOutOfBoundsFall.splice(index,1)
+          }
+        }
+        // OBSTACLE/BARRIER DAMAGE/DESTROY
+        for(const cell of this.obstacleBarrierToDestroy) {
+          if (cell.limit > 0) {
+            if (cell.count < cell.limit) {
+              cell.count++
+            }
+            else if (cell.count >= cell.limit) {
+              let index = this.obstacleBarrierToDestroy.indexOf(cell)
+              this.obstacleBarrierToDestroy.splice(index,1)
+            }
+          }
+        }
+
+        // ITEMS TO DROP
+        // -call itemdrop crementer and set position like w/ movement
+        for(const cell of this.obstacleItemsToDrop) {
+          if (cell.limit > 0) {
+            if (cell.count < cell.limit) {
+              cell.count++
+            }
+            else if (cell.count >= cell.limit) {
+              let index = this.obstacleItemsToDrop.indexOf(cell)
+              this.obstacleItemsToDrop.splice(index,1)
+            }
           }
         }
 
@@ -10557,54 +10555,54 @@ class App extends Component {
       let newArray = [];
       let x = 0;
       let y = 0;
-      // for (const [key, value] of Object.entries(this.popupImageRef)) {
-      //   newArray.push(key);
-      // }
-      // for (var i = 0; i < 20; i++) {
-      //   // if (!player.popups.find(x => x.msg === newArray[i])) {
-      //   //   player.popups.push(
-      //   //     {
-      //   //       state: false,
-      //   //       count: 0,
-      //   //       limit: 35,
-      //   //       type: '',
-      //   //       position: '',
-      //   //       msg: newArray[i],
-      //   //       img: '',
-      //   //       // cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
-      //   //     }
-      //   //   )
-      //   // }
-      //   // if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 4 && x.cell.number.x === 4)) {
-      //   //   this.cellPopups.push(
-      //   //     {
-      //   //       state: false,
-      //   //       count: 0,
-      //   //       limit: 35,
-      //   //       type: '',
-      //   //       position: '',
-      //   //       msg: newArray[i],
-      //   //       img: '',
-      //   //       cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
-      //   //     }
-      //   //   )
-      //   // }
-      //   if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 4 && x.cell.number.x === 3)) {
-      //     this.cellPopups.push(
-      //       {
-      //         state: false,
-      //         count: 0,
-      //         limit: 35,
-      //         type: '',
-      //         position: '',
-      //         msg: newArray[i],
-      //         color: '',
-      //         img: '',
-      //         cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 3)
-      //       }
-      //     )
-      //   }
-      // };
+      for (const [key, value] of Object.entries(this.popupImageRef)) {
+        newArray.push(key);
+      }
+      for (var i = 0; i < 20; i++) {
+        // if (!player.popups.find(x => x.msg === newArray[i])) {
+        //   player.popups.push(
+        //     {
+        //       state: false,
+        //       count: 0,
+        //       limit: 35,
+        //       type: '',
+        //       position: '',
+        //       msg: newArray[i],
+        //       img: '',
+        //       // cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
+        //     }
+        //   )
+        // }
+        // if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 4 && x.cell.number.x === 4)) {
+        //   this.cellPopups.push(
+        //     {
+        //       state: false,
+        //       count: 0,
+        //       limit: 35,
+        //       type: '',
+        //       position: '',
+        //       msg: newArray[i],
+        //       img: '',
+        //       cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
+        //     }
+        //   )
+        // }
+        // if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 4 && x.cell.number.x === 3)) {
+        //   this.cellPopups.push(
+        //     {
+        //       state: false,
+        //       count: 0,
+        //       limit: 35,
+        //       type: '',
+        //       position: '',
+        //       msg: newArray[i],
+        //       color: '',
+        //       img: '',
+        //       cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 3)
+        //     }
+        //   )
+        // }
+      };
     }
     //PLAYER
     if (player.popups.length > 0) {
@@ -18286,173 +18284,156 @@ class App extends Component {
     }
 
   }
-  obstacleCheckDestination = (cell) => {
+  obstacleCheckDestination = (cell,player) => {
 
-    // if terraint ype is hazard not lava, damage
-    // if name is lava, destroy
-    //
-    // if (targetCell.obstacle.destructible.state === true) {
-    //   // WEAPON CHECK
-    //   if (targetCell.obstacle.destructible.weapons.find(x => x === 'bolt')) {
-    //
-    //
-    //     if (targetCell.obstacle.hp - damage > 0) {
-    //       let hp = targetCell.obstacle.hp - damage;
-    //
-    //       targetCell.obstacle = {
-    //         state: targetCell.obstacle.state,
-    //         name: targetCell.obstacle.name,
-    //         type: targetCell.obstacle.type,
-    //         hp: hp,
-    //         destructible: targetCell.obstacle.destructible,
-    //         locked: targetCell.obstacle.locked,
-    //         weight: targetCell.obstacle.weight,
-    //         height: targetCell.obstacle.height,
-    //         items: targetCell.obstacle.items,
-    //         effects: targetCell.obstacle.effects,
-    //         moving: targetCell.obstacle.moving
-    //       };
-    //
-    //
-    //       this.obstacleBarrierToDestroy.push({
-    //         type: 'obstacle',
-    //         action: 'damage',
-    //         count: 0,
-    //         limit: 30,
-    //         complete: false,
-    //         cell: targetCell,
-    //       })
-    //
-    //
-    //       // this.canPushObstacle(player,targetCell,'hitPushBolt_'+bolt.direction);
-    //       // this.canPushObstacle(player,targetCell,`hitPushBolt_${bolt.direction}`);
-    //
-    //     }
-    //
-    //
-    //
-    //     // DESTROY OBSTACLE W/ OR W/O RUBBLE
-    //     else if (targetCell.obstacle.hp - damage <= 0) {
-    //       let itemsToDrop = [];
-    //       if (targetCell.obstacle.destructible.leaveRubble === true) {
-    //         // console.log('leave rubble on ',targetCell.number,'removing obstacle');
-    //         if (targetCell.obstacle.items[0]) {
-    //           itemsToDrop = targetCell.obstacle.items;
-    //         }
-    //         // let cellRef = this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y);
-    //         targetCell.rubble = true;
-    //         // targetCell.terrain.type = 'hazard';
-    //
-    //         targetCell.obstacle =
-    //         {
-    //           state: false,
-    //           name: targetCell.obstacle.name,
-    //           type: targetCell.obstacle.type,
-    //           hp: 0,
-    //           destructible: targetCell.obstacle.destructible,
-    //           locked: targetCell.obstacle.locked,
-    //           weight: targetCell.obstacle.weight,
-    //           height: targetCell.obstacle.height,
-    //           items: targetCell.obstacle.items,
-    //           effects: targetCell.obstacle.effects,
-    //           moving: targetCell.obstacle.moving
-    //         };
-    //
-    //         this.players[player.number-1].statusDisplay = {
-    //           state: true,
-    //           status: 'Destroyed '+targetCell.obstacle.name+'!',
-    //           count: 1,
-    //           limit: this.players[player.number-1].statusDisplay.limit,
-    //         }
-    //
-    //         player.popups.push(
-    //           {
-    //             state: false,
-    //             count: 0,
-    //             limit: 25,
-    //             type: '',
-    //             position: '',
-    //             msg: 'destroyedItem',
-    //             img: '',
-    //
-    //           }
-    //         )
-    //       } else {
-    //         // console.log('no rubble. Just remove obstacle');
-    //         if (targetCell.obstacle.items[0]) {
-    //           itemsToDrop = targetCell.obstacle.items;
-    //         }
-    //
-    //         targetCell.obstacle =
-    //         {
-    //           state: false,
-    //           name: targetCell.obstacle.name,
-    //           type: targetCell.obstacle.type,
-    //           hp: 0,
-    //           destructible: targetCell.obstacle.destructible,
-    //           locked: targetCell.obstacle.locked,
-    //           weight: targetCell.obstacle.weight,
-    //           height: targetCell.obstacle.height,
-    //           items: targetCell.obstacle.items,
-    //           effects: targetCell.obstacle.effects,
-    //           moving: targetCell.obstacle.moving
-    //         };
-    //
-    //         this.players[player.number-1].statusDisplay = {
-    //           state: true,
-    //           status: 'Destroyed '+targetCell.obstacle.name+'!',
-    //           count: 1,
-    //           limit: this.players[player.number-1].statusDisplay.limit,
-    //         }
-    //
-    //         player.popups.push(
-    //           {
-    //             state: false,
-    //             count: 0,
-    //             limit: 25,
-    //             type: '',
-    //             position: '',
-    //             msg: 'destroyedItem',
-    //             img: '',
-    //
-    //           }
-    //         )
-    //       }
-    //
-    //
-    //       // DROP OBSTACLE ITEMS?
-    //       if (itemsToDrop[0]) {
-    //         // console.log('dropping obstacle items bolt',itemsToDrop);
-    //
-    //         this.obstacleItemDrop(targetCell,player);
-    //
-    //       }
-    //       this.obstacleBarrierToDestroy.push({
-    //         type: 'obstacle',
-    //         action: 'destroy',
-    //         count: 0,
-    //         limit: 30,
-    //         complete: false,
-    //         cell: targetCell,
-    //       })
-    //
-    //     }
-    //
-    //
-    //
-    //   }
-    //
-    //   // WEAPON NO GOOD. DEFLECT
-    //   else {
-    //     console.log('your current weapon cannot destroy this, you need ',targetCell.obstacle.destructible.weapons,'. Deflect player?');
-    //
-    //     this.canPushObstacle(player,targetCell,`hitPushBolt_${bolt.direction}`);
-    //     // this.canPushObstacle(player,targetCell,'hitPushBolt_'+bolt.direction);
-    //
-    //   }
-    //
-    //
-    // }
+    let targetCell = this.gridInfo.find(x => x.number.x === cell.number.x && x.number.y === cell.number.y);
+    let damage = 0;
+    if (targetCell.terrain.name === 'lava') {
+      damage = targetCell.obstacle.hp;
+    }
+    if (targetCell.terrain.type === 'hazard' || targetCell.rubble === true) {
+      if (targetCell.terrain.name !== 'lava') {
+        damage = this.rnJesus(1,targetCell.obstacle.hp-1);
+        if (damage === 0) {
+          damage = 1;
+        }
+      }
+    }
+    if (targetCell.obstacle.destructible.state === true && damage > 0) {
+      // WEAPON CHECK
+      if (targetCell.obstacle.hp - damage > 0) {
+        let hp = targetCell.obstacle.hp - damage;
+
+        targetCell.obstacle = {
+          state: targetCell.obstacle.state,
+          name: targetCell.obstacle.name,
+          type: targetCell.obstacle.type,
+          hp: hp,
+          destructible: targetCell.obstacle.destructible,
+          locked: targetCell.obstacle.locked,
+          weight: targetCell.obstacle.weight,
+          height: targetCell.obstacle.height,
+          items: targetCell.obstacle.items,
+          effects: targetCell.obstacle.effects,
+          moving: targetCell.obstacle.moving
+        };
+        this.obstacleBarrierToDestroy.push({
+          type: 'obstacle',
+          action: 'damage',
+          count: 0,
+          limit: 30,
+          complete: false,
+          cell: targetCell,
+        })
+      }
+
+      // DESTROY OBSTACLE W/ OR W/O RUBBLE
+      else if (targetCell.obstacle.hp - damage <= 0) {
+        let itemsToDrop = [];
+        if (targetCell.obstacle.destructible.leaveRubble === true && targetCell.rubble !== true) {
+          // console.log('leave rubble on ',targetCell.number,'removing obstacle');
+          if (targetCell.obstacle.items[0]) {
+            itemsToDrop = targetCell.obstacle.items;
+          }
+          // let cellRef = this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y);
+          targetCell.rubble = true;
+          // targetCell.terrain.type = 'hazard';
+
+          targetCell.obstacle =
+          {
+            state: false,
+            name: targetCell.obstacle.name,
+            type: targetCell.obstacle.type,
+            hp: 0,
+            destructible: targetCell.obstacle.destructible,
+            locked: targetCell.obstacle.locked,
+            weight: targetCell.obstacle.weight,
+            height: targetCell.obstacle.height,
+            items: targetCell.obstacle.items,
+            effects: targetCell.obstacle.effects,
+            moving: targetCell.obstacle.moving
+          };
+
+          this.players[player.number-1].statusDisplay = {
+            state: true,
+            status: 'Destroyed '+targetCell.obstacle.name+'!',
+            count: 1,
+            limit: this.players[player.number-1].statusDisplay.limit,
+          }
+
+          player.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 25,
+              type: '',
+              position: '',
+              msg: 'destroyedItem',
+              img: '',
+
+            }
+          )
+        } else {
+          // console.log('no rubble. Just remove obstacle');
+          if (targetCell.obstacle.items[0]) {
+            itemsToDrop = targetCell.obstacle.items;
+          }
+
+          targetCell.obstacle =
+          {
+            state: false,
+            name: targetCell.obstacle.name,
+            type: targetCell.obstacle.type,
+            hp: 0,
+            destructible: targetCell.obstacle.destructible,
+            locked: targetCell.obstacle.locked,
+            weight: targetCell.obstacle.weight,
+            height: targetCell.obstacle.height,
+            items: targetCell.obstacle.items,
+            effects: targetCell.obstacle.effects,
+            moving: targetCell.obstacle.moving
+          };
+
+          this.players[player.number-1].statusDisplay = {
+            state: true,
+            status: 'Destroyed '+targetCell.obstacle.name+'!',
+            count: 1,
+            limit: this.players[player.number-1].statusDisplay.limit,
+          }
+
+          player.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 25,
+              type: '',
+              position: '',
+              msg: 'destroyedItem',
+              img: '',
+
+            }
+          )
+        }
+
+        // DROP OBSTACLE ITEMS?
+        if (itemsToDrop[0]) {
+          // console.log('dropping obstacle items bolt',itemsToDrop);
+
+          this.obstacleItemDrop(targetCell,player);
+
+        }
+        this.obstacleBarrierToDestroy.push({
+          type: 'obstacle',
+          action: 'destroy',
+          count: 0,
+          limit: 30,
+          complete: false,
+          cell: targetCell,
+        })
+
+      }
+
+    }
 
   }
   popupDrawCalc = (popup,playerOrigin,plyrNo) => {
@@ -27538,6 +27519,7 @@ class App extends Component {
           break
         }
       }
+
 
       // OBSTACLE
       if (elem.levelData.split('_')[1] !== '*') {
