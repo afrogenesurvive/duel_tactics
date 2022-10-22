@@ -6981,7 +6981,9 @@ class App extends Component {
                         cell: destCellRef,
                       })
                     }
-                  }
+                  };
+
+                  this.obstacleCheckDestination(destCellRef);
 
 
                 }
@@ -7172,6 +7174,7 @@ class App extends Component {
           }
         }
 
+        // ITEMS FALLING/SINKING
 
         // // IDLE ANIM STEPPER!
         if (player.action === 'idle') {
@@ -18285,8 +18288,171 @@ class App extends Component {
   }
   obstacleCheckDestination = (cell) => {
 
-    if terraint ype is hazard not lava, damage
-    if name is lava, destroy
+    // if terraint ype is hazard not lava, damage
+    // if name is lava, destroy
+    //
+    // if (targetCell.obstacle.destructible.state === true) {
+    //   // WEAPON CHECK
+    //   if (targetCell.obstacle.destructible.weapons.find(x => x === 'bolt')) {
+    //
+    //
+    //     if (targetCell.obstacle.hp - damage > 0) {
+    //       let hp = targetCell.obstacle.hp - damage;
+    //
+    //       targetCell.obstacle = {
+    //         state: targetCell.obstacle.state,
+    //         name: targetCell.obstacle.name,
+    //         type: targetCell.obstacle.type,
+    //         hp: hp,
+    //         destructible: targetCell.obstacle.destructible,
+    //         locked: targetCell.obstacle.locked,
+    //         weight: targetCell.obstacle.weight,
+    //         height: targetCell.obstacle.height,
+    //         items: targetCell.obstacle.items,
+    //         effects: targetCell.obstacle.effects,
+    //         moving: targetCell.obstacle.moving
+    //       };
+    //
+    //
+    //       this.obstacleBarrierToDestroy.push({
+    //         type: 'obstacle',
+    //         action: 'damage',
+    //         count: 0,
+    //         limit: 30,
+    //         complete: false,
+    //         cell: targetCell,
+    //       })
+    //
+    //
+    //       // this.canPushObstacle(player,targetCell,'hitPushBolt_'+bolt.direction);
+    //       // this.canPushObstacle(player,targetCell,`hitPushBolt_${bolt.direction}`);
+    //
+    //     }
+    //
+    //
+    //
+    //     // DESTROY OBSTACLE W/ OR W/O RUBBLE
+    //     else if (targetCell.obstacle.hp - damage <= 0) {
+    //       let itemsToDrop = [];
+    //       if (targetCell.obstacle.destructible.leaveRubble === true) {
+    //         // console.log('leave rubble on ',targetCell.number,'removing obstacle');
+    //         if (targetCell.obstacle.items[0]) {
+    //           itemsToDrop = targetCell.obstacle.items;
+    //         }
+    //         // let cellRef = this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y);
+    //         targetCell.rubble = true;
+    //         // targetCell.terrain.type = 'hazard';
+    //
+    //         targetCell.obstacle =
+    //         {
+    //           state: false,
+    //           name: targetCell.obstacle.name,
+    //           type: targetCell.obstacle.type,
+    //           hp: 0,
+    //           destructible: targetCell.obstacle.destructible,
+    //           locked: targetCell.obstacle.locked,
+    //           weight: targetCell.obstacle.weight,
+    //           height: targetCell.obstacle.height,
+    //           items: targetCell.obstacle.items,
+    //           effects: targetCell.obstacle.effects,
+    //           moving: targetCell.obstacle.moving
+    //         };
+    //
+    //         this.players[player.number-1].statusDisplay = {
+    //           state: true,
+    //           status: 'Destroyed '+targetCell.obstacle.name+'!',
+    //           count: 1,
+    //           limit: this.players[player.number-1].statusDisplay.limit,
+    //         }
+    //
+    //         player.popups.push(
+    //           {
+    //             state: false,
+    //             count: 0,
+    //             limit: 25,
+    //             type: '',
+    //             position: '',
+    //             msg: 'destroyedItem',
+    //             img: '',
+    //
+    //           }
+    //         )
+    //       } else {
+    //         // console.log('no rubble. Just remove obstacle');
+    //         if (targetCell.obstacle.items[0]) {
+    //           itemsToDrop = targetCell.obstacle.items;
+    //         }
+    //
+    //         targetCell.obstacle =
+    //         {
+    //           state: false,
+    //           name: targetCell.obstacle.name,
+    //           type: targetCell.obstacle.type,
+    //           hp: 0,
+    //           destructible: targetCell.obstacle.destructible,
+    //           locked: targetCell.obstacle.locked,
+    //           weight: targetCell.obstacle.weight,
+    //           height: targetCell.obstacle.height,
+    //           items: targetCell.obstacle.items,
+    //           effects: targetCell.obstacle.effects,
+    //           moving: targetCell.obstacle.moving
+    //         };
+    //
+    //         this.players[player.number-1].statusDisplay = {
+    //           state: true,
+    //           status: 'Destroyed '+targetCell.obstacle.name+'!',
+    //           count: 1,
+    //           limit: this.players[player.number-1].statusDisplay.limit,
+    //         }
+    //
+    //         player.popups.push(
+    //           {
+    //             state: false,
+    //             count: 0,
+    //             limit: 25,
+    //             type: '',
+    //             position: '',
+    //             msg: 'destroyedItem',
+    //             img: '',
+    //
+    //           }
+    //         )
+    //       }
+    //
+    //
+    //       // DROP OBSTACLE ITEMS?
+    //       if (itemsToDrop[0]) {
+    //         // console.log('dropping obstacle items bolt',itemsToDrop);
+    //
+    //         this.obstacleItemDrop(targetCell,player);
+    //
+    //       }
+    //       this.obstacleBarrierToDestroy.push({
+    //         type: 'obstacle',
+    //         action: 'destroy',
+    //         count: 0,
+    //         limit: 30,
+    //         complete: false,
+    //         cell: targetCell,
+    //       })
+    //
+    //     }
+    //
+    //
+    //
+    //   }
+    //
+    //   // WEAPON NO GOOD. DEFLECT
+    //   else {
+    //     console.log('your current weapon cannot destroy this, you need ',targetCell.obstacle.destructible.weapons,'. Deflect player?');
+    //
+    //     this.canPushObstacle(player,targetCell,`hitPushBolt_${bolt.direction}`);
+    //     // this.canPushObstacle(player,targetCell,'hitPushBolt_'+bolt.direction);
+    //
+    //   }
+    //
+    //
+    // }
 
   }
   popupDrawCalc = (popup,playerOrigin,plyrNo) => {
@@ -26852,6 +27018,7 @@ class App extends Component {
             ctcRef.obstacle.state === true ||
             ctcRef.void.state === true ||
             ctcRef.terrain.type === 'deep' ||
+            ctcRef.terrain.name === 'lava' ||
             ctcRef.item.name !== "" ||
             ctcRef.rubble === true
           ) {
