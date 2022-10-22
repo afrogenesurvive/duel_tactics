@@ -10031,6 +10031,14 @@ class App extends Component {
                     nextPosition = this.lineCrementer(player);
                     player.nextPosition = nextPosition;
 
+                    if (
+                      this.mouseOverCell.state === true &&
+                      this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
+                      this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
+                    ) {
+                      this.clicked.player = undefined;
+                    }
+
                   }
                   else {
 
@@ -18268,6 +18276,9 @@ class App extends Component {
 
       this.gridInfo.find(x => x.number.x === cell.number.x && x.number.y === cell.number.y).rubble = false;
     }
+
+  }
+  obstacleCheckDestination = (cell) => {
 
   }
   popupDrawCalc = (popup,playerOrigin,plyrNo) => {
