@@ -302,7 +302,7 @@ class App extends Component {
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_k_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_h_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
       row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_*_4.3_f_0a*','cs_h_4.4_a_0a*','**_b_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
-      row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','cn_*_5.2_f_0a*','**_*_5.3_f_0a*','**_*_5.4_k_0a*','**_*_5.5_a_0a*','**_*_5.6_g_0a*','**_*_5.7_a_0a*','cs_*_5.8_a_0a*','**_*_5.9_a_0a*'],
+      row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','cn_*_5.2_f_0a*','**_*_5.3_f_0a*','**_*_5.4_k_0a*','**_*_5.5_a_0a*','**_*_5.6_g_0a*','**_*_5.7_a_0a*','ce_*_5.8_a_0a*','**_*_5.9_a_0a*'],
       row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_b_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_b_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
       row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','**_*_7.5_a_0a*','**_i_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
       row8: ['**_*_8.0_a_0a*','**_*_8.1_a_0a*','**_*_8.2_a_0a*','**_*_8.3_a_0a*','**_*_8.4_a_0a*','**_*_8.5_a_0a*','**_c_8.6_a_0a*','**_*_8.7_a_0a*','**_*_8.8_a_0a*','**_*_8.9_d_0a*'],
@@ -7387,7 +7387,6 @@ class App extends Component {
 
         // STRAFE RELEASE
         if (player.strafeReleaseHook === true ) {
-          console.log('yyyyyyyyy');
           player.strafing.state = false;
           player.strafeReleaseHook = false;
           this.getTarget(player);
@@ -10180,6 +10179,7 @@ class App extends Component {
                 this.players[player.number-1].jumping.checking = true;
                 let target = this.getTarget(player);
 
+                let myCell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y)
                 let cell1 = this.gridInfo.find(elem => elem.number.x === target.cell.number.x && elem.number.y === target.cell.number.y)
                 let cell2 = this.gridInfo.find(elem => elem.number.x === target.cell2.number.x && elem.number.y === target.cell2.number.y)
                 // console.log('cell1',cell1);
@@ -10200,17 +10200,93 @@ class App extends Component {
                 if (player.stamina.current - this.staminaCostRef.jump >= 0) {
 
                   if (cellsWithinBounds === true) {
+
+                    // CAN ONLY JUMP OVER HAZARDS, DEEP OR VOID
                     if (
                       cell1.void.state === true ||
                       cell1.terrain.type === 'deep' ||
                       cell1.terrain.type === 'hazard'
                     ) {
                       // console.log('a');
+
+                      // CHECK ALL 3 JUMPING CELLS FOR BARRIERS BASED ON POSITION
+                      let myCellBlocked = false;
+                      let cell1BarrierFacing = false;
+                      let cell2BarrierFacing = false;
+                      if (myCell.barrier.state === true && myCell.barrier.position === player.direction) {
+                        myCellBlocked = true;
+                      }
+                      if (cell1.barrier.state === true) {
+                        switch (cell1.barrier.position) {
+                          case 'north':
+                            if (
+                              player.direction === 'south' ||
+                              player.direction === 'north'
+                            ) {
+                              cell1BarrierFacing = true;
+                            }
+                            break;
+                          case 'south':
+                            if (
+                              player.direction === 'south' ||
+                              player.direction === 'north'
+                            ) {
+                              cell1BarrierFacing = true;
+                            }
+                            break;
+                          case 'east':
+                            if (
+                              player.direction === 'east' ||
+                              player.direction === 'west'
+                            ) {
+                              cell1BarrierFacing = true;
+                            }
+                            break;
+                          case 'west':
+                            if (
+                              player.direction === 'east' ||
+                              player.direction === 'west'
+                            ) {
+                              cell1BarrierFacing = true;
+                            }
+                            break;
+                          default:
+
+                        }
+                      }
+                      if (cell2.barrier.state === true) {
+                        switch (cell2.barrier.position) {
+                          case 'north':
+                            if (player.direction === 'south') {
+                              cell2BarrierFacing = true;
+                            }
+                            break;
+                          case 'south':
+                            if (player.direction === 'north') {
+                              cell2BarrierFacing = true;
+                            }
+                            break;
+                          case 'east':
+                            if (player.direction === 'west') {
+                              cell2BarrierFacing = true;
+                            }
+                            break;
+                          case 'west':
+                            if (player.direction === 'east') {
+                              cell2BarrierFacing = true;
+                            }
+                            break;
+                          default:
+
+                        }
+                      }
+
                       if (
-                        // cell2.levelData.charAt(0) !==  'z' ||
-                        // cell2.levelData.charAt(0) !==  'y'
+                        cell1.obstacle.state !== true &&
                         cell2.obstacle.state !== true &&
-                        cell2.barrier.state !== true
+                        cell1BarrierFacing !== true &&
+                        cell2BarrierFacing !== true &&
+                        myCellBlocked !== true
                       ) {
                         // console.log('no obstacles at jump destination');
 
@@ -10306,6 +10382,23 @@ class App extends Component {
                       } else {
                         // console.log('jump obstacle detected');
                         this.players[player.number-1].jumping.checking = false;
+
+                        if (cell1.obstacle.state === true) {
+                          console.log("can't jump! obstacle in cell1");
+                        }
+                        if (cell2.obstacle.state === true) {
+                          console.log("can't jump! obstacle in cell2");
+                        }
+                        if (myCellBlocked === true) {
+                          console.log("can't jump! barrier in player cell blocking");
+                        }
+                        if (cell1BarrierFacing === true) {
+                          console.log("can't jump! barrier cell 1 blocking");
+                        }
+                        if (cell2BarrierFacing === true) {
+                          console.log("can't jump! barrier cell 2 blocking");
+                        }
+
                       }
                     } else {
                       // console.log('can only jump over voids, hazards or deep water cell 2');
