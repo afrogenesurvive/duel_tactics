@@ -297,12 +297,12 @@ class App extends Component {
       row12: ['**_*_12.0_a_0a*','**_*_12.1_a_0a*','**_*_12.2_a_0a*','**_*_12.3_a_0a*','**_*_12.4_a_0a*','**_*_12.5_a_0a*','**_*_12.6_a_0a*','**_*_12.7_a_0a*','**_*_12.8_a_0a*','**_*_12.9_a_0a*','**_*_12.10_a_0a*','**_*_12.11_a_0a*','**_*_12.12_a_0a*'],
     };
     this.levelData9 = {
-      row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*','**_*_0.7_a_0a*','**_*_0.8_a_0a*','**_*_0.9_a_0a*'],
+      row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*','**_*_0.7_a_0a*','**_*_0.8_h_0a*','**_*_0.9_h_0a*'],
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_k_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_h_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
-      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','cs_h_4.4_a_0a*','**_b_4.5_a_0a*','**_*_4.6_a_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
-      row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','cn_*_5.2_a_0a*','**_*_5.3_a_0a*','**_*_5.4_k_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','cs_*_5.8_a_0a*','**_*_5.9_a_0a*'],
+      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_*_4.3_f_0a*','cs_h_4.4_a_0a*','**_b_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
+      row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','cn_*_5.2_f_0a*','**_*_5.3_f_0a*','**_*_5.4_k_0a*','**_*_5.5_a_0a*','**_*_5.6_g_0a*','**_*_5.7_a_0a*','cs_*_5.8_a_0a*','**_*_5.9_a_0a*'],
       row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_b_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_b_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
       row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','**_*_7.5_a_0a*','**_i_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
       row8: ['**_*_8.0_a_0a*','**_*_8.1_a_0a*','**_*_8.2_a_0a*','**_*_8.3_a_0a*','**_*_8.4_a_0a*','**_*_8.5_a_0a*','**_c_8.6_a_0a*','**_*_8.7_a_0a*','**_*_8.8_a_0a*','**_*_8.9_d_0a*'],
@@ -386,7 +386,11 @@ class App extends Component {
         effect: 'void',
       },
     }
-
+    this.terrainMoveSpeedRef = {
+      shallow: .1,
+      sticky: .05,
+      slippery: .2,
+    };
 
 
 
@@ -18072,12 +18076,12 @@ class App extends Component {
       case 'shallow' :
         // console.log('player',player.number,' stepped in',cell.terrain.name,'type',cell.terrain.type);
         this.players[player.number-1].terrainMoveSpeed.state = true;
-        this.players[player.number-1].terrainMoveSpeed.speed = .1;
+        this.players[player.number-1].terrainMoveSpeed.speed = this.terrainMoveSpeedRef[cell.terrain.type]
       break;
       case 'sticky' :
         // console.log('player',player.number,' stepped in',cell.terrain.name,'type',cell.terrain.type);
         this.players[player.number-1].terrainMoveSpeed.state = true;
-        this.players[player.number-1].terrainMoveSpeed.speed = .05;
+        this.players[player.number-1].terrainMoveSpeed.speed = this.terrainMoveSpeedRef[cell.terrain.type]
 
         if (!player.popups.find(x=>x.msg === 'terrainSlowdown')) {
           this.players[player.number-1].popups.push(
@@ -18098,7 +18102,8 @@ class App extends Component {
       case 'slippery' :
         // console.log('player',player.number,' stepped in',cell.terrain.name,'type',cell.terrain.type);
         this.players[player.number-1].terrainMoveSpeed.state = true;
-        this.players[player.number-1].terrainMoveSpeed.speed = .2;
+        this.players[player.number-1].terrainMoveSpeed.speed = this.terrainMoveSpeedRef[cell.terrain.type]
+
 
         if (!player.popups.find(x=>x.msg === 'terrainSpeedup')) {
           this.players[player.number-1].popups.push(
@@ -18279,6 +18284,9 @@ class App extends Component {
 
   }
   obstacleCheckDestination = (cell) => {
+
+    if terraint ype is hazard not lava, damage
+    if name is lava, destroy
 
   }
   popupDrawCalc = (popup,playerOrigin,plyrNo) => {
@@ -18768,6 +18776,11 @@ class App extends Component {
       if (preMoveSpeed > 4) {
         moveSpeed = .2;
       }
+
+      if (this.terrainMoveSpeedRef[obstacleCell.terrain.type]) {
+        moveSpeed = this.terrainMoveSpeedRef[obstacleCell.terrain.type];
+      }
+
 
       if (destCellRef) {
 
@@ -19964,6 +19977,9 @@ class App extends Component {
         moveSpeed = .2;
       }
       // pullStrengthThreshold = 100
+      if (this.terrainMoveSpeedRef[obstacleCell.terrain.type]) {
+        moveSpeed = this.terrainMoveSpeedRef[obstacleCell.terrain.type];
+      }
 
       if (destCellRef) {
 
@@ -26116,7 +26132,6 @@ class App extends Component {
 
 
           }
-
 
 
           // INDESTRUCTIBLE OBSTACLE
