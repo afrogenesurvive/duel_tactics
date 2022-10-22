@@ -15776,8 +15776,8 @@ class App extends Component {
 
         // DROP ITEMS & DAMAGE/DESTROY OBSTACLES & BARRIERS
         for(const cell of this.obstacleBarrierToDestroy) {
-          if (gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y && cell.cell.obstacle.state === true) {
-          // if (gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y) {
+          if (gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y ) {
+          // if (gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y && cell.cell.obstacle.state === true) {
             if(cell.count % 3 === 0) {
               if (cell.type === "obstacle") {
                 let obstacleImg = this.obstacleImgs[cell.cell.obstacle.type];
