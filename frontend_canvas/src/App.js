@@ -535,7 +535,7 @@ class App extends Component {
           state: false,
           key: '',
         },
-        weight: 1,
+        weight: .5,
         height: 1,
         items: [{
           name: 'hpUp',
@@ -6228,12 +6228,22 @@ class App extends Component {
 
                 if (player.strafing.state === true) {
 
+                  if (
+                    player.pulling.state === true ||
+                    player.pushed.state === true ||
+                    player.pulled.state === true
+                  ) {
+                    // player.strafing.direction = '';
+                    player.strafeReleaseHook = true;
+                  }
+
                   // CONTINUOUS STRAFING CHECK
                   if (this.keyPressed[player.number-1].strafe !== true) {
-                    console.log('continuous strafe check');
+                    // console.log('continuous strafe check');
                     player.strafing.state = false;
                   }
                   else {
+                    // console.log('continuous strafe check 2');
                     player.strafing.direction = '';
                   }
 
@@ -7377,6 +7387,7 @@ class App extends Component {
 
         // STRAFE RELEASE
         if (player.strafeReleaseHook === true ) {
+          console.log('yyyyyyyyy');
           player.strafing.state = false;
           player.strafeReleaseHook = false;
           this.getTarget(player);
@@ -15915,6 +15926,12 @@ class App extends Component {
 
   }
 
+
+  // .....item places to change: this.players; add ai player; lvlDataProcess; settings & normal clicked; cellInfoBox; atkCellContents items; this.checkDestination, this.placeItems; cycle/discard/pickup gear (@plyrUpdate & @drawPlyr); itemPlacement (@drawGirdInnit & @drawPlyr); this.deflectDrop; atkPlayr armor mode check; kill plyr drop @plyrUpdate attacking; this.obstacleItemDrop; aiEvaluate gear/item logic
+
+  // have separate function for damage calc called from anywhere player.hp is used
+
+  // add to refs: at end of pulling, pushed,pulled strafing, set strafeReleaseHook true
 
   getTarget = (player) => {
     // console.log('checking target',player.number,'dir',player.direction);
