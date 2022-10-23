@@ -10197,107 +10197,106 @@ class App extends Component {
                   }
                 }
 
-                if (player.stamina.current - this.staminaCostRef.jump >= 0) {
+                if (cellsWithinBounds === true) {
 
-                  if (cellsWithinBounds === true) {
+                  // CAN ONLY JUMP OVER HAZARDS, DEEP OR VOID
+                  if (
+                    cell1.void.state === true ||
+                    cell1.terrain.type === 'deep' ||
+                    cell1.terrain.type === 'hazard'
+                  ) {
+                    // console.log('a');
 
-                    // CAN ONLY JUMP OVER HAZARDS, DEEP OR VOID
+                    // CHECK ALL 3 JUMPING CELLS FOR BARRIERS BASED ON POSITION
+                    let myCellBlocked = false;
+                    let cell1BarrierFacing = false;
+                    let cell2BarrierFacing = false;
+                    if (myCell.barrier.state === true && myCell.barrier.position === player.direction) {
+                      myCellBlocked = true;
+                    }
+                    if (cell1.barrier.state === true) {
+                      switch (cell1.barrier.position) {
+                        case 'north':
+                          if (
+                            player.direction === 'south' ||
+                            player.direction === 'north'
+                          ) {
+                            cell1BarrierFacing = true;
+                          }
+                          break;
+                        case 'south':
+                          if (
+                            player.direction === 'south' ||
+                            player.direction === 'north'
+                          ) {
+                            cell1BarrierFacing = true;
+                          }
+                          break;
+                        case 'east':
+                          if (
+                            player.direction === 'east' ||
+                            player.direction === 'west'
+                          ) {
+                            cell1BarrierFacing = true;
+                          }
+                          break;
+                        case 'west':
+                          if (
+                            player.direction === 'east' ||
+                            player.direction === 'west'
+                          ) {
+                            cell1BarrierFacing = true;
+                          }
+                          break;
+                        default:
+
+                      }
+                    }
+                    if (cell2.barrier.state === true) {
+                      switch (cell2.barrier.position) {
+                        case 'north':
+                          if (player.direction === 'south') {
+                            cell2BarrierFacing = true;
+                          }
+                          break;
+                        case 'south':
+                          if (player.direction === 'north') {
+                            cell2BarrierFacing = true;
+                          }
+                          break;
+                        case 'east':
+                          if (player.direction === 'west') {
+                            cell2BarrierFacing = true;
+                          }
+                          break;
+                        case 'west':
+                          if (player.direction === 'east') {
+                            cell2BarrierFacing = true;
+                          }
+                          break;
+                        default:
+
+                      }
+                    }
+
                     if (
-                      cell1.void.state === true ||
-                      cell1.terrain.type === 'deep' ||
-                      cell1.terrain.type === 'hazard'
+                      cell1.obstacle.state !== true &&
+                      cell2.obstacle.state !== true &&
+                      cell1BarrierFacing !== true &&
+                      cell2BarrierFacing !== true &&
+                      myCellBlocked !== true
                     ) {
-                      // console.log('a');
-
-                      // CHECK ALL 3 JUMPING CELLS FOR BARRIERS BASED ON POSITION
-                      let myCellBlocked = false;
-                      let cell1BarrierFacing = false;
-                      let cell2BarrierFacing = false;
-                      if (myCell.barrier.state === true && myCell.barrier.position === player.direction) {
-                        myCellBlocked = true;
-                      }
-                      if (cell1.barrier.state === true) {
-                        switch (cell1.barrier.position) {
-                          case 'north':
-                            if (
-                              player.direction === 'south' ||
-                              player.direction === 'north'
-                            ) {
-                              cell1BarrierFacing = true;
-                            }
-                            break;
-                          case 'south':
-                            if (
-                              player.direction === 'south' ||
-                              player.direction === 'north'
-                            ) {
-                              cell1BarrierFacing = true;
-                            }
-                            break;
-                          case 'east':
-                            if (
-                              player.direction === 'east' ||
-                              player.direction === 'west'
-                            ) {
-                              cell1BarrierFacing = true;
-                            }
-                            break;
-                          case 'west':
-                            if (
-                              player.direction === 'east' ||
-                              player.direction === 'west'
-                            ) {
-                              cell1BarrierFacing = true;
-                            }
-                            break;
-                          default:
-
-                        }
-                      }
-                      if (cell2.barrier.state === true) {
-                        switch (cell2.barrier.position) {
-                          case 'north':
-                            if (player.direction === 'south') {
-                              cell2BarrierFacing = true;
-                            }
-                            break;
-                          case 'south':
-                            if (player.direction === 'north') {
-                              cell2BarrierFacing = true;
-                            }
-                            break;
-                          case 'east':
-                            if (player.direction === 'west') {
-                              cell2BarrierFacing = true;
-                            }
-                            break;
-                          case 'west':
-                            if (player.direction === 'east') {
-                              cell2BarrierFacing = true;
-                            }
-                            break;
-                          default:
-
-                        }
-                      }
+                      // console.log('no obstacles at jump destination');
 
                       if (
-                        cell1.obstacle.state !== true &&
-                        cell2.obstacle.state !== true &&
-                        cell1BarrierFacing !== true &&
-                        cell2BarrierFacing !== true &&
-                        myCellBlocked !== true
+                        cell2.void.state !== true &&
+                        cell2.terrain.type !== 'deep'
                       ) {
-                        // console.log('no obstacles at jump destination');
-
-                        if (
-                          cell2.void.state !== true &&
-                          cell2.terrain.type !== 'deep'
-                        ) {
 
 
+                        if (player.stamina.current - this.staminaCostRef.jump >= 0) {
 
-                          // console.log('can jump');
+                          // console.log('can jump',player.stamina.current);
                           this.players[player.number-1].jumping.checking = false;
                           this.players[player.number-1].jumping.state = true;
                           player.action = 'jumping'
@@ -10318,6 +10317,7 @@ class App extends Component {
                           // nextPosition = this.jumpCrementer(player);
                           player.nextPosition = nextPosition;
 
+                          // RESET CELL INFO PLAYER
                           if (
                             this.mouseOverCell.state === true &&
                             this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
@@ -10326,99 +10326,102 @@ class App extends Component {
                             this.clicked.player = undefined;
                           }
 
-                        } else {
-                          // console.log('can only jump over voids or deep water cell 2');
-                          this.players[player.number-1].jumping.checking = false;
                         }
-
-
-                        // let targetOccupied = false;
-                        // for (const plyr of this.players) {
-                        //   if (
-                        //     plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
-                        //     plyr.currentPosition.cell.number.y === player.target.cell2.number.y
-                        //   ) {
-                        //     // console.log('c');
-                        //     targetOccupied = true
-                        //   }
-                        //
-                        // }
-
-                        // if (targetOccupied !== true) {
-                        //   if (
-                        //     cell2.void.state !== true &&
-                        //     cell2.terrain.type !== 'deep'
-                        //   ) {
-                        //     // console.log('can jump');
-                        //     this.players[player.number-1].jumping.checking = false;
-                        //     this.players[player.number-1].jumping.state = true;
-                        //     player.action = 'jumping'
-                        //     player.stamina.current = player.stamina.current - this.staminaCostRef.jump;
-                        //
-                        //     player.moving = {
-                        //       state: true,
-                        //       step: 0,
-                        //       course: '',
-                        //       origin: {
-                        //         number: player.currentPosition.cell.number,
-                        //         center: player.currentPosition.cell.center,
-                        //       },
-                        //       destination: target.cell2.center
-                        //     }
-                        //
-                        //     nextPosition = this.lineCrementer(player);
-                        //     // nextPosition = this.jumpCrementer(player);
-                        //     player.nextPosition = nextPosition;
-                        //   } else {
-                        //     // console.log('can only jump over voids or deep water cell 2');
-                        //     this.players[player.number-1].jumping.checking = false;
-                        //   }
-                        // }
-                        // else {
-                        //   // console.log('jump destination occupied');
-                        //   this.players[player.number-1].jumping.checking = false;
-                        // }
+                        else {
+                          // this.getTarget(player);
+                          this.players[player.number-1].jumping.checking = false;
+                          player.action = 'idle';
+                          player.stamina.current = 0;
+                          player.statusDisplay = {
+                            state: true,
+                            status: 'Out of Stamina',
+                            count: 0,
+                            limit: player.statusDisplay.limit,
+                          }
+                        }
 
                       } else {
-                        // console.log('jump obstacle detected');
+                        // console.log('can only jump over voids or deep water cell 2');
                         this.players[player.number-1].jumping.checking = false;
-
-                        if (cell1.obstacle.state === true) {
-                          console.log("can't jump! obstacle in cell1");
-                        }
-                        if (cell2.obstacle.state === true) {
-                          console.log("can't jump! obstacle in cell2");
-                        }
-                        if (myCellBlocked === true) {
-                          console.log("can't jump! barrier in player cell blocking");
-                        }
-                        if (cell1BarrierFacing === true) {
-                          console.log("can't jump! barrier cell 1 blocking");
-                        }
-                        if (cell2BarrierFacing === true) {
-                          console.log("can't jump! barrier cell 2 blocking");
-                        }
-
                       }
+
+
+                      // JUMPING INTO PLYR OCCUPIED CELL CAUSES OVERLAP PUSHBACK. IF NOT USE THE FOLLOWING
+                      // let targetOccupied = false;
+                      // for (const plyr of this.players) {
+                      //   if (
+                      //     plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
+                      //     plyr.currentPosition.cell.number.y === player.target.cell2.number.y
+                      //   ) {
+                      //     // console.log('c');
+                      //     targetOccupied = true
+                      //   }
+                      //
+                      // }
+                      //
+                      // if (targetOccupied !== true) {
+                      //   if (
+                      //     cell2.void.state !== true &&
+                      //     cell2.terrain.type !== 'deep'
+                      //   ) {
+                      //     // console.log('can jump');
+                      //     this.players[player.number-1].jumping.checking = false;
+                      //     this.players[player.number-1].jumping.state = true;
+                      //     player.action = 'jumping'
+                      //     player.stamina.current = player.stamina.current - this.staminaCostRef.jump;
+                      //
+                      //     player.moving = {
+                      //       state: true,
+                      //       step: 0,
+                      //       course: '',
+                      //       origin: {
+                      //         number: player.currentPosition.cell.number,
+                      //         center: player.currentPosition.cell.center,
+                      //       },
+                      //       destination: target.cell2.center
+                      //     }
+                      //
+                      //     nextPosition = this.lineCrementer(player);
+                      //     // nextPosition = this.jumpCrementer(player);
+                      //     player.nextPosition = nextPosition;
+                      //   } else {
+                      //     // console.log('can only jump over voids or deep water cell 2');
+                      //     this.players[player.number-1].jumping.checking = false;
+                      //   }
+                      // }
+                      // else {
+                      //   // console.log('jump destination occupied');
+                      //   this.players[player.number-1].jumping.checking = false;
+                      // }
+
                     } else {
-                      // console.log('can only jump over voids, hazards or deep water cell 2');
+                      // console.log('jump obstacle detected');
                       this.players[player.number-1].jumping.checking = false;
+
+                      if (cell1.obstacle.state === true) {
+                        console.log("can't jump! obstacle in cell1");
+                      }
+                      if (cell2.obstacle.state === true) {
+                        console.log("can't jump! obstacle in cell2");
+                      }
+                      if (myCellBlocked === true) {
+                        console.log("can't jump! barrier in player cell blocking");
+                      }
+                      if (cell1BarrierFacing === true) {
+                        console.log("can't jump! barrier cell 1 blocking");
+                      }
+                      if (cell2BarrierFacing === true) {
+                        console.log("can't jump! barrier cell 2 blocking");
+                      }
+
                     }
                   } else {
-                    // console.log('cell out of bounds');
+                    // console.log('can only jump over voids, hazards or deep water cell 2');
                     this.players[player.number-1].jumping.checking = false;
                   }
-
-                }
-                else {
-                  player.action = 'idle';
-                  player.stamina.current = 0;
-                  player.statusDisplay = {
-                    state: true,
-                    status: 'Out of Stamina',
-                    count: 0,
-                    limit: player.statusDisplay.limit,
-                  }
+                } else {
+                  // console.log('cell out of bounds');
+                  this.players[player.number-1].jumping.checking = false;
                 }
 
               }
@@ -21582,6 +21585,39 @@ class App extends Component {
           }
         )
       break;
+      case 'jumping':
+        if (player.success.deflected.state !== true) {
+          player.action = 'idle';
+        }
+        player.idleAnim = {
+          state: false,
+          count: 0,
+          limit: 5,
+        }
+        player.jumping = {
+          checking: false,
+          state: false,
+        };
+        this.players[player.number-1].statusDisplay = {
+          state: true,
+          status: 'jumping break!',
+          count: 1,
+          limit: this.players[player.number-1].statusDisplay.limit,
+        }
+        player.popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 25,
+            type: '',
+            position: '',
+            msg: 'attackCancelled',
+            img: '',
+
+          }
+        )
+      break;
+      default:
     }
 
     if (player.prePush.state === true) {
