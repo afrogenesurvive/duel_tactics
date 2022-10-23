@@ -16020,12 +16020,6 @@ class App extends Component {
   }
 
 
-  // .....item places to change: this.players; add ai player; lvlDataProcess; settings & normal clicked; cellInfoBox; atkCellContents items; this.checkDestination, this.placeItems; cycle/discard/pickup gear (@plyrUpdate & @drawPlyr); itemPlacement (@drawGirdInnit & @drawPlyr); this.deflectDrop; atkPlayr armor mode check; kill plyr drop @plyrUpdate attacking; this.obstacleItemDrop; aiEvaluate gear/item logic
-
-  // have separate function for damage calc called from anywhere player.hp is used
-
-  // add to refs: at end of pulling, pushed,pulled strafing, set strafeReleaseHook true
-
   getTarget = (player) => {
     // console.log('checking target',player.number,'dir',player.direction);
 
@@ -18096,6 +18090,7 @@ class App extends Component {
             name: '',
             type: '',
             subType: '',
+            effect: '',
             initDrawn: false
           }
         }
@@ -22503,6 +22498,7 @@ class App extends Component {
               cell2.item.type = item.type;
               cell2.item.subType = item.subType;
               cell2.item.effect = item.effect;
+
 
               // item.amount--
               // console.log('post item', item, cell2.item,cell2.number);
