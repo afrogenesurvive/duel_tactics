@@ -213,3 +213,12 @@
   margin: 0 .3rem;
   color: red;
 }
+
+.defendSvg {
+  position: relative;
+  bottom: 2;
+  right: 2;
+  height: 50px;
+  text-align: right;
+  margin-bottom: 1rem;
+}

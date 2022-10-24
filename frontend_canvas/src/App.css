@@ -203,3 +203,12 @@
     transform: rotate(359deg);
   }
 }
+
+
+.defendSvg {
+  height: 40px;
+  position: absolute;
+  bottom: 50px;
+  right: 100px;
+  z-index: 999;
+}

@@ -2528,7 +2528,7 @@ class App extends Component {
     this.mouseOverCellSwitchOff = {
       state: false,
       count: 0,
-      limit: 80,
+      limit: 200,
     }
 
 
@@ -2696,6 +2696,11 @@ class App extends Component {
     this.obstacleImgs = {};
     this.barrierImgs = {};
     this.cellColorRef = [];
+    this.svgDefaultsRef = {
+      defend: [
+        {elem: 'path', id: "1", value: "M14 1h6M13 2h1M20 2h1M12 3h1M21 3h1M9 4h3M22 4h3M6 5h3M25 5h3M5 6h1M28 6h1M4 7h1M29 7h1M4 8h1M29 8h1M4 9h1M8 9h1M25 9h1M29 9h1M4 10h1M29 10h1M4 11h1M29 11h1M4 12h1M29 12h1M4 13h1M29 13h1M4 14h1M29 14h1M4 15h1M29 15h1M4 16h1M29 16h1M4 17h1M29 17h1M4 18h1M29 18h1M5 19h1M9 19h1M25 19h1M28 19h1M5 20h1M28 20h1M5 21h1M28 21h1M6 22h1M27 22h1M6 23h1M27 23h1M7 24h1M26 24h1M8 25h1M13 25h1M21 25h1M25 25h1M9 26h1M24 26h1M10 27h1M23 27h1M11 28h1M22 28h1M12 29h1M17 29h1M21 29h1M13 30h1M20 30h1M14 31h1M19 31h1M15 32h4"}
+      ]
+    }
 
 
     // CAMERA
@@ -2850,6 +2855,7 @@ class App extends Component {
 
 
     this.testDraw = [];
+    this.testData = "";
 
   }
 
@@ -10657,7 +10663,37 @@ class App extends Component {
 
     // POPUPS
     // Testing
+    if (this.time > 100 && this.time < 200) {
+      // this.refs.defendSvg.children[2].attributes[3].value = ""
+      let perc = (this.time - 100)/100;
+      let arr = this.svgDefaultsRef.defend[this.svgDefaultsRef.defend.indexOf(this.svgDefaultsRef.defend.find(x=>x.id === '1'))].value.split(" ");
+      let upperIndex = Math.ceil(arr.length*perc);
+      let newArr = [];
+      for (var i = 0; i < upperIndex; i++) {
+        newArr.push(arr[i]);
+      }
+      this.testData = newArr.join(" ");
+    }
     if (this.time === 100 || this.time === 300) {
+
+      // DOM manipulation: how to find element of HTMLCollection and NamedNodeMap by property??
+
+
+      // this.refs.defendSvg.children[1].attributes[3].value = ""
+      // this.refs.defendSvg.children[1].setAttribute('d','');
+      // let arr = this.svgDefaultsRef.defend[this.svgDefaultsRef.defend.indexOf(this.svgDefaultsRef.defend.find(x=>x.id === '1'))].value.split(" ");
+      // let newArr = [];
+
+      // let percentage =
+      // using eg defend windup, determine percentage completion
+      // deteremine the limit index of arr,
+      // run for loop if index < limit+1
+
+      // for (const elem of arr) {
+      //   newArr.push(elem);
+      //   this.testData = newArr.join(" ");
+      // }
+
 
       let newArray = [];
       let x = 0;
@@ -27833,6 +27869,7 @@ class App extends Component {
   drawGridInit = (canvas, context, canvas2, context2) => {
     // console.log('drawing initial');
 
+
     context.clearRect(0,0,this.canvasWidth,this.canvasHeight)
     context2.clearRect(0,0,this.canvasWidth,this.canvasHeight)
 
@@ -28478,7 +28515,6 @@ class App extends Component {
     this.cellColorRef = preCellColorRef;
 
 
-
     for (var x = 0; x < this.gridWidth+1; x++) {
       for (var y = 0; y < this.gridWidth+1; y++) {
         let p = new Point();
@@ -28770,8 +28806,6 @@ class App extends Component {
 
       }
     }
-
-
 
   }
 
@@ -36305,6 +36339,17 @@ class App extends Component {
             />
           )}
 
+
+          <svg className="defendSvg" ref="defendSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 34 34" shape-rendering="crispEdges">
+            <metadata>Made with Pixels to Svg https://codepen.io/shshaw/pen/XbxvNj</metadata>
+            <path stroke="green" stroke-width="10px" id="1" d="M14 1h6M13 2h1M20 2h1M12 3h1M21 3h1M9 4h3M22 4h3M6 5h3M25 5h3M5 6h1M28 6h1M4 7h1M29 7h1M4 8h1M29 8h1M4 9h1M8 9h1M25 9h1M29 9h1M4 10h1M29 10h1M4 11h1M29 11h1M4 12h1M29 12h1M4 13h1M29 13h1M4 14h1M29 14h1M4 15h1M29 15h1M4 16h1M29 16h1M4 17h1M29 17h1M4 18h1M29 18h1M5 19h1M9 19h1M25 19h1M28 19h1M5 20h1M28 20h1M5 21h1M28 21h1M6 22h1M27 22h1M6 23h1M27 23h1M7 24h1M26 24h1M8 25h1M13 25h1M21 25h1M25 25h1M9 26h1M24 26h1M10 27h1M23 27h1M11 28h1M22 28h1M12 29h1M17 29h1M21 29h1M13 30h1M20 30h1M14 31h1M19 31h1M15 32h4" />
+            <path stroke="red" stroke-width="10px" id="2" d={this.testData} />
+            <path stroke="#fbfbfb" d="M14 2h4M13 3h2M12 4h3M9 5h5M6 6h6M5 7h2M14 7h1M5 8h1M7 8h1M9 8h1M11 8h1M13 8h1M24 8h1M5 9h1M10 9h1M12 9h1M5 10h1M7 10h1M9 10h1M11 10h1M5 11h1M8 11h1M10 11h1M5 12h1M7 12h1M9 12h1M11 12h1M5 13h1M8 13h1M5 14h1M5 15h1M7 15h1M5 16h1M5 17h1M5 18h1M8 18h1M24 18h1M6 20h1M6 21h1M7 23h1M12 24h1M20 24h1M16 28h1" />
+            <path stroke="#cfc9db" d="M18 2h2M15 3h1M15 4h2M14 5h2M23 5h2M12 6h5M22 6h6M7 7h7M15 7h1M6 8h1M10 8h1M12 8h1M14 8h3M6 9h1M9 9h1M11 9h1M13 9h3M6 10h1M8 10h1M10 10h1M12 10h5M6 11h2M9 11h1M11 11h5M6 12h1M8 12h1M10 12h1M12 12h5M6 13h2M9 13h7M6 14h11M6 15h1M8 15h8M6 16h1M8 16h1M10 16h1M12 16h1M14 16h1M16 16h1M6 19h1M7 22h1M8 24h1M9 25h1M10 26h1M11 27h1M12 28h1M13 29h1M14 30h1" />
+            <path stroke="#9f99ab" d="M16 3h4M17 4h3M16 5h5M22 5h1M17 6h5M16 7h11M17 8h7M26 8h1M16 9h8M26 9h1M17 10h10M16 11h11M17 12h10M16 13h11M17 14h10M16 15h11M7 16h1M9 16h1M11 16h1M13 16h1M15 16h1M17 16h1M19 16h1M21 16h1M23 16h1M25 16h1M6 17h11M18 17h1M20 17h1M22 17h1M24 17h1M26 17h1M6 18h2M10 18h6M17 18h1M7 19h1M10 19h7M7 20h9M17 20h1M7 21h10M8 22h8M17 22h1M8 23h9M9 24h3M14 24h2M17 24h1M10 25h2M14 25h3M11 26h5M17 26h1M12 27h5M13 28h3M14 29h2M15 30h1M15 31h2" />
+            <path stroke="#7d7789" d="M20 3h1M20 4h2M21 5h1M28 7h1M8 8h1M28 8h1M7 9h1M28 9h1M28 10h1M28 11h1M28 12h1M28 13h1M28 14h1M28 15h1M18 16h1M20 16h1M22 16h1M24 16h1M26 16h1M28 16h1M17 17h1M19 17h1M21 17h1M23 17h1M25 17h1M28 17h1M16 18h1M18 18h6M28 18h1M17 19h7M27 19h1M16 20h1M18 20h8M27 20h1M17 21h9M27 21h1M16 22h1M18 22h7M26 22h1M17 23h8M26 23h1M16 24h1M18 24h2M22 24h2M25 24h1M17 25h3M22 25h1M24 25h1M16 26h1M18 26h4M23 26h1M17 27h4M22 27h1M17 28h3M21 28h1M16 29h1M18 29h1M20 29h1M16 30h1M19 30h1M17 31h2" />
+            <path stroke="#585264" d="M27 7h1M25 8h1M27 8h1M24 9h1M27 9h1M27 10h1M27 11h1M27 12h1M27 13h1M27 14h1M27 15h1M27 16h1M27 17h1M9 18h1M25 18h3M8 19h1M24 19h1M26 19h1M26 20h1M26 21h1M25 22h1M25 23h1M13 24h1M21 24h1M24 24h1M12 25h1M20 25h1M23 25h1M22 26h1M21 27h1M20 28h1M19 29h1M17 30h2" />
+          </svg>
 
           <img src={floorGrass} className='hidden' ref="floorGrass" alt="logo" id="floor1"/>
           <img src={floorDirt} className='hidden' ref="floorDirt" alt="logo" id="floor2"/>
