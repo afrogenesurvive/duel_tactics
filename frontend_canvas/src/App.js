@@ -2697,9 +2697,7 @@ class App extends Component {
     this.barrierImgs = {};
     this.cellColorRef = [];
     this.svgDefaultsRef = {
-      defend: [
-        {elem: 'path', id: "1", value: "M14 1h6M13 2h1M20 2h1M12 3h1M21 3h1M9 4h3M22 4h3M6 5h3M25 5h3M5 6h1M28 6h1M4 7h1M29 7h1M4 8h1M29 8h1M4 9h1M8 9h1M25 9h1M29 9h1M4 10h1M29 10h1M4 11h1M29 11h1M4 12h1M29 12h1M4 13h1M29 13h1M4 14h1M29 14h1M4 15h1M29 15h1M4 16h1M29 16h1M4 17h1M29 17h1M4 18h1M29 18h1M5 19h1M9 19h1M25 19h1M28 19h1M5 20h1M28 20h1M5 21h1M28 21h1M6 22h1M27 22h1M6 23h1M27 23h1M7 24h1M26 24h1M8 25h1M13 25h1M21 25h1M25 25h1M9 26h1M24 26h1M10 27h1M23 27h1M11 28h1M22 28h1M12 29h1M17 29h1M21 29h1M13 30h1M20 30h1M14 31h1M19 31h1M15 32h4"}
-      ]
+      defend: "M14 1h6M13 2h1M20 2h1M12 3h1M21 3h1M9 4h3M22 4h3M6 5h3M25 5h3M5 6h1M28 6h1M4 7h1M29 7h1M4 8h1M29 8h1M4 9h1M8 9h1M25 9h1M29 9h1M4 10h1M29 10h1M4 11h1M29 11h1M4 12h1M29 12h1M4 13h1M29 13h1M4 14h1M29 14h1M4 15h1M29 15h1M4 16h1M29 16h1M4 17h1M29 17h1M4 18h1M29 18h1M5 19h1M9 19h1M25 19h1M28 19h1M5 20h1M28 20h1M5 21h1M28 21h1M6 22h1M27 22h1M6 23h1M27 23h1M7 24h1M26 24h1M8 25h1M13 25h1M21 25h1M25 25h1M9 26h1M24 26h1M10 27h1M23 27h1M11 28h1M22 28h1M12 29h1M17 29h1M21 29h1M13 30h1M20 30h1M14 31h1M19 31h1M15 32h4",
     }
 
 
@@ -10663,35 +10661,21 @@ class App extends Component {
 
     // POPUPS
     // Testing
-    if (this.time > 100 && this.time < 200) {
-      // this.refs.defendSvg.children[2].attributes[3].value = ""
-      let perc = (this.time - 100)/100;
-      let arr = this.svgDefaultsRef.defend[this.svgDefaultsRef.defend.indexOf(this.svgDefaultsRef.defend.find(x=>x.id === '1'))].value.split(" ");
-      let upperIndex = Math.ceil(arr.length*perc);
-      let newArr = [];
-      for (var i = 0; i < upperIndex; i++) {
-        newArr.push(arr[i]);
-      }
-      this.testData = newArr.join(" ");
-    }
     if (this.time === 100 || this.time === 300) {
 
-      // DOM manipulation: how to find element of HTMLCollection and NamedNodeMap by property??
-
-
-      // this.refs.defendSvg.children[1].attributes[3].value = ""
-      // this.refs.defendSvg.children[1].setAttribute('d','');
-      // let arr = this.svgDefaultsRef.defend[this.svgDefaultsRef.defend.indexOf(this.svgDefaultsRef.defend.find(x=>x.id === '1'))].value.split(" ");
-      // let newArr = [];
-
-      // let percentage =
-      // using eg defend windup, determine percentage completion
-      // deteremine the limit index of arr,
-      // run for loop if index < limit+1
-
-      // for (const elem of arr) {
-      //   newArr.push(elem);
-      //   this.testData = newArr.join(" ");
+      // if (!player.popups.find(x => x.msg === newArray[i])) {
+      //   player.popups.push(
+      //     {
+      //       state: false,
+      //       count: 0,
+      //       limit: 35,
+      //       type: '',
+      //       position: '',
+      //       msg: newArray[i],
+      //       img: '',
+      //       // cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
+      //     }
+      //   )
       // }
 
 
@@ -10702,20 +10686,20 @@ class App extends Component {
         newArray.push(key);
       }
       for (var i = 0; i < 20; i++) {
-        // if (!player.popups.find(x => x.msg === newArray[i])) {
-        //   player.popups.push(
-        //     {
-        //       state: false,
-        //       count: 0,
-        //       limit: 35,
-        //       type: '',
-        //       position: '',
-        //       msg: newArray[i],
-        //       img: '',
-        //       // cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
-        //     }
-        //   )
-        // }
+        if (!player.popups.find(x => x.msg === newArray[i])) {
+          player.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 35,
+              type: '',
+              position: '',
+              msg: newArray[i],
+              img: '',
+              // cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
+            }
+          )
+        }
         // if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 4 && x.cell.number.x === 4)) {
         //   this.cellPopups.push(
         //     {
@@ -12906,7 +12890,7 @@ class App extends Component {
           }
         }
         // CELL POPUPS
-        if (x === this.gridWidth && y === this.gridWidth ) {
+        if (x === this.gridWidth+1 && y === this.gridWidth+1 ) {
           // console.log(this.refs.pickupAmmo);
 
           // let popupImageRef = {
@@ -14973,7 +14957,7 @@ class App extends Component {
 
 
           // PLAYER POPUPS
-          if (x === this.gridWidth && y === this.gridWidth ) {
+          if (x === this.gridWidth+1 && y === this.gridWidth+1 ) {
             // console.log(this.refs.pickupAmmo);
 
 
@@ -15326,7 +15310,10 @@ class App extends Component {
                     }
 
 
-                    popup.img = this.popupImageRef[popup.msg]
+                    if (popup.img === "") {
+                      popup.img = this.popupImageRef[popup.msg];
+                    }
+
 
                     popupDrawCoords = this.popupDrawCalc(popup,{x:point.x-25,y:point.y-25},plyr.number);
                     // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
@@ -15694,7 +15681,10 @@ class App extends Component {
                       // console.log("A new invalid direction === popup's position. reconsidering...",popup.msg);
                     }
                     else {
-                      popup.img = this.popupImageRef[popup.msg]
+                      if (popup.img === "") {
+                        popup.img = this.popupImageRef[popup.msg];
+                      }
+
                       popupDrawCoords = this.popupDrawCalc(popup,{x:point.x-25,y:point.y-25},plyr.number);
                       // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
                       drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor)
@@ -18754,6 +18744,48 @@ class App extends Component {
     }
 
     return popupCoords;
+
+  }
+  playerPopupSvgCalc = (player) => {
+
+    // at defend start, push defend popup, call popupsvgcalc
+    // at all other defend counts, call svgcalc
+
+    
+
+    // this.refs.defendSvg.children[2].attributes[3].value = "";
+    // this.refs.defendSvg.children[2].setAttribute("d","");
+    let perc = (this.time - 100)/100;
+    // let arr = this.svgDefaultsRef[player.action][this.svgDefaultsRef[player.action].indexOf(this.svgDefaultsRef[player.action].find(x=>x.id === '1'))].value.split(" ").reverse();
+    let arr = this.svgDefaultsRef.defend[this.svgDefaultsRef.defend.indexOf(this.svgDefaultsRef.defend.find(x=>x.id === '1'))].value.split(" ");
+    let upperIndex = Math.ceil(arr.length*perc);
+
+    // let newArr = [];
+    // for (var i = 0; i < upperIndex+1; i++) {
+    //   newArr.push(arr[i]);
+    // }
+    // this.refs.defendSvg.children[2].setAttribute("d",newArr.join(" "));
+
+
+
+    let newArr = arr;
+    this.refs.defendSvg.children[2].setAttribute("d",arr.join(" "));
+    for (var i = 0; i < upperIndex+1; i++) {
+      newArr.pop();
+    }
+    this.refs.defendSvg.children[2].setAttribute("d",newArr.join(" "));
+
+
+    // set popup img ref to svg,
+    // if plyr popups incls msg defend,
+    // call playerPopupSvgCalc(player,action,stage(winup,peak,cooldown),popupMsg)
+    //   calc reset svg path.d.value,set perc,
+     // arr (if winding up, start w/ empty newArr then fill path data, if cooldown, start w/ full newArr then empty path data, if peak keep refpath d empty),
+     // newArr, this.refs[popup.msg].children[2].setAttribute("d",newArr.join(" "));
+    // use switch to determine newArr processing eg: defend,decay
+
+
+
 
   }
   cartesianToIsometric = (cartPt) => {
@@ -36343,7 +36375,7 @@ class App extends Component {
           <svg className="defendSvg" ref="defendSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 34 34" shape-rendering="crispEdges">
             <metadata>Made with Pixels to Svg https://codepen.io/shshaw/pen/XbxvNj</metadata>
             <path stroke="green" stroke-width="10px" id="1" d="M14 1h6M13 2h1M20 2h1M12 3h1M21 3h1M9 4h3M22 4h3M6 5h3M25 5h3M5 6h1M28 6h1M4 7h1M29 7h1M4 8h1M29 8h1M4 9h1M8 9h1M25 9h1M29 9h1M4 10h1M29 10h1M4 11h1M29 11h1M4 12h1M29 12h1M4 13h1M29 13h1M4 14h1M29 14h1M4 15h1M29 15h1M4 16h1M29 16h1M4 17h1M29 17h1M4 18h1M29 18h1M5 19h1M9 19h1M25 19h1M28 19h1M5 20h1M28 20h1M5 21h1M28 21h1M6 22h1M27 22h1M6 23h1M27 23h1M7 24h1M26 24h1M8 25h1M13 25h1M21 25h1M25 25h1M9 26h1M24 26h1M10 27h1M23 27h1M11 28h1M22 28h1M12 29h1M17 29h1M21 29h1M13 30h1M20 30h1M14 31h1M19 31h1M15 32h4" />
-            <path stroke="red" stroke-width="10px" id="2" d={this.testData} />
+            <path stroke="red" stroke-width="10px" id="2" d="" />
             <path stroke="#fbfbfb" d="M14 2h4M13 3h2M12 4h3M9 5h5M6 6h6M5 7h2M14 7h1M5 8h1M7 8h1M9 8h1M11 8h1M13 8h1M24 8h1M5 9h1M10 9h1M12 9h1M5 10h1M7 10h1M9 10h1M11 10h1M5 11h1M8 11h1M10 11h1M5 12h1M7 12h1M9 12h1M11 12h1M5 13h1M8 13h1M5 14h1M5 15h1M7 15h1M5 16h1M5 17h1M5 18h1M8 18h1M24 18h1M6 20h1M6 21h1M7 23h1M12 24h1M20 24h1M16 28h1" />
             <path stroke="#cfc9db" d="M18 2h2M15 3h1M15 4h2M14 5h2M23 5h2M12 6h5M22 6h6M7 7h7M15 7h1M6 8h1M10 8h1M12 8h1M14 8h3M6 9h1M9 9h1M11 9h1M13 9h3M6 10h1M8 10h1M10 10h1M12 10h5M6 11h2M9 11h1M11 11h5M6 12h1M8 12h1M10 12h1M12 12h5M6 13h2M9 13h7M6 14h11M6 15h1M8 15h8M6 16h1M8 16h1M10 16h1M12 16h1M14 16h1M16 16h1M6 19h1M7 22h1M8 24h1M9 25h1M10 26h1M11 27h1M12 28h1M13 29h1M14 30h1" />
             <path stroke="#9f99ab" d="M16 3h4M17 4h3M16 5h5M22 5h1M17 6h5M16 7h11M17 8h7M26 8h1M16 9h8M26 9h1M17 10h10M16 11h11M17 12h10M16 13h11M17 14h10M16 15h11M7 16h1M9 16h1M11 16h1M13 16h1M15 16h1M17 16h1M19 16h1M21 16h1M23 16h1M25 16h1M6 17h11M18 17h1M20 17h1M22 17h1M24 17h1M26 17h1M6 18h2M10 18h6M17 18h1M7 19h1M10 19h7M7 20h9M17 20h1M7 21h10M8 22h8M17 22h1M8 23h9M9 24h3M14 24h2M17 24h1M10 25h2M14 25h3M11 26h5M17 26h1M12 27h5M13 28h3M14 29h2M15 30h1M15 31h2" />
