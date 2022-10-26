@@ -14,8 +14,6 @@ import './debugBox.css';
 
 const CellInfo = props => {
 
-
-
   return (
     <div className="cellInfoBox">
       <p className="cellInfoText">
