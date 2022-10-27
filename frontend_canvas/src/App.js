@@ -2697,10 +2697,7 @@ class App extends Component {
     this.obstacleImgs = {};
     this.barrierImgs = {};
     this.cellColorRef = [];
-    this.svgDefaultsRef = {
-      defend: "M14 1h6M13 2h1M20 2h1M12 3h1M21 3h1M9 4h3M22 4h3M6 5h3M25 5h3M5 6h1M28 6h1M4 7h1M29 7h1M4 8h1M29 8h1M4 9h1M8 9h1M25 9h1M29 9h1M4 10h1M29 10h1M4 11h1M29 11h1M4 12h1M29 12h1M4 13h1M29 13h1M4 14h1M29 14h1M4 15h1M29 15h1M4 16h1M29 16h1M4 17h1M29 17h1M4 18h1M29 18h1M5 19h1M9 19h1M25 19h1M28 19h1M5 20h1M28 20h1M5 21h1M28 21h1M6 22h1M27 22h1M6 23h1M27 23h1M7 24h1M26 24h1M8 25h1M13 25h1M21 25h1M25 25h1M9 26h1M24 26h1M10 27h1M23 27h1M11 28h1M22 28h1M12 29h1M17 29h1M21 29h1M13 30h1M20 30h1M14 31h1M19 31h1M15 32h4",
-      attack: "M123 4h1M110 17h1M145 26h1M79 48h1M114 57h1M101 70h1M17 119h1M30 132h1 M124 4h21M145 5h1M145 6h1M145 7h1M145 8h1M145 9h1M145 10h1M145 11h1M145 12h1M145 13h1M145 14h1M145 15h1M145 16h1M145 17h1M145 18h1M145 19h1M145 20h1M145 21h1M145 22h1M145 23h1M145 24h1M145 25h1M71 57h4M97 70h4M92 75h1M92 76h1M92 77h1M92 78h1M14 79h8M75 92h13M61 119h1M70 128h1M70 129h1M70 130h1M70 131h1M5 132h3M70 132h1M70 133h1M70 134h1M70 135h1M17 142h1M17 143h1M17 144h1M9 145h8 M145 4h1M111 17h3M92 36h1M132 36h1M92 37h1M132 37h1M92 38h1M132 38h1M111 57h3M70 58h1M70 59h1M70 60h1M89 79h3M31 92h8M17 106h1M17 107h1M17 108h1M17 109h1M57 111h1M57 112h1M57 113h1M57 114h1M57 115h1M57 116h1M57 117h1M57 118h1M17 120h1M17 121h1M17 122h1M13 123h1M4 132h1M27 132h3M40 132h4M26 136h1M17 145h1 M123 5h1M123 6h1M123 7h1M102 26h3M142 26h3M101 27h1M101 28h1M101 29h1M123 45h1M123 46h1M123 47h1M80 48h3M120 48h3M101 67h1M101 68h1M101 69h1M26 84h1M26 85h1M26 86h1M26 87h1M39 92h1M14 123h3M62 123h4M26 133h1M26 134h1M26 135h1 M124 5h21M124 6h21M124 7h21M141 8h4M120 9h3M142 9h3M120 10h3M142 10h3M120 11h3M142 11h3M120 12h3M142 12h3M142 13h3M115 14h4M142 14h3M115 15h4M142 15h3M115 16h4M142 16h3M142 17h3M111 18h3M142 18h3M111 19h3M142 19h3M111 20h3M142 20h3M111 21h3M142 21h3M106 22h4M142 22h3M106 23h4M142 23h3M106 24h4M142 24h3M106 25h4M142 25h3M102 27h3M137 27h4M102 28h3M137 28h4M102 29h3M137 29h4M97 31h4M133 31h3M97 32h4M133 32h3M97 33h4M133 33h3M97 34h4M133 34h3M93 36h4M128 36h4M93 37h4M128 37h4M93 38h4M128 38h4M89 40h3M124 40h4M89 41h3M124 41h4M89 42h3M124 42h4M89 43h3M124 43h4M84 45h4M120 45h3M84 46h4M120 46h3M84 47h4M120 47h3M80 49h3M115 49h4M80 50h3M115 50h4M80 51h3M115 51h4M80 52h3M115 52h4M75 53h4M111 53h3M75 54h4M111 54h3M75 55h4M111 55h3M75 56h4M111 56h3M71 58h4M106 58h4M71 59h4M106 59h4M71 60h4M106 60h4M58 62h12M102 62h3M58 63h12M102 63h3M58 64h12M102 64h3M58 65h12M102 65h3M58 66h3M58 67h3M97 67h4M58 68h3M97 68h4M58 69h3M97 69h4M58 70h3M58 71h3M93 71h4M58 72h3M93 72h4M58 73h3M93 73h4M58 74h3M93 74h4M40 75h17M89 75h3M40 76h17M89 76h3M40 77h17M89 77h3M40 78h17M89 78h3M40 79h4M14 80h8M40 80h4M84 80h4M14 81h8M40 81h4M84 81h4M14 82h8M40 82h4M84 82h4M40 83h4M84 83h4M9 84h4M22 84h4M40 84h4M84 84h4M9 85h4M22 85h4M40 85h4M84 85h4M9 86h4M22 86h4M40 86h4M84 86h4M9 87h4M22 87h4M40 87h4M84 87h4M9 88h4M40 88h4M84 88h4M9 89h4M27 89h3M40 89h4M75 89h13M9 90h4M27 90h3M40 90h4M75 90h13M9 91h4M27 91h3M40 91h4M75 91h13M9 92h4M40 92h4M9 93h4M31 93h13M71 93h4M9 94h4M31 94h13M71 94h4M9 95h4M31 95h13M71 95h4M9 96h4M31 96h13M71 96h4M14 97h3M71 97h4M14 98h3M71 98h4M14 99h3M71 99h4M14 100h3M71 100h4M14 101h3M71 101h4M14 102h3M71 102h4M14 103h3M71 103h4M14 104h3M71 104h4M71 105h4M18 106h4M53 106h22M18 107h4M53 107h22M18 108h4M53 108h22M18 109h4M53 109h22M53 110h4M22 111h4M53 111h4M22 112h4M53 112h4M22 113h4M53 113h4M22 114h4M53 114h4M22 115h4M53 115h4M22 116h4M53 116h4M22 117h4M53 117h4M22 118h4M53 118h4M18 120h4M58 120h3M18 121h4M58 121h3M18 122h4M58 122h3M14 124h3M31 124h8M62 124h4M14 125h3M31 125h8M62 125h4M14 126h3M31 126h8M62 126h4M14 127h3M31 127h8M62 127h4M9 128h4M27 128h3M40 128h4M67 128h3M9 129h4M27 129h3M40 129h4M67 129h3M9 130h4M27 130h3M40 130h4M67 130h3M9 131h4M27 131h3M40 131h4M67 131h3M67 132h3M5 133h3M22 133h4M45 133h8M67 133h3M5 134h3M22 134h4M45 134h8M67 134h3M5 135h3M22 135h4M45 135h8M67 135h3M5 136h3M5 137h3M18 137h4M53 137h13M5 138h3M18 138h4M53 138h13M5 139h3M18 139h4M53 139h13M5 140h3M18 140h4M53 140h13M9 142h8M9 143h8M9 144h8 M119 8h4M105 22h1M105 23h1M105 24h1M105 25h1M141 27h1M141 28h1M141 29h1M97 30h4M141 30h1M83 44h1M124 44h4M83 45h1M83 46h1M83 47h1M119 49h1M119 50h1M119 51h1M119 52h1M57 61h1M102 66h4M9 83h4M22 83h4M8 84h1M8 85h1M8 86h1M8 87h1M8 88h1M8 89h1M8 90h1M8 91h1M8 92h1M8 93h1M8 94h1M8 95h1M8 96h1M17 110h1M66 124h1M66 125h1M66 126h1M66 127h1M8 128h1M8 129h1M8 130h1M8 131h1M66 137h1M66 138h1M66 139h1M66 140h1M5 141h3M18 141h4M53 141h13M8 142h1M8 143h1M8 144h1 M123 8h1M105 26h1M101 30h1M92 39h1M83 48h1M70 61h1 M119 9h1M119 10h1M119 11h1M119 12h1M137 30h4M84 44h4M105 62h1M105 63h1M105 64h1M105 65h1M30 89h1M30 90h1M30 91h1M14 105h3M18 119h4M58 119h3M30 128h1M30 129h1M30 130h1M30 131h1M44 133h1M44 134h1M44 135h1 M123 9h1M123 10h1M123 11h1M123 12h1M106 26h4M101 31h1M101 32h1M101 33h1M101 34h1M84 48h4 M114 13h1M136 35h1M88 39h1M110 61h1M88 92h1 M115 13h4M110 18h1M110 19h1M110 20h1M110 21h1M136 31h1M136 32h1M136 33h1M136 34h1M93 35h4M128 39h4M88 40h1M88 41h1M88 42h1M88 43h1M114 53h1M114 54h1M114 55h1M114 56h1M106 61h4M13 80h1M13 81h1M13 82h1M27 88h3M13 97h1M13 98h1M13 99h1M13 100h1M13 101h1M13 102h1M13 103h1M13 104h1M61 120h1M61 121h1M61 122h1M13 124h1M13 125h1M13 126h1M13 127h1M22 136h4M45 136h8M67 136h3 M114 14h1M114 15h1M114 16h1M101 26h1M92 35h1M133 35h3M89 39h3M132 39h1M123 48h1M70 57h1M110 58h1M110 59h1M110 60h1M58 61h12M39 75h1M39 76h1M39 77h1M39 78h1M39 79h1M92 79h1M39 80h1M88 80h1M39 81h1M88 81h1M39 82h1M88 82h1M39 83h1M88 83h1M39 84h1M88 84h1M39 85h1M88 85h1M39 86h1M88 86h1M39 87h1M88 87h1M39 88h1M88 88h1M39 89h1M88 89h1M39 90h1M88 90h1M39 91h1M88 91h1M18 110h4M58 110h17M39 128h1M39 129h1M39 130h1M39 131h1M8 141h1 M115 17h4M92 40h1M92 41h1M92 42h1M92 43h1M70 62h1M70 63h1M70 64h1M70 65h1 M79 49h1M79 50h1M79 51h1M79 52h1M57 62h1M57 63h1M57 64h1M57 65h1M57 66h1M57 67h1M57 68h1M57 69h1M57 70h1M57 71h1M57 72h1M57 73h1M57 74h1M13 105h1M4 133h1M4 134h1M4 135h1M4 136h1M4 137h1M4 138h1M4 139h1M4 140h1 M26 83h1M66 123h1M39 132h1M4 141h1M8 145h1 M30 88h1 M57 110h1 M44 136h1 M70 136h1",
-    }
+    this.popupProgressBorderSvgPath = "";
 
 
     // CAMERA
@@ -15343,6 +15340,14 @@ class App extends Component {
                       popup.img = this.popupImageRef[popup.msg];
                     }
 
+                    // if action needs a count ui: pre push, pre pull, dodge, attack, defend, flanking
+                      // playerPopupSvgCalc(plyr,popup)
+                    // else
+                      // this.refs.popupProgressSvg.children[1].setAttribute("d","")
+                      // this.refs.popupProgressSvg.children[2].setAttribute("height","0")
+                      // this.refs.popupProgressSvg.children[2].setAttribute("fill","white")
+
+
 
                     popupDrawCoords = this.popupDrawCalc(popup,{x:point.x-25,y:point.y-25},plyr.number);
                     // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
@@ -15352,7 +15357,7 @@ class App extends Component {
                     // console.log('popup.msg',popup.msg,popup.img);
                     let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
                     context.drawImage(this.popupImageRef.missedAttack, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
-                    context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
+                    context.drawImage(this.refs.popupProgressSvg, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
 
                   }
                   else {
@@ -15717,6 +15722,14 @@ class App extends Component {
                         popup.img = this.popupImageRef[popup.msg];
                       }
 
+
+                      // if action needs a count ui: pre push, pre pull, dodge, attack, defend, flanking
+                        // playerPopupSvgCalc(plyr,popup)
+                      // else
+                        // this.refs.popupProgressSvg.children[1].setAttribute("d","")
+                        // this.refs.popupProgressSvg.children[2].setAttribute("height","0")
+                        // this.refs.popupProgressSvg.children[2].setAttribute("fill","white")
+
                       popupDrawCoords = this.popupDrawCalc(popup,{x:point.x-25,y:point.y-25},plyr.number);
                       // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
                       drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor)
@@ -15725,7 +15738,7 @@ class App extends Component {
                       // console.log('popup.msg',popup.msg);
                       let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
                       context.drawImage(this.popupImageRef.missedAttack, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
-                      context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
+                      context.drawImage(this.refs.popupProgressSvg, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
 
 
                     }
@@ -18782,45 +18795,91 @@ class App extends Component {
     return popupCoords;
 
   }
-  playerPopupSvgCalc = (player) => {
-
-    // at defend start, push defend popup, call popupsvgcalc
-    // at all other defend counts, call svgcalc
+  playerPopupSvgCalc = (player,popup) => {
 
 
 
-    // this.refs.defendSvg.children[2].attributes[3].value = "";
-    // this.refs.defendSvg.children[2].setAttribute("d","");
-    let perc = (this.time - 100)/100;
-    // let arr = this.svgDefaultsRef[player.action][this.svgDefaultsRef[player.action].indexOf(this.svgDefaultsRef[player.action].find(x=>x.id === '1'))].value.split(" ").reverse();
-    let arr = this.svgDefaultsRef.defend[this.svgDefaultsRef.defend.indexOf(this.svgDefaultsRef.defend.find(x=>x.id === '1'))].value.split(" ");
-    let upperIndex = Math.ceil(arr.length*perc);
+      // this.refs.popupProgressSvg.setAttribute("viewBox","0 -0.5 popimgsize popimgsize")
+      // this.refs.popupProgressSvg.children[1].setAttribute("d","")
+      // this.refs.popupProgressSvg.children[2].setAttribute("height","0")
+      // this.refs.popupProgressSvg.children[2].setAttribute("fill","white")
+      // this.refs.popupProgressSvg.children[2].setAttribute("x","2")
+      // this.refs.popupProgressSvg.children[2].setAttribute("y","2")
 
-    // let newArr = [];
-    // for (var i = 0; i < upperIndex+1; i++) {
-    //   newArr.push(arr[i]);
+
+    let phase = "";
+    let perc = 0;
+    let arr = this.popupProgressBorderSvgPath.split(" ");
+
+    // check player action and it's current phase, set phase
+    // calc perc/%
+    // if phase is windup
+    //   the smaller the count, the smaller the percent
+    // if phase is cooldown,
+    //   the higher the count, the smaller the %
+    //
+    // let upperIndex = Math.ceil(arr.length*perc);
+    // let resetRectHeight = false;
+    // let fillPath = false;
+    // let emptyPath = false;
+    //
+    // if phase is windup
+    //   if percent is 0,1 or low, rect height = 0
+    //     resetRectHeight = true
+    //   else, resetRectHeight false
+    //   fillPath = true
+    //
+    // if phase is peak
+    //   percent = 100
+    //   path.d = arr
+    //   fillPath = false,
+    //   emptyPath = false
+    //
+    // if phase is cooldown
+    //   if percent is 0,1,2 , rect height = popupimgsize
+    //     resetRectHeight = true
+    //   else, resetRectHeight false
+    //   emptyPath = true
+    //
+    // set path fill based on phase
+    //   windup = red, peak = green, cooldown = blue
+    // set recf fill based on percentage thresholds & phase
+    //   0-20 = red, 20-40 = orange, 40-60 = yellow, 60-80 = blue green, 80+ = green
+    //
+    //   **windup = gradient w/ red, peak = gradient w/  green, cooldown = gradient w/ blue**
+    //
+    // if (resetRectHeight !== true) {
+    //   rect height = popupimgsize * percent
     // }
-    // this.refs.defendSvg.children[2].setAttribute("d",newArr.join(" "));
+    //
+    // if (fillPath === true) {
+    //   let newArr = [];
+    //   for (var i = 0; i < upperIndex+1; i++) {
+    //     newArr.push(arr[i]);
+    //   }
+    //   this.refs.popupProgressSvg.children[2].setAttribute("d",newArr.join(" "));
+    // }
+    //
+    // if (emptyPath === true) {
+    //   let newArr = arr;
+    //   this.refs.popupProgressSvg.children[2].setAttribute("d",arr.join(" "));
+    //   for (var i = 0; i < upperIndex+1; i++) {
+    //     newArr.pop();
+    //   }
+    //   this.refs.popupProgressSvg.children[2].setAttribute("d",newArr.join(" "));
+    // }
 
 
 
-    let newArr = arr;
-    this.refs.defendSvg.children[2].setAttribute("d",arr.join(" "));
-    for (var i = 0; i < upperIndex+1; i++) {
-      newArr.pop();
-    }
-    this.refs.defendSvg.children[2].setAttribute("d",newArr.join(" "));
-
-
-    // set popup img ref to svg,
-    // if plyr popups incls msg defend,
-    // call playerPopupSvgCalc(player,action,stage(winup,peak,cooldown),popupMsg)
-    //   calc reset svg path.d.value,set perc,
-     // arr (if winding up, start w/ empty newArr then fill path data, if cooldown, start w/ full newArr then empty path data, if peak keep refpath d empty),
-     // newArr, this.refs[popup.msg].children[2].setAttribute("d",newArr.join(" "));
-    // use switch to determine newArr processing eg: defend,decay
-
-
+    // if using linear gradient for rect,
+    //   add defs > linearGradient,
+    //   <defs>
+    //     <linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%">
+    //       <stop offset="0%" style="stop-color:rgb(255,0,0);stop-opacity:1" />
+    //       <stop offset="100%" style="stop-color:rgb(255,255,0);stop-opacity:1" />
+    //     </linearGradient>
+    //   </defs>
+    //   rect fill="url(#grad2)"
 
 
   }
@@ -27949,6 +28008,7 @@ class App extends Component {
         }
     }
 
+    this.popupProgressBorderSvgPath = this.refs.popupProgressSvg.children[1].attributes[3].value;
     this.popupImageRef = {
       attackStart: this.refs.preAttackIndicate,
       preAction1: this.refs.preAction1Indicate,
@@ -36422,8 +36482,8 @@ class App extends Component {
           <svg className="defendSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 30 30" shape-rendering="crispEdges">
             <metadata>Made with Pixels to Svg https://codepen.io/shshaw/pen/XbxvNj</metadata>
 
-            <path id="border" stroke="#000000" stroke-width="4px" d="M4 0h21M2 1h26M1 2h2M27 2h2M1 3h1M28 3h1M1 4h1M28 4h2M0 5h2M28 5h2M0 6h2M28 6h2M0 7h2M28 7h2M0 8h2M28 8h2M0 9h2M28 9h2M0 10h2M28 10h2M0 11h2M28 11h2M0 12h2M28 12h2M0 13h2M28 13h2M0 14h2M28 14h2M0 15h2M28 15h2M0 16h2M28 16h2M0 17h2M28 17h2M0 18h2M28 18h2M0 19h2M28 19h2M0 20h2M28 20h2M0 21h2M28 21h2M0 22h2M28 22h2M0 23h2M28 23h2M0 24h2M28 24h2M0 25h2M28 25h1M1 26h1M28 26h1M1 27h2M27 27h2M2 28h26M5 29h21" />
-            <rect id="rect" x="2.5" y="2.5" rx="5" ry="5" width="25" height="25" fill="green"/>
+            <path id="border" stroke="yellow" stroke-width="4px" d="M4 0h21M2 1h26M1 2h2M27 2h2M1 3h1M28 3h1M1 4h1M28 4h2M0 5h2M28 5h2M0 6h2M28 6h2M0 7h2M28 7h2M0 8h2M28 8h2M0 9h2M28 9h2M0 10h2M28 10h2M0 11h2M28 11h2M0 12h2M28 12h2M0 13h2M28 13h2M0 14h2M28 14h2M0 15h2M28 15h2M0 16h2M28 16h2M0 17h2M28 17h2M0 18h2M28 18h2M0 19h2M28 19h2M0 20h2M28 20h2M0 21h2M28 21h2M0 22h2M28 22h2M0 23h2M28 23h2M0 24h2M28 24h2M0 25h2M28 25h1M1 26h1M28 26h1M1 27h2M27 27h2M2 28h26M5 29h21" />
+            <rect id="rect" x="2.5" y="2.5" rx="5" ry="5" width="20" height="20" fill="green"/>
           </svg>
 
 
