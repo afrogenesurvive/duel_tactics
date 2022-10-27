@@ -15727,6 +15727,7 @@ class App extends Component {
                       context.drawImage(this.popupImageRef.missedAttack, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
                       context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
 
+
                     }
 
 
