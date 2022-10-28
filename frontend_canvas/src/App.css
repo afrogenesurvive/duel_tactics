@@ -205,17 +205,10 @@
 }
 
 
-.defendSvg {
+.defendSvg .popupProgressSvg {
   height: 30px;
   position: absolute;
   bottom: 50px;
   right: 100px;
-  z-index: 999;
-}
-.attackSvg {
-  height: 40px;
-  position: absolute;
-  bottom: 50px;
-  right: 50px;
   z-index: 999;
 }

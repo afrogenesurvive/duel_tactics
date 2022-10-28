@@ -10661,26 +10661,8 @@ class App extends Component {
     // POPUPS
     // Testing
     if (this.time > 100 & this.time < 201) {
-      let perc = (this.time - 100)/100;
-      // let arr = this.svgDefaultsRef[player.action][this.svgDefaultsRef[player.action].indexOf(this.svgDefaultsRef[player.action].find(x=>x.id === '1'))].value.split(" ").reverse();
-      // let arr = this.svgDefaultsRef.attack.split(" ");
-      // let upperIndex = Math.ceil(arr.length*perc);
-      //
-      // let newArr = [];
-      // for (var i = 0; i < upperIndex+1; i++) {
-      //   newArr.push(arr[i]);
-      //
-      // }
-      // this.refs.attackSvg.children[2].setAttribute("d",newArr.join(" "));
 
-
-
-      // let newArr = arr;
-      // this.refs.attackSvg.children[2].setAttribute("d",this.svgDefaultsRef.attack);
-      // for (var i = 0; i < upperIndex+1; i++) {
-      //   newArr.pop();
-      // }
-      // this.refs.attackSvg.children[2].setAttribute("d",newArr.join(" "));
+      this.playerPopupSvgCalc(player,null)
 
     }
 
@@ -15340,14 +15322,26 @@ class App extends Component {
                       popup.img = this.popupImageRef[popup.msg];
                     }
 
+
                     let showProgress = false;
-                    // if action needs a count ui: pre push, pre pull, dodge, attack, defend, flanking
-                      // playerPopupSvgCalc(plyr,popup)
+                    if (
+                      plyr.prePush.state === true ||
+                      plyr.prePull.state === true ||
+                      plyr.dodging.state === true ||
+                      plyr.action === 'dodging' ||
+                      plyr.action === 'defending' ||
+                      plyr.action === 'attacking' ||
+                      plyr.flanking.state === true
+                    ) {
+                      this.playerPopupSvgCalc(plyr,popup)
                       showProgress = true;
-                    // else
-                      // this.refs.popupProgressSvg.children[1].setAttribute("d","")
-                      // this.refs.popupProgressSvg.children[2].setAttribute("height","0")
-                      // this.refs.popupProgressSvg.children[2].setAttribute("fill","white")
+                    }
+                    else {
+                      this.refs.popupProgressSvg.children[1].setAttribute("d","")
+                      this.refs.popupProgressSvg.children[2].setAttribute("height","0")
+                      this.refs.popupProgressSvg.children[2].setAttribute("fill","white")
+                    }
+
 
 
 
@@ -15727,14 +15721,25 @@ class App extends Component {
                         popup.img = this.popupImageRef[popup.msg];
                       }
 
+
                       let showProgress = false;
-                      // if action needs a count ui: pre push, pre pull, dodge, attack, defend, flanking
-                        // playerPopupSvgCalc(plyr,popup)
+                      if (
+                        plyr.prePush.state === true ||
+                        plyr.prePull.state === true ||
+                        plyr.dodging.state === true ||
+                        plyr.action === 'dodging' ||
+                        plyr.action === 'defending' ||
+                        plyr.action === 'attacking' ||
+                        plyr.flanking.state === true
+                      ) {
+                        this.playerPopupSvgCalc(plyr,popup)
                         showProgress = true;
-                      // else
-                        // this.refs.popupProgressSvg.children[1].setAttribute("d","")
-                        // this.refs.popupProgressSvg.children[2].setAttribute("height","0")
-                        // this.refs.popupProgressSvg.children[2].setAttribute("fill","white")
+                      }
+                      else {
+                        this.refs.popupProgressSvg.children[1].setAttribute("d","")
+                        this.refs.popupProgressSvg.children[2].setAttribute("height","0")
+                        this.refs.popupProgressSvg.children[2].setAttribute("fill","white")
+                      }
 
                       popupDrawCoords = this.popupDrawCalc(popup,{x:point.x-25,y:point.y-25},plyr.number);
                       // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
@@ -18818,7 +18823,9 @@ class App extends Component {
 
     let phase = "";
     let perc = 0;
+
     let arr = this.popupProgressBorderSvgPath.split(" ");
+    perc = (this.time - 100)/100;
 
     // check player action and it's current phase, set phase
     // calc perc/%
