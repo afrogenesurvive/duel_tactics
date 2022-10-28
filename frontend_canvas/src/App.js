@@ -15340,8 +15340,10 @@ class App extends Component {
                       popup.img = this.popupImageRef[popup.msg];
                     }
 
+                    let showProgress = false;
                     // if action needs a count ui: pre push, pre pull, dodge, attack, defend, flanking
                       // playerPopupSvgCalc(plyr,popup)
+                      showProgress = true;
                     // else
                       // this.refs.popupProgressSvg.children[1].setAttribute("d","")
                       // this.refs.popupProgressSvg.children[2].setAttribute("height","0")
@@ -15357,7 +15359,10 @@ class App extends Component {
                     // console.log('popup.msg',popup.msg,popup.img);
                     let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
                     context.drawImage(this.popupImageRef.missedAttack, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
-                    context.drawImage(this.refs.popupProgressSvg, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
+                    if (showProgress === true) {
+                      context.drawImage(this.refs.popupProgressSvg, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
+                    }
+
 
                   }
                   else {
@@ -15722,9 +15727,10 @@ class App extends Component {
                         popup.img = this.popupImageRef[popup.msg];
                       }
 
-
+                      let showProgress = false;
                       // if action needs a count ui: pre push, pre pull, dodge, attack, defend, flanking
                         // playerPopupSvgCalc(plyr,popup)
+                        showProgress = true;
                       // else
                         // this.refs.popupProgressSvg.children[1].setAttribute("d","")
                         // this.refs.popupProgressSvg.children[2].setAttribute("height","0")
@@ -15738,7 +15744,9 @@ class App extends Component {
                       // console.log('popup.msg',popup.msg);
                       let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
                       context.drawImage(this.popupImageRef.missedAttack, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
-                      context.drawImage(this.refs.popupProgressSvg, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
+                      if (showProgress === true) {
+                        context.drawImage(this.refs.popupProgressSvg, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
+                      }
 
 
                     }
@@ -18801,6 +18809,7 @@ class App extends Component {
 
       // this.refs.popupProgressSvg.setAttribute("viewBox","0 -0.5 popimgsize popimgsize")
       // this.refs.popupProgressSvg.children[1].setAttribute("d","")
+      // // this.refs.popupProgressSvg.children[2].setAttribute("width","0")
       // this.refs.popupProgressSvg.children[2].setAttribute("height","0")
       // this.refs.popupProgressSvg.children[2].setAttribute("fill","white")
       // this.refs.popupProgressSvg.children[2].setAttribute("x","2")
@@ -18846,10 +18855,14 @@ class App extends Component {
     // set recf fill based on percentage thresholds & phase
     //   0-20 = red, 20-40 = orange, 40-60 = yellow, 60-80 = blue green, 80+ = green
     //
+        // gradients:
+        //   set rect fill = "url(#grad)"
+          // set linearGradient child stops styles to base clrs above and following clrs
+            // "stop-color:rgb(255,0,0);stop-opacity:1"
     //   **windup = gradient w/ red, peak = gradient w/  green, cooldown = gradient w/ blue**
     //
     // if (resetRectHeight !== true) {
-    //   rect height = popupimgsize * percent
+    //   rect height = percent
     // }
     //
     // if (fillPath === true) {
@@ -18868,18 +18881,6 @@ class App extends Component {
     //   }
     //   this.refs.popupProgressSvg.children[2].setAttribute("d",newArr.join(" "));
     // }
-
-
-
-    // if using linear gradient for rect,
-    //   add defs > linearGradient,
-    //   <defs>
-    //     <linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%">
-    //       <stop offset="0%" style="stop-color:rgb(255,0,0);stop-opacity:1" />
-    //       <stop offset="100%" style="stop-color:rgb(255,255,0);stop-opacity:1" />
-    //     </linearGradient>
-    //   </defs>
-    //   rect fill="url(#grad2)"
 
 
   }
@@ -36479,11 +36480,17 @@ class App extends Component {
             <path stroke="#585264" d="M27 7h1M25 8h1M27 8h1M24 9h1M27 9h1M27 10h1M27 11h1M27 12h1M27 13h1M27 14h1M27 15h1M27 16h1M27 17h1M9 18h1M25 18h3M8 19h1M24 19h1M26 19h1M26 20h1M26 21h1M25 22h1M25 23h1M13 24h1M21 24h1M24 24h1M12 25h1M20 25h1M23 25h1M22 26h1M21 27h1M20 28h1M19 29h1M17 30h2" />
           </svg>
 
-          <svg className="defendSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 30 30" shape-rendering="crispEdges">
+          <svg className="popupProgressSvg" ref="popupProgressSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 30 30" shape-rendering="crispEdges">
             <metadata>Made with Pixels to Svg https://codepen.io/shshaw/pen/XbxvNj</metadata>
 
             <path id="border" stroke="yellow" stroke-width="4px" d="M4 0h21M2 1h26M1 2h2M27 2h2M1 3h1M28 3h1M1 4h1M28 4h2M0 5h2M28 5h2M0 6h2M28 6h2M0 7h2M28 7h2M0 8h2M28 8h2M0 9h2M28 9h2M0 10h2M28 10h2M0 11h2M28 11h2M0 12h2M28 12h2M0 13h2M28 13h2M0 14h2M28 14h2M0 15h2M28 15h2M0 16h2M28 16h2M0 17h2M28 17h2M0 18h2M28 18h2M0 19h2M28 19h2M0 20h2M28 20h2M0 21h2M28 21h2M0 22h2M28 22h2M0 23h2M28 23h2M0 24h2M28 24h2M0 25h2M28 25h1M1 26h1M28 26h1M1 27h2M27 27h2M2 28h26M5 29h21" />
-            <rect id="rect" x="2.5" y="2.5" rx="5" ry="5" width="20" height="20" fill="green"/>
+            <rect id="rect" x="2.5" y="2.5" rx="5" ry="5" width="100%" height="50%" fill="url(#grad)"/>
+            <defs>
+              <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="rgb(255,0,0)" stopOpacity="100%" />
+                <stop offset="100%"  stopColor="rgb(255,255,0)" stopOpacity="100%"/>
+              </linearGradient>
+            </defs>
           </svg>
 
 
