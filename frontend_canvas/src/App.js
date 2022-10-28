@@ -10668,24 +10668,6 @@ class App extends Component {
 
     if (this.time === 100 || this.time === 300) {
 
-
-
-      // if (!player.popups.find(x => x.msg === newArray[i])) {
-      //   player.popups.push(
-      //     {
-      //       state: false,
-      //       count: 0,
-      //       limit: 35,
-      //       type: '',
-      //       position: '',
-      //       msg: newArray[i],
-      //       img: '',
-      //       // cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
-      //     }
-      //   )
-      // }
-
-
       let newArray = [];
       let x = 0;
       let y = 0;
@@ -10693,20 +10675,20 @@ class App extends Component {
         newArray.push(key);
       }
       for (var i = 0; i < 20; i++) {
-        if (!player.popups.find(x => x.msg === newArray[i])) {
-          player.popups.push(
-            {
-              state: false,
-              count: 0,
-              limit: 35,
-              type: '',
-              position: '',
-              msg: newArray[i],
-              img: '',
-              // cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
-            }
-          )
-        }
+        // if (!player.popups.find(x => x.msg === newArray[i])) {
+        //   player.popups.push(
+        //     {
+        //       state: false,
+        //       count: 0,
+        //       limit: 35,
+        //       type: '',
+        //       position: '',
+        //       msg: newArray[i],
+        //       img: '',
+        //       // cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
+        //     }
+        //   )
+        // }
         // if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 4 && x.cell.number.x === 4)) {
         //   this.cellPopups.push(
         //     {
@@ -10721,21 +10703,21 @@ class App extends Component {
         //     }
         //   )
         // }
-        if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 4 && x.cell.number.x === 3)) {
-          this.cellPopups.push(
-            {
-              state: false,
-              count: 0,
-              limit: 35,
-              type: '',
-              position: '',
-              msg: newArray[i],
-              color: '',
-              img: '',
-              cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 3)
-            }
-          )
-        }
+        // if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 4 && x.cell.number.x === 3)) {
+        //   this.cellPopups.push(
+        //     {
+        //       state: false,
+        //       count: 0,
+        //       limit: 35,
+        //       type: '',
+        //       position: '',
+        //       msg: newArray[i],
+        //       color: '',
+        //       img: '',
+        //       cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 3)
+        //     }
+        //   )
+        // }
       };
     }
     //PLAYER
@@ -18825,7 +18807,8 @@ class App extends Component {
     let perc = 0;
 
     let arr = this.popupProgressBorderSvgPath.split(" ");
-    perc = (this.time - 100)/100;
+    perc = (this.time - 100);
+    console.log('beep',perc);
 
     // check player action and it's current phase, set phase
     // calc perc/%
@@ -18834,7 +18817,7 @@ class App extends Component {
     // if phase is cooldown,
     //   the higher the count, the smaller the %
     //
-    // let upperIndex = Math.ceil(arr.length*perc);
+    let upperIndex = Math.ceil(arr.length*(perc/100));
     // let resetRectHeight = false;
     // let fillPath = false;
     // let emptyPath = false;
@@ -18869,24 +18852,28 @@ class App extends Component {
     //   **windup = gradient w/ red, peak = gradient w/  green, cooldown = gradient w/ blue**
     //
     // if (resetRectHeight !== true) {
-    //   rect height = percent
+      if (perc < 90) {
+        this.refs.popupProgressSvg.children[2].setAttribute("height", perc+"%")
+      }
+      // this.refs.popupProgressSvg.children[2].setAttribute("height", perc)
+
     // }
     //
     // if (fillPath === true) {
-    //   let newArr = [];
-    //   for (var i = 0; i < upperIndex+1; i++) {
-    //     newArr.push(arr[i]);
-    //   }
-    //   this.refs.popupProgressSvg.children[2].setAttribute("d",newArr.join(" "));
+      // let newArr = [];
+      // for (var i = 0; i < upperIndex+1; i++) {
+      //   newArr.push(arr[i]);
+      // }
+      // this.refs.popupProgressSvg.children[2].setAttribute("d",newArr.join(" "));
     // }
     //
     // if (emptyPath === true) {
-    //   let newArr = arr;
-    //   this.refs.popupProgressSvg.children[2].setAttribute("d",arr.join(" "));
-    //   for (var i = 0; i < upperIndex+1; i++) {
-    //     newArr.pop();
-    //   }
-    //   this.refs.popupProgressSvg.children[2].setAttribute("d",newArr.join(" "));
+      let newArr = arr;
+      this.refs.popupProgressSvg.children[2].setAttribute("d",arr.join(" "));
+      for (var i = 0; i < upperIndex+1; i++) {
+        newArr.pop();
+      }
+      this.refs.popupProgressSvg.children[2].setAttribute("d",newArr.join(" "));
     // }
 
 
@@ -36476,22 +36463,13 @@ class App extends Component {
           )}
 
 
-          <svg className="defendSvg hidden" ref="defendSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 34 34" shape-rendering="crispEdges">
-            <metadata>Made with Pixels to Svg https://codepen.io/shshaw/pen/XbxvNj</metadata>
-            <path stroke="green" stroke-width="10px" id="1" d="M14 1h6M13 2h1M20 2h1M12 3h1M21 3h1M9 4h3M22 4h3M6 5h3M25 5h3M5 6h1M28 6h1M4 7h1M29 7h1M4 8h1M29 8h1M4 9h1M8 9h1M25 9h1M29 9h1M4 10h1M29 10h1M4 11h1M29 11h1M4 12h1M29 12h1M4 13h1M29 13h1M4 14h1M29 14h1M4 15h1M29 15h1M4 16h1M29 16h1M4 17h1M29 17h1M4 18h1M29 18h1M5 19h1M9 19h1M25 19h1M28 19h1M5 20h1M28 20h1M5 21h1M28 21h1M6 22h1M27 22h1M6 23h1M27 23h1M7 24h1M26 24h1M8 25h1M13 25h1M21 25h1M25 25h1M9 26h1M24 26h1M10 27h1M23 27h1M11 28h1M22 28h1M12 29h1M17 29h1M21 29h1M13 30h1M20 30h1M14 31h1M19 31h1M15 32h4" />
-            <path stroke="red" stroke-width="10px" id="2" d="" />
-            <path stroke="#fbfbfb" d="M14 2h4M13 3h2M12 4h3M9 5h5M6 6h6M5 7h2M14 7h1M5 8h1M7 8h1M9 8h1M11 8h1M13 8h1M24 8h1M5 9h1M10 9h1M12 9h1M5 10h1M7 10h1M9 10h1M11 10h1M5 11h1M8 11h1M10 11h1M5 12h1M7 12h1M9 12h1M11 12h1M5 13h1M8 13h1M5 14h1M5 15h1M7 15h1M5 16h1M5 17h1M5 18h1M8 18h1M24 18h1M6 20h1M6 21h1M7 23h1M12 24h1M20 24h1M16 28h1" />
-            <path stroke="#cfc9db" d="M18 2h2M15 3h1M15 4h2M14 5h2M23 5h2M12 6h5M22 6h6M7 7h7M15 7h1M6 8h1M10 8h1M12 8h1M14 8h3M6 9h1M9 9h1M11 9h1M13 9h3M6 10h1M8 10h1M10 10h1M12 10h5M6 11h2M9 11h1M11 11h5M6 12h1M8 12h1M10 12h1M12 12h5M6 13h2M9 13h7M6 14h11M6 15h1M8 15h8M6 16h1M8 16h1M10 16h1M12 16h1M14 16h1M16 16h1M6 19h1M7 22h1M8 24h1M9 25h1M10 26h1M11 27h1M12 28h1M13 29h1M14 30h1" />
-            <path stroke="#9f99ab" d="M16 3h4M17 4h3M16 5h5M22 5h1M17 6h5M16 7h11M17 8h7M26 8h1M16 9h8M26 9h1M17 10h10M16 11h11M17 12h10M16 13h11M17 14h10M16 15h11M7 16h1M9 16h1M11 16h1M13 16h1M15 16h1M17 16h1M19 16h1M21 16h1M23 16h1M25 16h1M6 17h11M18 17h1M20 17h1M22 17h1M24 17h1M26 17h1M6 18h2M10 18h6M17 18h1M7 19h1M10 19h7M7 20h9M17 20h1M7 21h10M8 22h8M17 22h1M8 23h9M9 24h3M14 24h2M17 24h1M10 25h2M14 25h3M11 26h5M17 26h1M12 27h5M13 28h3M14 29h2M15 30h1M15 31h2" />
-            <path stroke="#7d7789" d="M20 3h1M20 4h2M21 5h1M28 7h1M8 8h1M28 8h1M7 9h1M28 9h1M28 10h1M28 11h1M28 12h1M28 13h1M28 14h1M28 15h1M18 16h1M20 16h1M22 16h1M24 16h1M26 16h1M28 16h1M17 17h1M19 17h1M21 17h1M23 17h1M25 17h1M28 17h1M16 18h1M18 18h6M28 18h1M17 19h7M27 19h1M16 20h1M18 20h8M27 20h1M17 21h9M27 21h1M16 22h1M18 22h7M26 22h1M17 23h8M26 23h1M16 24h1M18 24h2M22 24h2M25 24h1M17 25h3M22 25h1M24 25h1M16 26h1M18 26h4M23 26h1M17 27h4M22 27h1M17 28h3M21 28h1M16 29h1M18 29h1M20 29h1M16 30h1M19 30h1M17 31h2" />
-            <path stroke="#585264" d="M27 7h1M25 8h1M27 8h1M24 9h1M27 9h1M27 10h1M27 11h1M27 12h1M27 13h1M27 14h1M27 15h1M27 16h1M27 17h1M9 18h1M25 18h3M8 19h1M24 19h1M26 19h1M26 20h1M26 21h1M25 22h1M25 23h1M13 24h1M21 24h1M24 24h1M12 25h1M20 25h1M23 25h1M22 26h1M21 27h1M20 28h1M19 29h1M17 30h2" />
-          </svg>
 
-          <svg className="popupProgressSvg" ref="popupProgressSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 30 30" shape-rendering="crispEdges">
+          <svg className="popupProgressSvg" ref="popupProgressSvg" height={this.popupImgSize} xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 30 30" shape-rendering="crispEdges">
             <metadata>Made with Pixels to Svg https://codepen.io/shshaw/pen/XbxvNj</metadata>
 
-            <path id="border" stroke="yellow" stroke-width="4px" d="M4 0h21M2 1h26M1 2h2M27 2h2M1 3h1M28 3h1M1 4h1M28 4h2M0 5h2M28 5h2M0 6h2M28 6h2M0 7h2M28 7h2M0 8h2M28 8h2M0 9h2M28 9h2M0 10h2M28 10h2M0 11h2M28 11h2M0 12h2M28 12h2M0 13h2M28 13h2M0 14h2M28 14h2M0 15h2M28 15h2M0 16h2M28 16h2M0 17h2M28 17h2M0 18h2M28 18h2M0 19h2M28 19h2M0 20h2M28 20h2M0 21h2M28 21h2M0 22h2M28 22h2M0 23h2M28 23h2M0 24h2M28 24h2M0 25h2M28 25h1M1 26h1M28 26h1M1 27h2M27 27h2M2 28h26M5 29h21" />
-            <rect id="rect" x="2.5" y="2.5" rx="5" ry="5" width="100%" height="50%" fill="url(#grad)"/>
+            <path id="border" stroke="yellow" stroke-width="4px" d="M4 0h21M2 1h26M1 2h2M27 2h2M1 3h1M28 3h1M1 4h1M28 4h2M0 5h2M28 5h2M0 6h2M28 6h2M0 7h2M28 7h2M0 8h2M28 8h2M0 9h2M28 9h2M0 10h2M28 10h2M0 11h2M28 11h2M0 12h2M28 12h2M0 13h2M28 13h2M0 14h2M28 14h2M0 15h2M28 15h2M0 16h2M28 16h2M0 17h2M28 17h2M0 18h2M28 18h2M0 19h2M28 19h2M0 20h2M28 20h2M0 21h2M28 21h2M0 22h2M28 22h2M0 23h2M28 23h2M0 24h2M28 24h2M0 25h2M28 25h1M1 26h1M28 26h1M1 27h2M27 27h2M2 28h26M5 29h21 M25 0h2M0 3h1M0 4h1M29 25h1M29 26h1M3 29h2 M27 0h1M0 2h1M25 2h1M2 4h1M27 25h1M4 27h1M29 27h1M2 29h1" />
+
+            <rect id="rect" x="1" y="1" rx="5" ry="5" width="95%" height="0%" fill="url(#grad)"/>
             <defs>
               <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" stopColor="rgb(255,0,0)" stopOpacity="100%" />
@@ -36499,7 +36477,9 @@ class App extends Component {
               </linearGradient>
             </defs>
           </svg>
-
+          {
+            // <path id="border" stroke="yellow" stroke-width="4px" d="M4 0h21M2 1h26M1 2h2M27 2h2M1 3h1M28 3h1M1 4h1M28 4h2M0 5h2M28 5h2M0 6h2M28 6h2M0 7h2M28 7h2M0 8h2M28 8h2M0 9h2M28 9h2M0 10h2M28 10h2M0 11h2M28 11h2M0 12h2M28 12h2M0 13h2M28 13h2M0 14h2M28 14h2M0 15h2M28 15h2M0 16h2M28 16h2M0 17h2M28 17h2M0 18h2M28 18h2M0 19h2M28 19h2M0 20h2M28 20h2M0 21h2M28 21h2M0 22h2M28 22h2M0 23h2M28 23h2M0 24h2M28 24h2M0 25h2M28 25h1M1 26h1M28 26h1M1 27h2M27 27h2M2 28h26M5 29h21" />
+          }
 
 
           <img src={floorGrass} className='hidden' ref="floorGrass" alt="logo" id="floor1"/>
