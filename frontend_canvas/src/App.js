@@ -2698,6 +2698,10 @@ class App extends Component {
     this.barrierImgs = {};
     this.cellColorRef = [];
     this.popupProgressBorderSvgPath = "";
+    this.popupProgressSvgGradColor1 = "rgb(255,0,0)";
+    this.popupProgressSvgGradColor2 = "rgb(255,255,0)";
+
+
 
 
     // CAMERA
@@ -15313,6 +15317,7 @@ class App extends Component {
                       plyr.action === 'dodging' ||
                       plyr.action === 'defending' ||
                       plyr.action === 'attacking' ||
+                      plyr.attacking.state === true ||
                       plyr.flanking.state === true
                     ) {
                       this.playerPopupSvgCalc(plyr,popup)
@@ -15712,6 +15717,7 @@ class App extends Component {
                         plyr.action === 'dodging' ||
                         plyr.action === 'defending' ||
                         plyr.action === 'attacking' ||
+                        plyr.attacking.state === true ||
                         plyr.flanking.state === true
                       ) {
                         this.playerPopupSvgCalc(plyr,popup)
@@ -18797,84 +18803,148 @@ class App extends Component {
       // this.refs.popupProgressSvg.setAttribute("viewBox","0 -0.5 popimgsize popimgsize")
       // this.refs.popupProgressSvg.children[1].setAttribute("d","")
       // // this.refs.popupProgressSvg.children[2].setAttribute("width","0")
-      // this.refs.popupProgressSvg.children[2].setAttribute("height","0")
-      // this.refs.popupProgressSvg.children[2].setAttribute("fill","white")
+      this.refs.popupProgressSvg.children[2].setAttribute("height","0")
+      this.refs.popupProgressSvg.children[2].setAttribute("fill","white")
       // this.refs.popupProgressSvg.children[2].setAttribute("x","2")
       // this.refs.popupProgressSvg.children[2].setAttribute("y","2")
 
-
+    let path = this.refs.popupProgressSvg.children[1];
+    let rect = this.refs.popupProgressSvg.children[2];
     let phase = "";
     let perc = 0;
-
     let arr = this.popupProgressBorderSvgPath.split(" ");
     perc = (this.time - 100);
-    console.log('beep',perc);
-
-    // check player action and it's current phase, set phase
-    // calc perc/%
-    // if phase is windup
-    //   the smaller the count, the smaller the percent
-    // if phase is cooldown,
-    //   the higher the count, the smaller the %
-    //
+    path.setAttribute("fill","blue")
+    let start = 0;
+    let end = 0;
+    let count = 0;
     let upperIndex = Math.ceil(arr.length*(perc/100));
-    // let resetRectHeight = false;
-    // let fillPath = false;
-    // let emptyPath = false;
-    //
-    // if phase is windup
-    //   if percent is 0,1 or low, rect height = 0
-    //     resetRectHeight = true
-    //   else, resetRectHeight false
-    //   fillPath = true
-    //
-    // if phase is peak
-    //   percent = 100
-    //   path.d = arr
-    //   fillPath = false,
-    //   emptyPath = false
-    //
-    // if phase is cooldown
-    //   if percent is 0,1,2 , rect height = popupimgsize
-    //     resetRectHeight = true
-    //   else, resetRectHeight false
-    //   emptyPath = true
-    //
-    // set path fill based on phase
-    //   windup = red, peak = green, cooldown = blue
-    // set recf fill based on percentage thresholds & phase
-    //   0-20 = red, 20-40 = orange, 40-60 = yellow, 60-80 = blue green, 80+ = green
-    //
-        // gradients:
-        //   set rect fill = "url(#grad)"
-          // set linearGradient child stops styles to base clrs above and following clrs
-            // "stop-color:rgb(255,0,0);stop-opacity:1"
-    //   **windup = gradient w/ red, peak = gradient w/  green, cooldown = gradient w/ blue**
-    //
-    // if (resetRectHeight !== true) {
-      if (perc < 90) {
-        this.refs.popupProgressSvg.children[2].setAttribute("height", perc+"%")
-      }
-      // this.refs.popupProgressSvg.children[2].setAttribute("height", perc)
+    let fillPath = false;
+    let emptyPath = true;
 
+
+
+
+    // plyr.prePush.state === true ||
+    // plyr.prePull.state === true ||
+    // plyr.dodging.state === true ||
+    // plyr.action === 'dodging' ||
+    // plyr.action === 'defending' ||
+    // plyr.action === 'attacking' ||
+    // plyr.flanking.state === true
+
+
+    // if (player.action === "defending") {
+    //     if (player.defending.count > 0 && player.defending.count < player.defending.limit+1 && player.defendDecay.state !== true) {
+    //       phase = "windup";
+    //      set start, end count, perc
+    //     }
     // }
-    //
-    // if (fillPath === true) {
-      // let newArr = [];
-      // for (var i = 0; i < upperIndex+1; i++) {
-      //   newArr.push(arr[i]);
-      // }
-      // this.refs.popupProgressSvg.children[2].setAttribute("d",newArr.join(" "));
-    // }
-    //
-    // if (emptyPath === true) {
+
+
+    if (phase === 'windup') {
+      fillPath = true;
+    }
+
+    if (phase === "peak") {
+      perc = 100;
+      path.setAttribute("d",arr.join(" "));
+      fillPath = false;
+      emptyPath = false;
+    }
+
+    if (phase === "cooldown") {
+      perc = 100-perc;
+      emptyPath = true;
+    }
+
+    if (phase === "off") {
+      perc = 100;
+      path.setAttribute("d",arr.join(" "));
+      fillPath = false;
+      emptyPath = false;
+    }
+
+    switch (phase) {
+      case "windup":
+          path.setAttribute("fill","red")
+        break;
+      case "peak":
+          path.setAttribute("fill","green")
+        break;
+      case "cooldown":
+          path.setAttribute("fill","blue")
+        break;
+      case "off":
+          path.setAttribute("fill","yellow")
+        break;
+      default:
+
+    }
+
+    let baseColor = "";
+    if (perc >= 0 && perc <= 20) {
+      rect.setAttribute("fill", "red")
+      baseColor = "red";
+    }
+    if (perc >= 20 && perc <= 40) {
+      rect.setAttribute("fill", "orange")
+      baseColor = "orange";
+    }
+    if (perc >= 40 && perc <= 60) {
+      rect.setAttribute("fill", "yellow")
+      baseColor = "yellow";
+    }
+    if (perc >= 60 && perc <= 80) {
+      rect.setAttribute("fill", "blue")
+      baseColor = "blue";
+    }
+    if (perc >= 80) {
+      rect.setAttribute("fill", "green")
+      baseColor = "green";
+    }
+
+      // Gradients:
+      // rect.setAttribute("fill","url(#grad)");
+      this.popupProgressSvgGradColor1 = baseColor;
+      switch (phase) {
+        case "windup" || "off":
+            this.popupProgressSvgGradColor2 = "red";
+          break;
+        case "peak":
+            this.popupProgressSvgGradColor2 = "green";
+          break;
+        case "cooldown":
+            this.popupProgressSvgGradColor2 = "blue";
+          break;
+        default:
+
+      }
+
+      if (perc < 95) {
+        this.refs.popupProgressSvg.children[2].setAttribute("height", perc+"%");
+      }
+      else {
+        perc = 95;
+      }
+
+
+    if (fillPath === true) {
+      let newArr = [];
+      for (var i = 0; i < upperIndex+1; i++) {
+        newArr.push(arr[i]);
+      }
+      this.refs.popupProgressSvg.children[2].setAttribute("d",newArr.join(" "));
+    }
+
+    if (emptyPath === true) {
       let newArr = arr;
       this.refs.popupProgressSvg.children[2].setAttribute("d",arr.join(" "));
       for (var i = 0; i < upperIndex+1; i++) {
         newArr.pop();
       }
       this.refs.popupProgressSvg.children[2].setAttribute("d",newArr.join(" "));
-    // }
+    }
 
 
   }
@@ -36466,21 +36536,15 @@ class App extends Component {
 
           <svg className="popupProgressSvg" ref="popupProgressSvg" height={this.popupImgSize} xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 30 30" shape-rendering="crispEdges">
             <metadata>Made with Pixels to Svg https://codepen.io/shshaw/pen/XbxvNj</metadata>
-
-            <path id="border" stroke="yellow" stroke-width="4px" d="M4 0h21M2 1h26M1 2h2M27 2h2M1 3h1M28 3h1M1 4h1M28 4h2M0 5h2M28 5h2M0 6h2M28 6h2M0 7h2M28 7h2M0 8h2M28 8h2M0 9h2M28 9h2M0 10h2M28 10h2M0 11h2M28 11h2M0 12h2M28 12h2M0 13h2M28 13h2M0 14h2M28 14h2M0 15h2M28 15h2M0 16h2M28 16h2M0 17h2M28 17h2M0 18h2M28 18h2M0 19h2M28 19h2M0 20h2M28 20h2M0 21h2M28 21h2M0 22h2M28 22h2M0 23h2M28 23h2M0 24h2M28 24h2M0 25h2M28 25h1M1 26h1M28 26h1M1 27h2M27 27h2M2 28h26M5 29h21 M25 0h2M0 3h1M0 4h1M29 25h1M29 26h1M3 29h2 M27 0h1M0 2h1M25 2h1M2 4h1M27 25h1M4 27h1M29 27h1M2 29h1" />
-
+            <path id="border" stroke="yellow" stroke-width="5px" d="M4 0h21M2 1h26M1 2h2M27 2h2M1 3h1M28 3h1M1 4h1M28 4h2M0 5h2M28 5h2M0 6h2M28 6h2M0 7h2M28 7h2M0 8h2M28 8h2M0 9h2M28 9h2M0 10h2M28 10h2M0 11h2M28 11h2M0 12h2M28 12h2M0 13h2M28 13h2M0 14h2M28 14h2M0 15h2M28 15h2M0 16h2M28 16h2M0 17h2M28 17h2M0 18h2M28 18h2M0 19h2M28 19h2M0 20h2M28 20h2M0 21h2M28 21h2M0 22h2M28 22h2M0 23h2M28 23h2M0 24h2M28 24h2M0 25h2M28 25h1M1 26h1M28 26h1M1 27h2M27 27h2M2 28h26M5 29h21" />
             <rect id="rect" x="1" y="1" rx="5" ry="5" width="95%" height="0%" fill="url(#grad)"/>
             <defs>
               <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="rgb(255,0,0)" stopOpacity="100%" />
-                <stop offset="100%"  stopColor="rgb(255,255,0)" stopOpacity="100%"/>
+                <stop offset="0%" stopColor={this.popupProgressSvgGradColor1} stopOpacity="100%" />
+                <stop offset="100%"  stopColor={this.popupProgressSvgGradColor2} stopOpacity="100%"/>
               </linearGradient>
             </defs>
           </svg>
-          {
-            // <path id="border" stroke="yellow" stroke-width="4px" d="M4 0h21M2 1h26M1 2h2M27 2h2M1 3h1M28 3h1M1 4h1M28 4h2M0 5h2M28 5h2M0 6h2M28 6h2M0 7h2M28 7h2M0 8h2M28 8h2M0 9h2M28 9h2M0 10h2M28 10h2M0 11h2M28 11h2M0 12h2M28 12h2M0 13h2M28 13h2M0 14h2M28 14h2M0 15h2M28 15h2M0 16h2M28 16h2M0 17h2M28 17h2M0 18h2M28 18h2M0 19h2M28 19h2M0 20h2M28 20h2M0 21h2M28 21h2M0 22h2M28 22h2M0 23h2M28 23h2M0 24h2M28 24h2M0 25h2M28 25h1M1 26h1M28 26h1M1 27h2M27 27h2M2 28h26M5 29h21" />
-          }
-
 
           <img src={floorGrass} className='hidden' ref="floorGrass" alt="logo" id="floor1"/>
           <img src={floorDirt} className='hidden' ref="floorDirt" alt="logo" id="floor2"/>
