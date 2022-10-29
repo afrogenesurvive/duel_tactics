@@ -2560,17 +2560,31 @@ class App extends Component {
     ]
     this.attackAnimRef = {
       limit: {
-        unarmed: 18,
-        sword: 22,
-        spear: 25,
+        unarmed: 20,
+        sword: 25,
+        spear: 30,
+        crossbow: 30,
+      },
+      peak: {
+        unarmed: 10,
+        sword: 15,
+        spear: 20,
+        crossbow: 20,
+      },
+    };
+    this.defendAnimRef = {
+      limit: {
+        unarmed: 15,
+        sword: 25,
+        spear: 30,
         crossbow: 25,
       },
       peak: {
-        unarmed: 6,
-        sword: 12,
-        spear: 18,
-        crossbow: 18,
-      },
+        unarmed: 5,
+        sword: 10,
+        spear: 15,
+        crossbow: 10,
+      }
     };
     this.staminaCostRef = {
       attack: {
@@ -7333,7 +7347,7 @@ class App extends Component {
 
           let defendPopup = player.popups.find(x=>x.msg.split("_")[0] === 'defending')
           if (defendPopup) {
-            player.popups.splice(player.popups.findIndex(x=>x.msg === 'defending'),1)
+            player.popups.splice(player.popups.findIndex(x=>x.msg.split("_")[0] === 'defending'),1)
           }
           if (player.falling.state !== true && player.moving.state !== true) {
             player.action = 'idle';
@@ -8948,115 +8962,150 @@ class App extends Component {
         }
 
 
-        // DEFENSE!!
+        // DEFENSE + DECAY!!
         // if (player.defending.count > 0 && player.defending.count < player.defending.limit+1 && player.defendDecay.state !== true && player.prePull.state !== true && player.pulling.state !== true) {
-        if (player.defending.count > 0 && player.defending.count < player.defending.limit+1 && player.defendDecay.state !== true) {
-          player.defending.count++;
-          player.action = 'defending';
-          console.log('defend winding up',player.defending.count, 'player',player.number);
-        } else if (player.defending.count >= player.defending.limit+1 && player.defending.state === false && player.defendDecay.state !== true) {
-          console.log('peak defend player',player.number);
+        if (player.defending.state === true) {
 
-          if (player.stamina.current - this.staminaCostRef.defend.peak >= 0) {
+          let defendType = player.currentWeapon.type;
+          if ( player.currentWeapon.name === "") {
+            defendType  = "unarmed";
+          }
+          let defendPeak = this.defendAnimRef.peak[defendType];
+          player.defending.limit = this.defendAnimRef.limit[defendType];
 
-            player.defending = {
-              state: true,
-              count: 0,
-              limit: player.defending.limit,
+          if (player.defending.count > 0 && player.defending.count < defendPeak && player.defendDecay.state !== true) {
+            player.defending.count++;
+            player.action = 'defending';
+            console.log('defend winding up',player.defending.count, 'player',player.number,defendPeak);
+            if (!player.popups.find(x=>x.msg === 'defending_1')) {
+
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: player.defending.limit,
+                  type: '',
+                  position: '',
+                  msg: 'defending_1',
+                  img: '',
+
+                }
+              )
+
             }
-            player.stamina.current = player.stamina.current - this.staminaCostRef.defend.peak;
-            player.defendDecay = {
-              state: true,
-              count: 0,
-              limit: player.defendDecay.limit,
+          }
+
+          // PEAK, START DECAY
+          else if (player.defending.count >= defendPeak && player.defendDecay.state !== true) {
+           console.log('peak defend player',player.number);
+
+           if (player.stamina.current - this.staminaCostRef.defend.peak >= 0) {
+
+             player.defending = {
+               state: true,
+               count: 0,
+               limit: player.defending.limit,
+             }
+             player.stamina.current = player.stamina.current - this.staminaCostRef.defend.peak;
+             player.defendDecay = {
+               state: true,
+               count: 0,
+               limit: player.defending.limit,
+             }
+
+             if (!player.popups.find(x=>x.msg === 'defending_1')) {
+
+               player.popups.push(
+                 {
+                   state: false,
+                   count: 0,
+                   limit: player.defending.limit,
+                   type: '',
+                   position: '',
+                   msg: 'defending_1',
+                   img: '',
+
+                 }
+               )
+
+             }
+
+           } else {
+
+             console.log('not enough stamina for peak defend. set defend decay and move close to drop defense count');
+
+             player.defendDecay = {
+               state: true,
+               count: player.defendDecay.limit-7,
+               limit: player.defendDecay.limit,
+             }
+             player.stamina.current = 0;
+             player.statusDisplay = {
+               state: true,
+               status: "Out of Stamina",
+               count: 1,
+               limit: player.statusDisplay.limit,
+             }
+
+             // player.popups.push(
+             //   {
+             //     state: false,
+             //     count: 0,
+             //     limit: 10,
+             //     type: '',
+             //     position: '',
+             //     msg: 'outOfStamina',
+             //     img: '',
+             //
+             //   }
+             // )
+           }
+
+         };
+
+          // DECAY!!
+          if (player.defendDecay.state === true) {
+            if (player.defendDecay.count < player.defendDecay.limit) {
+              player.defendDecay.count++;
+
+
+              if (!player.popups.find(x=>x.msg === 'defending_1')) {
+
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: player.defendDecay.limit,
+                    type: '',
+                    position: '',
+                    msg: 'defending_1',
+                    img: '',
+
+                  }
+                )
+
+              }
+              console.log('defend decay count',player.defendDecay.count,player.defending.state,player.action);
             }
 
-            player.popups.push(
-              {
+
+            if (player.defendDecay.count >= player.defendDecay.limit) {
+              player.defending = {
                 state: false,
                 count: 0,
-                limit: player.defendDecay.limit,
-                type: '',
-                position: '',
-                msg: 'defending_1',
-                img: '',
-
+                limit: player.defending.limit,
               }
-            )
-
-          } else {
-
-            console.log('not enough stamina for peak defend. set defend decay and move close to drop defense count');
-
-            player.defendDecay = {
-              state: true,
-              count: player.defendDecay.limit-7,
-              limit: player.defendDecay.limit,
-            }
-            player.stamina.current = 0;
-            player.statusDisplay = {
-              state: true,
-              status: "Out of Stamina",
-              count: 1,
-              limit: player.statusDisplay.limit,
-            }
-
-            // player.popups.push(
-            //   {
-            //     state: false,
-            //     count: 0,
-            //     limit: 10,
-            //     type: '',
-            //     position: '',
-            //     msg: 'outOfStamina',
-            //     img: '',
-            //
-            //   }
-            // )
-          }
-
-        };
-        // DEFENSE DECAY!!
-        if (player.defendDecay.state === true) {
-          if (player.defendDecay.count < player.defendDecay.limit) {
-            player.defendDecay.count++;
-
-            // CHANGE TO USE FRACTIONS(DECIMAL) INSTEAD OF STATIC NUMBERS
-            if (player.popups.find(x=>x.msg.split("_")[0] === 'defending')) {
-
-              if (player.defendDecay.count > 4 && player.defendDecay.count < 15) {
-                player.popups.find(x=>x.msg.split("_")[0] === 'defending').msg = 'defending_2'
-              }
-              if (player.defendDecay.count > 14 && player.defendDecay.count < 20) {
-                player.popups.find(x=>x.msg.split("_")[0] === 'defending').msg = 'defending_3'
-              }
-              if (player.defendDecay.count > 19 && player.defendDecay.count < player.defendDecay.limit) {
-                player.popups.find(x=>x.msg.split("_")[0] === 'defending').msg = 'defending_4'
-              }
-
-            }
-            console.log('defend decay count',player.defendDecay.count,player.defending.state);
-          }
-
-          // DEFENDING ENDS JUST BEFORE THE END OF THE DECAY
-          if (player.defendDecay.count === player.defendDecay.limit-5) {
-            console.log('drop defense!!');
-            player.defending = {
-              state: false,
-              count: 0,
-              limit: player.defending.limit,
-            }
-            player.action = 'idle';
-          }
-
-          if (player.defendDecay.count >= player.defendDecay.limit) {
-              console.log('defend decay limit',player.defending.state);
+              player.action = 'idle';
+              console.log('defend decay limit. drop defense',player.defending.state);
               player.defendDecay = {
                 state: false,
                 count: 0,
                 limit: player.defendDecay.limit,
               }
             }
+
+          }
+
 
         }
 
@@ -10516,7 +10565,7 @@ class App extends Component {
 
                 if (player.defending.count === 0 && player.defendDecay.state !== true) {
                   player.defending = {
-                    state: false,
+                    state: true,
                     count: 1,
                     limit: player.defending.limit,
                   }
@@ -13644,7 +13693,127 @@ class App extends Component {
           //   plyr.currentPosition.cell.number.x === x &&
           //   plyr.currentPosition.cell.number.y === y
           // ) {
-          // plyr.action swithc here!!
+          //   switch(plyr.action) {
+          //     case 'moving':
+          //       let moveSpeed = plyr.speed.move;
+          //       if (plyr.terrainMoveSpeed.state === true) {
+          //         moveSpeed = plyr.terrainMoveSpeed.speed;
+          //       }
+          //       if (plyr.pushing.state === true) {
+          //         moveSpeed = plyr.pushing.moveSpeed;
+          //       }
+          //       if (plyr.pulling.state === true) {
+          //         moveSpeed = plyr.pulling.moveSpeed;
+          //       }
+          //       if (plyr.pushed.state === true) {
+          //         moveSpeed = plyr.pushed.moveSpeed;
+          //       }
+          //       if (plyr.pulled.state === true) {
+          //         moveSpeed = plyr.pulled.moveSpeed;
+          //       }
+          //       let rangeIndex = plyr.speed.range.indexOf(moveSpeed)
+          //       let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
+          //       finalAnimIndex = moveAnimIndex;
+          //       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+          //       if (plyr.target.void == true) {
+          //         // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+          //       }
+          //     break;
+          //     case 'jumping':
+          //       let rangeIndex4 = plyr.speed.range.indexOf(.1)
+          //       let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(plyr.moving.step)
+          //       finalAnimIndex = moveAnimIndex4;
+          //       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+          //     break;
+          //     case 'strafe moving':
+          //       if (plyr.pushBack.state === true ) {
+          //         let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
+          //         let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
+          //         finalAnimIndex = moveAnimIndex3;
+          //         // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+          //       } else {
+          //         let moveSpeed = plyr.speed.move;
+          //         // if (plyr.pushing.state === true) {
+          //         //   moveSpeed = plyr.pushing.moveSpeed;
+          //         // }
+          //         if (plyr.pulling.state === true) {
+          //           moveSpeed = plyr.pulling.moveSpeed;
+          //         }
+          //         if (plyr.pushed.state === true) {
+          //           moveSpeed = plyr.pushed.moveSpeed;
+          //         }
+          //         if (plyr.pulled.state === true) {
+          //           moveSpeed = plyr.pulled.moveSpeed;
+          //         }
+          //         let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed)
+          //         let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
+          //         finalAnimIndex = moveAnimIndex2;
+          //         // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+          //       }
+          //     break;
+          //     case 'flanking':
+          //       let rangeIndex6 = plyr.speed.range.indexOf(.2)
+          //       let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(plyr.moving.step)
+          //       finalAnimIndex = moveAnimIndex6;
+          //       // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
+          //       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+          //     break;
+          //     case 'attacking':
+          //       let animIndex = plyr.attacking.count -1;
+          //       finalAnimIndex = animIndex;
+          //       // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
+          //     break;
+          //     case 'defending':
+          //       if (plyr.defending.count > 0) {
+          //         let animIndex2 = plyr.defending.count -1;
+          //         finalAnimIndex = animIndex2;
+          //         // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
+          //       }
+          //       if (plyr.defending.count === 0) {
+          //         let animIndex2a = 4;
+          //         finalAnimIndex = animIndex2a;
+          //         console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
+          //       }
+          //     break;
+          //     case 'idle':
+          //       if (plyr.number === 1) {
+          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+          //       }
+          //       if (plyr.number === 2) {
+          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+          //       }
+          //       let animIndex3 = plyr.idleAnim.count -1;
+          //       finalAnimIndex = animIndex3;
+          //     break;
+          //     case 'falling':
+          //       let animIndex4 = plyr.falling.count -1;
+          //       finalAnimIndex = animIndex4;
+          //       // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
+          //     break;
+          //     case 'deflected':
+          //       let animIndex5 = plyr.success.deflected.count -1;
+          //       // let animIndex5;
+          //       if (plyr.success.deflected.count > 10 && plyr.success.deflected.count < 21) {
+          //         animIndex5 = (plyr.success.deflected.count-10);
+          //       }
+          //       if (plyr.success.deflected.count > 20 && plyr.success.deflected.count < 31) {
+          //         animIndex5 = (plyr.success.deflected.count-20);
+          //       }
+          //       if (plyr.success.deflected.count > 30 && plyr.success.deflected.count < 41) {
+          //         animIndex5 = (plyr.success.deflected.count-30);
+          //       }
+          //       if (plyr.success.deflected.count > 40 && plyr.success.deflected.count < 51) {
+          //         animIndex5 = (plyr.success.deflected.count-40);
+          //       }
+          //       finalAnimIndex = animIndex5;
+          //       // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
+          //     break;
+          //     case 'dodging':
+          //       let animIndex7 = plyr.dodging.count -1;
+          //       finalAnimIndex = animIndex7;
+          //       // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
+          //     break;
+          //   }
           // }
           // FOR TESTING BY CALLING ONLY @ 1 CELL
 
@@ -13726,7 +13895,7 @@ class App extends Component {
                 // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
               }
               if (plyr.defending.count === 0) {
-                let animIndex2a = plyr.defending.limit;
+                let animIndex2a = 5;
                 finalAnimIndex = animIndex2a;
                 // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
               }
@@ -15339,9 +15508,9 @@ class App extends Component {
                     // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
                     // console.log('popup.msg',popup.msg,popup.img);
                     let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
-                    context.drawImage(this.popupImageRef.missedAttack, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
+                    context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
                     if (showProgress === true) {
-                      context.drawImage(this.refs.popupProgressSvg, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
+                      // context.drawImage(this.refs.popupProgressSvg, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
                     }
 
 
@@ -15736,9 +15905,9 @@ class App extends Component {
                       // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
                       // console.log('popup.msg',popup.msg);
                       let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
-                      context.drawImage(this.popupImageRef.missedAttack, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
+                      context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
                       if (showProgress === true) {
-                        context.drawImage(this.refs.popupProgressSvg, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
+                        // context.drawImage(this.refs.popupProgressSvg, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
                       }
 
 
