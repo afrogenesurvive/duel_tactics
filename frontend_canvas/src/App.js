@@ -2716,8 +2716,8 @@ class App extends Component {
     this.barrierImgs = {};
     this.cellColorRef = [];
     this.popupProgressBorderSvgPath = "";
-    this.popupProgressSvgGradColor1 = "rgb(255,0,0)";
-    this.popupProgressSvgGradColor2 = "rgb(255,255,0)";
+    this.popupProgressImgGradColor1 = "rgb(255,0,0)";
+    this.popupProgressImgGradColor2 = "rgb(255,255,0)";
 
 
 
@@ -7349,9 +7349,9 @@ class App extends Component {
           }
 
 
-          let defendPopup = player.popups.find(x=>x.msg.split("_")[0] === 'defending')
+          let defendPopup = player.popups.find(x=>x.msg === 'defending')
           if (defendPopup) {
-            player.popups.splice(player.popups.findIndex(x=>x.msg.split("_")[0] === 'defending'),1)
+            player.popups.splice(player.popups.findIndex(x=>x.msg === 'defending'),1)
           }
           if (player.falling.state !== true && player.moving.state !== true) {
             player.action = 'idle';
@@ -7483,7 +7483,7 @@ class App extends Component {
         }
 
 
-        // ATTACK/DEFEND/DEFLECT CHECK!!
+        // ATTACKING!
         if (player.attacking.state === true) {
 
 
@@ -8957,7 +8957,7 @@ class App extends Component {
         }
 
 
-        // DEFENSE + DECAY!!
+        // DEFENDING!!
         if (player.defending.state === true) {
 
           let defendType = player.currentWeapon.type;
@@ -8967,13 +8967,13 @@ class App extends Component {
           let defendPeak = this.defendAnimRef.peak[defendType];
           player.defending.limit = this.defendAnimRef.limit[defendType];
 
-          if (player.defending.count > 0 && player.defending.count < defendPeak && player.defendDecay.state !== true) {
+          if (player.defending.count < defendPeak && player.defendDecay.state !== true) {
             player.defending.count++;
             player.action = 'defending';
             player.defendPeak = false;
             console.log('defend winding up',player.defending.count, 'player',player.number,defendPeak);
-            if (!player.popups.find(x=>x.msg === 'defending_1')) {
-
+            if (!player.popups.find(x=>x.msg === 'defending')) {
+              console.log('2');
               player.popups.push(
                 {
                   state: false,
@@ -8981,7 +8981,7 @@ class App extends Component {
                   limit: player.defending.limit,
                   type: '',
                   position: '',
-                  msg: 'defending_1',
+                  msg: 'defending',
                   img: '',
 
                 }
@@ -9006,11 +9006,11 @@ class App extends Component {
              player.defendDecay = {
                state: true,
                count: 0,
-               limit: player.defending.limit,
+               limit: player.defending.limit-defendPeak,
              }
 
-             if (!player.popups.find(x=>x.msg === 'defending_1')) {
-
+             if (!player.popups.find(x=>x.msg === 'defending')) {
+               console.log('3');
                player.popups.push(
                  {
                    state: false,
@@ -9018,7 +9018,7 @@ class App extends Component {
                    limit: player.defending.limit,
                    type: '',
                    position: '',
-                   msg: 'defending_1',
+                   msg: 'defending',
                    img: '',
 
                  }
@@ -9026,7 +9026,8 @@ class App extends Component {
 
              }
 
-           } else {
+           }
+           else {
 
              console.log('not enough stamina for peak defend. set defend decay and move close to drop defense count');
 
@@ -9067,8 +9068,8 @@ class App extends Component {
                 player.defendPeak = false;
               }
 
-              if (!player.popups.find(x=>x.msg === 'defending_1')) {
-
+              if (!player.popups.find(x=>x.msg === 'defending')) {
+                console.log('1');
                 player.popups.push(
                   {
                     state: false,
@@ -9076,7 +9077,7 @@ class App extends Component {
                     limit: player.defendDecay.limit,
                     type: '',
                     position: '',
-                    msg: 'defending_1',
+                    msg: 'defending',
                     img: '',
 
                   }
@@ -12326,18 +12327,21 @@ class App extends Component {
                           limit: this.players.[plyr.number-1].success.defendSuccess.limit
                         }
 
-                        player.popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit:25,
-                            type: '',
-                            position: '',
-                            msg: 'defendSuccess',
-                            img: '',
+                        if (!player.popups.find(x=> x.msg === "defendSuccess")) {
+                          player.popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit:25,
+                              type: '',
+                              position: '',
+                              msg: 'defendSuccess',
+                              img: '',
 
-                          }
-                        )
+                            }
+                          )
+                        }
+
 
 
                         // GUARD BREAK!
@@ -15482,7 +15486,7 @@ class App extends Component {
                       plyr.attacking.state === true ||
                       plyr.flanking.state === true
                     ) {
-                      this.playerPopupSvgCalc(plyr,popup)
+                      // this.playerPopupSvgCalc(plyr,popup,{x:popupDrawCoords.origin.x+centerPopupOffset,y:popupDrawCoords.origin.y+centerPopupOffset},context)
                       showProgress = true;
                     }
                     else {
@@ -15503,8 +15507,16 @@ class App extends Component {
                     let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
                     context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
                     if (showProgress === true) {
-                      // context.drawImage(this.refs.popupProgressSvg, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
+                      let perc = this.playerPopupSvgCalc(plyr,popup)
+                      context.fillStyle = this.popupProgressImgGradColor2;
+                      context.beginPath();
+                      context.roundRect(popupDrawCoords.origin.x,popupDrawCoords.origin.y, this.popupSize, this.popupSize*perc, 5);
+                      context.stroke();
+                      context.fillStyle = this.popupProgressImgGradColor1;
+                      context.roundRect(popupDrawCoords.origin.x,popupDrawCoords.origin.y, this.popupSize, this.popupSize*perc, 5);
+                      context.fill();
                     }
+
 
 
                   }
@@ -15882,13 +15894,7 @@ class App extends Component {
                         plyr.attacking.state === true ||
                         plyr.flanking.state === true
                       ) {
-                        this.playerPopupSvgCalc(plyr,popup)
                         showProgress = true;
-                      }
-                      else {
-                        this.refs.popupProgressSvg.children[1].setAttribute("d","")
-                        this.refs.popupProgressSvg.children[2].setAttribute("height","0")
-                        this.refs.popupProgressSvg.children[2].setAttribute("fill","white")
                       }
 
                       popupDrawCoords = this.popupDrawCalc(popup,{x:point.x-25,y:point.y-25},plyr.number);
@@ -15898,10 +15904,19 @@ class App extends Component {
                       // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
                       // console.log('popup.msg',popup.msg);
                       let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
-                      context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
+
                       if (showProgress === true) {
-                        // context.drawImage(this.refs.popupProgressSvg, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
+                        let perc = this.playerPopupSvgCalc(plyr,popup)
+                        context.fillStyle = this.popupProgressImgGradColor2;
+                        context.beginPath();
+                        context.roundRect(popupDrawCoords.origin.x,popupDrawCoords.origin.y, this.popupSize, this.popupSize*perc, 5);
+                        context.stroke();
+                        context.fillStyle = this.popupProgressImgGradColor1;
+                        context.roundRect(popupDrawCoords.origin.x,popupDrawCoords.origin.y, this.popupSize, this.popupSize*perc, 5);
+                        context.fill();
                       }
+                      context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
+
 
 
                     }
@@ -18960,22 +18975,15 @@ class App extends Component {
   }
   playerPopupSvgCalc = (player,popup) => {
 
-
-
-      // this.refs.popupProgressSvg.setAttribute("viewBox","0 -0.5 popimgsize popimgsize")
-      // this.refs.popupProgressSvg.children[1].setAttribute("d","")
-      // // this.refs.popupProgressSvg.children[2].setAttribute("width","0")
       this.refs.popupProgressSvg.children[2].setAttribute("height","0")
       this.refs.popupProgressSvg.children[2].setAttribute("fill","white")
-      // this.refs.popupProgressSvg.children[2].setAttribute("x","2")
-      // this.refs.popupProgressSvg.children[2].setAttribute("y","2")
 
     let path = this.refs.popupProgressSvg.children[1];
     let rect = this.refs.popupProgressSvg.children[2];
+
     let phase = "";
     let perc = 0;
     let arr = this.popupProgressBorderSvgPath.split(" ");
-    perc = (this.time - 100);
     path.setAttribute("fill","blue")
     let start = 0;
     let end = 0;
@@ -18983,8 +18991,6 @@ class App extends Component {
     let upperIndex = Math.ceil(arr.length*(perc/100));
     let fillPath = false;
     let emptyPath = true;
-
-
 
 
     // plyr.prePush.state === true ||
@@ -18996,37 +19002,54 @@ class App extends Component {
     // plyr.flanking.state === true
 
 
-    // if (player.action === "defending") {
-    //     if (player.defending.count > 0 && player.defending.count < player.defending.limit+1 && player.defendDecay.state !== true) {
-    //       phase = "windup";
-    //      set start, end count, perc
-    //     }
-    // }
+    if (player.action === "defending") {
+
+      let defendType = player.currentWeapon.type;
+      if ( player.currentWeapon.name === "") {
+        defendType  = "unarmed";
+      }
+      let defendPeak = this.defendAnimRef.peak[defendType];
+      player.defending.limit = this.defendAnimRef.limit[defendType];
+
+      if (player.defending.count < defendPeak && player.defendDecay.state !== true) {
+        phase = "windup";
+        perc = (player.defending.count/defendPeak)*100;
+      }
+      else if (player.defending.count === defendPeak && player.defendDecay.state !== true) {
+          phase = "peak";
+      }
+      if (player.defendDecay.state === true) {
+        if (player.defendDecay.count < player.defendDecay.limit) {
+          phase = "cooldown"
+          perc = (player.defendDecay.count/player.defendDecay.limit)*100;
+        }
+        if (player.defendDecay.count >= player.defendDecay.limit) {
+          phase = "off";
+        }
+      }
+
+    }
 
 
     if (phase === 'windup') {
       fillPath = true;
     }
-
     if (phase === "peak") {
       perc = 100;
       path.setAttribute("d",arr.join(" "));
       fillPath = false;
       emptyPath = false;
     }
-
     if (phase === "cooldown") {
       perc = 100-perc;
       emptyPath = true;
     }
-
     if (phase === "off") {
       perc = 100;
       path.setAttribute("d",arr.join(" "));
       fillPath = false;
       emptyPath = false;
     }
-
     switch (phase) {
       case "windup":
           path.setAttribute("fill","red")
@@ -19066,47 +19089,65 @@ class App extends Component {
       baseColor = "green";
     }
 
-      // Gradients:
-      // rect.setAttribute("fill","url(#grad)");
-      this.popupProgressSvgGradColor1 = baseColor;
-      switch (phase) {
-        case "windup" || "off":
-            this.popupProgressSvgGradColor2 = "red";
-          break;
-        case "peak":
-            this.popupProgressSvgGradColor2 = "green";
-          break;
-        case "cooldown":
-            this.popupProgressSvgGradColor2 = "blue";
-          break;
-        default:
+    // Gradients:
+    // rect.setAttribute("fill","url(#grad)");
+    this.popupProgressImgGradColor1 = baseColor;
+    switch (phase) {
+      case "windup" || "off":
+          this.popupProgressImgGradColor2 = "red";
+        break;
+      case "peak":
+          this.popupProgressImgGradColor2 = "green";
+        break;
+      case "cooldown":
+          this.popupProgressImgGradColor2 = "blue";
+        break;
+      default:
 
-      }
-
-      if (perc < 95) {
-        this.refs.popupProgressSvg.children[2].setAttribute("height", perc+"%");
-      }
-      else {
-        perc = 95;
-      }
-
-
-    if (fillPath === true) {
-      let newArr = [];
-      for (var i = 0; i < upperIndex+1; i++) {
-        newArr.push(arr[i]);
-      }
-      this.refs.popupProgressSvg.children[2].setAttribute("d",newArr.join(" "));
     }
 
-    if (emptyPath === true) {
-      let newArr = arr;
-      this.refs.popupProgressSvg.children[2].setAttribute("d",arr.join(" "));
-      for (var i = 0; i < upperIndex+1; i++) {
-        newArr.pop();
-      }
-      this.refs.popupProgressSvg.children[2].setAttribute("d",newArr.join(" "));
+    if (perc < 95) {
+      // this.refs.popupProgressSvg.children[2].setAttribute("height", Math.floor(perc)+"%");
     }
+    else {
+      perc = 95;
+    }
+    // if (fillPath === true) {
+    //   let newArr = [];
+    //   for (var i = 0; i < upperIndex+1; i++) {
+    //     newArr.push(arr[i]);
+    //   }
+    //   this.refs.popupProgressSvg.children[2].setAttribute("d",newArr.join(" "));
+    // }
+    // if (emptyPath === true) {
+    //   let newArr = arr;
+    //   this.refs.popupProgressSvg.children[2].setAttribute("d",arr.join(" "));
+    //   for (var i = 0; i < upperIndex+1; i++) {
+    //     newArr.pop();
+    //   }
+    //   this.refs.popupProgressSvg.children[2].setAttribute("d",newArr.join(" "));
+    // }
+
+    // function svgToPng(svg, callback) {
+    //   const url = getSvgUrl(svg);
+    // }
+    // function getSvgUrl(svg) {
+    //   return URL.createObjectURL(new Blob([svg], {
+    //     type: 'image/svg+xml'
+    //   }));
+    // }
+    // svgToPng(svg, (imgData) => {
+    //   pngImage.src = imgData;
+    // });
+
+    // SET SVG IMAGE filter
+    // var xml = new XMLSerializer().serializeToString(this.refs.popupProgressSvg);
+    // var svg64 = btoa(xml); //for utf8: btoa(unescape(encodeURIComponent(xml)))
+    // var b64start = 'data:image/svg+xml;base64,';
+    // var image64 = b64start + svg64;
+    // this.refs.popupProgressImg.src = image64;
+
+    return (perc/100);
 
 
   }
@@ -28252,6 +28293,7 @@ class App extends Component {
       boltKilled: this.refs.boltKilledIndicate,
       attackCancelled: this.refs.attackBreakIndicate,
       injured: this.refs.deflectInjuredIndicate,
+      defending: this.refs.defendIndicate,
       defending_1: this.refs.defendIndicate1,
       defending_2: this.refs.defendIndicate2,
       defending_3: this.refs.defendIndicate3,
@@ -36698,7 +36740,7 @@ class App extends Component {
 
 
 
-          <svg className="popupProgressSvg" ref="popupProgressSvg" height={this.popupImgSize} xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 30 30" shape-rendering="crispEdges">
+          <svg className="popupProgressSvg hidden" ref="popupProgressSvg"  xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 30 30" shape-rendering="crispEdges">
             <metadata>Made with Pixels to Svg https://codepen.io/shshaw/pen/XbxvNj</metadata>
             <path id="border" stroke="yellow" stroke-width="5px" d="M4 0h21M2 1h26M1 2h2M27 2h2M1 3h1M28 3h1M1 4h1M28 4h2M0 5h2M28 5h2M0 6h2M28 6h2M0 7h2M28 7h2M0 8h2M28 8h2M0 9h2M28 9h2M0 10h2M28 10h2M0 11h2M28 11h2M0 12h2M28 12h2M0 13h2M28 13h2M0 14h2M28 14h2M0 15h2M28 15h2M0 16h2M28 16h2M0 17h2M28 17h2M0 18h2M28 18h2M0 19h2M28 19h2M0 20h2M28 20h2M0 21h2M28 21h2M0 22h2M28 22h2M0 23h2M28 23h2M0 24h2M28 24h2M0 25h2M28 25h1M1 26h1M28 26h1M1 27h2M27 27h2M2 28h26M5 29h21" />
             <rect id="rect" x="1" y="1" rx="5" ry="5" width="95%" height="0%" fill="url(#grad)"/>
@@ -36709,6 +36751,7 @@ class App extends Component {
               </linearGradient>
             </defs>
           </svg>
+          <img src="" className="hidden" height={this.popupImgSize} width={this.popupImgSize} ref="popupProgressImg" alt="logo"/>
 
           <img src={floorGrass} className='hidden' ref="floorGrass" alt="logo" id="floor1"/>
           <img src={floorDirt} className='hidden' ref="floorDirt" alt="logo" id="floor2"/>
