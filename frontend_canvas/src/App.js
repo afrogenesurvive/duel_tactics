@@ -1430,6 +1430,8 @@ class App extends Component {
           limit: 20,
         },
         attackStrength: 0,
+        attackPeak: false,
+        defendPeak: false,
         bluntAttack: false,
         dodging: {
           countState: false,
@@ -1858,6 +1860,8 @@ class App extends Component {
           limit: 20,
         },
         attackStrength: 0,
+        attackPeak: false,
+        defendPeak: false,
         bluntAttack: false,
         dodging: {
           countState: false,
@@ -7502,7 +7506,7 @@ class App extends Component {
             if (player.attacking.count < attackPeak) {
               console.log('attack wind up',player.attacking.count,'player',player.number);
             }
-
+            player.attackPeak = false;
             player.action = 'attacking';
             player.attacking.count++;
 
@@ -7630,7 +7634,7 @@ class App extends Component {
             // WEAPON STAMINA COST!!
             if (player.stamina.current - this.staminaCostRef.attack[stamAtkType][blunt].peak >= 0) {
                 player.stamina.current -= this.staminaCostRef.attack[stamAtkType][blunt].peak;
-
+                player.attackPeak = true;
 
               // CREATE NEW PROJECTILE
               if (player.currentWeapon.type === 'crossbow' && player.bluntAttack !== true && player.items.ammo > 0) {
@@ -8610,12 +8614,7 @@ class App extends Component {
                       )
 
                       let defenderParry = false;
-                      if (
-                        this.players[player.target.occupant.player-1].defending.state === true &&
-                        this.players[player.target.occupant.player-1].defendDecay.state !== true ||
-                        this.players[player.target.occupant.player-1].defendDecay.state === true &&
-                        this.players[player.target.occupant.player-1].defendDecay.count < 4
-                      ) {
+                      if (this.players[player.target.occupant.player-1].defendPeak === true) {
                         defenderParry = true;
                         this.players[player.target.occupant.player-1].stamina.current += this.staminaCostRef.defend.peak;
                       }
@@ -8692,12 +8691,7 @@ class App extends Component {
                       shouldDeflectPushBackAttacker = this.rnJesus(1,player.crits.pushBack);
 
                       // PEAK DEFEND/PARRY!!
-                      if (
-                        this.players[player.target.occupant.player-1].defending.state === true &&
-                        this.players[player.target.occupant.player-1].defendDecay.state !== true ||
-                        this.players[player.target.occupant.player-1].defendDecay.state === true &&
-                        this.players[player.target.occupant.player-1].defendDecay.count < 4
-                      ) {
+                      if (this.players[player.target.occupant.player-1].defendPeak) {
                         console.log('peak defend/parry attacker',player.number,'defender',player.target.occupant.player);
                         shouldDeflectAttacker = this.rnJesus(1,1);
                         shouldDeflectPushBackAttacker = this.rnJesus(1,1);
@@ -8874,7 +8868,7 @@ class App extends Component {
                 let targetCell2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y );
                 let myCell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y );
 
-                 if (player.target.occupant.type !== 'player' && player.target.free !== true) {
+                if (player.target.occupant.type !== 'player' && player.target.free !== true) {
 
 
                   // let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y );
@@ -8930,6 +8924,7 @@ class App extends Component {
           // ATTACK COOLDOWN AND END!
           if (player.attacking.count > attackPeak && player.attacking.count < player.attacking.limit) {
             console.log('attack cooldown',player.attacking.count);
+            player.attackPeak = false;
           }
           if (player.attacking.count >= player.attacking.limit) {
             console.log('attack end',player.attacking.count);
@@ -8963,7 +8958,6 @@ class App extends Component {
 
 
         // DEFENSE + DECAY!!
-        // if (player.defending.count > 0 && player.defending.count < player.defending.limit+1 && player.defendDecay.state !== true && player.prePull.state !== true && player.pulling.state !== true) {
         if (player.defending.state === true) {
 
           let defendType = player.currentWeapon.type;
@@ -8976,6 +8970,7 @@ class App extends Component {
           if (player.defending.count > 0 && player.defending.count < defendPeak && player.defendDecay.state !== true) {
             player.defending.count++;
             player.action = 'defending';
+            player.defendPeak = false;
             console.log('defend winding up',player.defending.count, 'player',player.number,defendPeak);
             if (!player.popups.find(x=>x.msg === 'defending_1')) {
 
@@ -9006,6 +9001,7 @@ class App extends Component {
                count: 0,
                limit: player.defending.limit,
              }
+             player.defendPeak = true;
              player.stamina.current = player.stamina.current - this.staminaCostRef.defend.peak;
              player.defendDecay = {
                state: true,
@@ -9067,7 +9063,9 @@ class App extends Component {
           if (player.defendDecay.state === true) {
             if (player.defendDecay.count < player.defendDecay.limit) {
               player.defendDecay.count++;
-
+              if (player.defendDecay.count === 5 ) {
+                player.defendPeak = false;
+              }
 
               if (!player.popups.find(x=>x.msg === 'defending_1')) {
 
@@ -12347,12 +12345,7 @@ class App extends Component {
                         let deflectDefender = 0;
 
                         // PEAK DEFEND/PARRY!!
-                        if (
-                          this.players.[plyr.number-1].defending.state === true &&
-                          this.players.[plyr.number-1].defendDecay.state !== true ||
-                          this.players.[plyr.number-1].defendDecay.state === true &&
-                          this.players.[plyr.number-1].defendDecay.count < 4
-                        ) {
+                        if (this.players.[plyr.number-1].peakDefend === true) {
                           console.log('peak bolt defend/parry');
                           deflectDefender = 0;
 
@@ -29432,6 +29425,8 @@ class App extends Component {
             limit: 20,
           },
           attackStrength: 0,
+          attackPeak: false,
+          defendPeak: false,
           bluntAttack: false,
           dodging: {
             countState: false,
