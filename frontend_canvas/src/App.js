@@ -8973,7 +8973,6 @@ class App extends Component {
             player.defendPeak = false;
             console.log('defend winding up',player.defending.count, 'player',player.number,defendPeak);
             if (!player.popups.find(x=>x.msg === 'defending')) {
-              console.log('2');
               player.popups.push(
                 {
                   state: false,
@@ -9010,7 +9009,6 @@ class App extends Component {
              }
 
              if (!player.popups.find(x=>x.msg === 'defending')) {
-               console.log('3');
                player.popups.push(
                  {
                    state: false,
@@ -9069,7 +9067,6 @@ class App extends Component {
               }
 
               if (!player.popups.find(x=>x.msg === 'defending')) {
-                console.log('1');
                 player.popups.push(
                   {
                     state: false,
@@ -10574,7 +10571,7 @@ class App extends Component {
                       {
                         state: false,
                         count: 0,
-                        limit: 5,
+                        limit: 3,
                         type: '',
                         position: '',
                         msg: 'preAction1',
@@ -14271,7 +14268,7 @@ class App extends Component {
               }
 
               if (plyr.defending.state === true) {
-                context.drawImage(this.indicatorImgs.defend, point.x-35, point.y-35, 35,35);
+                // context.drawImage(this.indicatorImgs.defend, point.x-35, point.y-35, 35,35);
               }
               if (plyr.success.attackSuccess === true) {
                 context.drawImage(this.indicatorImgs.attackSuccess, point.x-35, point.y-35, 35,35);
@@ -15475,6 +15472,7 @@ class App extends Component {
                     }
 
 
+                    let popupProgress = false;
                     let showProgress = false;
                     if (
                       plyr.prePush.state === true ||
@@ -15489,10 +15487,14 @@ class App extends Component {
                       // this.playerPopupSvgCalc(plyr,popup,{x:popupDrawCoords.origin.x+centerPopupOffset,y:popupDrawCoords.origin.y+centerPopupOffset},context)
                       showProgress = true;
                     }
-                    else {
-                      this.refs.popupProgressSvg.children[1].setAttribute("d","")
-                      this.refs.popupProgressSvg.children[2].setAttribute("height","0")
-                      this.refs.popupProgressSvg.children[2].setAttribute("fill","white")
+                    if (
+                      popup.msg === "attacking1" ||
+                      popup.msg === "attacking2" ||
+                      popup.msg === "defending" ||
+                      popup.msg === "flanking" ||
+                      popup.msg === "dodging"
+                    ) {
+                      popupProgress = true;
                     }
 
 
@@ -15506,7 +15508,7 @@ class App extends Component {
                     // console.log('popup.msg',popup.msg,popup.img);
                     let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
                     context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
-                    if (showProgress === true) {
+                    if (showProgress === true  && popupProgress === true) {
                       let perc = this.playerPopupSvgCalc(plyr,popup)
                       context.fillStyle = this.popupProgressImgGradColor2;
                       context.beginPath();
@@ -15883,6 +15885,7 @@ class App extends Component {
                       }
 
 
+                      let popupProgress = false;
                       let showProgress = false;
                       if (
                         plyr.prePush.state === true ||
@@ -15894,7 +15897,17 @@ class App extends Component {
                         plyr.attacking.state === true ||
                         plyr.flanking.state === true
                       ) {
+                        // this.playerPopupSvgCalc(plyr,popup,{x:popupDrawCoords.origin.x+centerPopupOffset,y:popupDrawCoords.origin.y+centerPopupOffset},context)
                         showProgress = true;
+                      }
+                      if (
+                        popup.msg === "attacking1" ||
+                        popup.msg === "attacking2" ||
+                        popup.msg === "defending" ||
+                        popup.msg === "flanking" ||
+                        popup.msg === "dodging"
+                      ) {
+                        popupProgress = true;
                       }
 
                       popupDrawCoords = this.popupDrawCalc(popup,{x:point.x-25,y:point.y-25},plyr.number);
@@ -15905,7 +15918,7 @@ class App extends Component {
                       // console.log('popup.msg',popup.msg);
                       let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
 
-                      if (showProgress === true) {
+                      if (showProgress === true && popupProgress === true) {
                         let perc = this.playerPopupSvgCalc(plyr,popup)
                         context.fillStyle = this.popupProgressImgGradColor2;
                         context.beginPath();
@@ -28303,6 +28316,7 @@ class App extends Component {
       deflected: this.refs.deflectBluntIndicate,
       dodgeStart: this.refs.preAction2Indicate,
       dodgeSuccess: this.refs.dodgeIndicate,
+      dodging: this.refs.dodgeIndicate,
       flanking: this.refs.flankIndicate,
       pushedBack: this.refs.pushbackIndicate,
       falling: this.refs.fallingIndicate,
