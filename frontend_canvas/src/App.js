@@ -3764,7 +3764,6 @@ class App extends Component {
             };
         }
 
-
         if (type === "mousemove") {
           this.mouseMoving = true;
           this.mousedOverCellCoords = {
@@ -3879,151 +3878,6 @@ class App extends Component {
         }
 
       }
-      // this.showCellInfoBox = false;
-
-      // this.clicked.cell = {
-      //   number:{
-      //     x:0,
-      //     y:0
-      //   },
-      //   center:{
-      //     x:0,
-      //     y:0
-      //   },
-      //   drawCenter:{
-      //     x:0,
-      //     y:0
-      //   },
-      //   vertices: [
-      //     {
-      //       x:0,
-      //       y:0
-      //     },
-      //     {
-      //       x:0,
-      //       y:0
-      //     },
-      //     {
-      //       x:0,
-      //       y:0
-      //     },
-      //     {
-      //       x:0,
-      //       y:0
-      //     },
-      //   ],
-      //   side: 0,
-      //   levelData: '',
-      //   edge: {
-      //     state: false,
-      //     side: ''
-      //   },
-      //   terrain: {
-      //     name: '',
-      //     type: '',
-      //     effect: ''
-      //   },
-      //   item: {
-      //     name: '',
-      //     type: '',
-      //     subType: '',
-      //     effect: '',
-      //     initDrawn: false
-      //   },
-      //   void: {
-      //     state: false
-      //   },
-      //   obstacle: {
-      //     state: false,
-      //     name: '',
-      //     type: '',
-      //     hp: 2,
-      //     destructible: {
-      //       state: false,
-      //       weapons: [],
-      //       leaveRubble: false,
-      //     },
-      //     locked: {
-      //       state: false,
-      //       key: '',
-      //     },
-      //     weight: 1,
-      //     height: 0.5,
-      //     items: [],
-      //     effects: [],
-      //     moving: {
-      //       state: false,
-      //       step: 0,
-      //       origin: {
-      //         number: {
-      //           x: undefined,
-      //           y: undefined,
-      //         },
-      //         center: {
-      //           x: undefined,
-      //           y: undefined,
-      //         },
-      //       },
-      //       destination: {
-      //         number: {
-      //           x: undefined,
-      //           y: undefined,
-      //         },
-      //         center: {
-      //           x: undefined,
-      //           y: undefined,
-      //         },
-      //       },
-      //       currentPosition: {
-      //         x: undefined,
-      //         y: undefined,
-      //       },
-      //       nextPosition: {
-      //         x: undefined,
-      //         y: undefined,
-      //       },
-      //       moveSpeed: 0,
-      //       pushable: true,
-      //       pushed: false,
-      //       pusher: undefined,
-      //       falling: {
-      //         state: false,
-      //         count: 0,
-      //         limit: 10,
-      //       },
-      //     }
-      //   },
-      //   barrier: {
-      //     state: false,
-      //     name: '',
-      //     type: '',
-      //     hp: 2,
-      //     destructible: {
-      //       state: false,
-      //       weapons: [],
-      //       leaveRubble: false,
-      //     },
-      //     locked: {
-      //       state: false,
-      //       key: '',
-      //     },
-      //     position: '',
-      //     height: 1,
-      //   },
-      //   elevation: {
-      //     number: 0,
-      //     type: '',
-      //     position: '',
-      //   },
-      //   rubble: false,
-      // };
-      // this.clicked.player = undefined;
-      // this.mouseOverCell = {
-      //   state: false,
-      //   cell: undefined,
-      //   count: 0,
-      //   threshold: this.mouseOverCell.threshold,
-      // };
     }
 
     if (type === "mousemove") {
@@ -15537,7 +15391,7 @@ class App extends Component {
                     let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
                     context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
                     if (showProgress === true  && popupProgress === true) {
-                      let perc = this.playerPopupSvgCalc(plyr,popup)
+                      let perc = this.playerPopupProgressCalc(plyr,popup)
                       context.fillStyle = this.popupProgressImgGradColor2;
                       context.beginPath();
                       context.roundRect(popupDrawCoords.origin.x,popupDrawCoords.origin.y, this.popupSize, this.popupSize*perc, 5);
@@ -15947,7 +15801,7 @@ class App extends Component {
                       let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
 
                       if (showProgress === true && popupProgress === true) {
-                        let perc = this.playerPopupSvgCalc(plyr,popup)
+                        let perc = this.playerPopupProgressCalc(plyr,popup)
                         context.fillStyle = this.popupProgressImgGradColor2;
                         context.beginPath();
                         context.roundRect(popupDrawCoords.origin.x,popupDrawCoords.origin.y, this.popupSize, this.popupSize*perc, 5);
@@ -19014,7 +18868,7 @@ class App extends Component {
     return popupCoords;
 
   }
-  playerPopupSvgCalc = (player,popup) => {
+  playerPopupProgressCalc = (player,popup) => {
 
       this.refs.popupProgressSvg.children[2].setAttribute("height","0")
       this.refs.popupProgressSvg.children[2].setAttribute("fill","white")
@@ -19068,6 +18922,20 @@ class App extends Component {
           phase = "off";
         }
       }
+
+    }
+
+    if (player.action === "attacking") {
+
+      let atkType = player.currentWeapon.type;
+      if (player.currentWeapon.name === "") {
+        atkType = "unarmed";
+      }
+      let attackPeak = this.attackAnimRef.peak[atkType];
+      if (player.attacking.count < attackPeak) {}
+      if (player.attacking.count === attackPeak) {}
+      if (player.attacking.count > attackPeak && player.attacking.count < player.attacking.limit) {}
+      if (player.attacking.count >= player.attacking.limit) {}
 
     }
 
