@@ -2519,7 +2519,7 @@ class App extends Component {
       plyrNo: 1,
       type: 'start',
     }
-    this.showCellInfoBox = true;
+    this.showCellInfoBox = false;
     this.mouseOverCell = {
       state: false,
       cell: undefined,
@@ -3759,138 +3759,128 @@ class App extends Component {
             this.showCellInfoBox = true;
             this.mouseOverCell = {
               state: true,
-              // state: false,
               cell: cell,
-              // cell: undefined,
               count: 0,
               threshold: this.mouseOverCell.threshold,
             };
         }
 
-        if (type === "mousemove"  && this.cellInfoMouseOver !== true) {
+        if (type === "mousemove") {
+
           this.mouseMoving = true;
-          this.mousedOverCellCoords = {
-            x: newX,
-            y: newY
+
+
+          if (this.mouseOverCellSwitchOff.state === true) {
+            this.mouseOverCellSwitchOff.state = false;
           }
 
-          if (this.mouseOverCell.cell !== undefined) {
-            if (this.mouseOverCell.cell.number.x === cell.number.x && this.mouseOverCell.cell.number.y === cell.number.y) {
-
-              if (this.mouseOverCellSwitchOff.state === true) {
-                this.mouseOverCellSwitchOff.state = false;
-              }
-              if (this.mouseOverCell.state === true) {
-                // console.log('new moused over cell is the same as previous but already true. do thing');
+          if (this.cellInfoMouseOver !== true) {
+            if (this.mouseOverCell.cell) {
+              if (this.mouseOverCell.cell.number.x === cell.number.x && this.mouseOverCell.cell.number.y === cell.number.y) {
+                if (this.mouseOverCell.state === true) {
+                  // console.log('do nothing');
+                }
+                else {
+                  if (this.mouseOverCell.count < this.mouseOverCell.threshold) {
+                    this.mouseOverCell.count++;
+                  }
+                  if (this.mouseOverCell.count >= this.mouseOverCell.threshold) {
+                    this.clicked.cell = cell;
+                    if (player) {
+                      this.clicked.player = player;
+                    }
+                    else {
+                      this.clicked.player = undefined;
+                    }
+                    this.showCellInfoBox = true;
+                    this.mouseOverCell = {
+                      state: true,
+                      cell: cell,
+                      count: 0,
+                      threshold: this.mouseOverCell.threshold,
+                    };
+                  }
+                }
               }
               else {
-
-                if (this.mouseOverCell.count < this.mouseOverCell.threshold) {
-                  this.mouseOverCell.count++;
-
-                }
-                if (this.mouseOverCell.count >= this.mouseOverCell.threshold) {
-                  this.mouseOverCell.count = 0;
-                  this.mouseOverCell.state = true;
-                  this.clicked.cell = cell;
-                  if (player) {
-                    this.clicked.player = player;
-                  }
-                  else {
-                    this.clicked.player = undefined;
-                  }
-                  this.showCellInfoBox = true;
+                this.mouseOverCell = {
+                  state: false,
+                  cell: cell,
+                  count: 0,
+                  threshold: this.mouseOverCell.threshold,
                 }
               }
+
             }
             else {
-
-              if (this.mouseOverCellSwitchOff.state === true) {
-                this.mouseOverCellSwitchOff.state = false;
-              }
-
               this.mouseOverCell = {
                 state: false,
                 cell: cell,
                 count: 0,
                 threshold: this.mouseOverCell.threshold,
-              };
+              }
+
             }
           }
           else {
-
-            if (this.mouseOverCellSwitchOff.state === true) {
-              this.mouseOverCellSwitchOff.state = false;
-            }
-
-            this.mouseOverCell = {
-              state: false,
-              cell: cell,
-              count: 0,
-              threshold: this.mouseOverCell.threshold,
-            };
+            // console.log("mouse in cell info box. do nothing");
           }
-
-
 
         }
       }
     }
     if ( insideGrid === false ) {
       // console.log("clicked or moused over the canvas out of bounds", 'x: ',x,'y: ',y);
-      // console.log('clicked or mouse moved outside the grid',this.setCellInfoMouseOver);
-      if (type === "click" && this.cellInfoMouseOver !== true) {
-          this.showCellInfoBox = false;
+      // console.log('clicked or mouse moved outside the grid',this.cellInfoMouseOver);
+      if (type === "click") {
 
+        if (this.mouseOverCellSwitchOff.state === true) {
+          this.mouseOverCellSwitchOff.state = false;
+        }
+        if (this.cellInfoMouseOver !== true) {
+          this.showCellInfoBox = false;
           this.mouseOverCell = {
             state: false,
             cell: undefined,
             count: 0,
             threshold: this.mouseOverCell.threshold,
           };
+        }
+        else {
+          this.showCellInfoBox = true;
+        }
 
       }
-      else if (type === "mousemove" && this.cellInfoMouseOver !== true) {
-        if (this.showCellInfoBox === true) {
-
+      else if (type === "mousemove") {
+        if (this.cellInfoMouseOver !== true) {
           if (this.mouseOverCellSwitchOff.state !== true) {
             this.mouseOverCellSwitchOff.state = true;
           }
-          // if (this.mouseOverCellSwitchOff.state === true) {
-          //   if (this.mouseOverCellSwitchOff.count < this.mouseOverCellSwitchOff.limit) {
-          //     this.mouseOverCellSwitchOff.count++;
-          //   }
-          //   if (this.mouseOverCellSwitchOff.count >= this.mouseOverCellSwitchOff.limit) {
-          //     this.mouseOverCellSwitchOff = {
-          //       state: false,
-          //       count: 0,
-          //       limit: this.mouseOverCellSwitchOff.limit,
-          //     }
-          //     this.showCellInfoBox = false;
-          //   }
-          // }
-        }
 
-        if (this.mouseOverCell.state !== true && this.mouseOverCell.count > 1) {
-          this.mouseOverCell = {
-            state: false,
-            cell: undefined,
-            count: 0,
-            threshold: this.mouseOverCell.threshold,
-          };
+          if (this.mouseOverCell.cell && this.mouseOverCell.state !== true && this.mouseOverCell.count > 1) {
+            this.mouseOverCell = {
+              state: false,
+              cell: undefined,
+              count: 0,
+              threshold: this.mouseOverCell.threshold,
+            };
+          }
+
+        }
+        else {
+          this.showCellInfoBox = true;
+          if (this.mouseOverCellSwitchOff.state === true) {
+            this.mouseOverCellSwitchOff.state = false;
+          }
         }
 
       }
     }
 
     if (type === "mousemove") {
-      this.mouseMoving = false;
+      this.mouseMoving = true;
     }
-    if (this.cellInfoMouseOver === true) {
-      if (this.showCellInfoBox !== true) {
-          this.showCellInfoBox = true;
-      }
-    }
+
 
   }
   getSettingsCanvasClick = (canvas, event) => {
@@ -4428,13 +4418,24 @@ class App extends Component {
 
   }
 
-  setCellInfoMouseOver = () => {
-    console.log('abc123');
-    this.cellInfoMouseOver = true;
-  }
-  unsetCellInfoMouseOver = () => {
-    console.log('abc456');
-    this.cellInfoMouseOver = false;
+  setCellInfoMouseOver = (state) => {
+    this.cellInfoMouseOver = state;
+    if (state === true) {
+      this.showCellInfoBox = true;
+      if (this.mouseOverCellSwitchOff.state === true) {
+        this.mouseOverCellSwitchOff.state = false;
+      }
+      if (this.mouseOverCell.cell && this.mouseOverCell.state !== true) {
+        this.mouseOverCell = {
+          state: false,
+          cell: undefined,
+          count: 0,
+          threshold: this.mouseOverCell.threshold,
+        };
+
+      }
+    }
+
   }
   toggleCellInfoBox = () => {
 
@@ -6001,6 +6002,7 @@ class App extends Component {
         }
       }
     };
+
     // MOUSED OVER CELL
     if (this.mouseOverCell.cell && this.mouseOverCell.state === false && this.mouseMoving !== true) {
 
@@ -6039,6 +6041,7 @@ class App extends Component {
         this.showCellInfoBox = false;
       }
     };
+    this.mouseMoving = false;
 
 
     // DEFLECTED PLAYER CAN'T DO ANYTHING!!
@@ -36617,7 +36620,6 @@ class App extends Component {
                 clicked={this.clicked}
                 close={this.toggleCellInfoBox}
                 setCellInfoMouseOver={this.setCellInfoMouseOver}
-                unsetCellInfoMouseOver={this.unsetCellInfoMouseOver}
               />
             )}
 
