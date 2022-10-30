@@ -213,6 +213,8 @@ class App extends Component {
     this.canvasRef3 = React.createRef();
     this.canvasRef4 = React.createRef();
 
+    this.cellInfoBoxRef = React.createRef();
+
     this.debugBoxStyle = "debugDisplay closedDebug";
     this.debugBoxStyle2 = "debugDisplay2 closedDebug";
 
@@ -2517,7 +2519,7 @@ class App extends Component {
       plyrNo: 1,
       type: 'start',
     }
-    this.showCellInfoBox = false;
+    this.showCellInfoBox = true;
     this.mouseOverCell = {
       state: false,
       cell: undefined,
@@ -2922,6 +2924,7 @@ class App extends Component {
 
     let canvas2 = this.canvasRef2.current;
     let context2 = canvas2.getContext('2d');
+
 
 
     this.setState({
@@ -3745,7 +3748,7 @@ class App extends Component {
             player = plyr;
           }
         }
-        if (type === 'click') {
+        if (type === 'click' && this.cellInfoMouseOver !== true) {
             this.clicked.cell = cell;
             if (player) {
               this.clicked.player = player;
@@ -3764,7 +3767,7 @@ class App extends Component {
             };
         }
 
-        if (type === "mousemove") {
+        if (type === "mousemove"  && this.cellInfoMouseOver !== true) {
           this.mouseMoving = true;
           this.mousedOverCellCoords = {
             x: newX,
@@ -3847,7 +3850,7 @@ class App extends Component {
           };
 
       }
-      else if (type === "mousemove") {
+      else if (type === "mousemove" && this.cellInfoMouseOver !== true) {
         if (this.showCellInfoBox === true) {
 
           if (this.mouseOverCellSwitchOff.state !== true) {
@@ -3882,6 +3885,11 @@ class App extends Component {
 
     if (type === "mousemove") {
       this.mouseMoving = false;
+    }
+    if (this.cellInfoMouseOver === true) {
+      if (this.showCellInfoBox !== true) {
+          this.showCellInfoBox = true;
+      }
     }
 
   }
@@ -4420,8 +4428,13 @@ class App extends Component {
 
   }
 
-  setCellInfoMouseOver = (state) => {
-    this.cellInfoMouseOver = state;
+  setCellInfoMouseOver = () => {
+    console.log('abc123');
+    this.cellInfoMouseOver = true;
+  }
+  unsetCellInfoMouseOver = () => {
+    console.log('abc456');
+    this.cellInfoMouseOver = false;
   }
   toggleCellInfoBox = () => {
 
@@ -6026,6 +6039,7 @@ class App extends Component {
         this.showCellInfoBox = false;
       }
     };
+
 
     // DEFLECTED PLAYER CAN'T DO ANYTHING!!
     if (player.success.deflected.state === false && player.dead.state !== true && this.camera.state !== true) {
@@ -10591,12 +10605,6 @@ class App extends Component {
 
     // POPUPS
     // Testing
-    if (this.time > 100 & this.time < 201) {
-
-      this.playerPopupSvgCalc(player,null)
-
-    }
-
     if (this.time === 100 || this.time === 300) {
 
       let newArray = [];
@@ -36605,14 +36613,11 @@ class App extends Component {
             )}
             {this.showCellInfoBox === true && (
               <CellInfo
+                ref={this.cellInfoBoxRef}
                 clicked={this.clicked}
                 close={this.toggleCellInfoBox}
-                onMouseEnter={() => {
-                  this.setCellInfoMouseOver(true);
-                }}
-                onMouseLeave={() => {
-                  this.setCellInfoMouseOver(false);
-                }}
+                setCellInfoMouseOver={this.setCellInfoMouseOver}
+                unsetCellInfoMouseOver={this.unsetCellInfoMouseOver}
               />
             )}
 

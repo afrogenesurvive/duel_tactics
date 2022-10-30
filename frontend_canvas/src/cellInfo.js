@@ -13,9 +13,9 @@ import {
 import './debugBox.css';
 
 const CellInfo = props => {
-
+// .bind(this,
   return (
-    <div className="cellInfoBox">
+    <div className="cellInfoBox" onMouseEnter={props.setCellInfoMouseOver} onMouseLeave={props.unsetCellInfoMouseOver}>
       <p className="cellInfoText">
         <strong>
           Cell Info:
