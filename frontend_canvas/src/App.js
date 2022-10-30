@@ -2532,8 +2532,9 @@ class App extends Component {
     this.mouseOverCellSwitchOff = {
       state: false,
       count: 0,
-      limit: 200,
-    }
+      limit: 100,
+    };
+    this.cellInfoMouseOver = false;
 
 
     //LOOP & ANIMATION
@@ -3774,6 +3775,9 @@ class App extends Component {
           if (this.mouseOverCell.cell !== undefined) {
             if (this.mouseOverCell.cell.number.x === cell.number.x && this.mouseOverCell.cell.number.y === cell.number.y) {
 
+              if (this.mouseOverCellSwitchOff.state === true) {
+                this.mouseOverCellSwitchOff.state = false;
+              }
               if (this.mouseOverCell.state === true) {
                 // console.log('new moused over cell is the same as previous but already true. do thing');
               }
@@ -3799,6 +3803,10 @@ class App extends Component {
             }
             else {
 
+              if (this.mouseOverCellSwitchOff.state === true) {
+                this.mouseOverCellSwitchOff.state = false;
+              }
+
               this.mouseOverCell = {
                 state: false,
                 cell: cell,
@@ -3808,6 +3816,10 @@ class App extends Component {
             }
           }
           else {
+
+            if (this.mouseOverCellSwitchOff.state === true) {
+              this.mouseOverCellSwitchOff.state = false;
+            }
 
             this.mouseOverCell = {
               state: false,
@@ -3824,12 +3836,21 @@ class App extends Component {
     }
     if ( insideGrid === false ) {
       // console.log("clicked or moused over the canvas out of bounds", 'x: ',x,'y: ',y);
-      // console.log('clicked or mouse moved outside the grid');
-      if (type === "click") {
+      // console.log('clicked or mouse moved outside the grid',this.setCellInfoMouseOver);
+      if (type === "click" && this.cellInfoMouseOver !== true) {
           this.showCellInfoBox = false;
+
+          this.mouseOverCell = {
+            state: false,
+            cell: undefined,
+            count: 0,
+            threshold: this.mouseOverCell.threshold,
+          };
+
       }
-      else {
+      else if (type === "mousemove") {
         if (this.showCellInfoBox === true) {
+
           if (this.mouseOverCellSwitchOff.state !== true) {
             this.mouseOverCellSwitchOff.state = true;
           }
@@ -3997,12 +4018,12 @@ class App extends Component {
       //   rubble: false,
       // };
       // this.clicked.player = undefined;
-      this.mouseOverCell = {
-        state: false,
-        cell: undefined,
-        count: 0,
-        threshold: this.mouseOverCell.threshold,
-      };
+      // this.mouseOverCell = {
+      //   state: false,
+      //   cell: undefined,
+      //   count: 0,
+      //   threshold: this.mouseOverCell.threshold,
+      // };
     }
 
     if (type === "mousemove") {
@@ -4545,7 +4566,9 @@ class App extends Component {
 
   }
 
-
+  setCellInfoMouseOver = (state) => {
+    this.cellInfoMouseOver = state;
+  }
   toggleCellInfoBox = () => {
 
     this.showCellInfoBox = !this.showCellInfoBox;
@@ -9027,8 +9050,13 @@ class App extends Component {
            }
            else {
 
-             console.log('not enough stamina for peak defend. set defend decay and move close to drop defense count');
-
+             console.log('not enough stamina for peak defend. reset stamina');
+             player.action = "idle";
+             player.defending = {
+               state: false,
+               count: 0,
+               limit: player.defending.limit,
+             }
              player.defendDecay = {
                state: true,
                count: player.defendDecay.limit-7,
@@ -36711,6 +36739,12 @@ class App extends Component {
               <CellInfo
                 clicked={this.clicked}
                 close={this.toggleCellInfoBox}
+                onMouseEnter={() => {
+                  this.setCellInfoMouseOver(true);
+                }}
+                onMouseLeave={() => {
+                  this.setCellInfoMouseOver(false);
+                }}
               />
             )}
 
