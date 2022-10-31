@@ -7407,7 +7407,7 @@ class App extends Component {
 
           let attackPeak = this.attackAnimRef.peak[player.currentWeapon.type];
           let stamAtkType = player.currentWeapon.type;
-          this.players[player.number-1].attacking.limit = this.attackAnimRef.limit[player.currentWeapon.type];
+
           if (player.currentWeapon.type === '') {
             this.players[player.number-1].attacking.limit = this.attackAnimRef.limit.unarmed;
             attackPeak = this.attackAnimRef.peak.unarmed;
@@ -7417,19 +7417,21 @@ class App extends Component {
           if (player.bluntAttack === true) {
             blunt = 'blunt';
           }
+          player.attacking.limit = this.attackAnimRef.limit[stamAtkType];
 
 
           // STEP ATTACK COUNT & CELLS UDER PRE-ATTACK
-          if (player.attacking.count < player.attacking.limit) {
+          if (player.attacking.count < this.attackAnimRef.limit[stamAtkType]) {
             if (player.attacking.count < attackPeak) {
-              console.log('attack wind up',player.attacking.count,'player',player.number);
+              // console.log('attack wind up',player.attacking.count,'player',player.number);
             }
             player.attackPeak = false;
             player.action = 'attacking';
             player.attacking.count++;
 
-            if (player.attacking.count === 2) {
-              player.popups.push(
+            if (player.attacking.count <= 2) {
+              if (!player.popups.find(x => x.msg === 'attackStart')) {
+                player.popups.push(
                   {
                     state: false,
                     count: 0,
@@ -7441,6 +7443,8 @@ class App extends Component {
 
                   }
                 )
+              }
+
 
                 this.getTarget(player)
                 // CELLS UNDER PRE ATTACK!
@@ -7539,6 +7543,22 @@ class App extends Component {
                   console.log('no setting auto cam: attackFocus');
                 }
 
+            }
+            if (player.attacking.count > 2) {
+              if (!player.popups.find(x => x.msg === "attacking")) {
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: this.attackAnimRef.limit[stamAtkType]-player.attacking.count,
+                    type: '',
+                    position: '',
+                    msg: 'attacking',
+                    img: '',
+
+                  }
+                )
+              }
             }
 
           }
@@ -8272,7 +8292,7 @@ class App extends Component {
                                 limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
                                 type: '',
                                 position: '',
-                                msg: 'attacking1',
+                                msg: 'attacking',
                                 img: '',
 
                               }
@@ -8811,18 +8831,22 @@ class App extends Component {
                     this.attackCellContents('melee',player,targetCell,targetCell2,myCell,undefined)
                   }
                   else {
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: '',
-                        position: '',
-                        msg: 'missedAttack',
-                        img: '',
+                    if (!player.popups.find(x => x.msg === "missedAttack")) {
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 25,
+                          type: '',
+                          position: '',
+                          msg: 'missedAttack',
+                          img: '',
 
-                      }
-                    )
+                        }
+                      )
+                    }
+
+
                   }
                 }
               }
@@ -8844,12 +8868,12 @@ class App extends Component {
 
 
           // ATTACK COOLDOWN AND END!
-          if (player.attacking.count > attackPeak && player.attacking.count < player.attacking.limit) {
-            console.log('attack cooldown',player.attacking.count);
+          if (player.attacking.count > attackPeak && player.attacking.count < this.attackAnimRef.limit[stamAtkType]) {
+            // console.log('attack cooldown',player.attacking.count);
             player.attackPeak = false;
           }
-          if (player.attacking.count >= player.attacking.limit) {
-            console.log('attack end',player.attacking.count);
+          if (player.attacking.count >= this.attackAnimRef.limit[stamAtkType]) {
+            // console.log('attack end',player.attacking.count);
 
             player.attacking = {
               state: false,
@@ -8872,7 +8896,11 @@ class App extends Component {
               console.log('no setting auto cam: attackFocusBreak');
             }
 
-            console.log('attack end');
+            // if (player.popups.find(x=>x.msg === 'attacking')) {
+            //   player.popups.splice(player.popups.findIndex(x=>x.msg === 'attacking'),1)
+            // }
+
+            // console.log('attack end');
 
           }
 
@@ -15438,10 +15466,10 @@ class App extends Component {
                       let perc = this.playerPopupProgressCalc(plyr,popup)
                       context.fillStyle = this.popupProgressImgGradColor2;
                       context.beginPath();
-                      context.roundRect(popupDrawCoords.origin.x,popupDrawCoords.origin.y, this.popupSize, this.popupSize*perc, 5);
+                      context.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
                       context.stroke();
                       context.fillStyle = this.popupProgressImgGradColor1;
-                      context.roundRect(popupDrawCoords.origin.x,popupDrawCoords.origin.y, this.popupSize, this.popupSize*perc, 5);
+                      context.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
                       context.fill();
                     }
 
@@ -15827,6 +15855,7 @@ class App extends Component {
                         showProgress = true;
                       }
                       if (
+                        popup.msg === "attacking" ||
                         popup.msg === "attacking1" ||
                         popup.msg === "attacking2" ||
                         popup.msg === "defending" ||
@@ -15848,10 +15877,10 @@ class App extends Component {
                         let perc = this.playerPopupProgressCalc(plyr,popup)
                         context.fillStyle = this.popupProgressImgGradColor2;
                         context.beginPath();
-                        context.roundRect(popupDrawCoords.origin.x,popupDrawCoords.origin.y, this.popupSize, this.popupSize*perc, 5);
+                        context.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
                         context.stroke();
                         context.fillStyle = this.popupProgressImgGradColor1;
-                        context.roundRect(popupDrawCoords.origin.x,popupDrawCoords.origin.y, this.popupSize, this.popupSize*perc, 5);
+                        context.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
                         context.fill();
                       }
                       context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
@@ -18958,7 +18987,10 @@ class App extends Component {
           phase = "peak";
       }
       if (player.defendDecay.state === true) {
-        if (player.defendDecay.count < player.defendDecay.limit) {
+        if (player.defendDecay.count < 5) {
+          phase = "peak";
+        }
+        if (player.defendDecay.count < player.defendDecay.limit && player.defendDecay.count > 5) {
           phase = "cooldown"
           perc = (player.defendDecay.count/player.defendDecay.limit)*100;
         }
@@ -18975,11 +19007,29 @@ class App extends Component {
       if (player.currentWeapon.name === "") {
         atkType = "unarmed";
       }
+      let end = this.attackAnimRef.limit[atkType]
       let attackPeak = this.attackAnimRef.peak[atkType];
-      if (player.attacking.count < attackPeak) {}
-      if (player.attacking.count === attackPeak) {}
-      if (player.attacking.count > attackPeak && player.attacking.count < player.attacking.limit) {}
-      if (player.attacking.count >= player.attacking.limit) {}
+
+      if (player.attacking.count < attackPeak) {
+        phase = "windup";
+        perc = (player.attacking.count/attackPeak)*100;
+      }
+      if (player.attacking.count === attackPeak) {
+        phase = "peak";
+      }
+      if (player.attacking.count > attackPeak && player.attacking.count < end) {
+        if (player.attacking.count < attackPeak + 5) {
+          phase = "peak";
+        }
+        if (player.attacking.count > attackPeak + 5) {
+          phase = "cooldown";
+          perc = (player.attacking.count-(attackPeak+5))/(end-attackPeak+5)*100;
+          console.log('beeep ',perc);
+        }
+      }
+      if (player.attacking.count >= end) {
+        phase = "off";
+      }
 
     }
 
@@ -19021,19 +19071,19 @@ class App extends Component {
     }
 
     let baseColor = "";
-    if (perc >= 0 && perc <= 20) {
+    if (perc >= 0 && perc <= 40) {
       rect.setAttribute("fill", "red")
       baseColor = "red";
     }
-    if (perc >= 20 && perc <= 40) {
+    if (perc >= 40 && perc <= 60) {
       rect.setAttribute("fill", "orange")
       baseColor = "orange";
     }
-    if (perc >= 40 && perc <= 60) {
+    if (perc >= 60 && perc <= 70) {
       rect.setAttribute("fill", "yellow")
       baseColor = "yellow";
     }
-    if (perc >= 60 && perc <= 80) {
+    if (perc >= 70 && perc <= 80) {
       rect.setAttribute("fill", "blue")
       baseColor = "blue";
     }
@@ -19059,12 +19109,12 @@ class App extends Component {
 
     }
 
-    if (perc < 95) {
-      // this.refs.popupProgressSvg.children[2].setAttribute("height", Math.floor(perc)+"%");
-    }
-    else {
-      perc = 95;
-    }
+    // if (perc < 95) {
+    //   // this.refs.popupProgressSvg.children[2].setAttribute("height", Math.floor(perc)+"%");
+    // }
+    // else {
+    //   perc = 95;
+    // }
     // if (fillPath === true) {
     //   let newArr = [];
     //   for (var i = 0; i < upperIndex+1; i++) {
@@ -19100,8 +19150,9 @@ class App extends Component {
     // var image64 = b64start + svg64;
     // this.refs.popupProgressImg.src = image64;
 
-    console.log("playerPopupProgressCalc perc: ",perc/100);
-    return (perc/100);
+    // console.log("playerPopupProgressCalc perc: ",(100-perc)/100 ,perc/100);
+    // return (100-perc)/100;
+    return -(perc/100);
 
   }
   cartesianToIsometric = (cartPt) => {
@@ -28233,6 +28284,7 @@ class App extends Component {
       attackStart: this.refs.preAttackIndicate,
       preAction1: this.refs.preAction1Indicate,
       preAction2: this.refs.preAction2Indicate,
+      attacking: this.refs.attack3Indicate,
       attacking1: this.refs.attack1Indicate,
       attacking2: this.refs.attack2Indicate,
       missedAttack: this.refs.missedIndicate,
