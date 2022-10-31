@@ -3852,6 +3852,7 @@ class App extends Component {
 
       }
       else if (type === "mousemove") {
+
         if (this.cellInfoMouseOver !== true) {
           if (this.mouseOverCellSwitchOff.state !== true) {
             this.mouseOverCellSwitchOff.state = true;
@@ -3868,6 +3869,7 @@ class App extends Component {
 
         }
         else {
+          console.log('heeere!');
           this.showCellInfoBox = true;
           if (this.mouseOverCellSwitchOff.state === true) {
             this.mouseOverCellSwitchOff.state = false;
@@ -4418,7 +4420,9 @@ class App extends Component {
 
   }
 
+
   setCellInfoMouseOver = (state) => {
+
     this.cellInfoMouseOver = state;
     if (state === true) {
       this.showCellInfoBox = true;
@@ -4435,11 +4439,27 @@ class App extends Component {
 
       }
     }
+    else {
+
+    }
 
   }
-  toggleCellInfoBox = () => {
+  closeCellInfoBox = () => {
 
+    this.cellInfoMouseOver = false;
     this.showCellInfoBox = !this.showCellInfoBox;
+    if (this.mouseOverCellSwitchOff.state === true) {
+      this.mouseOverCellSwitchOff.state = false;
+    }
+
+    if (this.mouseOverCell.cell && this.mouseOverCell.state !== true) {
+      // this.mouseOverCell.cell = {
+      //   state: false,
+      //   cell: undefined,
+      //   count: 0,
+      //   threshold: this.mouseOverCell.threshold,
+      // };
+    }
 
   }
   loadSettings = (event) => {
@@ -7282,6 +7302,10 @@ class App extends Component {
                 player.attackStrength = 0;
                 player.stamina.current += this.staminaCostRef.attack[atkType][blunt].pre;
             }
+            let popup = player.popups.find(x=>x.msg === 'attacking')
+            if (popup) {
+              player.popups.splice(player.popups.findIndex(x=>x.msg === 'attacking'),1)
+            }
 
         }
 
@@ -7856,7 +7880,7 @@ class App extends Component {
 
   // -----------
                     // doubleHit = 2
-                    // singleHit = 2
+                    // singleHit = 1
   // ---------------
 
                     // UNARMED ATTACK!
@@ -8019,7 +8043,7 @@ class App extends Component {
 
                     }
 
-                    // ADJUST TARGET PLYR SPEED ON INJURY
+                    // ADJUST TARGET PLYR SPEED ON INJURY: OLD
                     if (doubleHit === 1 || singleHit === 1) {
                       let currentMoveSpeedIndx = this.players[player.target.occupant.player-1].speed.range.indexOf(this.players[player.target.occupant.player-1].speed.move)
                       if (currentMoveSpeedIndx > 0) {
@@ -8060,9 +8084,13 @@ class App extends Component {
                     }
 
 
-                    // REDUCE MOVE SPEED!
+                    // ADJUST TARGET PLYR SPEED ON INJURY
                     if (this.players[player.target.occupant.player-1].hp === 1) {
-                      this.players[player.target.occupant.player-1].speed.move = .05;
+                      // this.players[player.target.occupant.player-1].speed.move = .05;
+                      let currentMoveSpeedIndx = this.players[player.target.occupant.player-1].speed.range.indexOf(this.players[player.target.occupant.player-1].speed.move)
+                      if (currentMoveSpeedIndx > 0) {
+                        this.players[player.target.occupant.player-1].speed.move = this.players[player.target.occupant.player-1].speed.range[currentMoveSpeedIndx-1]
+                      }
                     }
 
 
@@ -8996,6 +9024,11 @@ class App extends Component {
                 state: false,
                 count: 0,
                 limit: player.defendDecay.limit,
+              }
+
+              let defendPopup = player.popups.find(x=>x.msg === 'defending')
+              if (defendPopup) {
+                player.popups.splice(player.popups.findIndex(x=>x.msg === 'defending'),1)
               }
             }
 
@@ -19067,8 +19100,8 @@ class App extends Component {
     // var image64 = b64start + svg64;
     // this.refs.popupProgressImg.src = image64;
 
+    console.log("playerPopupProgressCalc perc: ",perc/100);
     return (perc/100);
-
 
   }
   cartesianToIsometric = (cartPt) => {
@@ -28196,7 +28229,6 @@ class App extends Component {
         }
     }
 
-    this.popupProgressBorderSvgPath = this.refs.popupProgressSvg.children[1].attributes[3].value;
     this.popupImageRef = {
       attackStart: this.refs.preAttackIndicate,
       preAction1: this.refs.preAction1Indicate,
@@ -36618,7 +36650,7 @@ class App extends Component {
               <CellInfo
                 ref={this.cellInfoBoxRef}
                 clicked={this.clicked}
-                close={this.toggleCellInfoBox}
+                close={this.closeCellInfoBox}
                 setCellInfoMouseOver={this.setCellInfoMouseOver}
               />
             )}
