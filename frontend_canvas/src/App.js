@@ -7545,12 +7545,17 @@ class App extends Component {
 
             }
             if (player.attacking.count > 2) {
+
               if (!player.popups.find(x => x.msg === "attacking")) {
+                let limit = this.attackAnimRef.limit[stamAtkType]-player.attacking.count;
+                if (limit === 0) {
+                  limit = 5;
+                }
                 player.popups.push(
                   {
                     state: false,
                     count: 0,
-                    limit: this.attackAnimRef.limit[stamAtkType]-player.attacking.count,
+                    limit: limit,
                     type: '',
                     position: '',
                     msg: 'attacking',
@@ -7559,6 +7564,10 @@ class App extends Component {
                   }
                 )
               }
+              // else {
+              //   console.log('beep2',this.attackAnimRef.limit[stamAtkType]-player.attacking.count);
+              //   player.popups.find(x => x.msg === "attacking").limit = this.attackAnimRef.limit[stamAtkType]-player.attacking.count
+              // }
             }
 
           }
@@ -7567,7 +7576,7 @@ class App extends Component {
           // TIME TO ATTACK IS NOW!
           if (player.attacking.count === attackPeak) {
 
-            console.log('attack peak',player.attacking.count,'plyr',player.number);
+            // console.log('attack peak',player.attacking.count,'plyr',player.number);
 
             // WEAPON STAMINA COST!!
             if (player.stamina.current - this.staminaCostRef.attack[stamAtkType][blunt].peak >= 0) {
@@ -7842,7 +7851,7 @@ class App extends Component {
 
                   // TARGET PLAYER ISN'T DEFENDING OR BACK TURNED, ATTACK SUCCESS!!
                   if (this.players.[player.target.occupant.player-1].defending.state === false || this.players.[player.target.occupant.player-1].direction === player.direction) {
-                    console.log('attack success');
+                    // console.log('attack success');
 
                     player.success.attackSuccess = {
                       state: true,
@@ -7983,7 +7992,7 @@ class App extends Component {
 
                     // ATTACK LANDED!!
                     if (doubleHit === 1) {
-                      console.log('double hit attack plyr ',player.number,'against plyr ',player.target.occupant.player);
+                      // console.log('double hit attack plyr ',player.number,'against plyr ',player.target.occupant.player);
                       this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 2;
                       player.attackStrength = 2;
                       this.attackedCancel(this.players[player.target.occupant.player-1])
@@ -8021,7 +8030,7 @@ class App extends Component {
 
                     }
                     else if (singleHit === 1) {
-                      console.log('single hit attack plyr ',player.number,'against plyr ',player.target.occupant.player);
+                      // console.log('single hit attack plyr ',player.number,'against plyr ',player.target.occupant.player);
                       this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
                       player.attackStrength = 1;
                       this.attackedCancel(this.players[player.target.occupant.player-1])
@@ -8064,12 +8073,12 @@ class App extends Component {
                     }
 
                     // ADJUST TARGET PLYR SPEED ON INJURY: OLD
-                    if (doubleHit === 1 || singleHit === 1) {
-                      let currentMoveSpeedIndx = this.players[player.target.occupant.player-1].speed.range.indexOf(this.players[player.target.occupant.player-1].speed.move)
-                      if (currentMoveSpeedIndx > 0) {
-                        this.players[player.target.occupant.player-1].speed.move = this.players[player.target.occupant.player-1].speed.range[currentMoveSpeedIndx-1]
-                      }
-                    }
+                    // if (doubleHit === 1 || singleHit === 1) {
+                    //   let currentMoveSpeedIndx = this.players[player.target.occupant.player-1].speed.range.indexOf(this.players[player.target.occupant.player-1].speed.move)
+                    //   if (currentMoveSpeedIndx > 0) {
+                    //     this.players[player.target.occupant.player-1].speed.move = this.players[player.target.occupant.player-1].speed.range[currentMoveSpeedIndx-1]
+                    //   }
+                    // }
 
 
                     // CHECK FOR MISS!
@@ -8284,20 +8293,20 @@ class App extends Component {
                             )
                           }
 
-                          if (!player.popups.find(x=>x.msg === 'attacking1')) {
-                            player.popups.push(
-                              {
-                                state: false,
-                                count: 0,
-                                limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
-                                type: '',
-                                position: '',
-                                msg: 'attacking',
-                                img: '',
-
-                              }
-                            )
-                          }
+                          // if (!player.popups.find(x=>x.msg === 'attacking')) {
+                          //   player.popups.push(
+                          //     {
+                          //       state: false,
+                          //       count: 0,
+                          //       limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
+                          //       type: '',
+                          //       position: '',
+                          //       msg: 'attacking',
+                          //       img: '',
+                          //
+                          //     }
+                          //   )
+                          // }
 
                           // KILL PLAYER
                           if (this.players[player.target.occupant.player-1].hp <= 0) {
@@ -8863,7 +8872,6 @@ class App extends Component {
               }
             }
 
-
           }
 
 
@@ -8892,6 +8900,7 @@ class App extends Component {
             ) {
               // this.setAutoCamera('attackFocusBreak',player)
             }
+
             else {
               console.log('no setting auto cam: attackFocusBreak');
             }
@@ -8921,7 +8930,7 @@ class App extends Component {
             player.defending.count++;
             player.action = 'defending';
             player.defendPeak = false;
-            console.log('defend winding up',player.defending.count, 'player',player.number,defendPeak);
+            // console.log('defend winding up',player.defending.count, 'player',player.number,defendPeak);
             if (!player.popups.find(x=>x.msg === 'defending')) {
               player.popups.push(
                 {
@@ -9054,8 +9063,7 @@ class App extends Component {
                 limit: player.defendDecay.limit,
               }
 
-              let defendPopup = player.popups.find(x=>x.msg === 'defending')
-              if (defendPopup) {
+              if (player.popups.find(x=>x.msg === 'defending')) {
                 player.popups.splice(player.popups.findIndex(x=>x.msg === 'defending'),1)
               }
             }
@@ -15897,6 +15905,7 @@ class App extends Component {
 
           }
 
+
         }
 
 
@@ -19023,8 +19032,7 @@ class App extends Component {
         }
         if (player.attacking.count > attackPeak + 5) {
           phase = "cooldown";
-          perc = (player.attacking.count-(attackPeak+5))/(end-attackPeak+5)*100;
-          console.log('beeep ',perc);
+          perc = (player.attacking.count-(attackPeak+5))/(end-(attackPeak+5))*100;
         }
       }
       if (player.attacking.count >= end) {
@@ -19150,9 +19158,9 @@ class App extends Component {
     // var image64 = b64start + svg64;
     // this.refs.popupProgressImg.src = image64;
 
-    // console.log("playerPopupProgressCalc perc: ",(100-perc)/100 ,perc/100);
+    console.log("playerPopupProgressCalc perc: ",((100-perc)/100).toFixed(2) ,(perc/100).toFixed(2));
     // return (100-perc)/100;
-    return -(perc/100);
+    return -(perc/100).toFixed(2);
 
   }
   cartesianToIsometric = (cartPt) => {
