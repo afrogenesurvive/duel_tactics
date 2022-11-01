@@ -7651,6 +7651,7 @@ class App extends Component {
 
                 // this.boltCrementer(bolt)
               }
+              // NO PROJECTILE AMMO
               if (player.currentWeapon.type === 'crossbow' && player.bluntAttack !== true && player.items.ammo <= 0) {
                 // console.log('no ammo!');
                 this.players[player.number-1].statusDisplay = {
@@ -7677,6 +7678,7 @@ class App extends Component {
                 }
 
               }
+              // CROSSBOW BLUNT ATTAK
               if (player.currentWeapon.type === 'crossbow' && player.bluntAttack === true && player.target.occupant.type === 'player') {
                 console.log('blunt attack w/ crossbow');
                 if (this.players.[player.target.occupant.player-1].defending.state === false || this.players.[player.target.occupant.player-1].direction === player.direction) {
@@ -8036,7 +8038,7 @@ class App extends Component {
                           limit: 25,
                           type: '',
                           position: '',
-                          msg: 'hpDown_'+2+'',
+                          msg: 'hpDown_'+'-'+2+'',
                           img: '',
 
                         }
@@ -8090,7 +8092,7 @@ class App extends Component {
                           limit: 25,
                           type: '',
                           position: '',
-                          msg: 'hpDown_'+1+'',
+                          msg: 'hpDown_'+'-'+1+'',
                           img: '',
 
                         }
@@ -12919,81 +12921,6 @@ class App extends Component {
         if (x === this.gridWidth && y === this.gridWidth) {
           // console.log(this.refs.pickupAmmo);
 
-          // let popupImageRef = {
-          //   attackStart: this.refs.preAttackIndicate,
-          //   preAction1: this.refs.preAction1Indicate,
-          //   preAction2: this.refs.preAction2Indicate,
-          //   attacking1: this.refs.attack1Indicate,
-          //   attacking2: this.refs.attack2Indicate,
-          //   missedAttack: this.refs.missedIndicate,
-          //   attackingBlunt: this.refs.attackBluntIndicate2,
-          //   attackingUnarmed: this.refs.attackUnarmedIndicate,
-          //   attacked1: this.refs.attack1Indicate,
-          //   attacked2: this.refs.attack2Indicate,
-          //   attackDefended: this.refs.attackBreakIndicate,
-          //   attackParried: this.refs.attackParriedIndicate,
-          //   boltKilled: this.refs.boltKilledIndicate,
-          //   attackCancelled: this.refs.attackBreakIndicate,
-          //   injured: this.refs.deflectInjuredIndicate,
-          //   defending_1: this.refs.defendIndicate1,
-          //   defending_2: this.refs.defendIndicate2,
-          //   defending_3: this.refs.defendIndicate3,
-          //   defending_4: this.refs.defendIndicate4,
-          //   defendSuccess: this.refs.defendSuccessIndicate,
-          //   guardBroken: this.refs.defendBreakIndicate,
-          //   deflected: this.refs.deflectBluntIndicate,
-          //   dodgeStart: this.refs.preAction2Indicate,
-          //   dodgeSuccess: this.refs.dodgeIndicate,
-          //   flanking: this.refs.flankIndicate,
-          //   pushedBack: this.refs.pushbackIndicate,
-          //   falling: this.refs.fallingIndicate,
-          //   outOfStamina: this.refs.outOfStaminaIndicate,
-          //   outOfAmmo: this.refs.outOfAmmoIndicate,
-          //   missionEngage: this.refs.deflectIndicate2,
-          //   missionPursue: this.refs.pursueMissionIndicate2,
-          //   missionRetrieve: this.refs.retrieveMissionIndicate,
-          //   missionDefend: this.refs.defendMissionIndicate,
-          //   missionPatrol: this.refs.patrolMissionIndicate,
-          //   missionRetreat: this.refs.retreatIndicate,
-          //   missionEnroute: this.refs.enrouteIndicate,
-          //   missionComplete: this.refs.completeMissionIndicate,
-          //   thinking: this.refs.thinkingIndicate,
-          //   alarmed: this.refs.preAttack2Indicate,
-          //   pathSwitch: this.refs.pathSwitchIndicate,
-          //   targetSwitch: this.refs.targetSwitchIndicate,
-          //   aggressiveMode: this.refs.aggressiveModeIndicate,
-          //   passiveMode: this.refs.passiveModeIndicate,
-          //   pickupWeapon: this.refs.pickupWeaponIndicate,
-          //   pickupArmor: this.refs.pickupArmorIndicate,
-          //   dropWeapon: this.refs.dropWeaponIndicate,
-          //   dropArmor: this.refs.dropArmorIndicate,
-          //   pickupBuff: this.refs.pickupBuffIndicate,
-          //   pickupDebuff: this.refs.pickupDebuffIndicate,
-          //   pickupAmmo: this.refs.pickupAmmoIndicate,
-          //   inventoryFull: this.refs.inventoryFullIndicate,
-          //   stop: this.refs.boltDefendIndicate,
-          //   dropWeapon: this.refs.dropWeaponIndicate,
-          //   dropArmor: this.refs.dropArmorIndicate,
-          //   drowning: this.refs.drowningIndicate,
-          //   terrainSlowdown: this.refs.terrainSlowdownIndicate,
-          //   terrainSpeedup: this.refs.terrainSpeedupIndicate,
-          //   terrainInjured: this.refs.terrainInjuredIndicate,
-          //   destroyedItem: this.refs.destroyedItemIndicate,
-          //   sword: this.refs.itemSword,
-          //   spear: this.refs.itemSpear,
-          //   crossbow: this.refs.itemCrossbow,
-          //   longbow: this.refs.itemBow,
-          //   helmet: this.refs.itemHelmet1,
-          //   mail: this.refs.itemMail1,
-          //   greaves: this.refs.itemGreaves1,
-          // };
-          // context.beginPath();
-          // context.lineWidth = "2"
-          // context.rect(point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
-          // context.strokeStyle = 'white';
-          // context.stroke();
-
-
 
           let drawBubble = (ctx,x,y,w,h,radius,px,py,color) => {
 
@@ -15495,14 +15422,8 @@ class App extends Component {
                     }
 
 
-
-
                     popupDrawCoords = this.popupDrawCalc(popup,{x:point.x-25,y:point.y-25},plyr.number);
-                    // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
-                    drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor)
-                    // context.fillStyle = 'black';
-                    // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
-                    // console.log('popup.msg',popup.msg,popup.img);
+                    drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor);
                     let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
 
                     if (showProgress === true  && popupProgress === true) {
@@ -15520,10 +15441,10 @@ class App extends Component {
                     if (writeValue === true) {
                       context.font = "15px Arial";
                       context.fillStyle = 'black';
-                      context.fillText("- "+popup.msg.split("_")[1],popupDrawCoords.origin.x+15,popupDrawCoords.origin.y+15
-                    );
-                      // context.drawImage(popup.img, popupDrawCoords.origin.x+(centerPopupOffset+5),popupDrawCoords.origin.y+(centerPopupOffset+5),this.popupImgSize*.75,this.popupImgSize*.75);
-                      context.drawImage(popup.img, popupDrawCoords.origin.x+(centerPopupOffset+5),popupDrawCoords.origin.y+(centerPopupOffset+10),this.popupImgSize*.75,this.popupImgSize*.75);
+                      context.fillText(popup.msg.split("_")[1],popupDrawCoords.origin.x+((this.popupSize-(popup.msg.split("_")[1].length*7))/2),popupDrawCoords.origin.y+15);
+
+                      centerPopupOffset = (this.popupSize-this.popupImgSize*.75)/2;
+                      context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+(centerPopupOffset+5),this.popupImgSize*.75,this.popupImgSize*.75);
                     }
                     else {
                       context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
@@ -15927,11 +15848,7 @@ class App extends Component {
 
 
                       popupDrawCoords = this.popupDrawCalc(popup,{x:point.x-25,y:point.y-25},plyr.number);
-                      // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
-                      drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor)
-                      // context.fillStyle = 'black';
-                      // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
-                      // console.log('popup.msg',popup.msg);
+                      drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor);
                       let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
 
                       if (showProgress === true && popupProgress === true) {
@@ -15949,10 +15866,10 @@ class App extends Component {
                       if (writeValue === true) {
                         context.font = "15px Arial";
                         context.fillStyle = 'black';
-                        context.fillText("- "+popup.msg.split("_")[1],popupDrawCoords.origin.x+15,popupDrawCoords.origin.y+15
-                      );
-                        // context.drawImage(popup.img, popupDrawCoords.origin.x+(centerPopupOffset+5),popupDrawCoords.origin.y+(centerPopupOffset+5),this.popupImgSize*.75,this.popupImgSize*.75);
-                        context.drawImage(popup.img, popupDrawCoords.origin.x+(centerPopupOffset+5),popupDrawCoords.origin.y+(centerPopupOffset+10),this.popupImgSize*.75,this.popupImgSize*.75);
+                        context.fillText(popup.msg.split("_")[1],popupDrawCoords.origin.x+((this.popupSize-(popup.msg.split("_")[1].length*7))/2),popupDrawCoords.origin.y+15)
+
+                        centerPopupOffset = (this.popupSize-this.popupImgSize*.75)/2
+                        context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+(centerPopupOffset+5),this.popupImgSize*.75,this.popupImgSize*.75);
                       }
                       else {
                         context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
@@ -19016,8 +18933,8 @@ class App extends Component {
   }
   playerPopupProgressCalc = (player,popup) => {
 
-      this.refs.popupProgressSvg.children[2].setAttribute("height","0")
-      this.refs.popupProgressSvg.children[2].setAttribute("fill","white")
+      // this.refs.popupProgressSvg.children[2].setAttribute("height","0")
+      // this.refs.popupProgressSvg.children[2].setAttribute("fill","white")
 
     let path = this.refs.popupProgressSvg.children[1];
     let rect = this.refs.popupProgressSvg.children[2];
@@ -21889,6 +21806,558 @@ class App extends Component {
   }
 
 
+  respawn = (player) => {
+    // console.log('respawning',player.number);
+    this.players[player.number-1].respawn = true;
+    this.players[player.number-1].action = 'idle';
+    this.players[player.number-1].hp = 2;
+    this.players[player.number-1].speed.move = .1;
+    this.players[player.number-1].ghost.state = false;
+    this.players[player.number-1].drowning = false;
+    this.players[player.number-1].dodging = {
+      countState: false,
+      state: false,
+      count: 0,
+      limit: 20,
+      peak: {
+        start: 5,
+        end: 10,
+      }
+    };
+    this.players[player.number-1].crits = {
+      singleHit: 1,
+      doubleHit: 6,
+      pushBack: 3,
+      guardBreak: 3,
+      dodge: 0,
+    };
+    this.players[player.number-1].items = {
+      weaponIndex: 0,
+      armorIndex: 0,
+      weapons: [{
+        name: 'sword1',
+        type: 'sword',
+        effect: '',
+      }],
+      armor: [],
+      ammo: 0,
+    };
+    this.players[player.number-1].currentWeapon = {
+      name: 'sword1',
+      type: 'sword',
+      effect: '',
+    };
+    this.players[player.number-1].currentArmor = {};
+    this.players[player.number-1].strafing = {
+      state: false,
+      direction: '',
+    };
+    this.players[player.number-1].pushBack = {
+      state: false,
+      prePushBackMoveSpeed: 0,
+    };
+    this.players[player.number-1].flanking = {
+      checking: false,
+      direction: '',
+      preFlankDirection: '',
+      state: false,
+      step: 0,
+      target1: {x:0 ,y:0},
+      target2: {x:0 ,y:0},
+    }
+    this.players[player.number-1].itemDrop = {
+      state: false,
+      count: 0,
+      limit: 10,
+      item: {
+        name: '',
+      },
+      gear: {
+        type: '',
+      }
+    };
+    this.players[player.number-1].itemPickup = {
+      state: false,
+      count: 0,
+      limit: 10,
+      item: {
+        name: '',
+      },
+      gear: {
+        type: '',
+      }
+    };
+    this.players[player.number-1].jumping = {
+      checking: false,
+      state: false,
+    };
+    this.players[player.number-1].stamina = {
+      current: 20,
+      max: 20,
+    };
+    this.players[player.number-1].popups = [];
+    this.players[player.number-1].prePush = {
+      state: false,
+      count: 0,
+      limit: 15,
+      targetCell: undefined,
+      direction: "",
+      pusher: undefined,
+    };
+    this.players[player.number-1].pushing = {
+      state: false,
+      targetCell: undefined,
+      moveSpeed: 0,
+    };
+    this.players[player.number-1].prePull = {
+      state: false,
+      count: 0,
+      limit: 15,
+      targetCell: undefined,
+      direction: "",
+      puller: undefined,
+    };
+    this.players[player.number-1].pulling = {
+      state: false,
+      targetCell: undefined,
+      moveSpeed: 0,
+    };
+    this.players[player.number-1].postPull = {
+      state: false,
+      count: 0,
+      limit: player.postPull.limit
+    }
+    this.players[player.number-1].pushed = {
+      state: false,
+      pusher: 0,
+      moveSpeed: 0,
+    };
+    this.players[player.number-1].pulled = {
+      state: false,
+      puller: 0,
+      moveSpeed: 0,
+    };
+
+
+  }
+  killPlayer = (player) => {
+    // console.log('killing player',player.number);
+
+    player.ghost.state = true;
+    player.ghost.position.cell = player.currentPosition.cell;
+
+    player.action = 'idle';
+    player.direction = 'north';
+    player.falling = {
+      state: false,
+      count: 0,
+      limit: 7,
+    }
+    player.flanking = {
+      checking: false,
+      direction: '',
+      preFlankDirection: '',
+      state: false,
+      step: 0,
+      target1: {x:0 ,y:0},
+      target2: {x:0 ,y:0},
+    }
+    player.target = {
+      cell: {
+        number: {
+          x: 0,
+          y: 0,
+        },
+        center: {
+          x: 0,
+          y: 0,
+        },
+      },
+      cell2: {
+        number: {
+          x: 0,
+          y: 0,
+        },
+        center: {
+          x: 0,
+          y: 0,
+        },
+      },
+      free: true,
+      occupant: {
+        type: '',
+        player: '',
+      },
+      void: false
+    };
+    player.moving = {
+      state: false,
+      step: 0,
+      course: '',
+      origin: {
+        number: {
+          x: 0,
+          y: 0,
+        },
+        center: {
+          x: 0,
+          y: 0,
+        },
+      },
+      destination: {
+        x: 0,
+        y: 0,
+      }
+    };
+    player.currentPosition = {
+      cell: {
+        number: {
+          x: -30,
+          y: -30,
+        },
+        center: {
+          x: 0,
+          y: 0,
+        }
+      }
+    };
+    player.dead = {
+      state: true,
+      count: 1,
+      limit: player.dead.limit
+    }
+    player.strafing = {
+      state: false,
+      direction: '',
+    };
+    player.pushBack = {
+      state: false,
+      prePushBackMoveSpeed: 0,
+    };
+    player.itemDrop = {
+      state: false,
+      count: 0,
+      limit: 10,
+      item: {
+        name: '',
+      },
+      gear: {
+        type: '',
+      }
+    };
+    player.itemPickup = {
+      state: false,
+      count: 0,
+      limit: 10,
+      item: {
+        name: '',
+      },
+      gear: {
+        type: '',
+      }
+    };
+    player.jumping = {
+      checking: false,
+      state: false,
+    };
+    player.stamina = {
+      current: 20,
+      max: 20,
+    };
+    player.defendDecay = {
+      state: false,
+      count: 0,
+      limit: 25,
+    };
+    player.dodging = {
+      countState: false,
+      state: false,
+      count: 0,
+      limit: 20,
+      peak: {
+        start: 5,
+        end: 10,
+      }
+    };
+    player.defending = {
+      state: false,
+      count: 0,
+      limit: 4,
+    };
+    player.deflected = {
+      state: false,
+      count: 0,
+      limit: 20,
+      predeflect: false,
+      type: '',
+    };
+    player.prePush = {
+      state: false,
+      count: 0,
+      limit: 15,
+      targetCell: undefined,
+      direction: "",
+      pusher: undefined,
+    };
+    player.pushing = {
+      state: false,
+      targetCell: undefined,
+      moveSpeed: 0,
+    };
+    player.prePull = {
+      state: false,
+      count: 0,
+      limit: 15,
+      targetCell: undefined,
+      direction: "",
+      puller: undefined,
+    };
+    player.pulling = {
+      state: false,
+      targetCell: undefined,
+      moveSpeed: 0,
+    };
+    player.postPull = {
+      state: false,
+      count: 0,
+      limit: player.postPull.limit
+    }
+    player.pushed = {
+      state: false,
+      pusher: 0,
+      moveSpeed: 0,
+    };
+    player.pulled = {
+      state: false,
+      puller: 0,
+      moveSpeed: 0,
+    };
+    // player.hp = 2;
+    player.points--;
+    player.drowning = false;
+    this.pointChecker(player)
+
+
+    // RESET TARGETTING FOR AI TARGETTING ME!!
+
+    if (player.ai.state !== true) {
+
+      this.resetAiTarget.state = true;
+      this.resetAiTarget.player = player.number;
+
+    }
+
+
+    this.players[player.number-1] = player;
+
+    if (player.ai.state === true) {
+      // console.log('ai player eliminated');
+      this.removeAiPlayer(player.number)
+    }
+
+
+    for (const player2 of this.players) {
+      if (player2.ai.state === true) {
+        console.log('player death/item drop. Search for weapon upgrades');
+        player2.ai.upgradeWeapon = true;
+      }
+    }
+
+  }
+  restartGame = () => {
+    // console.log('resetting');
+
+    this.setState({
+      loading: true
+    })
+
+    this.time = 0;
+    this.projectiles = [];
+    for (const player of this.players) {
+      player.ghost.state = false;
+      player.speed.move = .1;
+      player.hp = 5;
+      player.drowning = false;
+      player.action = 'idle';
+      player.dodging = {
+        countState: false,
+        state: false,
+        count: 0,
+        limit: 20,
+        peak: {
+          start: 5,
+          end: 10,
+        }
+      };
+      player.crits = {
+        singleHit: 1,
+        doubleHit: 6,
+        pushBack: 4,
+        guardBreak: 3,
+        dodge: 0,
+      };
+      player.items = {
+        weaponIndex: 0,
+        armorIndex: 0,
+        weapons: [
+          {
+            name: 'sword1',
+            type: 'sword',
+            effect: '',
+          },
+          {
+            name: 'crossbow1',
+            type: 'crossbow',
+            effect: '',
+          },
+          {
+            name: 'spear1',
+            type: 'spear',
+            effect: '',
+          }
+        ],
+        armor: [],
+        ammo: 20,
+      };
+      player.currentWeapon = {
+        name: 'sword1',
+        type: 'sword',
+        effect: '',
+      };
+      player.currentArmor = {};
+      player.strafing = {
+        state: false,
+        direction: '',
+      };
+      player.pushBack = {
+        state: false,
+        prePushBackMoveSpeed: 0,
+      };
+      player.itemDrop = {
+        state: false,
+        count: 0,
+        limit: 10,
+        item: {
+          name: '',
+        },
+        gear: {
+          type: '',
+        }
+      };
+      player.itemPickup = {
+        state: false,
+        count: 0,
+        limit: 10,
+        item: {
+          name: '',
+        },
+        gear: {
+          type: '',
+        }
+      };
+      player.jumping = {
+        checking: false,
+        state: false,
+      };
+      player.stamina = {
+        current: 20,
+        max: 20,
+      };
+      player.defendDecay = {
+        state: false,
+        count: 0,
+        limit: 25,
+      };
+      player.dodging = {
+        countState: false,
+        state: false,
+        count: 0,
+        limit: 20,
+        peak: {
+          start: 5,
+          end: 10,
+        }
+      };
+      player.defending = {
+        state: false,
+        count: 0,
+        limit: 4,
+      };
+      player.flanking = {
+        checking: false,
+        preFlankDirection: '',
+        direction: '',
+        state: false,
+        step: 0,
+        target1: {x:0 ,y:0},
+        target2: {x:0 ,y:0},
+      };
+      player.prePush = {
+        state: false,
+        count: 0,
+        limit: 15,
+        targetCell: undefined,
+        direction: "",
+        pusher: undefined,
+      };
+      player.pushing = {
+        state: false,
+        targetCell: undefined,
+        moveSpeed: 0,
+      };
+      player.prePull = {
+        state: false,
+        count: 0,
+        limit: 15,
+        targetCell: undefined,
+        direction: "",
+        puller: undefined,
+      };
+      player.pulling = {
+        state: false,
+        targetCell: undefined,
+        moveSpeed: 0,
+      };
+      player.postPull = {
+        state: false,
+        count: 0,
+        limit: player.postPull.limit
+      }
+      player.pushed = {
+        state: false,
+        pusher: 0,
+        moveSpeed: 0,
+      };
+      player.pulled = {
+        state: false,
+        puller: 0,
+        moveSpeed: 0,
+      };
+      player.popups = [];
+
+      // player.currentArmor = {};
+
+    }
+    this.aiTarget = 1;
+
+    // this.resetCameraSwitch = true;
+
+
+    let plyrz = this.players
+    for (const plyr of plyrz) {
+      if (plyr.ai.state === true ) {
+        let indx = plyrz.indexOf(plyr)
+        let toRemove1 = this.players[indx];
+        this.players = this.players.filter(x=> x !== toRemove1);
+      }
+    }
+
+    this.drawGridInit(this.state.canvas, this.state.context, this.state.canvas2, this.state.context2, this.state.canvas3, this.state.context3);
+
+
+  }
+
+
   attackedCancel = (player) => {
     // console.log('player', player.number,' attacked. Cancel action!',player.action);
 
@@ -22261,558 +22730,6 @@ class App extends Component {
     }
 
   }
-  respawn = (player) => {
-    // console.log('respawning',player.number);
-    this.players[player.number-1].respawn = true;
-    this.players[player.number-1].action = 'idle';
-    this.players[player.number-1].hp = 2;
-    this.players[player.number-1].speed.move = .1;
-    this.players[player.number-1].ghost.state = false;
-    this.players[player.number-1].drowning = false;
-    this.players[player.number-1].dodging = {
-      countState: false,
-      state: false,
-      count: 0,
-      limit: 20,
-      peak: {
-        start: 5,
-        end: 10,
-      }
-    };
-    this.players[player.number-1].crits = {
-      singleHit: 1,
-      doubleHit: 6,
-      pushBack: 3,
-      guardBreak: 3,
-      dodge: 0,
-    };
-    this.players[player.number-1].items = {
-      weaponIndex: 0,
-      armorIndex: 0,
-      weapons: [{
-        name: 'sword1',
-        type: 'sword',
-        effect: '',
-      }],
-      armor: [],
-      ammo: 0,
-    };
-    this.players[player.number-1].currentWeapon = {
-      name: 'sword1',
-      type: 'sword',
-      effect: '',
-    };
-    this.players[player.number-1].currentArmor = {};
-    this.players[player.number-1].strafing = {
-      state: false,
-      direction: '',
-    };
-    this.players[player.number-1].pushBack = {
-      state: false,
-      prePushBackMoveSpeed: 0,
-    };
-    this.players[player.number-1].flanking = {
-      checking: false,
-      direction: '',
-      preFlankDirection: '',
-      state: false,
-      step: 0,
-      target1: {x:0 ,y:0},
-      target2: {x:0 ,y:0},
-    }
-    this.players[player.number-1].itemDrop = {
-      state: false,
-      count: 0,
-      limit: 10,
-      item: {
-        name: '',
-      },
-      gear: {
-        type: '',
-      }
-    };
-    this.players[player.number-1].itemPickup = {
-      state: false,
-      count: 0,
-      limit: 10,
-      item: {
-        name: '',
-      },
-      gear: {
-        type: '',
-      }
-    };
-    this.players[player.number-1].jumping = {
-      checking: false,
-      state: false,
-    };
-    this.players[player.number-1].stamina = {
-      current: 20,
-      max: 20,
-    };
-    this.players[player.number-1].popups = [];
-    this.players[player.number-1].prePush = {
-      state: false,
-      count: 0,
-      limit: 15,
-      targetCell: undefined,
-      direction: "",
-      pusher: undefined,
-    };
-    this.players[player.number-1].pushing = {
-      state: false,
-      targetCell: undefined,
-      moveSpeed: 0,
-    };
-    this.players[player.number-1].prePull = {
-      state: false,
-      count: 0,
-      limit: 15,
-      targetCell: undefined,
-      direction: "",
-      puller: undefined,
-    };
-    this.players[player.number-1].pulling = {
-      state: false,
-      targetCell: undefined,
-      moveSpeed: 0,
-    };
-    this.players[player.number-1].postPull = {
-      state: false,
-      count: 0,
-      limit: player.postPull.limit
-    }
-    this.players[player.number-1].pushed = {
-      state: false,
-      pusher: 0,
-      moveSpeed: 0,
-    };
-    this.players[player.number-1].pulled = {
-      state: false,
-      puller: 0,
-      moveSpeed: 0,
-    };
-
-
-  }
-  killPlayer = (player) => {
-    // console.log('killing player',player.number);
-
-    player.ghost.state = true;
-    player.ghost.position.cell = player.currentPosition.cell;
-
-    player.action = 'idle';
-    player.direction = 'north';
-    player.falling = {
-      state: false,
-      count: 0,
-      limit: 7,
-    }
-    player.flanking = {
-      checking: false,
-      direction: '',
-      preFlankDirection: '',
-      state: false,
-      step: 0,
-      target1: {x:0 ,y:0},
-      target2: {x:0 ,y:0},
-    }
-    player.target = {
-      cell: {
-        number: {
-          x: 0,
-          y: 0,
-        },
-        center: {
-          x: 0,
-          y: 0,
-        },
-      },
-      cell2: {
-        number: {
-          x: 0,
-          y: 0,
-        },
-        center: {
-          x: 0,
-          y: 0,
-        },
-      },
-      free: true,
-      occupant: {
-        type: '',
-        player: '',
-      },
-      void: false
-    };
-    player.moving = {
-      state: false,
-      step: 0,
-      course: '',
-      origin: {
-        number: {
-          x: 0,
-          y: 0,
-        },
-        center: {
-          x: 0,
-          y: 0,
-        },
-      },
-      destination: {
-        x: 0,
-        y: 0,
-      }
-    };
-    player.currentPosition = {
-      cell: {
-        number: {
-          x: -30,
-          y: -30,
-        },
-        center: {
-          x: 0,
-          y: 0,
-        }
-      }
-    };
-    player.dead = {
-      state: true,
-      count: 1,
-      limit: player.dead.limit
-    }
-    player.strafing = {
-      state: false,
-      direction: '',
-    };
-    player.pushBack = {
-      state: false,
-      prePushBackMoveSpeed: 0,
-    };
-    player.itemDrop = {
-      state: false,
-      count: 0,
-      limit: 10,
-      item: {
-        name: '',
-      },
-      gear: {
-        type: '',
-      }
-    };
-    player.itemPickup = {
-      state: false,
-      count: 0,
-      limit: 10,
-      item: {
-        name: '',
-      },
-      gear: {
-        type: '',
-      }
-    };
-    player.jumping = {
-      checking: false,
-      state: false,
-    };
-    player.stamina = {
-      current: 20,
-      max: 20,
-    };
-    player.defendDecay = {
-      state: false,
-      count: 0,
-      limit: 25,
-    };
-    player.dodging = {
-      countState: false,
-      state: false,
-      count: 0,
-      limit: 20,
-      peak: {
-        start: 5,
-        end: 10,
-      }
-    };
-    player.defending = {
-      state: false,
-      count: 0,
-      limit: 4,
-    };
-    player.deflected = {
-      state: false,
-      count: 0,
-      limit: 20,
-      predeflect: false,
-      type: '',
-    };
-    player.prePush = {
-      state: false,
-      count: 0,
-      limit: 15,
-      targetCell: undefined,
-      direction: "",
-      pusher: undefined,
-    };
-    player.pushing = {
-      state: false,
-      targetCell: undefined,
-      moveSpeed: 0,
-    };
-    player.prePull = {
-      state: false,
-      count: 0,
-      limit: 15,
-      targetCell: undefined,
-      direction: "",
-      puller: undefined,
-    };
-    player.pulling = {
-      state: false,
-      targetCell: undefined,
-      moveSpeed: 0,
-    };
-    player.postPull = {
-      state: false,
-      count: 0,
-      limit: player.postPull.limit
-    }
-    player.pushed = {
-      state: false,
-      pusher: 0,
-      moveSpeed: 0,
-    };
-    player.pulled = {
-      state: false,
-      puller: 0,
-      moveSpeed: 0,
-    };
-    // player.hp = 2;
-    player.points--;
-    player.drowning = false;
-    this.pointChecker(player)
-
-
-    // RESET TARGETTING FOR AI TARGETTING ME!!
-
-    if (player.ai.state !== true) {
-
-      this.resetAiTarget.state = true;
-      this.resetAiTarget.player = player.number;
-
-    }
-
-
-    this.players[player.number-1] = player;
-
-    if (player.ai.state === true) {
-      // console.log('ai player eliminated');
-      this.removeAiPlayer(player.number)
-    }
-
-
-    for (const player2 of this.players) {
-      if (player2.ai.state === true) {
-        console.log('player death/item drop. Search for weapon upgrades');
-        player2.ai.upgradeWeapon = true;
-      }
-    }
-
-  }
-  restartGame = () => {
-    // console.log('resetting');
-
-    this.setState({
-      loading: true
-    })
-
-    this.time = 0;
-    this.projectiles = [];
-    for (const player of this.players) {
-      player.ghost.state = false;
-      player.speed.move = .1;
-      player.hp = 2;
-      player.drowning = false;
-      player.action = 'idle';
-      player.dodging = {
-        countState: false,
-        state: false,
-        count: 0,
-        limit: 20,
-        peak: {
-          start: 5,
-          end: 10,
-        }
-      };
-      player.crits = {
-        singleHit: 1,
-        doubleHit: 6,
-        pushBack: 4,
-        guardBreak: 3,
-        dodge: 0,
-      };
-      player.items = {
-        weaponIndex: 0,
-        armorIndex: 0,
-        weapons: [
-          {
-            name: 'sword1',
-            type: 'sword',
-            effect: '',
-          },
-          {
-            name: 'crossbow1',
-            type: 'crossbow',
-            effect: '',
-          },
-          {
-            name: 'spear1',
-            type: 'spear',
-            effect: '',
-          }
-        ],
-        armor: [],
-        ammo: 20,
-      };
-      player.currentWeapon = {
-        name: 'sword1',
-        type: 'sword',
-        effect: '',
-      };
-      player.currentArmor = {};
-      player.strafing = {
-        state: false,
-        direction: '',
-      };
-      player.pushBack = {
-        state: false,
-        prePushBackMoveSpeed: 0,
-      };
-      player.itemDrop = {
-        state: false,
-        count: 0,
-        limit: 10,
-        item: {
-          name: '',
-        },
-        gear: {
-          type: '',
-        }
-      };
-      player.itemPickup = {
-        state: false,
-        count: 0,
-        limit: 10,
-        item: {
-          name: '',
-        },
-        gear: {
-          type: '',
-        }
-      };
-      player.jumping = {
-        checking: false,
-        state: false,
-      };
-      player.stamina = {
-        current: 20,
-        max: 20,
-      };
-      player.defendDecay = {
-        state: false,
-        count: 0,
-        limit: 25,
-      };
-      player.dodging = {
-        countState: false,
-        state: false,
-        count: 0,
-        limit: 20,
-        peak: {
-          start: 5,
-          end: 10,
-        }
-      };
-      player.defending = {
-        state: false,
-        count: 0,
-        limit: 4,
-      };
-      player.flanking = {
-        checking: false,
-        preFlankDirection: '',
-        direction: '',
-        state: false,
-        step: 0,
-        target1: {x:0 ,y:0},
-        target2: {x:0 ,y:0},
-      };
-      player.prePush = {
-        state: false,
-        count: 0,
-        limit: 15,
-        targetCell: undefined,
-        direction: "",
-        pusher: undefined,
-      };
-      player.pushing = {
-        state: false,
-        targetCell: undefined,
-        moveSpeed: 0,
-      };
-      player.prePull = {
-        state: false,
-        count: 0,
-        limit: 15,
-        targetCell: undefined,
-        direction: "",
-        puller: undefined,
-      };
-      player.pulling = {
-        state: false,
-        targetCell: undefined,
-        moveSpeed: 0,
-      };
-      player.postPull = {
-        state: false,
-        count: 0,
-        limit: player.postPull.limit
-      }
-      player.pushed = {
-        state: false,
-        pusher: 0,
-        moveSpeed: 0,
-      };
-      player.pulled = {
-        state: false,
-        puller: 0,
-        moveSpeed: 0,
-      };
-      player.popups = [];
-
-      // player.currentArmor = {};
-
-    }
-    this.aiTarget = 1;
-
-    // this.resetCameraSwitch = true;
-
-
-    let plyrz = this.players
-    for (const plyr of plyrz) {
-      if (plyr.ai.state === true ) {
-        let indx = plyrz.indexOf(plyr)
-        let toRemove1 = this.players[indx];
-        this.players = this.players.filter(x=> x !== toRemove1);
-      }
-    }
-
-    this.drawGridInit(this.state.canvas, this.state.context, this.state.canvas2, this.state.context2, this.state.canvas3, this.state.context3);
-
-
-  }
-
-
   pointChecker = (player) => {
 
     // console.log('point checker player',player);
@@ -23397,71 +23314,8 @@ class App extends Component {
     }
 
   }
-  scanTargetAreaThreat = (args) => {
-    // console.log('scanning area for threats');
 
-    let point = args.point;
-    let range = args.range;
-    let playerPositions = [];
-    let isSafe = true;
-    let threats = []
-     for (const player of this.players) {
-       if (player.ai.state !== true && player.number !== args.player) {
-         playerPositions.push({
-           player: player.number,
-           position: player.currentPosition.cell.number,
-         })
-       }
-     }
-     for (const playerPos of playerPositions) {
 
-       let xDiff;
-       let yDiff;
-       let largerx = Math.max(point.x, playerPos.position.x);
-       // console.log('playerPos.position.x',playerPos.position.x,'point.x',point.x,'largerx',largerx);
-       if (largerx === point.x) {
-         xDiff = point.x - playerPos.position.x;
-       } else {
-         xDiff = playerPos.position.x - point.x;
-       }
-       let largery = Math.max(point.y, playerPos.position.y);
-       // console.log('playerPos.position.y',playerPos.position.y,'point.y',point.y,'largery',largery);
-       if (largery === point.y) {
-         yDiff = point.y - playerPos.position.y;
-       } else {
-         yDiff = playerPos.position.y - point.y;
-       }
-       let diffSum = xDiff + yDiff;
-       // console.log('vv',playerPos.player,diffSum);
-
-       if (diffSum <= range) {
-         threats.push({
-           player: playerPos.player,
-           position: playerPos.position,
-           distValue: diffSum,
-           distIndex: undefined,
-         })
-       }
-
-     }
-
-     if (threats.length > 0) {
-       isSafe = false;
-     }
-
-     threats.sort((a, b) => (a.distValue > b.distValue) ? 1 : -1);
-     for (const threat of threats) {
-       let threatIndex = threats.findIndex(x => x.player === threat.player)
-       threat.distIndex = threatIndex;
-     }
-     // console.log('threats',threats);
-
-     return {
-       isSafe: isSafe,
-       threats: threats
-     }
-
-  }
   findFocusCell = (inputType,focus,canvas,context,speed) => {
 
     let cell = {
@@ -29223,49 +29077,21 @@ class App extends Component {
 
             this.getTarget(player);
 
-
-
             context.drawImage(playerImg, sx, sy, sWidth, sHeight, point.x-30, point.y-30, this.playerDrawWidth, this.playerDrawHeight);
 
           }
 
         }
 
+        // OBSTACLES & BARRIERS
         if (cell.barrier.state === true && cell.void.state !== true) {
           let barrierImg = this.barrierImgs[cell.barrier.type][cell.barrier.position];
-
           context.drawImage(barrierImg, iso.x - offset.x, iso.y - barrierImg.height, barrierImg.width, barrierImg.height);
-          // context.drawImage(barrierImg, iso.x - offset.x, iso.y - offset.y);
-
-          // console.log('barrier check 1',cell.levelData,cell.barrier.position);
         }
 
-        // OBSTACLES
         if (cell.obstacle.state === true && cell.void.state !== true) {
-          // let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
           let obstacleImg = this.obstacleImgs[cell.obstacle.type]
-
-
-          context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
-
-          // if (cell.obstacle.height > 1) {
-          //   offset = {x: wallImageWidth/2, y: wallImageHeight}
-          //   context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
-          //
-          //   let isoHeight = wallImageHeight - floorImageHeight
-          //   offset.y += isoHeight
-          //   context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
-          // }
-          // if (cell.obstacle.height < 1) {
-          //   offset = {x: wallImageWidth/2, y: wallImageHeight}
-          //   // context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
-          //   context.drawImage(obstacleImg, iso.x - offset.x, (iso.y - offset.y)+25);
-          // }
-          // if (cell.obstacle.height === 1) {
-          //   offset = {x: wallImageWidth/2, y: wallImageHeight}
-          //   context.drawImage(obstacleImg, iso.x - offset.x, iso.y - offset.y);
-          // }
-
+          context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
         }
 
 
@@ -30068,6 +29894,71 @@ class App extends Component {
     this.setState({
       showAiStatus: newState,
     })
+  }
+  scanTargetAreaThreat = (args) => {
+    // console.log('scanning area for threats');
+
+    let point = args.point;
+    let range = args.range;
+    let playerPositions = [];
+    let isSafe = true;
+    let threats = []
+     for (const player of this.players) {
+       if (player.ai.state !== true && player.number !== args.player) {
+         playerPositions.push({
+           player: player.number,
+           position: player.currentPosition.cell.number,
+         })
+       }
+     }
+     for (const playerPos of playerPositions) {
+
+       let xDiff;
+       let yDiff;
+       let largerx = Math.max(point.x, playerPos.position.x);
+       // console.log('playerPos.position.x',playerPos.position.x,'point.x',point.x,'largerx',largerx);
+       if (largerx === point.x) {
+         xDiff = point.x - playerPos.position.x;
+       } else {
+         xDiff = playerPos.position.x - point.x;
+       }
+       let largery = Math.max(point.y, playerPos.position.y);
+       // console.log('playerPos.position.y',playerPos.position.y,'point.y',point.y,'largery',largery);
+       if (largery === point.y) {
+         yDiff = point.y - playerPos.position.y;
+       } else {
+         yDiff = playerPos.position.y - point.y;
+       }
+       let diffSum = xDiff + yDiff;
+       // console.log('vv',playerPos.player,diffSum);
+
+       if (diffSum <= range) {
+         threats.push({
+           player: playerPos.player,
+           position: playerPos.position,
+           distValue: diffSum,
+           distIndex: undefined,
+         })
+       }
+
+     }
+
+     if (threats.length > 0) {
+       isSafe = false;
+     }
+
+     threats.sort((a, b) => (a.distValue > b.distValue) ? 1 : -1);
+     for (const threat of threats) {
+       let threatIndex = threats.findIndex(x => x.player === threat.player)
+       threat.distIndex = threatIndex;
+     }
+     // console.log('threats',threats);
+
+     return {
+       isSafe: isSafe,
+       threats: threats
+     }
+
   }
   safeDistanceRetreat = (plyr,cell) => {
 
@@ -36816,6 +36707,7 @@ class App extends Component {
 
 
 
+
           <svg className="popupProgressSvg hidden" ref="popupProgressSvg"  xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 30 30" shape-rendering="crispEdges">
             <metadata>Made with Pixels to Svg https://codepen.io/shshaw/pen/XbxvNj</metadata>
             <path id="border" stroke="yellow" stroke-width="5px" d="M4 0h21M2 1h26M1 2h2M27 2h2M1 3h1M28 3h1M1 4h1M28 4h2M0 5h2M28 5h2M0 6h2M28 6h2M0 7h2M28 7h2M0 8h2M28 8h2M0 9h2M28 9h2M0 10h2M28 10h2M0 11h2M28 11h2M0 12h2M28 12h2M0 13h2M28 13h2M0 14h2M28 14h2M0 15h2M28 15h2M0 16h2M28 16h2M0 17h2M28 17h2M0 18h2M28 18h2M0 19h2M28 19h2M0 20h2M28 20h2M0 21h2M28 21h2M0 22h2M28 22h2M0 23h2M28 23h2M0 24h2M28 24h2M0 25h2M28 25h1M1 26h1M28 26h1M1 27h2M27 27h2M2 28h26M5 29h21" />
@@ -36827,6 +36719,7 @@ class App extends Component {
               </linearGradient>
             </defs>
           </svg>
+
 
           <img src="" className="hidden" height={this.popupImgSize} width={this.popupImgSize} ref="popupProgressImg" alt="logo"/>
 
