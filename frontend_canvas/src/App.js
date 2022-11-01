@@ -73,11 +73,13 @@ import defendIndicate4 from './assets/indicators/defend6.png';
 import deflectIndicate from './assets/indicators/deflect.png';
 import deflectIndicate2 from './assets/indicators/deflect2.png';
 import deflectInjuredIndicate from './assets/indicators/deflectInjured2.png';
+import deflectInjuredIndicate2 from './assets/indicators/deflectInjured.png';
 import deflectBluntIndicate from './assets/indicators/death2.png';
 import pushbackIndicate from './assets/indicators/pushback.png';
 import ghostIndicate from './assets/indicators/ghost.png';
 import deathIndicate from './assets/indicators/death.png';
 import preAttackIndicate from './assets/indicators/preAttack.png';
+import healIndicate from './assets/indicators/healIndicate.png';
 
 
 import preAttack2Indicate from './assets/indicators/preAttack2.png';
@@ -8027,6 +8029,18 @@ class App extends Component {
                         )
                       }
 
+                      this.players[player.target.occupant.player-1].popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 25,
+                          type: '',
+                          position: '',
+                          msg: 'hpDown_'+2+'',
+                          img: '',
+
+                        }
+                      )
 
                     }
                     else if (singleHit === 1) {
@@ -8069,6 +8083,18 @@ class App extends Component {
                           }
                         )
                       }
+                      this.players[player.target.occupant.player-1].popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 25,
+                          type: '',
+                          position: '',
+                          msg: 'hpDown_'+1+'',
+                          img: '',
+
+                        }
+                      )
 
                     }
 
@@ -15431,13 +15457,9 @@ class App extends Component {
                     }
 
 
-                    if (popup.img === "") {
-                      popup.img = this.popupImageRef[popup.msg];
-                    }
-
-
                     let popupProgress = false;
                     let showProgress = false;
+                    let writeValue = false;
                     if (
                       plyr.prePush.state === true ||
                       plyr.prePull.state === true ||
@@ -15461,6 +15483,17 @@ class App extends Component {
                       popupProgress = true;
                     }
 
+                    if (popup.img === "") {
+                      popup.img = this.popupImageRef[popup.msg];
+                    }
+
+                    if (popup.msg.split("_")) {
+                      if (popup.msg.split("_")[0] === "hpUp" || popup.msg.split("_")[0] === "hpDown") {
+                        writeValue = true;
+                        popup.img = this.popupImageRef[popup.msg.split("_")[0]]
+                      }
+                    }
+
 
 
 
@@ -15471,7 +15504,7 @@ class App extends Component {
                     // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
                     // console.log('popup.msg',popup.msg,popup.img);
                     let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
-                    context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
+
                     if (showProgress === true  && popupProgress === true) {
                       let perc = this.playerPopupProgressCalc(plyr,popup)
                       context.fillStyle = this.popupProgressImgGradColor2;
@@ -15481,6 +15514,17 @@ class App extends Component {
                       context.fillStyle = this.popupProgressImgGradColor1;
                       context.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
                       context.fill();
+                    }
+
+
+                    if (writeValue === true) {
+                      context.font = "15px Arial";
+                      context.fillStyle = 'black';
+                      context.fillText("- "+popup.msg.split("_")[1],popupDrawCoords.origin.x+(this.popupSize/2),popupDrawCoords.origin.y+15);
+                      context.drawImage(popup.img, popupDrawCoords.origin.x+(centerPopupOffset+5),popupDrawCoords.origin.y+(centerPopupOffset+5),this.popupImgSize*.75,this.popupImgSize*.75);
+                    }
+                    else {
+                      context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
                     }
 
 
@@ -15844,13 +15888,11 @@ class App extends Component {
                       // console.log("A new invalid direction === popup's position. reconsidering...",popup.msg);
                     }
                     else {
-                      if (popup.img === "") {
-                        popup.img = this.popupImageRef[popup.msg];
-                      }
 
 
                       let popupProgress = false;
                       let showProgress = false;
+                      let writeValue = false;
                       if (
                         plyr.prePush.state === true ||
                         plyr.prePull.state === true ||
@@ -15875,6 +15917,18 @@ class App extends Component {
                         popupProgress = true;
                       }
 
+                      if (popup.img === "") {
+                        popup.img = this.popupImageRef[popup.msg];
+                      }
+
+                      if (popup.msg.split("_")) {
+                        if (popup.msg.split("_")[0] === "hpUp" || popup.msg.split("_")[0] === "hpDown") {
+                          writeValue = true;
+                          popup.img = this.popupImageRef[popup.msg.split("_")[0]]
+                        }
+                      }
+
+
                       popupDrawCoords = this.popupDrawCalc(popup,{x:point.x-25,y:point.y-25},plyr.number);
                       // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
                       drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor)
@@ -15893,8 +15947,17 @@ class App extends Component {
                         context.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
                         context.fill();
                       }
-                      context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
 
+
+                      if (writeValue === true) {
+                        context.font = "15px Arial";
+                        context.fillStyle = 'black';
+                        context.fillText("- "+popup.msg.split("_")[1],popupDrawCoords.origin.x+(this.popupSize/2),popupDrawCoords.origin.y+15);
+                        context.drawImage(popup.img, popupDrawCoords.origin.x+(centerPopupOffset+5),popupDrawCoords.origin.y+(centerPopupOffset+5),this.popupImgSize*.75,this.popupImgSize*.75);
+                      }
+                      else {
+                        context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
+                      }
 
 
                     }
@@ -28307,6 +28370,8 @@ class App extends Component {
       boltKilled: this.refs.boltKilledIndicate,
       attackCancelled: this.refs.attackBreakIndicate,
       injured: this.refs.deflectInjuredIndicate,
+      hpDown: this.refs.deflectInjuredIndicate2,
+      hpUp: this.refs.healIndicate,
       defending: this.refs.defendIndicate,
       defending_1: this.refs.defendIndicate1,
       defending_2: this.refs.defendIndicate2,
@@ -36824,6 +36889,7 @@ class App extends Component {
           <img src={deflectIndicate} className='hidden playerImgs' ref="deflectIndicate" id="deflectIndicate" alt="logo" />
           <img src={deflectIndicate2} className='hidden playerImgs' ref="deflectIndicate2" id="deflectIndicate2" alt="logo" />
           <img src={deflectInjuredIndicate} className='hidden playerImgs' ref="deflectInjuredIndicate" id="deflectInjuredIndicate" alt="logo" />
+          <img src={deflectInjuredIndicate2} className='hidden playerImgs' ref="deflectInjuredIndicate2" id="deflectInjuredIndicate" alt="logo" />
           <img src={deflectBluntIndicate} className='hidden playerImgs' ref="deflectBluntIndicate" id="deflectBluntIndicate" alt="logo" />
           <img src={pushbackIndicate} className='hidden playerImgs' ref="pushbackIndicate" id="pushbackIndicate" alt="logo" />
           <img src={ghostIndicate} className='hidden playerImgs' ref="ghostIndicate" id="ghostIndicate" alt="logo" />
@@ -36846,6 +36912,7 @@ class App extends Component {
           <img src={pathSwitchIndicate} className="hidden playerImgs" ref="pathSwitchIndicate" id="pathSwitchIndicate" alt="logo"/>
           <img src={retreatIndicate} className="hidden playerImgs" ref="retreatIndicate" id="retreatIndicate" alt="logo"/>
           <img src={defendSuccessIndicate} className="hidden playerImgs" ref="defendSuccessIndicate" id="defendSuccessIndicate" alt="logo"/>
+          <img src={healIndicate} className="hidden playerImgs" ref="healIndicate" id="defendSuccessIndicate" alt="logo"/>
 
 
           <img src={preAttack2Indicate} className="hidden playerImgs" ref="preAttack2Indicate" id="preAttack2Indicate" alt="..." />
