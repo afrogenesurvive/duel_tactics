@@ -7181,33 +7181,33 @@ class App extends Component {
         //   }
         // }
         // OLD TURNER COMPLETE
-        //if (player.turning.state === false && player.flanking.state !== true) {
-      //   console.log('turn complete');
-      //   player.direction = player.turning.toDirection;
-      //   player.nextPosition = {
-      //     x: player.currentPosition.cell.center.x,
-      //     y: player.currentPosition.cell.center.y
-      //   }
-      //   player.moving = {
-      //     state: false,
-      //     step: 0,
-      //     course: '',
-      //     origin: {
-      //       number: {
-      //         x: player.currentPosition.cell.number.x,
-      //         y: player.currentPosition.cell.number.y
-      //       },
-      //       center: {
-      //         x: player.currentPosition.cell.center.x,
-      //         y: player.currentPosition.cell.center.y
-      //       },
-      //     },
-      //     destination: player.target.cell.center
-      //   }
-      //   player.turning.toDirection = '';
-      //   player.turning.state = undefined;
-      //   this.getTarget(player);
-      // }
+        // if (player.turning.state === false && player.flanking.state !== true) {
+        //   console.log('turn complete');
+        //   player.direction = player.turning.toDirection;
+        //   player.nextPosition = {
+        //     x: player.currentPosition.cell.center.x,
+        //     y: player.currentPosition.cell.center.y
+        //   }
+        //   player.moving = {
+        //     state: false,
+        //     step: 0,
+        //     course: '',
+        //     origin: {
+        //       number: {
+        //         x: player.currentPosition.cell.number.x,
+        //         y: player.currentPosition.cell.number.y
+        //       },
+        //       center: {
+        //         x: player.currentPosition.cell.center.x,
+        //         y: player.currentPosition.cell.center.y
+        //       },
+        //     },
+        //     destination: player.target.cell.center
+        //   }
+        //   player.turning.toDirection = '';
+        //   player.turning.state = undefined;
+        //   this.getTarget(player);
+        // }
         if (player.turning.state === true && player.flanking.state !== true ) {
           if (player.turning.delayCount < player.turning.limit) {
             player.turning.delayCount++;
@@ -15193,6 +15193,7 @@ class App extends Component {
 
                     let dir = undefined;
 
+                    // CHECK OTHER PLAYER'S POSITION AND THE POPUPS POSITION
                     for (const plyr2 of this.players) {
                       if (plyr2.ai.state !== true && plyr2.number !== plyr.number) {
                         let myPos = plyr.currentPosition.cell.number;
@@ -15470,7 +15471,6 @@ class App extends Component {
                       plyr.attacking.state === true ||
                       plyr.flanking.state === true
                     ) {
-                      // this.playerPopupSvgCalc(plyr,popup,{x:popupDrawCoords.origin.x+centerPopupOffset,y:popupDrawCoords.origin.y+centerPopupOffset},context)
                       showProgress = true;
                     }
                     if (
@@ -15520,8 +15520,10 @@ class App extends Component {
                     if (writeValue === true) {
                       context.font = "15px Arial";
                       context.fillStyle = 'black';
-                      context.fillText("- "+popup.msg.split("_")[1],popupDrawCoords.origin.x+(this.popupSize/2),popupDrawCoords.origin.y+15);
-                      context.drawImage(popup.img, popupDrawCoords.origin.x+(centerPopupOffset+5),popupDrawCoords.origin.y+(centerPopupOffset+5),this.popupImgSize*.75,this.popupImgSize*.75);
+                      context.fillText("- "+popup.msg.split("_")[1],popupDrawCoords.origin.x+15,popupDrawCoords.origin.y+15
+                    );
+                      // context.drawImage(popup.img, popupDrawCoords.origin.x+(centerPopupOffset+5),popupDrawCoords.origin.y+(centerPopupOffset+5),this.popupImgSize*.75,this.popupImgSize*.75);
+                      context.drawImage(popup.img, popupDrawCoords.origin.x+(centerPopupOffset+5),popupDrawCoords.origin.y+(centerPopupOffset+10),this.popupImgSize*.75,this.popupImgSize*.75);
                     }
                     else {
                       context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
@@ -15879,10 +15881,6 @@ class App extends Component {
                     // if (popup.position === dir ) {
                     if (dirs.find(x => x === popup.position) ) {
 
-                      // for (const pop of plyr.popups) {
-                      //   pop.position = '';
-                      //   pop.state = false;
-                      // }
                       plyr.popups.find(x => x.msg === popup.msg).position = '';
                       plyr.popups.find(x => x.msg === popup.msg).state = false;
                       // console.log("A new invalid direction === popup's position. reconsidering...",popup.msg);
@@ -15903,7 +15901,6 @@ class App extends Component {
                         plyr.attacking.state === true ||
                         plyr.flanking.state === true
                       ) {
-                        // this.playerPopupSvgCalc(plyr,popup,{x:popupDrawCoords.origin.x+centerPopupOffset,y:popupDrawCoords.origin.y+centerPopupOffset},context)
                         showProgress = true;
                       }
                       if (
@@ -15952,8 +15949,10 @@ class App extends Component {
                       if (writeValue === true) {
                         context.font = "15px Arial";
                         context.fillStyle = 'black';
-                        context.fillText("- "+popup.msg.split("_")[1],popupDrawCoords.origin.x+(this.popupSize/2),popupDrawCoords.origin.y+15);
-                        context.drawImage(popup.img, popupDrawCoords.origin.x+(centerPopupOffset+5),popupDrawCoords.origin.y+(centerPopupOffset+5),this.popupImgSize*.75,this.popupImgSize*.75);
+                        context.fillText("- "+popup.msg.split("_")[1],popupDrawCoords.origin.x+15,popupDrawCoords.origin.y+15
+                      );
+                        // context.drawImage(popup.img, popupDrawCoords.origin.x+(centerPopupOffset+5),popupDrawCoords.origin.y+(centerPopupOffset+5),this.popupImgSize*.75,this.popupImgSize*.75);
+                        context.drawImage(popup.img, popupDrawCoords.origin.x+(centerPopupOffset+5),popupDrawCoords.origin.y+(centerPopupOffset+10),this.popupImgSize*.75,this.popupImgSize*.75);
                       }
                       else {
                         context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
@@ -19074,7 +19073,6 @@ class App extends Component {
       }
 
     }
-
     if (player.action === "attacking") {
 
       let atkType = player.currentWeapon.type;
@@ -19182,12 +19180,7 @@ class App extends Component {
 
     }
 
-    // if (perc < 95) {
-    //   // this.refs.popupProgressSvg.children[2].setAttribute("height", Math.floor(perc)+"%");
-    // }
-    // else {
-    //   perc = 95;
-    // }
+
     // if (fillPath === true) {
     //   let newArr = [];
     //   for (var i = 0; i < upperIndex+1; i++) {
@@ -36791,6 +36784,7 @@ class App extends Component {
               />
             )}
 
+
           </div>
 
           {this.state.showSettings === true && (
@@ -36833,6 +36827,7 @@ class App extends Component {
               </linearGradient>
             </defs>
           </svg>
+
           <img src="" className="hidden" height={this.popupImgSize} width={this.popupImgSize} ref="popupProgressImg" alt="logo"/>
 
           <img src={floorGrass} className='hidden' ref="floorGrass" alt="logo" id="floor1"/>
