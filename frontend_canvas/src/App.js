@@ -10206,8 +10206,9 @@ class App extends Component {
         }
       }
 
-    } else {
-      // console.log('sorry no key presses right now');
+    }
+    else {
+      // console.log('sorry no key presses right now. you are deflected');
     }
 
 
@@ -10860,7 +10861,7 @@ class App extends Component {
           if (this.setInitZoom.windowWidth < 1100) {
 
             if ((this.camera.zoom.x-1) >= -.25) {
-
+              console.log('1');
               this.camera.zoom.x -= .04 ;
               this.camera.zoom.y -= .04 ;
               this.camera.zoomDirection = 'out';
@@ -10883,6 +10884,34 @@ class App extends Component {
           if (this.setInitZoom.windowWidth > 1100) {
 
           }
+        }
+
+        if (this.setInitZoom.gridWidth < 12) {
+
+          if (this.setInitZoom.windowWidth < 1100) {
+
+            if ((this.camera.zoom.x-1) >= -.05) {
+              console.log('2');
+              this.camera.zoom.x -= .04 ;
+              this.camera.zoom.y -= .04 ;
+              this.camera.zoomDirection = 'out';
+
+              let zoom = this.camera.zoom.x;
+              let diff = 1 - zoom;
+
+              this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
+              this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
+
+              // this.setCameraFocus('input',canvas, context, canvas2, context2);
+              this.findFocusCell('panToCell',{},canvas,context)
+            }
+
+            if ((this.camera.zoom.x-1) < -.05) {
+              this.setInitZoom.state = false;
+            }
+
+          }
+
         }
 
     }
@@ -12556,8 +12585,6 @@ class App extends Component {
 
 
   }
-
-
 
   drawPlayerStep = (playerNumber, canvas, context, canvas2, context2) => {
     // console.log('drawing player step',playerNumber);
@@ -16108,7 +16135,8 @@ class App extends Component {
           // console.log('Camera centered');
           // context.fillStyle = 'yellow';
           context.beginPath();
-          context.arc(this.camera.focus.x, this.camera.focus.y, 10, 0, 2 * Math.PI);
+          // context.arc(this.camera.focus.x, this.camera.focus.y, 10, 0, 2 * Math.PI);
+          // context.arc(this.camera.zoomFocusPan.x, this.camera.zoomFocusPan.y, 10, 0, 2 * Math.PI);
           context.fill();
 
         }
@@ -17654,6 +17682,21 @@ class App extends Component {
                     )
                   }
 
+                  if (!this.players[player.number-1].popups.find(x=>x.msg.split("_")[0] === "hpUp")) {
+                    this.players[player.number-1].popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 30,
+                        type: '',
+                        position: '',
+                        msg: 'hpUp_'+'+'+1+'',
+                        img: '',
+
+                      }
+                    )
+                  }
+
                 }
               break;
               case 'speedUp' :
@@ -17903,6 +17946,21 @@ class App extends Component {
                         type: '',
                         position: '',
                         msg: 'pickupBuff',
+                        img: '',
+
+                      }
+                    )
+                  }
+
+                  if (!this.players[player.number-1].popups.find(x=>x.msg.split("_")[0] === "hpUp")) {
+                    this.players[player.number-1].popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 30,
+                        type: '',
+                        position: '',
+                        msg: 'hpUp_'+'+'+1+'',
                         img: '',
 
                       }
@@ -28814,12 +28872,22 @@ class App extends Component {
         gridWidth: this.gridWidth,
       }
     }
+    if (window.innerWidth < 1100 && this.gridWidth < 12) {
+      // this.camera.zoom.x = 1;
+      // this.camera.zoom.y = 1;
+
+      this.setInitZoom = {
+        state: true,
+        windowWidth: window.innerWidth,
+        gridWidth: this.gridWidth,
+      }
+    }
 
     let diff = 1 - this.camera.zoom.x;
 
     // FOCUSED ZOOMING INIT SET
     this.camera.pan.x = (diff*this.canvasWidth/2);
-    this.camera.pan.y = (diff*this.canvasWidth/2)-(diff*150);
+    this.camera.pan.y = (diff*this.canvasWidth/2)-(diff*350);
     if (this.camera.pan.x === 0) {
       this.camera.pan.x = -1
       this.camera.pan.y = -1
@@ -36439,7 +36507,7 @@ class App extends Component {
 
       let zoom = this.camera.zoom.x;
       if (this.camera.mode === 'pan') {
-
+        console.log('beep');
         switch (this.camera.panDirection) {
           case 'north':
             this.camera.focus.y -= 10;
