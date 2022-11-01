@@ -7999,20 +7999,20 @@ class App extends Component {
                       player.attackStrength = 2;
                       this.attackedCancel(this.players[player.target.occupant.player-1])
 
-                      if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'alarmed')) {
-                        this.players[player.target.occupant.player-1].popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit:25,
-                            type: '',
-                            position: '',
-                            msg: 'alarmed',
-                            img: '',
-
-                          }
-                        )
-                      }
+                      // if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'alarmed')) {
+                      //   this.players[player.target.occupant.player-1].popups.push(
+                      //     {
+                      //       state: false,
+                      //       count: 0,
+                      //       limit:25,
+                      //       type: '',
+                      //       position: '',
+                      //       msg: 'alarmed',
+                      //       img: '',
+                      //
+                      //     }
+                      //   )
+                      // }
 
                       if (!player.popups.find(x=>x.msg === 'attacking2')) {
                         player.popups.push(
@@ -8054,20 +8054,20 @@ class App extends Component {
                         weapon = 'unarmed'
                       }
 
-                      if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'alarmed')) {
-                        this.players[player.target.occupant.player-1].popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit:25,
-                            type: '',
-                            position: '',
-                            msg: 'alarmed',
-                            img: '',
-
-                          }
-                        )
-                      }
+                      // if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'alarmed')) {
+                      //   this.players[player.target.occupant.player-1].popups.push(
+                      //     {
+                      //       state: false,
+                      //       count: 0,
+                      //       limit:25,
+                      //       type: '',
+                      //       position: '',
+                      //       msg: 'alarmed',
+                      //       img: '',
+                      //
+                      //     }
+                      //   )
+                      // }
 
                       if (!player.popups.find(x=>x.msg === 'attacking1')) {
                         player.popups.push(
