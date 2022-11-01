@@ -1223,11 +1223,11 @@ class App extends Component {
       //   type: 'item',
       //   effect: '',
       // },
-      // {
-      //   name: 'hpUp',
-      //   type: 'item',
-      //   effect: 'hpUp',
-      // },
+      {
+        name: 'hpUp',
+        type: 'item',
+        effect: 'hpUp',
+      },
       // {
       //   name: 'hpDown',
       //   type: 'item',
@@ -1281,15 +1281,20 @@ class App extends Component {
       //   subType: 'helmet',
       //   effect: '',
       // },
+      // {
+      //   name: 'strengthUp',
+      //   type: 'item',
+      //   effect: 'strengthUp',
+      // },
+      // {
+      //   name: 'strengthUp',
+      //   type: 'item',
+      //   effect: 'strengthUp',
+      // },
       {
-        name: 'strengthUp',
+        name: 'hpUp',
         type: 'item',
-        effect: 'strengthUp',
-      },
-      {
-        name: 'strengthUp',
-        type: 'item',
-        effect: 'strengthUp',
+        effect: 'hpUp',
       },
       {
         name: 'strengthUp',
@@ -6639,491 +6644,6 @@ class App extends Component {
         // }
 
 
-        // OBSTACLE
-        // MOVING & FALLING
-        for(const cell of this.gridInfo) {
-
-
-          if (cell.obstacle.state === true && cell.obstacle.moving.state === true && cell.obstacle.moving.falling.state !== true) {
-            // console.log('tracking moving obstacle',cell.obstacle.moving.origin);
-
-            let destCellRef = this.gridInfo.find(x => x.number.x === cell.obstacle.moving.destination.number.x && x.number.y === cell.obstacle.moving.destination.number.y)
-
-            let obstacleCrementObj = undefined;
-            if (!destCellRef) {
-              obstacleCrementObj = this.obstacleMoveCrementer(cell,{center:cell.obstacle.moving.destination.center});
-            }
-            else {
-              obstacleCrementObj = this.obstacleMoveCrementer(cell,destCellRef);
-            }
-
-
-
-            cell.obstacle.moving.nextPosition = obstacleCrementObj.pos;
-            cell.obstacle.moving.step = obstacleCrementObj.step;
-            nextPosition = obstacleCrementObj.pos;
-
-            let atDestRanges = [false,false,false,false];
-
-            let destRngIndx = undefined;
-            if (
-              nextPosition.x >= cell.obstacle.moving.destination.center.x-1 &&
-              nextPosition.x <= cell.obstacle.moving.destination.center.x+1 &&
-              nextPosition.y >= cell.obstacle.moving.destination.center.y-1 &&
-              nextPosition.y <= cell.obstacle.moving.destination.center.y+1
-            ) {
-              atDestRanges[0] = true;
-              destRngIndx = 0;
-            }
-            if (
-              nextPosition.x === cell.obstacle.moving.destination.center.x-0.25 &&
-              nextPosition.y === cell.obstacle.moving.destination.center.y+0.5
-            ) {
-              atDestRanges[1] = true;
-              destRngIndx = 1;
-            }
-            if (
-              nextPosition.x === cell.obstacle.moving.destination.center.x &&
-              nextPosition.y === cell.obstacle.moving.destination.center.y
-            ) {
-              atDestRanges[2] = true;
-              destRngIndx = 2;
-            }
-            if (
-              nextPosition.x === cell.obstacle.moving.destination.center.x-5 &&
-              nextPosition.y === cell.obstacle.moving.destination.center.y-5
-            ) {
-              atDestRanges[3] = true;
-              destRngIndx = 3;
-            }
-
-
-            for (const el of atDestRanges) {
-              if (el === true) {
-
-                let indx = atDestRanges.indexOf(el);
-                // console.log('obstacle at destination');
-
-                if (destCellRef) {
-                  // console.log('obstacle at in bounds destination',cell.obstacle.moving.nextPosition);
-
-                  let cell2 = cell;
-                  let originLevelData = cell2.levelData.split("_");
-                  originLevelData[1] = "*";
-
-                  let originCellRef = this.gridInfo.find(x => x.number.x === cell.obstacle.moving.origin.number.x && x.number.y === cell.obstacle.moving.origin.number.y)
-                  let destCellRef = this.gridInfo.find(x => x.number.x === cell.obstacle.moving.destination.number.x && x.number.y === cell.obstacle.moving.destination.number.y)
-
-
-                  if (destCellRef.void.state === true || destCellRef.terrain.type === "deep") {
-
-                    destCellRef.obstacle = {
-                      state: true,
-                      name: cell2.obstacle.name,
-                      type: cell2.obstacle.type,
-                      hp: cell2.obstacle.hp,
-                      destructible: cell2.obstacle.destructible,
-                      locked: cell2.obstacle.locked,
-                      weight: cell2.obstacle.weight,
-                      height: cell2.obstacle.height,
-                      items: cell2.obstacle.items,
-                      effects: cell2.obstacle.effects,
-                      moving: {
-                        state: false,
-                        step: 0,
-                        origin: {
-                          number: {
-                            x: undefined,
-                            y: undefined,
-                          },
-                          center: {
-                            x: undefined,
-                            y: undefined,
-                          },
-                        },
-                        destination: {
-                          number: {
-                            x: undefined,
-                            y: undefined,
-                          },
-                          center: {
-                            x: undefined,
-                            y: undefined,
-                          },
-                        },
-                        currentPosition: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                        nextPosition: {
-                          x: destCellRef.center.x,
-                          y: destCellRef.center.y,
-                        },
-                        moveSpeed: 0,
-                        pushable: true,
-                        pushed: false,
-                        pusher: undefined,
-                        falling: {
-                          state: true,
-                          count: 0,
-                          limit: cell2.obstacle.moving.falling.limit,
-                        }
-                      }
-                    };
-
-
-                    destCellRef.obstacle.moving.nextPosition.x -= this.floorImageWidth/2;
-                    destCellRef.obstacle.moving.nextPosition.y -= this.floorImageHeight/2;
-
-                  }
-                  if (destCellRef.void.state !== true && destCellRef.terrain.type !== "deep") {
-                    destCellRef.obstacle = {
-                      state: true,
-                      name: cell2.obstacle.name,
-                      type: cell2.obstacle.type,
-                      hp: cell2.obstacle.hp,
-                      destructible: cell2.obstacle.destructible,
-                      locked: cell2.obstacle.locked,
-                      weight: cell2.obstacle.weight,
-                      height: cell2.obstacle.height,
-                      items: cell2.obstacle.items,
-                      effects: cell2.obstacle.effects,
-                      moving: {
-                        state: false,
-                        step: 0,
-                        origin: {
-                          number: {
-                            x: undefined,
-                            y: undefined,
-                          },
-                          center: {
-                            x: undefined,
-                            y: undefined,
-                          },
-                        },
-                        destination: {
-                          number: {
-                            x: undefined,
-                            y: undefined,
-                          },
-                          center: {
-                            x: undefined,
-                            y: undefined,
-                          },
-                        },
-                        currentPosition: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                        nextPosition: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                        moveSpeed: 0,
-                        pushable: true,
-                        pushed: false,
-                        pusher: undefined,
-                        falling: cell2.obstacle.moving.falling,
-                      }
-                    };
-                  }
-
-                  destCellRef.levelData = cell2.levelData;
-
-                  originCellRef.obstacle = {
-                    state: false,
-                    name: '',
-                    type: '',
-                    hp: 0,
-                    destructible: {
-                      state: false,
-                      weapons: [],
-                      leaveRubble: false,
-                    },
-                    locked: {
-                      state: false,
-                      key: '',
-                    },
-                    weight: 1,
-                    height: 0.5,
-                    items: [],
-                    effects: [],
-                    moving: {
-                      state: false,
-                      step: 0,
-                      origin: {
-                        number: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                        center: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                      },
-                      destination: {
-                        number: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                        center: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                      },
-                      currentPosition: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                      nextPosition: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                      moveSpeed: 0,
-                      pushable: true,
-                      pushed: false,
-                      pusher: undefined,
-                      falling: {
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                      },
-                    }
-                  };
-                  originCellRef.levelData = originLevelData.join("_");
-
-
-                  for(const obs of this.obstacleBarrierToDestroy) {
-                    if (originCellRef.number.x === obs.cell.number.x && originCellRef.number.y === obs.cell.number.y && destCellRef.void.state !== true) {
-                      this.obstacleBarrierToDestroy.push({
-                        type: 'obstacle',
-                        action: 'damage',
-                        count: 0,
-                        limit: 30,
-                        complete: false,
-                        cell: destCellRef,
-                      })
-                    }
-                  };
-
-                  this.obstacleCheckDestination(destCellRef,player);
-
-
-                }
-                else {
-
-                  // console.log('obstacle at out of bounds destination',cell.obstacle.moving.origin.center,cell.obstacle.moving.nextPosition);
-                  let cell2 = cell;
-                  let originLevelData = cell2.levelData.split("_");
-                  originLevelData[1] = "*";
-
-
-                  cell2.obstacle.moving.falling = {
-                    state: true,
-                    count: 0,
-                    limit: cell2.obstacle.moving.falling.limit,
-                  };
-
-
-                  cell2.obstacle.moving.nextPosition.x -= this.floorImageWidth/2;
-                  cell2.obstacle.moving.nextPosition.y -= this.floorImageHeight/2;
-
-                  this.obstaclesOutOfBoundsFall.push(cell2.obstacle);
-
-                  let originCellRef = this.gridInfo.find(x => x.number.x === cell.obstacle.moving.origin.number.x && x.number.y === cell.obstacle.moving.origin.number.y)
-
-
-                  originCellRef.obstacle = {
-                    state: false,
-                    name: '',
-                    type: '',
-                    hp: 0,
-                    destructible: {
-                      state: false,
-                      weapons: [],
-                      leaveRubble: false,
-                    },
-                    locked: {
-                      state: false,
-                      key: '',
-                    },
-                    weight: 1,
-                    height: 0.5,
-                    items: [],
-                    effects: [],
-                    moving: {
-                      state: false,
-                      step: 0,
-                      origin: {
-                        number: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                        center: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                      },
-                      destination: {
-                        number: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                        center: {
-                          x: undefined,
-                          y: undefined,
-                        },
-                      },
-                      currentPosition: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                      nextPosition: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                      moveSpeed: 0,
-                      pushable: true,
-                      pushed: false,
-                      pusher: undefined,
-                      falling: {
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                      },
-                    }
-                  };
-                  originCellRef.levelData = originLevelData.join("_");
-
-                }
-
-
-                break;
-              }
-            }
-
-            // if (cell.obstacle.moving.step >= 1) {
-            //
-            // }
-
-          }
-
-          // step falling.count
-          if (cell.obstacle.state === true && cell.obstacle.moving.falling.state === true) {
-            // console.log('falling obstacle');
-            if (cell.obstacle.moving.falling.count < cell.obstacle.moving.falling.limit) {
-              cell.obstacle.moving.falling.count++;
-              // console.log('obstacle falling in bounds a count',cell.obstacle.moving.falling.count,'position',cell.obstacle.moving.nextPosition);
-            }
-            if (cell.obstacle.moving.falling.count >= cell.obstacle.moving.falling.limit) {
-              let cell2 = cell;
-              let levelData = cell2.levelData.split("_");
-              levelData[1] = "*";
-              cell.levelData = levelData.join("_");
-              cell.obstacle = {
-                state: false,
-                name: '',
-                type: '',
-                hp: 0,
-                destructible: {
-                  state: false,
-                  weapons: [],
-                  leaveRubble: false,
-                },
-                locked: {
-                  state: false,
-                  key: '',
-                },
-                weight: 1,
-                height: 0.5,
-                items: [],
-                effects: [],
-                moving: {
-                  state: false,
-                  step: 0,
-                  origin: {
-                    number: {
-                      x: undefined,
-                      y: undefined,
-                    },
-                    center: {
-                      x: undefined,
-                      y: undefined,
-                    },
-                  },
-                  destination: {
-                    number: {
-                      x: undefined,
-                      y: undefined,
-                    },
-                    center: {
-                      x: undefined,
-                      y: undefined,
-                    },
-                  },
-                  currentPosition: {
-                    x: undefined,
-                    y: undefined,
-                  },
-                  nextPosition: {
-                    x: undefined,
-                    y: undefined,
-                  },
-                  moveSpeed: 0,
-                  pushable: true,
-                  pushed: false,
-                  pusher: undefined,
-                  falling: {
-                    state: false,
-                    count: 0,
-                    limit: 10,
-                  },
-                }
-              };
-              // console.log('obstacle falling in bounds over');
-            }
-          }
-        }
-        for(const elem of this.obstaclesOutOfBoundsFall) {
-          if (elem.moving.falling.count < elem.moving.falling.limit) {
-            elem.moving.falling.count++;
-            // obstacle.moving.nextPosition.y += (obstacle.moving.falling.count*5)
-            // console.log('obstacle falling out of bounds a count',elem.moving.falling.count,'position',elem.moving.nextPosition);
-          }
-          if (elem.moving.falling.count >= elem.moving.falling.limit) {
-            // console.log('obstacle falling out of bounds over');
-            let index = this.obstaclesOutOfBoundsFall.indexOf(elem)
-            this.obstaclesOutOfBoundsFall.splice(index,1)
-          }
-        }
-        // OBSTACLE/BARRIER DAMAGE/DESTROY
-        for(const cell of this.obstacleBarrierToDestroy) {
-          if (cell.limit > 0) {
-            if (cell.count < cell.limit) {
-              cell.count++
-            }
-            else if (cell.count >= cell.limit) {
-              let index = this.obstacleBarrierToDestroy.indexOf(cell)
-              this.obstacleBarrierToDestroy.splice(index,1)
-            }
-          }
-        }
-
-        // ITEMS TO DROP
-        // -call itemdrop crementer and set position like w/ movement
-        for(const cell of this.obstacleItemsToDrop) {
-          if (cell.limit > 0) {
-            if (cell.count < cell.limit) {
-              cell.count++
-            }
-            else if (cell.count >= cell.limit) {
-              let index = this.obstacleItemsToDrop.indexOf(cell)
-              this.obstacleItemsToDrop.splice(index,1)
-            }
-          }
-        }
-
-        // ITEMS FALLING/SINKING
 
         // // IDLE ANIM STEPPER!
         if (player.action === 'idle') {
@@ -8031,18 +7551,20 @@ class App extends Component {
                         )
                       }
 
-                      this.players[player.target.occupant.player-1].popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit: 25,
-                          type: '',
-                          position: '',
-                          msg: 'hpDown_'+'-'+2+'',
-                          img: '',
+                      if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg.split("_")[0] === "hpDown")) {
+                        this.players[player.target.occupant.player-1].popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 30,
+                            type: '',
+                            position: '',
+                            msg: 'hpDown_'+'-'+2+'',
+                            img: '',
 
-                        }
-                      )
+                          }
+                        )
+                      }
 
                     }
                     else if (singleHit === 1) {
@@ -8085,18 +7607,21 @@ class App extends Component {
                           }
                         )
                       }
-                      this.players[player.target.occupant.player-1].popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit: 25,
-                          type: '',
-                          position: '',
-                          msg: 'hpDown_'+'-'+1+'',
-                          img: '',
+                      if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg.split("_")[0] === "hpDown")) {
+                        this.players[player.target.occupant.player-1].popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 30,
+                            type: '',
+                            position: '',
+                            msg: 'hpDown_'+'-'+1+'',
+                            img: '',
 
-                        }
-                      )
+                          }
+                        )
+                      }
+
 
                     }
 
@@ -8977,7 +8502,7 @@ class App extends Component {
 
           // PEAK, START DECAY
           else if (player.defending.count >= defendPeak && player.defendDecay.state !== true) {
-           console.log('peak defend player',player.number);
+           // console.log('peak defend player',player.number);
 
            if (player.stamina.current - this.staminaCostRef.defend.peak >= 0) {
 
@@ -9072,7 +8597,7 @@ class App extends Component {
                 )
 
               }
-              console.log('defend decay count',player.defendDecay.count,player.defending.state,player.action);
+              // console.log('defend decay count',player.defendDecay.count,player.defending.state,player.action);
             }
 
 
@@ -9083,7 +8608,7 @@ class App extends Component {
                 limit: player.defending.limit,
               }
               player.action = 'idle';
-              console.log('defend decay limit. drop defense',player.defending.state);
+              // console.log('defend decay limit. drop defense',player.defending.state);
               player.defendDecay = {
                 state: false,
                 count: 0,
@@ -10684,6 +10209,495 @@ class App extends Component {
     } else {
       // console.log('sorry no key presses right now');
     }
+
+
+
+    // OBSTACLE
+    // MOVING & FALLING
+    for(const cell of this.gridInfo) {
+
+
+      if (cell.obstacle.state === true && cell.obstacle.moving.state === true && cell.obstacle.moving.falling.state !== true) {
+        // console.log('tracking moving obstacle',cell.obstacle.moving.origin);
+
+        let destCellRef = this.gridInfo.find(x => x.number.x === cell.obstacle.moving.destination.number.x && x.number.y === cell.obstacle.moving.destination.number.y)
+
+        let obstacleCrementObj = undefined;
+        if (!destCellRef) {
+          obstacleCrementObj = this.obstacleMoveCrementer(cell,{center:cell.obstacle.moving.destination.center});
+        }
+        else {
+          obstacleCrementObj = this.obstacleMoveCrementer(cell,destCellRef);
+        }
+
+
+
+        cell.obstacle.moving.nextPosition = obstacleCrementObj.pos;
+        cell.obstacle.moving.step = obstacleCrementObj.step;
+        nextPosition = obstacleCrementObj.pos;
+
+        let atDestRanges = [false,false,false,false];
+
+        let destRngIndx = undefined;
+        if (
+          nextPosition.x >= cell.obstacle.moving.destination.center.x-1 &&
+          nextPosition.x <= cell.obstacle.moving.destination.center.x+1 &&
+          nextPosition.y >= cell.obstacle.moving.destination.center.y-1 &&
+          nextPosition.y <= cell.obstacle.moving.destination.center.y+1
+        ) {
+          atDestRanges[0] = true;
+          destRngIndx = 0;
+        }
+        if (
+          nextPosition.x === cell.obstacle.moving.destination.center.x-0.25 &&
+          nextPosition.y === cell.obstacle.moving.destination.center.y+0.5
+        ) {
+          atDestRanges[1] = true;
+          destRngIndx = 1;
+        }
+        if (
+          nextPosition.x === cell.obstacle.moving.destination.center.x &&
+          nextPosition.y === cell.obstacle.moving.destination.center.y
+        ) {
+          atDestRanges[2] = true;
+          destRngIndx = 2;
+        }
+        if (
+          nextPosition.x === cell.obstacle.moving.destination.center.x-5 &&
+          nextPosition.y === cell.obstacle.moving.destination.center.y-5
+        ) {
+          atDestRanges[3] = true;
+          destRngIndx = 3;
+        }
+
+
+        for (const el of atDestRanges) {
+          if (el === true) {
+
+            let indx = atDestRanges.indexOf(el);
+            // console.log('obstacle at destination');
+
+            if (destCellRef) {
+              // console.log('obstacle at in bounds destination',cell.obstacle.moving.nextPosition);
+
+              let cell2 = cell;
+              let originLevelData = cell2.levelData.split("_");
+              originLevelData[1] = "*";
+
+              let originCellRef = this.gridInfo.find(x => x.number.x === cell.obstacle.moving.origin.number.x && x.number.y === cell.obstacle.moving.origin.number.y)
+              let destCellRef = this.gridInfo.find(x => x.number.x === cell.obstacle.moving.destination.number.x && x.number.y === cell.obstacle.moving.destination.number.y)
+
+
+              if (destCellRef.void.state === true || destCellRef.terrain.type === "deep") {
+
+                destCellRef.obstacle = {
+                  state: true,
+                  name: cell2.obstacle.name,
+                  type: cell2.obstacle.type,
+                  hp: cell2.obstacle.hp,
+                  destructible: cell2.obstacle.destructible,
+                  locked: cell2.obstacle.locked,
+                  weight: cell2.obstacle.weight,
+                  height: cell2.obstacle.height,
+                  items: cell2.obstacle.items,
+                  effects: cell2.obstacle.effects,
+                  moving: {
+                    state: false,
+                    step: 0,
+                    origin: {
+                      number: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                      center: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                    },
+                    destination: {
+                      number: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                      center: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                    },
+                    currentPosition: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                    nextPosition: {
+                      x: destCellRef.center.x,
+                      y: destCellRef.center.y,
+                    },
+                    moveSpeed: 0,
+                    pushable: true,
+                    pushed: false,
+                    pusher: undefined,
+                    falling: {
+                      state: true,
+                      count: 0,
+                      limit: cell2.obstacle.moving.falling.limit,
+                    }
+                  }
+                };
+
+
+                destCellRef.obstacle.moving.nextPosition.x -= this.floorImageWidth/2;
+                destCellRef.obstacle.moving.nextPosition.y -= this.floorImageHeight/2;
+
+              }
+              if (destCellRef.void.state !== true && destCellRef.terrain.type !== "deep") {
+                destCellRef.obstacle = {
+                  state: true,
+                  name: cell2.obstacle.name,
+                  type: cell2.obstacle.type,
+                  hp: cell2.obstacle.hp,
+                  destructible: cell2.obstacle.destructible,
+                  locked: cell2.obstacle.locked,
+                  weight: cell2.obstacle.weight,
+                  height: cell2.obstacle.height,
+                  items: cell2.obstacle.items,
+                  effects: cell2.obstacle.effects,
+                  moving: {
+                    state: false,
+                    step: 0,
+                    origin: {
+                      number: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                      center: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                    },
+                    destination: {
+                      number: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                      center: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                    },
+                    currentPosition: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                    nextPosition: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                    moveSpeed: 0,
+                    pushable: true,
+                    pushed: false,
+                    pusher: undefined,
+                    falling: cell2.obstacle.moving.falling,
+                  }
+                };
+              }
+
+              destCellRef.levelData = cell2.levelData;
+
+              originCellRef.obstacle = {
+                state: false,
+                name: '',
+                type: '',
+                hp: 0,
+                destructible: {
+                  state: false,
+                  weapons: [],
+                  leaveRubble: false,
+                },
+                locked: {
+                  state: false,
+                  key: '',
+                },
+                weight: 1,
+                height: 0.5,
+                items: [],
+                effects: [],
+                moving: {
+                  state: false,
+                  step: 0,
+                  origin: {
+                    number: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                    center: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                  },
+                  destination: {
+                    number: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                    center: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                  },
+                  currentPosition: {
+                    x: undefined,
+                    y: undefined,
+                  },
+                  nextPosition: {
+                    x: undefined,
+                    y: undefined,
+                  },
+                  moveSpeed: 0,
+                  pushable: true,
+                  pushed: false,
+                  pusher: undefined,
+                  falling: {
+                    state: false,
+                    count: 0,
+                    limit: 25,
+                  },
+                }
+              };
+              originCellRef.levelData = originLevelData.join("_");
+
+
+              for(const obs of this.obstacleBarrierToDestroy) {
+                if (originCellRef.number.x === obs.cell.number.x && originCellRef.number.y === obs.cell.number.y && destCellRef.void.state !== true) {
+                  this.obstacleBarrierToDestroy.push({
+                    type: 'obstacle',
+                    action: 'damage',
+                    count: 0,
+                    limit: 30,
+                    complete: false,
+                    cell: destCellRef,
+                  })
+                }
+              };
+
+              this.obstacleCheckDestination(destCellRef,player);
+
+
+            }
+            else {
+
+              // console.log('obstacle at out of bounds destination',cell.obstacle.moving.origin.center,cell.obstacle.moving.nextPosition);
+              let cell2 = cell;
+              let originLevelData = cell2.levelData.split("_");
+              originLevelData[1] = "*";
+
+
+              cell2.obstacle.moving.falling = {
+                state: true,
+                count: 0,
+                limit: cell2.obstacle.moving.falling.limit,
+              };
+
+
+              cell2.obstacle.moving.nextPosition.x -= this.floorImageWidth/2;
+              cell2.obstacle.moving.nextPosition.y -= this.floorImageHeight/2;
+
+              this.obstaclesOutOfBoundsFall.push(cell2.obstacle);
+
+              let originCellRef = this.gridInfo.find(x => x.number.x === cell.obstacle.moving.origin.number.x && x.number.y === cell.obstacle.moving.origin.number.y)
+
+
+              originCellRef.obstacle = {
+                state: false,
+                name: '',
+                type: '',
+                hp: 0,
+                destructible: {
+                  state: false,
+                  weapons: [],
+                  leaveRubble: false,
+                },
+                locked: {
+                  state: false,
+                  key: '',
+                },
+                weight: 1,
+                height: 0.5,
+                items: [],
+                effects: [],
+                moving: {
+                  state: false,
+                  step: 0,
+                  origin: {
+                    number: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                    center: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                  },
+                  destination: {
+                    number: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                    center: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                  },
+                  currentPosition: {
+                    x: undefined,
+                    y: undefined,
+                  },
+                  nextPosition: {
+                    x: undefined,
+                    y: undefined,
+                  },
+                  moveSpeed: 0,
+                  pushable: true,
+                  pushed: false,
+                  pusher: undefined,
+                  falling: {
+                    state: false,
+                    count: 0,
+                    limit: 25,
+                  },
+                }
+              };
+              originCellRef.levelData = originLevelData.join("_");
+
+            }
+
+
+            break;
+          }
+        }
+
+        // if (cell.obstacle.moving.step >= 1) {
+        //
+        // }
+
+      }
+
+      // step falling.count
+      if (cell.obstacle.state === true && cell.obstacle.moving.falling.state === true) {
+        // console.log('falling obstacle');
+        if (cell.obstacle.moving.falling.count < cell.obstacle.moving.falling.limit) {
+          cell.obstacle.moving.falling.count++;
+          // console.log('obstacle falling in bounds a count',cell.obstacle.moving.falling.count,'position',cell.obstacle.moving.nextPosition);
+        }
+        if (cell.obstacle.moving.falling.count >= cell.obstacle.moving.falling.limit) {
+          let cell2 = cell;
+          let levelData = cell2.levelData.split("_");
+          levelData[1] = "*";
+          cell.levelData = levelData.join("_");
+          cell.obstacle = {
+            state: false,
+            name: '',
+            type: '',
+            hp: 0,
+            destructible: {
+              state: false,
+              weapons: [],
+              leaveRubble: false,
+            },
+            locked: {
+              state: false,
+              key: '',
+            },
+            weight: 1,
+            height: 0.5,
+            items: [],
+            effects: [],
+            moving: {
+              state: false,
+              step: 0,
+              origin: {
+                number: {
+                  x: undefined,
+                  y: undefined,
+                },
+                center: {
+                  x: undefined,
+                  y: undefined,
+                },
+              },
+              destination: {
+                number: {
+                  x: undefined,
+                  y: undefined,
+                },
+                center: {
+                  x: undefined,
+                  y: undefined,
+                },
+              },
+              currentPosition: {
+                x: undefined,
+                y: undefined,
+              },
+              nextPosition: {
+                x: undefined,
+                y: undefined,
+              },
+              moveSpeed: 0,
+              pushable: true,
+              pushed: false,
+              pusher: undefined,
+              falling: {
+                state: false,
+                count: 0,
+                limit: 10,
+              },
+            }
+          };
+          // console.log('obstacle falling in bounds over');
+        }
+      }
+    }
+    for(const elem of this.obstaclesOutOfBoundsFall) {
+      if (elem.moving.falling.count < elem.moving.falling.limit) {
+        elem.moving.falling.count++;
+        // obstacle.moving.nextPosition.y += (obstacle.moving.falling.count*5)
+        // console.log('obstacle falling out of bounds a count',elem.moving.falling.count,'position',elem.moving.nextPosition);
+      }
+      if (elem.moving.falling.count >= elem.moving.falling.limit) {
+        // console.log('obstacle falling out of bounds over');
+        let index = this.obstaclesOutOfBoundsFall.indexOf(elem)
+        this.obstaclesOutOfBoundsFall.splice(index,1)
+      }
+    }
+    // OBSTACLE/BARRIER DAMAGE/DESTROY
+    for(const cell of this.obstacleBarrierToDestroy) {
+      if (cell.limit > 0) {
+        if (cell.count < cell.limit) {
+          cell.count++
+        }
+        else if (cell.count >= cell.limit) {
+          let index = this.obstacleBarrierToDestroy.indexOf(cell)
+          this.obstacleBarrierToDestroy.splice(index,1)
+        }
+      }
+    }
+
+    // ITEMS TO DROP
+    // -call itemdrop crementer and set position like w/ movement
+    for(const cell of this.obstacleItemsToDrop) {
+      if (cell.limit > 0) {
+        if (cell.count < cell.limit) {
+          cell.count++
+        }
+        else if (cell.count >= cell.limit) {
+          let index = this.obstacleItemsToDrop.indexOf(cell)
+          this.obstacleItemsToDrop.splice(index,1)
+        }
+      }
+    }
+
+    // ITEMS FALLING/SINKING
+
 
 
     // STATUS DISPLAY STEPPER!!
@@ -22176,7 +22190,7 @@ class App extends Component {
     for (const player of this.players) {
       player.ghost.state = false;
       player.speed.move = .1;
-      player.hp = 5;
+      player.hp = 2;
       player.drowning = false;
       player.action = 'idle';
       player.dodging = {
