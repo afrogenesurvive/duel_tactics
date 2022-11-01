@@ -8231,7 +8231,6 @@ class App extends Component {
                     // console.log('attack defended by ',player.target.occupant.player,'target defending?',this.players.[player.target.occupant.player-1].defending.state,'against plyr ',player.number);
 
 
-
                     let shouldDefend = false;
                     let bluntAttackBreakDefense = false;
 
@@ -12515,6 +12514,9 @@ class App extends Component {
 
 
   }
+
+
+
   drawPlayerStep = (playerNumber, canvas, context, canvas2, context2) => {
     // console.log('drawing player step',playerNumber);
 
