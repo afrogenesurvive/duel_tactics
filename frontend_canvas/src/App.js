@@ -98,6 +98,17 @@ import defendFeintIndicate from './assets/indicators/defendFeint.png';
 import defendFeintIndicate2 from './assets/indicators/defendFeint2.png';
 
 
+import defendFeintIndicate3 from './assets/indicators/defendFeint3.png';
+import attackFeintIndicate3 from './assets/indicators/attackFeint3.png';
+import dodgeFeintIndicate from './assets/indicators/dodgeFeint.png';
+import dodgeFeintIndicate2 from './assets/indicators/dodgeFeint2.png';
+
+import cellVoidingIndicate from './assets/indicators/cellVoiding.png';
+import cellVoidingIndicate2 from './assets/indicators/cellVoiding2.png';
+import boltDefendIndicate2 from './assets/indicators/boltDefend2.png';
+import flankIndicate2 from './assets/indicators/flanking2.png';
+
+
 import preAttack2Indicate from './assets/indicators/preAttack2.png';
 import preAction1Indicate from './assets/indicators/preAction1.png';
 import preAction2Indicate from './assets/indicators/preAction2.png';
@@ -7218,7 +7229,7 @@ class App extends Component {
               // CROSSBOW BLUNT ATTAK
               if (player.currentWeapon.type === 'crossbow' && player.bluntAttack === true && player.target.occupant.type === 'player') {
                 console.log('blunt attack w/ crossbow');
-                if (this.players.[player.target.occupant.player-1].defending.state === false || this.players.[player.target.occupant.player-1].direction === player.direction) {
+                if (this.players[player.target.occupant.player-1].defending.state === false || this.players[player.target.occupant.player-1].direction === player.direction) {
                   player.popups.push(
                     {
                       state: false,
@@ -7390,8 +7401,19 @@ class App extends Component {
                 if (player.target.occupant.type === 'player') {
 
 
+                  let targetDefending = false;
+                  let defendType = this.players.currentWeapon.type;
+                  if (this.players[player.target.occupant.player-1].currentWeapon.name === "") {
+                    defendType  = "unarmed";
+                  }
+                  let defendPeak = this.defendAnimRef.peak[defendType];
+                  if (this.players[player.target.occupant.player-1].defending.count === defendPeak || this.players[player.target.occupant.player-1].defendDecay.state === true) {
+                    targetDefending = true;
+                    console.log('valid defend');
+                  }
+
                   // TARGET PLAYER ISN'T DEFENDING OR BACK TURNED, ATTACK SUCCESS!!
-                  if (this.players.[player.target.occupant.player-1].defending.state === false || this.players.[player.target.occupant.player-1].direction === player.direction) {
+                  if (targetDefending !== true || this.players[player.target.occupant.player-1].direction === player.direction) {
                     // console.log('attack success');
 
                     player.success.attackSuccess = {
@@ -7403,7 +7425,7 @@ class App extends Component {
 
                     // BACK ATTACK CHECK!
                     let backAttack = false;
-                    if (this.players.[player.target.occupant.player-1].direction === player.direction) {
+                    if (this.players[player.target.occupant.player-1].direction === player.direction) {
                       // console.log('back attack!!');
                       backAttack = true;
                     }
@@ -7421,9 +7443,9 @@ class App extends Component {
 
 
                     // ATTACK STRENGTH ARMOR MOD CHECK!
-                    if (this.players.[player.target.occupant.player-1].currentArmor.name !== '') {
+                    if (this.players[player.target.occupant.player-1].currentArmor.name !== '') {
                       // console.log('opponent armour found');
-                      switch(this.players.[player.target.occupant.player-1].currentArmor.effect) {
+                      switch(this.players[player.target.occupant.player-1].currentArmor.effect) {
                         case 'dblhit-5' :
                           doubleHitChance = player.crits.doubleHit+5;
                         break;
@@ -7798,7 +7820,7 @@ class App extends Component {
 
                   // ATTACK DEFENDED!!
                   else {
-                    // console.log('attack defended by ',player.target.occupant.player,'target defending?',this.players.[player.target.occupant.player-1].defending.state,'against plyr ',player.number);
+                    // console.log('attack defended by ',player.target.occupant.player,'target defending?',this.players[player.target.occupant.player-1].defending.state,'against plyr ',player.number);
 
 
                     let shouldDefend = false;
@@ -8107,7 +8129,7 @@ class App extends Component {
 
                         }
                       )
-                      // if (this.players.[player.target.occupant.player-1].direction === player.direction) {
+                      // if (this.players[player.target.occupant.player-1].direction === player.direction) {
                       //   console.log('defend the rear!!');
                       // }
 
@@ -12038,14 +12060,25 @@ class App extends Component {
                     )
 
 
+
+                    let targetDefending = false;
+                    let defendType = plyr.currentWeapon.type;
+                    if ( plyr.currentWeapon.name === "") {
+                      defendType  = "unarmed";
+                    }
+                    let defendPeak = this.defendAnimRef.peak[defendType];
+                    if (plyr.defending.count === defendPeak || plyr.defendDecay.state === true) {
+                      targetDefending = true;
+                    }
+
                     if (
-                      this.players.[plyr.number-1].defending.state === false ||
-                      this.players.[plyr.number-1].direction === bolt.direction
+                      targetDefending !== true ||
+                      this.players[plyr.number-1].direction === bolt.direction
                     ) {
                       // console.log('attack success');
 
                       let backAttack = false;
-                      if (this.players.[plyr.number-1].direction === bolt.direction) {
+                      if (this.players[plyr.number-1].direction === bolt.direction) {
                         console.log('back attack');
                         backAttack = true;
                       }
@@ -12068,9 +12101,9 @@ class App extends Component {
                       }
 
                       // FACTOR OPPONENT ARMOUR
-                      if (this.players.[plyr.number-1].currentArmor.name !== '') {
+                      if (this.players[plyr.number-1].currentArmor.name !== '') {
                         // console.log('opponent armour found');
-                        switch(this.players.[plyr.number-1].currentArmor.effect) {
+                        switch(this.players[plyr.number-1].currentArmor.effect) {
                           case 'dblhit-5' :
                             doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+5;
                           break;
@@ -12099,6 +12132,28 @@ class App extends Component {
                       // doubleHit = 2;
                       // singleHit = 2;
                       // ----------------
+
+
+                      // DODGED CHECK!
+                      if (plyr.dodging.state === true) {
+
+                        let canDodge = true;
+                        if (backAttack === true && plyr.crits.dodge < 4) {
+                          canDodge = false
+                        }
+
+                        if (canDodge === true) {
+
+                          console.log('you dodged a bolt');
+                          singleHit = 2;
+                          doubleHit = 2;
+                          if (plyr.bluntAttack === true) {
+                            plyr.bluntAttack = false;
+                          }
+
+                        }
+                      }
+
 
                       let miss;
                       if (doubleHit === 1) {
@@ -12154,12 +12209,12 @@ class App extends Component {
                         }
                       }
 
-                      if (this.players.[plyr.number-1].hp === 1) {
-                        this.players.[plyr.number-1].speed.move = .05;
+                      if (this.players[plyr.number-1].hp === 1) {
+                        this.players[plyr.number-1].speed.move = .05;
                       }
 
-                      if (this.players.[plyr.number-1].hp <= 0) {
-                        this.killPlayer(this.players.[plyr.number-1]);
+                      if (this.players[plyr.number-1].hp <= 0) {
+                        this.killPlayer(this.players[plyr.number-1]);
 
                         let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
                         this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
@@ -12169,7 +12224,7 @@ class App extends Component {
 
                       }
                       else if (miss !== true) {
-                        this.players.[plyr.number-1].action = 'deflected';
+                        this.players[plyr.number-1].action = 'deflected';
 
                         this.players[plyr.number-1].defending = {
                           state: false,
@@ -12182,17 +12237,17 @@ class App extends Component {
                           limit: this.players[plyr.number-1].attacking.limit,
                         }
 
-                        this.players.[plyr.number-1].success.deflected = {
+                        this.players[plyr.number-1].success.deflected = {
                           state: true,
                           count: 1,
                           limit: this.deflectedLengthRef.attacked,
-                          predeflect: this.players.[plyr.number-1].success.deflected.predeflect,
+                          predeflect: this.players[plyr.number-1].success.deflected.predeflect,
                           type: 'attacked',
                         };
 
 
-                        if (this.aiDeflectedCheck.includes(this.players.[plyr.number-1].number) !== true) {
-                          this.aiDeflectedCheck.push(this.players.[plyr.number-1].number)
+                        if (this.aiDeflectedCheck.includes(this.players[plyr.number-1].number) !== true) {
+                          this.aiDeflectedCheck.push(this.players[plyr.number-1].number)
                         }
 
 
@@ -12201,15 +12256,16 @@ class App extends Component {
 
                     }
 
+
                     // ATTACK DEFENDED!!
                     else {
 
 
                       // CAN'T DEFLECT BOLT UNARMED
-                      if (this.players.[plyr.number-1].currentWeapon.name === "") {
+                      if (this.players[plyr.number-1].currentWeapon.name === "") {
                         console.log('cant deflect bolt unarmed');
                         let backAttack = false;
-                        if (this.players.[plyr.number-1].direction === bolt.direction) {
+                        if (this.players[plyr.number-1].direction === bolt.direction) {
                           console.log('back attack');
                           backAttack = true;
                         }
@@ -12230,9 +12286,9 @@ class App extends Component {
                           }
                         }
 
-                        if (this.players.[plyr.number-1].currentArmor.name !== '') {
+                        if (this.players[plyr.number-1].currentArmor.name !== '') {
                           // console.log('opponent armour found');
-                          switch(this.players.[plyr.number-1].currentArmor.effect) {
+                          switch(this.players[plyr.number-1].currentArmor.effect) {
                             case 'dblhit-5' :
                               doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+5;
                             break;
@@ -12311,12 +12367,12 @@ class App extends Component {
                           }
                         }
 
-                        if (this.players.[plyr.number-1].hp === 1) {
-                          this.players.[plyr.number-1].speed.move = .05;
+                        if (this.players[plyr.number-1].hp === 1) {
+                          this.players[plyr.number-1].speed.move = .05;
                         }
 
-                        if (this.players.[plyr.number-1].hp <= 0) {
-                          this.killPlayer(this.players.[plyr.number-1]);
+                        if (this.players[plyr.number-1].hp <= 0) {
+                          this.killPlayer(this.players[plyr.number-1]);
 
                           let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
                           this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
@@ -12326,7 +12382,7 @@ class App extends Component {
 
                         }
                         else if (miss !== true) {
-                          this.players.[plyr.number-1].action = 'deflected';
+                          this.players[plyr.number-1].action = 'deflected';
 
                           this.players[plyr.number-1].defending = {
                             state: false,
@@ -12339,23 +12395,23 @@ class App extends Component {
                             limit: this.players[plyr.number-1].attacking.limit,
                           }
 
-                          this.players.[plyr.number-1].success.deflected = {
+                          this.players[plyr.number-1].success.deflected = {
                             state: true,
                             count: 1,
                             limit: this.deflectedLengthRef.attacked,
-                            predeflect: this.players.[plyr.number-1].success.deflected.predeflect,
+                            predeflect: this.players[plyr.number-1].success.deflected.predeflect,
                             type: 'attacked',
                           };
 
 
-                          if (this.aiDeflectedCheck.includes(this.players.[plyr.number-1].number) !== true) {
-                            this.aiDeflectedCheck.push(this.players.[plyr.number-1].number)
+                          if (this.aiDeflectedCheck.includes(this.players[plyr.number-1].number) !== true) {
+                            this.aiDeflectedCheck.push(this.players[plyr.number-1].number)
                           }
 
 
                         }
                       } else {
-                        // console.log('bullet doged');
+                        console.log('bullet blocked');
 
                         this.boltDeflectAnim = {
                           position: {
@@ -12367,10 +12423,10 @@ class App extends Component {
                           limit: this.boltDeflectAnim.limit,
                         }
 
-                        this.players.[plyr.number-1].success.defendSuccess = {
+                        this.players[plyr.number-1].success.defendSuccess = {
                           state: true,
                           count: 1,
-                          limit: this.players.[plyr.number-1].success.defendSuccess.limit
+                          limit: this.players[plyr.number-1].success.defendSuccess.limit
                         }
 
                         if (!player.popups.find(x=> x.msg === "defendSuccess")) {
@@ -12395,19 +12451,19 @@ class App extends Component {
                         let deflectDefender = 0;
 
                         // PEAK DEFEND/PARRY!!
-                        if (this.players.[plyr.number-1].peakDefend === true) {
+                        if (this.players[plyr.number-1].peakDefend === true) {
                           console.log('peak bolt defend/parry');
                           deflectDefender = 0;
 
 
-                          this.players.[plyr.number-1].statusDisplay = {
+                          this.players[plyr.number-1].statusDisplay = {
                             state: true,
                             status: 'Parry!',
                             count: 1,
                             limit: this.players[player.number-1].statusDisplay.limit,
                           }
 
-                          this.players.[plyr.number-1].popups.push(
+                          this.players[plyr.number-1].popups.push(
                             {
                               state: false,
                               count: 0,
@@ -12426,14 +12482,14 @@ class App extends Component {
                           console.log('off peak bolt defend');
                           deflectDefender = this.rnJesus(1,this.players[plyr.number-1].crits.guardBreak);
 
-                          this.players.[plyr.number-1].statusDisplay = {
+                          this.players[plyr.number-1].statusDisplay = {
                             state: true,
                             status: 'Defend',
                             count: 1,
                             limit: this.players[player.number-1].statusDisplay.limit,
                           }
 
-                          this.players.[plyr.number-1].popups.push(
+                          this.players[plyr.number-1].popups.push(
                             {
                               state: false,
                               count: 0,
@@ -12489,13 +12545,11 @@ class App extends Component {
                   // bolt.kill = true;
                 }
 
-
                 else if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
 
                   this.attackCellContents('bolt',this.players[bolt.owner-1],infoCell,undefined,undefined,bolt)
                   // bolt.kill = true;
                 }
-
 
               }
               else {
@@ -19222,7 +19276,8 @@ class App extends Component {
     // var image64 = b64start + svg64;
     // this.refs.popupProgressImg.src = image64;
 
-    console.log("playerPopupProgressCalc perc: ",((100-perc)/100).toFixed(2) ,(perc/100).toFixed(2));
+    // console.log("playerPopupProgressCalc perc: ",((100-perc)/100).toFixed(2) ,(perc/100).toFixed(2));
+
     // return (100-perc)/100;
     return -(perc/100).toFixed(2);
 
@@ -28377,6 +28432,13 @@ class App extends Component {
       attackFeint2: this.refs.attackFeintIndicate2,
       defendFeint: this.refs.defendFeintIndicate,
       defendFeint2: this.refs.defendFeintIndicate2,
+      defendFeint3: this.refs.defendFeintIndicate3,
+      dodgeFeint: this.refs.dodgeFeintIndicate,
+      dodgeFeint2: this.refs.dodgeFeintIndicate2,
+      boltDefend: this.refs.boltDefendIndicate,
+      flanking2: this.refs.flankIndicate2,
+      cellVoiding: this.refs.cellVoidingIndicate,
+      cellVoiding2: this.refs.cellVoidingIndicate2,
     };
     this.indicatorImgs = {
       preAttack: this.refs.preAttackIndicate,
@@ -36976,8 +37038,17 @@ class App extends Component {
           <img src={dodgeIndicate2} className="hidden playerImgs" ref="dodgeIndicate2" id="dodgeIndicate2" alt="..." />
           <img src={attackFeintIndicate} className="hidden playerImgs" ref="attackFeintIndicate" id="attackFeintIndicate" alt="..." />
           <img src={attackFeintIndicate2} className="hidden playerImgs" ref="attackFeintIndicate2" id="attackFeintIndicate2" alt="..." />
+          <img src={attackFeintIndicate3} className="hidden playerImgs" ref="attackFeintIndicate3" id="attackFeintIndicate3" alt="..." />
           <img src={defendFeintIndicate} className="hidden playerImgs" ref="defendFeintIndicate" id="defendFeintIndicate" alt="..." />
           <img src={defendFeintIndicate2} className="hidden playerImgs" ref="defendFeintIndicate2" id="defendFeintIndicate2" alt="..." />
+
+          <img src={defendFeintIndicate3} className="hidden playerImgs" ref="defendFeintIndicate3" id="defendFeintIndicate3" alt="..." />
+          <img src={dodgeFeintIndicate} className="hidden playerImgs" ref="dodgeFeintIndicate" id="dodgeFeintIndicate" alt="..." />
+          <img src={dodgeFeintIndicate2} className="hidden playerImgs" ref="dodgeFeintIndicate2" id="dodgeFeintIndicate2" alt="..." />
+          <img src={boltDefendIndicate} className="hidden playerImgs" ref="boltDefendIndicate" id="boltDefendIndicate" alt="..." />
+          <img src={flankIndicate2} className="hidden playerImgs" ref="flankIndicate2" id="flankIndicate2" alt="..." />
+          <img src={cellVoidingIndicate} className="hidden playerImgs" ref="cellVoidingIndicate" id="cellVoidingIndicate" alt="..." />
+          <img src={cellVoidingIndicate2} className="hidden playerImgs" ref="cellVoidingIndicate2" id="cellVoidingIndicate2" alt="..." />
 
 
           <img src={sword} className='hidden playerImgs' ref="itemSword" id="itemSword" alt="logo" />
