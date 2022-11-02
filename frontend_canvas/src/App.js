@@ -65,6 +65,7 @@ import attackUnarmedIndicate from './assets/items/unarmed.png';
 import attackBluntIndicate from './assets/indicators/blunt.png';
 import attackSuccessIndicate from './assets/indicators/attackSuccess.png';
 import missedIndicate from './assets/indicators/miss.png';
+import missedIndicate2 from './assets/indicators/miss2.png';
 import defendIndicate from './assets/indicators/defend.png';
 import defendIndicate1 from './assets/indicators/defend3.png';
 import defendIndicate2 from './assets/indicators/defend4.png';
@@ -81,6 +82,21 @@ import deathIndicate from './assets/indicators/death.png';
 import preAttackIndicate from './assets/indicators/preAttack.png';
 import healIndicate from './assets/indicators/healIndicate.png';
 
+import prePushIndicate from './assets/indicators/prePush.png';
+import canPushIndicate from './assets/indicators/canPush.png';
+import noPushingIndicate from './assets/indicators/noPushing.png';
+import pushingIndicate from './assets/indicators/pushing.png';
+import prePullIndicate from './assets/indicators/prePull.png';
+import canPullIndicate from './assets/indicators/canPull.png';
+import noPullingIndicate from './assets/indicators/noPulling.png';
+import pullingIndicate from './assets/indicators/pulling.png';
+import pushedPulledIndicate from './assets/indicators/pushedPulled.png';
+import unbreakableIndicate from './assets/indicators/unbreakable.png';
+import attackFeintIndicate from './assets/indicators/attackFeint.png';
+import attackFeintIndicate2 from './assets/indicators/attackFeint2.png';
+import defendFeintIndicate from './assets/indicators/defendFeint.png';
+import defendFeintIndicate2 from './assets/indicators/defendFeint2.png';
+
 
 import preAttack2Indicate from './assets/indicators/preAttack2.png';
 import preAction1Indicate from './assets/indicators/preAction1.png';
@@ -89,6 +105,7 @@ import attackBreakIndicate from './assets/indicators/attackBreak.png';
 import defendBreakIndicate from './assets/indicators/defendBreak.png';
 import boltDefendIndicate from './assets/indicators/boltDefend.png';
 import dodgeIndicate from './assets/indicators/dodge.png';
+import dodgeIndicate2 from './assets/indicators/dodge2.png';
 import fallingIndicate from './assets/indicators/falling.png';
 import completeMissionIndicate from './assets/indicators/complete.png';
 import flankIndicate from './assets/indicators/flank.png';
@@ -28344,6 +28361,22 @@ class App extends Component {
       helmet: this.refs.itemHelmet1,
       mail: this.refs.itemMail1,
       greaves: this.refs.itemGreaves1,
+      missedAttack2: this.refs.missedIndicate2,
+      prePush: this.refs.prePushIndicate,
+      canPush: this.refs.canPushIndicate,
+      noPushing: this.refs.noPushingIndicate,
+      pushing: this.refs.pushingIndicate,
+      prePull: this.refs.prePullIndicate,
+      canPull: this.refs.canPullIndicate,
+      noPulling: this.refs.noPullingIndicate,
+      pulling: this.refs.pullingIndicate,
+      pushedPulled: this.refs.pushedPulledIndicate,
+      unbreakable: this.refs.unbreakableIndicate,
+      dodging2: this.refs.dodgeIndicate2,
+      attackFeint: this.refs.attackFeintIndicate,
+      attackFeint2: this.refs.attackFeintIndicate2,
+      defendFeint: this.refs.defendFeintIndicate,
+      defendFeint2: this.refs.defendFeintIndicate2,
     };
     this.indicatorImgs = {
       preAttack: this.refs.preAttackIndicate,
@@ -36927,6 +36960,24 @@ class App extends Component {
           <img src={attackParriedIndicate} className="hidden playerImgs" ref="attackParriedIndicate" id="attackParriedIndicate" alt="..." />
           <img src={inventoryFullIndicate} className="hidden playerImgs" ref="inventoryFullIndicate" id="inventoryFullIndicate" alt="..." />
           <img src={outOfAmmoIndicate} className="hidden playerImgs" ref="outOfAmmoIndicate" id="outOfAmmoIndicate" alt="..." />
+
+
+          <img src={missedIndicate2} className="hidden playerImgs" ref="missedIndicate2" id="missedIndicate2" alt="..." />
+          <img src={prePushIndicate} className="hidden playerImgs" ref="prePushIndicate" id="prePushIndicate" alt="..." />
+          <img src={canPushIndicate} className="hidden playerImgs" ref="canPushIndicate" id="canPushIndicate" alt="..." />
+          <img src={noPushingIndicate} className="hidden playerImgs" ref="noPushingIndicate" id="noPushingIndicate" alt="..." />
+          <img src={pushingIndicate} className="hidden playerImgs" ref="pushingIndicate" id="pushingIndicate" alt="..." />
+          <img src={prePullIndicate} className="hidden playerImgs" ref="prePullIndicate" id="prePullIndicate" alt="..." />
+          <img src={canPullIndicate} className="hidden playerImgs" ref="canPullIndicate" id="canPullIndicate" alt="..." />
+          <img src={noPullingIndicate} className="hidden playerImgs" ref="noPullingIndicate" id="noPullingIndicate" alt="..." />
+          <img src={pullingIndicate} className="hidden playerImgs" ref="pullingIndicate" id="pullingIndicate" alt="..." />
+          <img src={pushedPulledIndicate} className="hidden playerImgs" ref="pushedPulledIndicate" id="pushedPulledIndicate" alt="..." />
+          <img src={unbreakableIndicate} className="hidden playerImgs" ref="unbreakableIndicate" id="unbreakableIndicate" alt="..." />
+          <img src={dodgeIndicate2} className="hidden playerImgs" ref="dodgeIndicate2" id="dodgeIndicate2" alt="..." />
+          <img src={attackFeintIndicate} className="hidden playerImgs" ref="attackFeintIndicate" id="attackFeintIndicate" alt="..." />
+          <img src={attackFeintIndicate2} className="hidden playerImgs" ref="attackFeintIndicate2" id="attackFeintIndicate2" alt="..." />
+          <img src={defendFeintIndicate} className="hidden playerImgs" ref="defendFeintIndicate" id="defendFeintIndicate" alt="..." />
+          <img src={defendFeintIndicate2} className="hidden playerImgs" ref="defendFeintIndicate2" id="defendFeintIndicate2" alt="..." />
 
 
           <img src={sword} className='hidden playerImgs' ref="itemSword" id="itemSword" alt="logo" />
