@@ -7402,7 +7402,7 @@ class App extends Component {
 
 
                   let targetDefending = false;
-                  let defendType = this.players.currentWeapon.type;
+                  let defendType = this.players[player.target.occupant.player-1].currentWeapon.type;
                   if (this.players[player.target.occupant.player-1].currentWeapon.name === "") {
                     defendType  = "unarmed";
                   }
@@ -12040,6 +12040,7 @@ class App extends Component {
                 }
               }
 
+              let dodged = false;
               if (fwdBarrier !== true) {
                 for (const plyr of this.players) {
                   if (
@@ -12135,6 +12136,7 @@ class App extends Component {
 
 
                       // DODGED CHECK!
+
                       if (plyr.dodging.state === true) {
 
                         let canDodge = true;
@@ -12143,7 +12145,7 @@ class App extends Component {
                         }
 
                         if (canDodge === true) {
-
+                          dodged = true;
                           console.log('you dodged a bolt');
                           singleHit = 2;
                           doubleHit = 2;
@@ -12530,7 +12532,10 @@ class App extends Component {
 
                     }
 
-                    bolt.kill = true;
+                    if (dodged !== true) {
+                        bolt.kill = true;
+                    }
+
 
                   }
                 }
