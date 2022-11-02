@@ -2704,15 +2704,6 @@ class App extends Component {
     };
     this.projectiles = [];
     this.projectileSpeed = .1;
-    this.boltDeflectAnim = {
-      position: {
-        x: 0,
-        y: 0,
-      },
-      state: false,
-      count: 0,
-      limit: 10,
-    };
     this.cellsUnderAttack = [];
     this.cellsUnderPreAttack = [];
     this.cellsToHighlight = [];
@@ -7697,7 +7688,7 @@ class App extends Component {
                           limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
                           type: '',
                           position: '',
-                          msg: 'missedAttack',
+                          msg: 'missedAttack2',
                           img: '',
 
                         }
@@ -8356,7 +8347,6 @@ class App extends Component {
 
                         }
 
-
                         if (this.aiDeflectedCheck.includes(player.number) !== true) {
                           this.aiDeflectedCheck.push(player.number)
                         }
@@ -8439,7 +8429,7 @@ class App extends Component {
                           limit: 25,
                           type: '',
                           position: '',
-                          msg: 'missedAttack',
+                          msg: 'missedAttack2',
                           img: '',
 
                         }
@@ -26222,7 +26212,7 @@ class App extends Component {
                   limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
                   type: '',
                   position: '',
-                  msg: 'missedAttack',
+                  msg: 'missedAttack2',
                   img: '',
 
                 }
@@ -28407,6 +28397,7 @@ class App extends Component {
       helmet: this.refs.itemHelmet1,
       mail: this.refs.itemMail1,
       greaves: this.refs.itemGreaves1,
+
       missedAttack2: this.refs.missedIndicate2,
       prePush: this.refs.prePushIndicate,
       canPush: this.refs.canPushIndicate,
