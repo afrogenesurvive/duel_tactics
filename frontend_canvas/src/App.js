@@ -12412,7 +12412,8 @@ class App extends Component {
 
 
                         }
-                      } else {
+                      }
+                      else {
                         console.log('bullet blocked');
 
                         this.boltDeflectAnim = {
@@ -12453,7 +12454,8 @@ class App extends Component {
                         let deflectDefender = 0;
 
                         // PEAK DEFEND/PARRY!!
-                        if (this.players[plyr.number-1].peakDefend === true) {
+                        console.log('ccc',this.players[plyr.number-1].defendPeak,plyr.defendPeak,plyr.defending.count,defendPeak);
+                        if (this.players[plyr.number-1].peakDefend === true || plyr.defending.count === defendPeak) {
                           console.log('peak bolt defend/parry');
                           deflectDefender = 0;
 
