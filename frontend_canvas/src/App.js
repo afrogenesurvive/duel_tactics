@@ -12416,15 +12416,6 @@ class App extends Component {
                       else {
                         console.log('bullet blocked');
 
-                        this.boltDeflectAnim = {
-                          position: {
-                            x: bolt.currentPosition.center.x,
-                            y: bolt.currentPosition.center.y,
-                          },
-                          state: true,
-                          count: 1,
-                          limit: this.boltDeflectAnim.limit,
-                        }
 
                         this.players[plyr.number-1].success.defendSuccess = {
                           state: true,
@@ -12432,8 +12423,8 @@ class App extends Component {
                           limit: this.players[plyr.number-1].success.defendSuccess.limit
                         }
 
-                        if (!player.popups.find(x=> x.msg === "defendSuccess")) {
-                          player.popups.push(
+                        if (!plyr.popups.find(x=> x.msg === "defendSuccess")) {
+                          plyr.popups.push(
                             {
                               state: false,
                               count: 0,
@@ -12441,6 +12432,20 @@ class App extends Component {
                               type: '',
                               position: '',
                               msg: 'defendSuccess',
+                              img: '',
+
+                            }
+                          )
+                        }
+                        if (!plyr.popups.find(x=> x.msg === 'boltDefend2')) {
+                          plyr.popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit:25,
+                              type: '',
+                              position: '',
+                              msg: 'boltDefend2',
                               img: '',
 
                             }
@@ -12454,7 +12459,6 @@ class App extends Component {
                         let deflectDefender = 0;
 
                         // PEAK DEFEND/PARRY!!
-                        console.log('ccc',this.players[plyr.number-1].defendPeak,plyr.defendPeak,plyr.defending.count,defendPeak);
                         if (this.players[plyr.number-1].peakDefend === true || plyr.defending.count === defendPeak) {
                           console.log('peak bolt defend/parry');
                           deflectDefender = 0;
@@ -12606,22 +12610,6 @@ class App extends Component {
 
       if (bolt.type === 'arc' && bolt.moving.state === true && bolt.kill !== true) {
 
-      }
-    }
-    if (this.boltDeflectAnim.state === true) {
-      if (this.boltDeflectAnim.count < this.boltDeflectAnim.limit) {
-        this.boltDeflectAnim.count++;
-      }
-      if (this.boltDeflectAnim.count >= this.boltDeflectAnim.limit) {
-        this.boltDeflectAnim = {
-          position: {
-            x: 0,
-            y: 0,
-          },
-          state: false,
-          count: 0,
-          limit: this.boltDeflectAnim.limit,
-        }
       }
     }
 
@@ -16201,10 +16189,6 @@ class App extends Component {
              // this.testDraw.push({color:'green',x:bolt.currentPosition.center.x,y:bolt.currentPosition.center.y})
              context.drawImage(boltImg, bolt.currentPosition.center.x-15, bolt.currentPosition.center.y-15, 35,35);
           }
-        }
-        if (this.boltDeflectAnim.state === true) {
-          let boltDeflectImg = this.refs.boltDefendIndicate;
-          context.drawImage(boltDeflectImg, this.boltDeflectAnim.position.x+35, this.boltDeflectAnim.position.y-35, 35, 35);
         }
 
 
@@ -28442,7 +28426,7 @@ class App extends Component {
       defendFeint3: this.refs.defendFeintIndicate3,
       dodgeFeint: this.refs.dodgeFeintIndicate,
       dodgeFeint2: this.refs.dodgeFeintIndicate2,
-      boltDefend: this.refs.boltDefendIndicate,
+      boltDefend2: this.refs.boltDefendIndicate2,
       flanking2: this.refs.flankIndicate2,
       cellVoiding: this.refs.cellVoidingIndicate,
       cellVoiding2: this.refs.cellVoidingIndicate2,
@@ -37052,7 +37036,7 @@ class App extends Component {
           <img src={defendFeintIndicate3} className="hidden playerImgs" ref="defendFeintIndicate3" id="defendFeintIndicate3" alt="..." />
           <img src={dodgeFeintIndicate} className="hidden playerImgs" ref="dodgeFeintIndicate" id="dodgeFeintIndicate" alt="..." />
           <img src={dodgeFeintIndicate2} className="hidden playerImgs" ref="dodgeFeintIndicate2" id="dodgeFeintIndicate2" alt="..." />
-          <img src={boltDefendIndicate} className="hidden playerImgs" ref="boltDefendIndicate" id="boltDefendIndicate" alt="..." />
+          <img src={boltDefendIndicate2} className="hidden playerImgs" ref="boltDefendIndicate2" id="boltDefendIndicate" alt="..." />
           <img src={flankIndicate2} className="hidden playerImgs" ref="flankIndicate2" id="flankIndicate2" alt="..." />
           <img src={cellVoidingIndicate} className="hidden playerImgs" ref="cellVoidingIndicate" id="cellVoidingIndicate" alt="..." />
           <img src={cellVoidingIndicate2} className="hidden playerImgs" ref="cellVoidingIndicate2" id="cellVoidingIndicate2" alt="..." />
