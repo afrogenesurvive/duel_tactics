@@ -1476,8 +1476,8 @@ class App extends Component {
           count: 0,
           limit: 20,
           peak: {
-            start: 5,
-            end: 10,
+            start: 7,
+            end: 12,
           }
         },
         dodgeDirection: '',
@@ -1906,8 +1906,8 @@ class App extends Component {
           count: 0,
           limit: 20,
           peak: {
-            start: 5,
-            end: 10,
+            start: 7,
+            end: 12,
           }
         },
         dodgeDirection: '',
@@ -6866,6 +6866,10 @@ class App extends Component {
               end: player.dodging.peak.end,
             }
           }
+
+          if (player.popups.find(x=>x.msg === 'dodging')) {
+            player.popups.splice(player.popups.findIndex(x=>x.msg === 'dodging'),1)
+          }
         }
 
 
@@ -8762,9 +8766,15 @@ class App extends Component {
 
           let startMod = player.crits.dodge;
           let endMod = player.crits.dodge;
-          // if (player.crits.dodge > 4) {
-          //   player.crits.dodge = 4;
-          // }
+          if (player.crits.dodge > 5) {
+            player.crits.dodge = 5;
+          }
+          if (player.dodging.peak.start - startMod < 2) {
+            startMod = player.dodging.peak.start-2;
+          }
+          if ((player.dodging.peak.end + endMod) > player.dodging.limit-2) {
+            endMod = player.dodging.limit-(2+player.dodging.peak.end);
+          }
 
           // HAVE STAMIN FOR DODGE
           if (player.dodging.count === 0) {
@@ -19098,9 +19108,6 @@ class App extends Component {
     // plyr.prePush.state === true ||
     // plyr.prePull.state === true ||
     // plyr.dodging.state === true ||
-    // plyr.action === 'dodging' ||
-    // plyr.action === 'defending' ||
-    // plyr.action === 'attacking' ||
     // plyr.flanking.state === true
 
 
@@ -19125,7 +19132,7 @@ class App extends Component {
           phase = "peak";
         }
         if (player.defendDecay.count < player.defendDecay.limit && player.defendDecay.count > 5) {
-          phase = "cooldown"
+          phase = "cooldown";
           perc = (player.defendDecay.count/player.defendDecay.limit)*100;
         }
         if (player.defendDecay.count >= player.defendDecay.limit) {
@@ -19165,37 +19172,59 @@ class App extends Component {
 
     }
     if (player.action === "dodging") {
-      console.log('popup progress dodging',this.time);
+      // console.log('popup progress dodging',this.time);
+      let dodgeCondition = false;
       if (player.dodging.countState === true && player.dodging.count <= (player.dodging.peak.start - player.crits.dodge) && this.keyPressed[player.number-1].dodge === true) {
-        console.log('dodge condition: true');
+        // console.log('dodge condition 1: true');
+        dodgeCondition = true;
       }
       if (player.dodging.countState === true && player.dodging.count > (player.dodging.peak.start - player.crits.dodge)) {
-        console.log('dodge condition: true');
+        // console.log('dodge condition 2: true');
+        dodgeCondition = true;
       }
+
       let startMod = player.crits.dodge;
       let endMod = player.crits.dodge;
-      if (player.stamina.current - this.staminaCostRef.dodge.peak >= 0) {
-        console.log('start count/windup');
+      if (player.crits.dodge > 5) {
+        player.crits.dodge = 5;
       }
-      if (player.dodging.count >= 1 && player.dodging.count < player.dodging.limit) {
-        console.log('continue count/ windup');
+      if (player.dodging.peak.start - startMod < 2) {
+        startMod = player.dodging.peak.start-2;
       }
-      if (player.dodging.count === (player.dodging.peak.start - startMod)) {
-        console.log('start dodge peak');
+      if ((player.dodging.peak.end + endMod) > player.dodging.limit-2) {
+        endMod = player.dodging.limit-(2+player.dodging.peak.end);
       }
-      if (player.dodging.count > (player.dodging.peak.start - startMod) && player.dodging.count < (player.dodging.peak.end + endMod)) {
-        console.log('continue peak dodge');
+      if (dodgeCondition === true) {
+
       }
-      if (player.dodging.count < (player.dodging.peak.start - startMod)) {
-        console.log('pre peak');
+
+      if (player.dodging.count === 0) {
+        // console.log('windup',player.dodging.count);
+        phase = "windup";
+        perc = (player.dodging.count/(player.dodging.peak.start - startMod))*100
       }
+      if ( player.dodging.count >= 1 && player.dodging.count < (player.dodging.peak.start - startMod)) {
+        // console.log('windup start:',1,'count:',player.dodging.count,'limit:',(player.dodging.peak.start - startMod));
+        phase = "windup";
+        perc = (player.dodging.count/(player.dodging.peak.start - startMod))*100;
+      }
+      if (player.dodging.count >= (player.dodging.peak.start - startMod) && player.dodging.count < (player.dodging.peak.end + endMod)) {
+        // console.log('peak start:',(player.dodging.peak.start - startMod),'count:',player.dodging.count,'limit:',(player.dodging.peak.end + endMod));
+        phase = "peak";
+      }
+
       if (player.dodging.count > (player.dodging.peak.end + endMod)) {
-        console.log('post peak');
+        // console.log('cooldown start:',(player.dodging.peak.end + endMod),'count:',player.dodging.count,'limit:',player.dodging.limit);
+        phase = "cooldown";
+        // perc = ((player.dodging.count-(player.dodging.peak.end + endMod))/(player.dodging.limit-(player.dodging.peak.end + endMod)))*100;
+        perc = (player.dodging.count/player.dodging.limit)*100;
       }
       if (player.dodging.count >= player.dodging.limit) {
-        console.log('end');
+        // console.log('end count',player.dodging.count);
+        phase = "off";
       }
     }
+    
 
 
     if (phase === 'windup') {
@@ -19212,7 +19241,8 @@ class App extends Component {
       emptyPath = true;
     }
     if (phase === "off") {
-      perc = 100;
+      perc = 0;
+      // perc = 100;
       path.setAttribute("d",arr.join(" "));
       fillPath = false;
       emptyPath = false;
@@ -29586,8 +29616,8 @@ class App extends Component {
             count: 0,
             limit: 20,
             peak: {
-              start: 5,
-              end: 10,
+              start: 7,
+              end: 12,
             }
           },
           dodgeDirection: '',
