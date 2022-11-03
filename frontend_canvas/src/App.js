@@ -6811,6 +6811,20 @@ class App extends Component {
           if (player.falling.state !== true && player.moving.state !== true) {
             player.action = 'idle';
           }
+          if (!player.popups.find(x=>x.msg === 'defendFeint3')) {
+            player.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: 20,
+                type: '',
+                position: '',
+                msg: 'defendFeint3',
+                img: '',
+
+              }
+            )
+          }
 
         }
 
@@ -6848,6 +6862,21 @@ class App extends Component {
               player.popups.splice(player.popups.findIndex(x=>x.msg === 'attacking'),1)
             }
 
+            if (!player.popups.find(x=>x.msg === 'attackFeint3')) {
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 20,
+                  type: '',
+                  position: '',
+                  msg: 'attackFeint3',
+                  img: '',
+
+                }
+              )
+            }
+
         }
 
 
@@ -6869,6 +6898,20 @@ class App extends Component {
 
           if (player.popups.find(x=>x.msg === 'dodging')) {
             player.popups.splice(player.popups.findIndex(x=>x.msg === 'dodging'),1)
+          }
+          if (!player.popups.find(x=>x.msg === 'dodgeFeint')) {
+            player.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: 20,
+                type: '',
+                position: '',
+                msg: 'dodgeFeint',
+                img: '',
+
+              }
+            )
           }
         }
 
@@ -19224,13 +19267,13 @@ class App extends Component {
     }
 
 
-    if (player.action === 'flanking';) {
+    if (player.action === 'flanking') {
       // player.flanking.state
       // player.flanking.step
 
       // set start flanking popups: start action, flanking
       // if step and state true, plyr flanking
-      //   check moving
+      //   check moving & strafe moving
     }
 
 
@@ -28502,6 +28545,7 @@ class App extends Component {
       dodging2: this.refs.dodgeIndicate2,
       attackFeint: this.refs.attackFeintIndicate,
       attackFeint2: this.refs.attackFeintIndicate2,
+      attackFeint3: this.refs.attackFeintIndicate3,
       defendFeint: this.refs.defendFeintIndicate,
       defendFeint2: this.refs.defendFeintIndicate2,
       defendFeint3: this.refs.defendFeintIndicate3,
