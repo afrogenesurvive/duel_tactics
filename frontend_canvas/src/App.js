@@ -9340,180 +9340,178 @@ class App extends Component {
             }
           }
         }
+        // START
         if (this.keyPressed[player.number-1].dodge === true ) {
 
 
           if (
-          this.keyPressed[player.number-1].north === true ||
-          this.keyPressed[player.number-1].south === true ||
-          this.keyPressed[player.number-1].east === true ||
-          this.keyPressed[player.number-1].west === true &&
-          player.strafing.state !== true &&
-          player.flanking.state !== true
-        ) {
+            this.keyPressed[player.number-1].north === true ||
+            this.keyPressed[player.number-1].south === true ||
+            this.keyPressed[player.number-1].east === true ||
+            this.keyPressed[player.number-1].west === true &&
+            player.strafing.state !== true &&
+            player.flanking.state !== true
+          ) {
 
-
-          this.players[player.number-1].dodging = {
-            countState: false,
-            state: false,
-            count: 0,
-            limit: player.dodging.limit,
-            peak: {
-              start: player.dodging.peak.start,
-              end: player.dodging.peak.end,
-            }
-          }
-
-
-          if (player.dodging.countState === true || player.dodging.state === true) {
-
-            this.players[player.number-1].stamina.current += this.staminaCostRef.dodge.pre;
-
-          }
-
-          if (keyPressedDirection !== player.direction) {
-
-            let canFlank = false;
-            switch(player.direction) {
-              case 'north' :
-                if (keyPressedDirection === 'east' || keyPressedDirection === 'west') {
-                  canFlank = true;
-                }
-              break;
-              case 'south' :
-                if (keyPressedDirection === 'east' || keyPressedDirection === 'west') {
-                  canFlank = true;
-                }
-              break;
-              case 'west' :
-                if (keyPressedDirection === 'north' || keyPressedDirection === 'south') {
-                  canFlank = true;
-                }
-              break;
-              case 'east' :
-                if (keyPressedDirection === 'north' || keyPressedDirection === 'south') {
-                  canFlank = true;
-                }
-              break;
+            // RESET DODGING
+            this.players[player.number-1].dodging = {
+              countState: false,
+              state: false,
+              count: 0,
+              limit: player.dodging.limit,
+              peak: {
+                start: player.dodging.peak.start,
+                end: player.dodging.peak.end,
+              }
             }
 
-            if (canFlank === true) {
 
-              if (player.stamina.current - this.staminaCostRef.flank >= 0) {
+            if (player.dodging.countState === true || player.dodging.state === true) {
 
-                // console.log('flanking step',keyPressedDirection,player.direction);
-                this.players[player.number-1].flanking.checking = true;
-                this.players[player.number-1].flanking.direction = keyPressedDirection;
-                this.players[player.number-1].flanking.preFlankDirection = player.direction;
+              this.players[player.number-1].stamina.current += this.staminaCostRef.dodge.pre;
 
-                let target = this.getTarget(player);
-                if (target.free === true ) {
+            }
 
-                  player.stamina.current = player.stamina.current - this.staminaCostRef.flank;
-                  // console.log('flank stam check1. cost',this.staminaCostRef.flank,'stam',player.stamina.current);
+            if (keyPressedDirection !== player.direction) {
 
-                  // this.players[player.number-1].dodging = {
-                  //   countState: false,
-                  //   state: false,
-                  //   count: 0,
-                  //   limit: player.dodging.limit,
-                  //   peak: {
-                  //     start: player.dodging.peak.start,
-                  //     end: player.dodging.peak.end,
-                  //   }
-                  // }
+              let canFlank = false;
+              switch(player.direction) {
+                case 'north' :
+                  if (keyPressedDirection === 'east' || keyPressedDirection === 'west') {
+                    canFlank = true;
+                  }
+                break;
+                case 'south' :
+                  if (keyPressedDirection === 'east' || keyPressedDirection === 'west') {
+                    canFlank = true;
+                  }
+                break;
+                case 'west' :
+                  if (keyPressedDirection === 'north' || keyPressedDirection === 'south') {
+                    canFlank = true;
+                  }
+                break;
+                case 'east' :
+                  if (keyPressedDirection === 'north' || keyPressedDirection === 'south') {
+                    canFlank = true;
+                  }
+                break;
+              }
+
+              if (canFlank === true) {
+
+                if (player.stamina.current - this.staminaCostRef.flank >= 0) {
+
+                  // console.log('flanking step',keyPressedDirection,player.direction);
+                  this.players[player.number-1].flanking.checking = true;
+                  this.players[player.number-1].flanking.direction = keyPressedDirection;
+                  this.players[player.number-1].flanking.preFlankDirection = player.direction;
+
+                  let target = this.getTarget(player);
+                  if (target.free === true ) {
+
+                    player.stamina.current = player.stamina.current - this.staminaCostRef.flank;
+                    // console.log('flank stam check1. cost',this.staminaCostRef.flank,'stam',player.stamina.current);
+
+                    // this.players[player.number-1].dodging = {
+                    //   countState: false,
+                    //   state: false,
+                    //   count: 0,
+                    //   limit: player.dodging.limit,
+                    //   peak: {
+                    //     start: player.dodging.peak.start,
+                    //     end: player.dodging.peak.end,
+                    //   }
+                    // }
 
 
-                  this.players[player.number-1].flanking.checking = false;
-                  this.players[player.number-1].flanking.state = true;
-                  this.players[player.number-1].flanking.step =  1;
-                  this.players[player.number-1].flanking.target1 = target.cell.number;
-                  // console.log('this.players[player.number-1].flanking.target1',this.players[player.number-1].flanking.target1);
-                  // player.action = 'moving';
+                    this.players[player.number-1].flanking.checking = false;
+                    this.players[player.number-1].flanking.state = true;
+                    this.players[player.number-1].flanking.step =  1;
+                    this.players[player.number-1].flanking.target1 = target.cell.number;
+                    // console.log('this.players[player.number-1].flanking.target1',this.players[player.number-1].flanking.target1);
+                    // player.action = 'moving';
 
-                  player.popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit: 25,
-                      type: '',
-                      position: '',
-                      msg: 'flanking',
-                      img: '',
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 25,
+                        type: '',
+                        position: '',
+                        msg: 'flanking',
+                        img: '',
+                      }
+                    )
+
+                    player.action = 'flanking';
+                    player.moving = {
+                      state: true,
+                      step: 0,
+                      course: '',
+                      origin: {
+                        number: {
+                          x: player.currentPosition.cell.number.x,
+                          y: player.currentPosition.cell.number.y
+                        },
+                        center: {
+                          x: player.currentPosition.cell.center.x,
+                          y: player.currentPosition.cell.center.y
+                        },
+                      },
+                      destination: target.cell.center
                     }
-                  )
+                    nextPosition = this.lineCrementer(player);
+                    player.nextPosition = nextPosition;
 
-                  player.action = 'flanking';
-                  player.moving = {
-                    state: true,
-                    step: 0,
-                    course: '',
-                    origin: {
-                      number: {
-                        x: player.currentPosition.cell.number.x,
-                        y: player.currentPosition.cell.number.y
-                      },
-                      center: {
-                        x: player.currentPosition.cell.center.x,
-                        y: player.currentPosition.cell.center.y
-                      },
-                    },
-                    destination: target.cell.center
-                  }
-                  nextPosition = this.lineCrementer(player);
-                  player.nextPosition = nextPosition;
+                    if (
+                      this.mouseOverCell.state === true &&
+                      this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
+                      this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
+                    ) {
+                      this.clicked.player = undefined;
+                    }
 
-                  if (
-                    this.mouseOverCell.state === true &&
-                    this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
-                    this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
-                  ) {
-                    this.clicked.player = undefined;
                   }
+                  else {
+                    // console.log('cancel flanking');
+                  }
+
 
                 }
                 else {
-                  // console.log('cancel flanking');
+                  // console.log('flank stam check. cost',this.staminaCostRef.flank,'stam',player.stamina.current);
+                  player.action = 'idle';
+                  player.stamina.current = 0;
+                  player.statusDisplay = {
+                    state: true,
+                    status: "Out of Stamina",
+                    count: 1,
+                    limit: player.statusDisplay.limit,
+                  }
+
+                  // player.popups.push(
+                  //   {
+                  //     state: false,
+                  //     count: 0,
+                  //     limit: 10,
+                  //     type: '',
+                  //     position: '',
+                  //     msg: 'outOfStamina',
+                  //     img: '',
+                  //   }
+                  // )
                 }
 
 
+              } else {
+                // console.log('cant flank2');
               }
-              else {
-                // console.log('flank stam check. cost',this.staminaCostRef.flank,'stam',player.stamina.current);
-                player.action = 'idle';
-                player.stamina.current = 0;
-                player.statusDisplay = {
-                  state: true,
-                  status: "Out of Stamina",
-                  count: 1,
-                  limit: player.statusDisplay.limit,
-                }
-
-                // player.popups.push(
-                //   {
-                //     state: false,
-                //     count: 0,
-                //     limit: 10,
-                //     type: '',
-                //     position: '',
-                //     msg: 'outOfStamina',
-                //     img: '',
-                //   }
-                // )
-              }
-
 
             } else {
               // console.log('cant flank2');
             }
-
-          } else {
-            // console.log('cant flank2');
           }
-
-
-
-        }
 
         }
 
@@ -19224,7 +19222,17 @@ class App extends Component {
         phase = "off";
       }
     }
-    
+
+
+    if (player.action === 'flanking';) {
+      // player.flanking.state
+      // player.flanking.step
+
+      // set start flanking popups: start action, flanking
+      // if step and state true, plyr flanking
+      //   check moving
+    }
+
 
 
     if (phase === 'windup') {
