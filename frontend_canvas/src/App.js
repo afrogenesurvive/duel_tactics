@@ -8772,6 +8772,7 @@ class App extends Component {
             if (player.stamina.current - this.staminaCostRef.dodge.peak >= 0) {
               player.stamina.current = player.stamina.current - this.staminaCostRef.dodge.peak;
               player.dodging.count++;
+              player.action = 'dodging';
             }
 
             else {
@@ -8796,41 +8797,59 @@ class App extends Component {
               }
             }
 
+            if (!player.popups.find(x => x.msg === "dodgeStart")) {
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 5,
+                  type: '',
+                  position: '',
+                  msg: 'dodgeStart',
+                  img: '',
 
-            // player.popups.push(
-            //   {
-            //     state: false,
-            //     count: 0,
-            //     limit: 5,
-            //     type: '',
-            //     position: '',
-            //     msg: 'dodgeStart',
-            //     img: '',
-            //
-            //   }
-            // )
+                }
+              )
+            }
+
 
           }
           if (player.dodging.count >= 1 && player.dodging.count < player.dodging.limit) {
             player.dodging.count++
             player.action = 'dodging';
             // console.log('dodge count',player.dodging.count);
+
+
+            if (!player.popups.find(x => x.msg === "dodging")) {
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: player.dodging.limit,
+                  type: '',
+                  position: '',
+                  msg: 'dodging',
+                  img: '',
+
+                }
+              )
+            }
           }
           // PEAK START
           if (player.dodging.count === (player.dodging.peak.start - startMod)) {
 
-            player.popups.push(
-              {
-                state: false,
-                count: 0,
-                limit: (player.dodging.peak.end + endMod)-(player.dodging.peak.start + startMod),
-                type: '',
-                position: '',
-                msg: 'dodgeSuccess',
-                img: '',
-
-              }
-            )
+            // player.popups.push(
+            //   {
+            //     state: false,
+            //     count: 0,
+            //     limit: (player.dodging.peak.end + endMod)-(player.dodging.peak.start + startMod),
+            //     type: '',
+            //     position: '',
+            //     msg: 'dodgeSuccess',
+            //     img: '',
+            //
+            //   }
+            // )
           }
           if (player.dodging.count > (player.dodging.peak.start - startMod) && player.dodging.count < (player.dodging.peak.end + endMod)) {
             player.dodging.state = true;
@@ -8839,7 +8858,7 @@ class App extends Component {
           }
 
           // CHOOSE DODGE DIRECTION
-          if (player.dodging.count === player.dodging.peak.start) {
+          if (player.dodging.count === (player.dodging.peak.start - startMod)) {
             let whichDirection = this.rnJesus(1,2);
             let dodgeDirection;
             switch(player.direction) {
@@ -10139,6 +10158,7 @@ class App extends Component {
             }
           }
 
+          // DODGE START
           else if (this.keyPressed[player.number-1].dodge === true) {
             if (player.dodging.state !== true && player.dodging.countState !== true) {
               // console.log('start dodge wind up');
@@ -10890,7 +10910,7 @@ class App extends Component {
           if (this.setInitZoom.windowWidth < 1100) {
 
             if ((this.camera.zoom.x-1) >= -.25) {
-              console.log('1');
+
               this.camera.zoom.x -= .04 ;
               this.camera.zoom.y -= .04 ;
               this.camera.zoomDirection = 'out';
@@ -10920,7 +10940,7 @@ class App extends Component {
           if (this.setInitZoom.windowWidth < 1100) {
 
             if ((this.camera.zoom.x-1) >= -.05) {
-              console.log('2');
+
               this.camera.zoom.x -= .04 ;
               this.camera.zoom.y -= .04 ;
               this.camera.zoomDirection = 'out';
@@ -19143,6 +19163,38 @@ class App extends Component {
         phase = "off";
       }
 
+    }
+    if (player.action === "dodging") {
+      console.log('popup progress dodging',this.time);
+      if (player.dodging.countState === true && player.dodging.count <= (player.dodging.peak.start - player.crits.dodge) && this.keyPressed[player.number-1].dodge === true) {
+        console.log('dodge condition: true');
+      }
+      if (player.dodging.countState === true && player.dodging.count > (player.dodging.peak.start - player.crits.dodge)) {
+        console.log('dodge condition: true');
+      }
+      let startMod = player.crits.dodge;
+      let endMod = player.crits.dodge;
+      if (player.stamina.current - this.staminaCostRef.dodge.peak >= 0) {
+        console.log('start count/windup');
+      }
+      if (player.dodging.count >= 1 && player.dodging.count < player.dodging.limit) {
+        console.log('continue count/ windup');
+      }
+      if (player.dodging.count === (player.dodging.peak.start - startMod)) {
+        console.log('start dodge peak');
+      }
+      if (player.dodging.count > (player.dodging.peak.start - startMod) && player.dodging.count < (player.dodging.peak.end + endMod)) {
+        console.log('continue peak dodge');
+      }
+      if (player.dodging.count < (player.dodging.peak.start - startMod)) {
+        console.log('pre peak');
+      }
+      if (player.dodging.count > (player.dodging.peak.end + endMod)) {
+        console.log('post peak');
+      }
+      if (player.dodging.count >= player.dodging.limit) {
+        console.log('end');
+      }
     }
 
 
