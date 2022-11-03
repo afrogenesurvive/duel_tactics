@@ -333,7 +333,7 @@ class App extends Component {
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_i_1.5_a_0a*','**_*_1.6_i_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_k_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_h_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
-      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_*_4.3_f_0a*','cs_h_4.4_a_0a*','**_b_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
+      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_*_4.3_f_0a*','**_h_4.4_a_0a*','cn_b_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','cn_*_5.2_f_0a*','**_*_5.3_f_0a*','**_*_5.4_k_0a*','**_*_5.5_a_0a*','**_*_5.6_g_0a*','**_*_5.7_a_0a*','ce_*_5.8_a_0a*','**_*_5.9_a_0a*'],
       row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_b_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_b_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
       row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','**_*_7.5_a_0a*','**_i_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
@@ -6775,7 +6775,7 @@ class App extends Component {
 
         // DEFEND FEINT
         if (this.keyPressed[player.number-1].defend === false && player.defending.state === true) {
-          console.log('player',player.number,' defend key release');
+          // console.log('player',player.number,' defend key release');
           player.defending = {
             state: false,
             count: 0,
@@ -6804,8 +6804,8 @@ class App extends Component {
           }
 
 
-          let defendPopup = player.popups.find(x=>x.msg === 'defending')
-          if (defendPopup) {
+
+          if (player.popups.find(x=>x.msg === 'defending')) {
             player.popups.splice(player.popups.findIndex(x=>x.msg === 'defending'),1)
           }
           if (player.falling.state !== true && player.moving.state !== true) {
@@ -6816,7 +6816,7 @@ class App extends Component {
               {
                 state: false,
                 count: 0,
-                limit: 20,
+                limit: 10,
                 type: '',
                 position: '',
                 msg: 'defendFeint3',
@@ -6846,7 +6846,7 @@ class App extends Component {
             }
 
             if (player.attacking.count < atkPeak) {
-                console.log('attack windup key release before peak. feinting. refund stamina part');
+                // console.log('attack windup key release before peak. feinting. refund stamina part');
                 player.bluntAttack = false
                 player.action = 'idle';
                 player.attacking = {
@@ -6867,7 +6867,7 @@ class App extends Component {
                 {
                   state: false,
                   count: 0,
-                  limit: 20,
+                  limit: 10,
                   type: '',
                   position: '',
                   msg: 'attackFeint3',
@@ -6881,8 +6881,8 @@ class App extends Component {
 
 
         // DODGE RELEASE/FEINT
-        if (player.dodging.countState === true && player.dodging.count <= (player.dodging.peak.start - player.crits.dodge) && this.keyPressed[player.number-1].dodge !== true) {
-          console.log('released dodge key while winding up. cancel dodge.');
+        if (player.dodging.countState === true && player.dodging.count <= (player.dodging.peak.start - player.crits.dodge) && this.keyPressed[player.number-1].dodge !== true && player.flanking.state !== true) {
+          // console.log('released dodge key while winding up. cancel dodge.');
           player.stamina.current += this.staminaCostRef.dodge.pre;
           player.action = 'idle';
           player.dodging = {
@@ -6904,7 +6904,7 @@ class App extends Component {
               {
                 state: false,
                 count: 0,
-                limit: 20,
+                limit: 10,
                 type: '',
                 position: '',
                 msg: 'dodgeFeint',
@@ -9286,6 +9286,7 @@ class App extends Component {
         // FLANKING!
         if (player.flanking.state === true) {
 
+          // RESET DODGING
           this.players[player.number-1].dodging = {
             countState: false,
             state: false,
@@ -9299,7 +9300,7 @@ class App extends Component {
 
 
           if (player.flanking.step === 2) {
-            // console.log('flanking step 2',player.direction,'flank dir',player.flanking.direction);
+            console.log('flanking step 2',player.direction,'flank dir',player.flanking.direction,"current position",player.currentPosition.cell.number);
             switch(player.flanking.direction) {
               case 'north' :
                 player.direction = 'south';
@@ -9318,7 +9319,6 @@ class App extends Component {
                 player.turning.toDirection = 'east';
               break;
             }
-
             player.flanking = {
               checking: false,
               direction: '',
@@ -9328,9 +9328,10 @@ class App extends Component {
               target1: {x:0 ,y:0},
               target2: {x:0 ,y:0},
             }
+
           }
           if (player.flanking.step === 1) {
-
+            console.log('flanking step 1',player.direction,'flank dir',player.flanking.direction,"current position",player.currentPosition.cell.number);
             let target = this.getTarget(player);
             if (target.free === true) {
               player.flanking.step = 2;
@@ -9384,7 +9385,7 @@ class App extends Component {
           }
         }
         // START
-        if (this.keyPressed[player.number-1].dodge === true ) {
+        if (this.keyPressed[player.number-1].dodge === true && player.flanking.state !== true) {
 
 
           if (
@@ -9475,17 +9476,20 @@ class App extends Component {
                     // console.log('this.players[player.number-1].flanking.target1',this.players[player.number-1].flanking.target1);
                     // player.action = 'moving';
 
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: '',
-                        position: '',
-                        msg: 'flanking',
-                        img: '',
-                      }
-                    )
+                    if (!player.popups.find(x=>x.msg === "preAction2") && !player.popups.find(x=>x.msg === "dodgeStart")) {
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 5,
+                          type: '',
+                          position: '',
+                          msg: 'preAction2',
+                          img: '',
+                        }
+                      )
+                    }
+
 
                     player.action = 'flanking';
                     player.moving = {
@@ -12474,6 +12478,7 @@ class App extends Component {
 
                         }
                       }
+                      // BLOCKED BOLT
                       else {
                         console.log('bullet blocked');
 
