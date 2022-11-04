@@ -107,6 +107,7 @@ import cellVoidingIndicate from './assets/indicators/cellVoiding.png';
 import cellVoidingIndicate2 from './assets/indicators/cellVoiding2.png';
 import boltDefendIndicate2 from './assets/indicators/boltDefend2.png';
 import flankIndicate2 from './assets/indicators/flanking2.png';
+import noFlankIndicate from './assets/indicators/noFlanking.png';
 
 
 import preAttack2Indicate from './assets/indicators/preAttack2.png';
@@ -1742,6 +1743,11 @@ class App extends Component {
           current: 20,
           max: 20,
         },
+        newPushPullDelay: {
+          state: false,
+          count: 0,
+          limit: 10,
+        },
         prePush: {
           state: false,
           count: 0,
@@ -2170,6 +2176,11 @@ class App extends Component {
         stamina: {
           current: 20,
           max: 20,
+        },
+        newPushPullDelay: {
+          state: false,
+          count: 0,
+          limit: 10,
         },
         prePush: {
           state: false,
@@ -6160,13 +6171,13 @@ class App extends Component {
           }
 
           // FLANKING POPUP 1
-          if (player.flanking.state === true || player.action === "flanking" ) {
+          if (player.flanking.state === true || player.action === "flanking2" ) {
             if (!player.popups.find(x=>x.msg === "flanking2")) {
               player.popups.push(
                 {
                   state: false,
                   count: 0,
-                  limit: 5,
+                  limit: 15,
                   type: '',
                   position: '',
                   msg: 'flanking2',
@@ -6815,7 +6826,7 @@ class App extends Component {
 
         // KEY PRESS RELEASE CHECKS!!
 
-        // DEFEND FEINT
+        // DEFEND/PRE PULL FEINT
         if (this.keyPressed[player.number-1].defend === false && player.defending.state === true) {
           // console.log('player',player.number,' defend key release');
           player.defending = {
@@ -6842,6 +6853,11 @@ class App extends Component {
               direction: '',
               puller: 0,
             }
+
+            if (player.newPushPullDelay.state !== true) {
+              player.newPushPullDelay.state = true
+            }
+
 
           }
 
@@ -8744,6 +8760,20 @@ class App extends Component {
         }
 
 
+
+        // NEW PUSH/PULL DELAY AFTER LAST ATTEMPT
+        if (player.newPushPullDelay.state === true) {
+          if (player.newPushPullDelay.count < player.newPushPullDelay.limit) {
+            player.newPushPullDelay.count++;
+            // console.log('new push pull delay');
+          }
+          if (player.newPushPullDelay.count >= player.newPushPullDelay.limit) {
+            player.newPushPullDelay.state = false;
+            player.newPushPullDelay.count = 0;
+
+          }
+        }
+
         // PUSHING/PULLING
         // PUSH KEY RELEASE
         if (player.prePush.state === true && this.keyPressed[player.number-1][player.prePush.direction] !== true) {
@@ -8755,6 +8785,10 @@ class App extends Component {
             targetCell: undefined,
             direction: "",
             pusher: undefined,
+          }
+
+          if (player.newPushPullDelay.state !== true) {
+            player.newPushPullDelay.state = true
           }
         }
         // key release prepull check??
@@ -9371,6 +9405,10 @@ class App extends Component {
               target2: {x:0 ,y:0},
             }
 
+            // if (player.popups.find(x=>x.msg === 'flanking2')) {
+            //   player.popups.splice(player.popups.findIndex(y=>y.msg === 'flanking2'),1)
+            // }
+
           }
           if (player.flanking.step === 1) {
             // console.log('flanking step 1',player.direction,'flank dir',player.flanking.direction,"current position",player.currentPosition.cell.number,'move step',player.moving.step);
@@ -9408,7 +9446,7 @@ class App extends Component {
                   {
                     state: false,
                     count: 0,
-                    limit: 5,
+                    limit: 15,
                     type: '',
                     position: '',
                     msg: 'flanking2',
@@ -9436,6 +9474,19 @@ class App extends Component {
 
               if (player.popups.find(x=>x.msg === 'flanking2')) {
                 player.popups.splice(player.popups.findIndex(y=>y.msg === 'flanking2'),1)
+              }
+              if (!player.popups.find(x=>x.msg === "noFlanking")) {
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 25,
+                    type: '',
+                    position: '',
+                    msg: 'noFlanking',
+                    img: '',
+                  }
+                )
               }
             }
           }
@@ -10337,6 +10388,10 @@ class App extends Component {
             direction: "",
             puller: undefined,
           };
+
+          if (this.players[plyrPullPushedPlyr-1].newPushPullDelay.state !== true) {
+            this.players[plyrPullPushedPlyr-1].newPushPullDelay.state = true
+          }
 
           if (this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === 'prePush')) {
             this.players[plyrPullPushedPlyr-1].popups.splice(this.players[plyrPullPushedPlyr-1].popups.findIndex(x=>x.msg === 'prePush'),1)
@@ -19311,7 +19366,8 @@ class App extends Component {
       console.log('barrier not obstacle. Cant be pushed');
       resetPush = true;
     }
-    else if (refCell.obstacle.moving.pushable === true && myCellCheck === true) {
+    else if (refCell.obstacle.moving.pushable === true && myCellCheck === true && player.newPushPullDelay.state !== true) {
+
       if (player.prePush.state !== true && player.prePush.count === 0) {
         // console.log('start pre push');
         player.prePush = {
@@ -19383,6 +19439,10 @@ class App extends Component {
       }
     }
 
+    if (player.newPushPullDelay.state === true) {
+      resetPush = true;
+    }
+
     if (refCell.obstacle.moving.pushable !== true) {
       console.log('obstacle is instrinsically unpushable');
       resetPush = true;
@@ -19398,6 +19458,10 @@ class App extends Component {
         direction: "",
         pusher: undefined,
       };
+
+      if (player.newPushPullDelay.state !== true) {
+        player.newPushPullDelay.state = true;
+      }
     }
 
 
@@ -19894,6 +19958,10 @@ class App extends Component {
           targetCell: undefined,
           moveSpeed: 0,
       }
+
+      if (this.players[player.number-1].newPushPullDelay.state !== true) {
+        this.players[player.number-1].newPushPullDelay.state = true
+      }
     }
 
   }
@@ -19922,7 +19990,7 @@ class App extends Component {
       resetPush = true;
     }
 
-    if (targetOpen === true && myCellCheck === true) {
+    if (targetOpen === true && myCellCheck === true && pusher.newPushPullDelay.state !== true) {
       if (pusher.prePush.state !== true && pusher.prePush.count === 0) {
         // console.log('start player pre push');
         pusher.prePush = {
@@ -19994,6 +20062,10 @@ class App extends Component {
       }
     }
 
+    if (pusher.newPushPullDelay.state === true) {
+      resetPush = true;
+    }
+
     if (targetOpen !== true) {
       // console.log('player is unpushable');
       resetPush = true;
@@ -20009,6 +20081,10 @@ class App extends Component {
         direction: "",
         pusher: undefined,
       };
+
+      if (pusher.newPushPullDelay.state !== true) {
+        pusher.newPushPullDelay.state = true;
+      }
     }
 
 
@@ -20509,6 +20585,9 @@ class App extends Component {
           targetCell: undefined,
           moveSpeed: 0,
       }
+      if (this.players[pusher.number-1].newPushPullDelay.state !== true) {
+        this.players[pusher.number-1].newPushPullDelay.state = true;
+      }
     }
 
 
@@ -20533,7 +20612,7 @@ class App extends Component {
       console.log('barrier not obstacle. Cant be pulled');
       resetPull = true;
     }
-    else if (refCell.obstacle.moving.pushable === true && myCellCheck === true) {
+    else if (refCell.obstacle.moving.pushable === true && myCellCheck === true && player.newPushPullDelay.state !== true) {
       if (player.prePull.state !== true && player.prePull.count === 0) {
         // console.log('start pre pull');
         player.prePull = {
@@ -20608,6 +20687,9 @@ class App extends Component {
       }
     }
 
+    if (player.newPushPullDelay.state === true) {
+      resetPull = true;
+    }
 
     if (refCell.obstacle.moving.pushable !== true) {
       console.log('obstacle is instrinsically unpullable');
@@ -20647,6 +20729,10 @@ class App extends Component {
       this.keyPressed[player.number-1].south = false;
       this.keyPressed[player.number-1].east = false;
       this.keyPressed[player.number-1].west = false;
+
+      if (this.players[player.number-1].newPushPullDelay.state !== true) {
+        this.players[player.number-1].newPushPullDelay.state = true
+      }
     }
 
 
@@ -21123,6 +21209,10 @@ class App extends Component {
       this.keyPressed[player.number-1].south = false;
       this.keyPressed[player.number-1].east = false;
       this.keyPressed[player.number-1].west = false;
+
+      if (this.players[player.number-1].newPushPullDelay.state !== true) {
+        this.players[player.number-1].newPushPullDelay.state = true
+      }
     }
 
   }
@@ -21151,7 +21241,7 @@ class App extends Component {
       resetPull = true;
     }
 
-    if (targetOpen === true && myCellCheck === true) {
+    if (targetOpen === true && myCellCheck === true && puller.newPushPullDelay.state !== true) {
       if (puller.prePull.state !== true && puller.prePull.count === 0) {
         // console.log('start player pre pull');
         puller.prePull = {
@@ -21224,6 +21314,10 @@ class App extends Component {
       }
     }
 
+    if (puller.newPushPullDelay.state === true) {
+      resetPull = true;
+    }
+
     if (targetOpen !== true) {
       // console.log('player is unpullable');
       resetPull = true;
@@ -21257,11 +21351,16 @@ class App extends Component {
       this.keyPressed[puller.number-1].south = false;
       this.keyPressed[puller.number-1].east = false;
       this.keyPressed[puller.number-1].west = false;
+
+      if (this.players[puller.number-1].newPushPullDelay.state !== true) {
+        this.players[puller.number-1].newPushPullDelay.state = true
+      }
     }
 
 
     this.players[puller.number-1].prePull = puller.prePull;
     this.players[puller.number-1].pulling = puller.pulling;
+
 
   }
   canPullPlayer = (puller,targetCell,targetPlayer) => {
@@ -21811,6 +21910,10 @@ class App extends Component {
       this.keyPressed[puller.number-1].south = false;
       this.keyPressed[puller.number-1].east = false;
       this.keyPressed[puller.number-1].west = false;
+
+      if (this.players[puller.number-1].newPushPullDelay.state !== true) {
+        this.players[puller.number-1].newPushPullDelay.state = true
+      }
     }
 
   }
@@ -28496,6 +28599,7 @@ class App extends Component {
       dodgeFeint2: this.refs.dodgeFeintIndicate2,
       boltDefend2: this.refs.boltDefendIndicate2,
       flanking2: this.refs.flankIndicate2,
+      noFlanking: this.refs.noFlankIndicate,
       cellVoiding: this.refs.cellVoidingIndicate,
       cellVoiding2: this.refs.cellVoidingIndicate2,
     };
@@ -29880,6 +29984,11 @@ class App extends Component {
           stamina: {
             current: 20,
             max: 20,
+          },
+          newPushPullDelay: {
+            state: false,
+            count: 0,
+            limit: 10,
           },
           prePush: {
             state: false,
@@ -37106,6 +37215,7 @@ class App extends Component {
           <img src={dodgeFeintIndicate2} className="hidden playerImgs" ref="dodgeFeintIndicate2" id="dodgeFeintIndicate2" alt="..." />
           <img src={boltDefendIndicate2} className="hidden playerImgs" ref="boltDefendIndicate2" id="boltDefendIndicate" alt="..." />
           <img src={flankIndicate2} className="hidden playerImgs" ref="flankIndicate2" id="flankIndicate2" alt="..." />
+          <img src={noFlankIndicate} className="hidden playerImgs" ref="noFlankIndicate" id="noFlankIndicate" alt="..." />
           <img src={cellVoidingIndicate} className="hidden playerImgs" ref="cellVoidingIndicate" id="cellVoidingIndicate" alt="..." />
           <img src={cellVoidingIndicate2} className="hidden playerImgs" ref="cellVoidingIndicate2" id="cellVoidingIndicate2" alt="..." />
 
