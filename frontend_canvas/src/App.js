@@ -6616,6 +6616,32 @@ class App extends Component {
                 break;
               }
 
+              if (player.flanking.state === true || player.action === "flanking") {
+                player.flanking = {
+                  checking: false,
+                  direction: '',
+                  state: false,
+                  step: 0,
+                  target1: {x:0 ,y:0},
+                  target2: {x:0 ,y:0},
+                }
+                player.action = "idle";
+              }
+              if (plyr4.flanking.state === true || plyr4.action === "flanking") {
+                plyr4.flanking = {
+                  checking: false,
+                  direction: '',
+                  state: false,
+                  step: 0,
+                  target1: {x:0 ,y:0},
+                  target2: {x:0 ,y:0},
+                }
+                plyr4.action = "idle";
+              }
+
+              if (playerAPushDir2 === playerBPushDir2) {
+                playerBPushDir2 = ['north','south','east','west'].filter(x=>x !== playerAPushDir2)[0];
+              }
               let canPush = this.pushBack(plyr4,playerAPushDir2)
               let canPush2 = this.pushBack(player,playerBPushDir2)
             }
@@ -22903,7 +22929,7 @@ class App extends Component {
     let target = this.getTarget(player)
 
     if (target.free === true && player.target.void === false) {
-      // console.log('proceed with pushback',player.number,'to',target.cell.number);
+      console.log('proceed with pushback',player.number,'to',target.cell.number);
 
       player.action = 'strafe moving';
       player.moving = {
@@ -22942,11 +22968,11 @@ class App extends Component {
           if (blockedCell.barrier.state === true) {
             console.log('Pushedback into barrier. lower hp Break it or do nothing');
           }
-          // player.pushBack.state = false;
+          player.pushBack.state = false;
     }
 
     if (player.target.void === true) {
-      console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
+      console.log('pushback target is VOID!!',target.cell.center.x,target.cell.center.y);
       player.action = 'strafe moving';
       player.moving = {
         state: true,
