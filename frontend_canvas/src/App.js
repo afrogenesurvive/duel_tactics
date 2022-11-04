@@ -6159,6 +6159,22 @@ class App extends Component {
             destRngIndx = 3;
           }
 
+          // FLANKING POPUP 1
+          if (player.flanking.state === true || player.action === "flanking" ) {
+            if (!player.popups.find(x=>x.msg === "flanking2")) {
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 5,
+                  type: '',
+                  position: '',
+                  msg: 'flanking2',
+                  img: '',
+                }
+              )
+            }
+          }
 
           for (const el of atDestRanges) {
             if (el === true) {
@@ -6285,7 +6301,7 @@ class App extends Component {
 
               // PUSHBACK MOVEMENT
               if (player.pushBack.state === true && player.target.void !== true) {
-                // console.log('player',player.number,'finished moving pushed back');
+                console.log('player',player.number,'finished moving pushed back',player.flanking.state);
 
                 // CANCEL AI ATTACK, DEFEND!!
                 if (player.ai.state === true) {
@@ -6626,7 +6642,7 @@ class App extends Component {
                   target2: {x:0 ,y:0},
                 }
                 player.action = "idle";
-              }
+              };
               if (plyr4.flanking.state === true || plyr4.action === "flanking") {
                 plyr4.flanking = {
                   checking: false,
@@ -6637,8 +6653,8 @@ class App extends Component {
                   target2: {x:0 ,y:0},
                 }
                 plyr4.action = "idle";
-              }
-
+              };
+              // playerAPushDir2 = "north";
               if (playerAPushDir2 === playerBPushDir2) {
                 playerBPushDir2 = ['north','south','east','west'].filter(x=>x !== playerAPushDir2)[0];
               }
@@ -8831,7 +8847,7 @@ class App extends Component {
         if (player.dodging.countState === true && player.dodging.count > (player.dodging.peak.start - player.crits.dodge)) {
           dodgeCondition = true;
         }
-        if (dodgeCondition === true) {
+        if (dodgeCondition === true && player.flanking.state !== true) {
 
           let startMod = player.crits.dodge;
           let endMod = player.crits.dodge;
@@ -9326,7 +9342,7 @@ class App extends Component {
 
 
           if (player.flanking.step === 2) {
-            console.log('flanking step 2',player.direction,'flank dir',player.flanking.direction,"current position",player.currentPosition.cell.number);
+            // console.log('flanking step 2',player.direction,'flank dir',player.flanking.direction,"current position",player.currentPosition.cell.number,'move step',player.moving.step);
             switch(player.flanking.direction) {
               case 'north' :
                 player.direction = 'south';
@@ -9357,7 +9373,7 @@ class App extends Component {
 
           }
           if (player.flanking.step === 1) {
-            console.log('flanking step 1',player.direction,'flank dir',player.flanking.direction,"current position",player.currentPosition.cell.number);
+            // console.log('flanking step 1',player.direction,'flank dir',player.flanking.direction,"current position",player.currentPosition.cell.number,'move step',player.moving.step);
             let target = this.getTarget(player);
             if (target.free === true) {
               player.flanking.step = 2;
@@ -9386,6 +9402,20 @@ class App extends Component {
               if (player.ai.state === true) {
                 this.keyPressed[player.number-1].dodge = false
               }
+
+              if (!player.popups.find(x=>x.msg === "flanking2")) {
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 5,
+                    type: '',
+                    position: '',
+                    msg: 'flanking2',
+                    img: '',
+                  }
+                )
+              }
             }
             else {
               // console.log('cancel flanking');
@@ -9404,8 +9434,8 @@ class App extends Component {
                 target2: {x:0 ,y:0},
               }
 
-              if (player.popups.find(x=>x.msg === 'flanking')) {
-                player.popups.splice(player.popups.findIndex(y=>y.msg === 'flanking'),1)
+              if (player.popups.find(x=>x.msg === 'flanking2')) {
+                player.popups.splice(player.popups.findIndex(y=>y.msg === 'flanking2'),1)
               }
             }
           }
@@ -9516,7 +9546,7 @@ class App extends Component {
                       )
                     }
 
-
+                    // console.log('flanking step 0/1',player.direction,'flank dir',player.flanking.direction,"current position",player.currentPosition.cell.number,'move step',player.moving.step);
                     player.action = 'flanking';
                     player.moving = {
                       state: true,
@@ -15019,213 +15049,6 @@ class App extends Component {
             }
           }
 
-          // if (plyr.itemDrop.state === true && plyr.dead.state !== true) {
-          //   if (plyr.itemDrop.gear.type === '' && plyr.itemDrop.item.name === '') {
-          //     // console.log('nothing to drop');
-          //   }
-          //   else {
-          //     let itemImg2;
-          //     let fillClr2;
-          //     if (plyr.itemDrop.item.name === '' && plyr.itemDrop.gear.type !== '') {
-          //       // console.log('drop a weapon or armor',plyr.itemDrop.gear.type);
-          //       switch(plyr.itemDrop.gear.type) {
-          //         case 'sword' :
-          //           fillClr2 = "orange";
-          //           itemImg2 = itemImgs[plyr.itemDrop.gear.type];
-          //         break;
-          //         case 'spear' :
-          //           fillClr2 = "maroon";
-          //           itemImg2 = itemImgs[plyr.itemDrop.gear.type];
-          //         break;
-          //         case 'crossbow' :
-          //           fillClr2 = "navy";
-          //           itemImg2 = itemImgs[plyr.itemDrop.gear.type];
-          //         break;
-          //         case 'helmet' :
-          //           fillClr2 = "grey";
-          //           itemImg2 = itemImgs[plyr.itemDrop.gear.type];
-          //         break;
-          //         case 'mail' :
-          //           fillClr2 = "olive";
-          //           itemImg2 = itemImgs[plyr.itemDrop.gear.type];
-          //         break;
-          //         case 'greaves' :
-          //           fillClr2 = "#b5179e";
-          //           itemImg2 = itemImgs[plyr.itemDrop.gear.type];
-          //         break;
-          //       }
-          //     }
-          //     else if (plyr.itemDrop.gear.type === '' && plyr.itemDrop.item.name !== '') {
-          //       // console.log('drop an item',plyr.itemDrop.item.name);
-          //       switch(plyr.itemDrop.item.name) {
-          //         case 'moveSpeedUp' :
-          //           fillClr2 = "purple";
-          //           itemImg2 = itemImgs[plyr.itemDrop.item.name];
-          //         break;
-          //         case 'moveSpeedDown' :
-          //           fillClr2 = "blue";
-          //           itemImg2 = itemImgs[plyr.itemDrop.item.name];
-          //         break;
-          //         case 'hpUp' :
-          //           fillClr2 = "yellow";
-          //           itemImg2 = itemImgs[plyr.itemDrop.item.name];
-          //         break;
-          //         case 'hpDown' :
-          //           fillClr2 = "brown";
-          //           itemImg2 = itemImgs[plyr.itemDrop.item.name];
-          //         break;
-          //         case 'focusUp' :
-          //           fillClr2 = "white";
-          //           itemImg2 = itemImgs[plyr.itemDrop.item.name];
-          //         break;
-          //         case 'focusDown' :
-          //           fillClr2 = "black";
-          //           itemImg2 = itemImgs[plyr.itemDrop.item.name];
-          //         break;
-          //         case 'strengthUp' :
-          //           fillClr2 = "green";
-          //           itemImg2 = itemImgs[plyr.itemDrop.item.name];
-          //         break;
-          //         case 'strengthDown' :
-          //           fillClr2 = "red";
-          //           itemImg2 = itemImgs[plyr.itemDrop.item.name];
-          //         break;
-          //         case 'ammo5' :
-          //           fillClr2 = "#283618";
-          //           itemImg2 = itemImgs[plyr.itemDrop.item.name];
-          //         break;
-          //         case 'ammo10' :
-          //           fillClr2 = "#283618";
-          //           itemImg2 = itemImgs[plyr.itemDrop.item.name];
-          //         break;
-          //       }
-          //     }
-          //
-          //     if (plyr.itemDrop.count < 4) {
-          //
-          //       let pos = plyr.currentPosition.cell.center;
-          //       // console.log('drawing item drop',itemImg2);
-          //       // context.fillStyle = fillClr2;
-          //       // context.beginPath();
-          //       // context.arc(pos.x-10, pos.y, 10, 0, 2 * Math.PI);
-          //       // context.fill();
-          //
-          //       // context.drawImage(itemImg2, pos.x-10, pos.y);
-          //     }
-          //     if (plyr.itemDrop.count > 3) {
-          //
-          //       let pos = plyr.currentPosition.cell.center;
-          //       // console.log('drawing item drop',itemImg2,'pos',pos);
-          //       // context.fillStyle = fillClr2;
-          //       // context.beginPath();
-          //       // context.arc(pos.x-10, pos.y+(plyr.itemDrop.count*2), 10, 0, 2 * Math.PI);
-          //       // context.fill();
-          //
-          //       context.drawImage(itemImg2, pos.x-10, pos.y+(plyr.itemDrop.count*2));
-          //     }
-          //   }
-          //
-          // }
-          // if (plyr.itemPickup.state === true) {
-          //   let itemImg3;
-          //   let fillClr3;
-          //   if (plyr.itemPickup.item.name === '') {
-          //     // console.log('Pickup a weapon or armor',plyr.itemPickup.gear.type);
-          //     switch(plyr.itemPickup.gear.type) {
-          //       case 'sword' :
-          //         fillClr3 = "orange";
-          //         itemImg3 = itemImgs[plyr.itemPickup.gear.type];
-          //       break;
-          //       case 'spear' :
-          //         fillClr3 = "maroon";
-          //         itemImg3 = itemImgs[plyr.itemPickup.gear.type];
-          //       break;
-          //       case 'crossbow' :
-          //         fillClr3 = "navy";
-          //         itemImg3 = itemImgs[plyr.itemPickup.gear.type];
-          //       break;
-          //       case 'helmet' :
-          //         fillClr3 = "grey";
-          //         itemImg3 = itemImgs[plyr.itemPickup.gear.type];
-          //       break;
-          //       case 'mail' :
-          //         fillClr3 = "olive";
-          //         itemImg3 = itemImgs[plyr.itemPickup.gear.type];
-          //       break;
-          //       case 'greaves' :
-          //         fillClr3 = "#b5179e";
-          //         itemImg3 = itemImgs[plyr.itemPickup.gear.type];
-          //       break;
-          //     }
-          //   }
-          //   else if (plyr.itemPickup.gear.type === '') {
-          //     // console.log('Pickup an item');
-          //     switch(plyr.itemPickup.item.name) {
-          //       case 'moveSpeedUp' :
-          //         fillClr3 = "purple";
-          //         itemImg3 = itemImgs[plyr.itemPickup.item.name];
-          //       break;
-          //       case 'moveSpeedDown' :
-          //         fillClr3 = "blue";
-          //         itemImg3 = itemImgs[plyr.itemPickup.item.name];
-          //       break;
-          //       case 'hpUp' :
-          //         fillClr3 = "yellow";
-          //         itemImg3 = itemImgs[plyr.itemPickup.item.name];
-          //       break;
-          //       case 'hpDown' :
-          //         fillClr3 = "brown";
-          //         itemImg3 = itemImgs[plyr.itemPickup.item.name];
-          //       break;
-          //       case 'focusUp' :
-          //         fillClr3 = "white";
-          //         itemImg3 = itemImgs[plyr.itemPickup.item.name];
-          //       break;
-          //       case 'focusDown' :
-          //         fillClr3 = "black";
-          //         itemImg3 = itemImgs[plyr.itemPickup.item.name];
-          //       break;
-          //       case 'strengthUp' :
-          //         fillClr3 = "green";
-          //         itemImg3 = itemImgs[plyr.itemPickup.item.name];
-          //       break;
-          //       case 'strengthDown' :
-          //         fillClr3 = "red";
-          //         itemImg3 = itemImgs[plyr.itemPickup.item.name];
-          //       break;
-          //       case 'ammo5' :
-          //         fillClr3 = "#283618";
-          //         itemImg3 = itemImgs[plyr.itemPickup.item.name];
-          //       break;
-          //       case 'ammo10' :
-          //         fillClr3 = "#283618";
-          //         itemImg3 = itemImgs[plyr.itemPickup.item.name];
-          //       break;
-          //     }
-          //   }
-          //   if (plyr.itemPickup.count < 4) {
-          //
-          //     let pos = plyr.currentPosition.cell.center;
-          //     // console.log('drawing item pickup',itemImg3,gridInfoCell.item.subType,gridInfoCell.item.name);
-          //     // context.fillStyle = fillClr3;
-          //     // context.beginPath();
-          //     // context.arc(pos.x-10, pos.y, 10, 0, 2 * Math.PI);
-          //     // context.fill();
-          //
-          //     context.drawImage(itemImg3, pos.x-10, pos.y);
-          //   }
-          //   if (plyr.itemPickup.count > 3) {
-          //
-          //     let pos = plyr.currentPosition.cell.center;
-          //     // console.log('drawing item pickup',itemImg3,gridInfoCell.item.subType,gridInfoCell.item.name);
-          //     // context.fillStyle = fillClr3;
-          //     // context.beginPath();
-          //     // context.arc(pos.x-10, pos.y-(plyr.itemPickup.count*2), 10, 0, 2 * Math.PI);
-          //     // context.fill();
-          //
-          //     context.drawImage(itemImg3, pos.x-10, pos.y-(plyr.itemPickup.count*2));
-          //   }
-          // }
 
           this.players[plyr.number-1] = plyr;
 
@@ -15594,8 +15417,7 @@ class App extends Component {
                       plyr.action === 'dodging' ||
                       plyr.action === 'defending' ||
                       plyr.action === 'attacking' ||
-                      plyr.attacking.state === true ||
-                      plyr.flanking.state === true
+                      plyr.attacking.state === true
                     ) {
                       showProgress = true;
                     }
@@ -15603,7 +15425,6 @@ class App extends Component {
                       popup.msg === "attacking1" ||
                       popup.msg === "attacking2" ||
                       popup.msg === "defending" ||
-                      popup.msg === "flanking" ||
                       popup.msg === "dodging"
                     ) {
                       popupProgress = true;
@@ -16018,8 +15839,7 @@ class App extends Component {
                         plyr.action === 'dodging' ||
                         plyr.action === 'defending' ||
                         plyr.action === 'attacking' ||
-                        plyr.attacking.state === true ||
-                        plyr.flanking.state === true
+                        plyr.attacking.state === true
                       ) {
                         showProgress = true;
                       }
@@ -16028,7 +15848,6 @@ class App extends Component {
                         popup.msg === "attacking1" ||
                         popup.msg === "attacking2" ||
                         popup.msg === "defending" ||
-                        popup.msg === "flanking" ||
                         popup.msg === "dodging"
                       ) {
                         popupProgress = true;
@@ -19179,8 +18998,6 @@ class App extends Component {
 
     // plyr.prePush.state === true ||
     // plyr.prePull.state === true ||
-    // plyr.dodging.state === true ||
-    // plyr.flanking.state === true
 
 
     if (player.action === "defending") {
@@ -19297,15 +19114,6 @@ class App extends Component {
       }
     }
 
-
-    if (player.action === 'flanking') {
-      // player.flanking.state
-      // player.flanking.step
-
-      // set start flanking popups: start action, flanking
-      // if step and state true, plyr flanking
-      //   check moving & strafe moving
-    }
 
 
 
@@ -22968,6 +22776,15 @@ class App extends Component {
           if (blockedCell.barrier.state === true) {
             console.log('Pushedback into barrier. lower hp Break it or do nothing');
           }
+          for(const plyr of this.players) {
+            if (
+              plyr.currentPosition.cell.number.x === blockedCell.number.x &&
+              plyr.currentPosition.cell.number.y === blockedCell.number.y
+            ) {
+              console.log('pushed back into player, push, damage them or do nothing');
+            }
+          }
+
           player.pushBack.state = false;
     }
 
