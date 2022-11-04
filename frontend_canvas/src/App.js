@@ -9611,7 +9611,11 @@ class App extends Component {
                 // console.log('cant flank2');
               }
 
-            } else {
+            }
+            if (keyPressedDirection !== player.direction) {
+              console.log('!! dodge roll key combo!!');
+            }
+            else {
               // console.log('cant flank2');
             }
           }
@@ -10333,6 +10337,14 @@ class App extends Component {
             direction: "",
             puller: undefined,
           };
+
+          if (this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === 'prePush')) {
+            this.players[plyrPullPushedPlyr-1].popups.splice(this.players[plyrPullPushedPlyr-1].popups.findIndex(x=>x.msg === 'prePush'),1)
+          }
+          if (this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === 'prePull')) {
+            this.players[plyrPullPushedPlyr-1].popups.splice(this.players[plyrPullPushedPlyr-1].popups.findIndex(x=>x.msg === 'prePull'),1)
+          }
+
 
         }
 
@@ -15425,6 +15437,8 @@ class App extends Component {
                       popup.msg === "attacking1" ||
                       popup.msg === "attacking2" ||
                       popup.msg === "defending" ||
+                      popup.msg === "prePush" ||
+                      popup.msg === "prePull" ||
                       popup.msg === "dodging"
                     ) {
                       popupProgress = true;
@@ -15848,6 +15862,8 @@ class App extends Component {
                         popup.msg === "attacking1" ||
                         popup.msg === "attacking2" ||
                         popup.msg === "defending" ||
+                        popup.msg === "prePush" ||
+                        popup.msg === "prePull" ||
                         popup.msg === "dodging"
                       ) {
                         popupProgress = true;
@@ -19113,7 +19129,14 @@ class App extends Component {
         phase = "off";
       }
     }
-
+    if (player.prePush.state === true) {
+      phase = "windup";
+      perc = (player.prePush.count/player.prePush.limit)*100;
+    }
+    if (player.prePull.state === true) {
+      phase = "windup";
+      perc = (player.prePull.count/player.prePull.limit)*100;
+    }
 
 
 
@@ -19299,6 +19322,9 @@ class App extends Component {
           this.players[player.number-1].prePush = player.prePush;
           this.players[player.number-1].pushing = player.pushing;
 
+          if (player.popups.find(x=>x.msg === 'prePush')) {
+            player.popups.splice(player.popups.findIndex(x=>x.msg === 'prePush'),1)
+          }
           this.canPushObstacle(player,refCell,'');
 
         }
@@ -19312,6 +19338,19 @@ class App extends Component {
            ) {
 
              player.prePush.count++;
+             if (!player.popups.find(x=>x.msg === "prePush")) {
+               player.popups.push(
+                 {
+                   state: false,
+                   count: 0,
+                   limit: player.prePush.limit,
+                   type: '',
+                   position: '',
+                   msg: 'prePush',
+                   img: '',
+                 }
+               )
+             }
              // console.log('pre pushing the same obstacle. Continue',player.prePush.count);
            }
            else {
@@ -20491,7 +20530,9 @@ class App extends Component {
           // console.log('pre pull limit. check can pull');
           this.players[player.number-1].prePull = player.prePull;
           this.players[player.number-1].pulling = player.pulling;
-
+          if (player.popups.find(x=>x.msg === 'prePull')) {
+            player.popups.splice(player.popups.findIndex(x=>x.msg === 'prePull'),1)
+          }
           this.canPullObstacle(player,refCell);
 
         }
@@ -20505,6 +20546,19 @@ class App extends Component {
            ) {
 
              player.prePull.count++;
+             if (!player.popups.find(x=>x.msg === "prePull")) {
+               player.popups.push(
+                 {
+                   state: false,
+                   count: 0,
+                   limit: player.prePull.limit,
+                   type: '',
+                   position: '',
+                   msg: 'prePull',
+                   img: '',
+                 }
+               )
+             }
              // console.log('pre pulling the same obstacle. Continue',player.prePull.count);
            }
            else {
