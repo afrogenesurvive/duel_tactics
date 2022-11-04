@@ -19130,12 +19130,23 @@ class App extends Component {
       }
     }
     if (player.prePush.state === true) {
-      phase = "windup";
-      perc = (player.prePush.count/player.prePush.limit)*100;
+      if (player.prePush.count < player.prePush.limit) {
+        phase = "windup";
+        perc = (player.prePush.count/player.prePush.limit)*100;
+      }
+      if (player.prePush.count >= player.prePush.limit) {
+        phase = "off";
+      }
+
     }
     if (player.prePull.state === true) {
-      phase = "windup";
-      perc = (player.prePull.count/player.prePull.limit)*100;
+      if (player.prePull.count < player.prePull.limit) {
+        phase = "windup";
+        perc = (player.prePull.count/player.prePull.limit)*100;
+      }
+      if (player.prePull.count >= player.prePull.limit) {
+        phase = "off";
+      }
     }
 
 
@@ -19933,7 +19944,9 @@ class App extends Component {
           // console.log('pre push limit. check can push player');
           this.players[pusher.number-1].prePush = pusher.prePush;
           this.players[pusher.number-1].pushing = pusher.pushing;
-
+          if (pusher.popups.find(x=>x.msg === 'prePush')) {
+            pusher.popups.splice(pusher.popups.findIndex(x=>x.msg === 'prePush'),1)
+          }
           this.canPushPlayer(pusher,targetCell,targetPlayer);
 
         }
@@ -19947,6 +19960,19 @@ class App extends Component {
            ) {
 
              pusher.prePush.count++;
+             if (!pusher.popups.find(x=>x.msg === "prePush")) {
+               pusher.popups.push(
+                 {
+                   state: false,
+                   count: 0,
+                   limit: pusher.prePush.limit,
+                   type: '',
+                   position: '',
+                   msg: 'prePush',
+                   img: '',
+                 }
+               )
+             }
              // console.log('pre pushing the same player. Continue',pusher.prePush.count);
            }
            else {
@@ -21148,7 +21174,9 @@ class App extends Component {
           // console.log('pre pull limit. check can pull player');
           this.players[puller.number-1].prePull = puller.prePull;
           this.players[puller.number-1].pulling = puller.pulling;
-
+          if (puller.popups.find(x=>x.msg === 'prePull')) {
+            puller.popups.splice(puller.popups.findIndex(x=>x.msg === 'prePull'),1)
+          }
           this.canPullPlayer(puller,targetCell,targetPlayer);
 
         }
@@ -21162,6 +21190,19 @@ class App extends Component {
            ) {
 
              puller.prePull.count++;
+             if (!puller.popups.find(x=>x.msg === "prePull")) {
+               puller.popups.push(
+                 {
+                   state: false,
+                   count: 0,
+                   limit: puller.prePull.limit,
+                   type: '',
+                   position: '',
+                   msg: 'prePull',
+                   img: '',
+                 }
+               )
+             }
              // console.log('pre pulling the same player. Continue',puller.prePull.count);
            }
            else {
