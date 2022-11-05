@@ -3909,7 +3909,6 @@ class App extends Component {
           console.log('heeere!',this.cellInfoMouseOver);
           this.cellInfoMouseOver = false;
 
-
           this.showCellInfoBox = true;
           this.mouseOverCell.state = false;
           if (this.mouseOverCellSwitchOff.state === true) {
@@ -5837,7 +5836,7 @@ class App extends Component {
             {
               state: false,
               count: 0,
-              limit: 10,
+              limit: 20,
               type: '',
               position: '',
               msg: 'outOfStamina',
@@ -5861,7 +5860,7 @@ class App extends Component {
               {
                 state: false,
                 count: 0,
-                limit: 25,
+                limit: 30,
                 type: '',
                 position: '',
                 msg: 'missionRetreat',
@@ -5889,61 +5888,72 @@ class App extends Component {
           player.success.deflected.type === 'defended'
         ) {
 
-          player.popups.push(
-            {
-              state: false,
-              count: 0,
-              limit: player.success.deflected.limit,
-              type: '',
-              position: '',
-              msg: 'guardBroken',
-              img: '',
+          if (!player.popups.find(x=>x.msg === "guardBroken")) {
+            player.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: player.success.deflected.limit,
+                type: '',
+                position: '',
+                msg: 'guardBroken',
+                img: '',
 
-            }
-          )
+              }
+            )
+          }
+
         }
 
         if (player.success.deflected.type === 'attack') {
-          player.popups.push(
-            {
-              state: false,
-              count: 0,
-              limit: player.success.deflected.limit,
-              type: '',
-              position: '',
-              msg: 'attackParried',
-              img: '',
+          if (!player.popups.find(x=>x.msg === "attackParried")) {
+            player.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: player.success.deflected.limit,
+                type: '',
+                position: '',
+                msg: 'attackParried',
+                img: '',
 
-            }
-          )
+              }
+            )
+          }
+
         }
         if (player.success.deflected.type === 'attacked') {
-          player.popups.push(
-            {
-              state: false,
-              count: 0,
-              limit: player.success.deflected.limit,
-              type: '',
-              position: '',
-              msg: 'injured',
-              img: '',
+          if (!player.popups.find(x=>x.msg === "injured")) {
+            player.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: player.success.deflected.limit,
+                type: '',
+                position: '',
+                msg: 'injured',
+                img: '',
 
-            }
-          )
+              }
+            )
+          }
         }
         if (player.success.deflected.type === 'outOfStamina') {
-          player.popups.push(
-            {
-              state: false,
-              count: 0,
-              limit: player.success.deflected.limit,
-              type: '',
-              position: '',
-              msg: player.success.deflected.type,
-              img: '',
 
-            }
-          )
+          if (!player.popups.find(x=>x.msg === player.success.deflected.type)) {
+            player.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: player.success.deflected.limit,
+                type: '',
+                position: '',
+                msg: player.success.deflected.type,
+                img: '',
+
+              }
+            )
+          }
         }
 
       }
@@ -6189,7 +6199,7 @@ class App extends Component {
                 {
                   state: false,
                   count: 0,
-                  limit: 15,
+                  limit: 20,
                   type: '',
                   position: '',
                   msg: 'flanking2',
@@ -6381,18 +6391,21 @@ class App extends Component {
                 player.falling.state = true;
                 player.action = 'falling';
 
-                player.popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit: 25,
-                    type: '',
-                    position: '',
-                    msg: 'falling',
-                    img: '',
+                if (!player.popups.find(x=>x.msg === "falling")) {
+                  player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 30,
+                      type: '',
+                      position: '',
+                      msg: 'falling',
+                      img: '',
 
-                  }
-                )
+                    }
+                  )
+                }
+
               }
               break;
 
@@ -6566,18 +6579,21 @@ class App extends Component {
                 player.falling.state = true;
                 player.action = 'falling';
 
-                player.popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit: 25,
-                    type: '',
-                    position: '',
-                    msg: 'falling',
-                    img: '',
+                if (!player.popups.find(x=>x.msg === "falling")) {
+                  player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 30,
+                      type: '',
+                      position: '',
+                      msg: 'falling',
+                      img: '',
 
-                  }
-                )
+                    }
+                  )
+                }
+
               }
 
               break;
@@ -6886,7 +6902,7 @@ class App extends Component {
               {
                 state: false,
                 count: 0,
-                limit: 10,
+                limit: 15,
                 type: '',
                 position: '',
                 msg: 'defendFeint3',
@@ -6937,7 +6953,7 @@ class App extends Component {
                 {
                   state: false,
                   count: 0,
-                  limit: 10,
+                  limit: 15,
                   type: '',
                   position: '',
                   msg: 'attackFeint3',
@@ -6974,7 +6990,7 @@ class App extends Component {
               {
                 state: false,
                 count: 0,
-                limit: 10,
+                limit: 15,
                 type: '',
                 position: '',
                 msg: 'dodgeFeint',
@@ -7209,18 +7225,21 @@ class App extends Component {
                 if (limit === 0) {
                   limit = 5;
                 }
-                player.popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit: limit,
-                    type: '',
-                    position: '',
-                    msg: 'attacking',
-                    img: '',
+                if (!player.popups.find(x=>x.msg === "attacking")) {
+                  player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: limit,
+                      type: '',
+                      position: '',
+                      msg: 'attacking',
+                      img: '',
 
-                  }
-                )
+                    }
+                  )
+                }
+
               }
               // else {
               //   console.log('beep2',this.attackAnimRef.limit[stamAtkType]-player.attacking.count);
@@ -7323,7 +7342,7 @@ class App extends Component {
                     {
                       state: false,
                       count: 0,
-                      limit: 25,
+                      limit: 30,
                       type: '',
                       position: '',
                       msg: 'outOfAmmo',
@@ -7338,18 +7357,22 @@ class App extends Component {
               if (player.currentWeapon.type === 'crossbow' && player.bluntAttack === true && player.target.occupant.type === 'player') {
                 console.log('blunt attack w/ crossbow');
                 if (this.players[player.target.occupant.player-1].defending.state === false || this.players[player.target.occupant.player-1].direction === player.direction) {
-                  player.popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit: (this.attackAnimRef.limit.crossbow-this.attackAnimRef.peak.crossbow),
-                      type: '',
-                      position: '',
-                      msg: 'attackingBlunt',
-                      img: '',
 
-                    }
-                  )
+                  if (!player.popups.find(x=>x.msg === "attackingBlunt")) {
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: (this.attackAnimRef.limit.crossbow-this.attackAnimRef.peak.crossbow),
+                        type: '',
+                        position: '',
+                        msg: 'attackingBlunt',
+                        img: '',
+
+                      }
+                    )
+                  }
+
 
                   this.players[player.target.occupant.player-1].action = 'deflected';
 
@@ -7467,18 +7490,21 @@ class App extends Component {
                     ) {
                       bolt.kill = true;
 
-                      player.popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit: 25,
-                          type: '',
-                          position: '',
-                          msg: 'boltKilled',
-                          img: '',
+                      if (!player.popups.find(x=>x.msg === "boltKilled")) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 30,
+                            type: '',
+                            position: '',
+                            msg: 'boltKilled',
+                            img: '',
 
-                        }
-                      )
+                          }
+                        )
+                      }
+
                     }
                   }
                   if (player.currentWeapon.type === 'sword') {
@@ -7488,18 +7514,21 @@ class App extends Component {
                     ) {
                       bolt.kill = true;
 
-                      player.popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit: 25,
-                          type: '',
-                          position: '',
-                          msg: 'boltKilled',
-                          img: '',
+                      if (!player.popups.find(x=>x.msg === "boltKilled")) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 30,
+                            type: '',
+                            position: '',
+                            msg: 'boltKilled',
+                            img: '',
 
-                        }
-                      )
+                          }
+                        )
+                      }
+
                     }
                   }
                 }
@@ -7591,18 +7620,21 @@ class App extends Component {
                         let singleHit = this.rnJesus(1,2);
                       }
 
-                      player.popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit: (this.attackAnimRef.limit.unarmed-this.attackAnimRef.peak.unarmed),
-                          type: '',
-                          position: '',
-                          msg: 'attackingUnarmed',
-                          img: '',
+                      if (!player.popups.find(x=>x.msg === "attackingUnarmed")) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: (this.attackAnimRef.limit.unarmed-this.attackAnimRef.peak.unarmed),
+                            type: '',
+                            position: '',
+                            msg: 'attackingUnarmed',
+                            img: '',
 
-                        }
-                      )
+                          }
+                        )
+                      }
+
                     }
 
 
@@ -7625,18 +7657,22 @@ class App extends Component {
                       if (weapon === '') {
                         weapon = 'unarmed';
                       }
-                      player.popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
-                          type: '',
-                          position: '',
-                          msg: 'attackingBlunt',
-                          img: '',
 
-                        }
-                      )
+                      if (!player.popups.find(x=>x.msg === "attackingBlunt")) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
+                            type: '',
+                            position: '',
+                            msg: 'attackingBlunt',
+                            img: '',
+
+                          }
+                        )
+                      }
+
                     }
 
 
@@ -7798,18 +7834,21 @@ class App extends Component {
                         weapon = 'unarmed';
                       }
 
-                      player.popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
-                          type: '',
-                          position: '',
-                          msg: 'missedAttack2',
-                          img: '',
+                      if (!player.popups.find(x=>x.msg === "attackingBlunt")) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
+                            type: '',
+                            position: '',
+                            msg: 'attackingBlunt',
+                            img: '',
 
-                        }
-                      )
+                          }
+                        )
+                      }
+
                     }
 
 
@@ -7846,7 +7885,7 @@ class App extends Component {
                               {
                                 state: false,
                                 count: 0,
-                                limit: 25,
+                                limit: 30,
                                 type: '',
                                 position: '',
                                 msg: 'missionRetrieve',
@@ -7905,18 +7944,21 @@ class App extends Component {
                         type: 'blunt_attacked',
                       };
 
-                      player.popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit: 25,
-                          type: '',
-                          position: '',
-                          msg: 'attackingBlunt',
-                          img: '',
+                      if (!player.popups.find(x=>x.msg === "attackingBlunt")) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 30,
+                            type: '',
+                            position: '',
+                            msg: 'attackingBlunt',
+                            img: '',
 
-                        }
-                      )
+                          }
+                        )
+                      }
+
 
                       if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
                         this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
@@ -7982,7 +8024,7 @@ class App extends Component {
                               {
                                 state: false,
                                 count: 0,
-                                limit:25,
+                                limit:30,
                                 type: '',
                                 position: '',
                                 msg: 'alarmed',
@@ -8030,7 +8072,7 @@ class App extends Component {
                                     {
                                       state: false,
                                       count: 0,
-                                      limit: 25,
+                                      limit: 30,
                                       type: '',
                                       position: '',
                                       msg: 'missionRetrieve',
@@ -8100,7 +8142,7 @@ class App extends Component {
                             {
                               state: false,
                               count: 0,
-                              limit:25,
+                              limit:30,
                               type: '',
                               position: '',
                               msg: 'alarmed',
@@ -8204,18 +8246,21 @@ class App extends Component {
                         type: 'blunt_attacked',
                       };
 
-                      player.popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit: 25,
-                          type: '',
-                          position: '',
-                          msg: 'attackingBlunt',
-                          img: '',
+                      if (!player.popups.find(x=>x.msg === "attackingBlunt")) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 30,
+                            type: '',
+                            position: '',
+                            msg: 'attackingBlunt',
+                            img: '',
 
-                        }
-                      )
+                          }
+                        )
+                      }
+
 
                       if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
                         this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
@@ -8225,18 +8270,21 @@ class App extends Component {
                     // DEFENDER DEFEND SUCCESS, DETERMINE DEFLECT OR PUSHBACK
                     if (shouldDefend === true) {
 
-                      player.popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit: 25,
-                          type: '',
-                          position: '',
-                          msg: 'attackDefended',
-                          img: '',
+                      if (!player.popups.find(x=>x.msg === "attackingBlunt")) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 30,
+                            type: '',
+                            position: '',
+                            msg: 'attackingBlunt',
+                            img: '',
 
-                        }
-                      )
+                          }
+                        )
+                      }
+
                       // if (this.players[player.target.occupant.player-1].direction === player.direction) {
                       //   console.log('defend the rear!!');
                       // }
@@ -8353,18 +8401,21 @@ class App extends Component {
                           limit: this.players[player.number-1].statusDisplay.limit,
                         }
 
-                        player.popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit: 25,
-                            type: '',
-                            position: '',
-                            msg: 'attackParried',
-                            img: '',
+                        if (!player.popups.find(x=>x.msg === "attackParried")) {
+                          player.popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit: 30,
+                              type: '',
+                              position: '',
+                              msg: 'attackParried',
+                              img: '',
 
-                          }
-                        )
+                            }
+                          )
+                        }
+
                       }
 
                       // OFF PEAK DEFEND
@@ -8380,18 +8431,21 @@ class App extends Component {
                           limit: this.players[player.number-1].statusDisplay.limit,
                         }
 
-                        player.popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit: 25,
-                            type: '',
-                            position: '',
-                            msg: 'attackDefended',
-                            img: '',
+                        if (!player.popups.find(x=>x.msg === "attackDefended")) {
+                          player.popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit: 30,
+                              type: '',
+                              position: '',
+                              msg: 'attackDefended',
+                              img: '',
 
-                          }
-                        )
+                            }
+                          )
+                        }
+
                       }
 
                       // shouldDeflectPushBackAttacker = 1;
@@ -8543,7 +8597,7 @@ class App extends Component {
                         {
                           state: false,
                           count: 0,
-                          limit: 25,
+                          limit: 30,
                           type: '',
                           position: '',
                           msg: 'missedAttack2',
@@ -9139,11 +9193,12 @@ class App extends Component {
               player.items.weaponIndex = newIndex;
               player.currentWeapon = player.items.weapons[newIndex]
 
-              player.popups.push(
+              if (!player.popups.find(x=>x.msg === player.items.weapons[newIndex].type)) {
+                player.popups.push(
                   {
                     state: false,
                     count: 0,
-                    limit: 25,
+                    limit: 30,
                     type: '',
                     position: '',
                     msg: player.items.weapons[newIndex].type,
@@ -9151,6 +9206,8 @@ class App extends Component {
 
                   }
                 )
+              }
+
               // console.log(player.items.weapons,player.currentWeapon,newIndex,player.items.weapons[newIndex]);
 
             }
@@ -9183,7 +9240,7 @@ class App extends Component {
                     {
                       state: false,
                       count: 0,
-                      limit: 25,
+                      limit: 30,
                       type: '',
                       position: '',
                       msg: 'stop',
@@ -9297,7 +9354,7 @@ class App extends Component {
                     {
                       state: false,
                       count: 0,
-                      limit: 25,
+                      limit: 30,
                       type: '',
                       position: '',
                       msg: player.items.armor[newIndex].type,
@@ -9311,7 +9368,7 @@ class App extends Component {
                     {
                       state: false,
                       count: 0,
-                      limit: 25,
+                      limit: 30,
                       type: '',
                       position: '',
                       msg: 'stop',
@@ -9340,7 +9397,7 @@ class App extends Component {
                   {
                     state: false,
                     count: 0,
-                    limit: 25,
+                    limit: 30,
                     type: '',
                     position: '',
                     msg: 'stop',
@@ -9457,7 +9514,7 @@ class App extends Component {
                   {
                     state: false,
                     count: 0,
-                    limit: 15,
+                    limit: 20,
                     type: '',
                     position: '',
                     msg: 'flanking2',
@@ -9491,7 +9548,7 @@ class App extends Component {
                   {
                     state: false,
                     count: 0,
-                    limit: 25,
+                    limit: 30,
                     type: '',
                     position: '',
                     msg: 'noFlanking',
@@ -9654,6 +9711,7 @@ class App extends Component {
                     count: 1,
                     limit: player.statusDisplay.limit,
                   }
+
 
                   // player.popups.push(
                   //   {
@@ -10316,7 +10374,7 @@ class App extends Component {
                       {
                         state: false,
                         count: 0,
-                        limit: 3,
+                        limit: 5,
                         type: '',
                         position: '',
                         msg: 'preAction1',
@@ -12662,7 +12720,7 @@ class App extends Component {
                             {
                               state: false,
                               count: 0,
-                              limit:25,
+                              limit: 30,
                               type: '',
                               position: '',
                               msg: 'defendSuccess',
@@ -12676,7 +12734,7 @@ class App extends Component {
                             {
                               state: false,
                               count: 0,
-                              limit:25,
+                              limit: 30,
                               type: '',
                               position: '',
                               msg: 'boltDefend2',
@@ -18746,18 +18804,21 @@ class App extends Component {
             limit: this.players[player.number-1].statusDisplay.limit,
           }
 
-          player.popups.push(
-            {
-              state: false,
-              count: 0,
-              limit: 25,
-              type: '',
-              position: '',
-              msg: 'destroyedItem',
-              img: '',
+          if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+            player.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: 30,
+                type: '',
+                position: '',
+                msg: 'destroyedItem',
+                img: '',
 
-            }
-          )
+              }
+            )
+          }
+
         } else {
           // console.log('no rubble. Just remove obstacle');
           if (targetCell.obstacle.items[0]) {
@@ -18786,18 +18847,21 @@ class App extends Component {
             limit: this.players[player.number-1].statusDisplay.limit,
           }
 
-          player.popups.push(
-            {
-              state: false,
-              count: 0,
-              limit: 25,
-              type: '',
-              position: '',
-              msg: 'destroyedItem',
-              img: '',
+          if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+            player.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: 30,
+                type: '',
+                position: '',
+                msg: 'destroyedItem',
+                img: '',
 
-            }
-          )
+              }
+            )
+          }
+
         }
 
         // DROP OBSTACLE ITEMS?
@@ -20031,7 +20095,7 @@ class App extends Component {
           {
             state: false,
             count: 0,
-            limit: 15,
+            limit: 20,
             type: '',
             position: '',
             msg: 'outOfStamina',
@@ -20699,7 +20763,7 @@ class App extends Component {
           {
             state: false,
             count: 0,
-            limit: 15,
+            limit: 20,
             type: '',
             position: '',
             msg: 'outOfStamina',
@@ -21340,7 +21404,7 @@ class App extends Component {
           {
             state: false,
             count: 0,
-            limit: 15,
+            limit: 20,
             type: '',
             position: '',
             msg: 'outOfStamina',
@@ -22082,7 +22146,7 @@ class App extends Component {
           {
             state: false,
             count: 0,
-            limit: 15,
+            limit: 20,
             type: '',
             position: '',
             msg: 'outOfStamina',
@@ -22923,18 +22987,21 @@ class App extends Component {
           limit: this.players[player.number-1].statusDisplay.limit,
         }
 
-        player.popups.push(
-          {
-            state: false,
-            count: 0,
-            limit: 25,
-            type: '',
-            position: '',
-            msg: 'attackCancelled',
-            img: '',
+        if (!player.popups.find(x=>x.msg === 'attackCancelled')) {
+          player.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 30,
+              type: '',
+              position: '',
+              msg: 'attackCancelled',
+              img: '',
 
-          }
-        )
+            }
+          )
+        }
+
         break;
       case 'defending':
         if (player.success.deflected.state !== true) {
@@ -22968,18 +23035,21 @@ class App extends Component {
           limit: player.defendDecay.limit,
         }
 
-        player.popups.push(
-          {
-            state: false,
-            count: 0,
-            limit: 25,
-            type: '',
-            position: '',
-            msg: 'attackCancelled',
-            img: '',
+        if (!player.popups.find(x=>x.msg === 'attackCancelled')) {
+          player.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 30,
+              type: '',
+              position: '',
+              msg: 'attackCancelled',
+              img: '',
 
-          }
-        )
+            }
+          )
+        }
+
         break;
       case 'strafe moving':
         if (player.success.deflected.state !== true) {
@@ -23000,18 +23070,22 @@ class App extends Component {
           count: 1,
           limit: this.players[player.number-1].statusDisplay.limit,
         }
-        player.popups.push(
-          {
-            state: false,
-            count: 0,
-            limit: 25,
-            type: '',
-            position: '',
-            msg: 'attackCancelled',
-            img: '',
 
-          }
-        )
+        if (!player.popups.find(x=>x.msg === 'attackCancelled')) {
+          player.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 30,
+              type: '',
+              position: '',
+              msg: 'attackCancelled',
+              img: '',
+
+            }
+          )
+        }
+
       break;
       case 'dodging':
         if (player.success.deflected.state !== true) {
@@ -23039,18 +23113,22 @@ class App extends Component {
           count: 1,
           limit: this.players[player.number-1].statusDisplay.limit,
         }
-        player.popups.push(
-          {
-            state: false,
-            count: 0,
-            limit: 25,
-            type: '',
-            position: '',
-            msg: 'attackCancelled',
-            img: '',
 
-          }
-        )
+        if (!player.popups.find(x=>x.msg === 'attackCancelled')) {
+          player.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 30,
+              type: '',
+              position: '',
+              msg: 'attackCancelled',
+              img: '',
+
+            }
+          )
+        }
+
       break;
       case 'flanking':
         if (player.success.deflected.state !== true) {
@@ -23076,18 +23154,22 @@ class App extends Component {
           count: 1,
           limit: this.players[player.number-1].statusDisplay.limit,
         }
-        player.popups.push(
-          {
-            state: false,
-            count: 0,
-            limit: 25,
-            type: '',
-            position: '',
-            msg: 'attackCancelled',
-            img: '',
 
-          }
-        )
+        if (!player.popups.find(x=>x.msg === 'attackCancelled')) {
+          player.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 30,
+              type: '',
+              position: '',
+              msg: 'attackCancelled',
+              img: '',
+
+            }
+          )
+        }
+
       break;
       case 'jumping':
         if (player.success.deflected.state !== true) {
@@ -23108,18 +23190,22 @@ class App extends Component {
           count: 1,
           limit: this.players[player.number-1].statusDisplay.limit,
         }
-        player.popups.push(
-          {
-            state: false,
-            count: 0,
-            limit: 25,
-            type: '',
-            position: '',
-            msg: 'attackCancelled',
-            img: '',
 
-          }
-        )
+        if (!player.popups.find(x=>x.msg === 'attackCancelled')) {
+          player.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 30,
+              type: '',
+              position: '',
+              msg: 'attackCancelled',
+              img: '',
+
+            }
+          )
+        }
+
       break;
       default:
     }
@@ -23253,7 +23339,7 @@ class App extends Component {
           {
             state: false,
             count: 0,
-            limit: 25,
+            limit: 30,
             type: '',
             position: '',
             msg: 'pushedBack',
@@ -24501,18 +24587,21 @@ class App extends Component {
                           limit: this.players[player.number-1].statusDisplay.limit,
                         }
 
-                        player.popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit: 25,
-                            type: '',
-                            position: '',
-                            msg: 'destroyedItem',
-                            img: '',
+                        if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                          player.popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit: 30,
+                              type: '',
+                              position: '',
+                              msg: 'destroyedItem',
+                              img: '',
 
-                          }
-                        )
+                            }
+                          )
+                        }
+
                       } else {
                         // console.log('no rubble. Just remove barrier');
 
@@ -24535,18 +24624,21 @@ class App extends Component {
                           limit: this.players[player.number-1].statusDisplay.limit,
                         }
 
-                        player.popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit: 25,
-                            type: '',
-                            position: '',
-                            msg: 'destroyedItem',
-                            img: '',
+                        if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                          player.popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit: 30,
+                              type: '',
+                              position: '',
+                              msg: 'destroyedItem',
+                              img: '',
 
-                          }
-                        )
+                            }
+                          )
+                        }
+
                       }
 
                       this.obstacleBarrierToDestroy.push({
@@ -24758,18 +24850,21 @@ class App extends Component {
                       limit: this.players[player.number-1].statusDisplay.limit,
                     }
 
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: '',
-                        position: '',
-                        msg: 'destroyedItem',
-                        img: '',
+                    if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 30,
+                          type: '',
+                          position: '',
+                          msg: 'destroyedItem',
+                          img: '',
 
-                      }
-                    )
+                        }
+                      )
+                    }
+
                   } else {
                     // console.log('no rubble. Just remove barrier');
 
@@ -24792,18 +24887,21 @@ class App extends Component {
                       limit: this.players[player.number-1].statusDisplay.limit,
                     }
 
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: '',
-                        position: '',
-                        msg: 'destroyedItem',
-                        img: '',
+                    if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 30,
+                          type: '',
+                          position: '',
+                          msg: 'destroyedItem',
+                          img: '',
 
-                      }
-                    )
+                        }
+                      )
+                    }
+
                   }
 
                   this.obstacleBarrierToDestroy.push({
@@ -25020,18 +25118,20 @@ class App extends Component {
                         limit: this.players[player.number-1].statusDisplay.limit,
                       }
 
-                      player.popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit: 25,
-                          type: '',
-                          position: '',
-                          msg: 'destroyedItem',
-                          img: '',
+                      if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 30,
+                            type: '',
+                            position: '',
+                            msg: 'destroyedItem',
+                            img: '',
 
-                        }
-                      );
+                          }
+                        )
+                      }
 
 
                     } else {
@@ -25061,18 +25161,20 @@ class App extends Component {
                         limit: this.players[player.number-1].statusDisplay.limit,
                       }
 
-                      player.popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit: 25,
-                          type: '',
-                          position: '',
-                          msg: 'destroyedItem',
-                          img: '',
+                      if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 30,
+                            type: '',
+                            position: '',
+                            msg: 'destroyedItem',
+                            img: '',
 
-                        }
-                      )
+                          }
+                        )
+                      }
                     }
 
 
@@ -25249,18 +25351,20 @@ class App extends Component {
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
 
-                player.popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit: 25,
-                    type: '',
-                    position: '',
-                    msg: 'destroyedItem',
-                    img: '',
+                if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                  player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 30,
+                      type: '',
+                      position: '',
+                      msg: 'destroyedItem',
+                      img: '',
 
-                  }
-                )
+                    }
+                  )
+                }
 
                 this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).item = {
                   name: '',
@@ -25350,18 +25454,20 @@ class App extends Component {
                           limit: this.players[player.number-1].statusDisplay.limit,
                         }
 
-                        player.popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit: 25,
-                            type: '',
-                            position: '',
-                            msg: 'destroyedItem',
-                            img: '',
+                        if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                          player.popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit: 30,
+                              type: '',
+                              position: '',
+                              msg: 'destroyedItem',
+                              img: '',
 
-                          }
-                        )
+                            }
+                          )
+                        }
                       } else {
                         // console.log('no rubble. Just remove barrier');
 
@@ -25384,18 +25490,21 @@ class App extends Component {
                           limit: this.players[player.number-1].statusDisplay.limit,
                         }
 
-                        player.popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit: 25,
-                            type: '',
-                            position: '',
-                            msg: 'destroyedItem',
-                            img: '',
+                        if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                          player.popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit: 30,
+                              type: '',
+                              position: '',
+                              msg: 'destroyedItem',
+                              img: '',
 
-                          }
-                        )
+                            }
+                          )
+                        }
+
                       }
 
                       this.obstacleBarrierToDestroy.push({
@@ -25614,18 +25723,21 @@ class App extends Component {
                       limit: this.players[player.number-1].statusDisplay.limit,
                     }
 
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: '',
-                        position: '',
-                        msg: 'destroyedItem',
-                        img: '',
+                    if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 30,
+                          type: '',
+                          position: '',
+                          msg: 'destroyedItem',
+                          img: '',
 
-                      }
-                    )
+                        }
+                      )
+                    }
+
                   } else {
                     // console.log('no rubble. Just remove barrier');
 
@@ -25647,18 +25759,21 @@ class App extends Component {
                       limit: this.players[player.number-1].statusDisplay.limit,
                     }
 
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: '',
-                        position: '',
-                        msg: 'destroyedItem',
-                        img: '',
+                    if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 30,
+                          type: '',
+                          position: '',
+                          msg: 'destroyedItem',
+                          img: '',
 
-                      }
-                    )
+                        }
+                      )
+                    }
+
                   }
 
                   this.obstacleBarrierToDestroy.push({
@@ -25832,18 +25947,20 @@ class App extends Component {
                         limit: this.players[player.number-1].statusDisplay.limit,
                       }
 
-                      player.popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit: 25,
-                          type: '',
-                          position: '',
-                          msg: 'destroyedItem',
-                          img: '',
+                      if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 30,
+                            type: '',
+                            position: '',
+                            msg: 'destroyedItem',
+                            img: '',
 
-                        }
-                      );
+                          }
+                        )
+                      }
 
 
                     } else {
@@ -25873,18 +25990,20 @@ class App extends Component {
                         limit: this.players[player.number-1].statusDisplay.limit,
                       }
 
-                      player.popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit: 25,
-                          type: '',
-                          position: '',
-                          msg: 'destroyedItem',
-                          img: '',
+                      if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 30,
+                            type: '',
+                            position: '',
+                            msg: 'destroyedItem',
+                            img: '',
 
-                        }
-                      )
+                          }
+                        )
+                      }
                     }
 
 
@@ -26015,18 +26134,20 @@ class App extends Component {
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
 
-                player.popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit: 25,
-                    type: '',
-                    position: '',
-                    msg: 'destroyedItem',
-                    img: '',
+                if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                  player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 30,
+                      type: '',
+                      position: '',
+                      msg: 'destroyedItem',
+                      img: '',
 
-                  }
-                )
+                    }
+                  )
+                }
 
                 this.gridInfo.find(elem => elem.number.x === targetCell2.number.x && elem.number.y === targetCell2.number.y ).item = {
                   name: '',
@@ -26104,18 +26225,20 @@ class App extends Component {
                             limit: this.players[player.number-1].statusDisplay.limit,
                           }
 
-                          player.popups.push(
-                            {
-                              state: false,
-                              count: 0,
-                              limit: 25,
-                              type: '',
-                              position: '',
-                              msg: 'destroyedItem',
-                              img: '',
+                          if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                            player.popups.push(
+                              {
+                                state: false,
+                                count: 0,
+                                limit: 30,
+                                type: '',
+                                position: '',
+                                msg: 'destroyedItem',
+                                img: '',
 
-                            }
-                          )
+                              }
+                            )
+                          }
                         } else {
                           // console.log('no rubble. Just remove barrier');
                           targetCell2.barrier = {
@@ -26136,18 +26259,20 @@ class App extends Component {
                             limit: this.players[player.number-1].statusDisplay.limit,
                           }
 
-                          player.popups.push(
-                            {
-                              state: false,
-                              count: 0,
-                              limit: 25,
-                              type: '',
-                              position: '',
-                              msg: 'destroyedItem',
-                              img: '',
+                          if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                            player.popups.push(
+                              {
+                                state: false,
+                                count: 0,
+                                limit: 30,
+                                type: '',
+                                position: '',
+                                msg: 'destroyedItem',
+                                img: '',
 
-                            }
-                          )
+                              }
+                            )
+                          }
                         }
 
                         this.obstacleBarrierToDestroy.push({
@@ -26280,18 +26405,20 @@ class App extends Component {
                           limit: this.players[player.number-1].statusDisplay.limit,
                         }
 
-                        player.popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit: 25,
-                            type: '',
-                            position: '',
-                            msg: 'destroyedItem',
-                            img: '',
+                        if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                          player.popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit: 30,
+                              type: '',
+                              position: '',
+                              msg: 'destroyedItem',
+                              img: '',
 
-                          }
-                        )
+                            }
+                          )
+                        }
                       } else {
                         // console.log('no rubble. Just remove barrier');
 
@@ -26314,18 +26441,20 @@ class App extends Component {
                           limit: this.players[player.number-1].statusDisplay.limit,
                         }
 
-                        player.popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit: 25,
-                            type: '',
-                            position: '',
-                            msg: 'destroyedItem',
-                            img: '',
+                        if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                          player.popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit: 30,
+                              type: '',
+                              position: '',
+                              msg: 'destroyedItem',
+                              img: '',
 
-                          }
-                        )
+                            }
+                          )
+                        }
                       }
 
                       this.obstacleBarrierToDestroy.push({
@@ -26540,18 +26669,20 @@ class App extends Component {
                       limit: this.players[player.number-1].statusDisplay.limit,
                     }
 
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: '',
-                        position: '',
-                        msg: 'destroyedItem',
-                        img: '',
+                    if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 30,
+                          type: '',
+                          position: '',
+                          msg: 'destroyedItem',
+                          img: '',
 
-                      }
-                    )
+                        }
+                      )
+                    }
                   } else {
                     // console.log('no rubble. Just remove barrier');
                     targetCell.barrier = {
@@ -26572,18 +26703,20 @@ class App extends Component {
                       limit: this.players[player.number-1].statusDisplay.limit,
                     }
 
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: '',
-                        position: '',
-                        msg: 'destroyedItem',
-                        img: '',
+                    if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 30,
+                          type: '',
+                          position: '',
+                          msg: 'destroyedItem',
+                          img: '',
 
-                      }
-                    )
+                        }
+                      )
+                    }
                   }
 
                   this.obstacleBarrierToDestroy.push({
@@ -26756,18 +26889,20 @@ class App extends Component {
                         limit: this.players[player.number-1].statusDisplay.limit,
                       }
 
-                      player.popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit: 25,
-                          type: '',
-                          position: '',
-                          msg: 'destroyedItem',
-                          img: '',
+                      if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 30,
+                            type: '',
+                            position: '',
+                            msg: 'destroyedItem',
+                            img: '',
 
-                        }
-                      )
+                          }
+                        )
+                      }
                     } else {
                       // console.log('no rubble. Just remove obstacle');
                       if (targetCell.obstacle.items[0]) {
@@ -26794,18 +26929,20 @@ class App extends Component {
                         limit: this.players[player.number-1].statusDisplay.limit,
                       }
 
-                      player.popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit: 25,
-                          type: '',
-                          position: '',
-                          msg: 'destroyedItem',
-                          img: '',
+                      if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 30,
+                            type: '',
+                            position: '',
+                            msg: 'destroyedItem',
+                            img: '',
 
-                        }
-                      )
+                          }
+                        )
+                      }
                     }
 
 
@@ -26935,18 +27072,20 @@ class App extends Component {
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
 
-                player.popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit: 25,
-                    type: '',
-                    position: '',
-                    msg: 'destroyedItem',
-                    img: '',
+                if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                  player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 30,
+                      type: '',
+                      position: '',
+                      msg: 'destroyedItem',
+                      img: '',
 
-                  }
-                )
+                    }
+                  )
+                }
 
                 this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).item = {
                   name: '',
@@ -26964,7 +27103,7 @@ class App extends Component {
 
               // NO OBSTACLE. DESTROY REAR BARRIER
 
-              if (!player.popups.find(x=>x.msg === 'missedAttack')) {
+              if (!player.popups.find(x=>x.msg === 'missedAttack2')) {
               player.popups.push(
                 {
                   state: false,
@@ -27305,18 +27444,20 @@ class App extends Component {
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
 
-                player.popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit: 25,
-                    type: '',
-                    position: '',
-                    msg: 'destroyedItem',
-                    img: '',
+                if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                  player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 30,
+                      type: '',
+                      position: '',
+                      msg: 'destroyedItem',
+                      img: '',
 
-                  }
-                )
+                    }
+                  )
+                }
               } else {
                 // console.log('no rubble. Just remove barrier');
                 targetCell.barrier =
@@ -27338,18 +27479,20 @@ class App extends Component {
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
 
-                player.popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit: 25,
-                    type: '',
-                    position: '',
-                    msg: 'destroyedItem',
-                    img: '',
+                if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                  player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 30,
+                      type: '',
+                      position: '',
+                      msg: 'destroyedItem',
+                      img: '',
 
-                  }
-                )
+                    }
+                  )
+                }
               }
 
               this.obstacleBarrierToDestroy.push({
@@ -27491,18 +27634,20 @@ class App extends Component {
                     limit: this.players[player.number-1].statusDisplay.limit,
                   }
 
-                  player.popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit: 25,
-                      type: '',
-                      position: '',
-                      msg: 'destroyedItem',
-                      img: '',
+                  if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 30,
+                        type: '',
+                        position: '',
+                        msg: 'destroyedItem',
+                        img: '',
 
-                    }
-                  )
+                      }
+                    )
+                  }
                 } else {
                   // console.log('no rubble. Just remove obstacle');
                   if (targetCell.obstacle.items[0]) {
@@ -27531,18 +27676,20 @@ class App extends Component {
                     limit: this.players[player.number-1].statusDisplay.limit,
                   }
 
-                  player.popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit: 25,
-                      type: '',
-                      position: '',
-                      msg: 'destroyedItem',
-                      img: '',
+                  if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 30,
+                        type: '',
+                        position: '',
+                        msg: 'destroyedItem',
+                        img: '',
 
-                    }
-                  )
+                      }
+                    )
+                  }
                 }
 
 
@@ -27688,18 +27835,20 @@ class App extends Component {
                       limit: this.players[player.number-1].statusDisplay.limit,
                     }
 
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: '',
-                        position: '',
-                        msg: 'destroyedItem',
-                        img: '',
+                    if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 30,
+                          type: '',
+                          position: '',
+                          msg: 'destroyedItem',
+                          img: '',
 
-                      }
-                    )
+                        }
+                      )
+                    }
                   } else {
                     // console.log('no rubble. Just remove barrier');
                     // this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier =
@@ -27723,18 +27872,20 @@ class App extends Component {
                       limit: this.players[player.number-1].statusDisplay.limit,
                     }
 
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: '',
-                        position: '',
-                        msg: 'destroyedItem',
-                        img: '',
+                    if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 30,
+                          type: '',
+                          position: '',
+                          msg: 'destroyedItem',
+                          img: '',
 
-                      }
-                    )
+                        }
+                      )
+                    }
                   }
 
                   this.obstacleBarrierToDestroy.push({
@@ -27904,18 +28055,20 @@ class App extends Component {
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
 
-                player.popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit: 25,
-                    type: '',
-                    position: '',
-                    msg: 'destroyedItem',
-                    img: '',
+                if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                  player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 30,
+                      type: '',
+                      position: '',
+                      msg: 'destroyedItem',
+                      img: '',
 
-                  }
-                )
+                    }
+                  )
+                }
               } else {
                 // console.log('no rubble. Just remove barrier');
                 targetCell.barrier = {
@@ -27936,18 +28089,20 @@ class App extends Component {
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
 
-                player.popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit: 25,
-                    type: '',
-                    position: '',
-                    msg: 'destroyedItem',
-                    img: '',
+                if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                  player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 30,
+                      type: '',
+                      position: '',
+                      msg: 'destroyedItem',
+                      img: '',
 
-                  }
-                )
+                    }
+                  )
+                }
               }
 
               this.obstacleBarrierToDestroy.push({
@@ -28075,18 +28230,20 @@ class App extends Component {
                     limit: this.players[player.number-1].statusDisplay.limit,
                   }
 
-                  player.popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit: 25,
-                      type: '',
-                      position: '',
-                      msg: 'destroyedItem',
-                      img: '',
+                  if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 30,
+                        type: '',
+                        position: '',
+                        msg: 'destroyedItem',
+                        img: '',
 
-                    }
-                  )
+                      }
+                    )
+                  }
                 } else {
                   // console.log('no rubble. Just remove obstacle');
                   if (targetCell.obstacle.items[0]) {
@@ -28114,18 +28271,20 @@ class App extends Component {
                     limit: this.players[player.number-1].statusDisplay.limit,
                   }
 
-                  player.popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit: 25,
-                      type: '',
-                      position: '',
-                      msg: 'destroyedItem',
-                      img: '',
+                  if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 30,
+                        type: '',
+                        position: '',
+                        msg: 'destroyedItem',
+                        img: '',
 
-                    }
-                  )
+                      }
+                    )
+                  }
                 }
 
 
@@ -28257,18 +28416,20 @@ class App extends Component {
                       limit: this.players[player.number-1].statusDisplay.limit,
                     }
 
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: '',
-                        position: '',
-                        msg: 'destroyedItem',
-                        img: '',
+                    if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 30,
+                          type: '',
+                          position: '',
+                          msg: 'destroyedItem',
+                          img: '',
 
-                      }
-                    )
+                        }
+                      )
+                    }
                   } else {
                     // console.log('no rubble. Just remove barrier');
 
@@ -28290,18 +28451,20 @@ class App extends Component {
                       limit: this.players[player.number-1].statusDisplay.limit,
                     }
 
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: '',
-                        position: '',
-                        msg: 'destroyedItem',
-                        img: '',
+                    if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 30,
+                          type: '',
+                          position: '',
+                          msg: 'destroyedItem',
+                          img: '',
 
-                      }
-                    )
+                        }
+                      )
+                    }
                   }
 
                   this.obstacleBarrierToDestroy.push({
@@ -31115,7 +31278,7 @@ class App extends Component {
           {
             state: false,
             count: 0,
-            limit: 25,
+            limit: 30,
             type: '',
             position: '',
             msg: 'thinking',
@@ -31426,7 +31589,7 @@ class App extends Component {
                     {
                       state: false,
                       count: 0,
-                      limit: 25,
+                      limit: 30,
                       type: '',
                       position: '',
                       msg: 'missionRetrieve',
@@ -31496,7 +31659,7 @@ class App extends Component {
                   {
                     state: false,
                     count: 0,
-                    limit: 25,
+                    limit: 30,
                     type: '',
                     position: '',
                     msg: 'missionRetrieve',
@@ -31579,7 +31742,7 @@ class App extends Component {
                 {
                   state: false,
                   count: 0,
-                  limit: 25,
+                  limit: 30,
                   type: '',
                   position: '',
                   msg: 'missionRetrieve',
@@ -31635,7 +31798,7 @@ class App extends Component {
                 {
                   state: false,
                   count: 0,
-                  limit: 25,
+                  limit: 30,
                   type: '',
                   position: '',
                   msg: 'missionRetrieve',
@@ -31697,7 +31860,7 @@ class App extends Component {
                   {
                     state: false,
                     count: 0,
-                    limit: 25,
+                    limit: 30,
                     type: '',
                     position: '',
                     msg: 'missionRetrieve',
@@ -31822,7 +31985,7 @@ class App extends Component {
                 {
                   state: false,
                   count: 0,
-                  limit: 25,
+                  limit: 30,
                   type: '',
                   position: '',
                   msg: 'missionRetrieve',
@@ -31888,7 +32051,7 @@ class App extends Component {
                 {
                   state: false,
                   count: 0,
-                  limit: 25,
+                  limit: 30,
                   type: '',
                   position: '',
                   msg: 'missionRetrieve',
@@ -32011,7 +32174,7 @@ class App extends Component {
               {
                 state: false,
                 count: 0,
-                limit: 25,
+                limit: 30,
                 type: '',
                 position: '',
                 msg: 'missionRetrieve',
@@ -32117,7 +32280,7 @@ class App extends Component {
                 {
                   state: false,
                   count: 0,
-                  limit: 25,
+                  limit: 30,
                   type: '',
                   position: '',
                   msg: 'missionRetrieve',
@@ -32146,7 +32309,7 @@ class App extends Component {
           {
             state: false,
             count: 0,
-            limit: 25,
+            limit: 30,
             type: '',
             position: '',
             msg: 'thinking',
@@ -32160,7 +32323,7 @@ class App extends Component {
           {
             state: false,
             count: 0,
-            limit: 25,
+            limit: 30,
             type: '',
             position: '',
             msg: 'pathSwitch',
@@ -32279,7 +32442,7 @@ class App extends Component {
                       {
                         state: false,
                         count: 0,
-                        limit: 25,
+                        limit: 30,
                         type: '',
                         position: '',
                         msg: 'alarmed',
@@ -32338,7 +32501,7 @@ class App extends Component {
                         {
                           state: false,
                           count: 0,
-                          limit: 25,
+                          limit: 30,
                           type: '',
                           position: '',
                           msg: 'alarmed',
@@ -32407,7 +32570,7 @@ class App extends Component {
                         {
                           state: false,
                           count: 0,
-                          limit: 25,
+                          limit: 30,
                           type: '',
                           position: '',
                           msg: 'alarmed',
@@ -32460,7 +32623,7 @@ class App extends Component {
                         {
                           state: false,
                           count: 0,
-                          limit: 25,
+                          limit: 30,
                           type: '',
                           position: '',
                           msg: 'alarmed',
@@ -32521,7 +32684,7 @@ class App extends Component {
                         {
                           state: false,
                           count: 0,
-                          limit: 25,
+                          limit: 30,
                           type: '',
                           position: '',
                           msg: 'alarmed',
@@ -32578,7 +32741,7 @@ class App extends Component {
                         {
                           state: false,
                           count: 0,
-                          limit: 25,
+                          limit: 30,
                           type: '',
                           position: '',
                           msg: 'alarmed',
@@ -32642,7 +32805,7 @@ class App extends Component {
                         {
                           state: false,
                           count: 0,
-                          limit: 25,
+                          limit: 30,
                           type: '',
                           position: '',
                           msg: 'alarmed',
@@ -32690,7 +32853,7 @@ class App extends Component {
                         {
                           state: false,
                           count: 0,
-                          limit: 25,
+                          limit: 30,
                           type: '',
                           position: '',
                           msg: 'alarmed',
@@ -32743,7 +32906,7 @@ class App extends Component {
                         {
                           state: false,
                           count: 0,
-                          limit: 25,
+                          limit: 30,
                           type: '',
                           position: '',
                           msg: 'alarmed',
@@ -32790,7 +32953,7 @@ class App extends Component {
                         {
                           state: false,
                           count: 0,
-                          limit: 25,
+                          limit: 30,
                           type: '',
                           position: '',
                           msg: 'alarmed',
@@ -32849,7 +33012,7 @@ class App extends Component {
             {
               state: false,
               count: 0,
-              limit: 25,
+              limit: 30,
               type: '',
               position: '',
               msg: 'missionEngage',
@@ -32879,7 +33042,7 @@ class App extends Component {
           {
             state: false,
             count: 0,
-            limit: 25,
+            limit: 30,
             type: '',
             position: '',
             msg: 'thinking',
@@ -32894,7 +33057,7 @@ class App extends Component {
       //     {
       //       state: false,
       //       count: 0,
-      //       limit: 25,
+      //       limit: 30,
       //       type: '',
       //       position: '',
       //       msg: 'mission'+plyr.ai.mission 1st char upper+'',
@@ -32954,7 +33117,7 @@ class App extends Component {
                {
                  state: false,
                  count: 0,
-                 limit: 25,
+                 limit: 30,
                  type: '',
                  position: '',
                  msg: 'missionPursue',
@@ -32968,7 +33131,7 @@ class App extends Component {
                {
                  state: false,
                  count: 0,
-                 limit: 25,
+                 limit: 30,
                  type: '',
                  position: '',
                  msg: 'aggressiveMode',
@@ -33018,7 +33181,7 @@ class App extends Component {
                {
                  state: false,
                  count: 0,
-                 limit: 25,
+                 limit: 30,
                  type: '',
                  position: '',
                  msg: 'passiveMode',
@@ -33035,7 +33198,7 @@ class App extends Component {
               {
                 state: false,
                 count: 0,
-                limit: 25,
+                limit: 30,
                 type: '',
                 position: '',
                 msg: 'missionRetreat',
@@ -33062,7 +33225,7 @@ class App extends Component {
              {
                state: false,
                count: 0,
-               limit: 25,
+               limit: 30,
                type: '',
                position: '',
                msg: 'missionComplete',
@@ -33077,7 +33240,7 @@ class App extends Component {
          //     {
          //       state: false,
          //       count: 0,
-         //       limit: 25,
+         //       limit: 30,
          //       type: '',
          //       position: '',
          //       msg: 'mission'+plyr.ai.mission 1st char upper+'',
@@ -33252,7 +33415,7 @@ class App extends Component {
               {
                 state: false,
                 count: 0,
-                limit: 25,
+                limit: 30,
                 type: '',
                 position: '',
                 msg: 'missionComplete',
@@ -33267,7 +33430,7 @@ class App extends Component {
           //     {
           //       state: false,
           //       count: 0,
-          //       limit: 25,
+          //       limit: 30,
           //       type: '',
           //       position: '',
           //       msg: 'mission'+plyr.ai.mission 1st char upper+'',
@@ -33380,7 +33543,7 @@ class App extends Component {
             {
               state: false,
               count: 0,
-              limit: 25,
+              limit: 30,
               type: '',
               position: '',
               msg: 'missionEnroute',
@@ -33459,7 +33622,7 @@ class App extends Component {
               {
                 state: false,
                 count: 0,
-                limit: 25,
+                limit: 30,
                 type: '',
                 position: '',
                 msg: 'missionPursue',
@@ -33546,7 +33709,7 @@ class App extends Component {
                   {
                     state: false,
                     count: 0,
-                    limit: 25,
+                    limit: 30,
                     type: '',
                     position: '',
                     msg: 'missionRetreat',
@@ -34706,7 +34869,7 @@ class App extends Component {
             {
               state: false,
               count: 0,
-              limit: 25,
+              limit: 30,
               type: '',
               position: '',
               msg: 'missionEnroute',
@@ -34885,7 +35048,7 @@ class App extends Component {
             {
               state: false,
               count: 0,
-              limit: 25,
+              limit: 30,
               type: '',
               position: '',
               msg: 'missionEnroute',
@@ -34936,7 +35099,7 @@ class App extends Component {
             {
               state: false,
               count: 0,
-              limit: 25,
+              limit: 30,
               type: '',
               position: '',
               msg: 'missionEnroute',
