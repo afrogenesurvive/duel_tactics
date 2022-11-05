@@ -1604,7 +1604,15 @@ class App extends Component {
           count: 0,
           limit: 15,
         },
-        popups: [],
+        popups: [{
+          state: true,
+          count: 0,
+          limit: 0,
+          type: '',
+          position: 'northWest',
+          msg: '',
+          img: '',
+        }],
         itemDrop: {
           state: false,
           count: 0,
@@ -2038,7 +2046,15 @@ class App extends Component {
           count: 0,
           limit: 15,
         },
-        popups: [],
+        popups: [{
+          state: true,
+          count: 0,
+          limit: 0,
+          type: '',
+          position: 'northWest',
+          msg: '',
+          img: '',
+        }],
         itemDrop: {
           state: false,
           count: 0,
@@ -11061,7 +11077,7 @@ class App extends Component {
       for (var i = 0; i < 20; i++) {
         if (
           !player.popups.find(x => x.msg === newArray[i]) &&
-          player.number === 1 &&
+          player.number === 2 &&
           newArray[i] !==  "hpUp" &&
           newArray[i] !==  "hpDown"
         ) {
@@ -11114,7 +11130,7 @@ class App extends Component {
 
       for (const popup of player.popups) {
         let indx = player.popups.findIndex(x=>x===popup);
-        if (popup.state === true) {
+        if (popup.state === true && popup.position !== "northWest") {
           if (popup.limit > 0) {
             if (popup.state === true && popup.count < popup.limit) {
               popup.count++
@@ -15194,8 +15210,8 @@ class App extends Component {
             context.stroke();
 
             let origin2 = {x:plyr.nextPosition.x-(this.floorImageHeight/2),y:plyr.nextPosition.y-(this.floorImageHeight)};
-            let height2 = (plyr.nextPosition.y+(this.floorImageHeight/2))-(plyr.nextPosition.y-(this.floorImageHeight));
-            let width2 = this.playerDrawWidth;
+            let height2 = (plyr.nextPosition.y+(this.floorImageHeight/2))+2-(plyr.nextPosition.y-(this.floorImageHeight));
+            let width2 = this.playerDrawWidth+2;
             context.strokeStyle = 'white';
             context.lineWidth = 2;
             context.beginPath();
@@ -15204,7 +15220,6 @@ class App extends Component {
             // context.roundRect(origin2.x,origin2.y, this.playerDrawWidth, this.playerDrawHeight*1.5, 2);
             // context.roundRect(origin2.x,origin2.y, this.playerDrawWidth+2, this.floorImageHeight*1.5, 2);
             context.stroke();
-
 
 
             let popupBorderColor = this.playerColourRef['player'+plyr.number+'']
@@ -15270,7 +15285,9 @@ class App extends Component {
                ctx.closePath();
             }
 
+
             if (plyr.dead.state !== true && plyr.popups.length > 0) {
+
 
               for (const popup of plyr.popups) {
                 if (popup.state === true) {
@@ -15278,6 +15295,7 @@ class App extends Component {
                   let popupDrawCoords;
                   if (popup.position === '' || !popup.position) {
                     let currentPopups = plyr.popups.filter(x=>x.state === true);
+                    // let positions = ['north','east','south','west','northEast','southEast','southWest']
                     let positions = ['north','east','south','west','northEast','northWest','southEast','southWest']
 
                     // REMOVE POSITIONS ALREADY TAKEN BY PLAYERS' OTHER POPUPS
@@ -15626,7 +15644,7 @@ class App extends Component {
 
 
                   }
-                  else {
+                  else if (popup.position !== 'northWest') {
 
 
                     let dir = undefined;
@@ -22497,7 +22515,15 @@ class App extends Component {
       puller: 0,
       moveSpeed: 0,
     };
-    this.players[player.number-1].popups = [];
+    this.players[player.number-1].popups = [{
+      state: true,
+      count: 0,
+      limit: 0,
+      type: '',
+      position: 'northWest',
+      msg: '',
+      img: '',
+    }]
 
 
   }
@@ -22693,7 +22719,15 @@ class App extends Component {
       puller: 0,
       moveSpeed: 0,
     };
-    player.popups = [];
+    player.popups = [{
+      state: true,
+      count: 0,
+      limit: 0,
+      type: '',
+      position: 'northWest',
+      msg: '',
+      img: '',
+    }]
     // player.hp = 2;
     player.points--;
     player.drowning = false;
@@ -22895,7 +22929,15 @@ class App extends Component {
         puller: 0,
         moveSpeed: 0,
       };
-      player.popups = [];
+      player.popups = [{
+        state: true,
+        count: 0,
+        limit: 0,
+        type: '',
+        position: 'northWest',
+        msg: '',
+        img: '',
+      }];
 
       // player.currentArmor = {};
 
@@ -30748,7 +30790,15 @@ class App extends Component {
             count: 0,
             limit: 15,
           },
-          popups: [],
+          popups: [{
+            state: true,
+            count: 0,
+            limit: 0,
+            type: '',
+            position: 'northWest',
+            msg: '',
+            img: '',
+          }],
           itemDrop: {
             state: false,
             count: 0,
