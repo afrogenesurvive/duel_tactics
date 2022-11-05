@@ -331,7 +331,7 @@ class App extends Component {
     };
     this.levelData9 = {
       row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*','**_i_0.7_a_0a*','**_*_0.8_h_0a*','**_*_0.9_h_0a*'],
-      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_i_1.5_a_0a*','**_*_1.6_i_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
+      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_h_1.5_a_0a*','**_*_1.6_i_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_k_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_h_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
       row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_*_4.3_f_0a*','**_h_4.4_a_0a*','cn_b_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
@@ -3906,7 +3906,7 @@ class App extends Component {
 
         }
         else {
-          console.log('heeere!');
+          console.log('heeere!',this.cellInfoMouseOver);
           this.showCellInfoBox = true;
           if (this.mouseOverCellSwitchOff.state === true) {
             this.mouseOverCellSwitchOff.state = false;
@@ -23265,7 +23265,7 @@ class App extends Component {
     // console.log('point checker player',player);
 
     let points = player.points;
-    if (points %1 === 0) {
+    if (points %5 === 0) {
       this.bloodSacrificeEvent.state = true;
       this.bloodSacrificeEvent.limit = 2000;
       this.bloodSacrificeEvent.restore = true;
@@ -24847,6 +24847,9 @@ class App extends Component {
                    }
 
                  }
+                 if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                   this.pushBack(player,this.getOppositDirection(player.direction))
+                 }
                  if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                    this.cellPopups.push(
                      {
@@ -24910,6 +24913,9 @@ class App extends Component {
                    }
                  }
 
+               }
+               if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                 this.pushBack(player,this.getOppositDirection(player.direction))
                }
                if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                  this.cellPopups.push(
@@ -25124,6 +25130,9 @@ class App extends Component {
 
                    }
                    this.canPushObstacle(player,targetCell,'hitPush');
+                   if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                     this.pushBack(player,this.getOppositDirection(player.direction))
+                   }
                    if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                      this.cellPopups.push(
                        {
@@ -25146,6 +25155,7 @@ class App extends Component {
               // INDESTRUCTIBLE OBSTACLE
               else {
                 console.log('attacking invurnerable obstacle, deflect player?');
+
                  let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
                  if (shouldDeflect === 1) {
                    this.attackedCancel(this.players[player.number-1]);
@@ -25208,7 +25218,9 @@ class App extends Component {
                      }
                    )
                  }
-
+                 if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                   this.pushBack(player,this.getOppositDirection(player.direction))
+                 }
               }
 
 
@@ -25427,6 +25439,9 @@ class App extends Component {
                        }
 
                      }
+                     if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                       this.pushBack(player,this.getOppositDirection(player.direction))
+                     }
                      if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
                        this.cellPopups.push(
                          {
@@ -25490,6 +25505,9 @@ class App extends Component {
                        }
                      }
 
+                   }
+                   if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                     this.pushBack(player,this.getOppositDirection(player.direction))
                    }
                    if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
                      this.cellPopups.push(
@@ -25666,6 +25684,9 @@ class App extends Component {
 
 
                  }
+                 if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                   this.pushBack(player,this.getOppositDirection(player.direction))
+                 }
                  if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
                    this.cellPopups.push(
                      {
@@ -25707,6 +25728,9 @@ class App extends Component {
                  }
 
 
+               }
+               if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                 this.pushBack(player,this.getOppositDirection(player.direction))
                }
                if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
                  this.cellPopups.push(
@@ -25897,6 +25921,9 @@ class App extends Component {
 
 
                    }
+                   if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                     this.pushBack(player,this.getOppositDirection(player.direction))
+                   }
                    if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
                      this.cellPopups.push(
                        {
@@ -25939,6 +25966,9 @@ class App extends Component {
                    }
 
 
+                 }
+                 if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                   this.pushBack(player,this.getOppositDirection(player.direction))
                  }
                  if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
                    this.cellPopups.push(
@@ -26339,6 +26369,9 @@ class App extends Component {
                        }
 
                      }
+                     if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                       this.pushBack(player,this.getOppositDirection(player.direction))
+                     }
                      if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
                        this.cellPopups.push(
                          {
@@ -26402,6 +26435,9 @@ class App extends Component {
                        }
                      }
 
+                   }
+                   if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                     this.pushBack(player,this.getOppositDirection(player.direction))
                    }
                    if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
                      this.cellPopups.push(
@@ -26573,6 +26609,9 @@ class App extends Component {
 
 
                  }
+                 if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                   this.pushBack(player,this.getOppositDirection(player.direction))
+                 }
                  if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                    this.cellPopups.push(
                      {
@@ -26614,6 +26653,9 @@ class App extends Component {
                  }
 
 
+               }
+               if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                 this.pushBack(player,this.getOppositDirection(player.direction))
                }
                if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                  this.cellPopups.push(
@@ -26800,6 +26842,9 @@ class App extends Component {
 
 
                    }
+                   if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                     this.pushBack(player,this.getOppositDirection(player.direction))
+                   }
                    if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                      this.cellPopups.push(
                        {
@@ -26823,6 +26868,7 @@ class App extends Component {
               // INDESTRUCTIBLE OBSTACLE
               else {
                 console.log('attacking invurnerable obstacle, deflect player?');
+
                  let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
                  // let shouldDeflect = this.rnJesus(1,1)
                  if (shouldDeflect === 1) {
@@ -26843,6 +26889,9 @@ class App extends Component {
                    }
 
 
+                 }
+                 if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                   this.pushBack(player,this.getOppositDirection(player.direction))
                  }
                  if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                    this.cellPopups.push(
@@ -28305,6 +28354,8 @@ class App extends Component {
 
     if (type === 'arc') {
 
+
+
     }
 
   }
@@ -28473,6 +28524,26 @@ class App extends Component {
     }
 
 
+  }
+  getOppositDirection = (originalDirection) => {
+    let oppositeDirection = "";
+    switch (originalDirection) {
+      case "north":
+        oppositeDirection = "south";
+        break;
+      case "south":
+        oppositeDirection = "north";
+        break;
+      case "east":
+        oppositeDirection = "west";
+        break;
+      case "west":
+        oppositeDirection = "east";
+        break;
+      default:
+
+    }
+    return oppositeDirection;
   }
 
 
