@@ -3907,7 +3907,11 @@ class App extends Component {
         }
         else {
           console.log('heeere!',this.cellInfoMouseOver);
+          this.cellInfoMouseOver = false;
+
+
           this.showCellInfoBox = true;
+          this.mouseOverCell.state = false;
           if (this.mouseOverCellSwitchOff.state === true) {
             this.mouseOverCellSwitchOff.state = false;
           }
@@ -6098,6 +6102,12 @@ class App extends Component {
           limit: this.mouseOverCellSwitchOff.limit,
         }
         this.showCellInfoBox = false;
+        this.mouseOverCell = {
+          state: false,
+          cell: undefined,
+          count: 0,
+          threshold: this.mouseOverCell.threshold,
+        };
       }
     };
     this.mouseMoving = false;
@@ -22458,6 +22468,7 @@ class App extends Component {
       puller: 0,
       moveSpeed: 0,
     };
+    this.players[player.number-1].popups = [];
 
 
   }
@@ -22653,6 +22664,7 @@ class App extends Component {
       puller: 0,
       moveSpeed: 0,
     };
+    player.popups = [];
     // player.hp = 2;
     player.points--;
     player.drowning = false;
@@ -28545,7 +28557,6 @@ class App extends Component {
     }
     return oppositeDirection;
   }
-
 
 
   updatePathArray = () => {
