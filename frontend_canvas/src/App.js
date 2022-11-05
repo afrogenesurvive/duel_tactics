@@ -22876,6 +22876,7 @@ class App extends Component {
     // this.resetCameraSwitch = true;
 
 
+
     let plyrz = this.players
     for (const plyr of plyrz) {
       if (plyr.ai.state === true ) {
