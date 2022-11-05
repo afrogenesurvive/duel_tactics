@@ -5726,6 +5726,8 @@ class App extends Component {
             limit: this.cellToVoid.limit,
           }
 
+
+
           if (this.voidCustomCell === true) {
             // console.log('void custom cell switch off');
             this.openVoid = false
@@ -8761,6 +8763,7 @@ class App extends Component {
 
 
 
+        // PUSHING/PULLING
         // NEW PUSH/PULL DELAY AFTER LAST ATTEMPT
         if (player.newPushPullDelay.state === true) {
           if (player.newPushPullDelay.count < player.newPushPullDelay.limit) {
@@ -8773,8 +8776,6 @@ class App extends Component {
 
           }
         }
-
-        // PUSHING/PULLING
         // PUSH KEY RELEASE
         if (player.prePush.state === true && this.keyPressed[player.number-1][player.prePush.direction] !== true) {
           console.log('mid prePush but key released. reset prePush');
@@ -10362,6 +10363,38 @@ class App extends Component {
 
           }
 
+          // POPUPS
+          if (this.players[plyrPullPushedPlyr-1].prePush.state === true) {
+            if (!this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === "noPush")) {
+              this.players[plyrPullPushedPlyr-1].popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 25,
+                  type: '',
+                  position: '',
+                  msg: 'noPush',
+                  img: '',
+                }
+              )
+            }
+          }
+          if (this.players[plyrPullPushedPlyr-1].prePull.state === true) {
+            if (!this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === "noPull")) {
+              this.players[plyrPullPushedPlyr-1].popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 25,
+                  type: '',
+                  position: '',
+                  msg: 'noPull',
+                  img: '',
+                }
+              )
+            }
+          }
+
           this.players[plyrPullPushedPlyr-1].pushing = {
             state: false,
             targetCell: undefined,
@@ -10392,6 +10425,8 @@ class App extends Component {
           if (this.players[plyrPullPushedPlyr-1].newPushPullDelay.state !== true) {
             this.players[plyrPullPushedPlyr-1].newPushPullDelay.state = true
           }
+
+
 
           if (this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === 'prePush')) {
             this.players[plyrPullPushedPlyr-1].popups.splice(this.players[plyrPullPushedPlyr-1].popups.findIndex(x=>x.msg === 'prePush'),1)
@@ -10969,7 +11004,7 @@ class App extends Component {
         //     }
         //   )
         // }
-        // if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 4 && x.cell.number.x === 4)) {
+        // if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 4 && x.cell.number.y === 4)) {
         //   this.cellPopups.push(
         //     {
         //       state: false,
@@ -10983,7 +11018,7 @@ class App extends Component {
         //     }
         //   )
         // }
-        // if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 4 && x.cell.number.x === 3)) {
+        // if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 4 && x.cell.number.y === 3)) {
         //   this.cellPopups.push(
         //     {
         //       state: false,
@@ -12928,6 +12963,23 @@ class App extends Component {
           this.cellToVoid.x === x &&
           this.cellToVoid.y === y
         ) {
+          if (this.cellToVoid.count === 1) {
+            if (!this.cellPopups.find(x => x.msg === "cellVoiding" && x.cell.number.x === gridInfoCell.number.x && x.cell.number.y === gridInfoCell.number.y)) {
+              this.cellPopups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 35,
+                  type: '',
+                  position: '',
+                  msg: 'cellVoiding',
+                  color: '',
+                  img: '',
+                  cell: this.gridInfo.find(x => x.number.x === gridInfoCell.number.x && x.number.y === gridInfoCell.number.y)
+                }
+              )
+            }
+          }
           if(this.cellToVoid.count % 5 === 0) {
             floor = this.floorImgs.void3;
             // drawFloor = false;
@@ -13016,7 +13068,6 @@ class App extends Component {
         if (drawFloor === true) {
           context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
         }
-
 
         // RUBBLE
         if (gridInfoCell.rubble === true) {
@@ -19675,6 +19726,20 @@ class App extends Component {
 
       if(!destCellRef && pushStrengthPlayer >= pushStrengthThreshold) {
 
+        if (!this.players[player.number-1].popups.find(x=>x.msg === "canPush")) {
+          this.players[player.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 25,
+              type: '',
+              position: '',
+              msg: 'canPush',
+              img: '',
+            }
+          )
+        }
+
         let voidCenter = {
           x: undefined,
           y: undefined
@@ -19817,7 +19882,19 @@ class App extends Component {
       }
 
       // console.log('pushStrengthThreshold/Player',pushStrengthThreshold,pushStrengthPlayer);
-
+      if (!this.players[player.number-1].popups.find(x=>x.msg === "canPush")) {
+        this.players[player.number-1].popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 25,
+            type: '',
+            position: '',
+            msg: 'canPush',
+            img: '',
+          }
+        )
+      }
 
       if (canPushTargetFree !== true) {
         console.log('something is in the way of the obstacle to be pushed');
@@ -19827,7 +19904,19 @@ class App extends Component {
       if (canPushStrength === true && canPushTargetFree === true && destCellRef) {
 
         // console.log('ready to push');
-
+        if (!this.players[player.number-1].popups.find(x=>x.msg === "canPush")) {
+          this.players[player.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 25,
+              type: '',
+              position: '',
+              msg: 'canPush',
+              img: '',
+            }
+          )
+        }
 
         let obstacleCrementObj = this.obstacleMoveCrementer(obstacleCell,destCellRef);
 
@@ -19961,6 +20050,20 @@ class App extends Component {
 
       if (this.players[player.number-1].newPushPullDelay.state !== true) {
         this.players[player.number-1].newPushPullDelay.state = true
+      }
+
+      if (!this.players[player.number-1].popups.find(x=>x.msg === "noPush")) {
+        this.players[player.number-1].popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 25,
+            type: '',
+            position: '',
+            msg: 'noPush',
+            img: '',
+          }
+        )
       }
     }
 
@@ -20279,6 +20382,20 @@ class App extends Component {
 
       if(!destCellRef && pushStrengthPlayer >= pushStrengthThreshold) {
 
+        if (!this.players[pusher.number-1].popups.find(x=>x.msg === "canPush")) {
+          this.players[pusher.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 25,
+              type: '',
+              position: '',
+              msg: 'canPush',
+              img: '',
+            }
+          )
+        }
+
         let voidCenter = {
           x: undefined,
           y: undefined
@@ -20442,6 +20559,19 @@ class App extends Component {
       if (canPushStrength === true && canPushTargetFree === true && destCellRef) {
 
         // console.log('ready to push');
+        if (!this.players[pusher.number-1].popups.find(x=>x.msg === "canPush")) {
+          this.players[pusher.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 25,
+              type: '',
+              position: '',
+              msg: 'canPush',
+              img: '',
+            }
+          )
+        }
 
 
         // MOVE TARGET PLAYER
@@ -20587,6 +20717,20 @@ class App extends Component {
       }
       if (this.players[pusher.number-1].newPushPullDelay.state !== true) {
         this.players[pusher.number-1].newPushPullDelay.state = true;
+      }
+
+      if (!this.players[pusher.number-1].popups.find(x=>x.msg === "noPush")) {
+        this.players[pusher.number-1].popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 25,
+            type: '',
+            position: '',
+            msg: 'noPush',
+            img: '',
+          }
+        )
       }
     }
 
@@ -20877,6 +21021,20 @@ class App extends Component {
       if(!destCellRef && pullStrengthPlayer >= pullStrengthThreshold) {
 
         // console.log('ready to pull',moveSpeed);
+        if (!this.players[player.number-1].popups.find(x=>x.msg === "canPull")) {
+          this.players[player.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 25,
+              type: '',
+              position: '',
+              msg: 'canPull',
+              img: '',
+            }
+          )
+        }
+
 
         let voidCenter = {
           x: undefined,
@@ -21050,6 +21208,19 @@ class App extends Component {
       if (canPullStrength === true && canPullTargetFree === true && destCellRef) {
 
         // console.log('ready to pull',moveSpeed);
+        if (!this.players[player.number-1].popups.find(x=>x.msg === "canPull")) {
+          this.players[player.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 25,
+              type: '',
+              position: '',
+              msg: 'canPull',
+              img: '',
+            }
+          )
+        }
 
         let obstacleCrementObj = this.obstacleMoveCrementer(obstacleCell,playerCellRef);
 
@@ -21212,6 +21383,20 @@ class App extends Component {
 
       if (this.players[player.number-1].newPushPullDelay.state !== true) {
         this.players[player.number-1].newPushPullDelay.state = true
+      }
+
+      if (!this.players[player.number-1].popups.find(x=>x.msg === "noPull")) {
+        this.players[player.number-1].popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 25,
+            type: '',
+            position: '',
+            msg: 'noPull',
+            img: '',
+          }
+        )
       }
     }
 
@@ -21547,6 +21732,19 @@ class App extends Component {
       if(!destCellRef && pullStrengthPlayer >= pullStrengthThreshold) {
 
         // console.log('ready to pull',moveSpeed);
+        if (!this.players[puller.number-1].popups.find(x=>x.msg === "canPull")) {
+          this.players[puller.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 25,
+              type: '',
+              position: '',
+              msg: 'canPull',
+              img: '',
+            }
+          )
+        }
 
         let voidCenter = {
           x: undefined,
@@ -21728,6 +21926,19 @@ class App extends Component {
       if (canPullStrength === true && canPullTargetFree === true && destCellRef) {
 
         // console.log('ready to pull',moveSpeed);
+        if (!this.players[puller.number-1].popups.find(x=>x.msg === "canPull")) {
+          this.players[puller.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 25,
+              type: '',
+              position: '',
+              msg: 'canPull',
+              img: '',
+            }
+          )
+        }
 
 
         // MOVE TARGET PLAYER
@@ -21914,6 +22125,21 @@ class App extends Component {
       if (this.players[puller.number-1].newPushPullDelay.state !== true) {
         this.players[puller.number-1].newPushPullDelay.state = true
       }
+
+      if (!this.players[puller.number-1].popups.find(x=>x.msg === "noPull")) {
+        this.players[puller.number-1].popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: 25,
+            type: '',
+            position: '',
+            msg: 'noPull',
+            img: '',
+          }
+        )
+      }
+
     }
 
   }
@@ -23039,7 +23265,7 @@ class App extends Component {
     // console.log('point checker player',player);
 
     let points = player.points;
-    if (points %5 === 0) {
+    if (points %1 === 0) {
       this.bloodSacrificeEvent.state = true;
       this.bloodSacrificeEvent.limit = 2000;
       this.bloodSacrificeEvent.restore = true;
@@ -24364,6 +24590,21 @@ class App extends Component {
                        }
 
                      }
+                     if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
+                       this.cellPopups.push(
+                         {
+                           state: false,
+                           count: 0,
+                           limit: 35,
+                           type: '',
+                           position: '',
+                           msg: 'unbreakable',
+                           color: '',
+                           img: '',
+                           cell: this.gridInfo.find(x => x.number.x === myCell.number.x && x.number.y === myCell.number.y)
+                         }
+                       )
+                     }
                   }
 
                 }
@@ -24413,7 +24654,21 @@ class App extends Component {
                      }
 
                    }
-
+                   if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
+                     this.cellPopups.push(
+                       {
+                         state: false,
+                         count: 0,
+                         limit: 35,
+                         type: '',
+                         position: '',
+                         msg: 'unbreakable',
+                         color: '',
+                         img: '',
+                         cell: this.gridInfo.find(x => x.number.x === myCell.number.x && x.number.y === myCell.number.y)
+                       }
+                     )
+                   }
                 }
             }
           }
@@ -24592,6 +24847,21 @@ class App extends Component {
                    }
 
                  }
+                 if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
+                   this.cellPopups.push(
+                     {
+                       state: false,
+                       count: 0,
+                       limit: 35,
+                       type: '',
+                       position: '',
+                       msg: 'unbreakable',
+                       color: '',
+                       img: '',
+                       cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
+                     }
+                   )
+                 }
               }
 
             }
@@ -24640,6 +24910,21 @@ class App extends Component {
                    }
                  }
 
+               }
+               if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
+                 this.cellPopups.push(
+                   {
+                     state: false,
+                     count: 0,
+                     limit: 35,
+                     type: '',
+                     position: '',
+                     msg: 'unbreakable',
+                     color: '',
+                     img: '',
+                     cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
+                   }
+                 )
                }
             }
           }
@@ -24839,7 +25124,21 @@ class App extends Component {
 
                    }
                    this.canPushObstacle(player,targetCell,'hitPush');
-
+                   if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
+                     this.cellPopups.push(
+                       {
+                         state: false,
+                         count: 0,
+                         limit: 35,
+                         type: '',
+                         position: '',
+                         msg: 'unbreakable',
+                         color: '',
+                         img: '',
+                         cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
+                       }
+                     )
+                   }
                 }
 
               }
@@ -24894,6 +25193,21 @@ class App extends Component {
 
                  }
                  this.canPushObstacle(player,targetCell,'hitPush');
+                 if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
+                   this.cellPopups.push(
+                     {
+                       state: false,
+                       count: 0,
+                       limit: 35,
+                       type: '',
+                       position: '',
+                       msg: 'unbreakable',
+                       color: '',
+                       img: '',
+                       cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
+                     }
+                   )
+                 }
 
               }
 
@@ -25113,6 +25427,21 @@ class App extends Component {
                        }
 
                      }
+                     if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
+                       this.cellPopups.push(
+                         {
+                           state: false,
+                           count: 0,
+                           limit: 35,
+                           type: '',
+                           position: '',
+                           msg: 'unbreakable',
+                           color: '',
+                           img: '',
+                           cell: this.gridInfo.find(x => x.number.x === myCell.number.x && x.number.y === myCell.number.y)
+                         }
+                       )
+                     }
                   }
 
                 }
@@ -25161,6 +25490,21 @@ class App extends Component {
                        }
                      }
 
+                   }
+                   if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
+                     this.cellPopups.push(
+                       {
+                         state: false,
+                         count: 0,
+                         limit: 35,
+                         type: '',
+                         position: '',
+                         msg: 'unbreakable',
+                         color: '',
+                         img: '',
+                         cell: this.gridInfo.find(x => x.number.x === myCell.number.x && x.number.y === myCell.number.y)
+                       }
+                     )
                    }
                 }
             }
@@ -25322,6 +25666,21 @@ class App extends Component {
 
 
                  }
+                 if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
+                   this.cellPopups.push(
+                     {
+                       state: false,
+                       count: 0,
+                       limit: 35,
+                       type: '',
+                       position: '',
+                       msg: 'unbreakable',
+                       color: '',
+                       img: '',
+                       cell: this.gridInfo.find(x => x.number.x === targetCell2.number.x && x.number.y === targetCell2.number.y)
+                     }
+                   )
+                 }
               }
 
             }
@@ -25348,6 +25707,21 @@ class App extends Component {
                  }
 
 
+               }
+               if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
+                 this.cellPopups.push(
+                   {
+                     state: false,
+                     count: 0,
+                     limit: 35,
+                     type: '',
+                     position: '',
+                     msg: 'unbreakable',
+                     color: '',
+                     img: '',
+                     cell: this.gridInfo.find(x => x.number.x === targetCell2.number.x && x.number.y === targetCell2.number.y)
+                   }
+                 )
                }
             }
           }
@@ -25523,7 +25897,21 @@ class App extends Component {
 
 
                    }
-
+                   if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
+                     this.cellPopups.push(
+                       {
+                         state: false,
+                         count: 0,
+                         limit: 35,
+                         type: '',
+                         position: '',
+                         msg: 'unbreakable',
+                         color: '',
+                         img: '',
+                         cell: this.gridInfo.find(x => x.number.x === targetCell2.number.x && x.number.y === targetCell2.number.y)
+                       }
+                     )
+                   }
                    this.canPushObstacle(player,targetCell2,'hitPush');
                 }
 
@@ -25552,7 +25940,21 @@ class App extends Component {
 
 
                  }
-
+                 if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
+                   this.cellPopups.push(
+                     {
+                       state: false,
+                       count: 0,
+                       limit: 35,
+                       type: '',
+                       position: '',
+                       msg: 'unbreakable',
+                       color: '',
+                       img: '',
+                       cell: this.gridInfo.find(x => x.number.x === targetCell2.number.x && x.number.y === targetCell2.number.y)
+                     }
+                   )
+                 }
                  this.canPushObstacle(player,targetCell2,'hitPush');
               }
 
@@ -25720,7 +26122,21 @@ class App extends Component {
                     // WEAPON NO GOOD. DEFLECT
                     else {
                       console.log('your current weapon cannot destroy this, you need ',targetCell2.barrier.destructible.weapons,'. Deflect player?');
-
+                      if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
+                        this.cellPopups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 35,
+                            type: '',
+                            position: '',
+                            msg: 'unbreakable',
+                            color: '',
+                            img: '',
+                            cell: this.gridInfo.find(x => x.number.x === targetCell2.number.x && x.number.y === targetCell2.number.y)
+                          }
+                        )
+                      }
                     }
 
                   }
@@ -25728,6 +26144,21 @@ class App extends Component {
                   // INDESTRUCTIBLE FWD BARRIER
                   else {
                     console.log('attacking invurnerable barrier');
+                    if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
+                      this.cellPopups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 35,
+                          type: '',
+                          position: '',
+                          msg: 'unbreakable',
+                          color: '',
+                          img: '',
+                          cell: this.gridInfo.find(x => x.number.x === targetCell2.number.x && x.number.y === targetCell2.number.y)
+                        }
+                      )
+                    }
                   }
                 }
                 else {
@@ -25908,6 +26339,21 @@ class App extends Component {
                        }
 
                      }
+                     if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
+                       this.cellPopups.push(
+                         {
+                           state: false,
+                           count: 0,
+                           limit: 35,
+                           type: '',
+                           position: '',
+                           msg: 'unbreakable',
+                           color: '',
+                           img: '',
+                           cell: this.gridInfo.find(x => x.number.x === myCell.number.x && x.number.y === myCell.number.y)
+                         }
+                       )
+                     }
                   }
 
                 }
@@ -25956,6 +26402,21 @@ class App extends Component {
                        }
                      }
 
+                   }
+                   if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
+                     this.cellPopups.push(
+                       {
+                         state: false,
+                         count: 0,
+                         limit: 35,
+                         type: '',
+                         position: '',
+                         msg: 'unbreakable',
+                         color: '',
+                         img: '',
+                         cell: this.gridInfo.find(x => x.number.x === myCell.number.x && x.number.y === myCell.number.y)
+                       }
+                     )
                    }
                 }
             }
@@ -26112,6 +26573,21 @@ class App extends Component {
 
 
                  }
+                 if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
+                   this.cellPopups.push(
+                     {
+                       state: false,
+                       count: 0,
+                       limit: 35,
+                       type: '',
+                       position: '',
+                       msg: 'unbreakable',
+                       color: '',
+                       img: '',
+                       cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
+                     }
+                   )
+                 }
               }
 
             }
@@ -26138,6 +26614,21 @@ class App extends Component {
                  }
 
 
+               }
+               if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
+                 this.cellPopups.push(
+                   {
+                     state: false,
+                     count: 0,
+                     limit: 35,
+                     type: '',
+                     position: '',
+                     msg: 'unbreakable',
+                     color: '',
+                     img: '',
+                     cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
+                   }
+                 )
                }
             }
           }
@@ -26309,7 +26800,21 @@ class App extends Component {
 
 
                    }
-
+                   if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
+                     this.cellPopups.push(
+                       {
+                         state: false,
+                         count: 0,
+                         limit: 35,
+                         type: '',
+                         position: '',
+                         msg: 'unbreakable',
+                         color: '',
+                         img: '',
+                         cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
+                       }
+                     )
+                   }
                    this.canPushObstacle(player,targetCell,'hitPush');
                 }
 
@@ -26339,7 +26844,21 @@ class App extends Component {
 
 
                  }
-
+                 if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
+                   this.cellPopups.push(
+                     {
+                       state: false,
+                       count: 0,
+                       limit: 35,
+                       type: '',
+                       position: '',
+                       msg: 'unbreakable',
+                       color: '',
+                       img: '',
+                       cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
+                     }
+                   )
+                 }
                  this.canPushObstacle(player,targetCell,'hitPush');
               }
 
@@ -26786,7 +27305,21 @@ class App extends Component {
           // WEAPON NO GOOD. DEFLECT
           else {
             console.log('your current weapon cannot destroy this, you need ',targetCell.obstacle.weapons,'. Deflect player?');
-
+            if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
+              this.cellPopups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 35,
+                  type: '',
+                  position: '',
+                  msg: 'unbreakable',
+                  color: '',
+                  img: '',
+                  cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
+                }
+              )
+            }
           }
 
         }
@@ -26794,6 +27327,21 @@ class App extends Component {
         // INDESTRUCTIBLE FWD BARRIER
         else {
           console.log('attacking invurnerable barrier w/ bolt');
+          if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
+            this.cellPopups.push(
+              {
+                state: false,
+                count: 0,
+                limit: 35,
+                type: '',
+                position: '',
+                msg: 'unbreakable',
+                color: '',
+                img: '',
+                cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
+              }
+            )
+          }
         }
 
         // bolt.kill = true;
@@ -26961,7 +27509,21 @@ class App extends Component {
             // WEAPON NO GOOD. DEFLECT
             else {
               console.log('your current weapon cannot destroy this, you need ',targetCell.obstacle.destructible.weapons,'. Deflect player?');
-
+              if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
+                this.cellPopups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 35,
+                    type: '',
+                    position: '',
+                    msg: 'unbreakable',
+                    color: '',
+                    img: '',
+                    cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
+                  }
+                )
+              }
               this.canPushObstacle(player,targetCell,`hitPushBolt_${bolt.direction}`);
               // this.canPushObstacle(player,targetCell,'hitPushBolt_'+bolt.direction);
 
@@ -26974,7 +27536,21 @@ class App extends Component {
           // INDESTRUCTIBLE OBSTACLE
           else {
             console.log('attacking invurnerable obstacle w/ bolt');
-
+            if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
+              this.cellPopups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 35,
+                  type: '',
+                  position: '',
+                  msg: 'unbreakable',
+                  color: '',
+                  img: '',
+                  cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
+                }
+              )
+            }
             this.canPushObstacle(player,targetCell,`hitPushBolt_${bolt.direction}`);
 
           }
@@ -27114,7 +27690,21 @@ class App extends Component {
               // WEAPON NO GOOD. DEFLECT
               else {
                 console.log('your current weapon cannot destroy this, you need ',targetCell.barrier.destructible.weapons,'. Deflect player?');
-
+                if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
+                  this.cellPopups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 35,
+                      type: '',
+                      position: '',
+                      msg: 'unbreakable',
+                      color: '',
+                      img: '',
+                      cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
+                    }
+                  )
+                }
               }
 
             }
@@ -27122,6 +27712,21 @@ class App extends Component {
             // INDESTRUCTIBLE FWD BARRIER
             else {
               console.log('attacking invurnerable barrier');
+              if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
+                this.cellPopups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 35,
+                    type: '',
+                    position: '',
+                    msg: 'unbreakable',
+                    color: '',
+                    img: '',
+                    cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
+                  }
+                )
+              }
             }
 
             // bolt.kill = true;
@@ -27298,7 +27903,21 @@ class App extends Component {
           // WEAPON NO GOOD. DEFLECT
           else {
             console.log('your current weapon cannot destroy this, you need ',targetCell.obstacle.weapons,'. Deflect player?');
-
+            if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
+              this.cellPopups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 35,
+                  type: '',
+                  position: '',
+                  msg: 'unbreakable',
+                  color: '',
+                  img: '',
+                  cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
+                }
+              )
+            }
           }
 
         }
@@ -27306,6 +27925,21 @@ class App extends Component {
         // INDESTRUCTIBLE FWD BARRIER
         else {
           console.log('attacking invurnerable barrier w/ bolt');
+          if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
+            this.cellPopups.push(
+              {
+                state: false,
+                count: 0,
+                limit: 35,
+                type: '',
+                position: '',
+                msg: 'unbreakable',
+                color: '',
+                img: '',
+                cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
+              }
+            )
+          }
         }
 
         this.projectiles.find(blt => blt.id === bolt.id).kill = true;
@@ -27454,7 +28088,21 @@ class App extends Component {
             // WEAPON NO GOOD. DEFLECT
             else {
               console.log('your current weapon cannot destroy this, you need ',targetCell.obstacle.destructible.weapons,'. Deflect player?');
-
+              if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
+                this.cellPopups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 35,
+                    type: '',
+                    position: '',
+                    msg: 'unbreakable',
+                    color: '',
+                    img: '',
+                    cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
+                  }
+                )
+              }
               this.canPushObstacle(player,targetCell,`hitPushBolt_${bolt.direction}`);
             }
 
@@ -27463,7 +28111,21 @@ class App extends Component {
           // INDESTRUCTIBLE OBSTACLE
           else {
             console.log('attacking invurnerable obstacle w/ bolt');
-
+            if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
+              this.cellPopups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 35,
+                  type: '',
+                  position: '',
+                  msg: 'unbreakable',
+                  color: '',
+                  img: '',
+                  cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
+                }
+              )
+            }
             this.canPushObstacle(player,targetCell,`hitPushBolt_${bolt.direction}`);
           }
 
@@ -27595,7 +28257,21 @@ class App extends Component {
               // WEAPON NO GOOD. DEFLECT
               else {
                 console.log('your current weapon cannot destroy this, you need ',targetCell.barrier.destructible.weapons,'. Deflect player?');
-
+                if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
+                  this.cellPopups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 35,
+                      type: '',
+                      position: '',
+                      msg: 'unbreakable',
+                      color: '',
+                      img: '',
+                      cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
+                    }
+                  )
+                }
               }
 
             }
@@ -27603,6 +28279,21 @@ class App extends Component {
             // INDESTRUCTIBLE FWD BARRIER
             else {
               console.log('attacking invurnerable barrier');
+              if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
+                this.cellPopups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 35,
+                    type: '',
+                    position: '',
+                    msg: 'unbreakable',
+                    color: '',
+                    img: '',
+                    cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
+                  }
+                )
+              }
             }
             this.projectiles.find(blt => blt.id === bolt.id).kill = true;
           }
@@ -28580,11 +29271,11 @@ class App extends Component {
       missedAttack2: this.refs.missedIndicate2,
       prePush: this.refs.prePushIndicate,
       canPush: this.refs.canPushIndicate,
-      noPushing: this.refs.noPushingIndicate,
+      noPush: this.refs.noPushingIndicate,
       pushing: this.refs.pushingIndicate,
       prePull: this.refs.prePullIndicate,
       canPull: this.refs.canPullIndicate,
-      noPulling: this.refs.noPullingIndicate,
+      noPull: this.refs.noPullingIndicate,
       pulling: this.refs.pullingIndicate,
       pushedPulled: this.refs.pushedPulledIndicate,
       unbreakable: this.refs.unbreakableIndicate,
