@@ -1387,7 +1387,7 @@ class App extends Component {
           y: 0,
         },
         target: {
-          cell: {
+          cell1: {
             number: {
               x: 0,
               y: 0,
@@ -1396,6 +1396,13 @@ class App extends Component {
               x: 0,
               y: 0,
             },
+            free: true,
+            occupant: {
+              type: '',
+              player: '',
+            },
+            void: false,
+            myCellBlock: false,
           },
           cell2: {
             number: {
@@ -1406,13 +1413,14 @@ class App extends Component {
               x: 0,
               y: 0,
             },
+            free: true,
+            occupant: {
+              type: '',
+              player: '',
+            },
+            void: false,
+            myCellBlock: false,
           },
-          free: true,
-          occupant: {
-            type: '',
-            player: '',
-          },
-          void: false
         },
         direction: 'south',
         turning: {
@@ -1829,7 +1837,7 @@ class App extends Component {
           y: 0,
         },
         target: {
-          cell: {
+          cell1: {
             number: {
               x: 0,
               y: 0,
@@ -1838,6 +1846,13 @@ class App extends Component {
               x: 0,
               y: 0,
             },
+            free: true,
+            occupant: {
+              type: '',
+              player: '',
+            },
+            void: false,
+            myCellBlock: false,
           },
           cell2: {
             number: {
@@ -1848,14 +1863,14 @@ class App extends Component {
               x: 0,
               y: 0,
             },
+            free: true,
+            occupant: {
+              type: '',
+              player: '',
+            },
+            void: false,
+            myCellBlock: false,
           },
-          free: true,
-          occupant: {
-            type: '',
-            player: '',
-          },
-          void: false,
-
         },
         direction: 'west',
         turning: {
@@ -7495,7 +7510,7 @@ class App extends Component {
 
                 }
 
-
+                console.log('xyz',{...player.target});
 
                 // ATTACK PROJECTILES!!
                 for (const bolt of this.projectiles) {
@@ -7654,7 +7669,7 @@ class App extends Component {
                     }
 
 
-                    // BLUNT ATTACK!!
+                    // BLUNT ATTACK MOD DAMAGE!!
                     if (player.bluntAttack === true) {
                       // console.log('blunt attack');
 
@@ -7720,20 +7735,6 @@ class App extends Component {
                       player.attackStrength = 2;
                       this.attackedCancel(this.players[player.target.occupant.player-1])
 
-                      // if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'alarmed')) {
-                      //   this.players[player.target.occupant.player-1].popups.push(
-                      //     {
-                      //       state: false,
-                      //       count: 0,
-                      //       limit:25,
-                      //       type: '',
-                      //       position: '',
-                      //       msg: 'alarmed',
-                      //       img: '',
-                      //
-                      //     }
-                      //   )
-                      // }
 
                       if (!player.popups.find(x=>x.msg === 'attacking2')) {
                         player.popups.push(
@@ -8248,6 +8249,7 @@ class App extends Component {
                       }
                     }
 
+
                     if (bluntAttackBreakDefense === true) {
                       shouldDefend = false;
                       this.attackedCancel(this.players[player.target.occupant.player-1])
@@ -8598,6 +8600,8 @@ class App extends Component {
 
                 }
 
+
+                // CHECK FOR ITEMS OR MISS
                 if (player.target.free === true) {
                   if (
                     targetCell.rubble === true ||
@@ -11075,26 +11079,26 @@ class App extends Component {
         newArray.push(key);
       }
       for (var i = 0; i < 20; i++) {
-        if (
-          !player.popups.find(x => x.msg === newArray[i]) &&
-          player.number === 2 &&
-          newArray[i] !==  "hpUp" &&
-          newArray[i] !==  "hpDown"
-        ) {
-          player.popups.push(
-            {
-              state: false,
-              count: 0,
-              limit: 30,
-              type: '',
-              position: '',
-              msg: newArray[i],
-              img: '',
-              // cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
-            }
-          )
-        }
-        // if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 4 && x.cell.number.y === 4)) {
+        // if (
+        //   !player.popups.find(x => x.msg === newArray[i]) &&
+        //   player.number === 2 &&
+        //   newArray[i] !==  "hpUp" &&
+        //   newArray[i] !==  "hpDown"
+        // ) {
+        //   player.popups.push(
+        //     {
+        //       state: false,
+        //       count: 0,
+        //       limit: 30,
+        //       type: '',
+        //       position: '',
+        //       msg: newArray[i],
+        //       img: '',
+        //       // cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
+        //     }
+        //   )
+        // }
+        // if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 3 && x.cell.number.y === 4)) {
         //   this.cellPopups.push(
         //     {
         //       state: false,
@@ -11104,7 +11108,7 @@ class App extends Component {
         //       position: '',
         //       msg: newArray[i],
         //       img: '',
-        //       cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
+        //       cell: this.gridInfo.find(x => x.number.x === 3 && x.number.y === 4)
         //     }
         //   )
         // }
@@ -16322,34 +16326,7 @@ class App extends Component {
     let currentPosition = player.currentPosition.cell.number;
     let direction = player.direction;
     let voidDirection;
-    let target = {
-      cell: {
-        number: {
-          x: 0,
-          y: 0,
-        },
-        center: {
-          x: 0,
-          y: 0,
-        },
-      },
-      cell2: {
-        number: {
-          x: 0,
-          y: 0,
-        },
-        center: {
-          x: 0,
-          y: 0,
-        },
-      },
-      free: false,
-      occupant: {
-        type: '',
-        player: '',
-      },
-      void: false
-    }
+    let target = this.resetTarget();
 
 
     if (player.strafing.state === true &&  player.strafing.direction !== '') {
@@ -16370,8 +16347,42 @@ class App extends Component {
     }
 
 
-    let targetCellNumber = {x: 0,y: 0};
-    let targetCellCenter = {x: 0,y: 0};
+    let targetCell1Number = {x: 0,y: 0};
+    let targetCell2Number = {x: 0,y: 0};
+    let targetCell2Center = {x: 0,y: 0};
+    let targetCell2Center = {x: 0,y: 0};
+    let getTargetCells = (origin,direction) => {
+
+      switch(direction) {
+        case 'north' :
+          targetCellNumber = {
+            x: currentPosition.x,
+            y: currentPosition.y-1
+          }
+        break;
+        case 'east' :
+          targetCellNumber = {
+            x: currentPosition.x+1,
+            y: currentPosition.y
+          }
+        break;
+        case 'west' :
+          targetCellNumber = {
+            x: currentPosition.x-1,
+            y: currentPosition.y
+          }
+        break;
+        case 'south' :
+          targetCellNumber = {
+            x: currentPosition.x,
+            y: currentPosition.y+1
+          }
+        break;
+        default:
+        break;
+      }
+
+    }
 
     // EDGE VOID CHECK & SET!!
     if (currentPosition.x === 0 && currentPosition.y === 0) {
@@ -16422,20 +16433,12 @@ class App extends Component {
         voidDirection = 'west';
       }
     } else if (currentPosition.y === 0) {
-      if (
-        direction === 'north' ||
-        direction === 'northWest' ||
-        direction === 'northEast'
-      ) {
+      if (direction === 'north' ) {
         target.void = true;
         voidDirection = 'north';
       }
     } else if (currentPosition.x === this.gridWidth) {
-      if (
-        direction === 'east' ||
-        direction === 'northEast' ||
-        direction === 'southEast'
-      ) {
+      if (direction === 'east') {
         target.void = true;
         voidDirection = 'east';
       }
@@ -16449,6 +16452,7 @@ class App extends Component {
         voidDirection = 'south';
       }
     }
+
 
 
     switch(direction) {
@@ -16503,6 +16507,7 @@ class App extends Component {
     }
 
 
+
     if (player.jumping.checking === true) {
       direction = player.direction;
 
@@ -16513,33 +16518,9 @@ class App extends Component {
             y: currentPosition.y-2
           }
         break;
-        case 'northWest' :
-          target.cell2.number = {
-            x: currentPosition.x-1,
-            y: currentPosition.y-2
-          }
-        break;
-        case 'northEast' :
-          target.cell2.number = {
-            x: currentPosition.x+1,
-            y: currentPosition.y-2
-          }
-        break;
         case 'south' :
           target.cell2.number = {
             x: currentPosition.x,
-            y: currentPosition.y+2
-          }
-        break;
-        case 'southWest' :
-          target.cell2.number = {
-            x: currentPosition.x-1,
-            y: currentPosition.y+2
-          }
-        break;
-        case 'southEast' :
-          target.cell2.number = {
-            x: currentPosition.x+1,
             y: currentPosition.y+2
           }
         break;
@@ -16971,250 +16952,6 @@ class App extends Component {
     }
 
 
-    // DONT MOVE IF SOMEONE ELSE HAS ALREADY STARTED MOVING TO YOUR TARGET!
-    // for (const plyr3 of this.players) {
-    //   if (
-    //     player.number !== plyr3.number &&
-    //     plyr3.moving.state == true &&
-    //     plyr3.target.cell.number.x === targetCellNumber.x &&
-    //     plyr3.target.cell.number.y === targetCellNumber.y
-    //   ) {
-    //     // console.log('player',plyr3.number,'is already heading for the cell you player ',player.number,'are targeting @',plyr3.target.cell.number);
-    //
-    //     target.free = false;
-    //     obstacleObstructFound = true;
-    //     target.occupant = {
-    //       type: 'player',
-    //       player: plyr3.number
-    //     };
-    //   }
-    // }
-
-    // DIAGONALLY ALIGNED PLAYERS/OBSTACLES CAN'T MOVE!!
-    let found = 0;
-    switch(direction) {
-      case 'northEast' :
-
-      for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
-        for (const cell of row) {
-          if (
-            // cell.charAt(0) === 'y' ||
-            // cell.charAt(0) ===  'z'
-            cell.split('_')[0] !== "**" ||
-            cell.split('_')[1] !== "*"
-          ) {
-
-
-            let obstaclePosition = {
-              // x: Number(cell.charAt(1)),
-              x: Number(cell.split("_")[2].charAt(0)),
-              y: row.indexOf(cell),
-            }
-            // console.log('found obstacle during map scan 2 @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
-
-            if (
-              player.moving.origin.number.x === obstaclePosition.x && player.moving.origin.number.y-1 === obstaclePosition.y
-            ) {
-              found = found + 1;
-              // console.log('found 1',found);
-            }
-            if (
-              player.moving.origin.number.x+1 === obstaclePosition.x && player.moving.origin.number.y === obstaclePosition.y
-            ) {
-              found = found + 1;
-              // console.log('found 1',found);
-            }
-          }
-        }
-      }
-      for (const plyr2 of this.players) {
-        if (plyr2.number !== player.number) {
-
-          if (
-            player.moving.origin.number.x === plyr2.currentPosition.cell.number.x && player.moving.origin.number.y-1 === plyr2.currentPosition.cell.number.y
-          ) {
-            found = found + 1;
-            // console.log('found 1',found);
-          }
-          if (
-            player.moving.origin.number.x+1 === plyr2.currentPosition.cell.number.x && player.moving.origin.number.y === plyr2.currentPosition.cell.number.y
-          ) {
-            found = found + 1;
-            // console.log('found 1',found);
-          }
-        }
-      }
-      if (found === 2) {
-        // console.log('found 2');
-        target.free = false;
-        obstacleObstructFound = true;
-        found = 0;
-      }
-      break;
-      case 'northWest' :
-
-      for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
-        for (const cell of row) {
-          if (
-            // cell.charAt(0) === 'y' ||
-            // cell.charAt(0) ===  'z'
-            cell.split('_')[0] !== "**" ||
-            cell.split('_')[1] !== "*"
-          ) {
-
-            let obstaclePosition = {
-              // x: Number(cell.charAt(1)),
-              x: Number(cell.split("_")[2].charAt(0)),
-              y: row.indexOf(cell),
-            }
-            // console.log('found obstacle during map scan 2 @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
-            if (
-              player.moving.origin.number.x-1 === obstaclePosition.x && player.moving.origin.number.y === obstaclePosition.y
-            ) {
-              found = found + 1;
-              // console.log('found 1a',found);
-            }
-            if (
-              (player.moving.origin.number.x === obstaclePosition.x && player.moving.origin.number.y-1 === obstaclePosition.y)
-            ) {
-              found = found + 1;
-              // console.log('found 1b',found);
-            }
-          }
-        }
-      }
-      for (const plyr2 of this.players) {
-        if (plyr2.number !== player.number) {
-          if (
-            player.moving.origin.number.x-1 === plyr2.currentPosition.cell.number.x && player.moving.origin.number.y === plyr2.currentPosition.cell.number.y
-          ) {
-            found = found + 1;
-            // console.log('found 1c',found);
-          }
-          if (
-            player.moving.origin.number.x === plyr2.currentPosition.cell.number.x && player.moving.origin.number.y-1 === plyr2.currentPosition.cell.number.y
-          ) {
-            found = found + 1;
-            // console.log('found 1d',found);
-          }
-        }
-      }
-      if (found === 2) {
-        // console.log('found 2');
-        target.free = false;
-        obstacleObstructFound = true;
-        found = 0;
-      }
-      break;
-      case 'southWest' :
-      for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
-        for (const cell of row) {
-          if (
-            // cell.charAt(0) === 'y' ||
-            // cell.charAt(0) ===  'z'
-            cell.split('_')[0] !== "**" ||
-            cell.split('_')[1] !== "*"
-          ) {
-
-            let obstaclePosition = {
-              // x: Number(cell.charAt(1)),
-              x: Number(cell.split("_")[2].charAt(0)),
-              y: row.indexOf(cell),
-            }
-            // console.log('found obstacle during map scan 2 @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
-            if (
-              player.moving.origin.number.x === obstaclePosition.x && player.moving.origin.number.y+1 === obstaclePosition.y
-            ) {
-              found = found + 1;
-              // console.log('found 1',found);
-            }
-            if (
-              player.moving.origin.number.x-1 === obstaclePosition.x && player.moving.origin.number.y === obstaclePosition.y
-            ) {
-              found = found + 1;
-              // console.log('found 1',found);
-            }
-          }
-        }
-      }
-      for (const plyr2 of this.players) {
-        if (plyr2.number !== player.number) {
-          if (
-            player.moving.origin.number.x === plyr2.currentPosition.cell.number.x && player.moving.origin.number.y+1=== plyr2.currentPosition.cell.number.y
-          ) {
-            found = found + 1;
-            // console.log('found 1',found);
-          }
-          if (
-            player.moving.origin.number.x-1 === plyr2.currentPosition.cell.number.x && player.moving.origin.number.y === plyr2.currentPosition.cell.number.y
-          ) {
-            found = found + 1;
-            // console.log('found 1',found);
-          }
-        }
-      }
-      if (found === 2) {
-        // console.log('found 2');
-        target.free = false;
-        obstacleObstructFound = true;
-        found = 0;
-      }
-      break;
-      case 'southEast' :
-      for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
-        for (const cell of row) {
-          if (
-            // cell.charAt(0) === 'y' ||
-            // cell.charAt(0) ===  'z'
-            cell.split('_')[0] !== "**" ||
-            cell.split('_')[1] !== "*"
-          ) {
-
-            let obstaclePosition = {
-              // x: Number(cell.charAt(1)),
-              x: Number(cell.split("_")[2].charAt(0)),
-              y: row.indexOf(cell),
-            }
-            // console.log('found obstacle during map scan 2 @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
-            if (
-              player.moving.origin.number.x+1 === obstaclePosition.x && player.moving.origin.number.y === obstaclePosition.y
-            ) {
-              found = found + 1;
-              // console.log('found 1',found);
-            }
-            if (
-              player.moving.origin.number.x === obstaclePosition.x && player.moving.origin.number.y+1 === obstaclePosition.y
-            ) {
-              found = found + 1;
-              // console.log('found 1',found);
-            }
-          }
-        }
-      }
-      for (const plyr2 of this.players) {
-        if (plyr2.number !== player.number) {
-          if (
-            player.moving.origin.number.x+1 === plyr2.currentPosition.cell.number.x && player.moving.origin.number.y === plyr2.currentPosition.cell.number.y
-          ) {
-            found = found + 1;
-            // console.log('found 1',found);
-          }
-          if (
-            player.moving.origin.number.x === plyr2.currentPosition.cell.number.x && player.moving.origin.number.y+1 === plyr2.currentPosition.cell.number.y
-          ) {
-            found = found + 1;
-            // console.log('found 1',found);
-          }
-        }
-      }
-      if (found === 2) {
-        // console.log('found 2');
-        target.free = false;
-        obstacleObstructFound = true;
-        found = 0;
-      }
-      break;
-    }
 
 
     if (obstacleObstructFound !== true && spearCellObstacle !== true && spearCell2Obstacle !== true && playerObstructFound !== true) {
@@ -17230,6 +16967,45 @@ class App extends Component {
 
     return target;
 
+  }
+  resetTarget = () => {
+
+    return {
+      cell1: {
+        number: {
+          x: 0,
+          y: 0,
+        },
+        center: {
+          x: 0,
+          y: 0,
+        },
+        free: true,
+        occupant: {
+          type: '',
+          player: '',
+        },
+        void: false,
+        myCellBlock: false,
+      },
+      cell2: {
+        number: {
+          x: 0,
+          y: 0,
+        },
+        center: {
+          x: 0,
+          y: 0,
+        },
+        free: true,
+        occupant: {
+          type: '',
+          player: '',
+        },
+        void: false,
+        myCellBlock: false,
+      },
+    };
   }
   aiBoltPathCheck = (aiPlayer) => {
 
@@ -18459,24 +18235,7 @@ class App extends Component {
         }
 
         // this.moveSpeed = plyr.speed.move;
-        this.players[player.number-1].target = {
-          cell: {
-            number: {
-              x: player.currentPosition.cell.number.x,
-              y: player.currentPosition.cell.number.y,
-            },
-            center: {
-              x: player.currentPosition.cell.center.x,
-              y: player.currentPosition.cell.center.y,
-            },
-          },
-          free: true,
-          occupant: {
-            type: '',
-            player: '',
-          },
-          void: true
-        }
+        this.players[player.number-1].target = this.resetTarget();
 
         this.players[player.number-1].moving = {
           state: true,
@@ -22549,34 +22308,7 @@ class App extends Component {
       target1: {x:0 ,y:0},
       target2: {x:0 ,y:0},
     }
-    player.target = {
-      cell: {
-        number: {
-          x: 0,
-          y: 0,
-        },
-        center: {
-          x: 0,
-          y: 0,
-        },
-      },
-      cell2: {
-        number: {
-          x: 0,
-          y: 0,
-        },
-        center: {
-          x: 0,
-          y: 0,
-        },
-      },
-      free: true,
-      occupant: {
-        type: '',
-        player: '',
-      },
-      void: false
-    };
+    player.target = this.resetTarget();
     player.moving = {
       state: false,
       step: 0,
@@ -24443,24 +24175,7 @@ class App extends Component {
           )
 
           this.moveSpeed = plyr.speed.move;
-          this.players[plyr.number-1].target = {
-            cell: {
-              number: {
-                x: plyr.currentPosition.cell.number.x,
-                y: plyr.currentPosition.cell.number.y,
-              },
-              center: {
-                x: plyr.currentPosition.cell.center.x,
-                y: plyr.currentPosition.cell.center.y,
-              },
-            },
-            free: true,
-            occupant: {
-              type: '',
-              player: '',
-            },
-            void: true
-          }
+          this.players[plyr.number-1].target = this.resetTarget();
 
           this.players[plyr.number-1].moving = {
             state: true,
@@ -30570,7 +30285,7 @@ class App extends Component {
             y: cell2.center.y,
           },
           target: {
-            cell: {
+            cell1: {
               number: {
                 x: 0,
                 y: 0,
@@ -30579,6 +30294,13 @@ class App extends Component {
                 x: 0,
                 y: 0,
               },
+              free: true,
+              occupant: {
+                type: '',
+                player: '',
+              },
+              void: false,
+              myCellBlock: false,
             },
             cell2: {
               number: {
@@ -30589,13 +30311,14 @@ class App extends Component {
                 x: 0,
                 y: 0,
               },
+              free: true,
+              occupant: {
+                type: '',
+                player: '',
+              },
+              void: false,
+              myCellBlock: false,
             },
-            free: true,
-            occupant: {
-              type: '',
-              player: '',
-            },
-            void: false
           },
           direction: 'north',
           turning: {
