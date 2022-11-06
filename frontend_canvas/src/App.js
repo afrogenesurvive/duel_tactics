@@ -1402,7 +1402,6 @@ class App extends Component {
               player: '',
             },
             void: false,
-            myCellBlock: false,
           },
           cell2: {
             number: {
@@ -1419,8 +1418,8 @@ class App extends Component {
               player: '',
             },
             void: false,
-            myCellBlock: false,
           },
+          myCellBlock: false,
         },
         direction: 'south',
         turning: {
@@ -1852,7 +1851,6 @@ class App extends Component {
               player: '',
             },
             void: false,
-            myCellBlock: false,
           },
           cell2: {
             number: {
@@ -1869,8 +1867,8 @@ class App extends Component {
               player: '',
             },
             void: false,
-            myCellBlock: false,
           },
+          myCellBlock: false,
         },
         direction: 'west',
         turning: {
@@ -16986,7 +16984,6 @@ class App extends Component {
           player: '',
         },
         void: false,
-        myCellBlock: false,
       },
       cell2: {
         number: {
@@ -17003,8 +17000,8 @@ class App extends Component {
           player: '',
         },
         void: false,
-        myCellBlock: false,
       },
+      myCellBlock: false,
     };
   }
   aiBoltPathCheck = (aiPlayer) => {
@@ -30300,7 +30297,6 @@ class App extends Component {
                 player: '',
               },
               void: false,
-              myCellBlock: false,
             },
             cell2: {
               number: {
@@ -30317,8 +30313,8 @@ class App extends Component {
                 player: '',
               },
               void: false,
-              myCellBlock: false,
             },
+            myCellBlock: false,
           },
           direction: 'north',
           turning: {
