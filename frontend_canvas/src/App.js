@@ -6104,6 +6104,7 @@ class App extends Component {
         }
       }
     };
+    
 
     // MOUSED OVER CELL
     if (this.mouseOverCell.cell && this.mouseOverCell.state === false && this.mouseMoving !== true) {
@@ -6541,7 +6542,7 @@ class App extends Component {
 
                   let playerAPushDir = this.getOppositeDirection(opp.direction);
                   let playerBPushDir this.getOppositeDirection(player.direction);
-                
+
 
                   player.strafing = {
                     state: true,
