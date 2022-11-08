@@ -6177,7 +6177,7 @@ class App extends Component {
         let atDestRanges = [false,false,false,false];
 
 
-        if (player.target.void === true) {
+        if (player.target.cell1.void === true) {
           if (player.falling.state === true) {
             // console.log('...');
           } else {
@@ -6246,8 +6246,9 @@ class App extends Component {
 
               player.newMoveDelay.state = true;
 
-              if (player.target.void === false) {
-                player.currentPosition.cell = player.target.cell;
+              if (player.target.cell1.void === false) {
+                player.currentPosition.cell.number = player.target.cell1.number;
+                player.currentPosition.cell.center = player.target.cell1.center;
                 player.action = 'idle';
                 player.moving = {
                   state: false,
@@ -6255,12 +6256,12 @@ class App extends Component {
                   course: '',
                   origin: {
                     number: {
-                      x: player.target.cell.number.x,
-                      y: player.target.cell.number.y
+                      x: player.target.cell1.number.x,
+                      y: player.target.cell1.number.y
                     },
                     center: {
-                      x: player.target.cell.center.x,
-                      y: player.target.cell.center.y
+                      x: player.target.cell1.center.x,
+                      y: player.target.cell1.center.y
                     },
                   },
                   destination: {
@@ -6362,7 +6363,7 @@ class App extends Component {
               }
 
               // PUSHBACK MOVEMENT
-              if (player.pushBack.state === true && player.target.void !== true) {
+              if (player.pushBack.state === true && player.target.cell1.void !== true) {
                 console.log('player',player.number,'finished moving pushed back',player.flanking.state);
 
                 // CANCEL AI ATTACK, DEFEND!!
@@ -6404,17 +6405,17 @@ class App extends Component {
 
                 // nextPosition.x === player.target.cell.center.x &&
                 // nextPosition.y === player.target.cell.center.y &&
-                nextPosition.x === player.target.cell.center.x &&
-                nextPosition.y === player.target.cell.center.y ||
-                nextPosition.x === player.target.cell.center.x-5 &&
-                nextPosition.y === player.target.cell.center.y-5 ||
-                nextPosition.x === player.target.cell.center.x-0.25 &&
-                nextPosition.y === player.target.cell.center.y+0.5 ||
-                nextPosition.x >= player.target.cell.center.x-1 &&
-                nextPosition.x <= player.target.cell.center.x+1 &&
-                nextPosition.y >= player.target.cell.center.y-1 &&
-                nextPosition.y <= player.target.cell.center.y+1 &&
-                player.target.void === true
+                nextPosition.x === player.target.cell1.center.x &&
+                nextPosition.y === player.target.cell1.center.y ||
+                nextPosition.x === player.target.cell1.center.x-5 &&
+                nextPosition.y === player.target.cell1.center.y-5 ||
+                nextPosition.x === player.target.cell1.center.x-0.25 &&
+                nextPosition.y === player.target.cell1.center.y+0.5 ||
+                nextPosition.x >= player.target.cell1.center.x-1 &&
+                nextPosition.x <= player.target.cell1.center.x+1 &&
+                nextPosition.y >= player.target.cell1.center.y-1 &&
+                nextPosition.y <= player.target.cell1.center.y+1 &&
+                player.target.cell1.void === true
               ) {
                 // console.log('falling....');
                 player.falling.state = true;
@@ -6495,8 +6496,8 @@ class App extends Component {
                   // plyr.currentPosition.cell.number.y === player.currentPosition.cell.number.y
                   // plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
                   // plyr.currentPosition.cell.number.y === player.target.cell2.number.y
-                  plyr.target.cell.number.x === player.target.cell2.number.x &&
-                  plyr.target.cell.number.y === player.target.cell2.number.y &&
+                  plyr.target.cell1.number.x === player.target.cell2.number.x &&
+                  plyr.target.cell1.number.y === player.target.cell2.number.y &&
                   plyr.moving.state === true
                 ) {
 
@@ -6538,37 +6539,9 @@ class App extends Component {
 
                 if (pushBack === true ) {
 
-                  let playerAPushDir;
-                  let playerBPushDir;
-                  switch(opp.direction) {
-                    case 'north' :
-                      playerAPushDir = 'south';
-                    break;
-                    case 'south' :
-                      playerAPushDir = 'north';
-                    break;
-                    case 'east' :
-                      playerAPushDir = 'west';
-                    break;
-                    case 'west' :
-                      playerAPushDir = 'east';
-                    break;
-                  }
-                  switch(player.direction) {
-                    case 'north' :
-                      playerBPushDir = 'south';
-                    break;
-                    case 'south' :
-                      playerBPushDir = 'north';
-                    break;
-                    case 'east' :
-                      playerBPushDir = 'west';
-                    break;
-                    case 'west' :
-                      playerBPushDir = 'east';
-                    break;
-                  }
-
+                  let playerAPushDir = this.getOppositeDirection(opp.direction);
+                  let playerBPushDir this.getOppositeDirection(player.direction);
+                
 
                   player.strafing = {
                     state: true,
@@ -9820,7 +9793,7 @@ class App extends Component {
 
                 let target = this.getTarget(player)
 
-                if (target.free === true && player.target.void === false) {
+                if (target.cell1.free === true && player.target.cell1.void === false) {
 
                   if (player.dead.state === true && player.dead.count === 0) {
 
@@ -9851,7 +9824,7 @@ class App extends Component {
                             y: player.currentPosition.cell.center
                           },
                         },
-                        destination: target.cell.center
+                        destination: target.cell1.center
                       }
                       nextPosition = this.lineCrementer(player);
                       player.nextPosition = nextPosition;
@@ -9882,12 +9855,12 @@ class App extends Component {
 
                 }
 
-                if (target.free === false) {
+                if (target.cell1.free === false) {
                   // console.log('target is NOT free',target);
-                  if (target.occupant.type === "obstacle" && player.pushing.state !== true) {
+                  if (target.cell1.occupant.type === "obstacle" && player.pushing.state !== true) {
                     this.preObstaclePushCheck(player,target)
                   }
-                  if (target.occupant.type === "player" && player.pushing.state !== true) {
+                  if (target.cell1.occupant.type === "player" && player.pushing.state !== true) {
                     this.prePlayerPushCheck(player,target)
                   }
                   if (player.pushing.state === true) {
@@ -9913,7 +9886,7 @@ class App extends Component {
                         number: player.currentPosition.cell.number,
                         center: player.currentPosition.cell.center,
                       },
-                      destination: target.cell.center
+                      destination: target.cell1.center
                     }
 
                     nextPosition = this.lineCrementer(player);
@@ -9987,7 +9960,7 @@ class App extends Component {
                 player.strafing.direction = keyPressedDirection;
                 let target = this.getTarget(player);
 
-                if (target.free === true) {
+                if (target.cell1.free === true) {
 
                   if (player.stamina.current - this.staminaCostRef.strafe >= 0) {
 
@@ -10010,7 +9983,7 @@ class App extends Component {
                           y: player.currentPosition.cell.center.y
                         },
                       },
-                      destination: target.cell.center
+                      destination: target.cell1.center
                     }
                     nextPosition = this.lineCrementer(player);
                     player.nextPosition = nextPosition;
@@ -10038,7 +10011,7 @@ class App extends Component {
 
                 }
 
-                if (target.free === false) {
+                if (target.cell1.free === false) {
                   // console.log('here',player.direction);
                 }
               }
@@ -10053,7 +10026,7 @@ class App extends Component {
                 let target = this.getTarget(player);
 
                 let myCell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y)
-                let cell1 = this.gridInfo.find(elem => elem.number.x === target.cell.number.x && elem.number.y === target.cell.number.y)
+                let cell1 = this.gridInfo.find(elem => elem.number.x === target.cell1.number.x && elem.number.y === target.cell1.number.y)
                 let cell2 = this.gridInfo.find(elem => elem.number.x === target.cell2.number.x && elem.number.y === target.cell2.number.y)
                 // console.log('cell1',cell1);
                 // console.log('cell2',cell2);
@@ -16371,40 +16344,6 @@ class App extends Component {
       return center;
     }
 
-    // cell1: {
-    //   number: {
-    //     x: 0,
-    //     y: 0,
-    //   },
-    //   center: {
-    //     x: 0,
-    //     y: 0,
-    //   },
-    //   free: true,
-    //   occupant: {
-    //     type: '',
-    //     player: '',
-    //   },
-    //   void: false,
-    // },
-    // cell2: {
-    //   number: {
-    //     x: 0,
-    //     y: 0,
-    //   },
-    //   center: {
-    //     x: 0,
-    //     y: 0,
-    //   },
-    //   free: true,
-    //   occupant: {
-    //     type: '',
-    //     player: '',
-    //   },
-    //   void: false,
-    // },
-    // myCellBlock: false,
-
 
     // DIRECTION MOD: STRAFING
     if (player.strafing.state === true &&  player.strafing.direction !== '') {
@@ -16638,6 +16577,26 @@ class App extends Component {
 
     return myCellBarrier;
 
+  }
+  getOppositDirection = (originalDirection) => {
+    let oppositeDirection = "";
+    switch (originalDirection) {
+      case "north":
+        oppositeDirection = "south";
+        break;
+      case "south":
+        oppositeDirection = "north";
+        break;
+      case "east":
+        oppositeDirection = "west";
+        break;
+      case "west":
+        oppositeDirection = "east";
+        break;
+      default:
+
+    }
+    return oppositeDirection;
   }
   aiBoltPathCheck = (aiPlayer) => {
 
@@ -28055,26 +28014,7 @@ class App extends Component {
 
 
   }
-  getOppositDirection = (originalDirection) => {
-    let oppositeDirection = "";
-    switch (originalDirection) {
-      case "north":
-        oppositeDirection = "south";
-        break;
-      case "south":
-        oppositeDirection = "north";
-        break;
-      case "east":
-        oppositeDirection = "west";
-        break;
-      case "west":
-        oppositeDirection = "east";
-        break;
-      default:
 
-    }
-    return oppositeDirection;
-  }
 
 
   updatePathArray = () => {
