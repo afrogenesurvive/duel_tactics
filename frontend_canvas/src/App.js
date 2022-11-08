@@ -16325,14 +16325,92 @@ class App extends Component {
     let direction = player.direction;
     let voidDirection;
     let target = this.resetTarget();
+    let midGridVoid1 = false;
+    let midGridVoid2 = false;
+    let edgeVoid1 = false;
+    let edgeVoid2 = false;
+    let getVoidCenter = (cellNo,voidDirection,refCell) => {
+      let voidCenter = {
+        x: undefined,
+        y: undefined
+      };
+      let xMod = this.floorImageWidth/2;
+      let yMod = this.floorImageHeight/2;
+      if (cellNo === 2) {
+        xMod = this.floorImageWidth;
+        yMod = this.floorImageHeight;
+      }
+      switch(voidDirection) {
+        case 'north' :
+          voidCenter = {
+            x: player.currentPosition.cell.center.x+xMod,
+            y: player.currentPosition.cell.center.y-yMod,
+          }
+        break;
+        case 'south' :
+          voidCenter = {
+            x: player.currentPosition.cell.center.x-xMod,
+            y: player.currentPosition.cell.center.y+yMod,
+          }
+        break;
+        case 'west' :
+          voidCenter = {
+            x: player.currentPosition.cell.center.x-xMod,
+            y: player.currentPosition.cell.center.y-yMod,
+          }
+        break;
+        case 'east' :
+          voidCenter = {
+            x: player.currentPosition.cell.center.x+xMod,
+            y: player.currentPosition.cell.center.y+yMod,
+          }
+        break;
+      }
 
 
+      return center;
+    }
+
+    // cell1: {
+    //   number: {
+    //     x: 0,
+    //     y: 0,
+    //   },
+    //   center: {
+    //     x: 0,
+    //     y: 0,
+    //   },
+    //   free: true,
+    //   occupant: {
+    //     type: '',
+    //     player: '',
+    //   },
+    //   void: false,
+    // },
+    // cell2: {
+    //   number: {
+    //     x: 0,
+    //     y: 0,
+    //   },
+    //   center: {
+    //     x: 0,
+    //     y: 0,
+    //   },
+    //   free: true,
+    //   occupant: {
+    //     type: '',
+    //     player: '',
+    //   },
+    //   void: false,
+    // },
+    // myCellBlock: false,
+
+
+    // DIRECTION MOD: STRAFING
     if (player.strafing.state === true &&  player.strafing.direction !== '') {
       direction = player.strafing.direction;
     }
-
-
-    // FLANKING!!
+    // DIRECTION MOD: FLANKING!!
     if (player.flanking.checking === true ) {
       if (player.flanking.step === 0) {
         direction = player.flanking.direction;
@@ -16344,621 +16422,144 @@ class App extends Component {
       }
     }
 
-
-    let targetCell1Number = {x: 0,y: 0};
-    let targetCell2Number = {x: 0,y: 0};
-    let targetCell2Center = {x: 0,y: 0};
-    let targetCell2Center = {x: 0,y: 0};
-    let getTargetCells = (origin,direction) => {
-
-      switch(direction) {
-        case 'north' :
-          targetCellNumber = {
-            x: currentPosition.x,
-            y: currentPosition.y-1
-          }
-        break;
-        case 'east' :
-          targetCellNumber = {
-            x: currentPosition.x+1,
-            y: currentPosition.y
-          }
-        break;
-        case 'west' :
-          targetCellNumber = {
-            x: currentPosition.x-1,
-            y: currentPosition.y
-          }
-        break;
-        case 'south' :
-          targetCellNumber = {
-            x: currentPosition.x,
-            y: currentPosition.y+1
-          }
-        break;
-        default:
-        break;
-      }
-
-    }
-
-    // EDGE VOID CHECK & SET!!
-    if (currentPosition.x === 0 && currentPosition.y === 0) {
-      if (
-        direction === 'north' ||
-        direction === 'northEast' ||
-        direction === 'northWest'
-      ) {
-        target.void = true;
-        voidDirection = 'north';
-      }
-    }
-    if (currentPosition.x === 0 && currentPosition.y === this.gridWidth) {
-      if (
-        direction === 'south' ||
-        direction === 'southEast'
-      ) {
-        target.void = true;
-        voidDirection = 'south';
-      }
-    }
-    if (currentPosition.x === this.gridWidth && currentPosition.y === this.gridWidth) {
-      if (
-        direction === 'south' ||
-        direction === 'southWest' ||
-        direction === 'southEast'
-      ) {
-        target.void = true;
-        voidDirection = 'south';
-      }
-    }
-    if (currentPosition.x === this.gridWidth && currentPosition.y === 0) {
-      if (
-        direction === 'east' ||
-        direction === 'southEast'
-      ) {
-        target.void = true;
-        voidDirection = 'east';
-      }
-    }
-    if (currentPosition.x === 0) {
-      if (
-        direction === 'west' ||
-        direction === 'northWest' ||
-        direction === 'southWest'
-      ) {
-        target.void = true;
-        voidDirection = 'west';
-      }
-    } else if (currentPosition.y === 0) {
-      if (direction === 'north' ) {
-        target.void = true;
-        voidDirection = 'north';
-      }
-    } else if (currentPosition.x === this.gridWidth) {
-      if (direction === 'east') {
-        target.void = true;
-        voidDirection = 'east';
-      }
-    } else if (currentPosition.y === this.gridWidth) {
-      if (
-        direction === 'south' ||
-        direction === 'southEast' ||
-        direction === 'southWest'
-      ) {
-        target.void = true;
-        voidDirection = 'south';
-      }
+    if (player.jumping.checking === true) {
+      direction = player.direction;
     }
 
 
-
+    // SET CELL 1 & 2 NUMBERS
     switch(direction) {
       case 'north' :
-        targetCellNumber = {
+        target.cell1.number = {
           x: currentPosition.x,
           y: currentPosition.y-1
         }
-      break;
-      case 'northEast' :
-        targetCellNumber = {
-          x: currentPosition.x+1,
-          y: currentPosition.y-1
-        }
-      break;
-      case 'northWest' :
-        targetCellNumber = {
-          x: currentPosition.x-1,
-          y: currentPosition.y-1
+        target.cell2.number = {
+          x: currentPosition.x,
+          y: currentPosition.y-2
         }
       break;
       case 'east' :
-        targetCellNumber = {
+        target.cell1.number = {
           x: currentPosition.x+1,
+          y: currentPosition.y
+        }
+        target.cell2.number = {
+          x: currentPosition.x+2,
           y: currentPosition.y
         }
       break;
       case 'west' :
-        targetCellNumber = {
+        target.cell1.number = {
           x: currentPosition.x-1,
+          y: currentPosition.y
+        }
+        target.cell2.number = {
+          x: currentPosition.x-2,
           y: currentPosition.y
         }
       break;
       case 'south' :
-        targetCellNumber = {
+        target.cell1.number = {
           x: currentPosition.x,
           y: currentPosition.y+1
         }
-      break;
-      case 'southEast' :
-        targetCellNumber = {
-          x: currentPosition.x+1,
-          y: currentPosition.y+1
+        target.cell2.number = {
+          x: currentPosition.x,
+          y: currentPosition.y+2
         }
       break;
-      case 'southWest' :
-        targetCellNumber = {
-          x: currentPosition.x-1,
-          y: currentPosition.y+1
-        }
+      default:
       break;
     }
 
+    targetCell1Ref = this.gridInfo.find(x => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y)
+    targetCell2Ref = this.gridInfo.find(x => x.number.x === target.cell2.number.x && x.number.y === target.cell2.number.y)
 
 
-    if (player.jumping.checking === true) {
-      direction = player.direction;
-
-      switch(direction) {
-        case 'north' :
-          target.cell2.number = {
-            x: currentPosition.x,
-            y: currentPosition.y-2
-          }
-        break;
-        case 'south' :
-          target.cell2.number = {
-            x: currentPosition.x,
-            y: currentPosition.y+2
-          }
-        break;
-        case 'east' :
-          target.cell2.number = {
-            x: currentPosition.x+2,
-            y: currentPosition.y
-          }
-        break;
-        case 'west' :
-          target.cell2.number = {
-            x: currentPosition.x-2,
-            y: currentPosition.y
-          }
-        break;
+    // CHECK SET VOID AND CENTERS
+    if (!targetCell1Ref) {
+      target.cell1.void = true;
+      voidDirection = player.direction;
+      edgeVoid1 = true;
+      target.cell1.center = getVoidCenter(1,voidDirection,currentPosition);
+    }
+    if (targetCell1Ref) {
+      target.cell1.center = targetCell1Ref.center;
+      if (targetCell1Ref.void.state === true) {
+        target.cell1.void = true;
+        midGridVoid1 = true;
       }
-
-      switch(direction) {
-        case 'north' :
-          targetCellNumber = {
-            x: currentPosition.x,
-            y: currentPosition.y-1,
-          }
-        break;
-        case 'northWest' :
-          targetCellNumber = {
-            x: currentPosition.x-1,
-            y: currentPosition.y-1,
-          }
-        break;
-        case 'northEast' :
-          targetCellNumber = {
-            x: currentPosition.x+1,
-            y: currentPosition.y-1,
-          }
-        break;
-        case 'south' :
-          targetCellNumber = {
-            x: currentPosition.x,
-            y: currentPosition.y+1,
-          }
-        break;
-        case 'southWest' :
-          targetCellNumber = {
-            x: currentPosition.x-1,
-            y: currentPosition.y+1,
-          }
-        break;
-        case 'southEast' :
-          targetCellNumber = {
-            x: currentPosition.x+1,
-            y: currentPosition.y+1,
-          }
-        break;
-        case 'east' :
-          targetCellNumber = {
-            x: currentPosition.x+1,
-            y: currentPosition.y,
-          }
-        break;
-        case 'west' :
-          targetCellNumber = {
-            x: currentPosition.x-1,
-            y: currentPosition.y,
-          }
-        break;
+    }
+    if (!targetCell2Ref) {
+      target.cell2.void = true;
+      voidDirection = player.direction;
+      edgeVoid2 = true;
+      target.cell1.center = getVoidCenter(2,voidDirection,currentPosition);
+    }
+    if (targetCell2Ref) {
+      target.cell2.center = targetCell2Ref.center;
+      if (targetCell2Ref.void.state === true) {
+        target.cell2.void = true;
+        midGridVoid2 = true;
       }
-
     }
 
 
-    if (player.currentWeapon.type === 'spear' && player.attacking.state === true && player.strafing.state !== true) {
+    let myCell = this.gridInfo.find(elem2 => elem2.number.x === player.currentPosition.cell.number.x && elem2.number.y === player.currentPosition.cell.number.y)
 
-      switch(direction) {
-        case 'north' :
-          targetCellNumber = {
-            x: currentPosition.x,
-            y: currentPosition.y-2
-          }
-        break;
-        case 'northWest' :
-          targetCellNumber = {
-            x: currentPosition.x-1,
-            y: currentPosition.y-2
-          }
-        break;
-        case 'northEast' :
-          targetCellNumber = {
-            x: currentPosition.x+1,
-            y: currentPosition.y-2
-          }
-        break;
-        case 'south' :
-          targetCellNumber = {
-            x: currentPosition.x,
-            y: currentPosition.y+2
-          }
-        break;
-        case 'southWest' :
-          targetCellNumber = {
-            x: currentPosition.x-1,
-            y: currentPosition.y+2
-          }
-        break;
-        case 'southEast' :
-          targetCellNumber = {
-            x: currentPosition.x+1,
-            y: currentPosition.y+2
-          }
-        break;
-        case 'east' :
-          targetCellNumber = {
-            x: currentPosition.x+2,
-            y: currentPosition.y
-          }
-        break;
-        case 'west' :
-          targetCellNumber = {
-            x: currentPosition.x-2,
-            y: currentPosition.y
-          }
-        break;
-      }
+    target.myCellBlock = this.checkForwardBarrier(direction,myCell);
+    let fwdBarrier = this.checkForwardBarrier(direction,cellRef);
 
-      switch(direction) {
-        case 'north' :
-          target.cell2.number = {
-            x: currentPosition.x,
-            y: currentPosition.y-1,
-          }
-        break;
-        case 'northWest' :
-          target.cell2.number = {
-            x: currentPosition.x-1,
-            y: currentPosition.y-1,
-          }
-        break;
-        case 'northEast' :
-          target.cell2.number = {
-            x: currentPosition.x+1,
-            y: currentPosition.y-1,
-          }
-        break;
-        case 'south' :
-          target.cell2.number = {
-            x: currentPosition.x,
-            y: currentPosition.y+1,
-          }
-        break;
-        case 'southWest' :
-          target.cell2.number = {
-            x: currentPosition.x-1,
-            y: currentPosition.y+1,
-          }
-        break;
-        case 'southEast' :
-          target.cell2.number = {
-            x: currentPosition.x+1,
-            y: currentPosition.y+1,
-          }
-        break;
-        case 'east' :
-          target.cell2.number = {
-            x: currentPosition.x+1,
-            y: currentPosition.y,
-          }
-        break;
-        case 'west' :
-          target.cell2.number = {
-            x: currentPosition.x-1,
-            y: currentPosition.y,
-          }
-        break;
-      }
-
-      if (targetCellNumber.x < 0 || targetCellNumber.x > this.gridWidth) {
-        target.void = true;
-      }
-      if (targetCellNumber.y < 0 || targetCellNumber.y > this.gridWidth) {
-        target.void = true;
-      }
-
-    }
-
-
-    let midGridVoid = false;
-    // FIND CENTER!!
-    let cellSideLength;
-    for (const cell of gridInfo) {
-      cellSideLength = cell.side;
-      let xMatch = cell.number.x === targetCellNumber.x;
-      let yMatch = cell.number.y === targetCellNumber.y;
-      if (
-        xMatch === true && yMatch === true
-      ) {
-        targetCellCenter = cell.center;
-
-        // MID GRID VOID CHECK!!
-        if (cell.void.state === true && player.jumping.checking !== true) {
-          target.void = true
-          voidDirection = player.direction;
-          midGridVoid = true
-        }
-
-      }
-
-      if (player.currentWeapon.type === 'spear' && player.attacking.state === true) {
-
+    for (const plyr of this.players) {
+      if (plyr.number !== player.number) {
         if (
-          cell.number.x === target.cell2.number.x &&
-          cell.number.y === target.cell2.number.y
+          target.cell1.number.x === plyr.currentPosition.cell.number.x &&
+          target.cell1.number.y === plyr.currentPosition.cell.number.y
         ) {
-          target.cell2.center = cell.center;
+          target.cell1.occupant.type = "player";
+          target.cell1.occupant.player = plyr;
+          target.cell1.free = false;
         }
-      }
-
-      if (player.jumping.checking === true) {
         if (
-          cell.number.x === target.cell2.number.x &&
-          cell.number.y === target.cell2.number.y
+          target.cell2.number.x === plyr.currentPosition.cell.number.x &&
+          target.cell2.number.y === plyr.currentPosition.cell.number.y
         ) {
-          target.cell2.center = cell.center;
+          target.cell2.occupant.type = "player";
+          target.cell2.occupant.player = plyr;
+          target.cell2.free = false;
         }
       }
-
-
-
     }
 
-    if (target.void === true) {
-      let voidCenter = {
-        x: 0,
-        y: 0,
+    if (targetCell1Ref) {
+      if (targetCell1Ref.obstacle.state === true) {
+        target.cell1.occupant = "obstacle";
+        target.cell1.free = false;
       }
-      switch(voidDirection) {
-        case 'north' :
-          voidCenter = {
-            x: player.currentPosition.cell.center.x+50,
-            y: player.currentPosition.cell.center.y-30,
-          }
-        break;
-        case 'south' :
-        if (
-          player.currentPosition.cell.number.x === 0 &&
-          player.currentPosition.cell.number.y === 9
-        ) {
-          voidCenter = {
-            x: player.currentPosition.cell.center.x-30,
-            y: player.currentPosition.cell.center.y+15,
-          }
-        } else {
-          voidCenter = {
-            x: player.currentPosition.cell.center.x-50,
-            y: player.currentPosition.cell.center.y+30,
+
+      if (targetCell1Ref.barrier.state === true) {
+        if (targetCell1Ref.barrier.position === this.getOppositeDirection(direction)) {
+          target.cell1.occupant.type = "barrier";
+          target.cell1.free = false;
+        }
+        if (targetCell2Ref) {
+          if (targetCell1Ref.barrier.position === direction || targetCell2Ref.barrier.position === this.getOppositeDirection(direction)) {
+            target.cell2.occupant.type = "barrier";
+            target.cell2.free = false;
           }
         }
-        break;
-        case 'west' :
-        if (
-          player.currentPosition.cell.number.x === 0 &&
-          player.currentPosition.cell.number.y === 9
-        ) {
-          voidCenter = {
-            x: player.currentPosition.cell.center.x-30,
-            y: player.currentPosition.cell.center.y-15,
-          }
-        } else {
-          voidCenter = {
-            x: player.currentPosition.cell.center.x-50,
-            y: player.currentPosition.cell.center.y-30,
-          }
-        }
-        break;
-        case 'east' :
-          voidCenter = {
-            x: player.currentPosition.cell.center.x+50,
-            y: player.currentPosition.cell.center.y+30,
-          }
-        break;
-      }
-      if (midGridVoid === true) {
-        voidCenter = targetCellCenter;
-      }
-      targetCellCenter = voidCenter;
-
-      context.fillStyle = "#e63946";
-      context.fillRect(voidCenter.x, voidCenter.y,5,5);
-    }
-
-
-    target.cell = {
-      number: targetCellNumber,
-      center: targetCellCenter
-    };
-
-    // '**_*_0.0_a_0**'
-    // barrierbarrierPosition_obstacle_x.y_terrain_elevationNumberelevationTypeelevationPosition
-
-
-    let obstacleObstructFound = false;
-    let playerObstructFound = false;
-    let spearCellObstacle = false;
-    let spearCell2Obstacle = false;
-    for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
-      for (const cell of row) {
-        let cellRef = this.gridInfo.find(elem => elem.number.x === parseInt(cell.split("_")[2].split(".")[0]) && elem.number.y === parseInt(cell.split("_")[2].split(".")[1]))
-        let myCell = this.gridInfo.find(elem2 => elem2.number.x === player.currentPosition.cell.number.x && elem2.number.y === player.currentPosition.cell.number.y)
-
-        let myCellBarrier = false;
-        if (myCell.barrier.state === true ) {
-          if (myCell.barrier.position === direction) {
-              myCellBarrier = true;
-
-              // console.log('barrier is in your way',myCell.barrier);
-          }
-        }
-
-        let fwdBarrier = false;
-        if (cellRef.barrier.state === true) {
-
-          if (direction === 'north' && cellRef.barrier.position === 'south') {
-            fwdBarrier = true;
-          }
-          if (direction === 'south' && cellRef.barrier.position === 'north') {
-            fwdBarrier = true;
-          }
-          if (direction === 'east' && cellRef.barrier.position === 'west') {
-            fwdBarrier = true;
-          }
-          if (direction === 'west' && cellRef.barrier.position === 'east') {
-            fwdBarrier = true;
-          }
-
-
-        }
-
-        if (myCellBarrier === true) {
-
-          target.free = false;
-          target.occupant.type = 'obstacle';
-          obstacleObstructFound = true;
-
-        }
-
-        if (
-          // cell.split('_')[0] !== "**" ||
-          // cell.split('_')[1] !== "*"
-          fwdBarrier === true ||
-          cellRef.obstacle.state === true
-        ) {
-          let obstaclePosition = {
-            // x: Number(cell.charAt(1)),
-            x: Number(cell.split("_")[2].charAt(0)),
-            y: row.indexOf(cell),
-          }
-          // console.log('found obstacle during map scan @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
-          if (
-            targetCellNumber.x === obstaclePosition.x &&
-            targetCellNumber.y === obstaclePosition.y
-          ) {
-            // console.log('an obstacle is in your way');
-
-            target.free = false;
-            target.occupant.type = 'obstacle';
-            obstacleObstructFound = true;
-          }
-
-          if (player.currentWeapon.type === 'spear' && player.attacking.state === true && player.strafing.state !== true) {
-
-            if (
-              target.cell2.number.x === obstaclePosition.x &&
-              target.cell2.number.y === obstaclePosition.y
-            ) {
-              spearCell2Obstacle = true;
-
-              target.free = false;
-              target.occupant.type = 'obstacle';
-              obstacleObstructFound = true;
-            }
-          }
-          // if (
-          //   target.cell2.number.x === obstaclePosition.x &&
-          //   target.cell2.number.y === obstaclePosition.y
-          // ) {
-          //   spearCell2Obstacle = true;
-          // }
-        }
-
 
 
       }
     }
-
-    for (const plyr2 of this.players) {
-      if (plyr2.number !== player.number) {
-        if (
-          targetCellNumber.x === plyr2.currentPosition.cell.number.x &&
-          targetCellNumber.y === plyr2.currentPosition.cell.number.y
-        ) {
-          // console.log('opposing player is in your way');
-          playerObstructFound = true;
-          target.free = false;
-          target.occupant = {
-            type: 'player',
-            player: plyr2.number
-          };
-        }
-        if (player.currentWeapon.type === 'spear' && player.attacking.state === true) {
-          if (
-            target.cell2.number.x === plyr2.currentPosition.cell.number.x &&
-            target.cell2.number.y === plyr2.currentPosition.cell.number.y
-          ) {
-            // console.log('opposing player is in your way',plyr2,target.cell2.number.x === plyr2.currentPosition.cell.number.x && target.cell2.number.y === plyr2.currentPosition.cell.number.y,plyr2.currentPosition.cell.number.x,plyr2.currentPosition.cell.number.y);
-            target.free = false;
-            playerObstructFound = true;
-            target.occupant = {
-              type: 'player',
-              player: plyr2.number
-            };
-          }
-
-          if (obstacleObstructFound === true) {
-            target.free = false;
-            target.occupant.type = 'obstacle';
-          }
-        }
-
+    if (targetCell2Ref) {
+      if (targetCell2Ref.obstacle.state === true) {
+        target.cell2.occupant = "obstacle";
+        target.cell2.free = false;
       }
     }
 
-
-
-
-    if (obstacleObstructFound !== true && spearCellObstacle !== true && spearCell2Obstacle !== true && playerObstructFound !== true) {
-      target.free = true;
-      target.occupant = {
-        type: '',
-        player: ''
-      }
-    }
 
     player.target = target;
     this.players[player.number-1] = player;
@@ -17003,6 +16604,40 @@ class App extends Component {
       },
       myCellBlock: false,
     };
+  }
+  checkForwardBarrier = (direction,cell) => {
+
+    let fwdBarrier = false;
+    if (cell.barrier.state === true) {
+
+      if (direction === 'north' && cell.barrier.position === 'south') {
+        fwdBarrier = true;
+      }
+      if (direction === 'south' && cell.barrier.position === 'north') {
+        fwdBarrier = true;
+      }
+      if (direction === 'east' && cell.barrier.position === 'west') {
+        fwdBarrier = true;
+      }
+      if (direction === 'west' && cell.barrier.position === 'east') {
+        fwdBarrier = true;
+      }
+
+    }
+    return fwdBarrier;
+
+  }
+  checkMyCellBarrier = (direction,myCell) => {
+
+    let myCellBarrier = false;
+    if (myCell.barrier.state === true ) {
+      if (myCell.barrier.position === direction) {
+          myCellBarrier = true;
+      }
+    }
+
+    return myCellBarrier;
+
   }
   aiBoltPathCheck = (aiPlayer) => {
 
