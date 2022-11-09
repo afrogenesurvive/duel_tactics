@@ -6104,7 +6104,7 @@ class App extends Component {
         }
       }
     };
-    
+
 
     // MOUSED OVER CELL
     if (this.mouseOverCell.cell && this.mouseOverCell.state === false && this.mouseMoving !== true) {
@@ -6192,31 +6192,31 @@ class App extends Component {
 
           let destRngIndx = undefined;
           if (
-            nextPosition.x >= player.target.cell.center.x-1 &&
-            nextPosition.x <= player.target.cell.center.x+1 &&
-            nextPosition.y >= player.target.cell.center.y-1 &&
-            nextPosition.y <= player.target.cell.center.y+1
+            nextPosition.x >= player.target.cell1.center.x-1 &&
+            nextPosition.x <= player.target.cell1.center.x+1 &&
+            nextPosition.y >= player.target.cell1.center.y-1 &&
+            nextPosition.y <= player.target.cell1.center.y+1
           ) {
             atDestRanges[0] = true;
             destRngIndx = 0;
           }
           if (
-            nextPosition.x === player.target.cell.center.x-0.25 &&
-            nextPosition.y === player.target.cell.center.y+0.5
+            nextPosition.x === player.target.cell1.center.x-0.25 &&
+            nextPosition.y === player.target.cell1.center.y+0.5
           ) {
             atDestRanges[1] = true;
             destRngIndx = 1;
           }
           if (
-            nextPosition.x === player.target.cell.center.x &&
-            nextPosition.y === player.target.cell.center.y
+            nextPosition.x === player.target.cell1.center.x &&
+            nextPosition.y === player.target.cell1.center.y
           ) {
             atDestRanges[2] = true;
             destRngIndx = 2;
           }
           if (
-            nextPosition.x === player.target.cell.center.x-5 &&
-            nextPosition.y === player.target.cell.center.y-5
+            nextPosition.x === player.target.cell1.center.x-5 &&
+            nextPosition.y === player.target.cell1.center.y-5
           ) {
             atDestRanges[3] = true;
             destRngIndx = 3;
@@ -6248,6 +6248,7 @@ class App extends Component {
               player.newMoveDelay.state = true;
 
               if (player.target.cell1.void === false) {
+
                 player.currentPosition.cell.number = player.target.cell1.number;
                 player.currentPosition.cell.center = player.target.cell1.center;
                 player.action = 'idle';
@@ -6418,6 +6419,7 @@ class App extends Component {
                 nextPosition.y <= player.target.cell1.center.y+1 &&
                 player.target.cell1.void === true
               ) {
+                console.log('there');
                 // console.log('falling....');
                 player.falling.state = true;
                 player.action = 'falling';
@@ -6509,7 +6511,9 @@ class App extends Component {
                 }
               }
 
-              if (player.target.void === false) {
+              // Jump dest cell not void
+              if (player.target.cell2.void === false) {
+
 
                 player.jumping.state = false;
                 player.currentPosition.cell = player.target.cell2;
@@ -6541,7 +6545,7 @@ class App extends Component {
                 if (pushBack === true ) {
 
                   let playerAPushDir = this.getOppositeDirection(opp.direction);
-                  let playerBPushDir this.getOppositeDirection(player.direction);
+                  let playerBPushDir = this.getOppositeDirection(player.direction);
 
 
                   player.strafing = {
@@ -9869,7 +9873,7 @@ class App extends Component {
                   }
                 }
 
-                if (player.target.void === true) {
+                if (player.target.cell1.void === true) {
                   // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
 
 
@@ -9922,7 +9926,6 @@ class App extends Component {
             }
 
             // CHANGE DIRECTION IF NOT STRAFING!!
-            // if (keyPressedDirection !== player.direction && player.strafing.state === false && player.prePull.state !== true) {
             if (keyPressedDirection !== player.direction && player.strafing.state === false) {
 
               // console.log('change player direction to',keyPressedDirection);
@@ -13167,8 +13170,8 @@ class App extends Component {
         let floorHighlight;
         for (const plyr3 of this.players) {
           if (
-            x === plyr3.target.cell.number.x &&
-            y === plyr3.target.cell.number.y
+            x === plyr3.target.cell1.number.x &&
+            y === plyr3.target.cell1.number.y
           ) {
             if (plyr3.ai.state !== true && plyr3.dead.state !== true && plyr3.falling.state !== true && plyr3.drowning !== true) {
               switch(plyr3.number) {
@@ -14412,7 +14415,7 @@ class App extends Component {
 
 
           //PLAYER DEPTH SORTING!!
-          if (plyr.target.void === false && plyr.moving.state === true && plyr.falling.state !== true) {
+          if (plyr.target.cell1.void === false && plyr.moving.state === true && plyr.falling.state !== true) {
             let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
             // console.log('move',finalAnimIndex);
             // if (plyr.direction === 'north' || plyr.direction === 'northWest' || plyr.direction === 'west') {
@@ -14622,7 +14625,7 @@ class App extends Component {
               // playerDrawLog(x,y,plyr)
             }
           }
-          else if (plyr.target.void === true && plyr.moving.state === true && plyr.falling.state !== true) {
+          else if (plyr.target.cell1.void === true && plyr.moving.state === true && plyr.falling.state !== true) {
 
             // console.log('heading for thevoid @ draw step');
             // if (
@@ -14824,8 +14827,8 @@ class App extends Component {
 
 
             if (
-              x === plyr.target.cell.number.x &&
-              y === plyr.target.cell.number.y
+              x === plyr.target.cell1.number.x &&
+              y === plyr.target.cell1.number.y
             ) {
 
               context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-35, this.playerDrawWidth, this.playerDrawHeight);
@@ -14833,10 +14836,10 @@ class App extends Component {
             }
 
             if (
-              plyr.target.cell.number.x < 0 ||
-              plyr.target.cell.number.y < 0 ||
-              plyr.target.cell.number.x > this.gridWidth ||
-              plyr.target.cell.number.y > this.gridWidth
+              plyr.target.cell1.number.x < 0 ||
+              plyr.target.cell1.number.y < 0 ||
+              plyr.target.cell1.number.x > this.gridWidth ||
+              plyr.target.cell1.number.y > this.gridWidth
             ) {
               if (
                 x === plyr.moving.origin.number.x &&
@@ -15118,8 +15121,8 @@ class App extends Component {
                     },
                   },
                   destination: {
-                    x: this.players[plyr.number-1].target.cell.center.x,
-                    y: this.players[plyr.number-1].target.cell.center.y
+                    x: this.players[plyr.number-1].target.cell1.center.x,
+                    y: this.players[plyr.number-1].target.cell1.center.y
                   }
                 }
 
@@ -16342,7 +16345,7 @@ class App extends Component {
       }
 
 
-      return center;
+      return voidCenter;
     }
 
 
@@ -16413,8 +16416,8 @@ class App extends Component {
       break;
     }
 
-    targetCell1Ref = this.gridInfo.find(x => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y)
-    targetCell2Ref = this.gridInfo.find(x => x.number.x === target.cell2.number.x && x.number.y === target.cell2.number.y)
+    let targetCell1Ref = this.gridInfo.find(x => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y)
+    let targetCell2Ref = this.gridInfo.find(x => x.number.x === target.cell2.number.x && x.number.y === target.cell2.number.y)
 
 
     // CHECK SET VOID AND CENTERS
@@ -16423,6 +16426,7 @@ class App extends Component {
       voidDirection = player.direction;
       edgeVoid1 = true;
       target.cell1.center = getVoidCenter(1,voidDirection,currentPosition);
+      this.testDraw.push({color:'red',x:target.cell1.center.x,y:target.cell1.center.y})
     }
     if (targetCell1Ref) {
       target.cell1.center = targetCell1Ref.center;
@@ -16435,7 +16439,8 @@ class App extends Component {
       target.cell2.void = true;
       voidDirection = player.direction;
       edgeVoid2 = true;
-      target.cell1.center = getVoidCenter(2,voidDirection,currentPosition);
+      target.cell2.center = getVoidCenter(2,voidDirection,currentPosition);
+      this.testDraw.push({color:'red',x:target.cell2.center.x,y:target.cell2.center.y})
     }
     if (targetCell2Ref) {
       target.cell2.center = targetCell2Ref.center;
@@ -16449,7 +16454,7 @@ class App extends Component {
     let myCell = this.gridInfo.find(elem2 => elem2.number.x === player.currentPosition.cell.number.x && elem2.number.y === player.currentPosition.cell.number.y)
 
     target.myCellBlock = this.checkForwardBarrier(direction,myCell);
-    let fwdBarrier = this.checkForwardBarrier(direction,cellRef);
+    // let fwdBarrier = this.checkForwardBarrier(direction,cellRef);
 
     for (const plyr of this.players) {
       if (plyr.number !== player.number) {
@@ -18810,7 +18815,7 @@ class App extends Component {
     // console.log('pre push check');
 
     let resetPush = false;
-    let refCell = this.gridInfo.find(x => x.number.x === target.cell.number.x && x.number.y === target.cell.number.y);
+    let refCell = this.gridInfo.find(x => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y);
     let plyrRefCell = this.gridInfo.find(x => x.number.x === player.currentPosition.cell.number.x && x.number.y === player.currentPosition.cell.number.y);
 
     let myCellCheck = true;
@@ -19481,7 +19486,7 @@ class App extends Component {
     // console.log('prePlayerPushCheck');
 
     let resetPush = false;
-    let targetCell = this.gridInfo.find(x => x.number.x === target.cell.number.x && x.number.y === target.cell.number.y);
+    let targetCell = this.gridInfo.find(x => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y);
     let plyrRefCell = this.gridInfo.find(x => x.number.x === pusher.currentPosition.cell.number.x && x.number.y === pusher.currentPosition.cell.number.y);
 
     let myCellCheck = true;
@@ -20149,7 +20154,7 @@ class App extends Component {
     // console.log('pre obstacle pull check');
 
     let resetPull = false;
-    let refCell = this.gridInfo.find(x => x.number.x === target.cell.number.x && x.number.y === target.cell.number.y);
+    let refCell = this.gridInfo.find(x => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y);
     let plyrRefCell = this.gridInfo.find(x => x.number.x === player.currentPosition.cell.number.x && x.number.y === player.currentPosition.cell.number.y);
     let limit = player.defending.limit-1;
     let myCellCheck = true;
@@ -20813,7 +20818,7 @@ class App extends Component {
     // console.log('pre player pull check');
 
     let resetPull = false;
-    let targetCell = this.gridInfo.find(x => x.number.x === target.cell.number.x && x.number.y === target.cell.number.y);
+    let targetCell = this.gridInfo.find(x => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y);
     let plyrRefCell = this.gridInfo.find(x => x.number.x === puller.currentPosition.cell.number.x && x.number.y === puller.currentPosition.cell.number.y);
     let limit = puller.defending.limit-1;
     let myCellCheck = true;
@@ -21615,7 +21620,7 @@ class App extends Component {
     if (player.jumping.state === true) {
       endPt = target.cell2.center;
     } else {
-      endPt = target.cell.center;
+      endPt = target.cell1.center;
     }
 
 
@@ -21637,8 +21642,8 @@ class App extends Component {
       player.falling.count++;
 
       newPosition = {
-        x: target.cell.center.x,
-        y: target.cell.center.y+player.falling.count*5,
+        x: target.cell1.center.x,
+        y: target.cell1.center.y+player.falling.count*5,
       }
       player.currentPosition.cell.center = newPosition;
 
@@ -22590,8 +22595,8 @@ class App extends Component {
 
     let target = this.getTarget(player)
 
-    if (target.free === true && player.target.void === false) {
-      console.log('proceed with pushback',player.number,'to',target.cell.number);
+    if (target.cell1.free === true && player.target.void === false) {
+      console.log('proceed with pushback',player.number,'to',target.cell1.number);
 
       player.action = 'strafe moving';
       player.moving = {
@@ -22608,15 +22613,15 @@ class App extends Component {
             y: player.currentPosition.cell.center
           },
         },
-        destination: target.cell.center
+        destination: target.cell1.center
       }
       let nextPosition = this.lineCrementer(player);
       player.nextPosition = nextPosition;
 
     }
-    if (target.free === false) {
+    if (target.cell1.free === false) {
           console.log('Pushback target is NOT free');
-          let blockedCell = this.gridInfo.find(x=>x.number.x === target.cell.number.x && x.number.y === target.cell.number.y)
+          let blockedCell = this.gridInfo.find(x=>x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y)
           if (
             // blockedCell.levelData.charAt(0) === 'y' ||
             // blockedCell.levelData.charAt(0) === 'z'
@@ -22643,7 +22648,7 @@ class App extends Component {
     }
 
     if (player.target.void === true) {
-      console.log('pushback target is VOID!!',target.cell.center.x,target.cell.center.y);
+      console.log('pushback target is VOID!!',target.cell1.center.x,target.cell1.center.y);
       player.action = 'strafe moving';
       player.moving = {
         state: true,
@@ -22653,7 +22658,7 @@ class App extends Component {
           number: player.currentPosition.cell.number,
           center: player.currentPosition.cell.center,
         },
-        destination: target.cell.center
+        destination: target.cell1.center
       }
 
       let nextPosition = this.lineCrementer(player);
@@ -22662,7 +22667,7 @@ class App extends Component {
 
     this.players[player.number-1] = player;
 
-    if (target.free === true) {
+    if (target.cell1.free === true) {
       player.pushBack.state = true;
 
       if (!player.popups.find(x=>x.msg === "pushedBack")) {
