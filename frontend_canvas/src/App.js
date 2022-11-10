@@ -6419,7 +6419,6 @@ class App extends Component {
                 nextPosition.y <= player.target.cell1.center.y+1 &&
                 player.target.cell1.void === true
               ) {
-                console.log('there');
                 // console.log('falling....');
                 player.falling.state = true;
                 player.action = 'falling';
@@ -6448,7 +6447,7 @@ class App extends Component {
         }
 
         if (player.jumping.state === true) {
-          // console.log('mid jump');
+          console.log('mid jump');
 
 
           if (
@@ -6485,7 +6484,7 @@ class App extends Component {
           for (const el of atDestRanges) {
             if (el === true) {
 
-              // console.log('at jump destination',player.target.cell2.number);
+              console.log('at jump destination',player.target.cell2.number);
               // console.log('next position is destination a',player.number);
               player.newMoveDelay.state = true;
 
@@ -6516,7 +6515,8 @@ class App extends Component {
 
 
                 player.jumping.state = false;
-                player.currentPosition.cell = player.target.cell2;
+                player.currentPosition.cell.number = player.target.cell2.number;
+                player.currentPosition.cell.center = player.target.cell2.center;
                 player.strafing.state = false;
                 player.action = 'idle';
                 player.moving = {
@@ -9952,7 +9952,6 @@ class App extends Component {
 
               }
 
-
             }
 
 
@@ -10022,7 +10021,6 @@ class App extends Component {
 
               // JUMPING!!
               if (keyPressedDirection === player.direction && player.strafing.state === true && player.jumping.checking !== true && player.jumping.state !== true) {
-
 
 
 
@@ -10244,7 +10242,8 @@ class App extends Component {
                       //   this.players[player.number-1].jumping.checking = false;
                       // }
 
-                    } else {
+                    }
+                    else {
                       // console.log('jump obstacle detected');
                       this.players[player.number-1].jumping.checking = false;
 
@@ -11056,7 +11055,7 @@ class App extends Component {
       for (var i = 0; i < 20; i++) {
         // if (
         //   !player.popups.find(x => x.msg === newArray[i]) &&
-        //   player.number === 2 &&
+        //   // player.number === 2 &&
         //   newArray[i] !==  "hpUp" &&
         //   newArray[i] !==  "hpDown"
         // ) {
@@ -11073,7 +11072,7 @@ class App extends Component {
         //     }
         //   )
         // }
-        // if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 3 && x.cell.number.y === 4)) {
+        // if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 1 && x.cell.number.y === 5)) {
         //   this.cellPopups.push(
         //     {
         //       state: false,
@@ -11083,7 +11082,7 @@ class App extends Component {
         //       position: '',
         //       msg: newArray[i],
         //       img: '',
-        //       cell: this.gridInfo.find(x => x.number.x === 3 && x.number.y === 4)
+        //       cell: this.gridInfo.find(x => x.number.x === 1 && x.number.y === 5)
         //     }
         //   )
         // }
@@ -13992,7 +13991,7 @@ class App extends Component {
           console.log('-- current position --',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y);
           console.log('-- moving state --',plyr.moving.state);
           console.log('-- moving step --',plyr.moving.step);
-          console.log('-- target --',plyr.target.cell.number.x,plyr.target.cell.number.y);
+          console.log('-- target --',plyr.target.cell1.number.x,plyr.target.cell1.number.y);
           console.log('-- direction --',plyr.direction);
           console.log('-- origin --',plyr.moving.origin.number.x,plyr.moving.origin.number.y);
           console.log('-- action --',plyr.action);
@@ -14116,7 +14115,7 @@ class App extends Component {
           //     case 'falling':
           //       let animIndex4 = plyr.falling.count -1;
           //       finalAnimIndex = animIndex4;
-          //       // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
+          //       console.log('anim testing fall',plyr.falling.count,'final anim indx',finalAnimIndex,'plyr',plyr.number);
           //     break;
           //     case 'deflected':
           //       let animIndex5 = plyr.success.deflected.count -1;
@@ -14499,37 +14498,12 @@ class App extends Component {
                 // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
                 // console.log('here',x,y);
                 if (plyr.jumping.state === true) {
+                  console.log('here',x,y);
                   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
-
                 } else {
                   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
-
                 }
                 // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
-                // playerDrawLog(x,y,plyr)
-              }
-            }
-            if (plyr.direction === 'northEast') {
-              // east edge disappearing bug fix
-              if (plyr.target.cell.number.x === this.gridWidth) {
-                if (x === this.gridWidth && y === plyr.target.cell.number.y+1) {
-                  // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
-                  // playerDrawLog(x,y,plyr)
-                }
-              } else {
-                if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
-                  // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
-                  // playerDrawLog(x,y)
-                }
-              }
-
-            }
-            if (plyr.direction === 'southWest') {
-              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
                 // playerDrawLog(x,y,plyr)
               }
             }
@@ -14632,7 +14606,7 @@ class App extends Component {
             //   x === plyr.currentPosition.cell.number.x &&
             //   y === plyr.currentPosition.cell.number.y
             // ) {
-            //   console.log('heading for thevoid @ draw step',plyr.target.cell.number);
+            //   console.log('heading for thevoid @ draw step',plyr.target.cell1.number);
             // }
 
 
@@ -14697,7 +14671,7 @@ class App extends Component {
             }
             if (plyr.strafing.direction === 'east' || plyr.direction === 'east') {
               if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
-              // if (x === plyr.target.cell.number.x && y === plyr.target.cell.number.y) {
+              // if (x === plyr.target.cell1.number.x && y === plyr.target.cell1.number.y) {
                 // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
                 // playerDrawLog(x,y)
@@ -14707,7 +14681,7 @@ class App extends Component {
             if (plyr.strafing.direction === 'south' || plyr.direction === 'south') {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
               // if (x === plyr.moving.destination.number.x && y === plyr.moving.destination.number.y) {
-              // if (x === plyr.target.cell.number.x && y === plyr.target.cell.number.y) {
+              // if (x === plyr.target.cell1.number.x && y === plyr.target.cell1.number.y) {
                 // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
                 // playerDrawLog(x,y)
@@ -14825,13 +14799,11 @@ class App extends Component {
           }
           if (plyr.falling.state === true) {
 
-
             if (
               x === plyr.target.cell1.number.x &&
               y === plyr.target.cell1.number.y
             ) {
-
-              context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-35, this.playerDrawWidth, this.playerDrawHeight);
+              context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
               // playerDrawLog(x,y,plyr)
             }
 
@@ -14845,8 +14817,7 @@ class App extends Component {
                 x === plyr.moving.origin.number.x &&
                 y === plyr.moving.origin.number.y
               ) {
-
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-35, this.playerDrawWidth, this.playerDrawHeight);
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
                 // playerDrawLog(x,y,plyr)
               }
             }
@@ -16426,7 +16397,7 @@ class App extends Component {
       voidDirection = player.direction;
       edgeVoid1 = true;
       target.cell1.center = getVoidCenter(1,voidDirection,currentPosition);
-      this.testDraw.push({color:'red',x:target.cell1.center.x,y:target.cell1.center.y})
+      // this.testDraw.push({color:'red',x:target.cell1.center.x,y:target.cell1.center.y})
     }
     if (targetCell1Ref) {
       target.cell1.center = targetCell1Ref.center;
@@ -16440,7 +16411,7 @@ class App extends Component {
       voidDirection = player.direction;
       edgeVoid2 = true;
       target.cell2.center = getVoidCenter(2,voidDirection,currentPosition);
-      this.testDraw.push({color:'red',x:target.cell2.center.x,y:target.cell2.center.y})
+      // this.testDraw.push({color:'red',x:target.cell2.center.x,y:target.cell2.center.y})
     }
     if (targetCell2Ref) {
       target.cell2.center = targetCell2Ref.center;
@@ -16584,7 +16555,7 @@ class App extends Component {
     return myCellBarrier;
 
   }
-  getOppositDirection = (originalDirection) => {
+  getOppositeDirection = (originalDirection) => {
     let oppositeDirection = "";
     switch (originalDirection) {
       case "north":
@@ -16604,6 +16575,7 @@ class App extends Component {
     }
     return oppositeDirection;
   }
+
   aiBoltPathCheck = (aiPlayer) => {
 
     // let path = [];
@@ -17832,7 +17804,9 @@ class App extends Component {
         }
 
         // this.moveSpeed = plyr.speed.move;
-        this.players[player.number-1].target = this.resetTarget();
+        // this.players[player.number-1].target = this.resetTarget();
+        this.players[player.number-1].target.cell1.number = player.currentPosition.cell.number;
+        this.players[player.number-1].target.cell1.center = player.currentPosition.cell.center;
 
         this.players[player.number-1].moving = {
           state: true,
@@ -21637,7 +21611,6 @@ class App extends Component {
     getLineXYatPercent(startPt,endPt,percent);
 
     if (player.falling.state === true) {
-      // console.log('increment fall',player.action);
 
       player.falling.count++;
 
@@ -22102,6 +22075,7 @@ class App extends Component {
       player.ghost.state = false;
       player.speed.move = .1;
       player.hp = 2;
+      player.points = 0;
       player.drowning = false;
       player.action = 'idle';
       player.dodging = {
@@ -24278,7 +24252,7 @@ class App extends Component {
 
                  }
                  if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                   this.pushBack(player,this.getOppositDirection(player.direction))
+                   this.pushBack(player,this.getOppositeDirection(player.direction))
                  }
                  if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                    this.cellPopups.push(
@@ -24345,7 +24319,7 @@ class App extends Component {
 
                }
                if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                 this.pushBack(player,this.getOppositDirection(player.direction))
+                 this.pushBack(player,this.getOppositeDirection(player.direction))
                }
                if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                  this.cellPopups.push(
@@ -24565,7 +24539,7 @@ class App extends Component {
                    }
                    this.canPushObstacle(player,targetCell,'hitPush');
                    if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                     this.pushBack(player,this.getOppositDirection(player.direction))
+                     this.pushBack(player,this.getOppositeDirection(player.direction))
                    }
                    if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                      this.cellPopups.push(
@@ -24653,7 +24627,7 @@ class App extends Component {
                    )
                  }
                  if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                   this.pushBack(player,this.getOppositDirection(player.direction))
+                   this.pushBack(player,this.getOppositeDirection(player.direction))
                  }
               }
 
@@ -24881,7 +24855,7 @@ class App extends Component {
 
                      }
                      if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                       this.pushBack(player,this.getOppositDirection(player.direction))
+                       this.pushBack(player,this.getOppositeDirection(player.direction))
                      }
                      if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
                        this.cellPopups.push(
@@ -24948,7 +24922,7 @@ class App extends Component {
 
                    }
                    if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                     this.pushBack(player,this.getOppositDirection(player.direction))
+                     this.pushBack(player,this.getOppositeDirection(player.direction))
                    }
                    if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
                      this.cellPopups.push(
@@ -25132,7 +25106,7 @@ class App extends Component {
 
                  }
                  if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                   this.pushBack(player,this.getOppositDirection(player.direction))
+                   this.pushBack(player,this.getOppositeDirection(player.direction))
                  }
                  if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
                    this.cellPopups.push(
@@ -25177,7 +25151,7 @@ class App extends Component {
 
                }
                if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                 this.pushBack(player,this.getOppositDirection(player.direction))
+                 this.pushBack(player,this.getOppositeDirection(player.direction))
                }
                if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
                  this.cellPopups.push(
@@ -25373,7 +25347,7 @@ class App extends Component {
 
                    }
                    if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                     this.pushBack(player,this.getOppositDirection(player.direction))
+                     this.pushBack(player,this.getOppositeDirection(player.direction))
                    }
                    if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
                      this.cellPopups.push(
@@ -25419,7 +25393,7 @@ class App extends Component {
 
                  }
                  if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                   this.pushBack(player,this.getOppositDirection(player.direction))
+                   this.pushBack(player,this.getOppositeDirection(player.direction))
                  }
                  if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
                    this.cellPopups.push(
@@ -25831,7 +25805,7 @@ class App extends Component {
 
                      }
                      if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                       this.pushBack(player,this.getOppositDirection(player.direction))
+                       this.pushBack(player,this.getOppositeDirection(player.direction))
                      }
                      if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
                        this.cellPopups.push(
@@ -25898,7 +25872,7 @@ class App extends Component {
 
                    }
                    if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                     this.pushBack(player,this.getOppositDirection(player.direction))
+                     this.pushBack(player,this.getOppositeDirection(player.direction))
                    }
                    if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
                      this.cellPopups.push(
@@ -26075,7 +26049,7 @@ class App extends Component {
 
                  }
                  if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                   this.pushBack(player,this.getOppositDirection(player.direction))
+                   this.pushBack(player,this.getOppositeDirection(player.direction))
                  }
                  if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                    this.cellPopups.push(
@@ -26120,7 +26094,7 @@ class App extends Component {
 
                }
                if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                 this.pushBack(player,this.getOppositDirection(player.direction))
+                 this.pushBack(player,this.getOppositeDirection(player.direction))
                }
                if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                  this.cellPopups.push(
@@ -26312,7 +26286,7 @@ class App extends Component {
 
                    }
                    if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                     this.pushBack(player,this.getOppositDirection(player.direction))
+                     this.pushBack(player,this.getOppositeDirection(player.direction))
                    }
                    if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                      this.cellPopups.push(
@@ -26360,7 +26334,7 @@ class App extends Component {
 
                  }
                  if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                   this.pushBack(player,this.getOppositDirection(player.direction))
+                   this.pushBack(player,this.getOppositeDirection(player.direction))
                  }
                  if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                    this.cellPopups.push(
