@@ -6643,7 +6643,7 @@ class App extends Component {
               nopushpull = false;
               console.log('player cell overlap but 1 is pushing/pulling the other');
             }
-            // console.log('buck up btwn plyrs',player.number,plyr4.number,"@",player.currentPosition.cell.number,plyr4.currentPosition.cell.number);
+            console.log('buck up btwn plyrs',player.number,plyr4.number,"@",player.currentPosition.cell.number,plyr4.currentPosition.cell.number);
             // console.log('plyrs pushed back?',player.pushBack.state,plyr4.pushBack.state);
             // console.log('plyrs moving?',player.moving.state,plyr4.moving.state);
             if (nopushpull === true) {
@@ -14414,7 +14414,7 @@ class App extends Component {
 
 
           //PLAYER DEPTH SORTING!!
-          if (plyr.target.cell1.void === false && plyr.moving.state === true && plyr.falling.state !== true) {
+          if (plyr.target.cell1.void === false && plyr.moving.state === true && plyr.falling.state !== true && plyr.jumping.state !== true) {
             let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
             // console.log('move',finalAnimIndex);
             // if (plyr.direction === 'north' || plyr.direction === 'northWest' || plyr.direction === 'west') {
@@ -14496,9 +14496,9 @@ class App extends Component {
             if (plyr.direction === 'south') {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
                 // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
-                // console.log('here',x,y);
+                console.log('here',x,y,plyr.jumping.state);
                 if (plyr.jumping.state === true) {
-                  console.log('here',x,y);
+                  console.log('also here',x,y);
                   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
                 } else {
                   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
@@ -14599,7 +14599,7 @@ class App extends Component {
               // playerDrawLog(x,y,plyr)
             }
           }
-          else if (plyr.target.cell1.void === true && plyr.moving.state === true && plyr.falling.state !== true) {
+          else if (plyr.target.cell1.void === true && plyr.moving.state === true && plyr.falling.state !== true && plyr.jumping.state !== true) {
 
             // console.log('heading for thevoid @ draw step');
             // if (
@@ -14656,6 +14656,30 @@ class App extends Component {
                 context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
                 // context.fillStyle = "black";
                 // context.fillRect(point.x, point.y,5,5);
+              }
+            }
+          }
+          if (plyr.jumping.state === true ) {
+            let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
+
+            if (plyr.direction === 'north') {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
+              }
+            }
+            if (plyr.direction === 'west') {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
+              }
+            }
+            if (plyr.direction === 'east') {
+              if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
+              }
+            }
+            if (plyr.direction === 'south') {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+2) {
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
               }
             }
           }
@@ -22569,7 +22593,7 @@ class App extends Component {
 
     let target = this.getTarget(player)
 
-    if (target.cell1.free === true && player.target.void === false) {
+    if (target.cell1.free === true && player.target.cell1.void === false) {
       console.log('proceed with pushback',player.number,'to',target.cell1.number);
 
       player.action = 'strafe moving';
@@ -22621,7 +22645,7 @@ class App extends Component {
           player.pushBack.state = false;
     }
 
-    if (player.target.void === true) {
+    if (player.target.cell1.void === true) {
       console.log('pushback target is VOID!!',target.cell1.center.x,target.cell1.center.y);
       player.action = 'strafe moving';
       player.moving = {
