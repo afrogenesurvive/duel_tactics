@@ -9477,9 +9477,9 @@ class App extends Component {
           if (player.flanking.step === 1) {
             // console.log('flanking step 1',player.direction,'flank dir',player.flanking.direction,"current position",player.currentPosition.cell.number,'move step',player.moving.step);
             let target = this.getTarget(player);
-            if (target.free === true) {
+            if (target.cell1.free === true) {
               player.flanking.step = 2;
-              player.flanking.target2 = target.cell.number;
+              player.flanking.target2 = target.cell1.number;
               // player.action = 'moving';
               player.action = 'flanking';
               player.moving = {
@@ -9496,7 +9496,7 @@ class App extends Component {
                     y: player.currentPosition.cell.center.y
                   },
                 },
-                destination: target.cell.center
+                destination: target.cell1.center
               }
               nextPosition = this.lineCrementer(player);
               player.nextPosition = nextPosition;
@@ -9623,7 +9623,7 @@ class App extends Component {
                   this.players[player.number-1].flanking.preFlankDirection = player.direction;
 
                   let target = this.getTarget(player);
-                  if (target.free === true ) {
+                  if (target.cell1.free === true ) {
 
                     player.stamina.current = player.stamina.current - this.staminaCostRef.flank;
                     // console.log('flank stam check1. cost',this.staminaCostRef.flank,'stam',player.stamina.current);
@@ -9643,7 +9643,7 @@ class App extends Component {
                     this.players[player.number-1].flanking.checking = false;
                     this.players[player.number-1].flanking.state = true;
                     this.players[player.number-1].flanking.step =  1;
-                    this.players[player.number-1].flanking.target1 = target.cell.number;
+                    this.players[player.number-1].flanking.target1 = target.cell1.number;
                     // console.log('this.players[player.number-1].flanking.target1',this.players[player.number-1].flanking.target1);
                     // player.action = 'moving';
 
@@ -9677,7 +9677,7 @@ class App extends Component {
                           y: player.currentPosition.cell.center.y
                         },
                       },
-                      destination: target.cell.center
+                      destination: target.cell1.center
                     }
                     nextPosition = this.lineCrementer(player);
                     player.nextPosition = nextPosition;
@@ -9708,18 +9708,6 @@ class App extends Component {
                     limit: player.statusDisplay.limit,
                   }
 
-
-                  // player.popups.push(
-                  //   {
-                  //     state: false,
-                  //     count: 0,
-                  //     limit: 10,
-                  //     type: '',
-                  //     position: '',
-                  //     msg: 'outOfStamina',
-                  //     img: '',
-                  //   }
-                  // )
                 }
 
 
