@@ -5482,7 +5482,6 @@ class App extends Component {
           if (context4) {
             context4.drawImage(barrierImg, iso2.x - offset2.x, iso2.y - (barrierImg.height/2), barrierImg.width/2, barrierImg.height/2);
           }
-          // console.log('xxx3',cell.levelData,cell.barrier.position);
         }
 
         // let walledTiles = []
@@ -6755,12 +6754,12 @@ class App extends Component {
         // // IDLE ANIM STEPPER!
         if (player.action === 'idle') {
           // player.idleAnim.state = true
-          if (player.idleAnim.count < player.idleAnim.limit+1) {
+          if (player.idleAnim.count < player.idleAnim.limit) {
             // console.log('player.idleAnim.count',player.idleAnim.count);
             player.idleAnim.count++
 
           }
-          if (player.idleAnim.count >= player.idleAnim.limit+1) {
+          if (player.idleAnim.count >= player.idleAnim.limit) {
             player.idleAnim.count = 0;
             player.idleAnim.state = false;
           }
@@ -11288,12 +11287,12 @@ class App extends Component {
       // IDLE ANIM STEPPER!
       if (player.action === 'idle') {
         // player.idleAnim.state = true
-        if (player.idleAnim.count < player.idleAnim.limit+1) {
+        if (player.idleAnim.count < player.idleAnim.limit) {
           // console.log('player.idleAnim.count',player.idleAnim.count);
           player.idleAnim.count++
 
         }
-        if (player.idleAnim.count >= player.idleAnim.limit+1) {
+        if (player.idleAnim.count >= player.idleAnim.limit) {
           player.idleAnim.count = 0;
           player.idleAnim.state = false;
         }
@@ -14096,13 +14095,13 @@ class App extends Component {
           //       if (plyr.number === 2) {
           //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
           //       }
-          //       let animIndex3 = plyr.idleAnim.count -1;
+          //       let animIndex3 = plyr.idleAnim.count+1;
           //       finalAnimIndex = animIndex3;
           //     break;
           //     case 'falling':
           //       let animIndex4 = plyr.falling.count -1;
           //       finalAnimIndex = animIndex4;
-          //       console.log('anim testing fall',plyr.falling.count,'final anim indx',finalAnimIndex,'plyr',plyr.number);
+          //       // console.log('anim testing fall',plyr.falling.count,'final anim indx',finalAnimIndex,'plyr',plyr.number);
           //     break;
           //     case 'deflected':
           //       let animIndex5 = plyr.success.deflected.count -1;
@@ -14221,7 +14220,7 @@ class App extends Component {
               if (plyr.number === 2) {
                 // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
               }
-              let animIndex3 = plyr.idleAnim.count -1;
+              let animIndex3 = plyr.idleAnim.count +1;
               finalAnimIndex = animIndex3;
             break;
             case 'falling':
@@ -14255,7 +14254,7 @@ class App extends Component {
           }
 
 
-          // SPRITE SHEET CHAR AVATAR SWITCH!
+          // SPRITE SHEET CHAR AVATAR & ACTION SWITCH!
           if (plyr.ai.state === false) {
             switch(plyr.action) {
               case 'idle':
@@ -14663,7 +14662,6 @@ class App extends Component {
               }
             }
             if (plyr.direction === 'south') {
-              // console.log('xxx',plyr.jumping.state);
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
                 context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
               }
@@ -15155,31 +15153,7 @@ class App extends Component {
           if (x === this.gridWidth && y === this.gridWidth ) {
 
 
-            // let popupCoordObject = {
-            //   north: this.popupDrawCalc("north",{x:plyr.nextPosition.x-25,y:plyr.nextPosition.y-25},plyr.number),
-            //   west: this.popupDrawCalc("west",{x:plyr.nextPosition.x-25,y:plyr.nextPosition.y-25},plyr.number),
-            //   south: this.popupDrawCalc("south",{x:plyr.nextPosition.x-25,y:plyr.nextPosition.y-25},plyr.number),
-            // };
-            // let origin = popupCoordObject.west;
-            // let width = popupCoordObject.north.pt4.x - origin.pt3.x;
-            // let height = popupCoordObject.south.pt2.y - origin.pt3.y;
-            // context.strokeStyle = 'white';
-            // context.lineWidth = 2;
-            // context.beginPath();
-            // context.roundRect(origin.pt3.x,origin.pt3.y, width, height, 2);
-            // context.stroke();
-            //
-            // let origin2 = {x:plyr.nextPosition.x-(this.floorImageHeight/2),y:plyr.nextPosition.y-(this.floorImageHeight)};
-            // let height2 = (plyr.nextPosition.y+(this.floorImageHeight/2))+2-(plyr.nextPosition.y-(this.floorImageHeight));
-            // let width2 = this.playerDrawWidth+2;
-            // context.strokeStyle = 'white';
-            // context.lineWidth = 2;
-            // context.beginPath();
-            // context.roundRect(origin2.x,origin2.y, width2+2, this.playerDrawHeight*1.5, 2);
-            // // context.roundRect(origin2.x,origin2.y, width2, height2, 2);
-            // // context.roundRect(origin2.x,origin2.y, this.playerDrawWidth, this.playerDrawHeight*1.5, 2);
-            // // context.roundRect(origin2.x,origin2.y, this.playerDrawWidth+2, this.floorImageHeight*1.5, 2);
-            // context.stroke();
+
 
 
             let popupBorderColor = this.playerColourRef['player'+plyr.number+'']
@@ -22293,7 +22267,7 @@ class App extends Component {
         player.idleAnim = {
           state: false,
           count: 0,
-          limit: 5,
+          limit: 4,
         };
         player.breakAnim.attack = {
           state: true,
@@ -22335,7 +22309,7 @@ class App extends Component {
         player.idleAnim = {
           state: false,
           count: 0,
-          limit: 5,
+          limit: 4,
         };
         player.breakAnim.defend = {
           state: true,
@@ -22378,7 +22352,7 @@ class App extends Component {
         player.idleAnim = {
           state: false,
           count: 0,
-          limit: 5,
+          limit: 4,
         };
         player.strafing = {
           state: false,
@@ -22414,7 +22388,7 @@ class App extends Component {
         player.idleAnim = {
           state: false,
           count: 0,
-          limit: 5,
+          limit: 4,
         };
         player.dodging = {
           countState: false,
@@ -22457,7 +22431,7 @@ class App extends Component {
         player.idleAnim = {
           state: false,
           count: 0,
-          limit: 5,
+          limit: 4,
         };
         player.flanking = {
           checking: false,
@@ -22498,7 +22472,7 @@ class App extends Component {
         player.idleAnim = {
           state: false,
           count: 0,
-          limit: 5,
+          limit: 4,
         }
         player.jumping = {
           checking: false,
@@ -32325,7 +32299,7 @@ class App extends Component {
       }
 
       if (plyr.ai.mission === 'retrieve' || plyr.ai.mission === 'retreat') {
-        // console.log('xxx');
+        // console.log('...');
       }
 
       // plyr.ai.engaging.state = true;
