@@ -1361,8 +1361,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 1,
-              y: 4,
+              x: 2,
+              y: 5,
             },
             center: {
               x: 0,
@@ -6447,7 +6447,7 @@ class App extends Component {
         }
 
         if (player.jumping.state === true) {
-          console.log('mid jump');
+          // console.log('mid jump');
 
 
           if (
@@ -6484,7 +6484,7 @@ class App extends Component {
           for (const el of atDestRanges) {
             if (el === true) {
 
-              console.log('at jump destination',player.target.cell2.number);
+              // console.log('at jump destination',player.target.cell2.number);
               // console.log('next position is destination a',player.number);
               player.newMoveDelay.state = true;
 
@@ -6503,7 +6503,7 @@ class App extends Component {
                   plyr.moving.state === true
                 ) {
 
-                  console.log('jump destination occupied, fall into target 1',player.direction);
+                  // console.log('jump destination occupied, fall into target 1',player.direction);
 
                   pushBack = true;
                   opp = plyr;
@@ -14484,7 +14484,7 @@ class App extends Component {
             if (plyr.direction === 'south') {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
                 // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
-                console.log('here',x,y,plyr.jumping.state);
+                console.log('xxxx',plyr.jumping.state);
                 if (plyr.jumping.state === true) {
                   console.log('also here',x,y);
                   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
@@ -14666,7 +14666,8 @@ class App extends Component {
               }
             }
             if (plyr.direction === 'south') {
-              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+2) {
+              // console.log('xxx',plyr.jumping.state);
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
                 context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
               }
             }
