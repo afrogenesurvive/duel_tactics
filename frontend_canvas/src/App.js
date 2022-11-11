@@ -331,13 +331,13 @@ class App extends Component {
     };
     this.levelData9 = {
       row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*','**_i_0.7_a_0a*','**_*_0.8_h_0a*','**_*_0.9_h_0a*'],
-      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_h_1.5_a_0a*','**_*_1.6_i_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
+      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_i_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_k_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_h_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
       row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_*_4.3_f_0a*','**_h_4.4_a_0a*','cn_b_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','cn_*_5.2_f_0a*','**_*_5.3_f_0a*','**_*_5.4_k_0a*','**_*_5.5_a_0a*','**_*_5.6_g_0a*','**_*_5.7_a_0a*','ce_*_5.8_a_0a*','**_*_5.9_a_0a*'],
       row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_b_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_b_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
-      row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','**_*_7.5_a_0a*','**_i_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
+      row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','**_*_7.5_a_0a*','**_*_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
       row8: ['**_*_8.0_a_0a*','**_*_8.1_a_0a*','**_*_8.2_a_0a*','**_*_8.3_a_0a*','**_*_8.4_a_0a*','**_*_8.5_a_0a*','**_c_8.6_a_0a*','**_*_8.7_a_0a*','**_*_8.8_a_0a*','**_*_8.9_d_0a*'],
       row9: ['**_*_9.0_a_0a*','**_a_9.1_a_0a*','**_*_9.2_a_0a*','**_*_9.3_a_0a*','**_*_9.4_a_0a*','**_*_9.5_a_0a*','**_*_9.6_a_0a*','**_*_9.7_a_0a*','**_*_9.8_a_0a*','**_*_9.9_a_0a*'],
     };
@@ -8871,44 +8871,44 @@ class App extends Component {
           this.getTarget(player);
 
           if (player.direction === 'south' && this.keyPressed[player.number-1].north === true) {
-            if (player.target.occupant.type === "obstacle" && player.pulling.state !== true) {
+            if (player.target.cell1.occupant.type === "obstacle" && player.pulling.state !== true) {
               // console.log('pulling obstacle trigger north',player.prePull.state,player.prePull.count);
               this.preObstaclePullCheck(player,player.target,'north')
             }
-            if (player.target.occupant.type === "player" && player.pulling.state !== true) {
+            if (player.target.cell1.occupant.type === "player" && player.pulling.state !== true) {
               // console.log('pulling player trigger north',player.prePull.state,player.prePull.count);
               this.prePlayerPullCheck(player,player.target,'north')
             }
           }
           if (player.direction === 'north' && this.keyPressed[player.number-1].south === true) {
 
-            if (player.target.occupant.type === "obstacle" && player.pulling.state !== true) {
+            if (player.target.cell1.occupant.type === "obstacle" && player.pulling.state !== true) {
               // console.log('pulling obstacle trigger south',player.prePull.state,player.prePull.count);
               this.preObstaclePullCheck(player,player.target,'south')
             }
-            if (player.target.occupant.type === "player" && player.pulling.state !== true) {
+            if (player.target.cell1.occupant.type === "player" && player.pulling.state !== true) {
               // console.log('pulling player trigger south',player.prePull.state,player.prePull.count);
               this.prePlayerPullCheck(player,player.target,'south')
             }
           }
           if (player.direction === 'west' && this.keyPressed[player.number-1].east === true) {
 
-            if (player.target.occupant.type === "obstacle" && player.pulling.state !== true) {
+            if (player.target.cell1.occupant.type === "obstacle" && player.pulling.state !== true) {
               // console.log('pulling obstacle trigger east',player.prePull.state,player.prePull.count);
               this.preObstaclePullCheck(player,player.target,'east')
             }
-            if (player.target.occupant.type === "player" && player.pulling.state !== true) {
+            if (player.target.cell1.occupant.type === "player" && player.pulling.state !== true) {
               // console.log('pulling player trigger east',player.prePull.state,player.prePull.count);
               this.prePlayerPullCheck(player,player.target,'east')
             }
           }
           if (player.direction === 'east' && this.keyPressed[player.number-1].west === true) {
 
-            if (player.target.occupant.type === "obstacle" && player.pulling.state !== true) {
+            if (player.target.cell1.occupant.type === "obstacle" && player.pulling.state !== true) {
               // console.log('pulling obstacle trigger west',player.prePull.state,player.prePull.count);
               this.preObstaclePullCheck(player,player.target,'west')
             }
-            if (player.target.occupant.type === "player" && player.pulling.state !== true) {
+            if (player.target.cell1.occupant.type === "player" && player.pulling.state !== true) {
               // console.log('pulling player trigger west',player.prePull.state,player.prePull.count);
               this.prePlayerPullCheck(player,player.target,'west')
             }
@@ -9733,14 +9733,14 @@ class App extends Component {
         let breakPulledPushed = false;
         for(const plyr of this.players) {
           if (plyr.prePush.state === true) {
-            if (plyr.target.cell.number.x === player.currentPosition.cell.number.x && plyr.target.cell.number.y === player.currentPosition.cell.number.y) {
+            if (plyr.target.cell1.number.x === player.currentPosition.cell.number.x && plyr.target.cell1.number.y === player.currentPosition.cell.number.y) {
               // console.log('player is being pre pushed by plyr',plyr.number);
               plyrPullPushed = true;
               plyrPullPushedPlyr = plyr.number;
             }
           }
           if (plyr.prePull.state === true) {
-            if (plyr.target.cell.number.x === player.currentPosition.cell.number.x && plyr.target.cell.number.y === player.currentPosition.cell.number.y) {
+            if (plyr.target.cell1.number.x === player.currentPosition.cell.number.x && plyr.target.cell1.number.y === player.currentPosition.cell.number.y) {
               // console.log('player is being pre pulled by plyr',plyr.number);
               plyrPullPushed = true;
               plyrPullPushedPlyr = plyr.number;
@@ -9848,8 +9848,7 @@ class App extends Component {
 
                 }
 
-                if (target.cell1.free === false) {
-                  // console.log('target is NOT free',target);
+                if (target.cell1.free !== true) {
                   if (target.cell1.occupant.type === "obstacle" && player.pushing.state !== true) {
                     this.preObstaclePushCheck(player,target)
                   }
@@ -14484,9 +14483,7 @@ class App extends Component {
             if (plyr.direction === 'south') {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
                 // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
-                console.log('xxxx',plyr.jumping.state);
                 if (plyr.jumping.state === true) {
-                  console.log('also here',x,y);
                   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
                 } else {
                   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
@@ -15158,31 +15155,31 @@ class App extends Component {
           if (x === this.gridWidth && y === this.gridWidth ) {
 
 
-            let popupCoordObject = {
-              north: this.popupDrawCalc("north",{x:plyr.nextPosition.x-25,y:plyr.nextPosition.y-25},plyr.number),
-              west: this.popupDrawCalc("west",{x:plyr.nextPosition.x-25,y:plyr.nextPosition.y-25},plyr.number),
-              south: this.popupDrawCalc("south",{x:plyr.nextPosition.x-25,y:plyr.nextPosition.y-25},plyr.number),
-            };
-            let origin = popupCoordObject.west;
-            let width = popupCoordObject.north.pt4.x - origin.pt3.x;
-            let height = popupCoordObject.south.pt2.y - origin.pt3.y;
-            context.strokeStyle = 'white';
-            context.lineWidth = 2;
-            context.beginPath();
-            context.roundRect(origin.pt3.x,origin.pt3.y, width, height, 2);
-            context.stroke();
-
-            let origin2 = {x:plyr.nextPosition.x-(this.floorImageHeight/2),y:plyr.nextPosition.y-(this.floorImageHeight)};
-            let height2 = (plyr.nextPosition.y+(this.floorImageHeight/2))+2-(plyr.nextPosition.y-(this.floorImageHeight));
-            let width2 = this.playerDrawWidth+2;
-            context.strokeStyle = 'white';
-            context.lineWidth = 2;
-            context.beginPath();
-            context.roundRect(origin2.x,origin2.y, width2+2, this.playerDrawHeight*1.5, 2);
-            // context.roundRect(origin2.x,origin2.y, width2, height2, 2);
-            // context.roundRect(origin2.x,origin2.y, this.playerDrawWidth, this.playerDrawHeight*1.5, 2);
-            // context.roundRect(origin2.x,origin2.y, this.playerDrawWidth+2, this.floorImageHeight*1.5, 2);
-            context.stroke();
+            // let popupCoordObject = {
+            //   north: this.popupDrawCalc("north",{x:plyr.nextPosition.x-25,y:plyr.nextPosition.y-25},plyr.number),
+            //   west: this.popupDrawCalc("west",{x:plyr.nextPosition.x-25,y:plyr.nextPosition.y-25},plyr.number),
+            //   south: this.popupDrawCalc("south",{x:plyr.nextPosition.x-25,y:plyr.nextPosition.y-25},plyr.number),
+            // };
+            // let origin = popupCoordObject.west;
+            // let width = popupCoordObject.north.pt4.x - origin.pt3.x;
+            // let height = popupCoordObject.south.pt2.y - origin.pt3.y;
+            // context.strokeStyle = 'white';
+            // context.lineWidth = 2;
+            // context.beginPath();
+            // context.roundRect(origin.pt3.x,origin.pt3.y, width, height, 2);
+            // context.stroke();
+            //
+            // let origin2 = {x:plyr.nextPosition.x-(this.floorImageHeight/2),y:plyr.nextPosition.y-(this.floorImageHeight)};
+            // let height2 = (plyr.nextPosition.y+(this.floorImageHeight/2))+2-(plyr.nextPosition.y-(this.floorImageHeight));
+            // let width2 = this.playerDrawWidth+2;
+            // context.strokeStyle = 'white';
+            // context.lineWidth = 2;
+            // context.beginPath();
+            // context.roundRect(origin2.x,origin2.y, width2+2, this.playerDrawHeight*1.5, 2);
+            // // context.roundRect(origin2.x,origin2.y, width2, height2, 2);
+            // // context.roundRect(origin2.x,origin2.y, this.playerDrawWidth, this.playerDrawHeight*1.5, 2);
+            // // context.roundRect(origin2.x,origin2.y, this.playerDrawWidth+2, this.floorImageHeight*1.5, 2);
+            // context.stroke();
 
 
             let popupBorderColor = this.playerColourRef['player'+plyr.number+'']
@@ -16463,7 +16460,7 @@ class App extends Component {
 
     if (targetCell1Ref) {
       if (targetCell1Ref.obstacle.state === true) {
-        target.cell1.occupant = "obstacle";
+        target.cell1.occupant.type = "obstacle";
         target.cell1.free = false;
       }
 
@@ -16484,7 +16481,7 @@ class App extends Component {
     }
     if (targetCell2Ref) {
       if (targetCell2Ref.obstacle.state === true) {
-        target.cell2.occupant = "obstacle";
+        target.cell2.occupant.type = "obstacle";
         target.cell2.free = false;
       }
     }
@@ -20561,7 +20558,7 @@ class App extends Component {
         // }
 
         if (player.turning.delayCount === 0) {
-          player.target.void = true;
+          player.target.cell1.void = true;
           this.players[player.number-1].strafing.direction = impactDirection;
           this.players[player.number-1].strafing.state = true;
           this.players[player.number-1].action = 'strafe moving';
@@ -20818,7 +20815,7 @@ class App extends Component {
     }
 
     let targetOpen = false;
-    let targetPlayer = this.players[target.occupant.player-1];
+    let targetPlayer = this.players[target.cell1.occupant.player-1];
     if (targetPlayer.success.deflected.state === true || targetPlayer.action === 'idle') {
       targetOpen = true;
     } else {
