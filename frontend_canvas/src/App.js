@@ -20266,11 +20266,11 @@ class App extends Component {
 
       if (player.prePull.state === true) {
 
-        // if (player.prePull.count >= player.prePull.limit) {
+        if (player.prePull.count >= player.prePull.limit) {
         // if (player.prePull.count >= 25) {
-        if (player.prePull.count >= limit) {
+        // if (player.prePull.count >= limit) {
 
-          // console.log('pre pull limit. check can pull');
+          console.log('pre pull limit. check can pull');
           this.players[player.number-1].prePull = player.prePull;
           this.players[player.number-1].pulling = player.pulling;
           if (player.popups.find(x=>x.msg === 'prePull')) {
@@ -20302,7 +20302,7 @@ class App extends Component {
                  }
                )
              }
-             // console.log('pre pulling the same obstacle. Continue',player.prePull.count);
+             // console.log('pre pulling the same obstacle. Continue',player.prePull.count,limit);
            }
            else {
              // console.log('pre pull player, target or direction has changed. Reset prepull');
@@ -20371,6 +20371,7 @@ class App extends Component {
       if (this.players[player.number-1].newPushPullDelay.state !== true) {
         this.players[player.number-1].newPushPullDelay.state = true
       }
+
 
       if (!player.popups.find(x=>x.msg === "noPull")) {
         player.popups.push(
@@ -20556,7 +20557,6 @@ class App extends Component {
         if (this.players[player.number-1].popups.find(x=>x.msg === 'noPull')) {
           this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'noPull'),1)
         }
-
 
 
         let voidCenter = {
@@ -20869,7 +20869,8 @@ class App extends Component {
 
           }
         )
-      }
+      };
+
     }
 
 
@@ -20982,9 +20983,9 @@ class App extends Component {
 
       if (puller.prePull.state === true) {
 
-        // if (puller.prePllh.count >= pusher.prePull.limit) {
+        if (puller.prePllh.count >= puller.prePull.limit) {
         // if (puller.prePllh.count >= 25) {
-        if (puller.prePull.count >= limit) {
+        // if (puller.prePull.count >= limit) {
 
           // console.log('pre pull limit. check can pull player');
           this.players[puller.number-1].prePull = puller.prePull;
