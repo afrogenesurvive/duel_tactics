@@ -19515,7 +19515,7 @@ class App extends Component {
     }
 
     let targetOpen = false;
-    let targetPlayer = this.players[target.occupant.player-1];
+    let targetPlayer = this.players[target.cell1.occupant.player-1];
     if (targetPlayer.success.deflected.state === true || targetPlayer.action === 'idle') {
       targetOpen = true;
     } else {
