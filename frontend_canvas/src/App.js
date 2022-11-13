@@ -10426,6 +10426,15 @@ class App extends Component {
                 }
               )
             }
+
+            if (this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === 'prePush')) {
+              this.players[plyrPullPushedPlyr-1].popups.splice(this.players[plyrPullPushedPlyr-1].popups.findIndex(x=>x.msg === 'prePush'),1)
+            }
+            if (this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === 'noPush')) {
+              this.players[plyrPullPushedPlyr-1].popups.splice(this.players[plyrPullPushedPlyr-1].popups.findIndex(x=>x.msg === 'canPush'),1)
+            }
+
+
           }
           if (this.players[plyrPullPushedPlyr-1].prePull.state === true) {
             if (!this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === "noPull")) {
@@ -10441,6 +10450,15 @@ class App extends Component {
                 }
               )
             }
+
+            if (this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === 'prePull')) {
+              this.players[plyrPullPushedPlyr-1].popups.splice(this.players[plyrPullPushedPlyr-1].popups.findIndex(x=>x.msg === 'prePull'),1)
+            }
+            if (this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === 'canPull')) {
+              this.players[plyrPullPushedPlyr-1].popups.splice(this.players[plyrPullPushedPlyr-1].popups.findIndex(x=>x.msg === 'canPull'),1)
+            }
+
+
           }
 
           this.players[plyrPullPushedPlyr-1].pushing = {
@@ -19096,7 +19114,10 @@ class App extends Component {
         movePlayer = false;
       }
 
+
+
       if(!destCellRef && pushStrengthPlayer >= pushStrengthThreshold) {
+
 
         if (!this.players[player.number-1].popups.find(x=>x.msg === "canPush")) {
           this.players[player.number-1].popups.push(
@@ -19111,6 +19132,15 @@ class App extends Component {
             }
           )
         }
+
+        if (this.players[player.number-1].popups.find(x=>x.msg === 'prePush')) {
+          this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'prePush'),1)
+        }
+        if (this.players[player.number-1].popups.find(x=>x.msg === 'noPush')) {
+          this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'noPush'),1)
+        }
+
+
 
         let voidCenter = {
           x: undefined,
@@ -19268,6 +19298,14 @@ class App extends Component {
         )
       }
 
+      if (this.players[player.number-1].popups.find(x=>x.msg === 'prePush')) {
+        this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'prePush'),1)
+      }
+      if (this.players[player.number-1].popups.find(x=>x.msg === 'noPush')) {
+        this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'noPush'),1)
+      }
+
+
       if (canPushTargetFree !== true) {
         console.log('something is in the way of the obstacle to be pushed');
         resetPush = true;
@@ -19289,6 +19327,16 @@ class App extends Component {
             }
           )
         }
+
+        if (this.players[player.number-1].popups.find(x=>x.msg === 'prePush')) {
+          this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'prePush'),1)
+        }
+        if (this.players[player.number-1].popups.find(x=>x.msg === 'noPush')) {
+          this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'noPush'),1)
+        }
+
+
+
 
         let obstacleCrementObj = this.obstacleMoveCrementer(obstacleCell,destCellRef);
 
@@ -19437,6 +19485,16 @@ class App extends Component {
           }
         )
       }
+
+      if (this.players[player.number-1].popups.find(x=>x.msg === 'prePush')) {
+        this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'prePush'),1)
+      }
+      if (this.players[player.number-1].popups.find(x=>x.msg === 'noPush')) {
+        this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'canPush'),1)
+      }
+
+
+
     }
 
   }
@@ -19768,6 +19826,14 @@ class App extends Component {
           )
         }
 
+        if (this.players[pusher.number-1].popups.find(x=>x.msg === 'prePush')) {
+          this.players[pusher.number-1].popups.splice(this.players[pusher.number-1].popups.findIndex(x=>x.msg === 'prePush'),1)
+        }
+        if (this.players[pusher.number-1].popups.find(x=>x.msg === 'noPush')) {
+          this.players[pusher.number-1].popups.splice(this.players[pusher.number-1].popups.findIndex(x=>x.msg === 'noPush'),1)
+        }
+
+
         let voidCenter = {
           x: undefined,
           y: undefined
@@ -19945,6 +20011,13 @@ class App extends Component {
           )
         }
 
+        if (this.players[pusher.number-1].popups.find(x=>x.msg === 'prePush')) {
+          this.players[pusher.number-1].popups.splice(this.players[pusher.number-1].popups.findIndex(x=>x.msg === 'prePush'),1)
+        }
+        if (this.players[pusher.number-1].popups.find(x=>x.msg === 'noPush')) {
+          this.players[pusher.number-1].popups.splice(this.players[pusher.number-1].popups.findIndex(x=>x.msg === 'noPush'),1)
+        }
+
 
         // MOVE TARGET PLAYER
         this.players[targetPlayer.number-1].strafing.direction = impactDirection;
@@ -20104,6 +20177,16 @@ class App extends Component {
           }
         )
       }
+
+      if (this.players[pusher.number-1].popups.find(x=>x.msg === 'prePush')) {
+        this.players[pusher.number-1].popups.splice(this.players[pusher.number-1].popups.findIndex(x=>x.msg === 'prePush'),1)
+      }
+      if (this.players[pusher.number-1].popups.find(x=>x.msg === 'noPush')) {
+        this.players[pusher.number-1].popups.splice(this.players[pusher.number-1].popups.findIndex(x=>x.msg === 'canPush'),1)
+      }
+
+
+
     }
 
 
@@ -20406,6 +20489,14 @@ class App extends Component {
           )
         }
 
+        if (this.players[player.number-1].popups.find(x=>x.msg === 'prePull')) {
+          this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'prePull'),1)
+        }
+        if (this.players[player.number-1].popups.find(x=>x.msg === 'noPull')) {
+          this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'noPull'),1)
+        }
+
+
 
         let voidCenter = {
           x: undefined,
@@ -20593,6 +20684,14 @@ class App extends Component {
           )
         }
 
+        if (this.players[player.number-1].popups.find(x=>x.msg === 'prePull')) {
+          this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'prePull'),1)
+        }
+        if (this.players[player.number-1].popups.find(x=>x.msg === 'noPull')) {
+          this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'noPull'),1)
+        }
+
+
         let obstacleCrementObj = this.obstacleMoveCrementer(obstacleCell,playerCellRef);
 
         obstacleCell.obstacle =
@@ -20769,6 +20868,16 @@ class App extends Component {
           }
         )
       }
+      console.log('arrrghh');
+
+      if (this.players[player.number-1].popups.find(x=>x.msg === 'prePull')) {
+        this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'prePull'),1)
+      }
+      if (this.players[player.number-1].popups.find(x=>x.msg === 'canPull')) {
+        this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'canPull'),1)
+      }
+
+
     }
 
   }
@@ -21117,6 +21226,15 @@ class App extends Component {
           )
         }
 
+        if (this.players[puller.number-1].popups.find(x=>x.msg === 'prePull')) {
+          this.players[puller.number-1].popups.splice(this.players[puller.number-1].popups.findIndex(x=>x.msg === 'prePull'),1)
+        }
+        if (this.players[puller.number-1].popups.find(x=>x.msg === 'noPull')) {
+          this.players[puller.number-1].popups.splice(this.players[puller.number-1].popups.findIndex(x=>x.msg === 'noPull'),1)
+        }
+
+
+
         let voidCenter = {
           x: undefined,
           y: undefined
@@ -21310,6 +21428,14 @@ class App extends Component {
             }
           )
         }
+
+        if (this.players[puller.number-1].popups.find(x=>x.msg === 'prePull')) {
+          this.players[puller.number-1].popups.splice(this.players[puller.number-1].popups.findIndex(x=>x.msg === 'prePull'),1)
+        }
+        if (this.players[puller.number-1].popups.find(x=>x.msg === 'noPull')) {
+          this.players[puller.number-1].popups.splice(this.players[puller.number-1].popups.findIndex(x=>x.msg === 'noPull'),1)
+        }
+
 
 
         // MOVE TARGET PLAYER
@@ -21510,6 +21636,15 @@ class App extends Component {
           }
         )
       }
+
+      if (this.players[puller.number-1].popups.find(x=>x.msg === 'prePull')) {
+        this.players[puller.number-1].popups.splice(this.players[puller.number-1].popups.findIndex(x=>x.msg === 'prePull'),1)
+      }
+      if (this.players[puller.number-1].popups.find(x=>x.msg === 'canPull')) {
+        this.players[puller.number-1].popups.splice(this.players[puller.number-1].popups.findIndex(x=>x.msg === 'canPull'),1)
+      }
+
+
 
     }
 
