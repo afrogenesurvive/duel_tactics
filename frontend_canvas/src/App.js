@@ -6892,6 +6892,7 @@ class App extends Component {
               puller: 0,
             }
 
+
             if (player.newPushPullDelay.state !== true) {
               player.newPushPullDelay.state = true
             }
@@ -19930,6 +19931,20 @@ class App extends Component {
         }
         this.getTarget(targetPlayer);
 
+        if (!this.players[targetPlayer.number-1].popups.find(x=>x.msg === "pushedPulled")) {
+          this.players[targetPlayer.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: this.players[targetPlayer.number-1].prePull.limit,
+              type: '',
+              position: '',
+              msg: 'pushedPulled',
+              img: '',
+            }
+          )
+        }
+
         this.players[targetPlayer.number-1].moving = {
           state: true,
           step: 0,
@@ -20057,6 +20072,20 @@ class App extends Component {
           moveSpeed: moveSpeed,
         }
         this.getTarget(targetPlayer);
+
+        if (!this.players[targetPlayer.number-1].popups.find(x=>x.msg === "pushedPulled")) {
+          this.players[targetPlayer.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: this.players[targetPlayer.number-1].prePull.limit,
+              type: '',
+              position: '',
+              msg: 'pushedPulled',
+              img: '',
+            }
+          )
+        }
 
         this.players[targetPlayer.number-1].moving = {
           state: true,
@@ -20342,6 +20371,28 @@ class App extends Component {
       if (this.players[player.number-1].newPushPullDelay.state !== true) {
         this.players[player.number-1].newPushPullDelay.state = true
       }
+
+      if (!player.popups.find(x=>x.msg === "noPull")) {
+        player.popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: player.prePull.limit,
+            type: '',
+            position: '',
+            msg: 'noPull',
+            img: '',
+          }
+        )
+      }
+
+      if (player.popups.find(x=>x.msg === 'prePull')) {
+        player.popups.splice(player.popups.findIndex(x=>x.msg === 'prePull'),1)
+      }
+      if (player.popups.find(x=>x.msg === 'canPull')) {
+        player.popups.splice(player.popups.findIndex(x=>x.msg === 'canPull'),1)
+      }
+
     }
 
 
@@ -21029,6 +21080,28 @@ class App extends Component {
       if (this.players[puller.number-1].newPushPullDelay.state !== true) {
         this.players[puller.number-1].newPushPullDelay.state = true
       }
+
+      if (!this.players[puller.number-1].popups.find(x=>x.msg === "noPull")) {
+        this.players[puller.number-1].popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: this.players[puller.number-1].prePull.limit,
+            type: '',
+            position: '',
+            msg: 'noPull',
+            img: '',
+          }
+        )
+      }
+
+      if (this.players[puller.number-1].popups.find(x=>x.msg === 'prePull')) {
+        this.players[puller.number-1].popups.splice(this.players[puller.number-1].popups.findIndex(x=>x.msg === 'prePull'),1)
+      }
+      if (this.players[puller.number-1].popups.find(x=>x.msg === 'canPull')) {
+        this.players[puller.number-1].popups.splice(this.players[puller.number-1].popups.findIndex(x=>x.msg === 'canPull'),1)
+      }
+
     }
 
 
@@ -21335,6 +21408,20 @@ class App extends Component {
         }
         this.getTarget(targetPlayer);
 
+        if (!this.players[targetPlayer.number-1].popups.find(x=>x.msg === "pushedPulled")) {
+          this.players[targetPlayer.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: this.players[targetPlayer.number-1].prePull.limit,
+              type: '',
+              position: '',
+              msg: 'pushedPulled',
+              img: '',
+            }
+          )
+        }
+
         this.players[targetPlayer.number-1].moving = {
           state: true,
           step: 0,
@@ -21478,6 +21565,20 @@ class App extends Component {
           moveSpeed: moveSpeed,
         }
         this.getTarget(targetPlayer);
+
+        if (!this.players[targetPlayer.number-1].popups.find(x=>x.msg === "pushedPulled")) {
+          this.players[targetPlayer.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: this.players[targetPlayer.number-1].prePull.limit,
+              type: '',
+              position: '',
+              msg: 'pushedPulled',
+              img: '',
+            }
+          )
+        }
 
         this.players[targetPlayer.number-1].moving = {
           state: true,
@@ -21647,7 +21748,6 @@ class App extends Component {
         )
       }
 
-      console.log('ahoy');
 
       if (this.players[puller.number-1].popups.find(x=>x.msg === 'prePull')) {
         this.players[puller.number-1].popups.splice(this.players[puller.number-1].popups.findIndex(x=>x.msg === 'prePull'),1)
