@@ -6546,7 +6546,7 @@ class App extends Component {
                 }
 
                 this.checkDestination(player);
-                let trgt = this.getTarget(player);
+                // let trgt = this.getTarget(player);
 
                 if (pushBack === true ) {
 
@@ -6585,10 +6585,8 @@ class App extends Component {
 
               }
 
-              let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y)
-              if (
-                targetCell.void.state === true
-              ) {
+              // let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y)
+              if (player.target.cell2.void === true) {
                 player.falling.state = true;
                 player.action = 'falling';
 
@@ -21080,7 +21078,7 @@ class App extends Component {
       }
       pullStrengthPlayer += (puller.crits.pushBack-3);
       pullStrengthPlayer += (puller.crits.guardBreak-2);
-      pullStrengthPlayer += 15;
+      // pullStrengthPlayer += 15;
 
 
       let destCell = {
