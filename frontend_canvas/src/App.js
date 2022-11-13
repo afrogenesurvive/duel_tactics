@@ -6180,7 +6180,8 @@ class App extends Component {
         if (player.target.cell1.void === true) {
           if (player.falling.state === true) {
             // console.log('...');
-          } else {
+          }
+          else {
             player.action = 'moving';
             // console.log('stepping into the void',player.action,player.moving.step);
           }
@@ -6188,6 +6189,8 @@ class App extends Component {
         }
 
         if (player.jumping.state !== true) {
+
+
 
           let destRngIndx = undefined;
           if (
@@ -16405,9 +16408,12 @@ class App extends Component {
 
 
     // CHECK SET VOID AND CENTERS
+    voidDirection = player.direction;
+    if (player.strafing.state === true) {
+      voidDirection = player.strafing.direction;
+    }
     if (!targetCell1Ref) {
       target.cell1.void = true;
-      voidDirection = player.direction;
       edgeVoid1 = true;
       target.cell1.center = getVoidCenter(1,voidDirection,currentPosition);
       // this.testDraw.push({color:'red',x:target.cell1.center.x,y:target.cell1.center.y})
@@ -16421,7 +16427,6 @@ class App extends Component {
     }
     if (!targetCell2Ref) {
       target.cell2.void = true;
-      voidDirection = player.direction;
       edgeVoid2 = true;
       target.cell2.center = getVoidCenter(2,voidDirection,currentPosition);
       // this.testDraw.push({color:'red',x:target.cell2.center.x,y:target.cell2.center.y})
@@ -19649,7 +19654,6 @@ class App extends Component {
     let impactDirection = pusher.prePush.direction;
 
 
-
     if (pusher.stamina.current - this.staminaCostRef.push >= 0) {
 
       pusher.stamina.current = pusher.stamina.current - this.staminaCostRef.push;
@@ -19819,8 +19823,6 @@ class App extends Component {
       }
 
 
-      // movePlayer = true;
-
       if(!destCellRef && pushStrengthPlayer >= pushStrengthThreshold) {
 
         if (!this.players[pusher.number-1].popups.find(x=>x.msg === "canPush")) {
@@ -19842,62 +19844,6 @@ class App extends Component {
         }
         if (this.players[pusher.number-1].popups.find(x=>x.msg === 'noPush')) {
           this.players[pusher.number-1].popups.splice(this.players[pusher.number-1].popups.findIndex(x=>x.msg === 'noPush'),1)
-        }
-
-
-        let voidCenter = {
-          x: undefined,
-          y: undefined
-        }
-        switch(impactDirection) {
-          case 'north' :
-            voidCenter = {
-              x: targetCell.center.x+50,
-              y: targetCell.center.y-30,
-            }
-          break;
-          case 'south' :
-          if (
-            targetCell.number.x === 0 &&
-            targetCell.number.y === 9
-          ) {
-            voidCenter = {
-              // x: obstacleCell.center.x-30,
-              // y: obstacleCell.center.y+15,
-              x: targetCell.center.x-50,
-              y: targetCell.center.y+30,
-            }
-          } else {
-            voidCenter = {
-              x: targetCell.center.x-50,
-              y: targetCell.center.y+30,
-            }
-          }
-          break;
-          case 'west' :
-          if (
-            targetCell.number.x === 0 &&
-            targetCell.number.y === 9
-          ) {
-            voidCenter = {
-              // x: obstacleCell.center.x-30,
-              // y: obstacleCell.center.y-15,
-              x: targetCell.center.x-50,
-              y: targetCell.center.y-30,
-            }
-          } else {
-            voidCenter = {
-              x: targetCell.center.x-50,
-              y: targetCell.center.y-30,
-            }
-          }
-          break;
-          case 'east' :
-            voidCenter = {
-              x: targetCell.center.x+50,
-              y: targetCell.center.y+30,
-            }
-          break;
         }
 
 
@@ -19944,7 +19890,6 @@ class App extends Component {
             }
           )
         }
-
         this.players[targetPlayer.number-1].moving = {
           state: true,
           step: 0,
@@ -19959,7 +19904,7 @@ class App extends Component {
               y: targetPlayer.currentPosition.cell.center
             },
           },
-          destination: voidCenter
+          destination: targetPlayer.target.cell1.center,
         }
         let targetPlyrNextPosition = this.lineCrementer(targetPlayer);
         this.players[targetPlayer.number-1].nextPosition = targetPlyrNextPosition;
@@ -20005,6 +19950,7 @@ class App extends Component {
             pusher.nextPosition = nextPosition;
 
           }
+
         }
 
 
@@ -20983,7 +20929,7 @@ class App extends Component {
 
       if (puller.prePull.state === true) {
 
-        if (puller.prePllh.count >= puller.prePull.limit) {
+        if (puller.prePull.count >= puller.prePull.limit) {
         // if (puller.prePllh.count >= 25) {
         // if (puller.prePull.count >= limit) {
 
@@ -21134,7 +21080,7 @@ class App extends Component {
       }
       pullStrengthPlayer += (puller.crits.pushBack-3);
       pullStrengthPlayer += (puller.crits.guardBreak-2);
-      // pullStrengthPlayer += 15;
+      pullStrengthPlayer += 15;
 
 
       let destCell = {
@@ -21474,7 +21420,9 @@ class App extends Component {
           }
 
           if (puller.turning.delayCount === 0) {
-            this.players[puller.number-1].action = 'moving';
+            this.players[puller.number-1].strafing.direction = impactDirection;
+            this.players[puller.number-1].strafing.state = true;
+            this.players[puller.number-1].action = 'strafe moving';
             this.players[puller.number-1].moving = {
               state: true,
               step: 0,
