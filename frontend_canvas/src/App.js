@@ -6237,6 +6237,10 @@ class App extends Component {
               )
             }
           }
+          if (player.popups.find(x=>x.msg === 'dodging')) {
+            player.popups.splice(player.popups.findIndex(x=>x.msg === 'dodging'),1)
+          }
+
 
           for (const el of atDestRanges) {
             if (el === true) {
@@ -8837,7 +8841,7 @@ class App extends Component {
         }
         // PUSH KEY RELEASE
         if (player.prePush.state === true && this.keyPressed[player.number-1][player.prePush.direction] !== true) {
-          console.log('mid prePush but key released. reset prePush');
+          // console.log('mid prePush but key released. reset prePush');
           player.prePush = {
             state: false,
             count: 0,
@@ -9436,6 +9440,9 @@ class App extends Component {
               end: player.dodging.peak.end,
             }
           }
+          if (this.players[player.number-1].popups.find(x=>x.msg === 'dodging')) {
+            this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'dodging'),1)
+          }
 
 
           if (player.flanking.step === 2) {
@@ -9516,6 +9523,9 @@ class App extends Component {
                     img: '',
                   }
                 )
+              }
+              if (this.players[player.number-1].popups.find(x=>x.msg === 'dodging')) {
+                this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'dodging'),1)
               }
             }
             else {
@@ -16436,7 +16446,7 @@ class App extends Component {
           target.cell1.number.y === plyr.currentPosition.cell.number.y
         ) {
           target.cell1.occupant.type = "player";
-          target.cell1.occupant.player = plyr;
+          target.cell1.occupant.player = plyr.number;
           target.cell1.free = false;
         }
         if (
@@ -16444,7 +16454,7 @@ class App extends Component {
           target.cell2.number.y === plyr.currentPosition.cell.number.y
         ) {
           target.cell2.occupant.type = "player";
-          target.cell2.occupant.player = plyr;
+          target.cell2.occupant.player = plyr.number;
           target.cell2.free = false;
         }
       }
@@ -20181,7 +20191,7 @@ class App extends Component {
       if (this.players[pusher.number-1].popups.find(x=>x.msg === 'prePush')) {
         this.players[pusher.number-1].popups.splice(this.players[pusher.number-1].popups.findIndex(x=>x.msg === 'prePush'),1)
       }
-      if (this.players[pusher.number-1].popups.find(x=>x.msg === 'noPush')) {
+      if (this.players[pusher.number-1].popups.find(x=>x.msg === 'canaPush')) {
         this.players[pusher.number-1].popups.splice(this.players[pusher.number-1].popups.findIndex(x=>x.msg === 'canPush'),1)
       }
 
@@ -20868,7 +20878,6 @@ class App extends Component {
           }
         )
       }
-      console.log('arrrghh');
 
       if (this.players[player.number-1].popups.find(x=>x.msg === 'prePull')) {
         this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'prePull'),1)
@@ -21623,6 +21632,7 @@ class App extends Component {
         this.players[puller.number-1].newPushPullDelay.state = true
       }
 
+
       if (!this.players[puller.number-1].popups.find(x=>x.msg === "noPull")) {
         this.players[puller.number-1].popups.push(
           {
@@ -21636,6 +21646,8 @@ class App extends Component {
           }
         )
       }
+
+      console.log('ahoy');
 
       if (this.players[puller.number-1].popups.find(x=>x.msg === 'prePull')) {
         this.players[puller.number-1].popups.splice(this.players[puller.number-1].popups.findIndex(x=>x.msg === 'prePull'),1)
