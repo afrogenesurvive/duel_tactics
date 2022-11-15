@@ -8575,6 +8575,8 @@ class App extends Component {
               }
 
             }
+
+            // OUT OF STAMINA
             else {
               player.attacking.count = attackPeak+1;
               player.stamina.current = 0;
@@ -12293,19 +12295,10 @@ class App extends Component {
             if (infoCell.elevation.number === bolt.elevation) {
 
               let fwdBarrier = false;
+
+
               if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
-                if (bolt.direction === 'north' && infoCell.barrier.position === 'south') {
-                  fwdBarrier = true;
-                }
-                if (bolt.direction === 'south' && infoCell.barrier.position === 'north') {
-                  fwdBarrier = true;
-                }
-                if (bolt.direction === 'east' && infoCell.barrier.position === 'west') {
-                  fwdBarrier = true;
-                }
-                if (bolt.direction === 'west' && infoCell.barrier.position === 'east') {
-                  fwdBarrier = true;
-                }
+                fwdBarrier = this.checkMyCellBarrier(bolt.direction,infoCell)
               }
 
               let dodged = false;
@@ -12431,15 +12424,30 @@ class App extends Component {
                         this.players[plyr.number-1].hp = this.players[plyr.number-1].hp - 2;
                         this.attackedCancel(this.players[plyr.number-1]);
 
-                        if (!this.players[plyr.number-1].popups.find(x=>x.msg === 'alarmed')) {
+                        // if (!this.players[plyr.number-1].popups.find(x=>x.msg === 'alarmed')) {
+                        //   this.players[plyr.number-1].popups.push(
+                        //     {
+                        //       state: false,
+                        //       count: 0,
+                        //       limit:25,
+                        //       type: '',
+                        //       position: '',
+                        //       msg: 'alarmed',
+                        //       img: '',
+                        //
+                        //     }
+                        //   )
+                        // }
+
+                        if (!this.players[plyr.number-1].popups.find(x=>x.msg.split("_")[0] === "hpDown")) {
                           this.players[plyr.number-1].popups.push(
                             {
                               state: false,
                               count: 0,
-                              limit:25,
+                              limit: 30,
                               type: '',
                               position: '',
-                              msg: 'alarmed',
+                              msg: 'hpDown_'+'-'+2+'',
                               img: '',
 
                             }
@@ -12452,15 +12460,29 @@ class App extends Component {
                         this.players[plyr.number-1].hp = this.players[plyr.number-1].hp - 1;
                         this.attackedCancel(this.players[plyr.number-1]);
 
-                        if (!this.players[plyr.number-1].popups.find(x=>x.msg === 'alarmed')) {
+                        // if (!this.players[plyr.number-1].popups.find(x=>x.msg === 'alarmed')) {
+                        //   this.players[plyr.number-1].popups.push(
+                        //     {
+                        //       state: false,
+                        //       count: 0,
+                        //       limit:25,
+                        //       type: '',
+                        //       position: '',
+                        //       msg: 'alarmed',
+                        //       img: '',
+                        //
+                        //     }
+                        //   )
+                        // }
+                        if (!this.players[plyr.number-1].popups.find(x=>x.msg.split("_")[0] === "hpDown")) {
                           this.players[plyr.number-1].popups.push(
                             {
                               state: false,
                               count: 0,
-                              limit:25,
+                              limit: 30,
                               type: '',
                               position: '',
-                              msg: 'alarmed',
+                              msg: 'hpDown_'+'-'+1+'',
                               img: '',
 
                             }
