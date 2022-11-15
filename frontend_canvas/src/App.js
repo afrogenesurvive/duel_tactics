@@ -8412,33 +8412,7 @@ class App extends Component {
                       // shouldDeflectAttacker = 1;
 
                       if (shouldDeflectPushBackAttacker === 1) {
-                        let pushBackDirection;
-                        switch(player.direction) {
-                          case 'north' :
-                            pushBackDirection = 'south';
-                          break;
-                          case 'south' :
-                            pushBackDirection = 'north';
-                          break;
-                          case 'east' :
-                            pushBackDirection = 'west';
-                          break;
-                          case 'west' :
-                            pushBackDirection = 'east';
-                          break;
-                          case 'northEast' :
-                            pushBackDirection = 'southWest';
-                          break;
-                          case 'northWest' :
-                            pushBackDirection = 'southEast';
-                          break;
-                          case 'southWest' :
-                            pushBackDirection = 'northEast';
-                          break;
-                          case 'southEast' :
-                            pushBackDirection = 'northWest';
-                          break;
-                        }
+                        let pushBackDirection = this.getOppositeDirection(player.direction)
 
                         let canPushback = this.pushBack(player,pushBackDirection);
                         // console.log('canPushback',canPushback);
@@ -12298,7 +12272,7 @@ class App extends Component {
 
 
               if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
-                fwdBarrier = this.checkMyCellBarrier(bolt.direction,infoCell)
+                fwdBarrier = this.checkForwardBarrier(bolt.direction,infoCell)
               }
 
               let dodged = false;
@@ -16423,7 +16397,7 @@ class App extends Component {
 
     let myCell = this.gridInfo.find(elem2 => elem2.number.x === player.currentPosition.cell.number.x && elem2.number.y === player.currentPosition.cell.number.y)
 
-    target.myCellBlock = this.checkForwardBarrier(direction,myCell);
+    target.myCellBlock = this.checkMyCellBarrier(direction,myCell);
     // let fwdBarrier = this.checkForwardBarrier(direction,cellRef);
 
     for (const plyr of this.players) {
@@ -16524,6 +16498,7 @@ class App extends Component {
 
     let fwdBarrier = false;
     if (cell.barrier.state === true) {
+
 
       if (direction === 'north' && cell.barrier.position === 'south') {
         fwdBarrier = true;
@@ -24235,18 +24210,7 @@ class App extends Component {
           // FWD BARRIER?
           let fwdBarrier = false;
           if (targetCell.barrier.state === true) {
-            if (player.direction === 'north' && targetCell.barrier.position === 'south') {
-              fwdBarrier = true;
-            }
-            if (player.direction === 'south' && targetCell.barrier.position === 'north') {
-              fwdBarrier = true;
-            }
-            if (player.direction === 'east' && targetCell.barrier.position === 'west') {
-              fwdBarrier = true;
-            }
-            if (player.direction === 'west' && targetCell.barrier.position === 'east') {
-              fwdBarrier = true;
-            }
+            fwdBarrier = this.checkForwardBarrier(player.direction,targetCell);
           }
 
           if (fwdBarrier === true) {
@@ -24820,7 +24784,7 @@ class App extends Component {
                   )
                 }
 
-                this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).item = {
+                this.gridInfo.find(elem => elem.number.x === player.target.cell1.number.x && elem.number.y === player.target.cell1.number.y ).item = {
                   name: '',
                   type: '',
                   subType: '',
@@ -24831,7 +24795,7 @@ class App extends Component {
 
               if (targetCell.rubble === true & damage > 0) {
                 // console.log('damage/clear rubble');
-                this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).rubble = false;
+                this.gridInfo.find(elem => elem.number.x === player.target.cell1.number.x && elem.number.y === player.target.cell1.number.y ).rubble = false;
 
               }
 
@@ -25107,18 +25071,7 @@ class App extends Component {
           // FWD BARRIER?
           let fwdBarrier = false;
           if (targetCell2.barrier.state === true) {
-            if (player.direction === 'north' && targetCell2.barrier.position === 'south') {
-              fwdBarrier = true;
-            }
-            if (player.direction === 'south' && targetCell2.barrier.position === 'north') {
-              fwdBarrier = true;
-            }
-            if (player.direction === 'east' && targetCell2.barrier.position === 'west') {
-              fwdBarrier = true;
-            }
-            if (player.direction === 'west' && targetCell2.barrier.position === 'east') {
-              fwdBarrier = true;
-            }
+            fwdBarrier = this.checkForwardBarrier(player.direction,targetCell2);
           }
 
 
@@ -25799,7 +25752,7 @@ class App extends Component {
 
         // CHECK 2ND CELL TARGET1
         if (player.currentWeapon.type === 'spear' && checkSpearTarget === true) {
-          let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y)
+          let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell1.number.x && elem.number.y === player.target.cell1.number.y)
 
           let myCellBarrier = false;
           if (myCell.barrier.state === true ) {
@@ -26057,18 +26010,7 @@ class App extends Component {
 
           let fwdBarrier = false;
           if (targetCell.barrier.state === true) {
-            if (player.direction === 'north' && targetCell.barrier.position === 'south') {
-              fwdBarrier = true;
-            }
-            if (player.direction === 'south' && targetCell.barrier.position === 'north') {
-              fwdBarrier = true;
-            }
-            if (player.direction === 'east' && targetCell.barrier.position === 'west') {
-              fwdBarrier = true;
-            }
-            if (player.direction === 'west' && targetCell.barrier.position === 'east') {
-              fwdBarrier = true;
-            }
+            fwdBarrier = this.checkForwardBarrier(player.direction,targetCell);
           }
 
           if (fwdBarrier === true) {
@@ -26541,7 +26483,7 @@ class App extends Component {
                   )
                 }
 
-                this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).item = {
+                this.gridInfo.find(elem => elem.number.x === player.target.cell1.number.x && elem.number.y === player.target.cell1.number.y ).item = {
                   name: '',
                   type: '',
                   subType: '',
@@ -26552,7 +26494,7 @@ class App extends Component {
 
               if (targetCell.rubble === true & damage > 0) {
                 // console.log('damage/clear rubble');
-                this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).rubble = false;
+                this.gridInfo.find(elem => elem.number.x === player.target.cell1.number.x && elem.number.y === player.target.cell1.number.y ).rubble = false;
               }
 
               // NO OBSTACLE. DESTROY REAR BARRIER
@@ -26606,235 +26548,13 @@ class App extends Component {
       }
 
       // MY CELL BARRIER?
-      // if (myCell.barrier.state === true ) {
-      //   if (myCell.barrier.position === player.direction) {
-      //
-      //       if (myCell.barrier.destructible.state === true) {
-      //         // WEAPON CHECK
-      //         if (myCell.barrier.destructible.weapons.find(x => x === player.currentWeapon.name)) {
-      //           if (myCell.barrier.hp - damage > 0) {
-      //
-      //             let hp = myCell.barrier.hp - damage;
-      //
-      //             myCell.barrier =
-      //             {
-      //               state: myCell.barrier.state,
-      //               name: myCell.barrier.name,
-      //               type: myCell.barrier.type,
-      //               hp: hp,
-      //               destructible: myCell.barrier.destructible,
-      //               locked: myCell.barrier.locked,
-      //               position: myCell.barrier.position,
-      //               height: myCell.barrier.height,
-      //             };
-      //
-      //             this.obstacleBarrierToDestroy.push({
-      //               type: 'barrier',
-      //               action: 'damage',
-      //               count: 0,
-      //               limit: 20,
-      //               complete: false,
-      //               cell: myCell,
-      //             })
-      //           }
-      //
-      //           // DESTROY FWD BARRIER W/ OR W/O RUBBLE
-      //           else if (myCell.barrier.hp - damage <= 0) {
-      //             if (myCell.barrier.destructible.leaveRubble === true) {
-      //               console.log('leave rubble on ',myCell.number,'removing barrier');
-      //               myCell.rubble = true;
-      //               // myCell.terrain.type = 'hazard';
-      //               myCell.barrier =
-      //               {
-      //                 state: false,
-      //                 name: myCell.barrier.name,
-      //                 type: myCell.barrier.type,
-      //                 hp: 0,
-      //                 destructible: myCell.barrier.destructible,
-      //                 locked: myCell.barrier.locked,
-      //                 position: myCell.barrier.position,
-      //                 height: myCell.barrier.height,
-      //               };
-      //
-      //               this.players[player.number-1].statusDisplay = {
-      //                 state: true,
-      //                 status: 'Destroyed '+myCell.barrier.name+'!',
-      //                 count: 1,
-      //                 limit: this.players[player.number-1].statusDisplay.limit,
-      //               }
-      //
-      //               player.popups.push(
-      //                 {
-      //                   state: false,
-      //                   count: 0,
-      //                   limit: 25,
-      //                   type: '',
-      //                   position: '',
-      //                   msg: 'destroyedItem',
-      //                   img: '',
-      //
-      //                 }
-      //               )
-      //             } else {
-      //               console.log('no rubble. Just remove barrier');
-      //
-      //               myCell.barrier =
-      //               {
-      //                 state: false,
-      //                 name: myCell.barrier.name,
-      //                 type: myCell.barrier.type,
-      //                 hp: 0,
-      //                 destructible: myCell.barrier.destructible,
-      //                 locked: myCell.barrier.locked,
-      //                 position: myCell.barrier.position,
-      //                 height: myCell.barrier.height,
-      //               };
-      //
-      //               this.players[player.number-1].statusDisplay = {
-      //                 state: true,
-      //                 status: 'Destroyed '+myCell.barrier.name+'!',
-      //                 count: 1,
-      //                 limit: this.players[player.number-1].statusDisplay.limit,
-      //               }
-      //
-      //               player.popups.push(
-      //                 {
-      //                   state: false,
-      //                   count: 0,
-      //                   limit: 25,
-      //                   type: '',
-      //                   position: '',
-      //                   msg: 'destroyedItem',
-      //                   img: '',
-      //
-      //                 }
-      //               )
-      //             }
-      //
-      //             this.obstacleBarrierToDestroy.push({
-      //               type: 'barrier',
-      //               action: 'destroy',
-      //               count: 0,
-      //               limit: 20,
-      //               complete: false,
-      //               cell: myCell,
-      //             })
-      //
-      //           }
-      //         }
-      //
-      //         // WEAPON NO GOOD. DEFLECT
-      //         else {
-      //           console.log('your current weapon cannot destroy this, you need ',myCell.obstacle.barrier.destructible.weapons,'. Deflect player?');
-      //            let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
-      //            if (shouldDeflect === 1) {
-      //
-      //              this.attackedCancel(this.players[player.number-1]);
-      //
-      //              player.success.deflected = {
-      //                state: true,
-      //                count: 1,
-      //                limit: this.deflectedLengthRef.attack,
-      //                predeflect: player.success.deflected.predeflect,
-      //                type: 'attack'
-      //              }
-      //              player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
-      //
-      //
-      //              if (this.aiDeflectedCheck.includes(player.number) !== true) {
-      //                this.aiDeflectedCheck.push(player.number)
-      //              }
-      //
-      //              if (player.currentWeapon.name === '') {
-      //                console.log('this barrier is stronger than your fist. Take damage?');
-      //                let takeDamage = this.rnJesus(1,player.crits.guardBreak);
-      //                if (takeDamage === 1) {
-      //                  if (player.hp - 1 <= 0) {
-      //                    this.killPlayer(this.players[player.number-1]);
-      //
-      //                    let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-      //                    this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
-      //
-      //                    this.players[player.number-1].points--;
-      //
-      //                    this.pointChecker(player)
-      //                  } else {
-      //                    this.players[player.number-1].hp -= 1;
-      //                  }
-      //                }
-      //              }
-      //
-      //            }
-      //         }
-      //
-      //       }
-      //
-      //       // INDESTRUCTIBLE MY CELL BARRIER
-      //       else {
-      //         console.log('attacking invurnerable barrier, deflect player?');
-      //          let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
-      //          if (shouldDeflect === 1) {
-      //            this.attackedCancel(this.players[player.number-1]);
-      //
-      //            player.success.deflected = {
-      //              state: true,
-      //              count: 1,
-      //              limit: this.deflectedLengthRef.attack,
-      //              predeflect: player.success.deflected.predeflect,
-      //              type: 'attack'
-      //            }
-      //            player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
-      //
-      //
-      //            if (this.aiDeflectedCheck.includes(player.number) !== true) {
-      //              this.aiDeflectedCheck.push(player.number)
-      //            }
-      //
-      //            if (player.currentWeapon.name === '') {
-      //              console.log('this barrier is stronger than your fist. Take damage?');
-      //              let takeDamage = this.rnJesus(1,player.crits.guardBreak);
-      //              if (takeDamage === 1) {
-      //                if (player.hp - 1 <= 0) {
-      //                  this.killPlayer(this.players[player.number-1]);
-      //
-      //                  let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-      //                  this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
-      //
-      //                  this.players[player.number-1].points--;
-      //
-      //                  this.pointChecker(player)
-      //                } else {
-      //                  this.players[player.number-1].hp -= 1;
-      //
-      //                  if (this.players[player.number-1].hp === 1) {
-      //                    this.players[player.number-1].speed.move = .05;
-      //                  }
-      //                }
-      //              }
-      //            }
-      //
-      //          }
-      //       }
-      //   }
-      // }
 
 
 
       // FWD BARRIER?
       let fwdBarrier = false;
       if (targetCell.barrier.state === true) {
-        if (bolt.direction === 'north' && targetCell.barrier.position === 'south') {
-          fwdBarrier = true;
-        }
-        if (bolt.direction === 'south' && targetCell.barrier.position === 'north') {
-          fwdBarrier = true;
-        }
-        if (bolt.direction === 'east' && targetCell.barrier.position === 'west') {
-          fwdBarrier = true;
-        }
-        if (bolt.direction === 'west' && targetCell.barrier.position === 'east') {
-          fwdBarrier = true;
-        }
+        fwdBarrier = this.checkForwardBarrier(bolt.direction,targetCell);
       }
 
       if (fwdBarrier === true && targetCell.barrier.height >= 1) {
@@ -27441,18 +27161,7 @@ class App extends Component {
       // FWD BARRIER?
       let fwdBarrier = false;
       if (targetCell.barrier.state === true) {
-        if (bolt.direction === 'north' && targetCell.barrier.position === 'south') {
-          fwdBarrier = true;
-        }
-        if (bolt.direction === 'south' && targetCell.barrier.position === 'north') {
-          fwdBarrier = true;
-        }
-        if (bolt.direction === 'east' && targetCell.barrier.position === 'west') {
-          fwdBarrier = true;
-        }
-        if (bolt.direction === 'west' && targetCell.barrier.position === 'east') {
-          fwdBarrier = true;
-        }
+        fwdBarrier = this.checkForwardBarrier(bolt.direction,targetCell);
       }
 
       if (fwdBarrier === true && barrierHeightCheck === true) {
