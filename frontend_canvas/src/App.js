@@ -2951,6 +2951,7 @@ class App extends Component {
 
   componentDidMount() {
 
+
     this.easyStar = new Easystar.js();
 
     if (window.innerWidth < 1100) {
@@ -3033,7 +3034,10 @@ class App extends Component {
 
 
   const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
-  // console.log('gamepads',gamepads);
+  console.log('gamepads',gamepads,navigator.getGamepads ? navigator.getGamepads() : []);
+
+
+
   // let joyPadCount = gamepads.length;
   let connectedGamepads = 0;
   if (gamepads[0] !== null) {
@@ -3102,6 +3106,9 @@ class App extends Component {
 
     if (!!gp) {
 
+      // test 2 joycons together as one
+      // set controls based on gp id (joycon/pro)
+
       // CHECK BUTTONS!!
       for (const btn of gp.buttons) {
         if (btn.pressed === true ) {
@@ -3124,7 +3131,8 @@ class App extends Component {
               gp.buttons.indexOf(btn) === 12
             ) {
               console.log('1 player btn',gp.buttons.indexOf(btn));
-              // console.log('gamepads', gp.id.substr(0,7));
+              console.log('gamepads1', gp.id.substr(0,7));
+              console.log('gamepads2', gp.id);
             }
 
             // DOWN BTN
@@ -3195,7 +3203,6 @@ class App extends Component {
             }
 
           }
-
           if (connectedGamepads === 2) {
 
             if (
@@ -3752,6 +3759,10 @@ class App extends Component {
     canvas2.addEventListener("click", e => {
       this.getCanvasClick(canvas2, e,"click")
     });
+
+    window.addEventListener("gamepadconnected", (e) => {
+      console.log('new gamepad?',e);
+    })
 
     // canvas3.addEventListener("click", e => {
     //   this.getSettingsCanvasClick(canvas3, e)
@@ -5243,60 +5254,10 @@ class App extends Component {
     let wall2 = this.refs.wall2;
     let wall3 = this.refs.wall3;
 
-    let floorImgs = {
-      grass: this.refs.floorGrass,
-      stone: this.refs.floorStone,
-      dirt: this.refs.floorDirt,
-      pond: this.refs.floorPond,
-      mud: this.refs.floorMud,
-      sand: this.refs.floorSand,
-      ice: this.refs.floorIce,
-      lava: this.refs.floorLava,
-      bramble: this.refs.floorBramble,
-      river: this.refs.floorRiver,
-      void: this.refs.floorVoid,
-      void2: this.refs.floorVoid2,
-      void3: this.refs.floorVoid3,
-    }
-    let obstacleImgs = {
-      table: this.refs.obstacleAHalf,
-      closet: this.refs.obstacleAFull,
-      chair: this.refs.obstacleBHalf,
-      shelf: this.refs.obstacleBFull,
-      smallBox: this.refs.obstacleCHalf,
-      largeBox: this.refs.obstacleCFull,
-      counter: this.refs.obstacleDHalf,
-      chest: this.refs.obstacleEHalf,
-      crate: this.refs.obstacleCrate,
-      barrel: this.refs.obstacleBarrel,
-      chest: this.refs.obstacleCrate,
-      table: this.refs.obstacleCrate,
-      chair: this.refs.obstacleCrate,
-      shelf: this.refs.obstacleCrate,
-      counter: this.refs.obstacleCrate,
-      smallBox: this.refs.obstacleCrate,
-      largeBox: this.refs.obstacleBarrel,
-    }
-    let barrierImgs = {
-      wall: {
-        north: this.refs.barrierANorth,
-        south: this.refs.barrierASouth,
-        east: this.refs.barrierAEast,
-        west: this.refs.barrierAWest,
-      },
-      door: {
-        north: this.refs.barrierANorth,
-        south: this.refs.barrierASouth,
-        east: this.refs.barrierAEast,
-        west: this.refs.barrierAWest,
-      },
-      balcony: {
-        north: this.refs.barrierANorth,
-        south: this.refs.barrierASouth,
-        east: this.refs.barrierAEast,
-        west: this.refs.barrierAWest,
-      },
-    }
+    let floorImgs = this.floorImgs;
+    let obstacleImgs = this.obstacleImgs;
+    let barrierImgs = this.barrierImgs;
+
 
     class Point {
         constructor(x, y) {
@@ -10417,8 +10378,8 @@ class App extends Component {
             };
             this.players[plyrPullPushedPlyr-1].action = "deflected";
 
-            if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
-              this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
+            if (this.aiDeflectedCheck.includes(this.players[player.target.cell1.occupant.player-1].number) !== true) {
+              this.aiDeflectedCheck.push(this.players[player.target.cell1.occupant.player-1].number)
             }
 
           }
@@ -37250,6 +37211,9 @@ class App extends Component {
     this.camera.state = true;
     this.camera.fixed = true;
   }
+
+
+
 
 
   render() {
