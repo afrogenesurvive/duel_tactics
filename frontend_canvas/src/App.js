@@ -15055,61 +15055,67 @@ class App extends Component {
                   respawnPoint.number.y = elem3.number.y;
                   respawnPoint.center.x = elem3.center.x;
                   respawnPoint.center.y = elem3.center.y;
+
+
+
+                  plyr.dead.state = false;
+                  plyr.currentPosition.cell = respawnPoint;
+                  plyr.nextPosition = respawnPoint.center;
+                  this.getTarget(plyr)
+                  plyr.moving = {
+                    state: false,
+                    step: 0,
+                    course: '',
+                    origin: {
+                      number: {
+                        x: respawnPoint.number.x,
+                        y: respawnPoint.number.y
+                      },
+                      center: {
+                        x: respawnPoint.center.x,
+                        y: respawnPoint.center.y
+                      },
+                    },
+                    destination: {
+                      x: this.players[plyr.number-1].target.cell1.center.x,
+                      y: this.players[plyr.number-1].target.cell1.center.y
+                    }
+                  }
+
+                  plyr.direction = 'north';
+                  plyr.respawn = false;
+                  this.players[plyr.number-1] = plyr;
+
+                  // context.drawImage(updatedPlayerImg, respawnPoint.center.x-25, respawnPoint.center.y-50, 55,55);
+
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  respawnPoint.center.x-25, respawnPoint.center.y-50,this.playerDrawWidth, this.playerDrawHeight)
+
+                  if (
+                      this.settingAutoCamera === false &&
+                      player.ai.state !== true &&
+                      this.camera.preInstructions.length === 0 &&
+                      this.camera.instructions.length === 0
+                    ) {
+                    this.setAutoCamera('playerSpawnFocus',plyr)
+                  }
+                  else {
+                    console.log('no setting auto cam: playerSpawnFocus');
+                  }
+
+
                 }
                 else if (respawnCellOccupied === true) {
 
-                  if (plyr.number === 1) {
-                    respawnPoint = altRespawnPoint;
-                  }
-                  if (plyr.number === 2) {
-                    respawnPoint = altRespawnPoint2;
-                  }
+                  console.log("no free cells for respawn");
+                  alert("no free cells for respawn");
+                  
+                  // if (plyr.number === 1) {
+                  //   respawnPoint = altRespawnPoint;
+                  // }
+                  // if (plyr.number === 2) {
+                  //   respawnPoint = altRespawnPoint2;
+                  // }
 
-                }
-
-
-                plyr.dead.state = false;
-                plyr.currentPosition.cell = respawnPoint;
-                plyr.nextPosition = respawnPoint.center;
-                this.getTarget(plyr)
-                plyr.moving = {
-                  state: false,
-                  step: 0,
-                  course: '',
-                  origin: {
-                    number: {
-                      x: respawnPoint.number.x,
-                      y: respawnPoint.number.y
-                    },
-                    center: {
-                      x: respawnPoint.center.x,
-                      y: respawnPoint.center.y
-                    },
-                  },
-                  destination: {
-                    x: this.players[plyr.number-1].target.cell1.center.x,
-                    y: this.players[plyr.number-1].target.cell1.center.y
-                  }
-                }
-
-                plyr.direction = 'north';
-                plyr.respawn = false;
-                this.players[plyr.number-1] = plyr;
-
-                // context.drawImage(updatedPlayerImg, respawnPoint.center.x-25, respawnPoint.center.y-50, 55,55);
-
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  respawnPoint.center.x-25, respawnPoint.center.y-50,this.playerDrawWidth, this.playerDrawHeight)
-
-                if (
-                    this.settingAutoCamera === false &&
-                    player.ai.state !== true &&
-                    this.camera.preInstructions.length === 0 &&
-                    this.camera.instructions.length === 0
-                  ) {
-                  this.setAutoCamera('playerSpawnFocus',plyr)
-                }
-                else {
-                  console.log('no setting auto cam: playerSpawnFocus');
                 }
 
               }
@@ -18978,29 +18984,8 @@ class App extends Component {
 
         if (destCellRef.barrier.state === true) {
           let barrier = false;
-          switch (impactDirection) {
-            case "north":
-              if (destCellRef.barrier.position === "south") {
-                barrier = true;
-              }
-              break;
-            case "south":
-              if (destCellRef.barrier.position === "north") {
-                barrier = true;
-              }
-              break;
-            case "east":
-              if (destCellRef.barrier.position === "west") {
-                barrier = true;
-              }
-              break;
-            case "west":
-              if (destCellRef.barrier.position === "east") {
-                barrier = true;
-              }
-              break;
-            default:
-              break;
+          if (destCellRef.barrier.position = this.getOppositeDirection(impactDirection)) {
+            barrier = true;
           }
 
           if (barrier === true) {
@@ -19016,29 +19001,8 @@ class App extends Component {
 
           // --------------
           let barrier = false;
-          switch (impactDirection) {
-            case "north":
-              if (obstacleCell.barrier.position === "south") {
-                barrier = true;
-              }
-              break;
-            case "south":
-              if (obstacleCell.barrier.position === "north") {
-                barrier = true;
-              }
-              break;
-            case "east":
-              if (obstacleCell.barrier.position === "west") {
-                barrier = true;
-              }
-              break;
-            case "west":
-              if (obstacleCell.barrier.position === "east") {
-                barrier = true;
-              }
-              break;
-            default:
-              break;
+          if (obstacleCell.barrier.position = this.getOppositeDirection(impactDirection)) {
+            barrier = true;
           }
 
           if (barrier === true) {
