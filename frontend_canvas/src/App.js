@@ -2947,8 +2947,6 @@ class App extends Component {
 
   }
 
-
-
   componentDidMount() {
 
 
@@ -3034,8 +3032,7 @@ class App extends Component {
 
 
   const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
-  console.log('gamepads',gamepads,navigator.getGamepads ? navigator.getGamepads() : []);
-
+  // console.log('gamepads',gamepads,navigator.getGamepads ? navigator.getGamepads() : []);
 
 
   // let joyPadCount = gamepads.length;
@@ -5523,10721 +5520,6 @@ class App extends Component {
   }
 
 
-  gameLoop = () => {
-
-    // IF PRESSED SETTINGS KEY, COUNT
-    // PAUSE GAME IF SETTINGS OPENED
-    if (this.showSettingsKeyPress.state === true) {
-      if (this.showSettingsKeyPress.count < this.showSettingsKeyPress.limit) {
-        this.showSettingsKeyPress.count++;
-      }
-      if (this.showSettingsKeyPress.count >= this.showSettingsKeyPress.limit) {
-        if (this.state.showSettings !== true) {
-          this.setState({
-            showSettings: true
-          })
-          if (this.showSettingsCanvasData.state === true) {
-            this.settingsFormGridWidthUpdate(this.settingsGridWidth)
-          }
-
-          // this.redrawSettingsGrid();
-        } else {
-
-          // this.updateSettingsFormAiDataData = {};
-          this.settingsFormAiStartPosList = [];
-          this.setState({
-            showSettings: false
-          })
-        }
-        this.showSettingsKeyPress = {
-          state: false,
-          count: 0,
-          limit: this.showSettingsKeyPress.limit,
-        }
-      }
-
-    }
-
-    if (this.state.showSettings !== true) {
-
-      // let ts = window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
-      this.stepper.currentTime = (new Date()).getTime();
-      this.stepper.deltaTime = (this.stepper.currentTime-this.stepper.lastTime);
-
-      if(this.stepper.deltaTime > this.stepper.interval) {
-
-        this.time++;
-
-        if (this.time === 300) {
-        //   this.openVoid = true;
-        // OR
-        //   this.customCellToVoid({x:2,y:2})
-
-        // this.players[1].ai.retreating.state = false;
-        // this.players[1].ai.retreating.checkin = undefined;
-        // this.players[1].ai.mission = 'retreat';
-        // this.players[1].ai.retreating.safe = false;
-        }
-
-
-        this.setState({
-          stateUpdater: '..'
-        })
-
-
-        if (this.gamepad === true) {
-          this.pollGamepads();
-        }
-
-
-        // REMOVE AI PLAYER!
-        if (this.removeAi && this.addAiCount.state !== true) {
-
-          let aiPlayer = this.players[this.removeAi-1]
-          let newArray = this.players.filter(x=> x !== aiPlayer);
-          this.players = [];
-          this.players = newArray;
-          this.removeAi = undefined;
-        }
-
-
-        for (const player of this.players) {
-
-          this.playerUpdate(player, this.state.canvas, this.state.context, this.state.canvas2, this.state.context2, this.state.canvas3, this.state.context3);
-        }
-
-
-        this.stepper.lastTime = this.stepper.currentTime - (this.stepper.deltaTime % this.stepper.interval);
-      }
-
-    }
-
-    requestAnimationFrame(this.gameLoop);
-
-  }
-  playerUpdate = (player, canvas, context, canvas2, context2, canvas3, context3) => {
-    // console.log('updating player',player.number);
-
-    let keyPressedDirection;
-    if (player.ai.state === true && player.dead.state === true) {
-
-    }
-    else {
-      for (const [key, value] of Object.entries(this.keyPressed[player.number-1])) {
-        // console.log(`${key}: ${value} ....${player.number}`);
-
-        if (
-          key !== 'strafe' &&
-          key !== 'attack' &&
-          key !== 'defend' &&
-          key !== 'dodge' &&
-          value === true
-        ) {
-          // if (player.ai.state === true) {
-          //   console.log('ai pressed',key,'plyr',player.number);
-          // }
-          // console.log('pressed1',key,'plyr',player.number);
-
-          keyPressedDirection = key;
-        }
-
-
-      }
-    }
-
-    let nextPosition;
-
-
-    if (player.dead.state === true) {
-
-      if (player.dead.count > 0 && player.dead.count < player.dead.limit+1) {
-        player.dead.count++
-        // console.log('player',player.number,'dying',player.dead.count);
-      }
-      else if (player.dead.count >= player.dead.limit) {
-        player.dead.count = 0;
-      }
-
-    }
-    if (player.dead.state === true && player.dead.count === 0) {
-      // console.log('done dying remove from board');
-      player.nextPosition = {
-        x: -30,
-        y: -30,
-      }
-    }
-
-
-    // OPEN VOID!!???
-    if (this.openVoid === true) {
-
-      if (this.cellToVoid.state !== true) {
-        // console.log('set a new cell to void');
-
-        let cell = {
-          x: 0,
-          y: 0
-        }
-
-        let voidChance = Math.round(1000/this.gridWidth)
-        let openVoid = this.rnJesus(1,voidChance);
-
-        if (openVoid === 1) {
-          // console.log('boom');
-          cell.x = this.rnJesus(0,this.gridWidth)
-          cell.y = this.rnJesus(0,this.gridWidth)
-
-          this.cellToVoid.state = true;
-          this.cellToVoid.x = cell.x;
-          this.cellToVoid.y = cell.y;
-          this.cellToVoid.count = 1;
-        }
-
-      }
-      else if (this.cellToVoid.state === true) {
-        // console.log('already voiding a cell');
-        if (this.cellToVoid.count < this.cellToVoid.limit) {
-          this.cellToVoid.count++
-          // console.log('cv',this.cellToVoid.count);
-        }
-        else if (this.cellToVoid.count >= this.cellToVoid.limit) {
-          // console.log('summon void now',this.cellToVoid.x,this.cellToVoid.y);
-
-          let cell = {
-            x: this.cellToVoid.x,
-            y: this.cellToVoid.y,
-          }
-
-          this.voidSummon(cell);
-
-          this.cellToVoid = {
-            state: false,
-            x: 0,
-            y: 0,
-            count: 0,
-            limit: this.cellToVoid.limit,
-          }
-
-
-
-          if (this.voidCustomCell === true) {
-            // console.log('void custom cell switch off');
-            this.openVoid = false
-            this.voidCustomCell = false;
-          }
-
-        }
-
-      }
-
-    }
-    // LIMIT CELL VOID EVENT!!
-    if (this.voidTimer.count < this.voidTimer.limit) {
-      this.voidTimer.count++
-      // console.log('void count',this.voidTimer.count);
-    }
-    if (this.voidTimer.count >= this.voidTimer.limit) {
-      this.openVoid = false;
-      // console.log('void off');
-    }
-
-
-    // BLOOD SACRIFICE!!
-    if (this.bloodSacrificeEvent.state === true) {
-
-      if (this.bloodSacrificeEvent.count < this.bloodSacrificeEvent.limit) {
-        this.bloodSacrificeEvent.count++;
-      } else if (this.bloodSacrificeEvent.count >= this.bloodSacrificeEvent.limit) {
-        if (this.cellToVoid.state !== true) {
-          this.bloodSacrificeEvent.state = false;
-          this.openVoid = false;
-          console.log('Blood Sacrifice event is now over.');
-          if (this.bloodSacrificeEvent.restore === true) {
-
-
-            for (const cell of this.bloodSacrificeVoidedCells) {
-              // console.log('restoring cells after blood Sacrifice',cell);
-              if (cell.terrain.name !== 'void') {
-                cell.void.state = false;
-              }
-            }
-
-            this.bloodSacrificeVoidedCells = [];
-            this.bloodSacrificeEvent.restore = false;
-          }
-        }
-
-      }
-    }
-
-
-    // STAMINA!!
-    if (player.stamina.current < player.stamina.max) {
-
-      player.stamina.current += .05;
-      player.stamina.current = +(Math.round((player.stamina.current) + "e+" + 3)  + "e-" + 3);
-
-      if (player.stamina.current >= player.stamina.max) {
-        player.stamina.current = player.stamina.max;
-      }
-      if (player.stamina.current === 1) {
-        // console.log('OUT OF STAMINA @ player update');
-        player.flanking = {
-          checking: false,
-          preFlankDirection: '',
-          direction: '',
-          state: false,
-          step: 0,
-          target1: {x:0 ,y:0},
-          target2: {x:0 ,y:0},
-        }
-        player.dodging = {
-          countState: false,
-          state: false,
-          count: 0,
-          limit: 20,
-          peak: {
-            start: 5,
-            end: 10,
-          }
-        }
-
-        this.attackedCancel(player);
-
-        if (player.success.deflected.state !== true) {
-
-          this.players[player.number-1].success.deflected = {
-            state: true,
-            count: 1,
-            limit: this.deflectedLengthRef.outOfStamina,
-            predeflect: this.players[player.number-1].success.deflected.predeflect,
-            type: 'outOfStamina',
-          };
-
-
-          if (this.aiDeflectedCheck.includes(this.players[player.number-1].number) !== true) {
-            this.aiDeflectedCheck.push(this.players[player.number-1].number)
-          }
-        }
-
-        if (!player.popups.find(x => x.msg === 'outOfStamina')) {
-          player.popups.push(
-            {
-              state: false,
-              count: 0,
-              limit: 20,
-              type: '',
-              position: '',
-              msg: 'outOfStamina',
-              img: '',
-
-            }
-          )
-        }
-
-
-      }
-
-      // AI RETREAT ON LOW STAMINA
-      if (player.stamina.current <= 4) {
-        if (player.ai.state === true) {
-          console.log('ai player',player.number,' almost out of stamina. Retreat');
-          player.ai.mission = 'retreat';
-
-          if (!player.popups.find(x=>x.msg === 'missionRetreat')) {
-            player.popups.push(
-              {
-                state: false,
-                count: 0,
-                limit: 30,
-                type: '',
-                position: '',
-                msg: 'missionRetreat',
-                img: '',
-
-              }
-            )
-          }
-
-        }
-      }
-    }
-
-
-    // CHECK AND SET DEFLECTION!!
-    if (player.success.deflected.state === true && player.success.deflected.count < player.success.deflected.limit) {
-      player.action = 'deflected';
-      player.success.deflected.count++
-
-      if (player.success.deflected.count === 2) {
-        // console.log('count',player.success.deflected.count,'limit',player.success.deflected.limit,'type',player.success.deflected.type);
-
-        if (
-          player.success.deflected.type === 'blunt_attacked' ||
-          player.success.deflected.type === 'defended'
-        ) {
-
-          if (!player.popups.find(x=>x.msg === "guardBroken")) {
-            player.popups.push(
-              {
-                state: false,
-                count: 0,
-                limit: player.success.deflected.limit,
-                type: '',
-                position: '',
-                msg: 'guardBroken',
-                img: '',
-
-              }
-            )
-          }
-
-        }
-
-        if (player.success.deflected.type === 'attack') {
-          if (!player.popups.find(x=>x.msg === "attackParried")) {
-            player.popups.push(
-              {
-                state: false,
-                count: 0,
-                limit: player.success.deflected.limit,
-                type: '',
-                position: '',
-                msg: 'attackParried',
-                img: '',
-
-              }
-            )
-          }
-
-        }
-        if (player.success.deflected.type === 'attacked') {
-          if (!player.popups.find(x=>x.msg === "injured")) {
-            player.popups.push(
-              {
-                state: false,
-                count: 0,
-                limit: player.success.deflected.limit,
-                type: '',
-                position: '',
-                msg: 'injured',
-                img: '',
-
-              }
-            )
-          }
-        }
-        if (player.success.deflected.type === 'outOfStamina') {
-
-          if (!player.popups.find(x=>x.msg === player.success.deflected.type)) {
-            player.popups.push(
-              {
-                state: false,
-                count: 0,
-                limit: player.success.deflected.limit,
-                type: '',
-                position: '',
-                msg: player.success.deflected.type,
-                img: '',
-
-              }
-            )
-          }
-        }
-
-      }
-
-
-      // if (player.ai.state === true) {
-      //   player.ai.instructions = []
-      //   player.ai.currentInstruction = 0
-      //   if (player.ai.mission === 'engage') {
-      //     player.ai.engaging.targetAction = ''
-      //   }
-      // }
-
-    }
-    //END DEFLECTION, SPIN & DROP
-    else if (player.success.deflected.state === true && player.success.deflected.count >= player.success.deflected.limit) {
-      // console.log('deflect end',player.success.deflected.type);
-      // DEFLECT SPIN!
-      let shouldSpin;
-      if (player.success.deflected.type === "attack") {
-        shouldSpin = this.rnJesus(1,3);
-      }
-      if (player.success.deflected.type === "defended") {
-        shouldSpin = this.rnJesus(1,10);
-      }
-      let newDirection;
-      if (shouldSpin === 1) {
-        switch(player.direction) {
-          case 'north':
-            if (shouldSpin === 1) {
-              newDirection = 'east';
-            } else {
-              newDirection = 'west';
-            }
-          break;
-          case 'south':
-            if (shouldSpin === 1) {
-              newDirection = 'east';
-            } else {
-              newDirection = 'west';
-            }
-          break;
-          case 'east':
-            if (shouldSpin === 1) {
-              newDirection = 'north';
-            } else {
-              newDirection = 'south';
-            }
-          break;
-          case 'west':
-            if (shouldSpin === 1) {
-              newDirection = 'north';
-            } else {
-              newDirection = 'south';
-            }
-          break;
-        }
-        player.direction = newDirection;
-      }
-
-      player.action = 'idle';
-      player.success.deflected = {
-        state: false,
-        count: 0,
-        limit: player.success.deflected.limit,
-        predeflect: player.success.deflected.predeflect,
-        type: '',
-      }
-
-      let indx = this.aiDeflectedCheck.indexOf(player.number)
-      // this.aiDeflectedCheck.splice(indx,1)
-      let newArr = this.aiDeflectedCheck.filter(x=>x !== player.number)
-      this.aiDeflectedCheck = newArr;
-      // console.log('this.aiDeflectedCheck',this.aiDeflectedCheck);
-
-
-      // CANCEL AI ATTACK, DEFEND!!
-      if (player.ai.state === true) {
-        if (player.ai.state === true) {
-          player.attacking = {
-            state: false,
-            count: 0,
-            limit: 15,
-          };
-        }
-
-        player.defending = {
-          state: false,
-          count: 0,
-          limit: player.defending.limit,
-        }
-
-        player.ai.targetAqcuiredReset = true
-
-      }
-
-
-      if (player.dead.state !== true && player.falling.state !== true) {
-        let shouldDeflectDrop = this.rnJesus(1,player.crits.guardBreak)
-        if (shouldDeflectDrop === 1) {
-          this.deflectDrop(player)
-        }
-
-      }
-
-
-    }
-
-
-    // CELLS TO HIGHLIGHT V2!!
-    for (const cell3 of this.cellsToHighlight2) {
-      if (cell3.limit > 0) {
-        if (cell3.count < cell3.limit) {
-          cell3.count++
-        }
-        else if (cell3.count >= cell3.limit) {
-          let index = this.cellsToHighlight2.indexOf(cell3)
-          this.cellsToHighlight2.splice(index,1)
-        }
-      }
-    };
-
-
-    // MOUSED OVER CELL
-    if (this.mouseOverCell.cell && this.mouseOverCell.state === false && this.mouseMoving !== true) {
-
-      if (this.mouseOverCell.count < this.mouseOverCell.threshold) {
-        this.mouseOverCell.count++;
-        // console.log('mouse not moving but moused over cell is counting',this.mouseOverCell.count);
-      }
-      if (this.mouseOverCell.count >= this.mouseOverCell.threshold) {
-        this.mouseOverCell.count = 0;
-        this.mouseOverCell.state = true;
-        this.clicked.cell = this.mouseOverCell.cell;
-        let plyrPresent = false;
-        for(const plyr of this.players) {
-          if (plyr.currentPosition.cell.number.x === this.mouseOverCell.cell.number.x && plyr.currentPosition.cell.number.y === this.mouseOverCell.cell.number.y) {
-            this.clicked.player = plyr;
-            plyrPresent = true;
-          }
-        }
-        if (plyrPresent !== true) {
-          this.clicked.player = undefined;
-        }
-        this.showCellInfoBox = true;
-      }
-    };
-    // SWITCH OFF ATER TIME IF MOUSE MOVED OUT OF GRID
-    if (this.mouseOverCellSwitchOff.state === true) {
-      if (this.mouseOverCellSwitchOff.count < this.mouseOverCellSwitchOff.limit) {
-        this.mouseOverCellSwitchOff.count++;
-      }
-      if (this.mouseOverCellSwitchOff.count >= this.mouseOverCellSwitchOff.limit) {
-        this.mouseOverCellSwitchOff = {
-          state: false,
-          count: 0,
-          limit: this.mouseOverCellSwitchOff.limit,
-        }
-        this.showCellInfoBox = false;
-        this.mouseOverCell = {
-          state: false,
-          cell: undefined,
-          count: 0,
-          threshold: this.mouseOverCell.threshold,
-        };
-      }
-    };
-    this.mouseMoving = false;
-
-
-    // DEFLECTED PLAYER CAN'T DO ANYTHING!!
-    if (player.success.deflected.state === false && player.dead.state !== true && this.camera.state !== true) {
-
-
-      // AI STRAFE SWITCH ON!!
-      if (player.ai.state === true && this.keyPressed[player.number-1]) {
-        if (this.keyPressed[player.number-1].strafe === true) {
-          this.players[player.number-1].strafing.state = true;
-        }
-      }
-
-
-      // DON'T READ INPUTS. JUST MOVE!!
-      if (player.moving.state === true) {
-
-        // console.log('player',player.number,player.action);
-        nextPosition = this.lineCrementer(player);
-        // player.currentPosition.cell = player.target.cell;
-        player.nextPosition = nextPosition;
-        // console.log('plyr',player.number,'nextPosition',nextPosition,'dest',player.target.cell.center);
-
-
-        let atDestRanges = [false,false,false,false];
-
-
-        if (player.target.cell1.void === true) {
-          if (player.falling.state === true) {
-            // console.log('...');
-          }
-          else {
-            player.action = 'moving';
-            // console.log('stepping into the void',player.action,player.moving.step);
-          }
-
-        }
-
-        if (player.jumping.state !== true) {
-
-
-
-          let destRngIndx = undefined;
-          if (
-            nextPosition.x >= player.target.cell1.center.x-1 &&
-            nextPosition.x <= player.target.cell1.center.x+1 &&
-            nextPosition.y >= player.target.cell1.center.y-1 &&
-            nextPosition.y <= player.target.cell1.center.y+1
-          ) {
-            atDestRanges[0] = true;
-            destRngIndx = 0;
-          }
-          if (
-            nextPosition.x === player.target.cell1.center.x-0.25 &&
-            nextPosition.y === player.target.cell1.center.y+0.5
-          ) {
-            atDestRanges[1] = true;
-            destRngIndx = 1;
-          }
-          if (
-            nextPosition.x === player.target.cell1.center.x &&
-            nextPosition.y === player.target.cell1.center.y
-          ) {
-            atDestRanges[2] = true;
-            destRngIndx = 2;
-          }
-          if (
-            nextPosition.x === player.target.cell1.center.x-5 &&
-            nextPosition.y === player.target.cell1.center.y-5
-          ) {
-            atDestRanges[3] = true;
-            destRngIndx = 3;
-          }
-
-          // FLANKING POPUP 1
-          if (player.flanking.state === true || player.action === "flanking2" ) {
-            if (!player.popups.find(x=>x.msg === "flanking2")) {
-              player.popups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit: 20,
-                  type: '',
-                  position: '',
-                  msg: 'flanking2',
-                  img: '',
-                }
-              )
-            }
-          }
-          if (player.popups.find(x=>x.msg === 'dodging')) {
-            player.popups.splice(player.popups.findIndex(x=>x.msg === 'dodging'),1)
-          }
-
-
-          for (const el of atDestRanges) {
-            if (el === true) {
-
-              let indx = atDestRanges.indexOf(el);
-              // console.log('indx',atDestRanges.indexOf(el),'next position is destination ',player.number,player.target,nextPosition.x === player.target.cell.center.x,nextPosition.x === player.target.cell.center.y);
-
-              player.newMoveDelay.state = true;
-
-              if (player.target.cell1.void === false) {
-
-                player.currentPosition.cell.number = player.target.cell1.number;
-                player.currentPosition.cell.center = player.target.cell1.center;
-                player.action = 'idle';
-                player.moving = {
-                  state: false,
-                  step: 0,
-                  course: '',
-                  origin: {
-                    number: {
-                      x: player.target.cell1.number.x,
-                      y: player.target.cell1.number.y
-                    },
-                    center: {
-                      x: player.target.cell1.center.x,
-                      y: player.target.cell1.center.y
-                    },
-                  },
-                  destination: {
-                    x: 0,
-                    y: 0,
-                  }
-                }
-
-                if (player.strafing.state === true) {
-
-                  if (
-                    player.pulling.state === true ||
-                    player.pushed.state === true ||
-                    player.pulled.state === true
-                  ) {
-                    // player.strafing.direction = '';
-                    player.strafeReleaseHook = true;
-                  }
-
-                  // CONTINUOUS STRAFING CHECK
-                  if (this.keyPressed[player.number-1].strafe !== true) {
-                    // console.log('continuous strafe check');
-                    player.strafing.state = false;
-                  }
-                  else {
-                    // console.log('continuous strafe check 2');
-                    player.strafing.direction = '';
-                  }
-
-                }
-
-
-                // PULLED, PUSHED PLAYERS
-                if (player.pushing.state === true) {
-                  player.pushing = {
-                    state: false,
-                    targetCell: undefined,
-                    moveSpeed: 0,
-                  }
-                }
-                if (player.pulling.state === true) {
-                  player.pulling = {
-                    state: false,
-                    targetCell: undefined,
-                    moveSpeed: 0,
-                  }
-                  player.postPull.state = true;
-
-                }
-                let deflectPullPushedPlayer = false;
-                if (player.pulled.state === true) {
-                  player.pulled = {
-                    state: false,
-                    puller: 0,
-                    moveSpeed: 0,
-                  }
-                  deflectPullPushedPlayer = true;
-                }
-                if (player.pushed.state === true) {
-                  player.pushed = {
-                    state: false,
-                    pusher: 0,
-                    moveSpeed: 0,
-                  }
-                  deflectPullPushedPlayer = true;
-                }
-
-
-                if (
-                  deflectPullPushedPlayer === true &&
-                  this.gridInfo.find(x => x.number.x === player.currentPosition.cell.number.x && x.number.y === player.currentPosition.cell.number.y).terrain.type !== "deep"
-                ) {
-                  // console.log('pulled pushed player at destination. deflect?');
-
-                  if (this.rnJesus(1,player.crits.guardBreak) === 1) {
-                    this.players[player.number-1].action = 'deflected';
-
-                    this.players[player.number-1].success.deflected = {
-                      state: true,
-                      count: 1,
-                      limit: this.deflectedLengthRef.bluntAttacked,
-                      predeflect: this.players[player.number-1].success.deflected.predeflect,
-                      type: 'blunt_attacked',
-                    };
-                    if (this.aiDeflectedCheck.includes(this.players[player.number-1].number) !== true) {
-                      this.aiDeflectedCheck.push(this.players[player.number-1].number)
-                    }
-                  }
-
-                }
-
-
-                this.checkDestination(player);
-                if (player.drowning !== true && player.pushBack.state !== true) {
-                  this.getTarget(player);
-                }
-
-
-              }
-
-              // PUSHBACK MOVEMENT
-              if (player.pushBack.state === true && player.target.cell1.void !== true) {
-                console.log('player',player.number,'finished moving pushed back',player.flanking.state);
-
-                // CANCEL AI ATTACK, DEFEND!!
-                if (player.ai.state === true) {
-                  if (player.ai.state === true) {
-                    player.attacking = {
-                      state: false,
-                      count: 0,
-                      limit: 15,
-                    };
-                  }
-
-                  player.defending = {
-                    state: false,
-                    count: 0,
-                    limit: player.defending.limit,
-                  }
-
-                  player.ai.targetAqcuiredReset = true
-                }
-
-
-                player.pushBack.state = false;
-                player.strafing = {
-                  state: false,
-                  direction: ''
-                }
-                player.moving.state = false;
-                player.speed.move = player.pushBack.prePushMoveSpeed;
-                this.getTarget(player);
-
-
-
-              }
-
-
-              // TARGET IS VOID, START FALLING!
-              if (
-
-                // nextPosition.x === player.target.cell.center.x &&
-                // nextPosition.y === player.target.cell.center.y &&
-                nextPosition.x === player.target.cell1.center.x &&
-                nextPosition.y === player.target.cell1.center.y ||
-                nextPosition.x === player.target.cell1.center.x-5 &&
-                nextPosition.y === player.target.cell1.center.y-5 ||
-                nextPosition.x === player.target.cell1.center.x-0.25 &&
-                nextPosition.y === player.target.cell1.center.y+0.5 ||
-                nextPosition.x >= player.target.cell1.center.x-1 &&
-                nextPosition.x <= player.target.cell1.center.x+1 &&
-                nextPosition.y >= player.target.cell1.center.y-1 &&
-                nextPosition.y <= player.target.cell1.center.y+1 &&
-                player.target.cell1.void === true
-              ) {
-                // console.log('falling....');
-                player.falling.state = true;
-                player.action = 'falling';
-
-                if (!player.popups.find(x=>x.msg === "falling")) {
-                  player.popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit: 30,
-                      type: '',
-                      position: '',
-                      msg: 'falling',
-                      img: '',
-
-                    }
-                  )
-                }
-
-              }
-              break;
-
-            }
-          }
-
-        }
-
-        if (player.jumping.state === true) {
-          // console.log('mid jump');
-
-
-          if (
-            nextPosition.x >= player.target.cell2.center.x-1 &&
-            nextPosition.x <= player.target.cell2.center.x+1 &&
-            nextPosition.y >= player.target.cell2.center.y-1 &&
-            nextPosition.y <= player.target.cell2.center.y+1
-          ) {
-            atDestRanges[0] = true;
-          }
-
-          if (
-            nextPosition.x === player.target.cell2.center.x-0.25 &&
-            nextPosition.y === player.target.cell2.center.y+0.5
-          ) {
-            atDestRanges[1] = true;
-          }
-
-          if (
-            nextPosition.x === player.target.cell2.center.x &&
-            nextPosition.y === player.target.cell2.center.y
-          ) {
-            atDestRanges[2] = true;
-          }
-
-          if (
-            nextPosition.x === player.target.cell2.center.x-5 &&
-            nextPosition.y === player.target.cell2.center.y-5
-          ) {
-            atDestRanges[3] = true;
-          }
-
-
-          for (const el of atDestRanges) {
-            if (el === true) {
-
-              // console.log('at jump destination',player.target.cell2.number);
-              // console.log('next position is destination a',player.number);
-              player.newMoveDelay.state = true;
-
-
-              let pushBack = false;
-              let opp;
-
-              for (const plyr of this.players) {
-                if (
-                  // plyr.currentPosition.cell.number.x === player.currentPosition.cell.number.x &&
-                  // plyr.currentPosition.cell.number.y === player.currentPosition.cell.number.y
-                  // plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
-                  // plyr.currentPosition.cell.number.y === player.target.cell2.number.y
-                  plyr.target.cell1.number.x === player.target.cell2.number.x &&
-                  plyr.target.cell1.number.y === player.target.cell2.number.y &&
-                  plyr.moving.state === true
-                ) {
-
-                  // console.log('jump destination occupied, fall into target 1',player.direction);
-
-                  pushBack = true;
-                  opp = plyr;
-                }
-              }
-
-              // Jump dest cell not void
-              if (player.target.cell2.void === false) {
-
-
-                player.jumping.state = false;
-                player.currentPosition.cell.number = player.target.cell2.number;
-                player.currentPosition.cell.center = player.target.cell2.center;
-                player.strafing.state = false;
-                player.action = 'idle';
-                player.moving = {
-                  state: false,
-                  step: 0,
-                  course: '',
-                  origin: {
-                    number: {
-                      x: player.target.cell2.number.x,
-                      y: player.target.cell2.number.y
-                    },
-                    center: {
-                      x: player.target.cell2.center.x,
-                      y: player.target.cell2.center.y
-                    },
-                  },
-                  destination: {
-                    x: 0,
-                    y: 0,
-                  }
-                }
-
-                this.checkDestination(player);
-                // let trgt = this.getTarget(player);
-
-                if (pushBack === true ) {
-
-                  let playerAPushDir = this.getOppositeDirection(opp.direction);
-                  let playerBPushDir = this.getOppositeDirection(player.direction);
-
-
-                  player.strafing = {
-                    state: true,
-                    direction: playerAPushDir
-                  }
-                  player.action = 'strafe moving';
-                  player.moving = {
-                    state: true,
-                    step: 0,
-                    course: '',
-                    origin: {
-                      number: {
-                        x: player.currentPosition.cell.number.x,
-                        y: player.currentPosition.cell.number.y
-                      },
-                      center: {
-                        x: player.currentPosition.cell.center,
-                        y: player.currentPosition.cell.center
-                      },
-                    },
-                    destination: player.target.cell2.center
-                  }
-                  player.target.void = true;
-                  let nextPosition = this.lineCrementer(player);
-                  player.nextPosition = nextPosition;
-
-
-
-                }
-
-              }
-
-              // let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y)
-              if (player.target.cell2.void === true) {
-                player.falling.state = true;
-                player.action = 'falling';
-
-                if (!player.popups.find(x=>x.msg === "falling")) {
-                  player.popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit: 30,
-                      type: '',
-                      position: '',
-                      msg: 'falling',
-                      img: '',
-
-                    }
-                  )
-                }
-
-              }
-
-              break;
-
-            }
-          }
-
-        }
-
-      }
-
-
-      // CAN READ INPUTS
-      else if (player.moving.state === false) {
-
-
-        // COLLISION/ MOVEMENT OVERLAP PUSHBACK!!
-          // if neither is pulling/pushng or pulled/pushed
-        for (const plyr4 of this.players) {
-
-          if (
-            player.number !== plyr4.number &&
-            player.currentPosition.cell.number.x === plyr4.currentPosition.cell.number.x &&
-            player.currentPosition.cell.number.y === plyr4.currentPosition.cell.number.y &&
-            player.pushBack.state !== true &&
-            plyr4.pushBack.state !== true
-          ) {
-
-            let nopushpull = true;
-            if (
-              player.pulled.state === true ||
-              player.pushed.state === true ||
-              player.pulling.state === true ||
-              player.pushing.state === true ||
-              plyr4.pulled.state === true ||
-              plyr4.pushed.state === true ||
-              plyr4.pulling.state === true ||
-              plyr4.pushing.state === true
-            ) {
-              nopushpull = false;
-              console.log('player cell overlap but 1 is pushing/pulling the other');
-            }
-            console.log('buck up btwn plyrs',player.number,plyr4.number,"@",player.currentPosition.cell.number,plyr4.currentPosition.cell.number);
-            // console.log('plyrs pushed back?',player.pushBack.state,plyr4.pushBack.state);
-            // console.log('plyrs moving?',player.moving.state,plyr4.moving.state);
-            if (nopushpull === true) {
-              let playerAPushDir2;
-              let playerBPushDir2;
-              switch(plyr4.direction) {
-                case 'north' :
-                  playerAPushDir2 = 'south';
-                break;
-                case 'south' :
-                  playerAPushDir2 = 'north';
-                break;
-                case 'east' :
-                  playerAPushDir2 = 'west';
-                break;
-                case 'west' :
-                  playerAPushDir2 = 'east';
-                break;
-              }
-              switch(player.direction) {
-                case 'north' :
-                  playerBPushDir2 = 'south';
-                break;
-                case 'south' :
-                  playerBPushDir2 = 'north';
-                break;
-                case 'east' :
-                  playerBPushDir2 = 'west';
-                break;
-                case 'west' :
-                  playerBPushDir2 = 'east';
-                break;
-              }
-
-              if (player.flanking.state === true || player.action === "flanking") {
-                player.flanking = {
-                  checking: false,
-                  direction: '',
-                  state: false,
-                  step: 0,
-                  target1: {x:0 ,y:0},
-                  target2: {x:0 ,y:0},
-                }
-                player.action = "idle";
-              };
-              if (plyr4.flanking.state === true || plyr4.action === "flanking") {
-                plyr4.flanking = {
-                  checking: false,
-                  direction: '',
-                  state: false,
-                  step: 0,
-                  target1: {x:0 ,y:0},
-                  target2: {x:0 ,y:0},
-                }
-                plyr4.action = "idle";
-              };
-              // playerAPushDir2 = "north";
-              if (playerAPushDir2 === playerBPushDir2) {
-                playerBPushDir2 = ['north','south','east','west'].filter(x=>x !== playerAPushDir2)[0];
-              }
-              let canPush = this.pushBack(plyr4,playerAPushDir2)
-              let canPush2 = this.pushBack(player,playerBPushDir2)
-            }
-
-
-          }
-        }
-
-
-        // CHECK CELL UNDER ATTACK & PRE ATTACK!!
-        for (const cell of this.cellsUnderAttack) {
-          if (cell.limit > 0) {
-            if (cell.count < cell.limit) {
-              cell.count++
-            }
-            else if (cell.count >= cell.limit) {
-              let index = this.cellsUnderAttack.indexOf(cell)
-              this.cellsUnderAttack.splice(index,1)
-            }
-          }
-
-        };
-        for (const cell2 of this.cellsUnderPreAttack) {
-          if (cell2.limit > 0) {
-            if (cell2.count < cell2.limit) {
-              cell2.count++
-            }
-            else if (cell2.count >= cell2.limit) {
-              let index = this.cellsUnderPreAttack.indexOf(cell2)
-              this.cellsUnderPreAttack.splice(index,1)
-            }
-          }
-        };
-        // CELLS TO HIGHLIGHT V2!!
-        // for (const cell3 of this.cellsToHighlight2) {
-        //   if (cell3.limit > 0) {
-        //     if (cell3.count < cell3.limit) {
-        //       cell3.count++
-        //     }
-        //     else if (cell3.count >= cell3.limit) {
-        //       let index = this.cellsToHighlight2.indexOf(cell3)
-        //       this.cellsToHighlight2.splice(index,1)
-        //     }
-        //   }
-        // }
-
-
-
-        // // IDLE ANIM STEPPER!
-        if (player.action === 'idle') {
-          // player.idleAnim.state = true
-          if (player.idleAnim.count < player.idleAnim.limit) {
-            // console.log('player.idleAnim.count',player.idleAnim.count);
-            player.idleAnim.count++
-
-          }
-          if (player.idleAnim.count >= player.idleAnim.limit) {
-            player.idleAnim.count = 0;
-            player.idleAnim.state = false;
-          }
-        }
-        else if (player.action !== 'idle') {
-          // player.idleAnim.state = false;
-          player.idleAnim.count = 0;
-        }
-
-
-        // BREAK ANIM STEPPERS!
-        if (player.breakAnim.attack.state === true) {
-          if (player.breakAnim.attack.count > 0 && player.breakAnim.attack.count < player.breakAnim.attack.limit) {
-            player.breakAnim.attack.count++
-          }
-          else if (player.breakAnim.attack.count >= player.breakAnim.attack.limit) {
-            player.breakAnim.attack = {
-              state: false,
-              count: 0,
-              limit: player.breakAnim.attack.limit
-            }
-          }
-        }
-        if (player.breakAnim.defend.state === true) {
-          if (player.breakAnim.defend.count > 0 && player.breakAnim.defend.count < player.breakAnim.defend.limit) {
-            player.breakAnim.defend.count++
-          }
-          else if (player.breakAnim.defend.count >= player.breakAnim.defend.limit) {
-            player.breakAnim.defend = {
-              state: false,
-              count: 0,
-              limit: player.breakAnim.defend.limit
-            }
-          }
-        }
-
-
-        // TURNER!!
-        // OLD TURNER
-        // if (player.turning.state === true && player.turning.toDirection === this.players[player.number-1].turnCheckerDirection) {
-        //   console.log('player',player.number,' turn-ing');
-        //   if (this.keyPressed[this.currentPlayer-1][this.players[player.number-1].turnCheckerDirection] === false) {
-        //     console.log('player',player.number,' turn-stop');
-        //     player.turning.state = false;
-        //   }
-        // }
-        // OLD TURNER COMPLETE
-        // if (player.turning.state === false && player.flanking.state !== true) {
-        //   console.log('turn complete');
-        //   player.direction = player.turning.toDirection;
-        //   player.nextPosition = {
-        //     x: player.currentPosition.cell.center.x,
-        //     y: player.currentPosition.cell.center.y
-        //   }
-        //   player.moving = {
-        //     state: false,
-        //     step: 0,
-        //     course: '',
-        //     origin: {
-        //       number: {
-        //         x: player.currentPosition.cell.number.x,
-        //         y: player.currentPosition.cell.number.y
-        //       },
-        //       center: {
-        //         x: player.currentPosition.cell.center.x,
-        //         y: player.currentPosition.cell.center.y
-        //       },
-        //     },
-        //     destination: player.target.cell.center
-        //   }
-        //   player.turning.toDirection = '';
-        //   player.turning.state = undefined;
-        //   this.getTarget(player);
-        // }
-        if (player.turning.state === true && player.flanking.state !== true ) {
-          if (player.turning.delayCount < player.turning.limit) {
-            player.turning.delayCount++;
-            // console.log('turning...',player.turning.delayCount);
-          }
-          if (player.turning.delayCount >= player.turning.limit) {
-            player.direction = player.turning.toDirection;
-            player.turnCheckerDirection = "";
-            player.turning = {
-              state: false,
-              toDirection: '',
-              delayCount: 0,
-              limit: player.turning.limit,
-            }
-
-
-            this.getTarget(player);
-            // console.log('turned/ turn complete');
-          }
-
-
-        }
-
-
-        // KEY PRESS RELEASE CHECKS!!
-
-        // DEFEND/PRE PULL FEINT
-        if (this.keyPressed[player.number-1].defend === false && player.defending.state === true) {
-          // console.log('player',player.number,' defend key release');
-          player.defending = {
-            state: false,
-            count: 0,
-            limit: player.defending.limit
-          }
-          player.action = 'idle';
-
-          player.defendDecay = {
-            state: false,
-            count: 0,
-            limit: player.defendDecay.limit,
-          }
-          player.stamina.current += this.staminaCostRef.defend.pre;
-
-          if (player.prePull.state === true) {
-            console.log('player was pre pulling. reset');
-            player.prePull = {
-              state: false,
-              count: 0,
-              limit: player.prePull.limit,
-              targetCell: undefined,
-              direction: '',
-              puller: 0,
-            }
-
-
-            if (player.newPushPullDelay.state !== true) {
-              player.newPushPullDelay.state = true
-            }
-
-
-          }
-
-
-
-          if (player.popups.find(x=>x.msg === 'defending')) {
-            player.popups.splice(player.popups.findIndex(x=>x.msg === 'defending'),1)
-          }
-          if (player.falling.state !== true && player.moving.state !== true) {
-            player.action = 'idle';
-          }
-          if (!player.popups.find(x=>x.msg === 'defendFeint3')) {
-            player.popups.push(
-              {
-                state: false,
-                count: 0,
-                limit: 15,
-                type: '',
-                position: '',
-                msg: 'defendFeint3',
-                img: '',
-
-              }
-            )
-          }
-
-        }
-
-
-        // ATTACK FEINT
-        if (this.keyPressed[player.number-1].attack === false && player.attacking.state === true) {
-
-            let atkPeak;
-            let atkType = player.currentWeapon.type;
-            let blunt = 'normal';
-            if (player.currentWeapon.name === "") {
-              atkPeak = this.attackAnimRef.peak.unarmed;
-            }
-            else {
-              atkPeak = this.attackAnimRef.peak[player.currentWeapon.type];
-            }
-            if (player.bluntAttack === true) {
-              blunt = 'blunt';
-            }
-
-            if (player.attacking.count < atkPeak) {
-                // console.log('attack windup key release before peak. feinting. refund stamina part');
-                player.bluntAttack = false
-                player.action = 'idle';
-                player.attacking = {
-                  state: false,
-                  count: 0,
-                  limit: player.attacking.limit,
-                }
-                player.attackStrength = 0;
-                player.stamina.current += this.staminaCostRef.attack[atkType][blunt].pre;
-            }
-            let popup = player.popups.find(x=>x.msg === 'attacking')
-            if (popup) {
-              player.popups.splice(player.popups.findIndex(x=>x.msg === 'attacking'),1)
-            }
-
-            if (!player.popups.find(x=>x.msg === 'attackFeint3')) {
-              player.popups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit: 15,
-                  type: '',
-                  position: '',
-                  msg: 'attackFeint3',
-                  img: '',
-
-                }
-              )
-            }
-
-        }
-
-
-        // DODGE RELEASE/FEINT
-        if (player.dodging.countState === true && player.dodging.count <= (player.dodging.peak.start - player.crits.dodge) && this.keyPressed[player.number-1].dodge !== true && player.flanking.state !== true) {
-          // console.log('released dodge key while winding up. cancel dodge.');
-          player.stamina.current += this.staminaCostRef.dodge.pre;
-          player.action = 'idle';
-          player.dodging = {
-            countState: false,
-            state: false,
-            count: 0,
-            limit: player.dodging.limit,
-            peak: {
-              start: player.dodging.peak.start,
-              end: player.dodging.peak.end,
-            }
-          }
-
-          if (player.popups.find(x=>x.msg === 'dodging')) {
-            player.popups.splice(player.popups.findIndex(x=>x.msg === 'dodging'),1)
-          }
-          if (!player.popups.find(x=>x.msg === 'dodgeFeint')) {
-            player.popups.push(
-              {
-                state: false,
-                count: 0,
-                limit: 15,
-                type: '',
-                position: '',
-                msg: 'dodgeFeint',
-                img: '',
-
-              }
-            )
-          }
-        }
-
-
-        // STRAFE RELEASE
-        if (player.strafeReleaseHook === true ) {
-          player.strafing.state = false;
-          player.strafeReleaseHook = false;
-          this.getTarget(player);
-        }
-
-
-        // RESET MOVE SPEED POST PUSHBACK
-        if (player.pushBack.state !== true && player.pushBack.prePushBackMoveSpeed !== 0) {
-
-          player.speed.move = player.player.pushBack.prePushBackMoveSpeed;
-          player.player.pushBack.prePushBackMoveSpeed = 0;
-        }
-
-
-        // ITEM PICKUP/DROP ANIM COUNTER!
-        if (player.itemDrop.state === true) {
-          if (player.itemDrop.count < player.itemDrop.limit) {
-            player.itemDrop.count++
-            // console.log('dropping item anim');
-          }
-          else if (player.itemDrop.count >= player.itemDrop.limit) {
-            player.itemDrop = {
-              state: false,
-              count: 0,
-              limit: 10,
-              item: {
-                name: '',
-              },
-              gear: {
-                type: '',
-              }
-            }
-          }
-        }
-        if (player.itemPickup.state === true) {
-          if (player.itemPickup.count < player.itemPickup.limit) {
-            player.itemPickup.count++
-            // console.log('picking item anim');
-          }
-          else if (player.itemPickup.count >= player.itemPickup.limit) {
-            player.itemPickup = {
-              state: false,
-              count: 0,
-              limit: 10,
-              item: {
-                name: '',
-              },
-              gear: {
-                type: '',
-              }
-            };
-          }
-        }
-
-
-        // CELL BY CELL MOVEMENT DELAY COUNTER!
-        if (player.newMoveDelay.state === true) {
-          if (player.newMoveDelay.count < player.newMoveDelay.limit) {
-            player.newMoveDelay.count++;
-            // console.log('newMoveDelay.count',player.newMoveDelay.count);
-          }
-          if (player.newMoveDelay.count >= player.newMoveDelay.limit) {
-            player.newMoveDelay = {
-              state: false,
-              count: 0,
-              limit: player.newMoveDelay.limit,
-            }
-          }
-        }
-
-
-        // ATTACKING!
-        if (player.attacking.state === true) {
-
-
-          let attackPeak = this.attackAnimRef.peak[player.currentWeapon.type];
-          let stamAtkType = player.currentWeapon.type;
-
-          if (player.currentWeapon.type === '') {
-            this.players[player.number-1].attacking.limit = this.attackAnimRef.limit.unarmed;
-            attackPeak = this.attackAnimRef.peak.unarmed;
-            stamAtkType = 'unarmed';
-          }
-          let blunt = 'normal';
-          if (player.bluntAttack === true) {
-            blunt = 'blunt';
-          }
-          player.attacking.limit = this.attackAnimRef.limit[stamAtkType];
-
-
-          // STEP ATTACK COUNT & CELLS UDER PRE-ATTACK
-          if (player.attacking.count < this.attackAnimRef.limit[stamAtkType]) {
-            if (player.attacking.count < attackPeak) {
-              // console.log('attack wind up',player.attacking.count,'player',player.number);
-            }
-            player.attackPeak = false;
-            player.action = 'attacking';
-            player.attacking.count++;
-
-            if (player.attacking.count <= 2) {
-              if (!player.popups.find(x => x.msg === 'attackStart')) {
-                player.popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit: 5,
-                    type: '',
-                    position: '',
-                    msg: 'attackStart',
-                    img: '',
-
-                  }
-                )
-              }
-
-
-                this.getTarget(player)
-                // CELLS UNDER PRE ATTACK!
-                let cellUnderPreAttack1 = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y)
-                let cellUnderPreAttack2;
-                if (player.currentWeapon.type === 'spear') {
-                  cellUnderPreAttack2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y)
-                }
-                if (player.currentWeapon.type === 'spear') {
-                  // console.log('spear target',player.target);
-                  // if (cellUnderPreAttack1 && cellUnderPreAttack1.terrain.type !== 'deep') {
-                  //   this.cellsUnderPreAttack.push(
-                  //     {
-                  //       number: {
-                  //         x: player.target.cell.number.x,
-                  //         y: player.target.cell.number.y,
-                  //       },
-                  //       count: 1,
-                  //       limit: 8,
-                  //     },
-                  //   )
-                  // }
-                  // if (cellUnderPreAttack2 && cellUnderPreAttack2.terrain.type !== 'deep') {
-                  //   this.cellsUnderPreAttack.push(
-                  //     {
-                  //       number: {
-                  //         x: player.target.cell2.number.x,
-                  //         y: player.target.cell2.number.y,
-                  //       },
-                  //       count: 1,
-                  //       limit: 8,
-                  //     },
-                  //   )
-                  //
-                  // }
-
-                  this.cellsUnderPreAttack.push(
-                    {
-                      number: {
-                        x: player.target.cell.number.x,
-                        y: player.target.cell.number.y,
-                      },
-                      count: 1,
-                      limit: 8,
-                    },
-                  )
-                  this.cellsUnderPreAttack.push(
-                    {
-                      number: {
-                        x: player.target.cell2.number.x,
-                        y: player.target.cell2.number.y,
-                      },
-                      count: 1,
-                      limit: 8,
-                    },
-                  )
-
-
-                }
-                else if (player.currentWeapon.type === 'sword' || player.currentWeapon.type === '') {
-                  // console.log('sword target',player.target);
-
-                  // if (cellUnderPreAttack1 && cellUnderPreAttack1.terrain.type !== 'deep') {
-                  //   this.cellsUnderPreAttack.push({
-                  //     number: {
-                  //       x: player.target.cell.number.x,
-                  //       y: player.target.cell.number.y,
-                  //     },
-                  //     count: 1,
-                  //     limit: 8,
-                  //   })
-                  // }
-                  this.cellsUnderPreAttack.push({
-                    number: {
-                      x: player.target.cell.number.x,
-                      y: player.target.cell.number.y,
-                    },
-                    count: 1,
-                    limit: 8,
-                  })
-
-                }
-
-                // console.log('this.cellsUnderPreAttack',this.cellsUnderPreAttack[0],this.cellsUnderPreAttack[1]);
-
-                // CAMERA ATTACK FOCUS
-                if (
-                  this.settingAutoCamera === false &&
-                  player.ai.state !== true &&
-                  this.camera.preInstructions.length === 0 &&
-                  this.camera.instructions.length === 0
-                ) {
-                  // this.setAutoCamera('attackFocus',player)
-                }
-                else {
-                  console.log('no setting auto cam: attackFocus');
-                }
-
-            }
-            if (player.attacking.count > 2) {
-
-              if (!player.popups.find(x => x.msg === "attacking")) {
-                let limit = this.attackAnimRef.limit[stamAtkType]-player.attacking.count;
-                if (limit === 0) {
-                  limit = 5;
-                }
-                if (!player.popups.find(x=>x.msg === "attacking")) {
-                  player.popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit: limit,
-                      type: '',
-                      position: '',
-                      msg: 'attacking',
-                      img: '',
-
-                    }
-                  )
-                }
-
-              }
-              // else {
-              //   console.log('beep2',this.attackAnimRef.limit[stamAtkType]-player.attacking.count);
-              //   player.popups.find(x => x.msg === "attacking").limit = this.attackAnimRef.limit[stamAtkType]-player.attacking.count
-              // }
-            }
-
-          }
-
-
-          // TIME TO ATTACK IS NOW!
-          if (player.attacking.count === attackPeak) {
-
-            // console.log('attack peak',player.attacking.count,'plyr',player.number);
-
-            // WEAPON STAMINA COST!!
-            if (player.stamina.current - this.staminaCostRef.attack[stamAtkType][blunt].peak >= 0) {
-                player.stamina.current -= this.staminaCostRef.attack[stamAtkType][blunt].peak;
-                player.attackPeak = true;
-
-              // CREATE NEW PROJECTILE
-              if (player.currentWeapon.type === 'crossbow' && player.bluntAttack !== true && player.items.ammo > 0) {
-                // console.log('firing crossbow');
-
-                let plyrX = player;
-                let origin = plyrX.currentPosition.cell;
-                let currentPosition = plyrX.currentPosition.cell;
-                let nextPosition = plyrX.currentPosition.cell.center;
-                let elevation = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y).elevation.number;
-
-
-                let projectileId = this.projectiles.length;
-                let boltx = {
-                  id: '000'+projectileId+'',
-                  type: 'bolt',
-                  owner: plyrX.number,
-                  origin: origin,
-                  direction: plyrX.direction,
-                  moving: {
-                    state: false,
-                    step: 0,
-                    course: '',
-                    origin: {
-                      number: currentPosition.number,
-                      center: currentPosition.center,
-                    },
-                    destination: {
-                      x: 0,
-                      y: 0,
-                    }
-                  },
-                  currentPosition: {
-                    number: currentPosition.number,
-                    center: currentPosition.center
-                  },
-                  nextPosition: {
-                    x: nextPosition.x,
-                    y: nextPosition.y,
-                  },
-                  target: {
-                    path: [],
-                    free: true,
-                    occupant: {
-                      type: '',
-                      player: '',
-                    },
-                    void: false,
-                  },
-                  speed: this.projectileSpeed,
-                  elevation: elevation,
-                  kill: false,
-                }
-                this.projectiles.push(boltx)
-                player.items.ammo--
-                player.currentWeapon.effect = 'ammo+0';
-
-                this.getBoltTarget(boltx)
-
-
-                // STAMINA COST!!
-
-                // this.players[player.number-1].stamina.current = this.players[player.number-1].stamina.current - this.staminaCostRef.attack.crossbow;
-                // console.log('start projectile',boltx.currentPosition.number, this.players[boltx.owner-1].currentPosition.cell.number,this.projectiles);
-
-                // this.boltCrementer(bolt)
-              }
-              // NO PROJECTILE AMMO
-              if (player.currentWeapon.type === 'crossbow' && player.bluntAttack !== true && player.items.ammo <= 0) {
-                // console.log('no ammo!');
-                this.players[player.number-1].statusDisplay = {
-                  state: true,
-                  status: 'out of ammo',
-                  count: 1,
-                  limit: this.players[player.number-1].statusDisplay.limit,
-                }
-                player.currentWeapon.effect = 'ammo+0'
-
-                if (!player.popups.find(x=>x.msg === 'outOfAmmo')) {
-                  player.popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit: 30,
-                      type: '',
-                      position: '',
-                      msg: 'outOfAmmo',
-                      img: '',
-
-                    }
-                  )
-                }
-
-              }
-              // CROSSBOW BLUNT ATTAK
-              if (player.currentWeapon.type === 'crossbow' && player.bluntAttack === true && player.target.occupant.type === 'player') {
-                console.log('blunt attack w/ crossbow');
-                if (this.players[player.target.occupant.player-1].defending.state === false || this.players[player.target.occupant.player-1].direction === player.direction) {
-
-                  if (!player.popups.find(x=>x.msg === "attackingBlunt")) {
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: (this.attackAnimRef.limit.crossbow-this.attackAnimRef.peak.crossbow),
-                        type: '',
-                        position: '',
-                        msg: 'attackingBlunt',
-                        img: '',
-
-                      }
-                    )
-                  }
-
-
-                  this.players[player.target.occupant.player-1].action = 'deflected';
-
-                  this.players[player.target.occupant.player-1].stamina.current = this.players[player.target.occupant.player-1].stamina.current - 3;
-                  this.players[player.target.occupant.player-1].success.deflected = {
-                    state: true,
-                    count: 1,
-                    limit: this.deflectedLengthRef.bluntAttacked,
-                    predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
-                    type: 'blunt_attacked',
-                  };
-
-
-                  if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
-                    this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
-                  }
-                }
-              }
-
-              // MELEE ATTACK!!
-              else if (player.currentWeapon.type !== 'crossbow' ) {
-
-                this.getTarget(player)
-
-                // CELLS UNDER ATTACK!
-                let cellUnderAttack1 = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y)
-                let cellUnderAttack2;
-                if (player.currentWeapon.type === 'spear') {
-                  cellUnderAttack2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y)
-                }
-                if (player.currentWeapon.type === 'spear') {
-                  // console.log('spear target',player.target);
-
-                  // if (cellUnderAttack1 && cellUnderAttack1.terrain.type !== 'deep') {
-                  //   this.cellsUnderAttack.push(
-                  //     {
-                  //       number: {
-                  //         x: player.target.cell.number.x,
-                  //         y: player.target.cell.number.y,
-                  //       },
-                  //       count: 1,
-                  //       limit: 8,
-                  //     },
-                  //   )
-                  // }
-                  // if (cellUnderAttack2 && cellUnderAttack2.terrain.type !== 'deep') {
-                  //   this.cellsUnderAttack.push(
-                  //     {
-                  //       number: {
-                  //         x: player.target.cell2.number.x,
-                  //         y: player.target.cell2.number.y,
-                  //       },
-                  //       count: 1,
-                  //       limit: 8,
-                  //     },
-                  //   )
-                  //
-                  // }
-
-                  this.cellsUnderAttack.push(
-                    {
-                      number: {
-                        x: player.target.cell.number.x,
-                        y: player.target.cell.number.y,
-                      },
-                      count: 1,
-                      limit: 8,
-                    },
-                  )
-                  this.cellsUnderAttack.push(
-                    {
-                      number: {
-                        x: player.target.cell2.number.x,
-                        y: player.target.cell2.number.y,
-                      },
-                      count: 1,
-                      limit: 8,
-                    },
-                  )
-
-
-                }
-                else if (player.currentWeapon.type === 'sword' || player.currentWeapon.type === '') {
-                  // console.log('sword target',player.target);
-
-                  // if (cellUnderAttack1 && cellUnderAttack1.terrain.type !== 'deep') {
-                  //   this.cellsUnderAttack.push({
-                  //     number: {
-                  //       x: player.target.cell.number.x,
-                  //       y: player.target.cell.number.y,
-                  //     },
-                  //     count: 1,
-                  //     limit: 8,
-                  //   })
-                  // }
-                  this.cellsUnderAttack.push({
-                    number: {
-                      x: player.target.cell.number.x,
-                      y: player.target.cell.number.y,
-                    },
-                    count: 1,
-                    limit: 8,
-                  })
-
-                }
-
-                console.log('xyz',{...player.target});
-
-                // ATTACK PROJECTILES!!
-                for (const bolt of this.projectiles) {
-                  if (player.currentWeapon.type === 'spear') {
-                    if (
-                      cellUnderAttack2.number.x === bolt.currentPosition.number.x &&
-                      cellUnderAttack2.number.y === bolt.currentPosition.number.y
-                    ) {
-                      bolt.kill = true;
-
-                      if (!player.popups.find(x=>x.msg === "boltKilled")) {
-                        player.popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit: 30,
-                            type: '',
-                            position: '',
-                            msg: 'boltKilled',
-                            img: '',
-
-                          }
-                        )
-                      }
-
-                    }
-                  }
-                  if (player.currentWeapon.type === 'sword') {
-                    if (
-                      cellUnderAttack1.number.x === bolt.currentPosition.number.x &&
-                      cellUnderAttack1.number.y === bolt.currentPosition.number.y
-                    ) {
-                      bolt.kill = true;
-
-                      if (!player.popups.find(x=>x.msg === "boltKilled")) {
-                        player.popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit: 30,
-                            type: '',
-                            position: '',
-                            msg: 'boltKilled',
-                            img: '',
-
-                          }
-                        )
-                      }
-
-                    }
-                  }
-                }
-
-
-                // ATTACK TARGET IS OCCUPIED!!
-                if (player.target.occupant.type === 'player') {
-
-
-                  let targetDefending = false;
-                  let defendType = this.players[player.target.occupant.player-1].currentWeapon.type;
-                  if (this.players[player.target.occupant.player-1].currentWeapon.name === "") {
-                    defendType  = "unarmed";
-                  }
-                  let defendPeak = this.defendAnimRef.peak[defendType];
-                  if (this.players[player.target.occupant.player-1].defending.count === defendPeak || this.players[player.target.occupant.player-1].defendDecay.state === true) {
-                    targetDefending = true;
-                    console.log('valid defend');
-                  }
-
-                  // TARGET PLAYER ISN'T DEFENDING OR BACK TURNED, ATTACK SUCCESS!!
-                  if (targetDefending !== true || this.players[player.target.occupant.player-1].direction === player.direction) {
-                    // console.log('attack success');
-
-                    player.success.attackSuccess = {
-                      state: true,
-                      count: 1,
-                      limit: player.success.attackSuccess.limit
-                    }
-
-
-                    // BACK ATTACK CHECK!
-                    let backAttack = false;
-                    if (this.players[player.target.occupant.player-1].direction === player.direction) {
-                      // console.log('back attack!!');
-                      backAttack = true;
-                    }
-
-
-                    // CALCULATE ATTACKER DOUBLE HIT!
-                    let doubleHitChance = player.crits.doubleHit;
-                    let singleHitChance = player.crits.singleHit;
-                    if (backAttack === true) {
-                      if (doubleHitChance > 2) {
-                        let diff = doubleHitChance - 2;
-                        doubleHitChance = doubleHitChance - diff;
-                      }
-                    }
-
-
-                    // ATTACK STRENGTH ARMOR MOD CHECK!
-                    if (this.players[player.target.occupant.player-1].currentArmor.name !== '') {
-                      // console.log('opponent armour found');
-                      switch(this.players[player.target.occupant.player-1].currentArmor.effect) {
-                        case 'dblhit-5' :
-                          doubleHitChance = player.crits.doubleHit+5;
-                        break;
-                        case 'dblhit-10' :
-                          doubleHitChance = player.crits.doubleHit+10;
-                        break;
-                        case 'dblhit-15' :
-                          doubleHitChance = player.crits.doubleHit+15;
-                        break;
-                        // case 'dblhit-30' :
-                        //   doubleHitChance = player.crits.doubleHit+30;
-                        // break;
-                        case 'snghit-5' :
-                          singleHitChance = player.crits.singleHit+5;
-                        break;
-                        case 'snghit-10' :
-                          singleHitChance = player.crits.singleHit+10;
-                        break;
-                      }
-                    }
-
-                    let doubleHit = this.rnJesus(1,doubleHitChance);
-                    let singleHit = this.rnJesus(1,singleHitChance);
-
-  // -----------
-                    // doubleHit = 2
-                    // singleHit = 1
-  // ---------------
-
-                    // UNARMED ATTACK!
-                    if ( player.currentWeapon.type === '') {
-                      console.log('unarmed attack');
-                      doubleHit = 2;
-                      if (singleHitChance === 1) {
-                        let singleHit = this.rnJesus(1,2);
-                      }
-
-                      if (!player.popups.find(x=>x.msg === "attackingUnarmed")) {
-                        player.popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit: (this.attackAnimRef.limit.unarmed-this.attackAnimRef.peak.unarmed),
-                            type: '',
-                            position: '',
-                            msg: 'attackingUnarmed',
-                            img: '',
-
-                          }
-                        )
-                      }
-
-                    }
-
-
-                    // BLUNT ATTACK MOD DAMAGE!!
-                    if (player.bluntAttack === true) {
-                      // console.log('blunt attack');
-
-                      singleHit = 2;
-                      doubleHit = 2;
-
-                      this.players[player.number-1].statusDisplay = {
-                        state: true,
-                        status: 'blunt attack!',
-                        count: 1,
-                        limit: this.players[player.number-1].statusDisplay.limit,
-                      }
-
-
-                      let weapon = player.currentWeapon.type;
-                      if (weapon === '') {
-                        weapon = 'unarmed';
-                      }
-
-                      if (!player.popups.find(x=>x.msg === "attackingBlunt")) {
-                        player.popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
-                            type: '',
-                            position: '',
-                            msg: 'attackingBlunt',
-                            img: '',
-
-                          }
-                        )
-                      }
-
-                    }
-
-
-                    // DODGED CHECK!
-                    if (this.players[player.target.occupant.player-1].dodging.state === true) {
-
-                      let canDodge = true;
-                      if (backAttack === true && player.crits.dodge < 4) {
-                        canDodge = false
-                      }
-
-                      if (canDodge === true) {
-
-                        console.log('opponent has dodged you');
-                        singleHit = 2;
-                        doubleHit = 2;
-                        if (player.bluntAttack === true) {
-                          player.bluntAttack = false;
-                        }
-
-                      }
-                    }
-
-
-                    // ATTACK LANDED!!
-                    if (doubleHit === 1) {
-                      // console.log('double hit attack plyr ',player.number,'against plyr ',player.target.occupant.player);
-                      this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 2;
-                      player.attackStrength = 2;
-                      this.attackedCancel(this.players[player.target.occupant.player-1])
-
-
-                      if (!player.popups.find(x=>x.msg === 'attacking2')) {
-                        player.popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
-                            type: '',
-                            position: '',
-                            msg: 'attacking2',
-                            img: '',
-
-                          }
-                        )
-                      }
-
-                      if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg.split("_")[0] === "hpDown")) {
-                        this.players[player.target.occupant.player-1].popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit: 30,
-                            type: '',
-                            position: '',
-                            msg: 'hpDown_'+'-'+2+'',
-                            img: '',
-
-                          }
-                        )
-                      }
-
-                    }
-                    else if (singleHit === 1) {
-                      // console.log('single hit attack plyr ',player.number,'against plyr ',player.target.occupant.player);
-                      this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
-                      player.attackStrength = 1;
-                      this.attackedCancel(this.players[player.target.occupant.player-1])
-
-                      let weapon = player.currentWeapon.type;
-                      if (weapon === '') {
-                        weapon = 'unarmed'
-                      }
-
-                      // if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'alarmed')) {
-                      //   this.players[player.target.occupant.player-1].popups.push(
-                      //     {
-                      //       state: false,
-                      //       count: 0,
-                      //       limit:25,
-                      //       type: '',
-                      //       position: '',
-                      //       msg: 'alarmed',
-                      //       img: '',
-                      //
-                      //     }
-                      //   )
-                      // }
-
-                      if (!player.popups.find(x=>x.msg === 'attacking1')) {
-                        player.popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
-                            type: '',
-                            position: '',
-                            msg: 'attacking1',
-                            img: '',
-
-                          }
-                        )
-                      }
-                      if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg.split("_")[0] === "hpDown")) {
-                        this.players[player.target.occupant.player-1].popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit: 30,
-                            type: '',
-                            position: '',
-                            msg: 'hpDown_'+'-'+1+'',
-                            img: '',
-
-                          }
-                        )
-                      }
-
-
-                    }
-
-                    // ADJUST TARGET PLYR SPEED ON INJURY: OLD
-                    // if (doubleHit === 1 || singleHit === 1) {
-                    //   let currentMoveSpeedIndx = this.players[player.target.occupant.player-1].speed.range.indexOf(this.players[player.target.occupant.player-1].speed.move)
-                    //   if (currentMoveSpeedIndx > 0) {
-                    //     this.players[player.target.occupant.player-1].speed.move = this.players[player.target.occupant.player-1].speed.range[currentMoveSpeedIndx-1]
-                    //   }
-                    // }
-
-
-                    // CHECK FOR MISS!
-                    let missed = false;
-                    if (doubleHit !== 1 && singleHit !== 1 && player.bluntAttack !== true) {
-                      console.log('attacked but no damage');
-                      missed = true;
-                      this.players[player.number-1].statusDisplay = {
-                        state: true,
-                        status: 'attack missed!',
-                        count: 1,
-                        limit: this.players[player.number-1].statusDisplay.limit,
-                      }
-
-                      let weapon = player.currentWeapon.type;
-                      if (player.currentWeapon.name === '') {
-                        weapon = 'unarmed';
-                      }
-
-                      if (!player.popups.find(x=>x.msg === "attackingBlunt")) {
-                        player.popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
-                            type: '',
-                            position: '',
-                            msg: 'attackingBlunt',
-                            img: '',
-
-                          }
-                        )
-                      }
-
-                    }
-
-
-                    // ADJUST TARGET PLYR SPEED ON INJURY
-                    if (this.players[player.target.occupant.player-1].hp === 1) {
-                      // this.players[player.target.occupant.player-1].speed.move = .05;
-                      let currentMoveSpeedIndx = this.players[player.target.occupant.player-1].speed.range.indexOf(this.players[player.target.occupant.player-1].speed.move)
-                      if (currentMoveSpeedIndx > 0) {
-                        this.players[player.target.occupant.player-1].speed.move = this.players[player.target.occupant.player-1].speed.range[currentMoveSpeedIndx-1]
-                      }
-                    }
-
-
-                    // KILL OPPONENT!
-                    if (this.players[player.target.occupant.player-1].hp <= 0) {
-                      this.killPlayer(this.players[player.target.occupant.player-1]);
-
-                      let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                      this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
-
-                      player.points++;
-
-                      this.pointChecker(player)
-
-                      if (player.ai.state === true && player.ai.mode === 'aggressive') {
-                        console.log('check for evidence of retrieval here and resume retrieve if so',player.ai.retrieving,player.ai.mission);
-
-                        if (player.ai.retrieving.checkin) {
-
-                          player.ai.mission = 'retrieve';
-
-                          if (!player.popups.find(x=>x.msg === 'missionRetrieve')) {
-                            player.popups.push(
-                              {
-                                state: false,
-                                count: 0,
-                                limit: 30,
-                                type: '',
-                                position: '',
-                                msg: 'missionRetrieve',
-                                img: '',
-
-                              }
-                            )
-                          }
-
-                          let targetSafeData = this.scanTargetAreaThreat({
-                            player: player.number,
-                            point: {
-                              x: player.ai.retrieving.point.x,
-                              y: player.ai.retrieving.point.y,
-                            },
-                            range: 3,
-                          })
-
-                          player.ai.retrieving.safe = targetSafeData.isSafe;
-
-                        }
-
-                      }
-
-                    }
-
-                    // ATTACK -> DEFLECT OPPONENT!
-                    else if (missed !== true && player.bluntAttack !== true) {
-                      this.players[player.target.occupant.player-1].action = 'deflected';
-                      this.players[player.target.occupant.player-1].success.deflected = {
-                        state: true,
-                        count: 1,
-                        limit: this.deflectedLengthRef.attacked,
-                        predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
-                        type: 'attacked',
-                      };
-
-
-                      if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
-                        this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
-                      }
-
-
-                    }
-
-                    // BLUNT ATTACK -> DEFLECT/GUARD BREAK -!
-                    else if (player.bluntAttack === true) {
-                      this.players[player.target.occupant.player-1].action = 'deflected';
-
-                      this.players[player.target.occupant.player-1].stamina.current = this.players[player.target.occupant.player-1].stamina.current - 3;
-                      this.players[player.target.occupant.player-1].success.deflected = {
-                        state: true,
-                        count: 1,
-                        limit: this.deflectedLengthRef.bluntAttacked,
-                        predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
-                        type: 'blunt_attacked',
-                      };
-
-                      if (!player.popups.find(x=>x.msg === "attackingBlunt")) {
-                        player.popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit: 30,
-                            type: '',
-                            position: '',
-                            msg: 'attackingBlunt',
-                            img: '',
-
-                          }
-                        )
-                      }
-
-
-                      if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
-                        this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
-                      }
-
-                    }
-
-                  }
-
-                  // ATTACK DEFENDED!!
-                  else {
-                    // console.log('attack defended by ',player.target.occupant.player,'target defending?',this.players[player.target.occupant.player-1].defending.state,'against plyr ',player.number);
-
-
-                    let shouldDefend = false;
-                    let bluntAttackBreakDefense = false;
-
-                    // DEFENDER IS UNARMED
-                    if (this.players[player.target.occupant.player-1].currentWeapon.name === "" && this.players[player.target.occupant.player-1].currentWeapon.type === "") {
-
-                      // console.log('player is unarmed');
-                      if (player.currentWeapon.name === "" && player.currentWeapon.type === "") {
-                        console.log('target and attacker unarmed. target defend');
-                        shouldDefend = true;
-                        if (player.bluntAttack === true) {
-                          bluntAttackBreakDefense = true;
-                        }
-                      }
-
-                      // player is armed
-                      else {
-                        console.log('armed player attacked unarmed target defense: cancel target defend and attack them');
-                        shouldDefend = false;
-
-                        if (player.bluntAttack === true) {
-                          bluntAttackBreakDefense = true;
-                        }
-                        else {
-
-                          // console.log('single hit attack plyr ',player.number,'against plyr ',player.target.occupant.player);
-                          this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
-                          player.attackStrength = 1;
-                          this.attackedCancel(this.players[player.target.occupant.player-1])
-
-                          this.players[player.target.occupant.player-1].success.deflected = {
-                            state: true,
-                            count: 1,
-                            limit: this.deflectedLengthRef.attack,
-                            predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
-                            type: 'attack'
-                          }
-
-                          if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
-                            this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
-                          }
-
-                          if (this.players[player.target.occupant.player-1].hp === 1) {
-                            this.players[player.target.occupant.player-1].speed.move = .05;
-                          }
-
-                          if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'alarmed')) {
-                            this.players[player.target.occupant.player-1].popups.push(
-                              {
-                                state: false,
-                                count: 0,
-                                limit:30,
-                                type: '',
-                                position: '',
-                                msg: 'alarmed',
-                                img: '',
-
-                              }
-                            )
-                          }
-
-                          // if (!player.popups.find(x=>x.msg === 'attacking')) {
-                          //   player.popups.push(
-                          //     {
-                          //       state: false,
-                          //       count: 0,
-                          //       limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
-                          //       type: '',
-                          //       position: '',
-                          //       msg: 'attacking',
-                          //       img: '',
-                          //
-                          //     }
-                          //   )
-                          // }
-
-                          // KILL PLAYER
-                          if (this.players[player.target.occupant.player-1].hp <= 0) {
-                            this.killPlayer(this.players[player.target.occupant.player-1]);
-
-                            let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                            this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
-
-                            player.points++;
-
-                            this.pointChecker(player)
-
-                            if (player.ai.state === true && player.ai.mode === 'aggressive') {
-                              console.log('check for evidence of retrieval here and resume retrieve if so',player.ai.retrieving,player.ai.mission);
-
-                              if (player.ai.retrieving.checkin) {
-
-                                player.ai.mission = 'retrieve';
-
-                                if (!player.popups.find(x=>x.msg === 'missionRetrieve')) {
-                                  player.popups.push(
-                                    {
-                                      state: false,
-                                      count: 0,
-                                      limit: 30,
-                                      type: '',
-                                      position: '',
-                                      msg: 'missionRetrieve',
-                                      img: '',
-
-                                    }
-                                  )
-                                }
-
-                                let targetSafeData = this.scanTargetAreaThreat({
-                                  player: player.number,
-                                  point: {
-                                    x: player.ai.retrieving.point.x,
-                                    y: player.ai.retrieving.point.y,
-                                  },
-                                  range: 3,
-                                })
-
-                                player.ai.retrieving.safe = targetSafeData.isSafe;
-
-                              }
-
-                            }
-
-                          }
-
-                        }
-
-                      }
-
-
-                    }
-                    // DEFENDER IS ARMED
-                    else {
-
-                      // player unarmed
-                      if (player.currentWeapon.name === "" && player.currentWeapon.type === "") {
-                        console.log('player unarmed attacked armed target defense: cancel player attack and check crits or otherwise roll for attacker damage');
-                        shouldDefend = false;
-
-                        // console.log('single hit attack plyr ',player.target.occupant.player,'against plyr ',player.number,);
-
-                        player.hp--;
-                        this.players[player.target.occupant.player-1].attackStrength = 1;
-                        this.attackedCancel(player)
-
-                        player.success.deflected = {
-                          state: true,
-                          count: 1,
-                          limit: this.deflectedLengthRef.attack,
-                          predeflect: player.success.deflected.predeflect,
-                          type: 'attack'
-                        }
-
-                        if (this.aiDeflectedCheck.includes(player.number) !== true) {
-                          this.aiDeflectedCheck.push(player.number)
-                        }
-
-
-                        if (player.hp === 1) {
-                          player.speed.move = .05;
-                        }
-
-
-                        if (!player.popups.find(x=>x.msg === 'alarmed')) {
-                          player.popups.push(
-                            {
-                              state: false,
-                              count: 0,
-                              limit:30,
-                              type: '',
-                              position: '',
-                              msg: 'alarmed',
-                              img: '',
-
-                            }
-                          )
-                        }
-
-                        if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'attacking1')) {
-                          this.players[player.target.occupant.player-1].popups.push(
-                            {
-                              state: false,
-                              count: 0,
-                              limit: (this.attackAnimRef.limit[this.players[player.target.occupant.player-1].currentWeapon.type]-this.attackAnimRef.peak[this.players[player.target.occupant.player-1].currentWeapon.type]),
-                              type: '',
-                              position: '',
-                              msg: 'attacking1',
-                              img: '',
-
-                            }
-                          )
-                        }
-
-                        if (player.hp <= 0) {
-
-                          let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                          this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
-
-                          this.players[player.target.occupant.player-1].points++;
-
-                          this.pointChecker(this.players[player.target.occupant.player-1])
-
-                          if (this.players[player.target.occupant.player-1].ai.state === true && this.players[player.target.occupant.player-1].ai.mode === 'aggressive') {
-                            console.log('check for evidence of retrieval here and resume retrieve if so',player.ai.retrieving,player.ai.mission);
-
-                            if (this.players[player.target.occupant.player-1].ai.retrieving.checkin) {
-
-                              this.players[player.target.occupant.player-1].ai.mission = 'retrieve';
-
-                              if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'missionRetrieve')) {
-                                this.players[player.target.occupant.player-1].popups.push(
-                                  {
-                                    state: false,
-                                    count: 0,
-                                    limit: 25,
-                                    type: '',
-                                    position: '',
-                                    msg: 'missionRetrieve',
-                                    img: '',
-
-                                  }
-                                )
-                              }
-
-                              let targetSafeData = this.scanTargetAreaThreat({
-                                player: this.players[player.target.occupant.player-1].number,
-                                point: {
-                                  x: this.players[player.target.occupant.player-1].ai.retrieving.point.x,
-                                  y: this.players[player.target.occupant.player-1].ai.retrieving.point.y,
-                                },
-                                range: 3,
-                              })
-
-                              this.players[player.target.occupant.player-1].ai.retrieving.safe = targetSafeData.isSafe;
-
-                            }
-
-                          }
-
-                          this.killPlayer(player);
-
-                        }
-
-                      }
-                      // player armed
-                      else {
-
-                        if (player.bluntAttack === true) {
-                          console.log('target and attacker are armed but blunt atk. target defend break');
-                          bluntAttackBreakDefense = true;
-                        }
-                        else {
-                          console.log('target and attacker are armed. target defend');
-                          shouldDefend = true;
-                        }
-                      }
-                    }
-
-
-                    if (bluntAttackBreakDefense === true) {
-                      shouldDefend = false;
-                      this.attackedCancel(this.players[player.target.occupant.player-1])
-                      this.players[player.target.occupant.player-1].action = 'deflected';
-
-                      this.players[player.target.occupant.player-1].stamina.current = this.players[player.target.occupant.player-1].stamina.current - 3;
-                      this.players[player.target.occupant.player-1].success.deflected = {
-                        state: true,
-                        count: 1,
-                        limit: this.deflectedLengthRef.bluntAttacked,
-                        predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
-                        type: 'blunt_attacked',
-                      };
-
-                      if (!player.popups.find(x=>x.msg === "attackingBlunt")) {
-                        player.popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit: 30,
-                            type: '',
-                            position: '',
-                            msg: 'attackingBlunt',
-                            img: '',
-
-                          }
-                        )
-                      }
-
-
-                      if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
-                        this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
-                      }
-
-                    }
-                    // DEFENDER DEFEND SUCCESS, DETERMINE DEFLECT OR PUSHBACK
-                    if (shouldDefend === true) {
-
-                      if (!player.popups.find(x=>x.msg === "attackingBlunt")) {
-                        player.popups.push(
-                          {
-                            state: false,
-                            count: 0,
-                            limit: 30,
-                            type: '',
-                            position: '',
-                            msg: 'attackingBlunt',
-                            img: '',
-
-                          }
-                        )
-                      }
-
-                      // if (this.players[player.target.occupant.player-1].direction === player.direction) {
-                      //   console.log('defend the rear!!');
-                      // }
-
-                      this.moveSpeed = .1;
-
-
-                      // DEFENDED STATUS DISPLAY!
-                      this.players[player.target.occupant.player-1].success.defendSuccess = {
-                        state: true,
-                        count: 1,
-                        limit: this.players[player.target.occupant.player-1].success.defendSuccess.limit
-                      }
-                      this.players[player.target.occupant.player-1].popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit: 25,
-                          type: '',
-                          position: '',
-                          msg: 'defendSuccess',
-                          img: '',
-
-                        }
-                      )
-
-                      let defenderParry = false;
-                      if (this.players[player.target.occupant.player-1].defendPeak === true) {
-                        defenderParry = true;
-                        this.players[player.target.occupant.player-1].stamina.current += this.staminaCostRef.defend.peak;
-                      }
-
-
-                      // PUSHBACK OPPONENT!
-                      // let shouldPushBackDefender = 2;
-                      let shouldPushBackDefender = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.pushBack*2);
-                      if (defenderParry === true) {
-                        shouldPushBackDefender = 0;
-                      }
-                      // shouldPushBackDefender = 1;
-                      if (shouldPushBackDefender === 1) {
-                        // console.log('pushback opponent');
-                        let canPushback = this.pushBack(this.players[player.target.occupant.player-1],player.direction);
-
-                      }
-
-                      // DON'T PUSHBACK OPPONENT, JUST DEFLECT/GUARD BREAK
-                      else {
-
-
-                        // OPPONENT GUARD BREAK ROLL!
-                        // let deflectDefender = this.rnJesus(1,1);
-                        let deflectDefender = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.guardBreak);
-                        if (player.bluntAttack === true && defenderParry !== true) {
-                          deflectDefender = 1;
-                        }
-                        // deflectDefender = 1
-                        if (defenderParry === true) {
-                          deflectDefender = 0;
-                        }
-
-                        // DEFLECT OPPONENT!
-                        if (deflectDefender === 1) {
-                          console.log('opponent guard break player',player.target.occupant.player);
-                          this.players[player.target.occupant.player-1].breakAnim.defend = {
-                            state: true,
-                            count: 1,
-                            limit: player.breakAnim.defend.limit,
-                          };
-
-                          this.attackedCancel(player);
-
-                          this.players[player.target.occupant.player-1].success.deflected = {
-                            state: true,
-                            count: 1,
-                            limit: this.deflectedLengthRef.defended,
-                            predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
-                            type: 'defended',
-                          };
-                          this.players[player.target.occupant.player-1].stamina.current = this.players[player.target.occupant.player-1].stamina.current - 3;
-
-
-                          if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
-                            this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
-                          }
-
-
-                        }
-
-                      }
-
-
-                      // ATTACKER PUSHBACK/DEFLECT!!??
-
-                      let shouldDeflectAttacker;
-
-                      // let shouldDeflectAttacker = this.rnJesus(1,2);
-
-                      let shouldDeflectPushBackAttacker;
-
-                      shouldDeflectAttacker = this.rnJesus(1,player.crits.guardBreak);
-                      shouldDeflectPushBackAttacker = this.rnJesus(1,player.crits.pushBack);
-
-                      // PEAK DEFEND/PARRY!!
-                      if (this.players[player.target.occupant.player-1].defendPeak) {
-                        console.log('peak defend/parry attacker',player.number,'defender',player.target.occupant.player);
-                        shouldDeflectAttacker = this.rnJesus(1,1);
-                        shouldDeflectPushBackAttacker = this.rnJesus(1,1);
-
-                        player.statusDisplay = {
-                          state: true,
-                          status: 'Parry!',
-                          count: 1,
-                          limit: this.players[player.number-1].statusDisplay.limit,
-                        }
-
-                        if (!player.popups.find(x=>x.msg === "attackParried")) {
-                          player.popups.push(
-                            {
-                              state: false,
-                              count: 0,
-                              limit: 30,
-                              type: '',
-                              position: '',
-                              msg: 'attackParried',
-                              img: '',
-
-                            }
-                          )
-                        }
-
-                      }
-
-                      // OFF PEAK DEFEND
-                      else {
-                        console.log('off peak defend');
-                        shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
-                        shouldDeflectPushBackAttacker = this.rnJesus(1,player.crits.pushBack);
-
-                        player.statusDisplay = {
-                          state: true,
-                          status: 'Defend',
-                          count: 1,
-                          limit: this.players[player.number-1].statusDisplay.limit,
-                        }
-
-                        if (!player.popups.find(x=>x.msg === "attackDefended")) {
-                          player.popups.push(
-                            {
-                              state: false,
-                              count: 0,
-                              limit: 30,
-                              type: '',
-                              position: '',
-                              msg: 'attackDefended',
-                              img: '',
-
-                            }
-                          )
-                        }
-
-                      }
-
-                      // shouldDeflectPushBackAttacker = 1;
-                      // shouldDeflectAttacker = 1;
-
-                      if (shouldDeflectPushBackAttacker === 1) {
-                        let pushBackDirection = this.getOppositeDirection(player.direction)
-
-                        let canPushback = this.pushBack(player,pushBackDirection);
-                        // console.log('canPushback',canPushback);
-
-                        if (canPushback === true && shouldDeflectAttacker === 1) {
-                          // console.log('predeflect --> pushback');
-                          player.success.deflected.predeflect = true;
-                        }
-                        else if (canPushback === false && shouldDeflectAttacker === 1) {
-                          // console.log('no pushback ---> just deflect');
-
-                          player.defending = {
-                            state: false,
-                            count: 0,
-                            limit: player.defending.limit,
-                            // limit: this.players[player.target.occupant.player-1].defending.limit,
-                          }
-                          player.attacking = {
-                            state: false,
-                            count: 0,
-                            limit: player.attacking.limit,
-                            // limit: this.players[player.target.occupant.player-1].attacking.limit,
-                          }
-
-                          player.success.deflected = {
-                            state: true,
-                            count: 1,
-                            limit: this.deflectedLengthRef.attack,
-                            predeflect: player.success.deflected.predeflect,
-                            type: 'attack'
-                          }
-
-
-                          if (this.aiDeflectedCheck.includes(player.number) !== true) {
-                            this.aiDeflectedCheck.push(player.number)
-                          }
-
-                        }
-
-                        if (this.aiDeflectedCheck.includes(player.number) !== true) {
-                          this.aiDeflectedCheck.push(player.number)
-                        }
-
-                      }
-
-                      // ATTACKER NO PUSHBACK, JUST DEFLECT!
-                      else if (shouldDeflectPushBackAttacker !== 1 && shouldDeflectAttacker === 1) {
-                        console.log('no pushback ---> just deflect');
-
-                        player.defending = {
-                          state: false,
-                          count: 0,
-                          limit: this.players[player.target.occupant.player-1].defending.limit,
-                        }
-                        player.attacking = {
-                          state: false,
-                          count: 0,
-                          limit: this.players[player.target.occupant.player-1].attacking.limit,
-                        }
-
-                        player.success.deflected = {
-                          state: true,
-                          count: 1,
-                          limit: this.deflectedLengthRef.attack,
-                          predeflect: player.success.deflected.predeflect,
-                          type: 'attack'
-                        }
-                        player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
-
-
-                        if (this.aiDeflectedCheck.includes(player.number) !== true) {
-                          this.aiDeflectedCheck.push(player.number)
-                        }
-
-                      }
-
-                      // ATTACKER NO DEFLECT NO PUSHBACK!
-                      else if (shouldDeflectPushBackAttacker !== 1 && shouldDeflectAttacker !== 1) {
-                        // console.log('attacker not deflected or pushed back');
-                      }
-
-                    }
-
-                  }
-                }
-
-                // ATTACK BARRIERS, OBSTACLES, ITEMS!
-
-                let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y );
-                let targetCell2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y );
-                let myCell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y );
-
-                if (player.target.occupant.type !== 'player' && player.target.free !== true) {
-
-
-                  // let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y );
-                  // let targetCell2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y );
-                  // let myCell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y );
-
-                  this.attackCellContents('melee',player,targetCell,targetCell2,myCell,undefined)
-
-                }
-
-
-                // CHECK FOR ITEMS OR MISS
-                if (player.target.free === true) {
-                  if (
-                    targetCell.rubble === true ||
-                    targetCell2.rubble === true ||
-                    targetCell.item.name !== "" ||
-                    targetCell2.item.name !== ""
-                  ) {
-                    this.attackCellContents('melee',player,targetCell,targetCell2,myCell,undefined)
-                  }
-                  else {
-                    if (!player.popups.find(x => x.msg === "missedAttack")) {
-                      player.popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit: 30,
-                          type: '',
-                          position: '',
-                          msg: 'missedAttack2',
-                          img: '',
-
-                        }
-                      )
-                    }
-
-
-                  }
-                }
-              }
-
-            }
-
-            // OUT OF STAMINA
-            else {
-              player.attacking.count = attackPeak+1;
-              player.stamina.current = 0;
-              player.statusDisplay = {
-                state: true,
-                status: "Out of Stamina",
-                count: 1,
-                limit: player.statusDisplay.limit,
-              }
-            }
-
-          }
-
-
-          // ATTACK COOLDOWN AND END!
-          if (player.attacking.count > attackPeak && player.attacking.count < this.attackAnimRef.limit[stamAtkType]) {
-            // console.log('attack cooldown',player.attacking.count);
-            player.attackPeak = false;
-          }
-          if (player.attacking.count >= this.attackAnimRef.limit[stamAtkType]) {
-            // console.log('attack end',player.attacking.count);
-
-            player.attacking = {
-              state: false,
-              count: 0,
-              limit: player.attacking.limit
-            }
-            player.attackStrength = 0;
-            player.bluntAttack = false;
-            player.action = 'idle';
-
-            if (
-              this.settingAutoCamera === false &&
-              player.ai.state !== true &&
-              this.camera.preInstructions.length === 0 &&
-              this.camera.instructions.length === 0
-            ) {
-              // this.setAutoCamera('attackFocusBreak',player)
-            }
-
-            else {
-              console.log('no setting auto cam: attackFocusBreak');
-            }
-
-            // if (player.popups.find(x=>x.msg === 'attacking')) {
-            //   player.popups.splice(player.popups.findIndex(x=>x.msg === 'attacking'),1)
-            // }
-
-            // console.log('attack end');
-
-          }
-
-        }
-
-
-        // DEFENDING!!
-        if (player.defending.state === true) {
-
-          let defendType = player.currentWeapon.type;
-          if ( player.currentWeapon.name === "") {
-            defendType  = "unarmed";
-          }
-          let defendPeak = this.defendAnimRef.peak[defendType];
-          player.defending.limit = this.defendAnimRef.limit[defendType];
-
-          if (player.defending.count < defendPeak && player.defendDecay.state !== true) {
-            player.defending.count++;
-            player.action = 'defending';
-            player.defendPeak = false;
-            // console.log('defend winding up',player.defending.count, 'player',player.number,defendPeak);
-            if (!player.popups.find(x=>x.msg === 'defending')) {
-              player.popups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit: player.defending.limit,
-                  type: '',
-                  position: '',
-                  msg: 'defending',
-                  img: '',
-
-                }
-              )
-
-            }
-          }
-
-          // PEAK, START DECAY
-          else if (player.defending.count >= defendPeak && player.defendDecay.state !== true) {
-           // console.log('peak defend player',player.number);
-
-           if (player.stamina.current - this.staminaCostRef.defend.peak >= 0) {
-
-             player.defending = {
-               state: true,
-               count: 0,
-               limit: player.defending.limit,
-             }
-             player.defendPeak = true;
-             player.stamina.current = player.stamina.current - this.staminaCostRef.defend.peak;
-             player.defendDecay = {
-               state: true,
-               count: 0,
-               limit: player.defending.limit-defendPeak,
-             }
-
-             if (!player.popups.find(x=>x.msg === 'defending')) {
-               player.popups.push(
-                 {
-                   state: false,
-                   count: 0,
-                   limit: player.defending.limit,
-                   type: '',
-                   position: '',
-                   msg: 'defending',
-                   img: '',
-
-                 }
-               )
-
-             }
-
-           }
-           else {
-
-             console.log('not enough stamina for peak defend. reset stamina');
-             player.action = "idle";
-             player.defending = {
-               state: false,
-               count: 0,
-               limit: player.defending.limit,
-             }
-             player.defendDecay = {
-               state: true,
-               count: player.defendDecay.limit-7,
-               limit: player.defendDecay.limit,
-             }
-             player.stamina.current = 0;
-             player.statusDisplay = {
-               state: true,
-               status: "Out of Stamina",
-               count: 1,
-               limit: player.statusDisplay.limit,
-             }
-
-             // player.popups.push(
-             //   {
-             //     state: false,
-             //     count: 0,
-             //     limit: 10,
-             //     type: '',
-             //     position: '',
-             //     msg: 'outOfStamina',
-             //     img: '',
-             //
-             //   }
-             // )
-           }
-
-         };
-
-          // DECAY!!
-          if (player.defendDecay.state === true) {
-            if (player.defendDecay.count < player.defendDecay.limit) {
-              player.defendDecay.count++;
-              if (player.defendDecay.count === 5 ) {
-                player.defendPeak = false;
-              }
-
-              if (!player.popups.find(x=>x.msg === 'defending')) {
-                player.popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit: player.defendDecay.limit,
-                    type: '',
-                    position: '',
-                    msg: 'defending',
-                    img: '',
-
-                  }
-                )
-
-              }
-              // console.log('defend decay count',player.defendDecay.count,player.defending.state,player.action);
-            }
-
-
-            if (player.defendDecay.count >= player.defendDecay.limit) {
-              player.defending = {
-                state: false,
-                count: 0,
-                limit: player.defending.limit,
-              }
-              player.action = 'idle';
-              // console.log('defend decay limit. drop defense',player.defending.state);
-              player.defendDecay = {
-                state: false,
-                count: 0,
-                limit: player.defendDecay.limit,
-              }
-
-              if (player.popups.find(x=>x.msg === 'defending')) {
-                player.popups.splice(player.popups.findIndex(x=>x.msg === 'defending'),1)
-              }
-            }
-
-          }
-
-
-        }
-
-
-
-        // PUSHING/PULLING
-        // NEW PUSH/PULL DELAY AFTER LAST ATTEMPT
-        if (player.newPushPullDelay.state === true) {
-          if (player.newPushPullDelay.count < player.newPushPullDelay.limit) {
-            player.newPushPullDelay.count++;
-            // console.log('new push pull delay');
-          }
-          if (player.newPushPullDelay.count >= player.newPushPullDelay.limit) {
-            player.newPushPullDelay.state = false;
-            player.newPushPullDelay.count = 0;
-
-          }
-        }
-        // PUSH KEY RELEASE
-        if (player.prePush.state === true && this.keyPressed[player.number-1][player.prePush.direction] !== true) {
-          // console.log('mid prePush but key released. reset prePush');
-          player.prePush = {
-            state: false,
-            count: 0,
-            limit: player.prePush.limit,
-            targetCell: undefined,
-            direction: "",
-            pusher: undefined,
-          }
-
-          if (player.newPushPullDelay.state !== true) {
-            player.newPushPullDelay.state = true
-          }
-        }
-        // key release prepull check??
-        // if (player.prePull.state === true && this.keyPressed[player.number-1][player.prePush.direction] !== true) {
-        //   console.log('mid prePull but key released. reset prePull');
-        //   player.prePull = {
-        //     state: false,
-        //     count: 0,
-        //     limit: player.prePull.limit,
-        //     targetCell: undefined,
-        //     direction: "",
-        //     puller: undefined,
-        //   }
-        // }
-
-
-        // PULL CHECK
-        if (this.keyPressed[player.number-1].defend === true && player.pulling.state !== true && player.turning.state !== true && player.postPull.state !== true) {
-          this.getTarget(player);
-
-          if (player.direction === 'south' && this.keyPressed[player.number-1].north === true) {
-            if (player.target.cell1.occupant.type === "obstacle" && player.pulling.state !== true) {
-              // console.log('pulling obstacle trigger north',player.prePull.state,player.prePull.count);
-              this.preObstaclePullCheck(player,player.target,'north')
-            }
-            if (player.target.cell1.occupant.type === "player" && player.pulling.state !== true) {
-              // console.log('pulling player trigger north',player.prePull.state,player.prePull.count);
-              this.prePlayerPullCheck(player,player.target,'north')
-            }
-          }
-          if (player.direction === 'north' && this.keyPressed[player.number-1].south === true) {
-
-            if (player.target.cell1.occupant.type === "obstacle" && player.pulling.state !== true) {
-              // console.log('pulling obstacle trigger south',player.prePull.state,player.prePull.count);
-              this.preObstaclePullCheck(player,player.target,'south')
-            }
-            if (player.target.cell1.occupant.type === "player" && player.pulling.state !== true) {
-              // console.log('pulling player trigger south',player.prePull.state,player.prePull.count);
-              this.prePlayerPullCheck(player,player.target,'south')
-            }
-          }
-          if (player.direction === 'west' && this.keyPressed[player.number-1].east === true) {
-
-            if (player.target.cell1.occupant.type === "obstacle" && player.pulling.state !== true) {
-              // console.log('pulling obstacle trigger east',player.prePull.state,player.prePull.count);
-              this.preObstaclePullCheck(player,player.target,'east')
-            }
-            if (player.target.cell1.occupant.type === "player" && player.pulling.state !== true) {
-              // console.log('pulling player trigger east',player.prePull.state,player.prePull.count);
-              this.prePlayerPullCheck(player,player.target,'east')
-            }
-          }
-          if (player.direction === 'east' && this.keyPressed[player.number-1].west === true) {
-
-            if (player.target.cell1.occupant.type === "obstacle" && player.pulling.state !== true) {
-              // console.log('pulling obstacle trigger west',player.prePull.state,player.prePull.count);
-              this.preObstaclePullCheck(player,player.target,'west')
-            }
-            if (player.target.cell1.occupant.type === "player" && player.pulling.state !== true) {
-              // console.log('pulling player trigger west',player.prePull.state,player.prePull.count);
-              this.prePlayerPullCheck(player,player.target,'west')
-            }
-          }
-
-        }
-        if (player.postPull.state === true) {
-          if (player.postPull.count < player.postPull.limit) {
-            player.postPull.count++;
-            // console.log('post pull count',player.postPull.count);
-          }
-          if (player.postPull.count >= player.postPull.limit) {
-            // console.log('post pull limit');
-            player.postPull = {
-              state: false,
-              count: 0,
-              limit: player.postPull.limit
-            };
-          }
-        }
-
-
-        // // DODGE STEPPER!
-        let dodgeCondition = false;
-        if (player.crits.dodge > 4) {
-          player.crits.dodge = 4;
-        }
-        if (player.dodging.countState === true && player.dodging.count <= (player.dodging.peak.start - player.crits.dodge) && this.keyPressed[player.number-1].dodge === true) {
-          dodgeCondition = true;
-        }
-        if (player.dodging.countState === true && player.dodging.count > (player.dodging.peak.start - player.crits.dodge)) {
-          dodgeCondition = true;
-        }
-        if (dodgeCondition === true && player.flanking.state !== true) {
-
-          let startMod = player.crits.dodge;
-          let endMod = player.crits.dodge;
-          if (player.crits.dodge > 5) {
-            player.crits.dodge = 5;
-          }
-          if (player.dodging.peak.start - startMod < 2) {
-            startMod = player.dodging.peak.start-2;
-          }
-          if ((player.dodging.peak.end + endMod) > player.dodging.limit-2) {
-            endMod = player.dodging.limit-(2+player.dodging.peak.end);
-          }
-
-          // HAVE STAMIN FOR DODGE
-          if (player.dodging.count === 0) {
-
-            if (player.stamina.current - this.staminaCostRef.dodge.peak >= 0) {
-              player.stamina.current = player.stamina.current - this.staminaCostRef.dodge.peak;
-              player.dodging.count++;
-              player.action = 'dodging';
-            }
-
-            else {
-
-              player.stamina.current = 0;
-              player.dodging = {
-                countState: false,
-                state: false,
-                count: 0,
-                limit: player.dodging.limit,
-                peak: {
-                  start: player.dodging.peak.start,
-                  end: player.dodging.peak.end,
-                }
-              }
-              player.action = 'idle';
-              player.statusDisplay = {
-                state: true,
-                status: "Out of Stamina",
-                count: 1,
-                limit: player.statusDisplay.limit,
-              }
-            }
-
-            if (!player.popups.find(x => x.msg === "dodgeStart")) {
-              player.popups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit: 5,
-                  type: '',
-                  position: '',
-                  msg: 'dodgeStart',
-                  img: '',
-
-                }
-              )
-            }
-
-
-          }
-          if (player.dodging.count >= 1 && player.dodging.count < player.dodging.limit) {
-            player.dodging.count++
-            player.action = 'dodging';
-            // console.log('dodge count',player.dodging.count);
-
-
-            if (!player.popups.find(x => x.msg === "dodging")) {
-              player.popups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit: player.dodging.limit,
-                  type: '',
-                  position: '',
-                  msg: 'dodging',
-                  img: '',
-
-                }
-              )
-            }
-          }
-          // PEAK START
-          if (player.dodging.count === (player.dodging.peak.start - startMod)) {
-
-            // player.popups.push(
-            //   {
-            //     state: false,
-            //     count: 0,
-            //     limit: (player.dodging.peak.end + endMod)-(player.dodging.peak.start + startMod),
-            //     type: '',
-            //     position: '',
-            //     msg: 'dodgeSuccess',
-            //     img: '',
-            //
-            //   }
-            // )
-          }
-          if (player.dodging.count > (player.dodging.peak.start - startMod) && player.dodging.count < (player.dodging.peak.end + endMod)) {
-            player.dodging.state = true;
-
-            // console.log('dodge peak',player.dodging.count,'crit',player.crits.dodge);
-          }
-
-          // CHOOSE DODGE DIRECTION
-          if (player.dodging.count === (player.dodging.peak.start - startMod)) {
-            let whichDirection = this.rnJesus(1,2);
-            let dodgeDirection;
-            switch(player.direction) {
-                case 'north':
-                if (whichDirection === 1) {
-                  dodgeDirection = 'east';
-                } else {
-                  dodgeDirection = 'west';
-                }
-                break;
-                case 'south':
-                if (whichDirection === 1) {
-                  dodgeDirection = 'east';
-                } else {
-                  dodgeDirection = 'west';
-                }
-                break;
-                case 'east':
-                if (whichDirection === 1) {
-                  dodgeDirection = 'north';
-                } else {
-                  dodgeDirection = 'south';
-                }
-                break;
-                case 'west':
-                if (whichDirection === 1) {
-                  dodgeDirection = 'north';
-                } else {
-                  dodgeDirection = 'south';
-                }
-                break;
-            }
-            player.dodgeDirection = dodgeDirection;
-          }
-
-          // IF DODGE IS BEFORE OR AFTER PEAK, STATE OFF
-          if (player.dodging.count < (player.dodging.peak.start - startMod) || player.dodging.count > (player.dodging.peak.end + endMod)) {
-            player.dodging.state = false;
-            player.dodgeDirection = '';
-            // console.log('dodge peak off');
-          }
-          if (player.dodging.count >= player.dodging.limit) {
-            player.action = 'idle';
-            player.dodging = {
-              countState: false,
-              state: false,
-              count: 0,
-              limit: player.dodging.limit,
-              peak: {
-                start: player.dodging.peak.start,
-                end: player.dodging.peak.end,
-              }
-            }
-          }
-
-
-
-        }
-
-
-        // COMPLETE PUSHBACK DEFLECT FLOW!
-        if (player.pushBack.state === false && player.success.deflected.predeflect === true && player.moving.state === false) {
-          // console.log('predefelct --> pushback ---> deflect');
-          player.success.deflected = {
-            state: true,
-            count: 1,
-            limit: this.deflectedLengthRef.attack,
-            predeflect: false,
-            type: player.success.deflected.type,
-          }
-
-
-          if (this.aiDeflectedCheck.includes(player.number) !== true) {
-            this.aiDeflectedCheck.push(player.number)
-          }
-
-
-        }
-
-
-        // DISCARD GEAR!!
-        if (
-          this.keyPressed[player.number-1].defend === true &&
-          this.keyPressed[player.number-1].cycleWeapon === true &&
-          player.discardGear.state !== true
-        ) {
-
-            this.discardGear(player,"weapon")
-            player.discardGear.state = true;
-        }
-        if (
-          this.keyPressed[player.number-1].defend === true &&
-          this.keyPressed[player.number-1].cycleArmor === true &&
-          player.discardGear.state !== true
-        ) {
-
-            this.discardGear(player,"armor")
-            player.discardGear.state = true;
-        }
-        // DISCARD GEAR STEPPER!!
-        if (player.discardGear.state === true) {
-          if (player.discardGear.count < player.discardGear.limit) {
-            player.discardGear.count++
-          }
-          else if (player.discardGear.count >= player.discardGear.limit) {
-            player.discardGear = {
-              state: false,
-              count: 0,
-              limit: player.discardGear.limit,
-            }
-          }
-        }
-
-
-        // WEAPON/ARMOR CYCLE CHECK!!
-        if (this.keyPressed[player.number-1].cycleWeapon === true && player.cycleWeapon.state === false && player.defending.state !== true && this.keyPressed[player.number-1].defend === false) {
-          if (player.cycleWeapon.count < player.cycleWeapon.limit) {
-            player.cycleWeapon.count++
-            // console.log('player.cycleWeapon.count',player.cycleWeapon.count);
-          }
-          if (player.cycleWeapon.count >= player.cycleWeapon.limit) {
-
-            if (
-              this.keyPressed[player.number-1].cycleWeapon === true &&
-              player.items.weapons.length > 1
-            ) {
-              // console.log('cycling weapon',player.items);
-
-              // let currentIndex = player.items.weapons.indexOf(player.currentWeapon);
-              let currentIndex = player.items.weaponIndex;
-              let newIndex;
-              // console.log(player.items.weapons,player.currentWeapon,currentIndex,player.items.weapons[currentIndex]);
-              if (currentIndex + 1 > player.items.weapons.length - 1) {
-                newIndex = 0
-              } else {
-                newIndex = currentIndex+1;
-              }
-              player.items.weaponIndex = newIndex;
-              player.currentWeapon = player.items.weapons[newIndex]
-
-              if (!player.popups.find(x=>x.msg === player.items.weapons[newIndex].type)) {
-                player.popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit: 30,
-                    type: '',
-                    position: '',
-                    msg: player.items.weapons[newIndex].type,
-                    img: '',
-
-                  }
-                )
-              }
-
-              // console.log(player.items.weapons,player.currentWeapon,newIndex,player.items.weapons[newIndex]);
-
-            }
-            if (
-              this.keyPressed[player.number-1].cycleWeapon === true &&
-              player.items.weapons.length === 1
-            ) {
-
-              if (player.currentWeapon.type === 'crossbow' && player.items.ammo === 0) {
-                player.currentWeapon = {
-                  name: '',
-                  type: '',
-                  effect: ''
-                }
-                console.log('only have empty crossbow left, switching to unarmed');
-              } else {
-
-
-              player.currentWeapon = player.items.weapons[0];
-              // console.log('nothing to cycle through');
-              this.players[player.number-1].statusDisplay = {
-                state: true,
-                status: 'no weapons to cycle!',
-                count: 1,
-                limit: this.players[player.number-1].statusDisplay.limit,
-              }
-
-              if (!player.popups.find(x=>x.msg === 'stop')) {
-                player.popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit: 30,
-                      type: '',
-                      position: '',
-                      msg: 'stop',
-                      img: '',
-
-                    }
-                  )
-              }
-
-              }
-
-
-            }
-
-            player.cycleWeapon = {
-              state: false,
-              count: 0,
-              limit: player.cycleWeapon.limit,
-            }
-
-            let myCell = this.gridInfo.find(cell => cell.number.x === player.currentPosition.cell.number.x && cell.number.y === player.currentPosition.cell.number.y)
-            if (myCell.item.name !== '') {
-              // console.log('found an item. picking it up');
-              this.checkDestination(player)
-            }
-          }
-
-        }
-        else if (this.keyPressed[player.number-1].cycleWeapon === true && player.cycleWeapon.state === true) {
-          console.log('already cycling weapon');
-        }
-        if (this.keyPressed[player.number-1].cycleArmor === true && player.cycleArmor.state === false && player.defending.state !== true && this.keyPressed[player.number-1].defend === false) {
-          if (player.cycleArmor.count < player.cycleArmor.limit) {
-            player.cycleArmor.count++
-            // console.log('player.cycleArmor.count',player.cycleArmor.count);
-          }
-          if (player.cycleArmor.count >= player.cycleArmor.limit) {
-
-            if (
-              this.keyPressed[player.number-1].cycleArmor === true &&
-              player.items.armor.length > 0
-            ) {
-              // console.log('cycling armor');
-
-              // let currentIndex = player.items.armor.indexOf(player.currentArmor);
-              let currentIndex = player.items.armorIndex;
-              let newIndex;
-              if (currentIndex + 1 > player.items.armor.length - 1) {
-                newIndex = 0
-              } else {
-                newIndex = currentIndex+1;
-              }
-
-
-              switch(player.currentArmor.effect) {
-                case 'hpUp' :
-                  if (player.hp > 1) {
-                    // console.log('armor cycle debuff hp',player.hp);
-                    player.hp = player.hp - 1;
-                    // console.log('armor cycle debuff hp',player.hp);
-                  }
-                break;
-                case 'speedUp' :
-                  let currentSpd1 = player.speed.range.indexOf(player.speed.move);
-                  if (player.speed.move > .05) {
-                    // console.log('armor cycle debuff speed',player.speed.move);
-                    player.speed.move = player.speed.range[currentSpd1-1];
-                    // console.log('armor cycle debuff speed',player.speed.move);
-                  }
-                break;
-              }
-
-              switch(player.items.armor[newIndex].effect) {
-                case 'hpUp' :
-                  if (player.hp < 3) {
-                    // console.log('armor cycle buff hp',player.hp);
-                    player.hp = player.hp + 1
-                    // console.log('armor cycle buff hp',player.hp);
-
-                    player.statusDisplay = {
-                      state: true,
-                      status: 'hpUp',
-                      count: 1,
-                      limit: player.statusDisplay.limit,
-                    }
-                  }
-                break;
-                case 'speedUp' :
-                  let currentSpd2 = player.speed.range.indexOf(player.speed.move)
-                  if (player.speed.move < .2) {
-
-                    // console.log('armor cycle buff speed',player.speed.move);
-                    player.speed.move = player.speed.range[currentSpd2+1]
-                    // console.log('armor cycle buff speed',player.speed.move);
-
-                    player.statusDisplay = {
-                      state: true,
-                      status: 'speedUp',
-                      count: 1,
-                      limit: player.statusDisplay.limit,
-                    }
-                  }
-                break;
-              }
-
-              player.items.armorIndex = newIndex;
-              player.currentArmor = player.items.armor[newIndex]
-
-              if (player.items.armor[newIndex].type !== '' && !player.popups.find(x=>x.msg === player.items.armor[newIndex].type)) {
-                player.popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit: 30,
-                      type: '',
-                      position: '',
-                      msg: player.items.armor[newIndex].type,
-                      img: '',
-
-                    }
-                  )
-              }
-              if (player.items.armor[newIndex].type === '' && !player.popups.find(x=>x.msg === 'stop')) {
-                player.popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit: 30,
-                      type: '',
-                      position: '',
-                      msg: 'stop',
-                      img: '',
-
-                    }
-                  )
-              }
-
-
-            }
-            if (
-              this.keyPressed[player.number-1].cycleArmor === true &&
-              player.items.armor.length === 0
-            ) {
-              console.log('no armor to cycle through');
-              this.players[player.number-1].statusDisplay = {
-                state: true,
-                status: 'no armor to cycle!',
-                count: 1,
-                limit: this.players[player.number-1].statusDisplay.limit,
-              }
-
-              if (!player.popups.find(x=>x.msg === 'stop')) {
-                player.popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit: 30,
-                    type: '',
-                    position: '',
-                    msg: 'stop',
-                    img: '',
-
-                  }
-                )
-              }
-
-            }
-
-            player.cycleArmor = {
-              state: false,
-              count: 0,
-              limit: player.cycleArmor.limit,
-            }
-
-            let myCell = this.gridInfo.find(cell => cell.number.x === player.currentPosition.cell.number.x && cell.number.y === player.currentPosition.cell.number.y)
-            if (myCell.item.name !== '') {
-              // console.log('found an item. picking it up');
-              this.checkDestination(player)
-            }
-          }
-        }
-        else if (this.keyPressed[player.number-1].cycleArmor === true && player.cycleArmor.state === true) {
-          console.log('already cycling armor');
-        }
-
-
-        // FLANKING!
-        if (player.flanking.state === true) {
-
-          // RESET DODGING
-          this.players[player.number-1].dodging = {
-            countState: false,
-            state: false,
-            count: 0,
-            limit: player.dodging.limit,
-            peak: {
-              start: player.dodging.peak.start,
-              end: player.dodging.peak.end,
-            }
-          }
-          if (this.players[player.number-1].popups.find(x=>x.msg === 'dodging')) {
-            this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'dodging'),1)
-          }
-
-
-          if (player.flanking.step === 2) {
-            // console.log('flanking step 2',player.direction,'flank dir',player.flanking.direction,"current position",player.currentPosition.cell.number,'move step',player.moving.step);
-            switch(player.flanking.direction) {
-              case 'north' :
-                player.direction = 'south';
-                player.turning.toDirection = 'south';
-              break;
-              case 'south' :
-                player.direction = 'north';
-                player.turning.toDirection = 'north';
-              break;
-              case 'east' :
-                player.direction = 'west';
-                player.turning.toDirection = 'west';
-              break;
-              case 'west' :
-                player.direction = 'east';
-                player.turning.toDirection = 'east';
-              break;
-            }
-            player.flanking = {
-              checking: false,
-              direction: '',
-              preFlankDirection: '',
-              state: false,
-              step: 0,
-              target1: {x:0 ,y:0},
-              target2: {x:0 ,y:0},
-            }
-
-            // if (player.popups.find(x=>x.msg === 'flanking2')) {
-            //   player.popups.splice(player.popups.findIndex(y=>y.msg === 'flanking2'),1)
-            // }
-
-          }
-          if (player.flanking.step === 1) {
-            // console.log('flanking step 1',player.direction,'flank dir',player.flanking.direction,"current position",player.currentPosition.cell.number,'move step',player.moving.step);
-            let target = this.getTarget(player);
-            if (target.cell1.free === true) {
-              player.flanking.step = 2;
-              player.flanking.target2 = target.cell1.number;
-              // player.action = 'moving';
-              player.action = 'flanking';
-              player.moving = {
-                state: true,
-                step: 0,
-                course: '',
-                origin: {
-                  number: {
-                    x: player.currentPosition.cell.number.x,
-                    y: player.currentPosition.cell.number.y
-                  },
-                  center: {
-                    x: player.currentPosition.cell.center.x,
-                    y: player.currentPosition.cell.center.y
-                  },
-                },
-                destination: target.cell1.center
-              }
-              nextPosition = this.lineCrementer(player);
-              player.nextPosition = nextPosition;
-
-              if (player.ai.state === true) {
-                this.keyPressed[player.number-1].dodge = false
-              }
-
-              if (!player.popups.find(x=>x.msg === "flanking2")) {
-                player.popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit: 20,
-                    type: '',
-                    position: '',
-                    msg: 'flanking2',
-                    img: '',
-                  }
-                )
-              }
-              if (this.players[player.number-1].popups.find(x=>x.msg === 'dodging')) {
-                this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'dodging'),1)
-              }
-            }
-            else {
-              // console.log('cancel flanking');
-              this.players[player.number-1].statusDisplay = {
-                state: true,
-                status: 'flanking cancelled!',
-                count: 1,
-                limit: this.players[player.number-1].statusDisplay.limit,
-              }
-              player.flanking = {
-                checking: false,
-                direction: '',
-                state: false,
-                step: 0,
-                target1: {x:0 ,y:0},
-                target2: {x:0 ,y:0},
-              }
-
-              if (player.popups.find(x=>x.msg === 'flanking2')) {
-                player.popups.splice(player.popups.findIndex(y=>y.msg === 'flanking2'),1)
-              }
-              if (!player.popups.find(x=>x.msg === "noFlanking")) {
-                player.popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit: 30,
-                    type: '',
-                    position: '',
-                    msg: 'noFlanking',
-                    img: '',
-                  }
-                )
-              }
-            }
-          }
-        }
-        // START
-        if (this.keyPressed[player.number-1].dodge === true && player.flanking.state !== true) {
-
-
-          if (
-            this.keyPressed[player.number-1].north === true ||
-            this.keyPressed[player.number-1].south === true ||
-            this.keyPressed[player.number-1].east === true ||
-            this.keyPressed[player.number-1].west === true &&
-            player.strafing.state !== true &&
-            player.flanking.state !== true
-          ) {
-
-            // RESET DODGING
-            this.players[player.number-1].dodging = {
-              countState: false,
-              state: false,
-              count: 0,
-              limit: player.dodging.limit,
-              peak: {
-                start: player.dodging.peak.start,
-                end: player.dodging.peak.end,
-              }
-            }
-
-
-            if (player.dodging.countState === true || player.dodging.state === true) {
-
-              this.players[player.number-1].stamina.current += this.staminaCostRef.dodge.pre;
-
-            }
-
-            if (keyPressedDirection !== player.direction) {
-
-              let canFlank = false;
-              switch(player.direction) {
-                case 'north' :
-                  if (keyPressedDirection === 'east' || keyPressedDirection === 'west') {
-                    canFlank = true;
-                  }
-                break;
-                case 'south' :
-                  if (keyPressedDirection === 'east' || keyPressedDirection === 'west') {
-                    canFlank = true;
-                  }
-                break;
-                case 'west' :
-                  if (keyPressedDirection === 'north' || keyPressedDirection === 'south') {
-                    canFlank = true;
-                  }
-                break;
-                case 'east' :
-                  if (keyPressedDirection === 'north' || keyPressedDirection === 'south') {
-                    canFlank = true;
-                  }
-                break;
-              }
-
-              if (canFlank === true) {
-
-                if (player.stamina.current - this.staminaCostRef.flank >= 0) {
-
-                  // console.log('flanking step',keyPressedDirection,player.direction);
-                  this.players[player.number-1].flanking.checking = true;
-                  this.players[player.number-1].flanking.direction = keyPressedDirection;
-                  this.players[player.number-1].flanking.preFlankDirection = player.direction;
-
-                  let target = this.getTarget(player);
-                  if (target.cell1.free === true ) {
-
-                    player.stamina.current = player.stamina.current - this.staminaCostRef.flank;
-                    // console.log('flank stam check1. cost',this.staminaCostRef.flank,'stam',player.stamina.current);
-
-                    // this.players[player.number-1].dodging = {
-                    //   countState: false,
-                    //   state: false,
-                    //   count: 0,
-                    //   limit: player.dodging.limit,
-                    //   peak: {
-                    //     start: player.dodging.peak.start,
-                    //     end: player.dodging.peak.end,
-                    //   }
-                    // }
-
-
-                    this.players[player.number-1].flanking.checking = false;
-                    this.players[player.number-1].flanking.state = true;
-                    this.players[player.number-1].flanking.step =  1;
-                    this.players[player.number-1].flanking.target1 = target.cell1.number;
-                    // console.log('this.players[player.number-1].flanking.target1',this.players[player.number-1].flanking.target1);
-                    // player.action = 'moving';
-
-                    if (!player.popups.find(x=>x.msg === "preAction2") && !player.popups.find(x=>x.msg === "dodgeStart")) {
-                      player.popups.push(
-                        {
-                          state: false,
-                          count: 0,
-                          limit: 5,
-                          type: '',
-                          position: '',
-                          msg: 'preAction2',
-                          img: '',
-                        }
-                      )
-                    }
-
-                    // console.log('flanking step 0/1',player.direction,'flank dir',player.flanking.direction,"current position",player.currentPosition.cell.number,'move step',player.moving.step);
-                    player.action = 'flanking';
-                    player.moving = {
-                      state: true,
-                      step: 0,
-                      course: '',
-                      origin: {
-                        number: {
-                          x: player.currentPosition.cell.number.x,
-                          y: player.currentPosition.cell.number.y
-                        },
-                        center: {
-                          x: player.currentPosition.cell.center.x,
-                          y: player.currentPosition.cell.center.y
-                        },
-                      },
-                      destination: target.cell1.center
-                    }
-                    nextPosition = this.lineCrementer(player);
-                    player.nextPosition = nextPosition;
-
-                    if (
-                      this.mouseOverCell.state === true &&
-                      this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
-                      this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
-                    ) {
-                      this.clicked.player = undefined;
-                    }
-
-                  }
-                  else {
-                    // console.log('cancel flanking');
-                  }
-
-
-                }
-                else {
-                  // console.log('flank stam check. cost',this.staminaCostRef.flank,'stam',player.stamina.current);
-                  player.action = 'idle';
-                  player.stamina.current = 0;
-                  player.statusDisplay = {
-                    state: true,
-                    status: "Out of Stamina",
-                    count: 1,
-                    limit: player.statusDisplay.limit,
-                  }
-
-                }
-
-
-              } else {
-                // console.log('cant flank2');
-              }
-
-            }
-            if (keyPressedDirection !== player.direction) {
-              console.log('!! dodge roll key combo!!');
-            }
-            else {
-              // console.log('cant flank2');
-            }
-          }
-
-        }
-
-
-        // BREAK FROM PULLED/PUSHED CHECK
-        let plyrPullPushed = false;
-        let plyrPullPushedPlyr = 0;
-        let breakPulledPushed = false;
-        for(const plyr of this.players) {
-          if (plyr.prePush.state === true) {
-            if (plyr.target.cell1.number.x === player.currentPosition.cell.number.x && plyr.target.cell1.number.y === player.currentPosition.cell.number.y) {
-              // console.log('player is being pre pushed by plyr',plyr.number);
-              plyrPullPushed = true;
-              plyrPullPushedPlyr = plyr.number;
-            }
-          }
-          if (plyr.prePull.state === true) {
-            if (plyr.target.cell1.number.x === player.currentPosition.cell.number.x && plyr.target.cell1.number.y === player.currentPosition.cell.number.y) {
-              // console.log('player is being pre pulled by plyr',plyr.number);
-              plyrPullPushed = true;
-              plyrPullPushedPlyr = plyr.number;
-            }
-          }
-        }
-
-
-        // CAN READ MOVE INPUTS!!
-        if (
-          player.attacking.state === false &&
-          player.defending.state === false &&
-          player.defending.count < 1 &&
-          player.dodging.state === false &&
-          player.dodging.countState === false &&
-          player.turning.state !== true &&
-          player.postPull.state !== true &&
-          player.defendDecay.state !== true &&
-          player.flanking.state !== true &&
-          player.jumping.state !== true &&
-          player.turning.state !== true
-        ) {
-          // CONFIRM MOVE KEYPRESS!!
-          if (
-            this.keyPressed[player.number-1].north === true ||
-            this.keyPressed[player.number-1].south === true ||
-            this.keyPressed[player.number-1].east === true ||
-            this.keyPressed[player.number-1].west === true ||
-            this.keyPressed[player.number-1].northEast === true ||
-            this.keyPressed[player.number-1].northWest === true ||
-            this.keyPressed[player.number-1].southEast === true ||
-            this.keyPressed[player.number-1].southWest === true
-          ) {
-
-            if (plyrPullPushed === true) {
-              breakPulledPushed = true;
-            }
-
-            if (player.newMoveDelay.state !== true) {
-
-              // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
-              if (keyPressedDirection === player.direction && player.strafing.state === false) {
-
-                let target = this.getTarget(player)
-
-                if (target.cell1.free === true && player.target.cell1.void === false) {
-
-                  if (player.dead.state === true && player.dead.count === 0) {
-
-                    player.nextPosition = {
-                      x: -30,
-                      y: -30,
-                    }
-
-                  }
-                  else if (player.turning.delayCount === 0) {
-
-                    if (player.stamina.current - this.staminaCostRef.move >= 0) {
-
-                      player.stamina.current -= this.staminaCostRef.move;
-
-                      player.action = 'moving';
-                      player.moving = {
-                        state: true,
-                        step: 0,
-                        course: '',
-                        origin: {
-                          number: {
-                            x: player.currentPosition.cell.number.x,
-                            y: player.currentPosition.cell.number.y
-                          },
-                          center: {
-                            x: player.currentPosition.cell.center,
-                            y: player.currentPosition.cell.center
-                          },
-                        },
-                        destination: target.cell1.center
-                      }
-                      nextPosition = this.lineCrementer(player);
-                      player.nextPosition = nextPosition;
-
-                      if (
-                        this.mouseOverCell.state === true &&
-                        this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
-                        this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
-                      ) {
-                        this.clicked.player = undefined;
-                      }
-
-                    }
-                    else {
-
-                      player.stamina.current = 0;
-                      player.statusDisplay = {
-                        state: true,
-                        status: 'Out of Stamina',
-                        count: 0,
-                        limit: player.statusDisplay.limit,
-                      }
-
-                    }
-
-
-                  }
-
-                }
-
-                if (target.cell1.free !== true) {
-                  if (target.cell1.occupant.type === "obstacle" && player.pushing.state !== true) {
-                    this.preObstaclePushCheck(player,target)
-                  }
-                  if (target.cell1.occupant.type === "player" && player.pushing.state !== true) {
-                    this.prePlayerPushCheck(player,target)
-                  }
-                  if (player.pushing.state === true) {
-                    // console.log('You are already pushing something');
-                  }
-                }
-
-                if (player.target.cell1.void === true) {
-                  // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
-
-
-                  if (player.stamina.current - this.staminaCostRef.move >= 0) {
-
-                    player.stamina.current -= this.staminaCostRef.move;
-
-                    this.moveSpeed = player.speed.move;
-
-                    player.moving = {
-                      state: true,
-                      step: 0,
-                      course: '',
-                      origin: {
-                        number: player.currentPosition.cell.number,
-                        center: player.currentPosition.cell.center,
-                      },
-                      destination: target.cell1.center
-                    }
-
-                    nextPosition = this.lineCrementer(player);
-                    player.nextPosition = nextPosition;
-
-                    if (
-                      this.mouseOverCell.state === true &&
-                      this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
-                      this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
-                    ) {
-                      this.clicked.player = undefined;
-                    }
-
-                  }
-                  else {
-
-                    player.stamina.current = 0;
-                    player.statusDisplay = {
-                      state: true,
-                      status: 'Out of Stamina',
-                      count: 0,
-                      limit: player.statusDisplay.limit,
-                    }
-
-                  }
-
-
-                }
-
-              }
-
-            }
-
-            // CHANGE DIRECTION IF NOT STRAFING!!
-            if (keyPressedDirection !== player.direction && player.strafing.state === false) {
-
-              // console.log('change player direction to',keyPressedDirection);
-              // console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
-
-              if (player.stamina.current - this.staminaCostRef.turn >= 0) {
-
-                player.stamina.current -= this.staminaCostRef.turn;
-
-                // console.log('start turning');
-                player.turning.state = true;
-                player.turning.toDirection = keyPressedDirection;
-
-              }
-              else {
-
-                player.stamina.current = 0;
-                player.statusDisplay = {
-                  state: true,
-                  status: 'Out of Stamina',
-                  count: 0,
-                  limit: player.statusDisplay.limit,
-                }
-
-              }
-
-            }
-
-
-            if (player.newMoveDelay.state !== true) {
-
-              // MOVE WHILE STRAFING!!
-              if (keyPressedDirection !== player.direction && player.strafing.state === true) {
-
-                player.strafing.direction = keyPressedDirection;
-                let target = this.getTarget(player);
-
-                if (target.cell1.free === true) {
-
-                  if (player.stamina.current - this.staminaCostRef.strafe >= 0) {
-
-                    player.stamina.current -= this.staminaCostRef.strafe;
-                    this.moveSpeed = player.speed.move;
-
-                    // console.log('start strafing');
-                    player.action = 'strafe moving';
-                    player.moving = {
-                      state: true,
-                      step: 0,
-                      course: '',
-                      origin: {
-                        number: {
-                          x: player.currentPosition.cell.number.x,
-                          y: player.currentPosition.cell.number.y
-                        },
-                        center: {
-                          x: player.currentPosition.cell.center.x,
-                          y: player.currentPosition.cell.center.y
-                        },
-                      },
-                      destination: target.cell1.center
-                    }
-                    nextPosition = this.lineCrementer(player);
-                    player.nextPosition = nextPosition;
-
-                    if (
-                      this.mouseOverCell.state === true &&
-                      this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
-                      this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
-                    ) {
-                      this.clicked.player = undefined;
-                    }
-
-                  }
-                  else {
-
-                    player.stamina.current = 0;
-                    player.statusDisplay = {
-                      state: true,
-                      status: 'Out of Stamina',
-                      count: 0,
-                      limit: player.statusDisplay.limit,
-                    }
-
-                  }
-
-                }
-
-                if (target.cell1.free === false) {
-                  // console.log('here',player.direction);
-                }
-              }
-
-              // JUMPING!!
-              if (keyPressedDirection === player.direction && player.strafing.state === true && player.jumping.checking !== true && player.jumping.state !== true) {
-
-
-
-                this.players[player.number-1].jumping.checking = true;
-                let target = this.getTarget(player);
-
-                let myCell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y)
-                let cell1 = this.gridInfo.find(elem => elem.number.x === target.cell1.number.x && elem.number.y === target.cell1.number.y)
-                let cell2 = this.gridInfo.find(elem => elem.number.x === target.cell2.number.x && elem.number.y === target.cell2.number.y)
-                // console.log('cell1',cell1);
-                // console.log('cell2',cell2);
-
-                let cellsWithinBounds = true;
-                if (!cell1 || !cell2) {
-                  cellsWithinBounds = false;
-                } else {
-                  if (cell1.number.x < 0 || cell1.number.x > this.gridWidth) {
-                    cellsWithinBounds = false;
-                  }
-                  if (cell1.number.y < 0 || cell1.number.y > this.gridWidth) {
-                    cellsWithinBounds = false;
-                  }
-                }
-
-                if (cellsWithinBounds === true) {
-
-                  // CAN ONLY JUMP OVER HAZARDS, DEEP OR VOID
-                  if (
-                    cell1.void.state === true ||
-                    cell1.terrain.type === 'deep' ||
-                    cell1.terrain.type === 'hazard'
-                  ) {
-                    // console.log('a');
-
-                    // CHECK ALL 3 JUMPING CELLS FOR BARRIERS BASED ON POSITION
-                    let myCellBlocked = false;
-                    let cell1BarrierFacing = false;
-                    let cell2BarrierFacing = false;
-                    if (myCell.barrier.state === true && myCell.barrier.position === player.direction) {
-                      myCellBlocked = true;
-                    }
-                    if (cell1.barrier.state === true) {
-                      switch (cell1.barrier.position) {
-                        case 'north':
-                          if (
-                            player.direction === 'south' ||
-                            player.direction === 'north'
-                          ) {
-                            cell1BarrierFacing = true;
-                          }
-                          break;
-                        case 'south':
-                          if (
-                            player.direction === 'south' ||
-                            player.direction === 'north'
-                          ) {
-                            cell1BarrierFacing = true;
-                          }
-                          break;
-                        case 'east':
-                          if (
-                            player.direction === 'east' ||
-                            player.direction === 'west'
-                          ) {
-                            cell1BarrierFacing = true;
-                          }
-                          break;
-                        case 'west':
-                          if (
-                            player.direction === 'east' ||
-                            player.direction === 'west'
-                          ) {
-                            cell1BarrierFacing = true;
-                          }
-                          break;
-                        default:
-
-                      }
-                    }
-                    if (cell2.barrier.state === true) {
-                      switch (cell2.barrier.position) {
-                        case 'north':
-                          if (player.direction === 'south') {
-                            cell2BarrierFacing = true;
-                          }
-                          break;
-                        case 'south':
-                          if (player.direction === 'north') {
-                            cell2BarrierFacing = true;
-                          }
-                          break;
-                        case 'east':
-                          if (player.direction === 'west') {
-                            cell2BarrierFacing = true;
-                          }
-                          break;
-                        case 'west':
-                          if (player.direction === 'east') {
-                            cell2BarrierFacing = true;
-                          }
-                          break;
-                        default:
-
-                      }
-                    }
-
-                    if (
-                      cell1.obstacle.state !== true &&
-                      cell2.obstacle.state !== true &&
-                      cell1BarrierFacing !== true &&
-                      cell2BarrierFacing !== true &&
-                      myCellBlocked !== true
-                    ) {
-                      // console.log('no obstacles at jump destination');
-
-                      if (
-                        cell2.void.state !== true &&
-                        cell2.terrain.type !== 'deep'
-                      ) {
-
-
-                        if (player.stamina.current - this.staminaCostRef.jump >= 0) {
-
-                          // console.log('can jump',player.stamina.current);
-                          this.players[player.number-1].jumping.checking = false;
-                          this.players[player.number-1].jumping.state = true;
-                          player.action = 'jumping'
-                          player.stamina.current = player.stamina.current - this.staminaCostRef.jump;
-
-                          player.moving = {
-                            state: true,
-                            step: 0,
-                            course: '',
-                            origin: {
-                              number: player.currentPosition.cell.number,
-                              center: player.currentPosition.cell.center,
-                            },
-                            destination: target.cell2.center
-                          }
-
-                          nextPosition = this.lineCrementer(player);
-                          // nextPosition = this.jumpCrementer(player);
-                          player.nextPosition = nextPosition;
-
-                          // RESET CELL INFO PLAYER
-                          if (
-                            this.mouseOverCell.state === true &&
-                            this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
-                            this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
-                          ) {
-                            this.clicked.player = undefined;
-                          }
-
-                        }
-                        else {
-                          // this.getTarget(player);
-                          this.players[player.number-1].jumping.checking = false;
-                          player.action = 'idle';
-                          player.stamina.current = 0;
-                          player.statusDisplay = {
-                            state: true,
-                            status: 'Out of Stamina',
-                            count: 0,
-                            limit: player.statusDisplay.limit,
-                          }
-                        }
-
-                      } else {
-                        // console.log('can only jump over voids or deep water cell 2');
-                        this.players[player.number-1].jumping.checking = false;
-                      }
-
-
-                      // JUMPING INTO PLYR OCCUPIED CELL CAUSES OVERLAP PUSHBACK. IF NOT USE THE FOLLOWING
-                      // let targetOccupied = false;
-                      // for (const plyr of this.players) {
-                      //   if (
-                      //     plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
-                      //     plyr.currentPosition.cell.number.y === player.target.cell2.number.y
-                      //   ) {
-                      //     // console.log('c');
-                      //     targetOccupied = true
-                      //   }
-                      //
-                      // }
-                      //
-                      // if (targetOccupied !== true) {
-                      //   if (
-                      //     cell2.void.state !== true &&
-                      //     cell2.terrain.type !== 'deep'
-                      //   ) {
-                      //     // console.log('can jump');
-                      //     this.players[player.number-1].jumping.checking = false;
-                      //     this.players[player.number-1].jumping.state = true;
-                      //     player.action = 'jumping'
-                      //     player.stamina.current = player.stamina.current - this.staminaCostRef.jump;
-                      //
-                      //     player.moving = {
-                      //       state: true,
-                      //       step: 0,
-                      //       course: '',
-                      //       origin: {
-                      //         number: player.currentPosition.cell.number,
-                      //         center: player.currentPosition.cell.center,
-                      //       },
-                      //       destination: target.cell2.center
-                      //     }
-                      //
-                      //     nextPosition = this.lineCrementer(player);
-                      //     // nextPosition = this.jumpCrementer(player);
-                      //     player.nextPosition = nextPosition;
-                      //   } else {
-                      //     // console.log('can only jump over voids or deep water cell 2');
-                      //     this.players[player.number-1].jumping.checking = false;
-                      //   }
-                      // }
-                      // else {
-                      //   // console.log('jump destination occupied');
-                      //   this.players[player.number-1].jumping.checking = false;
-                      // }
-
-                    }
-                    else {
-                      // console.log('jump obstacle detected');
-                      this.players[player.number-1].jumping.checking = false;
-
-                      if (cell1.obstacle.state === true) {
-                        console.log("can't jump! obstacle in cell1");
-                      }
-                      if (cell2.obstacle.state === true) {
-                        console.log("can't jump! obstacle in cell2");
-                      }
-                      if (myCellBlocked === true) {
-                        console.log("can't jump! barrier in player cell blocking");
-                      }
-                      if (cell1BarrierFacing === true) {
-                        console.log("can't jump! barrier cell 1 blocking");
-                      }
-                      if (cell2BarrierFacing === true) {
-                        console.log("can't jump! barrier cell 2 blocking");
-                      }
-
-                    }
-                  } else {
-                    // console.log('can only jump over voids, hazards or deep water cell 2');
-                    this.players[player.number-1].jumping.checking = false;
-                  }
-                } else {
-                  // console.log('cell out of bounds');
-                  this.players[player.number-1].jumping.checking = false;
-                }
-
-              }
-
-            }
-
-          }
-        }
-
-
-        // CAN READ NON-MOVE INPUTS!!
-        if (player.strafing.state === false && player.turning.state !== true && player.postPull.state !== true) {
-
-          if (this.keyPressed[player.number-1].attack === true || this.keyPressed[player.number-1].defend === true) {
-
-            // ALREADY ATTACKING/DEFENDING!!
-            if (player.attacking.state === true || player.defending.state === true) {
-
-              if (this.keyPressed[player.number-1].attack === true) {
-                // console.log('already attacking');
-              }
-              if (this.keyPressed[player.number-1].defend === true) {
-                // console.log('already defending',player.number);
-              }
-            }
-
-
-            // START ATTACK/DEFEND!!
-            if (player.attacking.state === false && player.defending.state === false && player.defendDecay.state !== true) {
-
-              if (this.keyPressed[player.number-1].attack === true && player.success.deflected.state !== true && this.keyPressed[player.number-1].defend !== true) {
-
-                let atkType = player.currentWeapon.type;
-                let blunt = 'normal';
-                if (player.bluntAttack === true) {
-                  atkType = 'blunt';
-                  blunt = 'blunt';
-                }
-                if (player.currentWeapon.name === "") {
-                  atkType = 'unarmed';
-                }
-
-                // BLUNT ATTACK!!
-                if (this.keyPressed[player.number-1].dodge === true) {
-                  // console.log('start blunt attack');
-                  if (player.dodging.countState === true || player.dodging.state === true) {
-                    console.log('was dodging, now blunt attacking. cancel dodge. return dodge stamina');
-                    player.stamina.current += this.staminaCostRef.dodge.peak;
-                    player.dodging = {
-                      countState: false,
-                      state: false,
-                      count: 0,
-                      limit: 20,
-                      peak: {
-                        start: 5,
-                        end: 10,
-                      }
-                    };
-                  }
-                  player.bluntAttack = true;
-                  atkType = 'blunt';
-                }
-
-                player.action = 'attacking';
-                player.attacking = {
-                  state: true,
-                  count: 1,
-                  limit: player.attacking.limit,
-                }
-                // console.log('start attack');
-
-                if (plyrPullPushed === true) {
-                  breakPulledPushed = true;
-                }
-
-              }
-
-              if (this.keyPressed[player.number-1].defend === true && player.defendDecay.state !== true && this.keyPressed[player.number-1].attack !== true) {
-                // console.log('start defending',player.number);
-
-                // console.log('start defending');
-                if (plyrPullPushed === true) {
-                  breakPulledPushed = true;
-                }
-
-                if (player.defending.count === 0 && player.defendDecay.state !== true) {
-                  player.defending = {
-                    state: true,
-                    count: 1,
-                    limit: player.defending.limit,
-                  }
-
-                  if (!player.popups.find(x=>x.msg === 'preAction1')) {
-                    player.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 5,
-                        type: '',
-                        position: '',
-                        msg: 'preAction1',
-                        img: '',
-
-                      }
-                    )
-                  }
-
-                } else {
-                  // console.log('cant start defend. might already be in progress');
-                }
-
-
-              }
-            }
-          }
-
-          // DODGE START
-          else if (this.keyPressed[player.number-1].dodge === true) {
-            if (player.dodging.state !== true && player.dodging.countState !== true) {
-              // console.log('start dodge wind up');
-              player.dodging.countState = true;
-
-              if (plyrPullPushed === true) {
-                breakPulledPushed = true;
-              }
-
-            } else {
-              // console.log('already dodging');
-            }
-          }
-        }
-
-
-        // BREAK FROM PULLED, PUSHED COMPLETE
-        if (breakPulledPushed === true) {
-          console.log('player ',player.number,' was being pre-pulled/pushed by ',plyrPullPushedPlyr,' break pulling/pushing and deflect?');
-
-          let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
-          if (shouldDeflect === 1) {
-            this.players[plyrPullPushedPlyr-1].success.deflected = {
-              state: true,
-              count: 1,
-              limit: this.deflectedLengthRef.bluntAttacked,
-              predeflect: this.players[plyrPullPushedPlyr-1].success.deflected.predeflect,
-              type: 'blunt_attacked',
-            };
-            this.players[plyrPullPushedPlyr-1].action = "deflected";
-
-            if (this.aiDeflectedCheck.includes(this.players[player.target.cell1.occupant.player-1].number) !== true) {
-              this.aiDeflectedCheck.push(this.players[player.target.cell1.occupant.player-1].number)
-            }
-
-          }
-
-          // POPUPS
-          if (this.players[plyrPullPushedPlyr-1].prePush.state === true) {
-            if (!this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === "noPush")) {
-              this.players[plyrPullPushedPlyr-1].popups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit: 25,
-                  type: '',
-                  position: '',
-                  msg: 'noPush',
-                  img: '',
-                }
-              )
-            }
-
-            if (this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === 'prePush')) {
-              this.players[plyrPullPushedPlyr-1].popups.splice(this.players[plyrPullPushedPlyr-1].popups.findIndex(x=>x.msg === 'prePush'),1)
-            }
-            if (this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === 'noPush')) {
-              this.players[plyrPullPushedPlyr-1].popups.splice(this.players[plyrPullPushedPlyr-1].popups.findIndex(x=>x.msg === 'canPush'),1)
-            }
-
-
-          }
-          if (this.players[plyrPullPushedPlyr-1].prePull.state === true) {
-            if (!this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === "noPull")) {
-              this.players[plyrPullPushedPlyr-1].popups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit: 25,
-                  type: '',
-                  position: '',
-                  msg: 'noPull',
-                  img: '',
-                }
-              )
-            }
-
-            if (this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === 'prePull')) {
-              this.players[plyrPullPushedPlyr-1].popups.splice(this.players[plyrPullPushedPlyr-1].popups.findIndex(x=>x.msg === 'prePull'),1)
-            }
-            if (this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === 'canPull')) {
-              this.players[plyrPullPushedPlyr-1].popups.splice(this.players[plyrPullPushedPlyr-1].popups.findIndex(x=>x.msg === 'canPull'),1)
-            }
-
-
-          }
-
-          this.players[plyrPullPushedPlyr-1].pushing = {
-            state: false,
-            targetCell: undefined,
-            moveSpeed: 0,
-          };
-          this.players[plyrPullPushedPlyr-1].pulling = {
-            state: false,
-            targetCell: undefined,
-            moveSpeed: 0,
-          };
-          this.players[plyrPullPushedPlyr-1].prePush = {
-            state: false,
-            count: 0,
-            limit: this.players[plyrPullPushedPlyr-1].prePush.limit,
-            targetCell: undefined,
-            direction: "",
-            pusher: undefined,
-          };
-          this.players[plyrPullPushedPlyr-1].prePull = {
-            state: false,
-            count: 0,
-            limit: this.players[plyrPullPushedPlyr-1].prePull.limit,
-            targetCell: undefined,
-            direction: "",
-            puller: undefined,
-          };
-
-          if (this.players[plyrPullPushedPlyr-1].newPushPullDelay.state !== true) {
-            this.players[plyrPullPushedPlyr-1].newPushPullDelay.state = true
-          }
-
-
-
-          if (this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === 'prePush')) {
-            this.players[plyrPullPushedPlyr-1].popups.splice(this.players[plyrPullPushedPlyr-1].popups.findIndex(x=>x.msg === 'prePush'),1)
-          }
-          if (this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === 'prePull')) {
-            this.players[plyrPullPushedPlyr-1].popups.splice(this.players[plyrPullPushedPlyr-1].popups.findIndex(x=>x.msg === 'prePull'),1)
-          }
-
-
-        }
-
-
-      }
-
-
-      // DISPLAY ATTACK AND DEFENSE SUCCESS!
-      if (player.success.attackSuccess.state === true) {
-        if (player.success.attackSuccess.count < player.success.attackSuccess.limit) {
-          player.success.attackSuccess.count++
-        }
-        else if (player.success.attackSuccess.count >= player.success.attackSuccess.limit) {
-          player.success.attackSuccess = {
-            state: false,
-            count: 0,
-            limit: player.success.attackSuccess.limit
-          }
-        }
-      }
-      if (player.success.defendSuccess.state === true) {
-        if (player.success.defendSuccess.count < player.success.defendSuccess.limit) {
-          player.success.defendSuccess.count++
-        }
-        else if (player.success.defendSuccess.count >= player.success.defendSuccess.limit) {
-          player.success.defendSuccess = {
-            state: false,
-            count: 0,
-            limit: player.success.defendSuccess.limit
-          }
-        }
-      }
-
-    }
-    else {
-      // console.log('sorry no key presses right now. you are deflected');
-    }
-
-
-
-    // OBSTACLE
-    // MOVING & FALLING
-    for(const cell of this.gridInfo) {
-
-
-      if (cell.obstacle.state === true && cell.obstacle.moving.state === true && cell.obstacle.moving.falling.state !== true) {
-        // console.log('tracking moving obstacle',cell.obstacle.moving.origin);
-
-        let destCellRef = this.gridInfo.find(x => x.number.x === cell.obstacle.moving.destination.number.x && x.number.y === cell.obstacle.moving.destination.number.y)
-
-        let obstacleCrementObj = undefined;
-        if (!destCellRef) {
-          obstacleCrementObj = this.obstacleMoveCrementer(cell,{center:cell.obstacle.moving.destination.center});
-        }
-        else {
-          obstacleCrementObj = this.obstacleMoveCrementer(cell,destCellRef);
-        }
-
-
-
-        cell.obstacle.moving.nextPosition = obstacleCrementObj.pos;
-        cell.obstacle.moving.step = obstacleCrementObj.step;
-        nextPosition = obstacleCrementObj.pos;
-
-        let atDestRanges = [false,false,false,false];
-
-        let destRngIndx = undefined;
-        if (
-          nextPosition.x >= cell.obstacle.moving.destination.center.x-1 &&
-          nextPosition.x <= cell.obstacle.moving.destination.center.x+1 &&
-          nextPosition.y >= cell.obstacle.moving.destination.center.y-1 &&
-          nextPosition.y <= cell.obstacle.moving.destination.center.y+1
-        ) {
-          atDestRanges[0] = true;
-          destRngIndx = 0;
-        }
-        if (
-          nextPosition.x === cell.obstacle.moving.destination.center.x-0.25 &&
-          nextPosition.y === cell.obstacle.moving.destination.center.y+0.5
-        ) {
-          atDestRanges[1] = true;
-          destRngIndx = 1;
-        }
-        if (
-          nextPosition.x === cell.obstacle.moving.destination.center.x &&
-          nextPosition.y === cell.obstacle.moving.destination.center.y
-        ) {
-          atDestRanges[2] = true;
-          destRngIndx = 2;
-        }
-        if (
-          nextPosition.x === cell.obstacle.moving.destination.center.x-5 &&
-          nextPosition.y === cell.obstacle.moving.destination.center.y-5
-        ) {
-          atDestRanges[3] = true;
-          destRngIndx = 3;
-        }
-
-
-        for (const el of atDestRanges) {
-          if (el === true) {
-
-            let indx = atDestRanges.indexOf(el);
-            // console.log('obstacle at destination');
-
-            if (destCellRef) {
-              // console.log('obstacle at in bounds destination',cell.obstacle.moving.nextPosition);
-
-              let cell2 = cell;
-              let originLevelData = cell2.levelData.split("_");
-              originLevelData[1] = "*";
-
-              let originCellRef = this.gridInfo.find(x => x.number.x === cell.obstacle.moving.origin.number.x && x.number.y === cell.obstacle.moving.origin.number.y)
-              let destCellRef = this.gridInfo.find(x => x.number.x === cell.obstacle.moving.destination.number.x && x.number.y === cell.obstacle.moving.destination.number.y)
-
-
-              if (destCellRef.void.state === true || destCellRef.terrain.type === "deep") {
-
-                destCellRef.obstacle = {
-                  state: true,
-                  name: cell2.obstacle.name,
-                  type: cell2.obstacle.type,
-                  hp: cell2.obstacle.hp,
-                  destructible: cell2.obstacle.destructible,
-                  locked: cell2.obstacle.locked,
-                  weight: cell2.obstacle.weight,
-                  height: cell2.obstacle.height,
-                  items: cell2.obstacle.items,
-                  effects: cell2.obstacle.effects,
-                  moving: {
-                    state: false,
-                    step: 0,
-                    origin: {
-                      number: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                      center: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                    },
-                    destination: {
-                      number: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                      center: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                    },
-                    currentPosition: {
-                      x: undefined,
-                      y: undefined,
-                    },
-                    nextPosition: {
-                      x: destCellRef.center.x,
-                      y: destCellRef.center.y,
-                    },
-                    moveSpeed: 0,
-                    pushable: true,
-                    pushed: false,
-                    pusher: undefined,
-                    falling: {
-                      state: true,
-                      count: 0,
-                      limit: cell2.obstacle.moving.falling.limit,
-                    }
-                  }
-                };
-
-
-                destCellRef.obstacle.moving.nextPosition.x -= this.floorImageWidth/2;
-                destCellRef.obstacle.moving.nextPosition.y -= this.floorImageHeight/2;
-
-              }
-              if (destCellRef.void.state !== true && destCellRef.terrain.type !== "deep") {
-                destCellRef.obstacle = {
-                  state: true,
-                  name: cell2.obstacle.name,
-                  type: cell2.obstacle.type,
-                  hp: cell2.obstacle.hp,
-                  destructible: cell2.obstacle.destructible,
-                  locked: cell2.obstacle.locked,
-                  weight: cell2.obstacle.weight,
-                  height: cell2.obstacle.height,
-                  items: cell2.obstacle.items,
-                  effects: cell2.obstacle.effects,
-                  moving: {
-                    state: false,
-                    step: 0,
-                    origin: {
-                      number: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                      center: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                    },
-                    destination: {
-                      number: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                      center: {
-                        x: undefined,
-                        y: undefined,
-                      },
-                    },
-                    currentPosition: {
-                      x: undefined,
-                      y: undefined,
-                    },
-                    nextPosition: {
-                      x: undefined,
-                      y: undefined,
-                    },
-                    moveSpeed: 0,
-                    pushable: true,
-                    pushed: false,
-                    pusher: undefined,
-                    falling: cell2.obstacle.moving.falling,
-                  }
-                };
-              }
-
-              destCellRef.levelData = cell2.levelData;
-
-              originCellRef.obstacle = {
-                state: false,
-                name: '',
-                type: '',
-                hp: 0,
-                destructible: {
-                  state: false,
-                  weapons: [],
-                  leaveRubble: false,
-                },
-                locked: {
-                  state: false,
-                  key: '',
-                },
-                weight: 1,
-                height: 0.5,
-                items: [],
-                effects: [],
-                moving: {
-                  state: false,
-                  step: 0,
-                  origin: {
-                    number: {
-                      x: undefined,
-                      y: undefined,
-                    },
-                    center: {
-                      x: undefined,
-                      y: undefined,
-                    },
-                  },
-                  destination: {
-                    number: {
-                      x: undefined,
-                      y: undefined,
-                    },
-                    center: {
-                      x: undefined,
-                      y: undefined,
-                    },
-                  },
-                  currentPosition: {
-                    x: undefined,
-                    y: undefined,
-                  },
-                  nextPosition: {
-                    x: undefined,
-                    y: undefined,
-                  },
-                  moveSpeed: 0,
-                  pushable: true,
-                  pushed: false,
-                  pusher: undefined,
-                  falling: {
-                    state: false,
-                    count: 0,
-                    limit: 25,
-                  },
-                }
-              };
-              originCellRef.levelData = originLevelData.join("_");
-
-
-              for(const obs of this.obstacleBarrierToDestroy) {
-                if (originCellRef.number.x === obs.cell.number.x && originCellRef.number.y === obs.cell.number.y && destCellRef.void.state !== true) {
-                  this.obstacleBarrierToDestroy.push({
-                    type: 'obstacle',
-                    action: 'damage',
-                    count: 0,
-                    limit: 30,
-                    complete: false,
-                    cell: destCellRef,
-                  })
-                }
-              };
-
-              this.obstacleCheckDestination(destCellRef,player);
-
-
-            }
-            else {
-
-              // console.log('obstacle at out of bounds destination',cell.obstacle.moving.origin.center,cell.obstacle.moving.nextPosition);
-              let cell2 = cell;
-              let originLevelData = cell2.levelData.split("_");
-              originLevelData[1] = "*";
-
-
-              cell2.obstacle.moving.falling = {
-                state: true,
-                count: 0,
-                limit: cell2.obstacle.moving.falling.limit,
-              };
-
-
-              cell2.obstacle.moving.nextPosition.x -= this.floorImageWidth/2;
-              cell2.obstacle.moving.nextPosition.y -= this.floorImageHeight/2;
-
-              this.obstaclesOutOfBoundsFall.push(cell2.obstacle);
-
-              let originCellRef = this.gridInfo.find(x => x.number.x === cell.obstacle.moving.origin.number.x && x.number.y === cell.obstacle.moving.origin.number.y)
-
-
-              originCellRef.obstacle = {
-                state: false,
-                name: '',
-                type: '',
-                hp: 0,
-                destructible: {
-                  state: false,
-                  weapons: [],
-                  leaveRubble: false,
-                },
-                locked: {
-                  state: false,
-                  key: '',
-                },
-                weight: 1,
-                height: 0.5,
-                items: [],
-                effects: [],
-                moving: {
-                  state: false,
-                  step: 0,
-                  origin: {
-                    number: {
-                      x: undefined,
-                      y: undefined,
-                    },
-                    center: {
-                      x: undefined,
-                      y: undefined,
-                    },
-                  },
-                  destination: {
-                    number: {
-                      x: undefined,
-                      y: undefined,
-                    },
-                    center: {
-                      x: undefined,
-                      y: undefined,
-                    },
-                  },
-                  currentPosition: {
-                    x: undefined,
-                    y: undefined,
-                  },
-                  nextPosition: {
-                    x: undefined,
-                    y: undefined,
-                  },
-                  moveSpeed: 0,
-                  pushable: true,
-                  pushed: false,
-                  pusher: undefined,
-                  falling: {
-                    state: false,
-                    count: 0,
-                    limit: 25,
-                  },
-                }
-              };
-              originCellRef.levelData = originLevelData.join("_");
-
-            }
-
-
-            break;
-          }
-        }
-
-        // if (cell.obstacle.moving.step >= 1) {
-        //
-        // }
-
-      }
-
-      // step falling.count
-      if (cell.obstacle.state === true && cell.obstacle.moving.falling.state === true) {
-        // console.log('falling obstacle');
-        if (cell.obstacle.moving.falling.count < cell.obstacle.moving.falling.limit) {
-          cell.obstacle.moving.falling.count++;
-          // console.log('obstacle falling in bounds a count',cell.obstacle.moving.falling.count,'position',cell.obstacle.moving.nextPosition);
-        }
-        if (cell.obstacle.moving.falling.count >= cell.obstacle.moving.falling.limit) {
-          let cell2 = cell;
-          let levelData = cell2.levelData.split("_");
-          levelData[1] = "*";
-          cell.levelData = levelData.join("_");
-          cell.obstacle = {
-            state: false,
-            name: '',
-            type: '',
-            hp: 0,
-            destructible: {
-              state: false,
-              weapons: [],
-              leaveRubble: false,
-            },
-            locked: {
-              state: false,
-              key: '',
-            },
-            weight: 1,
-            height: 0.5,
-            items: [],
-            effects: [],
-            moving: {
-              state: false,
-              step: 0,
-              origin: {
-                number: {
-                  x: undefined,
-                  y: undefined,
-                },
-                center: {
-                  x: undefined,
-                  y: undefined,
-                },
-              },
-              destination: {
-                number: {
-                  x: undefined,
-                  y: undefined,
-                },
-                center: {
-                  x: undefined,
-                  y: undefined,
-                },
-              },
-              currentPosition: {
-                x: undefined,
-                y: undefined,
-              },
-              nextPosition: {
-                x: undefined,
-                y: undefined,
-              },
-              moveSpeed: 0,
-              pushable: true,
-              pushed: false,
-              pusher: undefined,
-              falling: {
-                state: false,
-                count: 0,
-                limit: 10,
-              },
-            }
-          };
-          // console.log('obstacle falling in bounds over');
-        }
-      }
-    }
-    for(const elem of this.obstaclesOutOfBoundsFall) {
-      if (elem.moving.falling.count < elem.moving.falling.limit) {
-        elem.moving.falling.count++;
-        // obstacle.moving.nextPosition.y += (obstacle.moving.falling.count*5)
-        // console.log('obstacle falling out of bounds a count',elem.moving.falling.count,'position',elem.moving.nextPosition);
-      }
-      if (elem.moving.falling.count >= elem.moving.falling.limit) {
-        // console.log('obstacle falling out of bounds over');
-        let index = this.obstaclesOutOfBoundsFall.indexOf(elem)
-        this.obstaclesOutOfBoundsFall.splice(index,1)
-      }
-    }
-    // OBSTACLE/BARRIER DAMAGE/DESTROY
-    for(const cell of this.obstacleBarrierToDestroy) {
-      if (cell.limit > 0) {
-        if (cell.count < cell.limit) {
-          cell.count++
-        }
-        else if (cell.count >= cell.limit) {
-          let index = this.obstacleBarrierToDestroy.indexOf(cell)
-          this.obstacleBarrierToDestroy.splice(index,1)
-        }
-      }
-    }
-
-    // ITEMS TO DROP
-    // -call itemdrop crementer and set position like w/ movement
-    for(const cell of this.obstacleItemsToDrop) {
-      if (cell.limit > 0) {
-        if (cell.count < cell.limit) {
-          cell.count++
-        }
-        else if (cell.count >= cell.limit) {
-          let index = this.obstacleItemsToDrop.indexOf(cell)
-          this.obstacleItemsToDrop.splice(index,1)
-        }
-      }
-    }
-
-    // ITEMS FALLING/SINKING
-
-
-
-    // STATUS DISPLAY STEPPER!!
-    if (player.statusDisplay.state === true && player.statusDisplay.count < player.statusDisplay.limit) {
-      // console.log('stepping status display');
-      player.statusDisplay.count++
-    }
-    else if (player.statusDisplay.state === true && player.statusDisplay.count >= player.statusDisplay.limit) {
-      // console.log('hide status display');
-      player.statusDisplay = {
-        state: false,
-        status: '',
-        count: 0,
-        limit: player.statusDisplay.limit,
-      }
-    }
-
-
-    // POPUPS
-    // Testing
-    if (this.time === 100 || this.time === 300) {
-
-
-      let newArray = [];
-      let x = 0;
-      let y = 0;
-      for (const [key, value] of Object.entries(this.popupImageRef)) {
-        newArray.push(key);
-      }
-      for (var i = 0; i < 20; i++) {
-        // if (
-        //   !player.popups.find(x => x.msg === newArray[i]) &&
-        //   // player.number === 2 &&
-        //   newArray[i] !==  "hpUp" &&
-        //   newArray[i] !==  "hpDown"
-        // ) {
-        //   player.popups.push(
-        //     {
-        //       state: false,
-        //       count: 0,
-        //       limit: 30,
-        //       type: '',
-        //       position: '',
-        //       msg: newArray[i],
-        //       img: '',
-        //       // cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
-        //     }
-        //   )
-        // }
-        // if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 1 && x.cell.number.y === 5)) {
-        //   this.cellPopups.push(
-        //     {
-        //       state: false,
-        //       count: 0,
-        //       limit: 35,
-        //       type: '',
-        //       position: '',
-        //       msg: newArray[i],
-        //       img: '',
-        //       cell: this.gridInfo.find(x => x.number.x === 1 && x.number.y === 5)
-        //     }
-        //   )
-        // }
-        // if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 4 && x.cell.number.y === 3)) {
-        //   this.cellPopups.push(
-        //     {
-        //       state: false,
-        //       count: 0,
-        //       limit: 35,
-        //       type: '',
-        //       position: '',
-        //       msg: newArray[i],
-        //       color: '',
-        //       img: '',
-        //       cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 3)
-        //     }
-        //   )
-        // }
-      };
-    }
-    //PLAYER
-    if (player.popups.length > 0) {
-
-      for (const popup of player.popups) {
-        let indx = player.popups.findIndex(x=>x===popup);
-        if (popup.state === true && popup.position !== "northWest") {
-          if (popup.limit > 0) {
-            if (popup.state === true && popup.count < popup.limit) {
-              popup.count++
-            }
-            if (popup.count >= popup.limit) {
-              player.popups.splice(indx,1)
-            }
-          }
-          if (popup.limit === 0) {
-            // check if the player state it relates to is true, if not remove it
-          }
-
-        }
-
-
-      }
-
-      let currentPopupCount = player.popups.filter(x=>x.state === true).length;
-      for (const popup2 of player.popups) {
-        if (currentPopupCount < 8) {
-          let indx = player.popups.findIndex(x=>x===popup2);
-          if (popup2.state === false) {
-            popup2.state = true;
-            currentPopupCount++;
-            // console.log('turn on new popup',popup2.msg);
-          }
-        } else {
-          // console.log('currentPopup display full..',popup2.msg);
-        }
-      }
-
-    }
-    // CELL
-    if (this.cellPopups.length > 0) {
-
-      for (const popup of this.cellPopups) {
-        let indx = this.cellPopups.findIndex(x=>x===popup);
-        if (popup.state === true) {
-          if (popup.limit > 0) {
-            if (popup.state === true && popup.count < popup.limit) {
-              popup.count++
-            }
-            if (popup.count >= popup.limit) {
-              this.cellPopups.splice(indx,1)
-            }
-          }
-          if (popup.limit === 0) {
-            // check if the player state it relates to is true, if not remove it
-          }
-
-        }
-
-
-      }
-
-      let currentPopupCount = this.cellPopups.filter(x=>x.state === true).length;
-      for (const popup2 of this.cellPopups) {
-        if (currentPopupCount < 8) {
-          let indx = this.cellPopups.findIndex(x=>x===popup2);
-          if (popup2.state === false) {
-            popup2.state = true;
-            currentPopupCount++;
-            // console.log('turn on new popup',popup2.msg);
-          }
-        } else {
-          // console.log('currentPopup display full..',popup2.msg);
-        }
-      }
-
-    }
-
-
-    // CAMERA
-    // SWITCH ON
-    if (this.setInitZoom.state === true) {
-
-
-        if (this.setInitZoom.gridWidth >= 12) {
-
-          if (this.setInitZoom.windowWidth < 1100) {
-
-            if ((this.camera.zoom.x-1) >= -.25) {
-
-              this.camera.zoom.x -= .04 ;
-              this.camera.zoom.y -= .04 ;
-              this.camera.zoomDirection = 'out';
-
-              let zoom = this.camera.zoom.x;
-              let diff = 1 - zoom;
-
-              this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
-              this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
-
-              // this.setCameraFocus('input',canvas, context, canvas2, context2);
-              this.findFocusCell('panToCell',{},canvas,context)
-            }
-
-            if ((this.camera.zoom.x-1) < -.25) {
-              this.setInitZoom.state = false;
-            }
-
-          }
-          if (this.setInitZoom.windowWidth > 1100) {
-
-          }
-        }
-
-        if (this.setInitZoom.gridWidth < 12) {
-
-          if (this.setInitZoom.windowWidth < 1100) {
-
-            if ((this.camera.zoom.x-1) >= -.05) {
-
-              this.camera.zoom.x -= .04 ;
-              this.camera.zoom.y -= .04 ;
-              this.camera.zoomDirection = 'out';
-
-              let zoom = this.camera.zoom.x;
-              let diff = 1 - zoom;
-
-              this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
-              this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
-
-              // this.setCameraFocus('input',canvas, context, canvas2, context2);
-              this.findFocusCell('panToCell',{},canvas,context)
-            }
-
-            if ((this.camera.zoom.x-1) < -.05) {
-              this.setInitZoom.state = false;
-            }
-
-          }
-
-        }
-
-    }
-    //INPUT MODE SWITCH
-    if (this.toggleCameraMode === false && this.camera.state === true) {
-      this.camera.startCount = 0;
-    }
-    if (this.camera.state === false && this.toggleCameraMode === false && this.camera.startCount >= this.camera.startLimit  && this.camera.instructionType === 'default') {
-      // console.log('welcome to camera mode');
-      this.camera.startCount = 0;
-      this.camera.state = true;
-      this.camera.fixed = true;
-    }
-    if (this.toggleCameraMode === true) {
-
-      let state = this.toggleCameraMode;
-      if (this.camera.state === false && state === true && this.camera.startCount < this.camera.startLimit) {
-
-        this.camera.startCount++;
-      }
-      if (this.camera.state === true && state === true && this.camera.startCount < this.camera.startLimit) {
-        // console.log('leaving camera mode ...');
-        this.camera.startCount++;
-      }
-      if (this.camera.state === true && state === true && this.camera.startCount >= this.camera.startLimit) {
-        // console.log('thank you for using the camera');
-        this.camera.startCount = 0;
-        this.camera.state = false;
-        this.camera.fixed = false;
-      }
-
-
-    }
-    //INDICATOR COUNTER
-    if (this.camera.limits.state.zoom === true || this.camera.limits.state.pan === true) {
-      if (this.camera.limits.state.count < this.camera.limits.state.limit) {
-        this.camera.limits.state.count++
-      }
-
-    };
-    if (this.camera.limits.state.zoom === true || this.camera.limits.state.pan === true) {
-      if (this.camera.limits.state.count >= this.camera.limits.state.limit) {
-        this.camera.limits.state.count = 0;
-        this.camera.limits.state.zoom = false;
-        this.camera.limits.state.pan = false;
-      }
-
-    };
-    //INPUT MODE CONTROLS
-    if (this.camera.state === true && this.camera.instructionType === 'default') {
-
-      let setFocus = false;
-      let setZoomPan = false;
-      let findFocusCell = false;
-
-
-      // IDLE ANIM STEPPER!
-      if (player.action === 'idle') {
-        // player.idleAnim.state = true
-        if (player.idleAnim.count < player.idleAnim.limit) {
-          // console.log('player.idleAnim.count',player.idleAnim.count);
-          player.idleAnim.count++
-
-        }
-        if (player.idleAnim.count >= player.idleAnim.limit) {
-          player.idleAnim.count = 0;
-          player.idleAnim.state = false;
-        }
-      }
-      else if (player.action !== 'idle') {
-        // player.idleAnim.state = false;
-        player.idleAnim.count = 0;
-      }
-
-
-      if (this.keyPressed[player.number-1].attack === true) {
-        // if mode is pan and x or y are outside threshold +/- 2, log pan value, special value = true
-        this.camera.mode = 'zoom';
-      }
-      if (this.keyPressed[player.number-1].defend === true) {
-        this.camera.mode = 'pan';
-      }
-
-      if (this.camera.mode === 'zoom') {
-
-        if (
-          this.keyPressed[player.number-1].north === true &&
-          this.keyPressed[player.number-1].south !== true &&
-          this.camera.zoom.x < this.camera.limits.zoom.max
-        ) {
-
-          this.camera.zoom.x += .02 ;
-          this.camera.zoom.y += .02 ;
-          this.camera.zoomDirection = 'in';
-          setFocus = true;
-          setZoomPan = true;
-
-          // console.log('zooming in');
-        }
-        if (this.keyPressed[player.number-1].north === true && this.camera.zoom.x >= this.camera.limits.zoom.max) {
-          this.camera.limits.state.zoom = true;
-          console.log('zoom in limit',this.camera.limits.state.zoom);
-
-        }
-        if (
-          this.keyPressed[player.number-1].south === true &&
-          this.keyPressed[player.number-1].north !== true &&
-          this.camera.zoom.x > this.camera.limits.zoom.min
-        ) {
-
-          this.camera.zoom.x -= .02 ;
-          this.camera.zoom.y -= .02 ;
-          this.camera.zoomDirection = 'out';
-          setFocus = true;
-          setZoomPan = true;
-
-          // console.log('zooming out');
-        }
-        if (this.keyPressed[player.number-1].south === true && this.camera.zoom.x <= this.camera.limits.zoom.min) {
-          console.log('zoom out limit');
-          this.camera.limits.state.zoom = true;
-        }
-
-      }
-
-      if (this.camera.mode === 'pan') {
-
-        // ONLY PAN IF CANT SEE WHOLE MAP
-        let canPan = false;
-        if (window.innerWidth < 1100) {
-          if (this.gridWidth >= 12) {
-            if (this.camera.zoom.x > .7) {
-              canPan = true;
-            }
-          } else {
-            if (this.camera.zoom.x > 1) {
-              canPan = true;
-            }
-          }
-        } else {
-          if (this.camera.zoom.x > 1) {
-            canPan = true;
-          }
-        }
-
-        if (canPan === true) {
-
-          if (
-            this.keyPressed[player.number-1].north === true &&
-            this.keyPressed[player.number-1].south !== true &&
-            this.keyPressed[player.number-1].east !== true &&
-            this.keyPressed[player.number-1].west !== true &&
-            this.camera.pan.y < this.camera.limits.pan.y.max
-          ) {
-            this.camera.pan.y += 10;
-            this.camera.adjustedPan.y += (10*this.camera.zoom.x);
-            this.camera.panDirection = 'north';
-            setFocus = true;
-            setZoomPan = true;
-            findFocusCell = true;
-
-            // console.log('panning north');
-
-          }
-          if (this.keyPressed[player.number-1].north === true && this.camera.pan.y >= this.camera.limits.pan.y.max) {
-            console.log('pan limit north');
-            this.camera.limits.state.pan = true;
-          }
-          if (
-            this.keyPressed[player.number-1].south === true &&
-            this.keyPressed[player.number-1].north !== true &&
-            this.keyPressed[player.number-1].west !== true &&
-            this.keyPressed[player.number-1].east !== true &&
-            this.camera.pan.y > this.camera.limits.pan.y.min
-          ) {
-            this.camera.pan.y -= 10;
-            this.camera.adjustedPan.y -= (10*this.camera.zoom.x);
-            this.camera.panDirection = 'south';
-            setFocus = true;
-            setZoomPan = true;
-            findFocusCell = true;
-
-            // console.log('panning south');
-
-          }
-          if (this.keyPressed[player.number-1].south === true && this.camera.pan.y <= this.camera.limits.pan.y.min) {
-            console.log('pan limit south');
-            this.camera.limits.state.pan = true;
-          }
-          if (
-            this.keyPressed[player.number-1].east === true &&
-            this.keyPressed[player.number-1].west !== true &&
-            this.keyPressed[player.number-1].north !== true &&
-            this.keyPressed[player.number-1].south !== true &&
-            this.camera.pan.x > this.camera.limits.pan.x.min
-          ) {
-            this.camera.pan.x -= 10;
-            this.camera.adjustedPan.x -= (10*this.camera.zoom.x);
-            this.camera.panDirection = 'east';
-            setFocus = true;
-            setZoomPan = true;
-            findFocusCell = true;
-
-            // console.log('panning east');
-          }
-          if (this.keyPressed[player.number-1].east === true && this.camera.pan.x <= this.camera.limits.pan.x.min) {
-            console.log('pan limit east');
-            this.camera.limits.state.pan = true;
-          }
-          if (
-            this.keyPressed[player.number-1].west === true &&
-            this.keyPressed[player.number-1].east !== true &&
-            this.keyPressed[player.number-1].north !== true &&
-            this.keyPressed[player.number-1].south !== true &&
-            this.camera.pan.x < this.camera.limits.pan.x.max
-          ) {
-            this.camera.pan.x += 10;
-            this.camera.adjustedPan.x += (10*this.camera.zoom.x);
-            this.camera.panDirection = 'west';
-            setFocus = true;
-            setZoomPan = true;
-            findFocusCell = true;
-
-            // console.log('panning west');
-          }
-          if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
-            console.log('pan limit west');
-            this.camera.limits.state.pan = true;
-          }
-
-        } else {
-          // console.log('cant pan at this zoom');
-          // this.camera.limits.state.pan = true;
-
-          if (
-            this.keyPressed[player.number-1].north === true ||
-            this.keyPressed[player.number-1].south === true ||
-            this.keyPressed[player.number-1].east === true ||
-            this.keyPressed[player.number-1].west === true
-          ) {
-            this.camera.limits.state.pan = true;
-          }
-        }
-      }
-
-
-      // ADJUST PAN WHEN ZOOMING TO KEEP CENTERED
-      if (setZoomPan === true) {
-        let zoom = this.camera.zoom.x;
-
-
-        // if mode is zoom
-
-
-        let diff;
-        if (zoom === 1) {
-
-          this.camera.pan.x = -1;
-          this.camera.pan.y = -1;
-          this.camera.zoomFocusPan.x = -1;
-          this.camera.zoomFocusPan.y = -1;
-          this.camera.adjustedPan.x = -1;
-          this.camera.adjustedPan.y = -1;
-
-          this.camera.focus.x = (canvas.width/2);
-          this.camera.focus.y = (canvas.height/2);
-
-        }
-
-
-        // ZOOMING IN & OUT ABOVE THRESHOLD
-        if (zoom < 1) {
-
-          diff = 1 - zoom;
-
-          this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
-          this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
-
-        }
-
-
-        // ZOOMING BELOW THRESHOLD
-        if (zoom > 1) {
-
-          diff = zoom - 1;
-          let diffx;
-          let diffy;
-
-          if (this.camera.mode === 'pan') {
-
-            this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
-            this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
-
-          }
-          if (this.camera.mode === 'zoom') {
-
-            // ZOOM INTO WHAT CAMERA IS CENTERED ON (MAGIC FORMULA!!!)
-            if (this.camera.zoomDirection === "in") {
-
-              this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
-              this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
-
-            }
-
-            // WHEN ZOOMING OUT INSIDE THRESHOLD, TEND TOWARDS A CENTER ALIGNMENT
-            if (this.camera.zoomDirection === "out") {
-
-
-              // ADJUST PAN INCREMENT FOR ZOOM OUT CENTERING
-
-              if (this.camera.pan.x > -1) {
-                this.camera.pan.x -= 6;
-                // this.camera.adjustedPan.x -= (this.camera.pan.x*(this.camera.zoom.x-1));
-                // this.camera.adjustedPan.x -= (6*(this.camera.zoom.x-1));
-                this.camera.adjustedPan.x -= (3*(this.camera.zoom.x-1));
-                // this.camera.adjustedPan.x -= (6*this.camera.zoom.x);
-                this.camera.panDirection = 'east';
-                setFocus = true;
-              }
-              if (this.camera.pan.x < -1) {
-                this.camera.pan.x += 6;
-                // this.camera.adjustedPan.x += (this.camera.pan.x*(this.camera.zoom.x-1));
-                // this.camera.adjustedPan.x += (6*(this.camera.zoom.x-1));
-                this.camera.adjustedPan.x += (3*(this.camera.zoom.x-1));
-                // this.camera.adjustedPan.x += (6*this.camera.zoom.x);
-                this.camera.panDirection = 'west';
-                setFocus = true;
-              }
-              if (this.camera.pan.y < -1) {
-                this.camera.pan.y += 3.5;
-                // this.camera.adjustedPan.y += (this.camera.pan.y*(this.camera.zoom.x-1));
-                // this.camera.adjustedPan.y += (3.5*(this.camera.zoom.x-1));
-                // this.camera.adjustedPan.y += (1.5*this.camera.zoom.x);
-                this.camera.adjustedPan.y += (1.5*(this.camera.zoom.x-1));
-                // this.camera.adjustedPan.y += (3.5*this.camera.zoom.x);
-                this.camera.panDirection = 'north';
-                setFocus = true;
-              }
-              if (this.camera.pan.y > -1) {
-                this.camera.pan.y -= 3.5;
-                // this.camera.adjustedPan.y -= (this.camera.pan.y*(this.camera.zoom.x-1));
-                // this.camera.adjustedPan.y -= (3.5*(this.camera.zoom.x-1));
-                // this.camera.adjustedPan.y -= (1.5*this.camera.zoom.x);
-                this.camera.adjustedPan.y -= (1.5*(this.camera.zoom.x-1));
-                // this.camera.adjustedPan.y -= (3.5*this.camera.zoom.x);
-                this.camera.panDirection = 'south';
-                setFocus = true;
-              }
-
-              // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)-((this.camera.adjustedPan.x+this.camera.pan.x)*(1-zoom));
-              // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)-((this.camera.adjustedPan.y+this.camera.pan.y)*(1-zoom));
-
-
-              this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
-              this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
-
-              findFocusCell = true;
-
-            }
-
-          }
-
-
-
-
-        }
-
-        // console.log('ZFP!',this.camera.zoomFocusPan.x.toFixed(2),',',this.camera.zoomFocusPan.y.toFixed(2));
-
-      }
-
-
-      //SET CAMERA FOCUS
-      if (setFocus === true) {
-        // this.setCameraFocus('input',canvas, context, canvas2, context2);
-      }
-
-      if (findFocusCell) {
-        this.findFocusCell('panToCell',{},canvas,context)
-      }
-
-
-    };
-    // RESET
-    if (this.resetCameraSwitch === true) {
-      // console.log('resetting camera');
-
-      this.resetCameraSwitch = false;
-      this.camera = {
-        state: true,
-        startCount: 0,
-        startLimit: 4,
-        mode: 'pan',
-        fixed: false,
-        target: {
-          type: 'player',
-          plyrNo: 1,
-          cell: {
-            x: undefined,
-            y: undefined,
-          }
-        },
-        focus: {
-          x: undefined,
-          y: undefined,
-        },
-        focusCell: {
-          x: this.camera.focusCell.x,
-          y: this.camera.focusCell.y,
-        },
-        cellToPanOrigin: {
-          x: undefined,
-          y: undefined,
-        },
-        zoom: {
-          x: 1,
-          y: 1,
-        },
-        zoomDirection: 'in',
-        pan: {
-          x: 1,
-          y: 1,
-        },
-        panDirection: 'east',
-        zoomFocusPan: {
-          x: -1,
-          y: -1,
-        },
-        adjustedPan: {
-          x: 1,
-          y: 1,
-        },
-        limits: {
-          zoom: {
-            min: .5,
-            max: 2.5,
-          },
-          pan: {
-            x: {
-              min: -700,
-              max: 600,
-            },
-            y: {
-              min: -700,
-              max: 600,
-            }
-          },
-          state: {
-            count: 0,
-            limit: 10,
-            zoom: false,
-            pan: false,
-          }
-        },
-        instructionType: 'default',
-        currentPreInstruction: 0,
-        preInstructions: [],
-        currentInstruction: 0,
-        instructions: [],
-      };
-
-
-
-      // this.setCameraFocus('reset', canvas, context, canvas2, context2);
-
-    };
-    // AUTO CAMERA
-    if (this.camera.state !== true && this.camera.fixed !== true) {
-
-      if (this.camera.instructionType === 'default') {
-
-        // PRE/RAW INSTRUCTIONS!!
-        if (this.camera.preInstructions.length > 0  && this.camera.instructions.length === 0 ) {
-          // console.log('step through auto camera pre instructions',this.camera.preInstructions);
-
-          let preInstruction = this.camera.preInstructions[this.camera.currentPreInstruction];
-          // let indx = this.camera.preInstructions.indexOf(preInstruction)
-          let focusCell = {
-            x: undefined,
-            y: undefined,
-          }
-          // console.log('Step through pre instructions...','preInstructions',preInstruction);
-
-          switch (preInstruction.split("_")[0]) {
-            case 'moveTo':
-
-            let speed = preInstruction.split("_")[3];
-              if (preInstruction.split("_")[0] === "moveTo") {
-                focusCell.x = parseInt(preInstruction.split("_")[1])
-                focusCell.y = parseInt(preInstruction.split("_")[2])
-
-                this.findFocusCell('cellToPan',focusCell,canvas,context,speed)
-
-              }
-            break;
-            case 'zoom':
-              this.camera.instructions.push(
-                {
-                  action:'zoom_'+preInstruction.split("_")[1],
-                  action2:'',
-                  count: 0,
-                  count2: 0,
-                  limit: parseInt(preInstruction.split("_")[2]),
-                  limit2: 0,
-                  speed: "",
-                }
-              )
-            break;
-            case 'waitFor':
-
-              this.camera.instructions.push(
-                {
-                  action:'wait',
-                  action2:'',
-                  count: 0,
-                  count2: 0,
-                  limit: parseInt(preInstruction.split("_")[1]),
-                  limit2: 0,
-                  speed: "",
-                }
-              )
-
-            break;
-          }
-
-          if (this.camera.currentPreInstruction ===  this.camera.preInstructions.length-1) {
-            // console.log('this is the last preInstruction. Empty array');
-            this.camera.preInstructions = [];
-            this.camera.currentPreInstruction = 0;
-            // console.log('camera instructions',this.camera.instructions);
-          } else {
-            this.camera.currentPreInstruction++;
-          }
-
-        }
-
-
-        // PARSED INSTRUCTIONS!
-        if (this.camera.instructions.length > 0 && this.camera.currentInstruction < this.camera.instructions.length) {
-          // console.log('stepping through all instructions... current',this.camera.currentInstruction,this.camera.instructions[this.camera.currentInstruction]);
-
-          if (this.camera.instructions[this.camera.currentInstruction].speed === 'fast') {
-
-            if (this.camera.instructions[this.camera.currentInstruction].count < this.camera.instructions[this.camera.currentInstruction].limit) {
-
-              if (this.camera.instructions[this.camera.currentInstruction].action === 'wait') {
-
-                  // console.log('single instruction: auto camera waiting. count:',this.camera.instructions[this.camera.currentInstruction].count);
-                  this.camera.instructions[this.camera.currentInstruction].count++;
-
-              } else {
-
-
-                for (var i = 0; i < this.camera.instructions[this.camera.currentInstruction].limit; i++) {
-                    // console.log('single instruction: auto camera',this.camera.instructions[this.camera.currentInstruction].action,' count:',this.camera.instructions[this.camera.currentInstruction].count);
-
-                    if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'pan') {
-                      // console.log('auto camera panning/moving',this.camera.instructions[this.camera.currentInstruction].count);
-
-                      if (this.camera.zoom.x <= 1) {
-
-
-                        // this.camera.instructions[this.camera.currentInstruction]
-                        // this.camera.currentInstruction--;
-
-                        // console.log('moving zoom to panable amount');
-                        this.camera.zoom.x += .04 ;
-                        this.camera.zoom.y += .04 ;
-                        this.camera.zoomDirection = 'in';
-
-                        let zoom = this.camera.zoom.x;
-                        let diff = 1 - zoom;
-
-                        this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
-                        this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
-
-                        // this.setCameraFocus('input',canvas, context, canvas2, context2);
-                        this.findFocusCell('panToCell',{},canvas,context)
-
-                      }
-
-                      // console.log('single instruction: adjusting pan x/y -/+ based on direction');
-
-                      switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
-                        case 'north':
-                          this.camera.pan.y += 1;
-                          this.camera.adjustedPan.y += (1*this.camera.zoom.x);
-                          this.camera.panDirection = 'north';
-                        break;
-                        case 'south':
-                        this.camera.pan.y -= 1;
-                        this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
-                        this.camera.panDirection = 'south';
-                        break;
-                        case 'east':
-                          this.camera.pan.x -= 1;
-                          this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
-                          this.camera.panDirection = 'east';
-                        break;
-                        case 'west':
-                          this.camera.pan.x += 1;
-                          this.camera.adjustedPan.x += (1*this.camera.zoom.x);
-                          this.camera.panDirection = 'west';
-                        break;
-                      }
-
-                      let zoom = this.camera.zoom.x;
-                      this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
-                      this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
-
-                      // this.setCameraFocus('input',canvas, context, canvas2, context2);
-                      this.findFocusCell('panToCell',{},canvas,context)
-
-                      if (this.camera.instructions[this.camera.currentInstruction].count === this.camera.instructions[this.camera.currentInstruction].limit) {
-                        // console.log('last count on pan instruction',this.camera.instructions[this.camera.currentInstruction].dest);
-                      }
-
-                    }
-                    if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'zoom') {
-                      // console.log('single instruction: adjusting zoom x -/+ based on direction',this.camera.instructions[this.camera.currentInstruction].count,this.camera.instructions[this.camera.currentInstruction].limit);
-
-                      switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
-                        case 'in':
-                          this.camera.zoom.x += .02 ;
-                          this.camera.zoom.y += .02 ;
-                          this.camera.zoomDirection = 'in';
-                        break;
-                        case 'out':
-                          this.camera.zoom.x -= .02 ;
-                          this.camera.zoom.y -= .02 ;
-                          this.camera.zoomDirection = 'out';
-                        break;
-                      }
-
-                      // ZOOMING IN & OUT ABOVE THRESHOLD
-                      let zoom = this.camera.zoom.x;
-                      if (zoom < 1) {
-
-                        let diff = 1 - zoom;
-
-                        this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
-                        this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
-
-                      }
-
-
-                      // ZOOMING BELOW THRESHOLD
-                      if (zoom > 1) {
-
-                        let diff = zoom - 1;
-                        let diffx;
-                        let diffy;
-
-                        // ZOOM INTO WHAT CAMERA IS CENTERED ON (MAGIC FORMULA!!!)
-                        if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1] === "in") {
-
-                          this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
-                          this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
-
-                        }
-
-                        // WHEN ZOOMING OUT INSIDE THRESHOLD, TEND TOWARDS A CENTER ALIGNMENT
-                        if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1] === "out") {
-
-
-                          // ADJUST PAN INCREMENT FOR ZOOM OUT CENTERING
-                          if (this.camera.pan.x > -1) {
-                            this.camera.pan.x -= 6;
-                            this.camera.adjustedPan.x -= (3*(this.camera.zoom.x-1));
-                            this.camera.panDirection = 'east';
-                          }
-                          if (this.camera.pan.x < -1) {
-                            this.camera.pan.x += 6;
-                            this.camera.adjustedPan.x += (3*(this.camera.zoom.x-1));
-                            this.camera.panDirection = 'west';
-                          }
-                          if (this.camera.pan.y < -1) {
-                            this.camera.pan.y += 3.5;
-                            this.camera.adjustedPan.y += (1.5*(this.camera.zoom.x-1));
-                            this.camera.panDirection = 'north';
-                          }
-                          if (this.camera.pan.y > -1) {
-                            this.camera.pan.y -= 3.5;
-                            this.camera.adjustedPan.y -= (1.5*(this.camera.zoom.x-1));
-                            this.camera.panDirection = 'south';
-                          }
-
-                          // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)-((this.camera.adjustedPan.x+this.camera.pan.x)*(1-zoom));
-                          // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)-((this.camera.adjustedPan.y+this.camera.pan.y)*(1-zoom));
-
-                          this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
-                          this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
-
-                        }
-
-                      }
-
-                      // this.setCameraFocus('input',canvas, context, canvas2, context2);
-                      this.findFocusCell('panToCell',{},canvas,context)
-
-                    }
-                    this.camera.instructions[this.camera.currentInstruction].count++;
-
-                }
-              }
-
-            }
-            else if (
-              this.camera.instructions[this.camera.currentInstruction].count >= this.camera.instructions[this.camera.currentInstruction].limit
-            ) {
-
-              if (this.camera.instructions[this.camera.currentInstruction].action2 === "" && this.camera.currentInstruction < this.camera.instructions.length) {
-                // console.log('single instruction finished w/ no secondaries. step to next instruction');
-                this.camera.currentInstruction++;
-              }
-
-            }
-
-            if (
-              this.camera.instructions[this.camera.currentInstruction] &&
-              this.camera.instructions[this.camera.currentInstruction].action2 !== "" &&
-              this.camera.instructions[this.camera.currentInstruction].count2 < this.camera.instructions[this.camera.currentInstruction].limit2
-            ) {
-
-              for (var i = 0; i < this.camera.instructions[this.camera.currentInstruction].limit2; i++) {
-                // console.log('single instruction2: auto camera',this.camera.instructions[this.camera.currentInstruction].action2,' count:',this.camera.instructions[this.camera.currentInstruction].count2);
-
-                switch (this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1]) {
-                  case 'north':
-                    this.camera.pan.y += 1;
-                    this.camera.adjustedPan.y += (1*this.camera.zoom.x);
-                    this.camera.panDirection = 'north';
-                  break;
-                  case 'south':
-                  this.camera.pan.y -= 1;
-                  this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
-                  this.camera.panDirection = 'south';
-                  break;
-                  case 'east':
-                    this.camera.pan.x -= 1;
-                    this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
-                    this.camera.panDirection = 'east';
-                  break;
-                  case 'west':
-                    this.camera.pan.x += 1;
-                    this.camera.adjustedPan.x += (1*this.camera.zoom.x);
-                    this.camera.panDirection = 'west';
-                  break;
-                }
-                let zoom = this.camera.zoom.x;
-                this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
-                this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
-
-                // this.setCameraFocus('input',canvas, context, canvas2, context2);
-                this.findFocusCell('panToCell',{},canvas,context)
-                this.camera.instructions[this.camera.currentInstruction].count2++;
-
-              }
-
-            }
-            else if (
-              this.camera.instructions[this.camera.currentInstruction] &&
-              this.camera.instructions[this.camera.currentInstruction].action2 !== "" &&
-              this.camera.instructions[this.camera.currentInstruction].count2 >= this.camera.instructions[this.camera.currentInstruction].limit2
-            ) {
-
-              this.camera.currentInstruction++;
-
-            }
-
-          }
-
-          if (this.camera.instructions[this.camera.currentInstruction]) {
-
-
-          if (
-            this.camera.instructions[this.camera.currentInstruction].speed === 'slow' ||
-            this.camera.instructions[this.camera.currentInstruction].speed === ''
-          ) {
-
-            if (this.camera.instructions[this.camera.currentInstruction].count < this.camera.instructions[this.camera.currentInstruction].limit) {
-              // console.log('step through a single instruction',this.camera.instructions[this.camera.currentInstruction],'count',this.camera.instructions[this.camera.currentInstruction].count);
-
-              if (this.camera.instructions[this.camera.currentInstruction].action === 'wait') {
-                // console.log('single instruction: auto camera waiting');
-              }
-              if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'pan') {
-                // console.log('auto camera panning/moving',this.camera.instructions[this.camera.currentInstruction].count);
-
-                if (this.camera.zoom.x <= 1) {
-
-
-                  // this.camera.instructions[this.camera.currentInstruction]
-                  // this.camera.currentInstruction--;
-
-                  // console.log('moving zoom to panable amount');
-                  this.camera.zoom.x += .04 ;
-                  this.camera.zoom.y += .04 ;
-                  this.camera.zoomDirection = 'in';
-
-                  let zoom = this.camera.zoom.x;
-                  let diff = 1 - zoom;
-
-                  this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
-                  this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
-
-                  // this.setCameraFocus('input',canvas, context, canvas2, context2);
-                  this.findFocusCell('panToCell',{},canvas,context)
-
-                }
-
-                // console.log('single instruction: adjusting pan x/y -/+ based on direction');
-
-                switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
-                  case 'north':
-                    this.camera.pan.y += 1;
-                    this.camera.adjustedPan.y += (1*this.camera.zoom.x);
-                    this.camera.panDirection = 'north';
-                  break;
-                  case 'south':
-                  this.camera.pan.y -= 1;
-                  this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
-                  this.camera.panDirection = 'south';
-                  break;
-                  case 'east':
-                    this.camera.pan.x -= 1;
-                    this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
-                    this.camera.panDirection = 'east';
-                  break;
-                  case 'west':
-                    this.camera.pan.x += 1;
-                    this.camera.adjustedPan.x += (1*this.camera.zoom.x);
-                    this.camera.panDirection = 'west';
-                  break;
-                }
-
-                let zoom = this.camera.zoom.x;
-                this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
-                this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
-
-                // this.setCameraFocus('input',canvas, context, canvas2, context2);
-                this.findFocusCell('panToCell',{},canvas,context)
-
-                if (this.camera.instructions[this.camera.currentInstruction].count === this.camera.instructions[this.camera.currentInstruction].limit) {
-                  // console.log('last count on pan instruction',this.camera.instructions[this.camera.currentInstruction].dest);
-                }
-
-              }
-              if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'zoom') {
-                // console.log('single instruction: adjusting zoom x -/+ based on direction',this.camera.instructions[this.camera.currentInstruction].count,this.camera.instructions[this.camera.currentInstruction].limit);
-
-                switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
-                  case 'in':
-                    this.camera.zoom.x += .02 ;
-                    this.camera.zoom.y += .02 ;
-                    this.camera.zoomDirection = 'in';
-                  break;
-                  case 'out':
-                    this.camera.zoom.x -= .02 ;
-                    this.camera.zoom.y -= .02 ;
-                    this.camera.zoomDirection = 'out';
-                  break;
-                }
-
-                // ZOOMING IN & OUT ABOVE THRESHOLD
-                let zoom = this.camera.zoom.x;
-                if (zoom < 1) {
-
-                  let diff = 1 - zoom;
-
-                  this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
-                  this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
-
-                }
-
-
-                // ZOOMING BELOW THRESHOLD
-                if (zoom > 1) {
-
-                  let diff = zoom - 1;
-                  let diffx;
-                  let diffy;
-
-                  // ZOOM INTO WHAT CAMERA IS CENTERED ON (MAGIC FORMULA!!!)
-                  if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1] === "in") {
-
-                    this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
-                    this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
-
-                  }
-
-                  // WHEN ZOOMING OUT INSIDE THRESHOLD, TEND TOWARDS A CENTER ALIGNMENT
-                  if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1] === "out") {
-
-
-                    // ADJUST PAN INCREMENT FOR ZOOM OUT CENTERING
-                    if (this.camera.pan.x > -1) {
-                      this.camera.pan.x -= 6;
-                      this.camera.adjustedPan.x -= (3*(this.camera.zoom.x-1));
-                      this.camera.panDirection = 'east';
-                    }
-                    if (this.camera.pan.x < -1) {
-                      this.camera.pan.x += 6;
-                      this.camera.adjustedPan.x += (3*(this.camera.zoom.x-1));
-                      this.camera.panDirection = 'west';
-                    }
-                    if (this.camera.pan.y < -1) {
-                      this.camera.pan.y += 3.5;
-                      this.camera.adjustedPan.y += (1.5*(this.camera.zoom.x-1));
-                      this.camera.panDirection = 'north';
-                    }
-                    if (this.camera.pan.y > -1) {
-                      this.camera.pan.y -= 3.5;
-                      this.camera.adjustedPan.y -= (1.5*(this.camera.zoom.x-1));
-                      this.camera.panDirection = 'south';
-                    }
-
-                    // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)-((this.camera.adjustedPan.x+this.camera.pan.x)*(1-zoom));
-                    // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)-((this.camera.adjustedPan.y+this.camera.pan.y)*(1-zoom));
-
-                    this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
-                    this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
-
-                  }
-
-                }
-
-                // this.setCameraFocus('input',canvas, context, canvas2, context2);
-                this.findFocusCell('panToCell',{},canvas,context)
-
-              }
-
-              this.camera.instructions[this.camera.currentInstruction].count++;
-
-            }
-            else if (
-              this.camera.instructions[this.camera.currentInstruction].count >= this.camera.instructions[this.camera.currentInstruction].limit
-            ) {
-
-              // if (this.camera.instructions[this.camera.currentInstruction].action2 === "") {
-              if (this.camera.instructions[this.camera.currentInstruction].action2 === "" && this.camera.currentInstruction < this.camera.instructions.length) {
-                // console.log('single instruction finished w/ no secondaries. step to next instruction');
-                this.camera.currentInstruction++;
-              }
-
-            }
-
-            if (
-              this.camera.instructions[this.camera.currentInstruction] &&
-              this.camera.instructions[this.camera.currentInstruction].action2 !== "" &&
-              this.camera.instructions[this.camera.currentInstruction].count2 < this.camera.instructions[this.camera.currentInstruction].limit2
-            ) {
-
-              // console.log('step through a single secondary instruction',this.camera.instructions[this.camera.currentInstruction],'count2',this.camera.instructions[this.camera.currentInstruction].count2);
-
-              switch (this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1]) {
-                case 'north':
-                  this.camera.pan.y += 1;
-                  this.camera.adjustedPan.y += (1*this.camera.zoom.x);
-                  this.camera.panDirection = 'north';
-                break;
-                case 'south':
-                this.camera.pan.y -= 1;
-                this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
-                this.camera.panDirection = 'south';
-                break;
-                case 'east':
-                  this.camera.pan.x -= 1;
-                  this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
-                  this.camera.panDirection = 'east';
-                break;
-                case 'west':
-                  this.camera.pan.x += 1;
-                  this.camera.adjustedPan.x += (1*this.camera.zoom.x);
-                  this.camera.panDirection = 'west';
-                break;
-              }
-
-              let zoom = this.camera.zoom.x;
-              this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
-              this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
-
-              // this.setCameraFocus('input',canvas, context, canvas2, context2);
-              this.findFocusCell('panToCell',{},canvas,context)
-
-              this.camera.instructions[this.camera.currentInstruction].count2++;
-            }
-            else if (
-              this.camera.instructions[this.camera.currentInstruction] &&
-              this.camera.instructions[this.camera.currentInstruction].action2 !== "" &&
-              this.camera.instructions[this.camera.currentInstruction].count2 >= this.camera.instructions[this.camera.currentInstruction].limit2
-            ) {
-
-              // if (this.camera.instructions[this.camera.currentInstruction].action2 !== "") {
-              // if (this.camera.currentInstruction < this.camera.instructions.length-1) {
-                // console.log('single secondary instruction finished. step to next instruction');
-                this.camera.currentInstruction++;
-              // }
-
-            }
-
-          }
-          }
-
-
-          // }
-          if (this.camera.currentInstruction >= this.camera.instructions.length) {
-            console.log('finished camera instructions');
-            this.camera.instructions = [];
-            this.camera.currentInstruction = 0;
-            this.settingAutoCamera = false;
-          }
-
-
-        }
-
-      }
-
-      if (this.camera.instructionType === 'story') {
-
-        // if there are nstructions, execute and step instructions.count, remove from array
-        //
-        // use a cameraInstructionRef to adjust the camera values accordingly, and push to this.camera.instructions
-        //
-        // if this is the last instruction, set the instructionType back to default
-
-      }
-
-    }
-
-
-    // MENU
-    // add count up then turn on
-    if (player.ai.state !== true && this.keyPressed[player.number-1].cycleWeapon === true && this.keyPressed[player.number-1].cycleArmor === true) {
-      // toggle the menu here
-    }
-
-
-    // // CHECK PROJECTILES!!
-    for (const bolt of this.projectiles) {
-      if (bolt.kill === true) {
-        let index = this.projectiles.findIndex(blt => blt.id === bolt.id);
-        this.projectiles.splice(index, 1);
-        // console.log('kill bolt',bolt.currentPosition.number, this.players[bolt.owner-1].currentPosition.cell.number,this.projectiles);
-      }
-      if (bolt.type === 'bolt' && bolt.moving.state === true && bolt.kill !== true) {
-        // console.log('traking projectile');
-
-        let index = this.projectiles.findIndex(blt => blt.id === bolt.id);
-        bolt.currentPosition.center = bolt.nextPosition;
-
-
-        let boltNextPosition = this.boltCrementer(bolt);
-        bolt.nextPosition = boltNextPosition;
-
-        // CHECK WHICH CELL BOLT IS AT
-        for (const cell of bolt.target.path) {
-          let point = [bolt.currentPosition.center.x,bolt.currentPosition.center.y];
-          let polygon = [];
-          for (const vertex of cell.vertices) {
-            let vertexPoint = [vertex.x-10,vertex.y-5];
-            // let vertexPoint = [vertex.x,vertex.y];
-            polygon.push(vertexPoint)
-          }
-          let pip = pointInPolygon(point, polygon)
-          if (pip === true) {
-            // console.log('bolt passing through cell',cell.number);
-            bolt.currentPosition.number = cell.number;
-
-            let infoCell = this.gridInfo.find(x => x.number.x === cell.number.x && x.number.y === cell.number.y);
-
-            if (infoCell.elevation.number === bolt.elevation) {
-
-              let fwdBarrier = false;
-
-
-              if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
-                fwdBarrier = this.checkForwardBarrier(bolt.direction,infoCell)
-              }
-
-              let dodged = false;
-              if (fwdBarrier !== true) {
-                for (const plyr of this.players) {
-                  if (
-                    plyr.currentPosition.cell.number.x === cell.number.x &&
-                    plyr.currentPosition.cell.number.y === cell.number.y &&
-                    plyr.number !== bolt.owner
-                  ) {
-                    // console.log('bolt hit a player',plyr);
-                    this.cellsUnderAttack.push(
-                      {
-                        number: {
-                          x: cell.number.x,
-                          y: cell.number.y,
-                        },
-                        count: 1,
-                        limit: 8,
-                      },
-                    )
-
-
-
-                    let targetDefending = false;
-                    let defendType = plyr.currentWeapon.type;
-                    if ( plyr.currentWeapon.name === "") {
-                      defendType  = "unarmed";
-                    }
-                    let defendPeak = this.defendAnimRef.peak[defendType];
-                    if (plyr.defending.count === defendPeak || plyr.defendDecay.state === true) {
-                      targetDefending = true;
-                    }
-
-                    if (
-                      targetDefending !== true ||
-                      this.players[plyr.number-1].direction === bolt.direction
-                    ) {
-                      // console.log('attack success');
-
-                      let backAttack = false;
-                      if (this.players[plyr.number-1].direction === bolt.direction) {
-                        console.log('back attack');
-                        backAttack = true;
-                      }
-
-                      this.players[bolt.owner-1].success.attackSuccess = {
-                        state: true,
-                        count: 1,
-                        limit: this.players[bolt.owner-1].success.attackSuccess.limit
-                      }
-
-
-                      // CALCULATE ATTACKER DOUBLE HIT!
-                      let doubleHitChance = this.players[bolt.owner-1].crits.doubleHit;
-                      let singleHitChance = this.players[bolt.owner-1].crits.singleHit;
-                      if (backAttack === true) {
-                        if (doubleHitChance > 2) {
-                          let diff = doubleHitChance - 2;
-                          doubleHitChance = doubleHitChance - diff;
-                        }
-                      }
-
-                      // FACTOR OPPONENT ARMOUR
-                      if (this.players[plyr.number-1].currentArmor.name !== '') {
-                        // console.log('opponent armour found');
-                        switch(this.players[plyr.number-1].currentArmor.effect) {
-                          case 'dblhit-5' :
-                            doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+5;
-                          break;
-                          case 'dblhit-10' :
-                            doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+10;
-                          break;
-                          case 'dblhit-15' :
-                            doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+15;
-                          break;
-                          // case 'dblhit-30' :
-                          //   doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+30;
-                          // break;
-                          case 'snghit-5' :
-                            singleHitChance = this.players[bolt.owner-1].crits.singleHit+5;
-                          break;
-                          case 'snghit-10' :
-                            singleHitChance = this.players[bolt.owner-1].crits.singleHit+10;
-                          break;
-                        }
-                      }
-
-                      let doubleHit = this.rnJesus(1,doubleHitChance);
-                      let singleHit = this.rnJesus(1,singleHitChance);
-
-    // -----------
-                      // doubleHit = 2;
-                      // singleHit = 2;
-                      // ----------------
-
-
-                      // DODGED CHECK!
-
-                      if (plyr.dodging.state === true) {
-
-                        let canDodge = true;
-                        if (backAttack === true && plyr.crits.dodge < 4) {
-                          canDodge = false
-                        }
-
-                        if (canDodge === true) {
-                          dodged = true;
-                          console.log('you dodged a bolt');
-                          singleHit = 2;
-                          doubleHit = 2;
-                          if (plyr.bluntAttack === true) {
-                            plyr.bluntAttack = false;
-                          }
-
-                        }
-                      }
-
-
-                      let miss;
-                      if (doubleHit === 1) {
-                        console.log('bolt double hit attack');
-                        this.players[plyr.number-1].hp = this.players[plyr.number-1].hp - 2;
-                        this.attackedCancel(this.players[plyr.number-1]);
-
-                        // if (!this.players[plyr.number-1].popups.find(x=>x.msg === 'alarmed')) {
-                        //   this.players[plyr.number-1].popups.push(
-                        //     {
-                        //       state: false,
-                        //       count: 0,
-                        //       limit:25,
-                        //       type: '',
-                        //       position: '',
-                        //       msg: 'alarmed',
-                        //       img: '',
-                        //
-                        //     }
-                        //   )
-                        // }
-
-                        if (!this.players[plyr.number-1].popups.find(x=>x.msg.split("_")[0] === "hpDown")) {
-                          this.players[plyr.number-1].popups.push(
-                            {
-                              state: false,
-                              count: 0,
-                              limit: 30,
-                              type: '',
-                              position: '',
-                              msg: 'hpDown_'+'-'+2+'',
-                              img: '',
-
-                            }
-                          )
-                        }
-
-                      }
-                      else if (singleHit === 1) {
-                        console.log('bolt single hit attack');
-                        this.players[plyr.number-1].hp = this.players[plyr.number-1].hp - 1;
-                        this.attackedCancel(this.players[plyr.number-1]);
-
-                        // if (!this.players[plyr.number-1].popups.find(x=>x.msg === 'alarmed')) {
-                        //   this.players[plyr.number-1].popups.push(
-                        //     {
-                        //       state: false,
-                        //       count: 0,
-                        //       limit:25,
-                        //       type: '',
-                        //       position: '',
-                        //       msg: 'alarmed',
-                        //       img: '',
-                        //
-                        //     }
-                        //   )
-                        // }
-                        if (!this.players[plyr.number-1].popups.find(x=>x.msg.split("_")[0] === "hpDown")) {
-                          this.players[plyr.number-1].popups.push(
-                            {
-                              state: false,
-                              count: 0,
-                              limit: 30,
-                              type: '',
-                              position: '',
-                              msg: 'hpDown_'+'-'+1+'',
-                              img: '',
-
-                            }
-                          )
-                        }
-
-                      }
-                      else if (doubleHit !== 1 && singleHit !== 1) {
-                        console.log('bolt attack but no damage');
-                        miss = true;
-                        this.players[bolt.owner-1].statusDisplay = {
-                          state: true,
-                          status: 'attack missed!',
-                          count: 1,
-                          limit: this.players[bolt.owner-1].statusDisplay.limit,
-                        }
-                      }
-
-                      if (this.players[plyr.number-1].hp === 1) {
-                        this.players[plyr.number-1].speed.move = .05;
-                      }
-
-                      if (this.players[plyr.number-1].hp <= 0) {
-                        this.killPlayer(this.players[plyr.number-1]);
-
-                        let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                        this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
-
-                        this.players[bolt.owner-1].points++;
-                        this.pointChecker(this.players[bolt.owner-1])
-
-                      }
-                      else if (miss !== true) {
-                        this.players[plyr.number-1].action = 'deflected';
-
-                        this.players[plyr.number-1].defending = {
-                          state: false,
-                          count: 0,
-                          limit: this.players[plyr.number-1].defending.limit,
-                        }
-                        this.players[plyr.number-1].attacking = {
-                          state: false,
-                          count: 0,
-                          limit: this.players[plyr.number-1].attacking.limit,
-                        }
-
-                        this.players[plyr.number-1].success.deflected = {
-                          state: true,
-                          count: 1,
-                          limit: this.deflectedLengthRef.attacked,
-                          predeflect: this.players[plyr.number-1].success.deflected.predeflect,
-                          type: 'attacked',
-                        };
-
-
-                        if (this.aiDeflectedCheck.includes(this.players[plyr.number-1].number) !== true) {
-                          this.aiDeflectedCheck.push(this.players[plyr.number-1].number)
-                        }
-
-
-                      }
-
-
-                    }
-
-
-                    // ATTACK DEFENDED!!
-                    else {
-
-
-                      // CAN'T DEFLECT BOLT UNARMED
-                      if (this.players[plyr.number-1].currentWeapon.name === "") {
-                        console.log('cant deflect bolt unarmed');
-                        let backAttack = false;
-                        if (this.players[plyr.number-1].direction === bolt.direction) {
-                          console.log('back attack');
-                          backAttack = true;
-                        }
-
-                        this.players[bolt.owner-1].success.attackSuccess = {
-                          state: true,
-                          count: 1,
-                          limit: this.players[bolt.owner-1].success.attackSuccess.limit
-                        }
-
-                        // CALCULATE ATTACKER DOUBLE HIT!
-                        let doubleHitChance = this.players[bolt.owner-1].crits.doubleHit;
-                        let singleHitChance = this.players[bolt.owner-1].crits.singleHit;
-                        if (backAttack === true) {
-                          if (doubleHitChance > 2) {
-                            let diff = doubleHitChance - 2;
-                            doubleHitChance = doubleHitChance - diff;
-                          }
-                        }
-
-                        if (this.players[plyr.number-1].currentArmor.name !== '') {
-                          // console.log('opponent armour found');
-                          switch(this.players[plyr.number-1].currentArmor.effect) {
-                            case 'dblhit-5' :
-                              doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+5;
-                            break;
-                            case 'dblhit-10' :
-                              doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+10;
-                            break;
-                            case 'dblhit-15' :
-                              doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+15;
-                            break;
-                            // case 'dblhit-30' :
-                            //   doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+30;
-                            // break;
-                            case 'snghit-5' :
-                              singleHitChance = this.players[bolt.owner-1].crits.singleHit+5;
-                            break;
-                            case 'snghit-10' :
-                              singleHitChance = this.players[bolt.owner-1].crits.singleHit+10;
-                            break;
-                          }
-                        }
-
-                        let doubleHit = this.rnJesus(1,doubleHitChance);
-                        let singleHit = this.rnJesus(1,singleHitChance);
-
-                        let miss;
-                        if (doubleHit === 1) {
-                          console.log('bolt double hit attack');
-                          this.players[plyr.number-1].hp = this.players[plyr.number-1].hp - 2;
-                          this.attackedCancel(this.players[plyr.number-1]);
-
-                          if (!this.players[plyr.number-1].popups.find(x=>x.msg === 'alarmed')) {
-                            this.players[plyr.number-1].popups.push(
-                              {
-                                state: false,
-                                count: 0,
-                                limit:25,
-                                type: '',
-                                position: '',
-                                msg: 'alarmed',
-                                img: '',
-
-                              }
-                            )
-                          }
-
-                        }
-                        else if (singleHit === 1) {
-                          console.log('bolt single hit attack');
-                          this.players[plyr.number-1].hp = this.players[plyr.number-1].hp - 1;
-                          this.attackedCancel(this.players[plyr.number-1]);
-
-                          if (!this.players[plyr.number-1].popups.find(x=>x.msg === 'alarmed')) {
-                            this.players[plyr.number-1].popups.push(
-                              {
-                                state: false,
-                                count: 0,
-                                limit:25,
-                                type: '',
-                                position: '',
-                                msg: 'alarmed',
-                                img: '',
-
-                              }
-                            )
-                          }
-
-                        }
-                        else if (doubleHit !== 1 && singleHit !== 1) {
-                          console.log('bolt attack but no damage');
-                          miss = true;
-                          this.players[bolt.owner-1].statusDisplay = {
-                            state: true,
-                            status: 'attack missed!',
-                            count: 1,
-                            limit: this.players[bolt.owner-1].statusDisplay.limit,
-                          }
-                        }
-
-                        if (this.players[plyr.number-1].hp === 1) {
-                          this.players[plyr.number-1].speed.move = .05;
-                        }
-
-                        if (this.players[plyr.number-1].hp <= 0) {
-                          this.killPlayer(this.players[plyr.number-1]);
-
-                          let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                          this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
-
-                          this.players[bolt.owner-1].points++;
-                          this.pointChecker(this.players[bolt.owner-1])
-
-                        }
-                        else if (miss !== true) {
-                          this.players[plyr.number-1].action = 'deflected';
-
-                          this.players[plyr.number-1].defending = {
-                            state: false,
-                            count: 0,
-                            limit: this.players[plyr.number-1].defending.limit,
-                          }
-                          this.players[plyr.number-1].attacking = {
-                            state: false,
-                            count: 0,
-                            limit: this.players[plyr.number-1].attacking.limit,
-                          }
-
-                          this.players[plyr.number-1].success.deflected = {
-                            state: true,
-                            count: 1,
-                            limit: this.deflectedLengthRef.attacked,
-                            predeflect: this.players[plyr.number-1].success.deflected.predeflect,
-                            type: 'attacked',
-                          };
-
-
-                          if (this.aiDeflectedCheck.includes(this.players[plyr.number-1].number) !== true) {
-                            this.aiDeflectedCheck.push(this.players[plyr.number-1].number)
-                          }
-
-
-                        }
-                      }
-                      // BLOCKED BOLT
-                      else {
-                        console.log('bullet blocked');
-
-
-                        this.players[plyr.number-1].success.defendSuccess = {
-                          state: true,
-                          count: 1,
-                          limit: this.players[plyr.number-1].success.defendSuccess.limit
-                        }
-
-                        if (!plyr.popups.find(x=> x.msg === "defendSuccess")) {
-                          plyr.popups.push(
-                            {
-                              state: false,
-                              count: 0,
-                              limit: 30,
-                              type: '',
-                              position: '',
-                              msg: 'defendSuccess',
-                              img: '',
-
-                            }
-                          )
-                        }
-                        if (!plyr.popups.find(x=> x.msg === 'boltDefend2')) {
-                          plyr.popups.push(
-                            {
-                              state: false,
-                              count: 0,
-                              limit: 30,
-                              type: '',
-                              position: '',
-                              msg: 'boltDefend2',
-                              img: '',
-
-                            }
-                          )
-                        }
-
-
-
-                        // GUARD BREAK!
-                        // let deflectDefender = this.rnJesus(1,3);
-                        let deflectDefender = 0;
-
-                        // PEAK DEFEND/PARRY!!
-                        if (this.players[plyr.number-1].peakDefend === true || plyr.defending.count === defendPeak) {
-                          console.log('peak bolt defend/parry');
-                          deflectDefender = 0;
-
-
-                          this.players[plyr.number-1].statusDisplay = {
-                            state: true,
-                            status: 'Parry!',
-                            count: 1,
-                            limit: this.players[player.number-1].statusDisplay.limit,
-                          }
-
-                          this.players[plyr.number-1].popups.push(
-                            {
-                              state: false,
-                              count: 0,
-                              limit: 25,
-                              type: '',
-                              position: '',
-                              msg: 'attackParried',
-                              img: '',
-
-                            }
-                          )
-                        }
-
-                        // OFF PEAK DEFEND
-                        else {
-                          console.log('off peak bolt defend');
-                          deflectDefender = this.rnJesus(1,this.players[plyr.number-1].crits.guardBreak);
-
-                          this.players[plyr.number-1].statusDisplay = {
-                            state: true,
-                            status: 'Defend',
-                            count: 1,
-                            limit: this.players[player.number-1].statusDisplay.limit,
-                          }
-
-                          this.players[plyr.number-1].popups.push(
-                            {
-                              state: false,
-                              count: 0,
-                              limit: 25,
-                              type: '',
-                              position: '',
-                              msg: 'attackDefended',
-                              img: '',
-
-                            }
-                          )
-                        }
-
-
-                        if (deflectDefender === 1) {
-                          this.players[plyr.number-1].breakAnim.defend = {
-                            state: true,
-                            count: 1,
-                            limit: player.breakAnim.defend.limit,
-                          };
-                          this.players[plyr.number-1].success.deflected = {
-                            state: true,
-                            count: 1,
-                            limit: this.deflectedLengthRef.defended,
-                            predeflect: this.players[plyr.number-1].success.deflected.predeflect,
-                            type: 'defended',
-                          };
-
-
-                          if (this.aiDeflectedCheck.includes(this.players[plyr.number-1].number) !== true) {
-                            this.aiDeflectedCheck.push(this.players[plyr.number-1].number)
-                          }
-
-
-                        }
-                      }
-
-
-                    }
-
-                    if (dodged !== true) {
-                        bolt.kill = true;
-                    }
-
-
-                  }
-                }
-
-
-                // CHECK FOR OBSTACLE &  REAR BARRIER COLLISION
-
-                if (infoCell.obstacle.state === true && infoCell.obstacle.height >= 1) {
-
-                  this.attackCellContents('bolt',this.players[bolt.owner-1],infoCell,undefined,undefined,bolt)
-
-                  // bolt.kill = true;
-                }
-
-                else if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
-
-                  this.attackCellContents('bolt',this.players[bolt.owner-1],infoCell,undefined,undefined,bolt)
-                  // bolt.kill = true;
-                }
-
-              }
-              else {
-
-                // HANDLE FWD BARRIER BOLT COLLISION
-                if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
-
-                  this.attackCellContents('bolt',this.players[bolt.owner-1],infoCell,undefined,undefined,bolt)
-
-                  // bolt.kill = true;
-                }
-
-              }
-
-            }
-
-
-            else {
-              if (infoCell.elevation.number < bolt.elevation) {
-                console.log('bolt moving over lower cell. ');
-
-                  this.attackCellContents('flyOverBolt',this.players[bolt.owner-1],infoCell,undefined,undefined,bolt)
-
-              }
-              if (infoCell.elevation.number > bolt.elevation) {
-                console.log('bolt hit cell of higher elevation.');
-                bolt.kill = true;
-              }
-            }
-
-
-          }
-        }
-
-        // BOLT WENT OUT OF CANVAS BOUNDS
-        if (
-          bolt.currentPosition.center.x < 0 ||
-          bolt.currentPosition.center.y < 0 ||
-          bolt.currentPosition.center.x > 1300 ||
-          bolt.currentPosition.center.y > 800
-        ) {
-          console.log('bolt went out of canvas bounds');
-          bolt.kill = true;
-        }
-
-      }
-
-      if (bolt.type === 'arc' && bolt.moving.state === true && bolt.kill !== true) {
-
-      }
-    }
-
-
-    // ADD COM PLAYER!
-    if (this.addAiPlayerKeyPress === true) {
-      // this.addAiRandomPlayer('random')
-      // this.addAiRandomPlayer('pursue')
-      // this.addAiRandomPlayer('patrol')
-      // this.addAiRandomPlayer('defend')
-      this.addAiPlayer()
-    }
-    if (this.addAiCount.state === true) {
-      if (this.addAiCount.count < this.addAiCount.limit) {
-        this.addAiCount.count++
-      }
-      if (this.addAiCount.count >= this.addAiCount.limit) {
-        this.addAiCount = {
-          state: false,
-          count: 0,
-          limit: this.addAiCount.limit,
-        }
-      }
-    }
-
-
-    // SYNC W/ GLOBAL PLAYER DATA
-    this.players[player.number-1] = player;
-
-
-    // AI EVALUATE
-    if (player.ai.state === true ) {
-      this.aiEvaluate(player)
-    }
-
-
-    // DRAW EVERYTHING
-    this.drawPlayerStep(player.number, canvas, context, canvas2, context2);
-
-
-  }
-
-  drawPlayerStep = (playerNumber, canvas, context, canvas2, context2) => {
-    // console.log('drawing player step',playerNumber);
-
-    let gridInfo = [];
-    class Point {
-        constructor(x, y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-    let wall = this.refs.wall;
-    let wall2 = this.refs.wall2;
-    let wall3 = this.refs.wall3;
-
-    canvas.width = this.canvasWidth;
-    canvas.height = this.canvasHeight;
-
-
-    let floorImageWidth = this.floorImageWidth;
-    let floorImageHeight = this.floorImageHeight;
-    let wallImageWidth = this.wallImageWidth;
-    let wallImageHeight = this.wallImageHeight;
-    let sceneX = (this.canvasWidth/2);
-    let sceneY = this.sceneY;
-    let tileWidth = this.tileWidth;
-
-
-    gridInfo = this.gridInfo;
-
-    let player = this.players[playerNumber-1]
-
-    let updatedPlayerImg;
-    let newDirection;
-
-    if (player.falling.state === true) {
-      // console.log('player',player.number,'falling count',player.falling.count,'position',player.nextPosition);
-      if (player.falling.count === player.falling.limit) {
-        this.killPlayer(player)
-      }
-    }
-
-    context.clearRect(0,0,this.canvasWidth,this.canvasHeight);
-    context2.clearRect(0,0,this.canvasWidth,this.canvasHeight);
-
-    context.translate(this.camera.zoomFocusPan.x,this.camera.zoomFocusPan.y);
-    context2.translate(this.camera.zoomFocusPan.x,this.camera.zoomFocusPan.y);
-
-    context.scale(this.camera.zoom.x,this.camera.zoom.y);
-    context2.scale(this.camera.zoom.x,this.camera.zoom.y);
-
-
-    for (var x = 0; x < this.gridWidth+1; x++) {
-      for (var y = 0; y < this.gridWidth+1; y++) {
-
-
-        let p = new Point();
-        p.x = x * tileWidth;
-        p.y = y * tileWidth;
-        let iso = this.cartesianToIsometric(p);
-        let offset = {x: floorImageWidth/2, y: floorImageHeight}
-        iso.x += sceneX
-        iso.y += sceneY
-        let center = {
-          x: iso.x - offset.x/2+23,
-          y: iso.y - offset.y/2-2,
-        }
-
-        let floor;
-        let drawFloor = true;
-        let gridInfoCell = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
-        gridInfoCell.center = center;
-        gridInfoCell.drawCenter = center;
-        floor = this.floorImgs[gridInfoCell.terrain.name]
-
-
-        // VOID
-        // FLOOR
-        if (gridInfoCell.void.state === true) {
-          // drawFloor = false;
-          floor = this.floorImgs.void3
-        }
-        //BLINKER!!
-        if (
-          this.cellToVoid.state === true &&
-          this.cellToVoid.x === x &&
-          this.cellToVoid.y === y
-        ) {
-          if (this.cellToVoid.count === 1) {
-            if (!this.cellPopups.find(x => x.msg === "cellVoiding" && x.cell.number.x === gridInfoCell.number.x && x.cell.number.y === gridInfoCell.number.y)) {
-              this.cellPopups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit: 35,
-                  type: '',
-                  position: '',
-                  msg: 'cellVoiding',
-                  color: '',
-                  img: '',
-                  cell: this.gridInfo.find(x => x.number.x === gridInfoCell.number.x && x.number.y === gridInfoCell.number.y)
-                }
-              )
-            }
-          }
-          if(this.cellToVoid.count % 5 === 0) {
-            floor = this.floorImgs.void3;
-            // drawFloor = false;
-          } else {
-            floor = this.floorImgs.void2;
-            // drawFloor = true;
-          }
-        }
-
-        // DROWNING
-        for (const plyrb of this.players) {
-          if (plyrb.drowning === true) {
-            if (
-              plyrb.currentPosition.cell.number.x === x &&
-              plyrb.currentPosition.cell.number.y === y
-            ) {
-              // console.log('player',plyrb.number,'drowning count',plyrb.falling.count,'position',plyrb.nextPosition);
-              if(plyrb.falling.count % 2 === 0) {
-                // drawFloor = false;
-                floor = this.floorImgs.void3;
-              } else {
-                // floor = floorImgs.stone
-                floor = this.floorImgs[gridInfoCell.terrain.name]
-              }
-            }
-          }
-        }
-
-        // FALLING OBSTACLE DEEP BLINKER
-        if (gridInfoCell.obstacle.state === true && gridInfoCell.obstacle.moving.falling.state === true && gridInfoCell.terrain.type === "deep") {
-          if(gridInfoCell.obstacle.moving.falling.count % 3 === 0) {
-            floor = this.floorImgs.void3;
-          } else {
-            floor = this.floorImgs[gridInfoCell.terrain.name]
-          }
-        }
-
-
-        // CELLS UNDER ATTACK & PREATTACK!!
-        if (this.cellsUnderAttack.length > 0) {
-          for (const cll of this.cellsUnderAttack) {
-            if (
-              cll.number.x === x &&
-              cll.number.y === y
-            ) {
-              floor = this.refs.floorAttack;
-            }
-          }
-        }
-        if (this.cellsUnderPreAttack.length > 0) {
-          for (const cll2 of this.cellsUnderPreAttack) {
-            if (
-              cll2.number.x === x &&
-              cll2.number.y === y
-            ) {
-              floor = this.refs.floorAttack2;
-            }
-          }
-        }
-        // CELLS TO HIGHLIGHT
-        if (this.cellsToHighlight.length > 0) {
-          for (const cll2 of this.cellsToHighlight) {
-            if (
-              cll2.x === x &&
-              cll2.y === y
-            ) {
-              floor = this.refs.floorVoid;
-            }
-          }
-        }
-        // CELLS TO HIGHLIGHT V2!!
-        if (this.cellsToHighlight2.length > 0) {
-
-          for (const cll3 of this.cellsToHighlight2) {
-            if (
-              cll3.number.x === x &&
-              cll3.number.y === y
-            ) {
-              floor = this.refs.floorHighlight;
-            }
-          }
-        }
-
-
-        // FLOOR
-        if (drawFloor === true) {
-          context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
-        }
-
-        // RUBBLE
-        if (gridInfoCell.rubble === true) {
-          context.drawImage(this.floorImgs.rubble, iso.x - offset.x, iso.y - offset.y);
-        }
-
-
-        // CELL COORD LABEL
-        context.fillStyle = 'black';
-        context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
-        context.fillStyle = "black";
-        context.fillRect(center.x, center.y,5,5);
-
-
-        // CELL VERTEX POINTS
-        let vertices = [
-          {x:center.x, y:center.y+tileWidth/2},
-          {x:center.x+tileWidth, y:center.y},
-          {x:center.x, y:center.y-tileWidth/2},
-          {x:center.x-tileWidth, y:center.y},
-        ];
-        for (const vertex of vertices) {
-          context.fillStyle = "yellow";
-          context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
-
-        }
-        gridInfoCell.vertices = vertices;
-
-
-        // TARGET HIGHLIGHT!!
-        let floorHighlight;
-        for (const plyr3 of this.players) {
-          if (
-            x === plyr3.target.cell1.number.x &&
-            y === plyr3.target.cell1.number.y
-          ) {
-            if (plyr3.ai.state !== true && plyr3.dead.state !== true && plyr3.falling.state !== true && plyr3.drowning !== true) {
-              switch(plyr3.number) {
-                case 1:
-                  floorHighlight = 'purple';
-                break;
-                case 2:
-                  floorHighlight = 'red';
-                break;
-              }
-            }
-            if (plyr3.ai.state === true && plyr3.dead.state !== true && plyr3.falling.state !== true && plyr3.drowning !== true) {
-              floorHighlight = 'brown';
-            }
-            if (plyr3.dead.state !== true) {
-              context.lineWidth = 5;
-              context.beginPath();
-              for (const vertex of vertices) {
-                context.strokeStyle = floorHighlight;
-
-                context.lineTo(vertex.x, vertex.y);
-              }
-              context.closePath();
-              context.stroke();
-            }
-          }
-        }
-
-        // MOUSED OVER CELL
-        if (this.mouseOverCell.state === true && x === this.mouseOverCell.cell.number.x && y === this.mouseOverCell.cell.number.y) {
-          context.lineWidth = 5;
-          context.beginPath();
-          for (const vertex of vertices) {
-            context.strokeStyle = 'orange';
-            context.lineTo(vertex.x, vertex.y);
-          }
-          context.closePath();
-          context.stroke();
-        }
-
-
-        // IN GAME ITEM PLACEMENT!!
-        if (gridInfoCell.item.name !== '' && gridInfoCell.void.state !== true) {
-
-          let hide = false;
-          if (this.obstacleItemsToDrop.length > 0) {
-            for(const cell of this.obstacleItemsToDrop) {
-              if (gridInfoCell.number.x === cell.target.x && gridInfoCell.number.y === cell.target.y && gridInfoCell.item.name === cell.item.name) {
-                hide = true;
-              }
-            }
-          }
-
-
-          if (hide !== true) {
-
-            let itemImg;
-            let fillClr;
-            if (gridInfoCell.item.type === 'item') {
-              switch(gridInfoCell.item.name) {
-                case 'moveSpeedUp' :
-                  fillClr = "purple";
-                  itemImg = this.itemImgs[gridInfoCell.item.name];
-                break;
-                case 'moveSpeedDown' :
-                  fillClr = "blue";
-                  itemImg = this.itemImgs[gridInfoCell.item.name];
-                break;
-                case 'hpUp' :
-                  fillClr = "yellow";
-                  itemImg = this.itemImgs[gridInfoCell.item.name];
-                break;
-                case 'hpDown' :
-                  fillClr = "brown";
-                  itemImg = this.itemImgs[gridInfoCell.item.name];
-                break;
-                case 'focusUp' :
-                  fillClr = "white";
-                  itemImg = this.itemImgs[gridInfoCell.item.name];
-                break;
-                case 'focusDown' :
-                  fillClr = "black";
-                  itemImg = this.itemImgs[gridInfoCell.item.name];
-                break;
-                case 'strengthUp' :
-                  fillClr = "green";
-                  itemImg = this.itemImgs[gridInfoCell.item.name];
-                break;
-                case 'strengthDown' :
-                  fillClr = "red";
-                  itemImg = this.itemImgs[gridInfoCell.item.name];
-                break;
-                case 'ammo5' :
-                  fillClr = "#283618";
-                  itemImg = this.itemImgs[gridInfoCell.item.name];
-                break;
-                case 'ammo10' :
-                  fillClr = "#283618";
-                  itemImg = this.itemImgs[gridInfoCell.item.name];
-                break;
-              }
-            }
-            else if (gridInfoCell.item.type === 'weapon') {
-              switch(gridInfoCell.item.subType) {
-                case 'sword' :
-                  fillClr = "orange";
-                  itemImg = this.itemImgs[gridInfoCell.item.subType];
-                break;
-                case 'spear' :
-                  fillClr = "maroon";
-                  itemImg = this.itemImgs[gridInfoCell.item.subType];
-                break;
-                case 'crossbow' :
-                  fillClr = "navy";
-                  itemImg = this.itemImgs[gridInfoCell.item.subType];
-                break;
-              }
-            }
-            else if (gridInfoCell.item.type === 'armor') {
-              switch(gridInfoCell.item.subType) {
-                case 'helmet' :
-                  fillClr = "grey";
-                  itemImg = this.itemImgs[gridInfoCell.item.subType];
-                break;
-                case 'mail' :
-                  fillClr = "olive";
-                  itemImg = this.itemImgs[gridInfoCell.item.subType];
-                break;
-                case 'greaves' :
-                  fillClr = "#b5179e";
-                  itemImg = this.itemImgs[gridInfoCell.item.subType];
-                break;
-              }
-            }
-
-            context.drawImage(itemImg, center.x-15, center.y-15);
-
-            // context.fillStyle = fillClr;
-            // context.beginPath();
-            // context.arc(center.x, center.y, 10, 0, 2 * Math.PI);
-            // context.fill();
-
-          }
-
-
-        }
-
-
-        //POPUPS
-        // CELL HIGHLIGHT
-        for(const popup of this.cellPopups) {
-          if (popup.state === true && x === popup.cell.number.x && y === popup.cell.number.y) {
-            context.lineWidth = 5;
-            context.beginPath();
-            for (const vertex of vertices) {
-              context.strokeStyle = popup.color;
-              context.lineTo(vertex.x, vertex.y);
-            }
-            context.closePath();
-            context.stroke();
-          }
-        }
-        // CELL POPUPS
-        if (x === this.gridWidth && y === this.gridWidth) {
-          // console.log(this.refs.pickupAmmo);
-
-
-          let drawBubble = (ctx,x,y,w,h,radius,px,py,color) => {
-
-             var r = x + w;
-             var b = y + h;
-             if(py<y || py>y+h){
-              var con1 = Math.min(Math.max(x+radius,px-10),r-radius-20);
-              var con2 = Math.min(Math.max(x+radius+20,px+10),r-radius);
-             }
-             else{
-              var con1 = Math.min(Math.max(y+radius,py-10),b-radius-20);
-              var con2 = Math.min(Math.max(y+radius+20,py+10),b-radius);
-             }
-             var dir;
-             if(py < y) dir = 2;
-             if(py > y) dir = 3;
-             if(px < x && py>=y && py<=b) dir = 0;
-             if(px > x && py>=y && py<=b) dir = 1;
-             if(px >= x && px <= r && py >= y && py <= b) dir = -1;
-             ctx.clearRect(x,y,this.popupSize,this.popupSize);
-             ctx.beginPath();
-             ctx.strokeStyle=color;
-             ctx.lineWidth="1";
-             ctx.moveTo(x+radius,y);
-             if(dir==2){
-              ctx.lineTo(con1,y);
-              ctx.lineTo(px,py);
-              ctx.lineTo(con2,y);
-              ctx.lineTo(r-radius,y);
-             }
-             else ctx.lineTo(r-radius,y);
-             ctx.quadraticCurveTo(r,y,r,y+radius);
-             if(dir==1){
-              ctx.lineTo(r,con1);
-              ctx.lineTo(px,py);
-              ctx.lineTo(r,con2);
-              ctx.lineTo(r,b-radius);
-             }
-             else ctx.lineTo(r,b-radius);
-             ctx.quadraticCurveTo(r, b, r-radius, b);
-             if(dir==3){
-              ctx.lineTo(con2,b);
-              ctx.lineTo(px,py);
-              ctx.lineTo(con1,b);
-              ctx.lineTo(x+radius,b);
-             }
-             else ctx.lineTo(x+radius,b);
-             ctx.quadraticCurveTo(x, b, x, b-radius);
-             if(dir==0){
-              ctx.lineTo(x,con2);
-              ctx.lineTo(px,py);
-              ctx.lineTo(x,con1);
-              ctx.lineTo(x,y+radius);
-             }
-             else ctx.lineTo(x,y+radius);
-             ctx.quadraticCurveTo(x, y, x+radius, y);
-             context.fillStyle = 'white';
-             ctx.fill();
-             ctx.stroke();
-             // ctx.globalCompositeOperation = "source-over";
-             ctx.closePath();
-          }
-
-          for (const popup of this.cellPopups) {
-
-            let popupBorderColor = 'black';
-            if (popup.state === true) {
-              // console.log('drawing a popup');
-              let popupDrawCoords;
-              if (popup.position === '' || !popup.position) {
-                let currentPopups = this.cellPopups.filter(x=>x.state === true);
-                let currentPopupsThisCell = this.cellPopups.filter(x=>x.state === true && x.cell.number.x === popup.cell.number.x && x.cell.number.y === popup.cell.number.y);
-                let positions = ['north','east','south','west','northEast','northWest','southEast','southWest'];
-
-
-                if (popup.color === '') {
-                    popup.color = this.cellColorRef.find(x => x.x === popup.cell.number.x && x.y === popup.cell.number.y).color;
-                }
-
-
-                // REMOVE POSITIONS OF POPUPS ALREADY DRAWN FOR THIS CELL
-                for (const popup2 of currentPopupsThisCell) {
-                  if (popup2.position && popup2.position !== '') {
-
-                    let indx = positions.indexOf(popup2.position);
-                    positions.splice(indx,1)
-                  }
-
-                }
-
-                let dir = undefined;
-                let dirs = [];
-
-                for (const plyr2 of this.players) {
-                  if (plyr2.ai.state !== true) {
-                    let myPos = popup.cell.number;
-                    let invalidPos = this.players[plyr2.number-1].currentPosition.cell.number;
-                    // let invalidPositions = [invalidPos];
-
-                    // GET DIRECTION OF PLAYER CELL RELATIVE TO ME
-                    if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
-                      dir = 'north';
-                    }
-                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y-1) {
-                      dir = 'northWest';
-                    }
-                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y) {
-                      dir = 'west';
-                    }
-                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y+1) {
-                      dir = 'southWest';
-                    }
-                    if (invalidPos.x === myPos.x && invalidPos.y === myPos.y+1) {
-                      dir = 'south';
-                    }
-                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y+1) {
-                      dir = 'southEast';
-                    }
-                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y) {
-                      dir = 'east';
-                    }
-                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y-1) {
-                      dir = 'northEast';
-                    }
-                    if (dir && positions.includes(dir) === true) {
-                      positions.splice(positions.indexOf(dir),1);
-                      // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                    }
-
-
-                    // GET DIRECTION THAT ALL OTHER PLAYER'S POPUPS OCCUPY, RELATIVE TO ME
-                    for(const pop of plyr2.popups) {
-
-                      dir = undefined;
-
-                      if (pop.state === true) {
-
-                        let invalidPos2 = {
-                          x: undefined,
-                          y: undefined,
-                        }
-
-                        switch (pop.position) {
-                          case 'north':
-                            invalidPos2 = {
-                              x: invalidPos.x,
-                              y: invalidPos.y-1,
-                            }
-                            break;
-                          case 'northEast':
-                            invalidPos2 = {
-                              x: invalidPos.x+1,
-                              y: invalidPos.y-1,
-                            }
-                            break;
-                          case 'northWest':
-                            invalidPos2 = {
-                              x: invalidPos.x-1,
-                              y: invalidPos.y-1,
-                            }
-                            break;
-                          case 'south':
-                            invalidPos2 = {
-                              x: invalidPos.x,
-                              y: invalidPos.y+1,
-                            }
-                            break;
-                          case 'southEast':
-                            invalidPos2 = {
-                              x: invalidPos.x+1,
-                              y: invalidPos.y+1,
-                            }
-                            break;
-                          case 'southWest':
-                            invalidPos2 = {
-                              x: invalidPos.x-1,
-                              y: invalidPos.y+1,
-                            }
-                            break;
-                          case 'east':
-                            invalidPos2 = {
-                              x: invalidPos.x-1,
-                              y: invalidPos.y,
-                            }
-                            break;
-                          case 'west':
-                            invalidPos2 = {
-                              x: invalidPos.x+1,
-                              y: invalidPos.y,
-                            }
-                            break;
-                          default:
-
-                        }
-
-                        // let dir = undefined;
-
-                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
-                          dir = 'north';
-                        }
-                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
-                          dir = 'northWest';
-                        }
-                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
-                          dir = 'west';
-                        }
-                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
-                          dir = 'southWest';
-                        }
-                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
-                          dir = 'south';
-                        }
-                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
-                          dir = 'southEast';
-                        }
-                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
-                          dir = 'east';
-                        }
-                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
-                          dir = 'northEast';
-                        }
-                        if (dir && positions.includes(dir) === true) {
-                          positions.splice(positions.indexOf(dir),1);
-                          // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                        }
-
-                      }
-
-                    }
-
-
-                  }
-                }
-
-                // GET DIRECTION OF CELLS THAT AREN'T THIS CELL'S POPUPS' POPUPS CELLS RELATIVE TO ME
-                for (const popup2 of currentPopups) {
-
-                  dir = undefined;
-
-
-                  if (
-                    popup.cell.number.x !== popup2.cell.number.x &&
-                    popup.cell.number.y !== popup2.cell.number.y &&
-                    popup2.msg !== popup.msg &&
-                    popup2.state === true
-                  ) {
-
-                    let myPos = popup.cell.number;
-                    let cellPos = popup2.cell.number;
-                    let invalidPos2 = {
-                      x: undefined,
-                      y: undefined,
-                    }
-
-                    switch (popup2.position) {
-                      case 'north':
-                        invalidPos2 = {
-                          x: cellPos.x,
-                          y: cellPos.y-1,
-                        }
-                        break;
-                      case 'northEast':
-                        invalidPos2 = {
-                          x: cellPos.x+1,
-                          y: cellPos.y-1,
-                        }
-                        break;
-                      case 'northWest':
-                        invalidPos2 = {
-                          x: cellPos.x-1,
-                          y: cellPos.y-1,
-                        }
-                        break;
-                      case 'south':
-                        invalidPos2 = {
-                          x: cellPos.x,
-                          y: cellPos.y+1,
-                        }
-                        break;
-                      case 'southEast':
-                        invalidPos2 = {
-                          x: cellPos.x+1,
-                          y: cellPos.y+1,
-                        }
-                        break;
-                      case 'southWest':
-                        invalidPos2 = {
-                          x: cellPos.x-1,
-                          y: cellPos.y+1,
-                        }
-                        break;
-                      case 'east':
-                        invalidPos2 = {
-                          x: cellPos.x-1,
-                          y: cellPos.y,
-                        }
-                        break;
-                      case 'west':
-                        invalidPos2 = {
-                          x: cellPos.x+1,
-                          y: cellPos.y,
-                        }
-                        break;
-                      default:
-
-                    }
-
-                    if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
-                      dir = 'north';
-                    }
-                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
-                      dir = 'northWest';
-                    }
-                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
-                      dir = 'west';
-                    }
-                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
-                      dir = 'southWest';
-                    }
-                    if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
-                      dir = 'south';
-                    }
-                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
-                      dir = 'southEast';
-                    }
-                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
-                      dir = 'east';
-                    }
-                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
-                      dir = 'northEast';
-                    }
-                    if (dir && positions.includes(dir) === true) {
-                      positions.splice(positions.indexOf(dir),1);
-                      // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                    }
-
-                  }
-
-                }
-
-                if (!positions[0]) {
-                  // console.log('no open positions for', popup.msg);
-                  popup.state = false;
-                  popup.count = 0;
-                } else {
-                  popup.position = positions[0];
-                }
-
-
-                popup.img = this.popupImageRef[popup.msg]
-
-                popupDrawCoords = this.popupDrawCalc(popup.position,{x:popup.cell.center.x-25,y:popup.cell.center.y-15},0);
-                // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
-                drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popup.color)
-                // context.fillStyle = 'black';
-                // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
-                // console.log('popup.msg',popup.msg,popup.img);
-                let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
-                context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
-
-
-
-              }
-              else {
-
-                let dir = undefined;
-                let dirs = [];
-
-
-                let currentPopupsNotThis = this.cellPopups.filter(x=>x.state === true && x.msg !== popup.msg && x.cell.number.x !== popup.cell.number.x && x.cell.number.y !== popup.cell.number.y);
-
-                for (const plyr2 of this.players) {
-                  if (plyr2.ai.state !== true) {
-                    let myPos = popup.cell.number;
-                    let invalidPos = this.players[plyr2.number-1].currentPosition.cell.number;
-
-
-                    // invalidpostions2 push plyr2 position
-                    // for player popups
-                    //   invalid cell = pop.cell.number + popup position mod, invalposits2 push invalidcell
-                    //
-
-
-                    if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
-                      dir = 'north';
-                    }
-                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y-1) {
-                      dir = 'northWest';
-                    }
-                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y) {
-                      dir = 'west';
-                    }
-                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y+1) {
-                      dir = 'southWest';
-                    }
-                    if (invalidPos.x === myPos.x && invalidPos.y === myPos.y+1) {
-                      dir = 'south';
-                    }
-                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y+1) {
-                      dir = 'southEast';
-                    }
-                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y) {
-                      dir = 'east';
-                    }
-                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y-1) {
-                      dir = 'northEast';
-                    }
-
-                    dirs.push(dir);
-
-
-                    for(const pop of plyr2.popups) {
-
-                      if (pop.state === true) {
-
-                        let invalidPos2 = {
-                          x: undefined,
-                          y: undefined,
-                        }
-
-                        switch (pop.position) {
-                          case 'north':
-                            invalidPos2 = {
-                              x: invalidPos.x,
-                              y: invalidPos.y-1,
-                            }
-                            break;
-                          case 'northEast':
-                            invalidPos2 = {
-                              x: invalidPos.x+1,
-                              y: invalidPos.y-1,
-                            }
-                            break;
-                          case 'northWest':
-                            invalidPos2 = {
-                              x: invalidPos.x-1,
-                              y: invalidPos.y-1,
-                            }
-                            break;
-                          case 'south':
-                            invalidPos2 = {
-                              x: invalidPos.x,
-                              y: invalidPos.y+1,
-                            }
-                            break;
-                          case 'southEast':
-                            invalidPos2 = {
-                              x: invalidPos.x+1,
-                              y: invalidPos.y+1,
-                            }
-                            break;
-                          case 'southWest':
-                            invalidPos2 = {
-                              x: invalidPos.x-1,
-                              y: invalidPos.y+1,
-                            }
-                            break;
-                          case 'east':
-                            invalidPos2 = {
-                              x: invalidPos.x-1,
-                              y: invalidPos.y,
-                            }
-                            break;
-                          case 'west':
-                            invalidPos2 = {
-                              x: invalidPos.x+1,
-                              y: invalidPos.y,
-                            }
-                            break;
-                          default:
-
-                        }
-
-
-                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
-                          dir = 'north';
-                        }
-                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
-                          dir = 'northWest';
-                        }
-                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
-                          dir = 'west';
-                        }
-                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
-                          dir = 'southWest';
-                        }
-                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
-                          dir = 'south';
-                        }
-                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
-                          dir = 'southEast';
-                        }
-                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
-                          dir = 'east';
-                        }
-                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
-                          dir = 'northEast';
-                        }
-                        // if (dir && positions.includes(dir) === true) {
-                        //   positions.splice(positions.indexOf(dir),1);
-                        //   // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                        // }
-                        dirs.push(dir);
-
-                      }
-
-                    }
-
-
-                  }
-                }
-
-                for (const popup2 of currentPopupsNotThis) {
-
-                  dir = undefined;
-
-                  if (popup2.msg !== popup.msg && popup2.state === true) {
-
-                    let myPos = popup.cell.number;
-
-                    let cellPos = popup2.cell.number;
-                    let invalidPos2 = {
-                      x: undefined,
-                      y: undefined,
-                    }
-
-
-                    switch (popup2.position) {
-                      case 'north':
-                        invalidPos2 = {
-                          x: cellPos.x,
-                          y: cellPos.y-1,
-                        }
-                        break;
-                      case 'northEast':
-                        invalidPos2 = {
-                          x: cellPos.x+1,
-                          y: cellPos.y-1,
-                        }
-                        break;
-                      case 'northWest':
-                        invalidPos2 = {
-                          x: cellPos.x-1,
-                          y: cellPos.y-1,
-                        }
-                        break;
-                      case 'south':
-                        invalidPos2 = {
-                          x: cellPos.x,
-                          y: cellPos.y+1,
-                        }
-                        break;
-                      case 'southEast':
-                        invalidPos2 = {
-                          x: cellPos.x+1,
-                          y: cellPos.y+1,
-                        }
-                        break;
-                      case 'southWest':
-                        invalidPos2 = {
-                          x: cellPos.x-1,
-                          y: cellPos.y+1,
-                        }
-                        break;
-                      case 'east':
-                        invalidPos2 = {
-                          x: cellPos.x-1,
-                          y: cellPos.y,
-                        }
-                        break;
-                      case 'west':
-                        invalidPos2 = {
-                          x: cellPos.x+1,
-                          y: cellPos.y,
-                        }
-                        break;
-                      default:
-
-                    }
-
-                    if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
-                      dir = 'north';
-                    }
-                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
-                      dir = 'northWest';
-                    }
-                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
-                      dir = 'west';
-                    }
-                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
-                      dir = 'southWest';
-                    }
-                    if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
-                      dir = 'south';
-                    }
-                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
-                      dir = 'southEast';
-                    }
-                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
-                      dir = 'east';
-                    }
-                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
-                      dir = 'northEast';
-                    }
-
-                    dirs.push(dir);
-
-                  }
-
-                }
-
-
-                // if (popup.position === dir ) {
-                if (dirs.find(x => x === popup.position) ) {
-                  // for (const pop of this.cellPopups) {
-                  //   pop.position = '';
-                  //   pop.state = false;
-                  // }
-                  this.cellPopups.find(x => x.msg === popup.msg && x.cell.number.x === popup.cell.number.x && x.cell.number.x === popup.cell.number.x).state = false;
-                  this.cellPopups.find(x => x.msg === popup.msg && x.cell.number.x === popup.cell.number.x && x.cell.number.x === popup.cell.number.x).position = '';
-                  // console.log('reconsidering...',popup.msg);
-                }
-                else {
-                  popup.img = this.popupImageRef[popup.msg]
-                  popupDrawCoords = this.popupDrawCalc(popup.position,{x:popup.cell.center.x-25,y:popup.cell.center.y-15},0);
-                  // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
-                  drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popup.color)
-                  // context.fillStyle = 'black';
-                  // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
-                  // console.log('popup.msg',popup.msg);
-                  let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
-                  context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
-
-                }
-
-
-              }
-            }
-          }
-
-        }
-
-
-
-        // DRAWN PLAYERS!!
-        function playerDrawLog (x,y,plyr) {
-          console.log('** playerDrawLog **');
-          console.log('-- player --',plyr.number);
-          console.log('-- strafing --',plyr.strafing.state);
-          console.log('-- turning --',plyr.turning.state);
-          console.log('-- currently drawing --',x,y);
-          console.log('-- current position --',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y);
-          console.log('-- moving state --',plyr.moving.state);
-          console.log('-- moving step --',plyr.moving.step);
-          console.log('-- target --',plyr.target.cell1.number.x,plyr.target.cell1.number.y);
-          console.log('-- direction --',plyr.direction);
-          console.log('-- origin --',plyr.moving.origin.number.x,plyr.moving.origin.number.y);
-          console.log('-- action --',plyr.action);
-        }
-        for (const plyr of this.players) {
-
-          let point = {
-            x: plyr.nextPosition.x,
-            y: plyr.nextPosition.y,
-          };
-
-          let weapon = plyr.currentWeapon.type;
-          if (plyr.currentWeapon.type === '' || !plyr.currentWeapon.type) {
-            weapon = 'unarmed'
-          }
-
-          let finalAnimIndex;
-
-          if (plyr.attacking.state === true && plyr.success.deflected.state !== true) {
-            plyr.action = 'attacking'
-          }
-
-
-          // FOR TESTING BY CALLING ONLY @ 1 CELL
-          // if (
-          //   plyr.currentPosition.cell.number.x === x &&
-          //   plyr.currentPosition.cell.number.y === y
-          // ) {
-          //   switch(plyr.action) {
-          //     case 'moving':
-          //       let moveSpeed = plyr.speed.move;
-          //       if (plyr.terrainMoveSpeed.state === true) {
-          //         moveSpeed = plyr.terrainMoveSpeed.speed;
-          //       }
-          //       if (plyr.pushing.state === true) {
-          //         moveSpeed = plyr.pushing.moveSpeed;
-          //       }
-          //       if (plyr.pulling.state === true) {
-          //         moveSpeed = plyr.pulling.moveSpeed;
-          //       }
-          //       if (plyr.pushed.state === true) {
-          //         moveSpeed = plyr.pushed.moveSpeed;
-          //       }
-          //       if (plyr.pulled.state === true) {
-          //         moveSpeed = plyr.pulled.moveSpeed;
-          //       }
-          //       let rangeIndex = plyr.speed.range.indexOf(moveSpeed)
-          //       let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
-          //       finalAnimIndex = moveAnimIndex;
-          //       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-          //       if (plyr.target.void == true) {
-          //         // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-          //       }
-          //     break;
-          //     case 'jumping':
-          //       let rangeIndex4 = plyr.speed.range.indexOf(.1)
-          //       let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(plyr.moving.step)
-          //       finalAnimIndex = moveAnimIndex4;
-          //       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-          //     break;
-          //     case 'strafe moving':
-          //       if (plyr.pushBack.state === true ) {
-          //         let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
-          //         let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
-          //         finalAnimIndex = moveAnimIndex3;
-          //         // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-          //       } else {
-          //         let moveSpeed = plyr.speed.move;
-          //         // if (plyr.pushing.state === true) {
-          //         //   moveSpeed = plyr.pushing.moveSpeed;
-          //         // }
-          //         if (plyr.pulling.state === true) {
-          //           moveSpeed = plyr.pulling.moveSpeed;
-          //         }
-          //         if (plyr.pushed.state === true) {
-          //           moveSpeed = plyr.pushed.moveSpeed;
-          //         }
-          //         if (plyr.pulled.state === true) {
-          //           moveSpeed = plyr.pulled.moveSpeed;
-          //         }
-          //         let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed)
-          //         let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
-          //         finalAnimIndex = moveAnimIndex2;
-          //         // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-          //       }
-          //     break;
-          //     case 'flanking':
-          //       let rangeIndex6 = plyr.speed.range.indexOf(.2)
-          //       let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(plyr.moving.step)
-          //       finalAnimIndex = moveAnimIndex6;
-          //       // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
-          //       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-          //     break;
-          //     case 'attacking':
-          //       let animIndex = plyr.attacking.count -1;
-          //       finalAnimIndex = animIndex;
-          //       // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
-          //     break;
-          //     case 'defending':
-          //       if (plyr.defending.count > 0) {
-          //         let animIndex2 = plyr.defending.count -1;
-          //         finalAnimIndex = animIndex2;
-          //         // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
-          //       }
-          //       if (plyr.defending.count === 0) {
-          //         let animIndex2a = 4;
-          //         finalAnimIndex = animIndex2a;
-          //         console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
-          //       }
-          //     break;
-          //     case 'idle':
-          //       if (plyr.number === 1) {
-          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-          //       }
-          //       if (plyr.number === 2) {
-          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-          //       }
-          //       let animIndex3 = plyr.idleAnim.count+1;
-          //       finalAnimIndex = animIndex3;
-          //     break;
-          //     case 'falling':
-          //       let animIndex4 = plyr.falling.count -1;
-          //       finalAnimIndex = animIndex4;
-          //       // console.log('anim testing fall',plyr.falling.count,'final anim indx',finalAnimIndex,'plyr',plyr.number);
-          //     break;
-          //     case 'deflected':
-          //       let animIndex5 = plyr.success.deflected.count -1;
-          //       // let animIndex5;
-          //       if (plyr.success.deflected.count > 10 && plyr.success.deflected.count < 21) {
-          //         animIndex5 = (plyr.success.deflected.count-10);
-          //       }
-          //       if (plyr.success.deflected.count > 20 && plyr.success.deflected.count < 31) {
-          //         animIndex5 = (plyr.success.deflected.count-20);
-          //       }
-          //       if (plyr.success.deflected.count > 30 && plyr.success.deflected.count < 41) {
-          //         animIndex5 = (plyr.success.deflected.count-30);
-          //       }
-          //       if (plyr.success.deflected.count > 40 && plyr.success.deflected.count < 51) {
-          //         animIndex5 = (plyr.success.deflected.count-40);
-          //       }
-          //       finalAnimIndex = animIndex5;
-          //       // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
-          //     break;
-          //     case 'dodging':
-          //       let animIndex7 = plyr.dodging.count -1;
-          //       finalAnimIndex = animIndex7;
-          //       // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
-          //     break;
-          //   }
-          // }
-          // FOR TESTING BY CALLING ONLY @ 1 CELL
-
-
-          switch(plyr.action) {
-            case 'moving':
-              let moveSpeed = plyr.speed.move;
-              if (plyr.terrainMoveSpeed.state === true) {
-                moveSpeed = plyr.terrainMoveSpeed.speed;
-              }
-              if (plyr.pushing.state === true) {
-                moveSpeed = plyr.pushing.moveSpeed;
-              }
-              if (plyr.pulling.state === true) {
-                moveSpeed = plyr.pulling.moveSpeed;
-              }
-              if (plyr.pushed.state === true) {
-                moveSpeed = plyr.pushed.moveSpeed;
-              }
-              if (plyr.pulled.state === true) {
-                moveSpeed = plyr.pulled.moveSpeed;
-              }
-              let rangeIndex = plyr.speed.range.indexOf(moveSpeed)
-              let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
-              finalAnimIndex = moveAnimIndex;
-              // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-              if (plyr.target.void == true) {
-                // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-              }
-            break;
-            case 'jumping':
-              let rangeIndex4 = plyr.speed.range.indexOf(.1)
-              let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(plyr.moving.step)
-              finalAnimIndex = moveAnimIndex4;
-              // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-            break;
-            case 'strafe moving':
-              if (plyr.pushBack.state === true ) {
-                let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
-                let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
-                finalAnimIndex = moveAnimIndex3;
-                // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-              } else {
-                let moveSpeed = plyr.speed.move;
-                // if (plyr.pushing.state === true) {
-                //   moveSpeed = plyr.pushing.moveSpeed;
-                // }
-                if (plyr.pulling.state === true) {
-                  moveSpeed = plyr.pulling.moveSpeed;
-                }
-                if (plyr.pushed.state === true) {
-                  moveSpeed = plyr.pushed.moveSpeed;
-                }
-                if (plyr.pulled.state === true) {
-                  moveSpeed = plyr.pulled.moveSpeed;
-                }
-                let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed)
-                let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
-                finalAnimIndex = moveAnimIndex2;
-                // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-              }
-            break;
-            case 'flanking':
-              let rangeIndex6 = plyr.speed.range.indexOf(.2)
-              let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(plyr.moving.step)
-              finalAnimIndex = moveAnimIndex6;
-              // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
-              // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-            break;
-            case 'attacking':
-              let animIndex = plyr.attacking.count -1;
-              finalAnimIndex = animIndex;
-              // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
-            break;
-            case 'defending':
-              if (plyr.defending.count > 0) {
-                let animIndex2 = plyr.defending.count -1;
-                finalAnimIndex = animIndex2;
-                // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
-              }
-              if (plyr.defending.count === 0) {
-                let animIndex2a = 5;
-                finalAnimIndex = animIndex2a;
-                // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
-              }
-            break;
-            case 'idle':
-              if (plyr.number === 1) {
-                // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-              }
-              if (plyr.number === 2) {
-                // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-              }
-              let animIndex3 = plyr.idleAnim.count +1;
-              finalAnimIndex = animIndex3;
-            break;
-            case 'falling':
-              let animIndex4 = plyr.falling.count -1;
-              finalAnimIndex = animIndex4;
-              // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
-            break;
-            case 'deflected':
-              let animIndex5 = plyr.success.deflected.count -1;
-              // let animIndex5;
-              if (plyr.success.deflected.count > 10 && plyr.success.deflected.count < 21) {
-                animIndex5 = (plyr.success.deflected.count-10);
-              }
-              if (plyr.success.deflected.count > 20 && plyr.success.deflected.count < 31) {
-                animIndex5 = (plyr.success.deflected.count-20);
-              }
-              if (plyr.success.deflected.count > 30 && plyr.success.deflected.count < 41) {
-                animIndex5 = (plyr.success.deflected.count-30);
-              }
-              if (plyr.success.deflected.count > 40 && plyr.success.deflected.count < 51) {
-                animIndex5 = (plyr.success.deflected.count-40);
-              }
-              finalAnimIndex = animIndex5;
-              // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
-            break;
-            case 'dodging':
-              let animIndex7 = plyr.dodging.count -1;
-              finalAnimIndex = animIndex7;
-              // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
-            break;
-          }
-
-
-          // SPRITE SHEET CHAR AVATAR & ACTION SWITCH!
-          if (plyr.ai.state === false) {
-            switch(plyr.action) {
-              case 'idle':
-                updatedPlayerImg = this.playerImgs[plyr.number-1].idle[weapon];
-              break;
-              case 'moving':
-              if (plyr.pushing.state === true) {
-                updatedPlayerImg = this.playerImgs[plyr.number-1].pushing[weapon];
-              }
-              if (plyr.pulled.state === true) {
-                updatedPlayerImg = this.playerImgs[plyr.number-1].pulled[weapon];
-              }
-              if (plyr.pushed.state === true) {
-                updatedPlayerImg = this.playerImgs[plyr.number-1].pushed[weapon];
-              }
-              else {
-                updatedPlayerImg = this.playerImgs[plyr.number-1].walking[weapon];
-              }
-
-              break;
-              case 'jumping':
-                updatedPlayerImg = this.playerImgs[plyr.number-1].jumping[weapon];
-              break;
-              case 'flanking':
-                updatedPlayerImg = this.playerImgs[plyr.number-1].flanking[weapon];
-              break;
-              case 'strafe moving':
-                if (plyr.pushBack.state === true) {
-                  updatedPlayerImg = this.playerImgs[plyr.number-1].pushBack[weapon];
-                }
-                if (plyr.pulling.state === true) {
-                  updatedPlayerImg = this.playerImgs[plyr.number-1].pulling[weapon];
-                }
-                if (plyr.pulled.state === true) {
-                  updatedPlayerImg = this.playerImgs[plyr.number-1].pulled[weapon];
-                }
-                if (plyr.pushed.state === true) {
-                  updatedPlayerImg = this.playerImgs[plyr.number-1].pushed[weapon];
-                }
-                else {
-                   updatedPlayerImg = this.playerImgs[plyr.number-1].strafing[weapon];
-                }
-              break;
-              case 'falling':
-                updatedPlayerImg = this.playerImgs[plyr.number-1].falling[weapon];
-              break;
-              case 'attacking':
-                updatedPlayerImg = this.playerImgs[plyr.number-1].attacking[weapon];
-              break;
-              case 'defending':
-                updatedPlayerImg = this.playerImgs[plyr.number-1].defending[weapon];
-              break;
-              case 'deflected' :
-                updatedPlayerImg = this.playerImgs[plyr.number-1].deflected[weapon];
-              break;
-              case 'dodging' :
-                updatedPlayerImg = this.playerImgs[plyr.number-1].dodging[weapon];
-              break;
-              case 'dead':
-                updatedPlayerImg = this.playerImgs[plyr.number-1].idle[weapon];
-              break;
-            }
-          }
-          if (plyr.ai.state === true) {
-            let plyrImgIndex;
-            if (plyr.ai.imgType === "A") {
-              plyrImgIndex = 2;
-            }
-            else if (plyr.ai.imgType === "B") {
-              plyrImgIndex = 3;
-            }
-
-            switch(plyr.action) {
-              case 'idle':
-                updatedPlayerImg = this.playerImgs[plyrImgIndex].idle[weapon];
-              break;
-              case 'moving':
-                if (plyr.pushing.state === true) {
-                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pushing[weapon];
-                }
-                if (plyr.pulled.state === true) {
-                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pulled[weapon];
-                }
-                if (plyr.pushed.state === true) {
-                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pushed[weapon];
-                }
-                else {
-                  updatedPlayerImg = this.playerImgs[plyrImgIndex].walking[weapon];
-                }
-              break;
-              case 'jumping':
-                updatedPlayerImg = this.playerImgs[plyrImgIndex].jumping[weapon];
-              break;
-              case 'flanking':
-                updatedPlayerImg = this.playerImgs[plyrImgIndex].flanking[weapon];
-              break;
-              case 'strafe moving':
-              if (plyr.pushBack.state === true) {
-                updatedPlayerImg = this.playerImgs[plyrImgIndex].pushBack[weapon];
-              }
-              if (plyr.pulling.state === true) {
-                updatedPlayerImg = this.playerImgs[plyrImgIndex].pulling[weapon];
-              }
-              if (plyr.pulled.state === true) {
-                updatedPlayerImg = this.playerImgs[plyrImgIndex].pulled[weapon];
-              }
-              if (plyr.pushed.state === true) {
-                updatedPlayerImg = this.playerImgs[plyrImgIndex].pushed[weapon];
-              }
-              else {
-                 updatedPlayerImg = this.playerImgs[plyrImgIndex].strafing[weapon];
-              }
-              break;
-              case 'falling':
-                updatedPlayerImg = this.playerImgs[plyrImgIndex].falling[weapon];
-              break;
-              case 'attacking':
-                updatedPlayerImg = this.playerImgs[plyrImgIndex].attacking[weapon];
-              break;
-              case 'defending':
-                updatedPlayerImg = this.playerImgs[plyrImgIndex].defending[weapon];
-              break;
-              case 'deflected' :
-                updatedPlayerImg = this.playerImgs[plyrImgIndex].deflected[weapon];
-              break;
-              case 'dodging' :
-                updatedPlayerImg = this.playerImgs[plyrImgIndex].dodging[weapon];
-              break;
-              case 'dead':
-                updatedPlayerImg = this.playerImgs[plyrImgIndex].idle[weapon];
-              break;
-            }
-          }
-
-
-          // SET SPRITE SHEET CLIP LOCATION!
-          let dirs = ['north','south','east','west']
-          let dirIndex = dirs.indexOf(plyr.direction);
-          let sHeight = this.charSpriteHeight;
-          let sWidth = this.charSpriteWidth;
-          let sy = dirIndex * sHeight;
-          let sx = (finalAnimIndex - 1)* sWidth;
-
-
-          //PLAYER DEPTH SORTING!!
-          if (plyr.target.cell1.void === false && plyr.moving.state === true && plyr.falling.state !== true && plyr.jumping.state !== true) {
-            let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
-            // console.log('move',finalAnimIndex);
-            // if (plyr.direction === 'north' || plyr.direction === 'northWest' || plyr.direction === 'west') {
-            //   if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
-            //     // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
-            //
-            //     if (plyr.jumping.state === true) {
-            //       context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
-            //     } else {
-            //       context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
-            //     }
-            //
-            //     // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
-            //
-            //   }
-            // }
-            if (plyr.direction === 'north') {
-              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
-                // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
-
-                if (plyr.jumping.state === true) {
-                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
-                } else {
-                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
-                }
-
-                // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
-
-              }
-            }
-            if (plyr.direction === 'west') {
-              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
-                // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
-
-                if (plyr.jumping.state === true) {
-                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
-                } else {
-                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
-                }
-
-                // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
-
-              }
-            }
-            // if (plyr.direction === 'east' || plyr.direction === 'south' || plyr.direction === 'southEast') {
-            //   if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
-            //     // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
-            //     console.log('here',x,y);
-            //     if (plyr.jumping.state === true) {
-            //       context2.translate(this.camera.pan.x,this.camera.pan.y);
-            //       context2.scale(this.camera.zoom.x,this.camera.zoom.y);
-            //       context2.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
-            //
-            //     } else {
-            //       context2.translate(this.camera.pan.x,this.camera.pan.y);
-            //       context2.scale(this.camera.zoom.x,this.camera.zoom.y);
-            //       context2.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
-            //
-            //     }
-            //     // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
-            //     // playerDrawLog(x,y,plyr)
-            //   }
-            // }
-            if (plyr.direction === 'east') {
-              if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
-                // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
-                // console.log('here',x,y);
-                if (plyr.jumping.state === true) {
-                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
-
-                } else {
-                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
-
-                }
-                // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
-                // playerDrawLog(x,y,plyr)
-              }
-            }
-            if (plyr.direction === 'south') {
-              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
-                // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
-                if (plyr.jumping.state === true) {
-                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
-                } else {
-                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
-                }
-                // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
-                // playerDrawLog(x,y,plyr)
-              }
-            }
-
-            if (plyr.pushBack.state === true) {
-
-              // context.drawImage(indicatorImgs.pushback, point.x-20, point.y-20, 35,35);
-            }
-
-          }
-          else if (plyr.moving.state === false && plyr.ghost.state !== true && plyr.dodging.state !== true) {
-
-            if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y && plyr.success.deflected.state === false) {
-              // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
-
-              // console.log('updatedPlayerImg',finalAnimIndex,sx, sy, sWidth, sHeight,point);
-              context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-
-              if (plyr.attacking.state === true) {
-                // console.log('ff atk',plyr.action ,finalAnimIndex,'plyr #', player.number);
-
-                // if (plyr.attacking.count > 0 && plyr.attacking.count < 3) {
-                //   // console.log('ff atk pre',plyr.action ,finalAnimIndex,'plyr #', player.number,'time',this.time);
-                //   context.drawImage(indicatorImgs.preAttack, point.x-35, point.y-35, 35,35);
-                // }
-
-                let attackPeak = this.attackAnimRef.peak.sword;
-                if (player.currentWeapon.type === 'spear') {
-                  attackPeak = this.attackAnimRef.peak.spear;
-                }
-                if (player.currentWeapon.type === 'crossbow') {
-                  attackPeak = this.attackAnimRef.peak.crossbow;
-                }
-                if (player.currentWeapon.type === '') {
-                  attackPeak = this.attackAnimRef.peak.unarmed;
-                }
-
-                if (plyr.attacking.count === attackPeak) {
-                  // console.log('ff atk peak',plyr.action ,finalAnimIndex,'plyr #', player.number,'time',this.time);
-                }
-                if (plyr.attacking.count > attackPeak && plyr.attacking.count < plyr.attacking.limit+1) {
-                  if (plyr.attackStrength === 1) {
-
-                    // context.fillStyle = fillClr2;
-                    // context.beginPath();
-                    // context.arc(pos.x-10, pos.y, 10, 0, 2 * Math.PI);
-                    // context.fill();
-
-                    // context.beginPath();
-                    // context.rect(20, 20, 150, 100);
-                    // context.stroke();
-
-                    // context.drawImage(indicatorImgs.attack1, point.x-35, point.y-35, 35,35);
-                  }
-                  if (plyr.attackStrength === 2) {
-                    // context.drawImage(indicatorImgs.attack2, point.x-35, point.y-35, 35,35);
-                  }
-                  if (plyr.bluntAttack === true) {
-                    // context.drawImage(indicatorImgs.attackBlunt, point.x-35, point.y-35, 35,35);
-                  }
-                  if (plyr.currentWeapon.type === '') {
-                    // context.drawImage(indicatorImgs.attackUnarmed, point.x-35, point.y-35, 35,35);
-                  }
-
-                  else if (plyr.currentWeapon.type !== '') {
-                    // context.drawImage(indicatorImgs.attack3, point.x-35, point.y-35, 35,35);
-                  }
-                }
-
-              }
-
-              if (plyr.defending.state === true) {
-                // context.drawImage(this.indicatorImgs.defend, point.x-35, point.y-35, 35,35);
-              }
-              if (plyr.success.attackSuccess === true) {
-                context.drawImage(this.indicatorImgs.attackSuccess, point.x-35, point.y-35, 35,35);
-              }
-              if (plyr.dodging.countState === true && plyr.dodging.count < 3) {
-                // context.drawImage(indicatorImgs.preAttack2, point.x-45, point.y-35, 35,35);
-              }
-
-              if (plyr.defending.count > 0 && plyr.defending.count < plyr.defending.limit ) {
-                // context2.drawImage(indicatorImgs.preAttack, point.x-35, point.y-35, 35,35);
-              }
-              // context.fillStyle = 'white';
-              // context.beginPath();
-              // context.rect(point.x-25, point.y-25, 50, 50);
-              // context.stroke();
-              // if (plyr.dodging.state === true) {
-              //   context.drawImage(indicatorImgs.dodge, point.x-45, point.y-35, 35,35);
-              // }
-
-              // playerDrawLog(x,y,plyr)
-            }
-          }
-          else if (plyr.target.cell1.void === true && plyr.moving.state === true && plyr.falling.state !== true && plyr.jumping.state !== true) {
-
-            // console.log('heading for thevoid @ draw step');
-            // if (
-            //   x === plyr.currentPosition.cell.number.x &&
-            //   y === plyr.currentPosition.cell.number.y
-            // ) {
-            //   console.log('heading for thevoid @ draw step',plyr.target.cell1.number);
-            // }
-
-
-            if (plyr.moving.origin.number.x === this.gridWidth && plyr.moving.origin.number.y !== 0 && plyr.moving.origin.number.y !== this.gridWidth) {
-              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y + 1) {
-
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
-              }
-            }
-            if (plyr.moving.origin.number.x === this.gridWidthd && plyr.moving.origin.number.y === 0) {
-              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
-
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
-              }
-            }
-            if (plyr.moving.origin.number.x === this.gridWidthd && plyr.moving.origin.number.y === this.gridWidthd) {
-              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
-
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
-              }
-            }
-            if (plyr.moving.origin.number.x === 0 && plyr.moving.origin.number.y === this.gridWidthd) {
-              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
-
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
-              }
-            }
-            if (plyr.moving.origin.number.x === 0 && plyr.moving.origin.number.y === 0) {
-              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
-
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
-              }
-            }
-            else {
-              if (x === plyr.moving.origin.number.x + 1 && y === plyr.moving.origin.number.y) {
-
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-                // context.fillStyle = "black";
-                // context.fillRect(point.x, point.y,5,5);
-              }
-            }
-          }
-          if (plyr.jumping.state === true ) {
-            let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
-
-            if (plyr.direction === 'north') {
-              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
-              }
-            }
-            if (plyr.direction === 'west') {
-              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
-              }
-            }
-            if (plyr.direction === 'east') {
-              if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
-              }
-            }
-            if (plyr.direction === 'south') {
-              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
-              }
-            }
-          }
-
-          if (plyr.strafing.state === true && plyr.falling.state !== true && plyr.jumping.state !== true) {
-            if (plyr.strafing.direction === 'north' || plyr.strafing.direction === 'northWest' || plyr.strafing.direction === 'west') {
-              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
-                // playerDrawLog(x,y,plyr)
-              }
-
-            }
-            if (plyr.strafing.direction === 'east' || plyr.direction === 'east') {
-              if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
-              // if (x === plyr.target.cell1.number.x && y === plyr.target.cell1.number.y) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
-                // playerDrawLog(x,y)
-              }
-
-            }
-            if (plyr.strafing.direction === 'south' || plyr.direction === 'south') {
-              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
-              // if (x === plyr.moving.destination.number.x && y === plyr.moving.destination.number.y) {
-              // if (x === plyr.target.cell1.number.x && y === plyr.target.cell1.number.y) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
-                // playerDrawLog(x,y)
-              }
-
-            }
-            if (plyr.strafing.direction === 'northEast') {
-              if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
-                // playerDrawLog(x,y)
-              }
-            }
-            if (plyr.strafing.direction === 'southWest') {
-              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
-                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
-                // playerDrawLog(x,y)
-              }
-            }
-          }
-          if (plyr.flanking.state === true && plyr.falling.state !== true) {
-
-            if (
-              plyr.currentPosition.cell.number.x === x &&
-              plyr.currentPosition.cell.number.y === y
-            ){
-              // console.log('flanking @ draw','finalAnimIndex',finalAnimIndex);
-            }
-
-            if (plyr.direction === 'east') {
-              if (plyr.flanking.direction === 'north') {
-                if (plyr.flanking.step === 1) {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-                  }
-                }
-                if (plyr.flanking.step === 2) {
-                  if (
-                    // x === plyr.flanking.target1.x &&
-                    // y === plyr.flanking.target1.y
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y+1
-                  ) {
-                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-                  }
-                }
-              }
-            }
-            if (plyr.direction === 'west') {
-              if (plyr.flanking.direction === 'south') {
-                if (plyr.flanking.step === 1) {
-                  if (
-                    // x === plyr.currentPosition.cell.number.x &&
-                    // y === plyr.currentPosition.cell.number.y
-                    x === plyr.flanking.target1.x &&
-                    y === plyr.flanking.target1.y
-                  ) {
-                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-                  }
-                }
-                if (plyr.flanking.step === 2) {
-                  if (
-                    x === plyr.flanking.target1.x &&
-                    y === plyr.flanking.target1.y
-                  ) {
-                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-                  }
-                }
-              }
-            }
-            if (plyr.direction === 'north') {
-              if (plyr.flanking.direction === 'east') {
-                if (plyr.flanking.step === 1) {
-                  if (
-                    x === plyr.flanking.target1.x &&
-                    y === plyr.flanking.target1.y
-                  ) {
-                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-                  }
-                }
-                if (plyr.flanking.step === 2) {
-                  if (
-                    x === plyr.flanking.target1.x &&
-                    y === plyr.flanking.target1.y
-                  ) {
-                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-                  }
-                }
-              }
-            }
-            if (plyr.direction === 'south') {
-              if (plyr.flanking.direction === 'west') {
-                if (plyr.flanking.step === 1) {
-                  if (
-                    x === plyr.currentPosition.cell.number.x &&
-                    y === plyr.currentPosition.cell.number.y
-                  ) {
-                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-                  }
-                }
-                if (plyr.flanking.step === 2) {
-                  if (
-                    x === plyr.flanking.target2.x &&
-                    y === plyr.flanking.target2.y
-                  ) {
-                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-                  }
-                }
-              }
-            }
-          }
-          if (plyr.falling.state === true) {
-
-            if (
-              x === plyr.target.cell1.number.x &&
-              y === plyr.target.cell1.number.y
-            ) {
-              context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
-              // playerDrawLog(x,y,plyr)
-            }
-
-            if (
-              plyr.target.cell1.number.x < 0 ||
-              plyr.target.cell1.number.y < 0 ||
-              plyr.target.cell1.number.x > this.gridWidth ||
-              plyr.target.cell1.number.y > this.gridWidth
-            ) {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
-                // playerDrawLog(x,y,plyr)
-              }
-            }
-
-          }
-
-          if (plyr.success.deflected.state === true) {
-            // console.log('updatedPlayerImg, sx, sy', sx, sy,'points',point.x-35, point.y-20,'dodge',plyr.dodging.state);
-
-            if (plyr.direction === 'north') {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y+1
-              ) {
-
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  point.x-35, point.y-20, this.playerDrawWidth, this.playerDrawHeight)
-
-                if (plyr.success.deflected.type === 'attack') {
-                  // context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
-                }
-                else if (plyr.success.deflected.type === 'attacked') {
-                  // context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
-                }
-                else if (plyr.success.deflected.type === 'blunt_attacked') {
-                  // context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
-                }
-              }
-            }
-            if (plyr.direction === 'east') {
-              if (
-                x === plyr.currentPosition.cell.number.x &&
-                y === plyr.currentPosition.cell.number.y
-              ) {
-
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-35, point.y-30, this.playerDrawWidth,this.playerDrawHeight);
-
-                if (plyr.success.deflected.type === 'attack') {
-                  // context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
-                }
-                else if (plyr.success.deflected.type === 'attacked') {
-                  // context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
-                }
-                else if (plyr.success.deflected.type === 'blunt_attacked') {
-                  // context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
-                }
-              }
-            }
-            if (plyr.direction === 'west') {
-              if (
-                x === plyr.currentPosition.cell.number.x+1 &&
-                y === plyr.currentPosition.cell.number.y
-              ) {
-
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-15, point.y-20, this.playerDrawWidth,this.playerDrawHeight);
-
-                if (plyr.success.deflected.type === 'attack') {
-                  // context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
-                }
-                else if (plyr.success.deflected.type === 'attacked') {
-                  // context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
-                }
-                else if (plyr.success.deflected.type === 'blunt_attacked') {
-                  // context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
-                }
-              }
-            }
-            if (plyr.direction === 'south') {
-              if (
-                x === plyr.currentPosition.cell.number.x+1 &&
-                y === plyr.currentPosition.cell.number.y
-              ) {
-
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-15, point.y-30, this.playerDrawWidth,this.playerDrawHeight);
-
-                if (plyr.success.deflected.type === 'attack') {
-                  // context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
-                }
-                else if (plyr.success.deflected.type === 'attacked') {
-                  // context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
-                }
-                else if (plyr.success.deflected.type === 'blunt_attacked') {
-                  // context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
-                }
-              }
-            }
-
-
-          }
-          if (plyr.dodging.state === true && plyr.success.deflected.state !== true) {
-
-            if (plyr.direction === 'north' || plyr.direction === 'south') {
-              if (
-                // x === plyr.moving.origin.number.x &&
-                // y === plyr.moving.origin.number.y+1
-                x === plyr.currentPosition.cell.number.x &&
-                y === plyr.currentPosition.cell.number.y
-              ) {
-                if (plyr.dodgeDirection === 'east') {
-                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  point.x-45, point.y-35, this.playerDrawWidth, this.playerDrawHeight)
-                } else {
-                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  point.x-10, point.y-20, this.playerDrawWidth, this.playerDrawHeight)
-                }
-              }
-            }
-            if (plyr.direction === 'east' || plyr.direction === 'west') {
-              let cll = this.gridInfo.find(elem => elem.number.x === plyr.currentPosition.cell.number.x && elem.number.y === plyr.currentPosition.cell.number.y)
-              if (cll.edge.state === true && cll.edge.side === "south") {
-                if (
-                  x === plyr.currentPosition.cell.number.x &&
-                  y === plyr.currentPosition.cell.number.y
-                ) {
-                  if (plyr.dodgeDirection === 'north') {
-                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-10, point.y-35, this.playerDrawWidth,this.playerDrawHeight);
-                  } else {
-                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-40, point.y-15, this.playerDrawWidth,this.playerDrawHeight);
-                  }
-                }
-              } else {
-                if (
-                  x === plyr.currentPosition.cell.number.x &&
-                  y === plyr.currentPosition.cell.number.y+1
-                ) {
-                  if (plyr.dodgeDirection === 'north') {
-                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-10, point.y-35, this.playerDrawWidth,this.playerDrawHeight);
-                  } else {
-                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-40, point.y-15, this.playerDrawWidth,this.playerDrawHeight);
-                  }
-                }
-              }
-
-            }
-            // context.drawImage(indicatorImgs.dodge, point.x-45, point.y-35, 35,35);
-
-          }
-          // DEPTH SORTING!!
-
-
-          if (plyr.respawn === true) {
-
-            if (
-              x === plyr.startPosition.cell.number.x &&
-              y === plyr.startPosition.cell.number.y
-            ) {
-              // console.log('respawning... confirm dead player',plyr.dead.state,x,y);
-
-                let respawnPoint = {
-                  number: {
-                    x: 0,
-                    y: 0,
-                  },
-                  center: {
-                    x: 0,
-                    y: 0,
-                  }
-                }
-                let altRespawnPoint = {
-                  number: {
-                    x: 0,
-                    y: 0,
-                  },
-                  center: {
-                    x: 0,
-                    y: 0,
-                  }
-                }
-                let altRespawnPoint2 = {
-                  number: {
-                    x: 0,
-                    y: 0,
-                  },
-                  center: {
-                    x: 0,
-                    y: 0,
-                  }
-                }
-                let respawnCellOccupied = false;
-
-                // console.log('matching grid info with start position');
-                let elem1 = this.gridInfo.find(gridCell => gridCell.number.x === this.gridWidth && gridCell.number.y === this.gridWidth);
-                altRespawnPoint.number.x = elem1.number.x;
-                altRespawnPoint.number.y = elem1.number.y;
-                altRespawnPoint.center.x = elem1.center.x;
-                altRespawnPoint.center.y = elem1.center.y;
-
-                let elem2 = this.gridInfo.find(gridCell => gridCell.number.x === this.gridWidth && gridCell.number.y === 0);
-                altRespawnPoint2.number.x = elem2.number.x;
-                altRespawnPoint2.number.y = elem2.number.y;
-                altRespawnPoint2.center.x = elem2.center.x;
-                altRespawnPoint2.center.y = elem2.center.y;
-
-
-                // '**_*_0.0_a_0**'
-                // barrierbarrierPosition_obstacle_x.y_terrain_elevationNumberelevationTypeelevationPosition
-
-
-                let elem3 = this.gridInfo.find(gridCell => gridCell.number.x === plyr.startPosition.cell.number.x && gridCell.number.y === plyr.startPosition.cell.number.y);
-                for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
-                  for (const cell of row) {
-                    if (
-                      cell.split('_')[0] !== "**" ||
-                      cell.split('_')[1] !== "*"
-                      // cell.charAt(0) === 'y' ||
-                      // cell.charAt(0) ===  'z'
-                    ) {
-                      let obstaclePosition = {
-                        // x: Number(cell.charAt(1)),
-                        x: Number(cell.split("_")[2].charAt(0)),
-                        y: row.indexOf(cell),
-                      }
-                      // console.log('found obstacle during map scan @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
-                      if (
-                        elem3.number.x === obstaclePosition.x &&
-                        elem3.number.y === obstaclePosition.y
-                      ) {
-                        // console.log('an obstacle is in your way');
-                        respawnCellOccupied = true;
-                      }
-                    }
-                  }
-                }
-                if (elem3.void.state === true ) {
-                  respawnCellOccupied = true;
-                }
-                for (const plyr2 of this.players) {
-                  if (plyr2.number !== plyr.number) {
-                    if (
-                      elem3.number.x === plyr2.currentPosition.cell.number.x &&
-                      elem3.number.y === plyr2.currentPosition.cell.number.y
-                    ) {
-                      respawnCellOccupied = true;
-                    }
-                  }
-                }
-
-                if (
-                  respawnCellOccupied === false
-                ) {
-
-                  respawnPoint.number.x = elem3.number.x;
-                  respawnPoint.number.y = elem3.number.y;
-                  respawnPoint.center.x = elem3.center.x;
-                  respawnPoint.center.y = elem3.center.y;
-
-
-
-                  plyr.dead.state = false;
-                  plyr.currentPosition.cell = respawnPoint;
-                  plyr.nextPosition = respawnPoint.center;
-                  this.getTarget(plyr)
-                  plyr.moving = {
-                    state: false,
-                    step: 0,
-                    course: '',
-                    origin: {
-                      number: {
-                        x: respawnPoint.number.x,
-                        y: respawnPoint.number.y
-                      },
-                      center: {
-                        x: respawnPoint.center.x,
-                        y: respawnPoint.center.y
-                      },
-                    },
-                    destination: {
-                      x: this.players[plyr.number-1].target.cell1.center.x,
-                      y: this.players[plyr.number-1].target.cell1.center.y
-                    }
-                  }
-
-                  plyr.direction = 'north';
-                  plyr.respawn = false;
-                  this.players[plyr.number-1] = plyr;
-
-                  // context.drawImage(updatedPlayerImg, respawnPoint.center.x-25, respawnPoint.center.y-50, 55,55);
-
-                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  respawnPoint.center.x-25, respawnPoint.center.y-50,this.playerDrawWidth, this.playerDrawHeight)
-
-                  if (
-                      this.settingAutoCamera === false &&
-                      player.ai.state !== true &&
-                      this.camera.preInstructions.length === 0 &&
-                      this.camera.instructions.length === 0
-                    ) {
-                    this.setAutoCamera('playerSpawnFocus',plyr)
-                  }
-                  else {
-                    console.log('no setting auto cam: playerSpawnFocus');
-                  }
-
-
-                }
-                else if (respawnCellOccupied === true) {
-
-                  console.log("no free cells for respawn");
-                  alert("no free cells for respawn");
-                  
-                  // if (plyr.number === 1) {
-                  //   respawnPoint = altRespawnPoint;
-                  // }
-                  // if (plyr.number === 2) {
-                  //   respawnPoint = altRespawnPoint2;
-                  // }
-
-                }
-
-              }
-
-            }
-          if (plyr.dead.state === true && player.dead.count > 0 && plyr.dead.count < plyr.dead.limit) {
-
-            if (
-              x === plyr.ghost.position.cell.number.x &&
-              y === plyr.ghost.position.cell.number.y
-            ) {
-              // console.log('player',plyr.number,'dying',player.dead.count);
-              context.drawImage(this.indicatorImgs.death, plyr.ghost.position.cell.center.x-15, plyr.ghost.position.cell.center.y-15, 25,25);
-            }
-          }
-          if (plyr.ghost.state === true && player.dead.count === 0) {
-            if (x === plyr.ghost.position.cell.number.x && y === plyr.ghost.position.cell.number.y) {
-              // console.log('player ',plyr.number,'ghost @',plyr.ghost.position.cell.number,plyr.ghost.position.cell.center);
-              context.drawImage(this.indicatorImgs.ghost, plyr.ghost.position.cell.center.x-20, plyr.ghost.position.cell.center.y-20, 25,25);
-            }
-          }
-
-
-          this.players[plyr.number-1] = plyr;
-
-
-          // PLAYER POPUPS & TRACKING OUTLINES
-          if (x === this.gridWidth && y === this.gridWidth ) {
-
-
-
-
-
-            let popupBorderColor = this.playerColourRef['player'+plyr.number+'']
-            let drawBubble = (ctx,x,y,w,h,radius,px,py,color) => {
-
-               var r = x + w;
-               var b = y + h;
-               if(py<y || py>y+h){
-                var con1 = Math.min(Math.max(x+radius,px-10),r-radius-20);
-                var con2 = Math.min(Math.max(x+radius+20,px+10),r-radius);
-               }
-               else{
-                var con1 = Math.min(Math.max(y+radius,py-10),b-radius-20);
-                var con2 = Math.min(Math.max(y+radius+20,py+10),b-radius);
-               }
-               var dir;
-               if(py < y) dir = 2;
-               if(py > y) dir = 3;
-               if(px < x && py>=y && py<=b) dir = 0;
-               if(px > x && py>=y && py<=b) dir = 1;
-               if(px >= x && px <= r && py >= y && py <= b) dir = -1;
-               ctx.clearRect(x,y,this.popupSize,this.popupSize);
-               ctx.beginPath();
-               ctx.strokeStyle=color;
-               ctx.lineWidth="1";
-               ctx.moveTo(x+radius,y);
-               if(dir==2){
-                ctx.lineTo(con1,y);
-                ctx.lineTo(px,py);
-                ctx.lineTo(con2,y);
-                ctx.lineTo(r-radius,y);
-               }
-               else ctx.lineTo(r-radius,y);
-               ctx.quadraticCurveTo(r,y,r,y+radius);
-               if(dir==1){
-                ctx.lineTo(r,con1);
-                ctx.lineTo(px,py);
-                ctx.lineTo(r,con2);
-                ctx.lineTo(r,b-radius);
-               }
-               else ctx.lineTo(r,b-radius);
-               ctx.quadraticCurveTo(r, b, r-radius, b);
-               if(dir==3){
-                ctx.lineTo(con2,b);
-                ctx.lineTo(px,py);
-                ctx.lineTo(con1,b);
-                ctx.lineTo(x+radius,b);
-               }
-               else ctx.lineTo(x+radius,b);
-               ctx.quadraticCurveTo(x, b, x, b-radius);
-               if(dir==0){
-                ctx.lineTo(x,con2);
-                ctx.lineTo(px,py);
-                ctx.lineTo(x,con1);
-                ctx.lineTo(x,y+radius);
-               }
-               else ctx.lineTo(x,y+radius);
-               ctx.quadraticCurveTo(x, y, x+radius, y);
-               context.fillStyle = 'white';
-               ctx.fill();
-               ctx.stroke();
-               // ctx.globalCompositeOperation = "source-over";
-               ctx.closePath();
-            }
-
-
-            if (plyr.dead.state !== true && plyr.popups.length > 0) {
-
-
-              for (const popup of plyr.popups) {
-                if (popup.state === true) {
-                  // console.log('drawing a popup');
-                  let popupDrawCoords;
-                  if (popup.position === '' || !popup.position) {
-                    let currentPopups = plyr.popups.filter(x=>x.state === true);
-                    // let positions = ['north','east','south','west','northEast','southEast','southWest']
-                    let positions = ['north','east','south','west','northEast','northWest','southEast','southWest']
-
-                    // REMOVE POSITIONS ALREADY TAKEN BY PLAYERS' OTHER POPUPS
-                    for (const popup2 of currentPopups) {
-                      if (popup2.position && popup2.position !== '') {
-
-                        let indx = positions.indexOf(popup2.position);
-                        positions.splice(indx,1)
-                      }
-
-                    }
-
-                    let dir = undefined;
-
-                    // CHECK OTHER PLAYER'S POSITION AND THE POPUPS POSITION
-                    for (const plyr2 of this.players) {
-                      if (plyr2.ai.state !== true && plyr2.number !== plyr.number) {
-                        let myPos = plyr.currentPosition.cell.number;
-                        let invalidPos = this.players[plyr2.number-1].currentPosition.cell.number;
-
-                        dir = undefined;
-                        // let invalidPositions = [invalidPos];
-
-                        // GET DIRECTION OF OTHER PLAYER CELL RELATIVE TO ME
-                        if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
-                          dir = 'north';
-                        }
-                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y-1) {
-                          dir = 'northWest';
-                        }
-                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y) {
-                          dir = 'west';
-                        }
-                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y+1) {
-                          dir = 'southWest';
-                        }
-                        if (invalidPos.x === myPos.x && invalidPos.y === myPos.y+1) {
-                          dir = 'south';
-                        }
-                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y+1) {
-                          dir = 'southEast';
-                        }
-                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y) {
-                          dir = 'east';
-                        }
-                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y-1) {
-                          dir = 'northEast';
-                        }
-
-                        if (dir && positions.includes(dir) === true) {
-                          positions.splice(positions.indexOf(dir),1);
-                          // console.log('player popups (unset): human player position is close to player',plyr.number,' @ ',invalidPos,'dir',dir);
-                          // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                        }
-
-
-                        // GET DIRECTION OF ALL OTHER PLAYERS' POPUPS OCCUPY, RELATIVE TO ME
-                        for(const pop of plyr2.popups) {
-
-                          dir = undefined;
-
-                          if (pop.state === true) {
-
-                            let invalidPos2 = {
-                              x: undefined,
-                              y: undefined,
-                            }
-
-                            switch (pop.position) {
-                              case 'north':
-                                invalidPos2 = {
-                                  x: invalidPos.x,
-                                  y: invalidPos.y-1,
-                                }
-                                break;
-                              case 'northEast':
-                                invalidPos2 = {
-                                  x: invalidPos.x+1,
-                                  y: invalidPos.y-1,
-                                }
-                                break;
-                              case 'northWest':
-                                invalidPos2 = {
-                                  x: invalidPos.x-1,
-                                  y: invalidPos.y-1,
-                                }
-                                break;
-                              case 'south':
-                                invalidPos2 = {
-                                  x: invalidPos.x,
-                                  y: invalidPos.y+1,
-                                }
-                                break;
-                              case 'southEast':
-                                invalidPos2 = {
-                                  x: invalidPos.x+1,
-                                  y: invalidPos.y+1,
-                                }
-                                break;
-                              case 'southWest':
-                                invalidPos2 = {
-                                  x: invalidPos.x-1,
-                                  y: invalidPos.y+1,
-                                }
-                                break;
-                              case 'east':
-                                invalidPos2 = {
-                                  x: invalidPos.x-1,
-                                  y: invalidPos.y,
-                                }
-                                break;
-                              case 'west':
-                                invalidPos2 = {
-                                  x: invalidPos.x+1,
-                                  y: invalidPos.y,
-                                }
-                                break;
-                              default:
-
-                            }
-
-
-                            if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
-                              dir = 'north';
-                            }
-                            if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
-                              dir = 'northWest';
-                            }
-                            if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
-                              dir = 'west';
-                            }
-                            if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
-                              dir = 'southWest';
-                            }
-                            if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
-                              dir = 'south';
-                            }
-                            if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
-                              dir = 'southEast';
-                            }
-                            if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
-                              dir = 'east';
-                            }
-                            if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
-                              dir = 'northEast';
-                            }
-
-                            if (dir && positions.includes(dir) === true) {
-                              positions.splice(positions.indexOf(dir),1);
-                              // console.log('player popups (unset): human player popup position is close to player',plyr.number,' @ ',invalidPos2,'dir',dir);
-                              // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                            }
-
-                          }
-
-                        }
-
-
-                      }
-                    }
-
-
-                    // GET DIRECTION OF CELL POPUPS' POPUPS  CELLS RELATIVE TO ME
-                    for (const popup2 of this.cellPopups) {
-
-                      dir = undefined;
-
-                      if (popup2.state === true) {
-
-                        let myPos = plyr.currentPosition.cell.number;
-                        let cellPos = popup2.cell.number;
-                        let invalidPos2 = {
-                          x: undefined,
-                          y: undefined,
-                        }
-
-
-                        switch (popup2.position) {
-                          case 'north':
-                            invalidPos2 = {
-                              x: cellPos.x,
-                              y: cellPos.y-1,
-                            }
-                            break;
-                          case 'northEast':
-                            invalidPos2 = {
-                              x: cellPos.x+1,
-                              y: cellPos.y-1,
-                            }
-                            break;
-                          case 'northWest':
-                            invalidPos2 = {
-                              x: cellPos.x-1,
-                              y: cellPos.y-1,
-                            }
-                            break;
-                          case 'south':
-                            invalidPos2 = {
-                              x: cellPos.x,
-                              y: cellPos.y+1,
-                            }
-                            break;
-                          case 'southEast':
-                            invalidPos2 = {
-                              x: cellPos.x+1,
-                              y: cellPos.y+1,
-                            }
-                            break;
-                          case 'southWest':
-                            invalidPos2 = {
-                              x: cellPos.x-1,
-                              y: cellPos.y+1,
-                            }
-                            break;
-                          case 'east':
-                            invalidPos2 = {
-                              x: cellPos.x-1,
-                              y: cellPos.y,
-                            }
-                            break;
-                          case 'west':
-                            invalidPos2 = {
-                              x: cellPos.x+1,
-                              y: cellPos.y,
-                            }
-                            break;
-                          default:
-
-                        }
-
-                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
-                          dir = 'north';
-                        }
-                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
-                          dir = 'northWest';
-                        }
-                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
-                          dir = 'west';
-                        }
-                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
-                          dir = 'southWest';
-                        }
-                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
-                          dir = 'south';
-                        }
-                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
-                          dir = 'southEast';
-                        }
-                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
-                          dir = 'east';
-                        }
-                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
-                          dir = 'northEast';
-                        }
-                        if (dir && positions.includes(dir) === true) {
-                          positions.splice(positions.indexOf(dir),1);
-                          // console.log('player popups (unset): cell popup position is close to player',plyr.number,' @ ',invalidPos2,'dir',dir);
-                          // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                        }
-
-
-                        // let indx = positions.indexOf(popup2.position);
-                        // positions.splice(indx,1)
-                      }
-
-                    }
-
-
-                    // console.log('new or postponed popup ',popup.msg,'position',positions[0]);
-
-                    if (!positions[0]) {
-                      // console.log('no open positions for new or postponed popup', popup.msg);
-                      popup.state = false;
-                      popup.count = 0;
-                    } else {
-                      popup.position = positions[0];
-                    }
-
-
-                    let popupProgress = false;
-                    let showProgress = false;
-                    let writeValue = false;
-                    if (
-                      plyr.prePush.state === true ||
-                      plyr.prePull.state === true ||
-                      plyr.dodging.state === true ||
-                      plyr.action === 'dodging' ||
-                      plyr.action === 'defending' ||
-                      plyr.action === 'attacking' ||
-                      plyr.attacking.state === true
-                    ) {
-                      showProgress = true;
-                    }
-                    if (
-                      popup.msg === "attacking1" ||
-                      popup.msg === "attacking2" ||
-                      popup.msg === "defending" ||
-                      popup.msg === "prePush" ||
-                      popup.msg === "prePull" ||
-                      popup.msg === "dodging"
-                    ) {
-                      popupProgress = true;
-                    }
-
-                    if (popup.img === "") {
-                      popup.img = this.popupImageRef[popup.msg];
-                    }
-
-                    if (popup.msg.split("_")) {
-                      if (popup.msg.split("_")[0] === "hpUp" || popup.msg.split("_")[0] === "hpDown") {
-                        writeValue = true;
-                        popup.img = this.popupImageRef[popup.msg.split("_")[0]]
-                      }
-                    }
-
-
-                    popupDrawCoords = this.popupDrawCalc(popup.position,{x:point.x-25,y:point.y-25},plyr.number);
-
-                    drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor);
-                    let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
-
-                    if (showProgress === true  && popupProgress === true) {
-                      let perc = this.playerPopupProgressCalc(plyr,popup)
-                      context.fillStyle = this.popupProgressImgGradColor2;
-                      context.beginPath();
-                      context.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
-                      context.stroke();
-                      context.fillStyle = this.popupProgressImgGradColor1;
-                      context.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
-                      context.fill();
-                    }
-
-
-                    if (writeValue === true) {
-                      context.font = "15px Arial";
-                      context.fillStyle = 'black';
-                      context.fillText(popup.msg.split("_")[1],popupDrawCoords.origin.x+((this.popupSize-(popup.msg.split("_")[1].length*7))/2),popupDrawCoords.origin.y+15);
-
-                      centerPopupOffset = (this.popupSize-this.popupImgSize*.75)/2;
-                      context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+(centerPopupOffset+5),this.popupImgSize*.75,this.popupImgSize*.75);
-                    }
-                    else {
-                      context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
-                    }
-
-
-
-                  }
-                  else if (popup.position !== 'northWest') {
-
-
-                    let dir = undefined;
-                    let dirs = [];
-
-                    let currentPopups = this.cellPopups.filter(x=>x.state === true);
-
-                    // HAVE ANY OTHER PLAYERS OR OTHER PLAYERS' POPUPS MOVED TO INVALID POSITIONS SINCE POPUP'S 1ST DRAW
-                    for (const plyr2 of this.players) {
-                      if (plyr2.ai.state !== true && plyr2.number !== plyr.number) {
-                        let myPos = plyr.currentPosition.cell.number;
-                        let invalidPos = this.players[plyr2.number-1].currentPosition.cell.number;
-
-
-                        if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
-                          dir = 'north';
-                        }
-                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y-1) {
-                          dir = 'northWest';
-                        }
-                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y) {
-                          dir = 'west';
-                        }
-                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y+1) {
-                          dir = 'southWest';
-                        }
-                        if (invalidPos.x === myPos.x && invalidPos.y === myPos.y+1) {
-                          dir = 'south';
-                        }
-                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y+1) {
-                          dir = 'southEast';
-                        }
-                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y) {
-                          dir = 'east';
-                        }
-                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y-1) {
-                          dir = 'northEast';
-                        }
-
-                        if (dir) {
-                          // console.log('player popups (set): human player position is close to player',plyr.number,' @ ',invalidPos,' dir ',dir);
-                          dirs.push(dir);
-                        }
-
-
-                        for(const pop of plyr2.popups) {
-
-
-                          dir = undefined;
-                          let invalidPos2 = {
-                            x: undefined,
-                            y: undefined,
-                          }
-
-                          switch (pop.position) {
-                            case 'north':
-                              invalidPos2 = {
-                                x: invalidPos.x,
-                                y: invalidPos.y-1,
-                              }
-                              break;
-                            case 'northEast':
-                              invalidPos2 = {
-                                x: invalidPos.x+1,
-                                y: invalidPos.y-1,
-                              }
-                              break;
-                            case 'northWest':
-                              invalidPos2 = {
-                                x: invalidPos.x-1,
-                                y: invalidPos.y-1,
-                              }
-                              break;
-                            case 'south':
-                              invalidPos2 = {
-                                x: invalidPos.x,
-                                y: invalidPos.y+1,
-                              }
-                              break;
-                            case 'southEast':
-                              invalidPos2 = {
-                                x: invalidPos.x+1,
-                                y: invalidPos.y+1,
-                              }
-                              break;
-                            case 'southWest':
-                              invalidPos2 = {
-                                x: invalidPos.x-1,
-                                y: invalidPos.y+1,
-                              }
-                              break;
-                            case 'east':
-                              invalidPos2 = {
-                                x: invalidPos.x-1,
-                                y: invalidPos.y,
-                              }
-                              break;
-                            case 'west':
-                              invalidPos2 = {
-                                x: invalidPos.x+1,
-                                y: invalidPos.y,
-                              }
-                              break;
-                            default:
-
-                          }
-
-
-                          if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
-                            dir = 'north';
-                          }
-                          if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
-                            dir = 'northWest';
-                          }
-                          if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
-                            dir = 'west';
-                          }
-                          if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
-                            dir = 'southWest';
-                          }
-                          if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
-                            dir = 'south';
-                          }
-                          if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
-                            dir = 'southEast';
-                          }
-                          if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
-                            dir = 'east';
-                          }
-                          if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
-                            dir = 'northEast';
-                          }
-                          // if (dir && positions.includes(dir) === true) {
-                          //   positions.splice(positions.indexOf(dir),1);
-                          //   // console.log('dont draw over player @',dir,'choose frome these position',positions);
-                          // }
-                          if (dir) {
-                            // console.log('player popups (set): human player popup position is close to player',plyr.number,' @ ',invalidPos2,' dir ',dir);
-                            dirs.push(dir);
-                          }
-
-                        }
-
-                      }
-                    }
-
-                    // HAVE ANY CELL POPUPS MOVED TO A NEARBY CELL TO ME
-                    for (const popup2 of currentPopups) {
-
-                      dir = undefined;
-
-                      let myPos = plyr.currentPosition.cell.number;
-
-                      let cellPos = popup2.cell.number;
-                      let invalidPos2 = {
-                        x: undefined,
-                        y: undefined,
-                      }
-
-
-                      switch (popup2.position) {
-                        case 'north':
-                          invalidPos2 = {
-                            x: cellPos.x,
-                            y: cellPos.y-1,
-                          }
-                          break;
-                        case 'northEast':
-                          invalidPos2 = {
-                            x: cellPos.x+1,
-                            y: cellPos.y-1,
-                          }
-                          break;
-                        case 'northWest':
-                          invalidPos2 = {
-                            x: cellPos.x-1,
-                            y: cellPos.y-1,
-                          }
-                          break;
-                        case 'south':
-                          invalidPos2 = {
-                            x: cellPos.x,
-                            y: cellPos.y+1,
-                          }
-                          break;
-                        case 'southEast':
-                          invalidPos2 = {
-                            x: cellPos.x+1,
-                            y: cellPos.y+1,
-                          }
-                          break;
-                        case 'southWest':
-                          invalidPos2 = {
-                            x: cellPos.x-1,
-                            y: cellPos.y+1,
-                          }
-                          break;
-                        case 'east':
-                          invalidPos2 = {
-                            x: cellPos.x-1,
-                            y: cellPos.y,
-                          }
-                          break;
-                        case 'west':
-                          invalidPos2 = {
-                            x: cellPos.x+1,
-                            y: cellPos.y,
-                          }
-                          break;
-                        default:
-
-                      }
-
-                      if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
-                        dir = 'north';
-                      }
-                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
-                        dir = 'northWest';
-                      }
-                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
-                        dir = 'west';
-                      }
-                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
-                        dir = 'southWest';
-                      }
-                      if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
-                        dir = 'south';
-                      }
-                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
-                        dir = 'southEast';
-                      }
-                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
-                        dir = 'east';
-                      }
-                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
-                        dir = 'northEast';
-                      }
-
-                      if (dir) {
-                        // console.log('player popups (set): cell popup position is close to player',plyr.number,' @ ',invalidPos2,' dir ',dir);
-                        dirs.push(dir);
-                      }
-
-                      // if (popup2.msg !== popup.msg) {
-                      //
-                      //   let myPos = plyr.currentPosition.cell.number;
-                      //
-                      //   let cellPos = popup2.cell.number;
-                      //   let invalidPos2 = {
-                      //     x: undefined,
-                      //     y: undefined,
-                      //   }
-                      //
-                      //
-                      //   switch (popup2.position) {
-                      //     case 'north':
-                      //       invalidPos2 = {
-                      //         x: cellPos.x,
-                      //         y: cellPos.y-1,
-                      //       }
-                      //       break;
-                      //     case 'northEast':
-                      //       invalidPos2 = {
-                      //         x: cellPos.x+1,
-                      //         y: cellPos.y-1,
-                      //       }
-                      //       break;
-                      //     case 'northWest':
-                      //       invalidPos2 = {
-                      //         x: cellPos.x-1,
-                      //         y: cellPos.y-1,
-                      //       }
-                      //       break;
-                      //     case 'south':
-                      //       invalidPos2 = {
-                      //         x: cellPos.x,
-                      //         y: cellPos.y+1,
-                      //       }
-                      //       break;
-                      //     case 'southEast':
-                      //       invalidPos2 = {
-                      //         x: cellPos.x+1,
-                      //         y: cellPos.y+1,
-                      //       }
-                      //       break;
-                      //     case 'southWest':
-                      //       invalidPos2 = {
-                      //         x: cellPos.x-1,
-                      //         y: cellPos.y+1,
-                      //       }
-                      //       break;
-                      //     case 'east':
-                      //       invalidPos2 = {
-                      //         x: cellPos.x-1,
-                      //         y: cellPos.y,
-                      //       }
-                      //       break;
-                      //     case 'west':
-                      //       invalidPos2 = {
-                      //         x: cellPos.x+1,
-                      //         y: cellPos.y,
-                      //       }
-                      //       break;
-                      //     default:
-                      //
-                      //   }
-                      //
-                      //   if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
-                      //     dir = 'north';
-                      //   }
-                      //   if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
-                      //     dir = 'northWest';
-                      //   }
-                      //   if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
-                      //     dir = 'west';
-                      //   }
-                      //   if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
-                      //     dir = 'southWest';
-                      //   }
-                      //   if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
-                      //     dir = 'south';
-                      //   }
-                      //   if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
-                      //     dir = 'southEast';
-                      //   }
-                      //   if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
-                      //     dir = 'east';
-                      //   }
-                      //   if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
-                      //     dir = 'northEast';
-                      //   }
-                      //
-                      //   if (dir) {
-                      //     dirs.push(dir);
-                      //   }
-                      //
-                      //
-                      //
-                      //   // let indx = positions.indexOf(popup2.position);
-                      //   // positions.splice(indx,1)
-                      // }
-
-                    }
-
-                    // console.log('dirs',dirs,'popup.position',popup.position);
-                    // if (popup.position === dir ) {
-                    if (dirs.find(x => x === popup.position) ) {
-
-                      plyr.popups.find(x => x.msg === popup.msg).position = '';
-                      plyr.popups.find(x => x.msg === popup.msg).state = false;
-                      // console.log("A new invalid direction === popup's position. reconsidering...",popup.msg);
-                    }
-                    else {
-
-
-                      let popupProgress = false;
-                      let showProgress = false;
-                      let writeValue = false;
-                      if (
-                        plyr.prePush.state === true ||
-                        plyr.prePull.state === true ||
-                        plyr.dodging.state === true ||
-                        plyr.action === 'dodging' ||
-                        plyr.action === 'defending' ||
-                        plyr.action === 'attacking' ||
-                        plyr.attacking.state === true
-                      ) {
-                        showProgress = true;
-                      }
-                      if (
-                        popup.msg === "attacking" ||
-                        popup.msg === "attacking1" ||
-                        popup.msg === "attacking2" ||
-                        popup.msg === "defending" ||
-                        popup.msg === "prePush" ||
-                        popup.msg === "prePull" ||
-                        popup.msg === "dodging"
-                      ) {
-                        popupProgress = true;
-                      }
-
-                      if (popup.img === "") {
-                        popup.img = this.popupImageRef[popup.msg];
-                      }
-
-                      if (popup.msg.split("_")) {
-                        if (popup.msg.split("_")[0] === "hpUp" || popup.msg.split("_")[0] === "hpDown") {
-                          writeValue = true;
-                          popup.img = this.popupImageRef[popup.msg.split("_")[0]]
-                        }
-                      }
-
-
-                      popupDrawCoords = this.popupDrawCalc(popup.position,{x:point.x-25,y:point.y-25},plyr.number);
-                      drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor);
-                      let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
-
-                      if (showProgress === true && popupProgress === true) {
-                        let perc = this.playerPopupProgressCalc(plyr,popup)
-                        context.fillStyle = this.popupProgressImgGradColor2;
-                        context.beginPath();
-                        context.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
-                        context.stroke();
-                        context.fillStyle = this.popupProgressImgGradColor1;
-                        context.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
-                        context.fill();
-                      }
-
-
-                      if (writeValue === true) {
-                        context.font = "15px Arial";
-                        context.fillStyle = 'black';
-                        context.fillText(popup.msg.split("_")[1],popupDrawCoords.origin.x+((this.popupSize-(popup.msg.split("_")[1].length*7))/2),popupDrawCoords.origin.y+15)
-
-                        centerPopupOffset = (this.popupSize-this.popupImgSize*.75)/2
-                        context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+(centerPopupOffset+5),this.popupImgSize*.75,this.popupImgSize*.75);
-                      }
-                      else {
-                        context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
-                      }
-
-
-                    }
-
-
-                  }
-                }
-              }
-            }
-
-          }
-
-
-        }
-
-
-        // OBSTACLES & BARRIERS
-        // FALLING
-        // IN BOUNDS
-        if (gridInfoCell.obstacle.state === true && gridInfoCell.obstacle.moving.falling.state === true) {
-
-          let obstacleImg = this.obstacleImgs[gridInfoCell.obstacle.type]
-
-          context.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x, gridInfoCell.obstacle.moving.nextPosition.y);
-          gridInfoCell.obstacle.moving.nextPosition.y += 2
-
-          // console.log('falling obstacle',gridInfoCell.obstacle.moving.nextPosition,'x/y',x,y);
-        }
-        // OUT OF BOUNDS
-        for(const obstacle of this.obstaclesOutOfBoundsFall) {
-          // here!! draw at origin cell x/y
-          // if (x === 0 && y === 0) {
-          if (x === obstacle.moving.origin.number.x && y === obstacle.moving.origin.number.y) {
-            // console.log('obstacle falling out of bounds b count',obstacle.moving.origin.center,'position',obstacle.moving.nextPosition);
-            let obstacleImg = this.obstacleImgs[obstacle.type]
-            context.drawImage(obstacleImg, obstacle.moving.nextPosition.x, obstacle.moving.nextPosition.y);
-            obstacle.moving.nextPosition = {
-              x: obstacle.moving.nextPosition.x,
-              y: obstacle.moving.nextPosition.y + 2
-              // y: obstacle.moving.nextPosition.y+obstacle.moving.falling.count*5
-            }
-
-          }
-        }
-
-        // STATIONARY
-        if (gridInfoCell.obstacle.state === true && gridInfoCell.void.state !== true && gridInfoCell.terrain.type !== "deep" && gridInfoCell.obstacle.moving.falling.state !== true) {
-
-          let hide = false;
-
-          if (this.obstacleBarrierToDestroy.length > 0) {
-            for(const cell of this.obstacleBarrierToDestroy) {
-              if (cell.type === 'obstacle' && gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y && gridInfoCell.obstacle.name === cell.cell.obstacle.name) {
-                hide = true;
-              }
-            }
-          }
-
-          if (hide !== true) {
-            let obstacleImg = this.obstacleImgs[gridInfoCell.obstacle.type]
-
-            if (gridInfoCell.obstacle.moving.state !== true) {
-              context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
-            }
-            else {
-              // console.log('x/y',x,y);
-              // context.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x-offset.x, gridInfoCell.obstacle.moving.nextPosition.y- Math.ceil(obstacleImg.height/2));
-            }
-
-          }
-
-        }
-
-        // MOVING
-        for(const cell of this.gridInfo) {
-
-          if (cell.obstacle.state === true && cell.obstacle.moving.state === true) {
-
-            let drawHere = {
-              x: cell.obstacle.moving.origin.number.x,
-              y: cell.obstacle.moving.origin.number.y
-            }
-            let direction = undefined;
-            if (cell.obstacle.moving.destination.number.y === cell.obstacle.moving.origin.number.y+1) {
-              direction = 'south';
-            }
-            if (cell.obstacle.moving.destination.number.y === cell.obstacle.moving.origin.number.y-1) {
-              direction = 'north';
-            }
-            if (cell.obstacle.moving.destination.number.x === cell.obstacle.moving.origin.number.x-1) {
-              direction = 'west';
-            }
-            if (cell.obstacle.moving.destination.number.x === cell.obstacle.moving.origin.number.x+1) {
-              direction = 'east';
-            }
-
-            if (
-              cell.obstacle.moving.destination.number.x !== null &&
-              cell.obstacle.moving.destination.number.x > -1 &&
-              cell.obstacle.moving.destination.number.x < this.gridWidth+1
-            ) {
-              if(direction === 'south' || direction === 'east') {
-
-                drawHere = cell.obstacle.moving.destination.number;
-              }
-            }
-
-
-            if (x === drawHere.x && y === drawHere.y ) {
-              // console.log('x/y',x,y,direction,cell.obstacle.moving.step);
-
-              let obstacleImg = this.obstacleImgs[cell.obstacle.type];
-              context.drawImage(obstacleImg, cell.obstacle.moving.nextPosition.x-offset.x, cell.obstacle.moving.nextPosition.y- Math.ceil(obstacleImg.height/2, 30, 30));
-
-            }
-
-            // console.log('falling obstacle',gridInfoCell.obstacle.moving.nextPosition,'x/y',x,y);
-          }
-        }
-
-        // DROP ITEMS & DAMAGE/DESTROY OBSTACLES & BARRIERS
-        for(const cell of this.obstacleBarrierToDestroy) {
-          if (gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y && cell.cell.obstacle.type) {
-          // if (gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y && cell.cell.obstacle.state === true) {
-            if(cell.count % 3 === 0) {
-              if (cell.type === "obstacle") {
-                let obstacleImg = this.obstacleImgs[cell.cell.obstacle.type];
-                context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
-              }
-              if (cell.type === "barrier") {
-                let barrierImg = this.barrierImgs[cell.cell.barrier.type][cell.cell.barrier.position];
-                context.drawImage(barrierImg, iso.x - offset.x, iso.y - barrierImg.height, barrierImg.width, barrierImg.height);
-              }
-
-            }
-          }
-        }
-        for(const cell of this.obstacleItemsToDrop) {
-          // console.log('obstacleItemsToDrop',cell);
-          if (gridInfoCell.number.x === cell.target.x && gridInfoCell.number.y === cell.target.y) {
-            if(cell.count % 3 === 0) {
-              let itemImg;
-              if (cell.item.type === "item") {
-                itemImg = this.itemImgs[cell.item.name];
-              }
-              if (cell.item.type === "weapon" || cell.item.type === "armor") {
-                itemImg = this.itemImgs[cell.item.subType];
-              }
-              context.drawImage(itemImg, center.x-15, center.y-15);
-            }
-          }
-        }
-
-        // STATIONARY BARRIERS
-        if (gridInfoCell.barrier.state === true && gridInfoCell.void.state !== true) {
-
-
-          let hide = false;
-
-          if (this.obstacleBarrierToDestroy.length > 0) {
-            for(const cell of this.obstacleBarrierToDestroy) {
-              if (cell.type === 'barrier' && gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y && gridInfoCell.barrier.name === cell.cell.barrier.name) {
-                hide = true;
-              }
-            }
-          }
-
-          if (hide !== true) {
-
-            let barrierImg = this.barrierImgs[gridInfoCell.barrier.type][gridInfoCell.barrier.position];
-            context.drawImage(barrierImg, iso.x - offset.x, iso.y - barrierImg.height, barrierImg.width, barrierImg.height);
-
-          }
-
-
-
-        }
-
-
-        // PROJECTILES
-        for (const bolt of this.projectiles) {
-
-          if (
-            bolt.currentPosition.number.x === x &&
-            bolt.currentPosition.number.y === y
-          ) {
-            let boltImg;
-            switch(bolt.direction) {
-              case 'north':
-                boltImg = this.boltImgs[bolt.direction]
-              break;
-              case 'south':
-                boltImg = this.boltImgs[bolt.direction]
-              break;
-              case 'east':
-                boltImg = this.boltImgs[bolt.direction]
-              break;
-              case 'west':
-                boltImg = this.boltImgs[bolt.direction]
-              break;
-            }
-            // console.log('dd',boltImg,bolt.direction);
-
-             // context2.fillStyle = "black";
-             // context2.fillRect(bolt.currentPosition.center.x, bolt.currentPosition.center.y,10,5);
-             // this.testDraw.push({color:'green',x:bolt.currentPosition.center.x,y:bolt.currentPosition.center.y})
-             context.drawImage(boltImg, bolt.currentPosition.center.x-15, bolt.currentPosition.center.y-15, 35,35);
-          }
-        }
-
-
-        // CAMERA FOCUS POINT
-        if (x === this.gridWidth && y === this.gridWidth ) {
-          // console.log('Camera centered');
-          // context.fillStyle = 'yellow';
-          // context.beginPath();
-          // context.arc(this.camera.focus.x, this.camera.focus.y, 10, 0, 2 * Math.PI);
-          // context.arc(this.camera.zoomFocusPan.x, this.camera.zoomFocusPan.y, 10, 0, 2 * Math.PI);
-          // context.fill();
-
-        }
-
-
-        // TEST DRAW
-        for (const point of this.testDraw ) {
-          context.fillStyle = point.color;
-          context.beginPath();
-          context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
-          context.fill();
-        }
-
-
-      }
-    }
-
-
-    this.players[player.number-1] = player;
-
-
-    // if (player.ai.state === true ) {
-    //   this.aiEvaluate(player)
-    // }
-
-  }
-
-
   getTarget = (player) => {
     // console.log('checking target',player.number,'dir',player.direction);
 
@@ -16555,6 +5837,7 @@ class App extends Component {
     }
     return oppositeDirection;
   }
+
 
   aiBoltPathCheck = (aiPlayer) => {
 
@@ -18984,7 +8267,7 @@ class App extends Component {
 
         if (destCellRef.barrier.state === true) {
           let barrier = false;
-          if (destCellRef.barrier.position = this.getOppositeDirection(impactDirection)) {
+          if (destCellRef.barrier.position === this.getOppositeDirection(impactDirection)) {
             barrier = true;
           }
 
@@ -19001,7 +8284,7 @@ class App extends Component {
 
           // --------------
           let barrier = false;
-          if (obstacleCell.barrier.position = this.getOppositeDirection(impactDirection)) {
+          if (obstacleCell.barrier.position === this.getOppositeDirection(impactDirection)) {
             barrier = true;
           }
 
@@ -27830,1669 +17113,6 @@ class App extends Component {
   }
 
 
-
-  updatePathArray = () => {
-    // console.log('updating pathArray');
-
-    let pathArray = []
-
-    for (const [key, value] of Object.entries(this.['levelData'+this.gridWidth])) {
-      let row = [];
-      for (const elem3 of value) {
-        // let terrainInfo2 = elem3.length-1;
-        // let cell = this.gridInfo.find(elem2 => elem2.levelData === elem3)
-        //
-        // if (cell) {
-        //   let playerCell = false;
-        //   for (const plyr of this.players) {
-        //     if (
-        //       plyr.currentPosition.cell.number.x === cell.number.x &&
-        //       plyr.currentPosition.cell.number.y === cell.number.y
-        //     ) {
-        //       playerCell = true;
-        //     }
-        //   }
-        //   if (playerCell === true) {
-        //     row.push(0)
-        //     // row.push(1)
-        //   } else {
-        //     if (
-        //       elem3.charAt(terrainInfo2) === 'j' ||
-        //       elem3.charAt(terrainInfo2) === 'h' ||
-        //       elem3.charAt(terrainInfo2) === 'i' ||
-        //       elem3.charAt(0) !== 'x' ||
-        //       cell.void.state === true
-        //     ) {
-        //       row.push(1)
-        //     } else {
-        //       row.push(0)
-        //     }
-        //     // row.push(0)
-        //   }
-        // }
-
-        row.push(0)
-      }
-      pathArray.push(row)
-    }
-    this.pathArray = pathArray;
-
-  }
-  startProcessLevelData = (canvas) => {
-
-    let gridInfo = [];
-    let settingsGridInfo = [];
-
-    canvas.width = this.canvasWidth;
-    canvas.height = this.canvasHeight;
-
-    let floorImageWidth = this.floorImageWidth;
-    let floorImageHeight = this.floorImageHeight;
-    let wallImageWidth = this.wallImageWidth;
-    let wallImageHeight = this.wallImageHeight;
-    let sceneX = this.canvasWidth/2;
-    let sceneY = this.sceneY;
-    let tileWidth = this.tileWidth;
-
-    class Point {
-        constructor(x, y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-
-    for (var x = 0; x < this.gridWidth+1; x++) {
-      for (var y = 0; y < this.gridWidth+1; y++) {
-
-        let p = new Point();
-        p.x = x * tileWidth;
-        p.y = y * tileWidth;
-
-
-        let iso = this.cartesianToIsometric(p);
-        let offset = {x: floorImageWidth/2, y: floorImageHeight}
-
-        // apply offset to center scene for a better view
-        iso.x += sceneX
-        iso.y += sceneY
-
-        let center = {
-          x: Math.round(iso.x - offset.x/2+this.cellCenterOffsetX),
-          y: Math.round(iso.y - offset.y/2-this.cellCenterOffsetY),
-        }
-
-        gridInfo.push({
-          number:{x:x,y:y},
-          center:{x:center.x,y:center.y},
-          drawCenter:{x:center.x,y:center.y},
-          vertices: [
-            {x:center.x, y:center.y+this.tileWidth/2},
-            {x:center.x+this.tileWidth, y:center.y},
-            {x:center.x, y:center.y-this.tileWidth/2},
-            {x:center.x-this.tileWidth, y:center.y},
-          ],
-          side: Math.sqrt((this.tileWidth/2)^2+(this.tileWidth)^2),
-          levelData: '',
-          edge: {
-            state: false,
-            side: ''
-          },
-          terrain: {
-            name: '',
-            type: '',
-            effect: ''
-          },
-          item: {
-            name: '',
-            type: '',
-            subType: '',
-            effect: '',
-            initDrawn: false
-          },
-          void: {
-            state: false
-          },
-          obstacle: {
-            state: false,
-            name: '',
-            type: '',
-            hp: 2,
-            destructible: {
-              state: false,
-              weapons: [],
-              leaveRubble: false,
-            },
-            locked: {
-              state: false,
-              key: '',
-            },
-            weight: 1,
-            height: 0.5,
-            items: [],
-            effects: [],
-            moving: {
-              state: false,
-              step: 0,
-              origin: {
-                number: {
-                  x: undefined,
-                  y: undefined,
-                },
-                center: {
-                  x: undefined,
-                  y: undefined,
-                },
-              },
-              destination: {
-                number: {
-                  x: undefined,
-                  y: undefined,
-                },
-                center: {
-                  x: undefined,
-                  y: undefined,
-                },
-              },
-              currentPosition: {
-                x: undefined,
-                y: undefined,
-              },
-              nextPosition: {
-                x: undefined,
-                y: undefined,
-              },
-              moveSpeed: 0,
-              pushable: true,
-              pushed: false,
-              pusher: undefined,
-              falling: {
-                state: false,
-                count: 0,
-                limit: 10,
-              },
-            }
-          },
-          barrier: {
-            state: false,
-            name: '',
-            type: '',
-            hp: 2,
-            destructible: {
-              state: false,
-              weapons: [],
-              leaveRubble: false,
-            },
-            locked: {
-              state: false,
-              key: '',
-            },
-            position: '',
-            height: 1,
-          },
-          elevation: {
-            number: 0,
-            type: '',
-            position: '',
-          },
-          rubble: false,
-        })
-
-      }
-    }
-
-    for (var x = 0; x < this.settingsGridWidth+1; x++) {
-      for (var y = 0; y < this.settingsGridWidth+1; y++) {
-
-        let p2 = new Point();
-        p2.x = x * tileWidth/2;
-        p2.y = y * tileWidth/2;
-
-        let iso2 = this.cartesianToIsometric(p2);
-        let offset2 = {x: (floorImageWidth/2)/2, y: (floorImageHeight/2)}
-
-        // apply offset to center scene for a better view
-
-        iso2.x += this.settingsSceneX;
-        iso2.y += this.settingsSceneY;
-
-        let center2 = {
-          x: Math.round(iso2.x - offset2.x/2+(this.cellCenterOffsetX/2)),
-          y: Math.round(iso2.y - offset2.y/2-(this.cellCenterOffsetY/2)),
-        }
-
-
-        settingsGridInfo.push({
-          number:{x:x,y:y},
-          center:{x:center2.x,y:center2.y},
-          drawCenter:{x:center2.x,y:center2.y},
-          vertices: [
-            {x:center2.x, y:center2.y+this.tileWidth/4},
-            {x:center2.x+this.tileWidth/2, y:center2.y},
-            {x:center2.x, y:center2.y-this.tileWidth/4},
-            {x:center2.x-this.tileWidth/2, y:center2.y},
-          ],
-          side: Math.sqrt(((this.tileWidth/2)/2)^2+((this.tileWidth/2))^2),
-          levelData: '',
-          edge: {
-            state: false,
-            side: ''
-          },
-          terrain: {
-            name: '',
-            type: '',
-            effect: ''
-          },
-          item: {
-            name: '',
-            type: '',
-            subType: '',
-            effect: '',
-            initDrawn: false
-          },
-          void: {
-            state: false
-          },
-          obstacle: {
-            state: false,
-            name: '',
-            type: '',
-            hp: 2,
-            destructible: {
-              state: false,
-              weapons: [],
-              leaveRubble: false,
-            },
-            locked: {
-              state: false,
-              key: '',
-            },
-            weight: 1,
-            height: 0.5,
-            items: [],
-            effects: [],
-            moving: {
-              state: false,
-              step: 0,
-              origin: {
-                number: {
-                  x: undefined,
-                  y: undefined,
-                },
-                center: {
-                  x: undefined,
-                  y: undefined,
-                },
-              },
-              destination: {
-                number: {
-                  x: undefined,
-                  y: undefined,
-                },
-                center: {
-                  x: undefined,
-                  y: undefined,
-                },
-              },
-              currentPosition: {
-                x: undefined,
-                y: undefined,
-              },
-              nextPosition: {
-                x: undefined,
-                y: undefined,
-              },
-              moveSpeed: 0,
-              pushable: true,
-              pushed: false,
-              pusher: undefined,
-              falling: {
-                state: false,
-                count: 0,
-                limit: 10,
-              },
-            }
-          },
-          barrier: {
-            state: false,
-            name: '',
-            type: '',
-            hp: 2,
-            destructible: {
-              state: false,
-              weapons: [],
-              leaveRubble: false,
-            },
-            locked: {
-              state: false,
-              key: '',
-            },
-            position: '',
-            height: 1,
-          },
-          elevation: {
-            number: 0,
-            type: '',
-            position: '',
-          },
-          rubble: false,
-        })
-
-      }
-    }
-
-    this.settingsGridInfo = settingsGridInfo;
-    this.gridInfo = gridInfo;
-
-  }
-  processLevelData = (allCells) => {
-    // console.log('processing level data','grid width',this.gridWidth);
-
-    for(const elem of allCells) {
-
-      // APPLY LEVEL DATA TO GRID INFO CELLS!
-      let levelData2Row = 'row'+elem.number.x;
-      let elemLevelData = this.['levelData'+this.gridWidth][levelData2Row][elem.number.y];
-
-      if (
-        (elemLevelData.split('_')[1] !== "*" &&
-        this.terrainLevelDataRef[elemLevelData.split('_')[3]].type === 'deep') ||
-        (elemLevelData.split('_')[1] !== "*" && this.terrainLevelDataRef[elemLevelData.split('_')[3]].type === 'void')
-      ) {
-        elemLevelData = elemLevelData.replaceAt(3, '*');
-      }
-      elem.levelData = elemLevelData;
-      // console.log('level data processing',elem.levelData);
-
-
-      // '**_*_0.0_a_0**'
-      // barrierType(a,b,c)BarrierPosition(n,s,e,w)_obstacle_x.y_terrain_elevationNumber(0,1,2)ElevationType(a,b,c)ElevationPosition(n,s,e,w)
-
-
-      elem.terrain = this.terrainLevelDataRef[elem.levelData.split('_')[3]]
-      if (elem.terrain.name === 'void') {
-        elem.void.state = true
-      }
-
-      elem.elevation.number = parseInt(elem.levelData.split('_')[4].charAt(0));
-      if (elem.levelData.split('_')[4].charAt(1) !== '*') {
-        elem.elevation.type = this.elevationTypeLevelDataRef[elem.levelData.split('_')[4].charAt(1)]
-      }
-
-
-      if (elem.levelData.split('_')[4].charAt(1) !== '*') {
-        switch (elem.levelData.split('_')[4].charAt(2)) {
-          case 'n':
-            elem.elevation = {
-              number: elem.elevation.number,
-              type: elem.elevation.type,
-              position: 'north',
-            }
-          break;
-          case 's':
-            elem.elevation = {
-              number: elem.elevation.number,
-              type: elem.elevation.type,
-              position: 'south',
-            }
-          break;
-          case 'e':
-            elem.elevation = {
-              number: elem.elevation.number,
-              type: elem.elevation.type,
-              position: 'east',
-            }
-          break;
-          case 'w':
-            elem.elevation = {
-              number: elem.elevation.number,
-              type: elem.elevation.type,
-              position: 'west',
-            }
-          break;
-          default:
-
-          break
-        }
-      }
-
-
-      // OBSTACLE
-      if (elem.levelData.split('_')[1] !== '*') {
-        elem.obstacle = this.obstacleLevelDataRef[elem.levelData.split('_')[1]];
-      }
-
-      // BARRIER
-      if (elem.levelData.split('_')[0] !== '**') {
-        elem.barrier = this.barrierLevelDataRef[elem.levelData.split('_')[0].charAt(0)];
-
-        switch (elem.levelData.split('_')[0].charAt(1)) {
-          case 'n':
-            elem.barrier = {
-              state: elem.barrier.state,
-              name: elem.barrier.name,
-              type: elem.barrier.type,
-              hp: elem.barrier.hp,
-              destructible: elem.barrier.destructible,
-              locked: elem.barrier.locked,
-              position: 'north',
-              height: elem.barrier.height,
-            }
-          break;
-          case 's':
-            elem.barrier = {
-              state: elem.barrier.state,
-              name: elem.barrier.name,
-              type: elem.barrier.type,
-              hp: elem.barrier.hp,
-              destructible: elem.barrier.destructible,
-              locked: elem.barrier.locked,
-              position: 'south',
-              height: elem.barrier.height,
-            }
-          break;
-          case 'e':
-            elem.barrier = {
-              state: elem.barrier.state,
-              name: elem.barrier.name,
-              type: elem.barrier.type,
-              hp: elem.barrier.hp,
-              destructible: elem.barrier.destructible,
-              locked: elem.barrier.locked,
-              position: 'east',
-              height: elem.barrier.height,
-            }
-          break;
-          case 'w':
-            elem.barrier = {
-              state: elem.barrier.state,
-              name: elem.barrier.name,
-              type: elem.barrier.type,
-              hp: elem.barrier.hp,
-              destructible: elem.barrier.destructible,
-              locked: elem.barrier.locked,
-              position: 'west',
-              height: elem.barrier.height,
-            }
-          break;
-          default:
-          break;
-        }
-      }
-
-      // console.log('oo2',elem.levelData,elem.number,elem.terrain);
-
-      // SET EDGES!
-      if (elem.number.x === 0) {
-        elem.edge = {
-          state: true,
-          side: 'west'
-        }
-      }
-      if (elem.number.x === this.gridWidth) {
-        elem.edge = {
-          state: true,
-          side: 'east'
-        }
-      }
-      if (elem.number.y === this.gridWidth) {
-        elem.edge = {
-          state: true,
-          side: 'south'
-        }
-      }
-      if (elem.number.y === 0) {
-        elem.edge = {
-          state: true,
-          side: 'north'
-        }
-      }
-
-    }
-
-
-    for(const elem2 of this.settingsGridInfo) {
-
-      // SET LEVEL DATA!
-      let levelData2Row = 'row'+elem2.number.x;
-      let elemLevelData = this.['levelData'+this.settingsGridWidth][levelData2Row][elem2.number.y];
-      if (
-        (elemLevelData.split('_')[1] !== "*" &&
-        this.terrainLevelDataRef[elemLevelData.split('_')[3]].type === 'deep') ||
-        (elemLevelData.split('_')[1] !== "*" && this.terrainLevelDataRef[elemLevelData.split('_')[3]].type === 'void')
-      ) {
-        elemLevelData = elemLevelData.replaceAt(3, '*');
-      }
-      elem2.levelData = elemLevelData;
-
-      // TERRAIN
-      elem2.terrain = this.terrainLevelDataRef[elem2.levelData.split('_')[3]]
-      if (elem2.terrain.name === 'void') {
-        elem2.void.state = true
-      }
-
-      // ELEVATION NUMBER
-      elem2.elevation.number = parseInt(elem2.levelData.split('_')[4].charAt(0));
-      if (elem2.levelData.split('_')[4].charAt(1) !== '*') {
-        elem2.elevation.type = this.elevationTypeLevelDataRef[elem2.levelData.split('_')[4].charAt(1)]
-      }
-
-      // ELEVATION POSITION
-      if (elem2.levelData.split('_')[4].charAt(1) !== '*') {
-        switch (elem2.levelData.split('_')[4].charAt(2)) {
-          case 'n':
-            elem2.elevation = {
-              number: elem2.elevation.number,
-              type: elem2.elevation.type,
-              position: 'north',
-            }
-          break;
-          case 's':
-            elem2.elevation = {
-              number: elem2.elevation.number,
-              type: elem2.elevation.type,
-              position: 'south',
-            }
-          break;
-          case 'e':
-            elem2.elevation = {
-              number: elem2.elevation.number,
-              type: elem2.elevation.type,
-              position: 'east',
-            }
-          break;
-          case 'w':
-            elem2.elevation = {
-              number: elem2.elevation.number,
-              type: elem2.elevation.type,
-              position: 'west',
-            }
-          break;
-          default:
-        }
-      }
-
-      // OBSTACLE
-      if (elem2.levelData.split('_')[1] !== '*') {
-        elem2.obstacle = this.obstacleLevelDataRef[elem2.levelData.split('_')[1]];
-      }
-
-      // BARRIER
-      if (elem2.levelData.split('_')[0] !== '**') {
-        elem2.barrier = this.barrierLevelDataRef[elem2.levelData.split('_')[0].charAt(0)];
-
-        switch (elem2.levelData.split('_')[0].charAt(1)) {
-          case 'n':
-            elem2.barrier = {
-              state: elem2.barrier.state,
-              name: elem2.barrier.name,
-              type: elem2.barrier.type,
-              hp: elem2.barrier.hp,
-              destructible: elem2.barrier.destructible,
-              locked: elem2.barrier.locked,
-              position: 'north',
-              height: elem2.barrier.height,
-            }
-          break;
-          case 's':
-            elem2.barrier = {
-              state: elem2.barrier.state,
-              name: elem2.barrier.name,
-              type: elem2.barrier.type,
-              hp: elem2.barrier.hp,
-              destructible: elem2.barrier.destructible,
-              locked: elem2.barrier.locked,
-              position: 'south',
-              height: elem2.barrier.height,
-            }
-          break;
-          case 'e':
-            elem2.barrier = {
-              state: elem2.barrier.state,
-              name: elem2.barrier.name,
-              type: elem2.barrier.type,
-              hp: elem2.barrier.hp,
-              destructible: elem2.barrier.destructible,
-              locked: elem2.barrier.locked,
-              position: 'east',
-              height: elem2.barrier.height,
-            }
-          break;
-          case 'w':
-            elem2.barrier = {
-              state: elem2.barrier.state,
-              name: elem2.barrier.name,
-              type: elem2.barrier.type,
-              hp: elem2.barrier.hp,
-              destructible: elem2.barrier.destructible,
-              locked: elem2.barrier.locked,
-              position: 'west',
-              height: elem2.barrier.height,
-            }
-          break;
-          default:
-        }
-
-      }
-
-      // console.log('oo2',elem.levelData,elem.number,elem.terrain);
-
-      // SET EDGES!
-      if (elem2.number.x === 0) {
-        elem2.edge = {
-          state: true,
-          side: 'west'
-        }
-      }
-      if (elem2.number.x === this.settingsGridWidth) {
-        elem2.edge = {
-          state: true,
-          side: 'east'
-        }
-      }
-      if (elem2.number.y === this.settingsGridWidth) {
-        elem2.edge = {
-          state: true,
-          side: 'south'
-        }
-      }
-      if (elem2.number.y === 0) {
-        elem2.edge = {
-          state: true,
-          side: 'north'
-        }
-      }
-
-    }
-
-    // gridInfo to 2D array
-    let gridInfo2d = [];
-    for (let i = 0; i <= this.gridWidth; i++) {
-    // for (let i = 9; i >= 0; i--) {
-      let newArray = [];
-      for (var j = 0; j < allCells.length; j++) {
-        if (allCells[j]['number'].x === i) {
-          newArray.push(allCells[j])
-        }
-      }
-      gridInfo2d.push(newArray)
-    }
-
-
-    this.gridInfo2D = gridInfo2d;
-    // console.log('gridInfo2d',this.gridInfo2D);
-    this.gridInfo = allCells;
-
-    // this.settingsFormAiGridInfo = this.gridInfo;
-    // console.log('post parse gridInfo',this.gridInfo);
-
-    // console.log('yyy',allCells.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
-    // console.log('yyy2',this.settingsGridInfo.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
-
-    this.updatePathArray()
-
-
-  }
-
-
-  drawGridInit = (canvas, context, canvas2, context2) => {
-    // console.log('drawing initial');
-
-
-    context.clearRect(0,0,this.canvasWidth,this.canvasHeight)
-    context2.clearRect(0,0,this.canvasWidth,this.canvasHeight)
-
-    let gridInfo = [];
-    class Point {
-        constructor(x, y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-    this.popupImageRef = {
-      attackStart: this.refs.preAttackIndicate,
-      preAction1: this.refs.preAction1Indicate,
-      preAction2: this.refs.preAction2Indicate,
-      attacking: this.refs.attack3Indicate,
-      attacking1: this.refs.attack1Indicate,
-      attacking2: this.refs.attack2Indicate,
-      missedAttack: this.refs.missedIndicate,
-      attackingBlunt: this.refs.attackBluntIndicate2,
-      attackingUnarmed: this.refs.attackUnarmedIndicate,
-      attacked1: this.refs.attack1Indicate,
-      attacked2: this.refs.attack2Indicate,
-      attackDefended: this.refs.attackBreakIndicate,
-      attackParried: this.refs.attackParriedIndicate,
-      boltKilled: this.refs.boltKilledIndicate,
-      attackCancelled: this.refs.attackBreakIndicate,
-      injured: this.refs.deflectInjuredIndicate,
-      hpDown: this.refs.deflectInjuredIndicate2,
-      hpUp: this.refs.healIndicate,
-      defending: this.refs.defendIndicate,
-      defending_1: this.refs.defendIndicate1,
-      defending_2: this.refs.defendIndicate2,
-      defending_3: this.refs.defendIndicate3,
-      defending_4: this.refs.defendIndicate4,
-      defendSuccess: this.refs.defendSuccessIndicate,
-      guardBroken: this.refs.defendBreakIndicate,
-      deflected: this.refs.deflectBluntIndicate,
-      dodgeStart: this.refs.preAction2Indicate,
-      dodgeSuccess: this.refs.dodgeIndicate,
-      dodging: this.refs.dodgeIndicate,
-      flanking: this.refs.flankIndicate,
-      pushedBack: this.refs.pushbackIndicate,
-      falling: this.refs.fallingIndicate,
-      outOfStamina: this.refs.outOfStaminaIndicate,
-      outOfAmmo: this.refs.outOfAmmoIndicate,
-      missionEngage: this.refs.deflectIndicate2,
-      missionPursue: this.refs.pursueMissionIndicate2,
-      missionRetrieve: this.refs.retrieveMissionIndicate,
-      missionDefend: this.refs.defendMissionIndicate,
-      missionPatrol: this.refs.patrolMissionIndicate,
-      missionRetreat: this.refs.retreatIndicate,
-      missionEnroute: this.refs.enrouteIndicate,
-      missionComplete: this.refs.completeMissionIndicate,
-      thinking: this.refs.thinkingIndicate,
-      alarmed: this.refs.preAttack2Indicate,
-      pathSwitch: this.refs.pathSwitchIndicate,
-      targetSwitch: this.refs.targetSwitchIndicate,
-      aggressiveMode: this.refs.aggressiveModeIndicate,
-      passiveMode: this.refs.passiveModeIndicate,
-      pickupWeapon: this.refs.pickupWeaponIndicate,
-      pickupArmor: this.refs.pickupArmorIndicate,
-      dropWeapon: this.refs.dropWeaponIndicate,
-      dropArmor: this.refs.dropArmorIndicate,
-      pickupBuff: this.refs.pickupBuffIndicate,
-      pickupDebuff: this.refs.pickupDebuffIndicate,
-      pickupAmmo: this.refs.pickupAmmoIndicate,
-      inventoryFull: this.refs.inventoryFullIndicate,
-      stop: this.refs.boltDefendIndicate,
-      dropWeapon: this.refs.dropWeaponIndicate,
-      dropArmor: this.refs.dropArmorIndicate,
-      drowning: this.refs.drowningIndicate,
-      terrainSlowdown: this.refs.terrainSlowdownIndicate,
-      terrainSpeedup: this.refs.terrainSpeedupIndicate,
-      terrainInjured: this.refs.terrainInjuredIndicate,
-      destroyedItem: this.refs.destroyedItemIndicate,
-      sword: this.refs.itemSword,
-      spear: this.refs.itemSpear,
-      crossbow: this.refs.itemCrossbow,
-      longbow: this.refs.itemBow,
-      helmet: this.refs.itemHelmet1,
-      mail: this.refs.itemMail1,
-      greaves: this.refs.itemGreaves1,
-
-      missedAttack2: this.refs.missedIndicate2,
-      prePush: this.refs.prePushIndicate,
-      canPush: this.refs.canPushIndicate,
-      noPush: this.refs.noPushingIndicate,
-      pushing: this.refs.pushingIndicate,
-      prePull: this.refs.prePullIndicate,
-      canPull: this.refs.canPullIndicate,
-      noPull: this.refs.noPullingIndicate,
-      pulling: this.refs.pullingIndicate,
-      pushedPulled: this.refs.pushedPulledIndicate,
-      unbreakable: this.refs.unbreakableIndicate,
-      dodging2: this.refs.dodgeIndicate2,
-      attackFeint: this.refs.attackFeintIndicate,
-      attackFeint2: this.refs.attackFeintIndicate2,
-      attackFeint3: this.refs.attackFeintIndicate3,
-      defendFeint: this.refs.defendFeintIndicate,
-      defendFeint2: this.refs.defendFeintIndicate2,
-      defendFeint3: this.refs.defendFeintIndicate3,
-      dodgeFeint: this.refs.dodgeFeintIndicate,
-      dodgeFeint2: this.refs.dodgeFeintIndicate2,
-      boltDefend2: this.refs.boltDefendIndicate2,
-      flanking2: this.refs.flankIndicate2,
-      noFlanking: this.refs.noFlankIndicate,
-      cellVoiding: this.refs.cellVoidingIndicate,
-      cellVoiding2: this.refs.cellVoidingIndicate2,
-    };
-    this.indicatorImgs = {
-      preAttack: this.refs.preAttackIndicate,
-      preAttack2: this.refs.preAttack2Indicate,
-      attack1: this.refs.attack1Indicate,
-      attack2: this.refs.attack2Indicate,
-      attack3: this.refs.attack3Indicate,
-      attackUnarmed: this.refs.attackUnarmedIndicate,
-      attackBlunt: this.refs.attackBluntIndicate,
-      attackSuccess: this.refs.attackSuccessIndicate,
-      defend: this.refs.defendIndicate,
-      deflect: this.refs.deflectIndicate,
-      deflectInjured: this.refs.deflectInjuredIndicate,
-      deflectBlunt: this.refs.deflectBluntIndicate,
-      pushback: this.refs.pushbackIndicate,
-      ghost: this.refs.ghostIndicate,
-      death: this.refs.deathIndicate,
-      attackBreak: this.refs.attackBreakIndicate,
-      defendBreak: this.refs.defendBreakIndicate,
-      dodge: this.refs.dodgeIndicate,
-    }
-    this.playerImgs = [
-      {
-        idle: {
-          unarmed: this.refs.playerImgIdleSheet,
-          sword: this.refs.playerImgIdleSheet,
-          spear: this.refs.playerImgIdleSheet,
-          crossbow: this.refs.playerImgIdleSheet,
-        },
-        walking: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        jumping: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        dodging: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        flanking: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        strafing: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        attacking: {
-          unarmed: this.refs.player1ImgAttackSheet,
-          sword: this.refs.player1ImgAttackSheet,
-          spear: this.refs.player1ImgAttackSheet,
-          crossbow: this.refs.player1ImgAttackSheet,
-        },
-        defending: {
-          unarmed: this.refs.player1ImgDefendSheet,
-          sword: this.refs.player1ImgDefendSheet,
-          spear: this.refs.player1ImgDefendSheet,
-          crossbow: this.refs.player1ImgDefendSheet,
-        },
-        deflected: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        pushBack: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        falling: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        pushing: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        pulling: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        pushed: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        pulled: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-      },
-      {
-        idle: {
-          unarmed: this.refs.player2ImgIdleSheet,
-          sword: this.refs.player2ImgIdleSheet,
-          spear: this.refs.player2ImgIdleSheet,
-          crossbow: this.refs.player2ImgIdleSheet,
-        },
-        walking: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        jumping: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        dodging: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        flanking: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        strafing: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        attacking: {
-          unarmed: this.refs.player2ImgAttackSheet,
-          sword: this.refs.player2ImgAttackSheet,
-          spear: this.refs.player2ImgAttackSheet,
-          crossbow: this.refs.player2ImgAttackSheet,
-        },
-        defending: {
-          unarmed: this.refs.player2ImgDefendSheet,
-          sword: this.refs.player2ImgDefendSheet,
-          spear: this.refs.player2ImgDefendSheet,
-          crossbow: this.refs.player2ImgDefendSheet,
-        },
-        deflected: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        pushBack: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        falling: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        pushing: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        pulling: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        pushed: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        pulled: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-      },
-      {
-        idle: {
-          unarmed: this.refs.playerComAImgIdleSheet,
-          sword: this.refs.playerComAImgIdleSheet,
-          spear: this.refs.playerComAImgIdleSheet,
-          crossbow: this.refs.playerComAImgIdleSheet,
-        },
-        walking: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        jumping: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        dodging: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        flanking: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        strafing: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        attacking: {
-          unarmed: this.refs.comAImgAttackSheet,
-          sword: this.refs.comAImgAttackSheet,
-          spear: this.refs.comAImgAttackSheet,
-          crossbow: this.refs.comAImgAttackSheet,
-        },
-        defending: {
-          unarmed: this.refs.comAImgDefendSheet,
-          sword: this.refs.comAImgDefendSheet,
-          spear: this.refs.comAImgDefendSheet,
-          crossbow: this.refs.comAImgDefendSheet,
-        },
-        deflected: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        pushBack: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        falling: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        pushing: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        pulling: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        pushed: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        pulled: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-      },
-      {
-        idle: {
-          unarmed: this.refs.playerComBImgIdleSheet,
-          sword: this.refs.playerComBImgIdleSheet,
-          spear: this.refs.playerComBImgIdleSheet,
-          crossbow: this.refs.playerComBImgIdleSheet,
-        },
-        walking: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        jumping: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        dodging: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        flanking: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        strafing: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        attacking: {
-          unarmed: this.refs.comBImgAttackSheet,
-          sword: this.refs.comBImgAttackSheet,
-          spear: this.refs.comBImgAttackSheet,
-          crossbow: this.refs.comBImgAttackSheet,
-        },
-        defending: {
-          unarmed: this.refs.comBImgDefendSheet,
-          sword: this.refs.comBImgDefendSheet,
-          spear: this.refs.comBImgDefendSheet,
-          crossbow: this.refs.comBImgDefendSheet,
-        },
-        deflected: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        pushBack: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        falling: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        pushing: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        pulling: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        pushed: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        pulled: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-      },
-    ]
-    this.itemImgs = {
-      moveSpeedUp: this.refs.itemSpdUp,
-      moveSpeedDown: this.refs.itemSpdDown,
-      hpUp: this.refs.itemHpUp,
-      hpDown: this.refs.itemHpDown,
-      focusUp: this.refs.itemFocusUp,
-      focusDown: this.refs.itemFocusDown,
-      strengthUp: this.refs.itemStrUp,
-      strengthDown: this.refs.itemStrDown,
-      sword: this.refs.itemSword,
-      spear: this.refs.itemSpear,
-      crossbow: this.refs.itemBow,
-      helmet: this.refs.itemHelmet1,
-      ammo5: this.refs.itemAmmo,
-      ammo10: this.refs.itemAmmo,
-      mail: this.refs.itemMail1,
-      greaves: this.refs.itemGreaves1,
-    };
-    this.boltImgs = {
-      north: this.refs.itemBoltNorth,
-      south: this.refs.itemBoltSouth,
-      east: this.refs.itemBoltEast,
-      west: this.refs.itemBoltWest,
-    }
-    this.floorImgs = {
-      grass: this.refs.floorGrass,
-      stone: this.refs.floorStone,
-      dirt: this.refs.floorDirt,
-      pond: this.refs.floorPond,
-      mud: this.refs.floorMud,
-      sand: this.refs.floorSand,
-      ice: this.refs.floorIce,
-      lava: this.refs.floorLava,
-      bramble: this.refs.floorBramble,
-      river: this.refs.floorRiver,
-      void: this.refs.floorVoid,
-      void2: this.refs.floorVoid2,
-      void3: this.refs.floorVoid3,
-      rubble: this.refs.floorRubble,
-    }
-    this.obstacleImgs = {
-      table: this.refs.obstacleAHalf,
-      closet: this.refs.obstacleAFull,
-      chair: this.refs.obstacleBHalf,
-      shelf: this.refs.obstacleBFull,
-      smallBox: this.refs.obstacleCHalf,
-      largeBox: this.refs.obstacleCFull,
-      counter: this.refs.obstacleDHalf,
-      chest: this.refs.obstacleEHalf,
-      crate: this.refs.obstacleCrate,
-      barrel: this.refs.obstacleBarrel,
-      chest: this.refs.obstacleCrate,
-      table: this.refs.obstacleCrate,
-      chair: this.refs.obstacleCrate,
-      shelf: this.refs.obstacleCrate,
-      counter: this.refs.obstacleCrate,
-      smallBox: this.refs.obstacleCrate,
-      largeBox: this.refs.obstacleBarrel,
-    }
-    this.barrierImgs = {
-      wall: {
-        north: this.refs.barrierANorth,
-        south: this.refs.barrierASouth,
-        east: this.refs.barrierAEast,
-        west: this.refs.barrierAWest,
-      },
-      door: {
-        north: this.refs.barrierANorth,
-        south: this.refs.barrierASouth,
-        east: this.refs.barrierAEast,
-        west: this.refs.barrierAWest,
-      },
-      balcony: {
-        north: this.refs.barrierANorth,
-        south: this.refs.barrierASouth,
-        east: this.refs.barrierAEast,
-        west: this.refs.barrierAWest,
-      },
-    }
-
-    // LOAD CROSSBOW AMMO
-    for (const plyr of this.players) {
-      if (plyr.currentWeapon.type === 'crossbow') {
-        let ammo = parseInt(plyr.currentWeapon.effect.split('+')[1])
-        plyr.items.ammo = plyr.items.ammo + ammo;
-      }
-    }
-
-    let floor;
-    let wall = this.refs.wall;
-    let wall2 = this.refs.wall2;
-    let wall3 = this.refs.wall3;
-
-    canvas.width = this.canvasWidth;
-    canvas.height = this.canvasHeight;
-
-    let floorImageWidth = this.floorImageWidth;
-    let floorImageHeight = this.floorImageHeight;
-    let wallImageWidth = this.wallImageWidth;
-    let wallImageHeight = this.wallImageHeight;
-    let sceneX = this.canvasWidth/2;
-    let sceneY = this.sceneY;
-    let tileWidth = this.tileWidth;
-
-    this.startProcessLevelData(canvas);
-    // gridInfo = this.gridInfo;
-
-    this.processLevelData(this.gridInfo);
-    // console.log('post process barrier check init',this.gridInfo.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
-
-    if (this.camera.fixed !== true) {
-      // this.setCameraFocus('init', canvas, context, canvas2, context2);
-    }
-    this.findFocusCell('panToCell',{},canvas,context)
-
-
-    // CENTER LARGER GRIDS
-    if (window.innerWidth < 1100 && this.gridWidth >= 12) {
-      // this.camera.zoom.x = 0.7;
-      // this.camera.zoom.y = 0.7;
-
-      this.setInitZoom = {
-        state: true,
-        windowWidth: window.innerWidth,
-        gridWidth: this.gridWidth,
-      }
-    }
-    if (window.innerWidth > 1100 && this.gridWidth >= 12) {
-      // this.camera.zoom.x = 1;
-      // this.camera.zoom.y = 1;
-
-      this.setInitZoom = {
-        state: true,
-        windowWidth: window.innerWidth,
-        gridWidth: this.gridWidth,
-      }
-    }
-    if (window.innerWidth < 1100 && this.gridWidth < 12) {
-      // this.camera.zoom.x = 1;
-      // this.camera.zoom.y = 1;
-
-      this.setInitZoom = {
-        state: true,
-        windowWidth: window.innerWidth,
-        gridWidth: this.gridWidth,
-      }
-    }
-
-    let diff = 1 - this.camera.zoom.x;
-
-    // FOCUSED ZOOMING INIT SET
-    this.camera.pan.x = (diff*this.canvasWidth/2);
-    this.camera.pan.y = (diff*this.canvasWidth/2)-(diff*350);
-    if (this.camera.pan.x === 0) {
-      this.camera.pan.x = -1
-      this.camera.pan.y = -1
-    }
-
-
-    if (this.showSettingsCanvasData.state === true) {
-      this.settingsFormGridWidthUpdate(this.settingsGridWidth)
-    }
-
-
-    this.placeItems({init: true, items: ''});
-
-
-    // CELL COLOR REF
-    let preCellColorRef = this.gridInfo.map(x => x = {x:x.number.x,y:x.number.y,color:''});
-    for(const cell of preCellColorRef) {
-      let colorCheckPass = false;
-      while (colorCheckPass === false) {
-        let randomColor = `rgb(${this.rnJesus(0,255)},${this.rnJesus(0,255)},${this.rnJesus(0,255)})`;
-        let colorsInUse = preCellColorRef.filter(x => x.color !== '').map(y => y === y.color);
-        if (colorsInUse.find(x => x === randomColor)) {
-          colorCheckPass = false;
-        }
-        else {
-          cell.color = randomColor;
-          colorCheckPass = true;
-        }
-      }
-    };
-    this.cellColorRef = preCellColorRef;
-
-
-    for (var x = 0; x < this.gridWidth+1; x++) {
-      for (var y = 0; y < this.gridWidth+1; y++) {
-        let p = new Point();
-        p.x = x * tileWidth;
-        p.y = y * tileWidth;
-
-        let iso = this.cartesianToIsometric(p);
-        let offset = {x: floorImageWidth/2, y: floorImageHeight}
-
-        // apply offset to center scene for a better view
-        iso.x += sceneX
-        iso.y += sceneY
-
-
-        let center = {
-          x: iso.x - offset.x/2+this.cellCenterOffsetX,
-          y: iso.y - offset.y/2-this.cellCenterOffsetY,
-        }
-
-
-        let cell = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
-        let cellLevelData = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y).levelData;
-
-
-        floor = this.floorImgs[cell.terrain.name]
-
-        if (cell.void.state === true) {
-          // drawFloor = false;
-          floor = this.floorImgs.void3
-        }
-
-
-        // context.drawImage(floor, iso.x - offset.x, iso.y - offset.y, 100, 100);
-        context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
-
-        context.fillStyle = 'black';
-        context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12);
-
-        context.fillStyle = "black";
-        context.fillRect(center.x, center.y,5,5);
-
-
-        // INITIAL ITEM DISTRIBUTION!!
-        let cell2 = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
-        if (cell2.item.name !== '') {
-          // console.log('found cell with item');
-          if (cell2.item.initDrawn === false) {
-            // console.log('found cell with item undrawn');
-            let itemImg;
-            let fillClr;
-            if (cell2.item.type === 'item') {
-              switch(cell2.item.name) {
-                case 'moveSpeedUp' :
-                  fillClr = "purple";
-                  itemImg = this.itemImgs[cell2.item.name];
-                break;
-                case 'moveSpeedDown' :
-                  fillClr = "blue";
-                  itemImg = this.itemImgs[cell2.item.name];
-                break;
-                case 'hpUp' :
-                  fillClr = "yellow";
-                  itemImg = this.itemImgs[cell2.item.name];
-                break;
-                case 'hpDown' :
-                  fillClr = "brown";
-                  itemImg = this.itemImgs[cell2.item.name];
-                break;
-                case 'focusUp' :
-                  fillClr = "white";
-                  itemImg = this.itemImgs[cell2.item.name];
-                break;
-                case 'focusDown' :
-                  fillClr = "black";
-                  itemImg = this.itemImgs[cell2.item.name];
-                break;
-                case 'strengthUp' :
-                  fillClr = "green";
-                  itemImg = this.itemImgs[cell2.item.name];
-                break;
-                case 'strengthDown' :
-                  fillClr = "red";
-                  itemImg = this.itemImgs[cell2.item.name];
-                break;
-                case 'ammo5' :
-                  fillClr = '#283618';
-                  itemImg = this.itemImgs[cell2.item.name];
-                break;
-                case 'ammo10' :
-                  fillClr = '#283618';
-                  itemImg = this.itemImgs[cell2.item.name];
-                break;
-              }
-            }
-            else if (cell2.item.type === 'weapon') {
-              switch(cell2.item.subType) {
-                case 'sword' :
-                  fillClr = "orange";
-                  itemImg = this.itemImgs[cell2.item.subType];
-                break;
-                case 'spear' :
-                  fillClr = "maroon";
-                  itemImg = this.itemImgs[cell2.item.subType];
-                break;
-                case 'crossbow' :
-                  fillClr = "navy";
-                  itemImg = this.itemImgs[cell2.item.subType];
-                break;
-              }
-            }
-            else if (cell2.item.type === 'armor') {
-              switch(cell2.item.subType) {
-                case 'helmet' :
-                  fillClr = "grey";
-                  itemImg = this.itemImgs[cell2.item.subType];
-                break;
-                case 'mail' :
-                  fillClr = "olive";
-                  itemImg = this.itemImgs[cell2.item.subType];
-                break;
-                case 'greaves' :
-                  fillClr = "#b5179e";
-                  itemImg = this.itemImgs[cell2.item.subType];
-                break;
-              }
-            }
-
-
-            // context.fillStyle = fillClr;
-            // context.beginPath();
-            // context.arc(center.x, center.y, 15, 0, 2 * Math.PI);
-            // context.fill();
-
-            context.drawImage(itemImg ,center.x-15, center.y-15, 30,30);
-          }
-        }
-
-
-        let vertices = [
-          {x:center.x, y:center.y+tileWidth/2},
-          {x:center.x+tileWidth, y:center.y},
-          {x:center.x, y:center.y-tileWidth/2},
-          {x:center.x-tileWidth, y:center.y},
-        ];
-        for (const vertex of vertices) {
-          context.fillStyle = "yellow";
-          context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
-        }
-
-
-        for (const player of this.players) {
-
-          if (
-            x === player.startPosition.cell.number.x &&
-            y === player.startPosition.cell.number.y
-          ) {
-
-            let playerImg;
-            let playerImgIndex;
-            let atkType = player.currentWeapon.type;
-            if (player.currentWeapon.name === "") {
-              atkType = "unarmed";
-            }
-
-            if (player.ai.state === true) {
-
-              if (player.ai.imgType === "A") {
-                playerImgIndex = 2;
-              }
-              else if (player.ai.imgType === "B") {
-                playerImgIndex = 3;
-              }
-
-              playerImg = this.playerImgs[playerImgIndex].idle[atkType];
-            } else {
-              playerImg = this.playerImgs[player.number-1].idle[atkType];
-            }
-
-
-            let dirs = ['north','south','east','west']
-            let dirIndex = dirs.indexOf(player.direction);
-            let sHeight = this.charSpriteHeight;
-            let sWidth = this.charSpriteWidth;
-            let sy = dirIndex * sHeight;
-            let sx = 0 * sWidth;
-
-
-            // player.speed.move = .1;
-            player.dead.state = false;
-            player.dead.count = 0;
-
-            let point = {
-              x: 0,
-              y: 0,
-            };
-
-            let cell = this.gridInfo.find(elem => elem.number.x === player.startPosition.cell.number.x && elem.number.y === player.startPosition.cell.number.y)
-            point.x = cell.center.x;
-            point.y = cell.center.y;
-
-            player.currentPosition.cell = {
-              number: {
-                x: player.startPosition.cell.number.x,
-                y: player.startPosition.cell.number.y
-              },
-              center : {
-                x: point.x,
-                y: point.y
-              }
-            }
-            player.moving = {
-              state: false,
-              step: 0,
-              course: '',
-              origin: {
-                number: {
-                  x: player.startPosition.cell.number.x,
-                  y: player.startPosition.cell.number.y,
-                },
-                center: {
-                  x: point.x,
-                  y: point.y,
-                },
-              },
-              destination: {
-                x: 0,
-                y: 0,
-              }
-            }
-            player.nextPosition = {
-              x: point.x,
-              y: point.y
-            }
-
-            this.players[player.number-1] = player;
-
-            this.getTarget(player);
-
-            context.drawImage(playerImg, sx, sy, sWidth, sHeight, point.x-30, point.y-30, this.playerDrawWidth, this.playerDrawHeight);
-
-          }
-
-        }
-
-        // OBSTACLES & BARRIERS
-        if (cell.barrier.state === true && cell.void.state !== true) {
-          let barrierImg = this.barrierImgs[cell.barrier.type][cell.barrier.position];
-          context.drawImage(barrierImg, iso.x - offset.x, iso.y - barrierImg.height, barrierImg.width, barrierImg.height);
-        }
-
-        if (cell.obstacle.state === true && cell.void.state !== true) {
-          let obstacleImg = this.obstacleImgs[cell.obstacle.type]
-          context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
-        }
-
-
-        this.init = false;
-        this.setState({
-          loading: false,
-        })
-
-      }
-    }
-
-  }
-
-
-
   addAiPlayer = () => {
 
     let newPlayerNumber = this.players.length+1;
@@ -36909,6 +24529,12377 @@ class App extends Component {
   }
 
 
+  updatePathArray = () => {
+    // console.log('updating pathArray');
+
+    let pathArray = []
+
+    for (const [key, value] of Object.entries(this.['levelData'+this.gridWidth])) {
+      let row = [];
+      for (const elem3 of value) {
+        // let terrainInfo2 = elem3.length-1;
+        // let cell = this.gridInfo.find(elem2 => elem2.levelData === elem3)
+        //
+        // if (cell) {
+        //   let playerCell = false;
+        //   for (const plyr of this.players) {
+        //     if (
+        //       plyr.currentPosition.cell.number.x === cell.number.x &&
+        //       plyr.currentPosition.cell.number.y === cell.number.y
+        //     ) {
+        //       playerCell = true;
+        //     }
+        //   }
+        //   if (playerCell === true) {
+        //     row.push(0)
+        //     // row.push(1)
+        //   } else {
+        //     if (
+        //       elem3.charAt(terrainInfo2) === 'j' ||
+        //       elem3.charAt(terrainInfo2) === 'h' ||
+        //       elem3.charAt(terrainInfo2) === 'i' ||
+        //       elem3.charAt(0) !== 'x' ||
+        //       cell.void.state === true
+        //     ) {
+        //       row.push(1)
+        //     } else {
+        //       row.push(0)
+        //     }
+        //     // row.push(0)
+        //   }
+        // }
+
+        row.push(0)
+      }
+      pathArray.push(row)
+    }
+    this.pathArray = pathArray;
+
+  }
+  startProcessLevelData = (canvas) => {
+
+    let gridInfo = [];
+    let settingsGridInfo = [];
+
+    canvas.width = this.canvasWidth;
+    canvas.height = this.canvasHeight;
+
+    let floorImageWidth = this.floorImageWidth;
+    let floorImageHeight = this.floorImageHeight;
+    let wallImageWidth = this.wallImageWidth;
+    let wallImageHeight = this.wallImageHeight;
+    let sceneX = this.canvasWidth/2;
+    let sceneY = this.sceneY;
+    let tileWidth = this.tileWidth;
+
+    class Point {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+
+    for (var x = 0; x < this.gridWidth+1; x++) {
+      for (var y = 0; y < this.gridWidth+1; y++) {
+
+        let p = new Point();
+        p.x = x * tileWidth;
+        p.y = y * tileWidth;
+
+
+        let iso = this.cartesianToIsometric(p);
+        let offset = {x: floorImageWidth/2, y: floorImageHeight}
+
+        // apply offset to center scene for a better view
+        iso.x += sceneX
+        iso.y += sceneY
+
+        let center = {
+          x: Math.round(iso.x - offset.x/2+this.cellCenterOffsetX),
+          y: Math.round(iso.y - offset.y/2-this.cellCenterOffsetY),
+        }
+
+        gridInfo.push({
+          number:{x:x,y:y},
+          center:{x:center.x,y:center.y},
+          drawCenter:{x:center.x,y:center.y},
+          vertices: [
+            {x:center.x, y:center.y+this.tileWidth/2},
+            {x:center.x+this.tileWidth, y:center.y},
+            {x:center.x, y:center.y-this.tileWidth/2},
+            {x:center.x-this.tileWidth, y:center.y},
+          ],
+          side: Math.sqrt((this.tileWidth/2)^2+(this.tileWidth)^2),
+          levelData: '',
+          edge: {
+            state: false,
+            side: ''
+          },
+          terrain: {
+            name: '',
+            type: '',
+            effect: ''
+          },
+          item: {
+            name: '',
+            type: '',
+            subType: '',
+            effect: '',
+            initDrawn: false
+          },
+          void: {
+            state: false
+          },
+          obstacle: {
+            state: false,
+            name: '',
+            type: '',
+            hp: 2,
+            destructible: {
+              state: false,
+              weapons: [],
+              leaveRubble: false,
+            },
+            locked: {
+              state: false,
+              key: '',
+            },
+            weight: 1,
+            height: 0.5,
+            items: [],
+            effects: [],
+            moving: {
+              state: false,
+              step: 0,
+              origin: {
+                number: {
+                  x: undefined,
+                  y: undefined,
+                },
+                center: {
+                  x: undefined,
+                  y: undefined,
+                },
+              },
+              destination: {
+                number: {
+                  x: undefined,
+                  y: undefined,
+                },
+                center: {
+                  x: undefined,
+                  y: undefined,
+                },
+              },
+              currentPosition: {
+                x: undefined,
+                y: undefined,
+              },
+              nextPosition: {
+                x: undefined,
+                y: undefined,
+              },
+              moveSpeed: 0,
+              pushable: true,
+              pushed: false,
+              pusher: undefined,
+              falling: {
+                state: false,
+                count: 0,
+                limit: 10,
+              },
+            }
+          },
+          barrier: {
+            state: false,
+            name: '',
+            type: '',
+            hp: 2,
+            destructible: {
+              state: false,
+              weapons: [],
+              leaveRubble: false,
+            },
+            locked: {
+              state: false,
+              key: '',
+            },
+            position: '',
+            height: 1,
+          },
+          elevation: {
+            number: 0,
+            type: '',
+            position: '',
+          },
+          rubble: false,
+        })
+
+      }
+    }
+
+    for (var x = 0; x < this.settingsGridWidth+1; x++) {
+      for (var y = 0; y < this.settingsGridWidth+1; y++) {
+
+        let p2 = new Point();
+        p2.x = x * tileWidth/2;
+        p2.y = y * tileWidth/2;
+
+        let iso2 = this.cartesianToIsometric(p2);
+        let offset2 = {x: (floorImageWidth/2)/2, y: (floorImageHeight/2)}
+
+        // apply offset to center scene for a better view
+
+        iso2.x += this.settingsSceneX;
+        iso2.y += this.settingsSceneY;
+
+        let center2 = {
+          x: Math.round(iso2.x - offset2.x/2+(this.cellCenterOffsetX/2)),
+          y: Math.round(iso2.y - offset2.y/2-(this.cellCenterOffsetY/2)),
+        }
+
+
+        settingsGridInfo.push({
+          number:{x:x,y:y},
+          center:{x:center2.x,y:center2.y},
+          drawCenter:{x:center2.x,y:center2.y},
+          vertices: [
+            {x:center2.x, y:center2.y+this.tileWidth/4},
+            {x:center2.x+this.tileWidth/2, y:center2.y},
+            {x:center2.x, y:center2.y-this.tileWidth/4},
+            {x:center2.x-this.tileWidth/2, y:center2.y},
+          ],
+          side: Math.sqrt(((this.tileWidth/2)/2)^2+((this.tileWidth/2))^2),
+          levelData: '',
+          edge: {
+            state: false,
+            side: ''
+          },
+          terrain: {
+            name: '',
+            type: '',
+            effect: ''
+          },
+          item: {
+            name: '',
+            type: '',
+            subType: '',
+            effect: '',
+            initDrawn: false
+          },
+          void: {
+            state: false
+          },
+          obstacle: {
+            state: false,
+            name: '',
+            type: '',
+            hp: 2,
+            destructible: {
+              state: false,
+              weapons: [],
+              leaveRubble: false,
+            },
+            locked: {
+              state: false,
+              key: '',
+            },
+            weight: 1,
+            height: 0.5,
+            items: [],
+            effects: [],
+            moving: {
+              state: false,
+              step: 0,
+              origin: {
+                number: {
+                  x: undefined,
+                  y: undefined,
+                },
+                center: {
+                  x: undefined,
+                  y: undefined,
+                },
+              },
+              destination: {
+                number: {
+                  x: undefined,
+                  y: undefined,
+                },
+                center: {
+                  x: undefined,
+                  y: undefined,
+                },
+              },
+              currentPosition: {
+                x: undefined,
+                y: undefined,
+              },
+              nextPosition: {
+                x: undefined,
+                y: undefined,
+              },
+              moveSpeed: 0,
+              pushable: true,
+              pushed: false,
+              pusher: undefined,
+              falling: {
+                state: false,
+                count: 0,
+                limit: 10,
+              },
+            }
+          },
+          barrier: {
+            state: false,
+            name: '',
+            type: '',
+            hp: 2,
+            destructible: {
+              state: false,
+              weapons: [],
+              leaveRubble: false,
+            },
+            locked: {
+              state: false,
+              key: '',
+            },
+            position: '',
+            height: 1,
+          },
+          elevation: {
+            number: 0,
+            type: '',
+            position: '',
+          },
+          rubble: false,
+        })
+
+      }
+    }
+
+    this.settingsGridInfo = settingsGridInfo;
+    this.gridInfo = gridInfo;
+
+  }
+  processLevelData = (allCells) => {
+    // console.log('processing level data','grid width',this.gridWidth);
+
+    for(const elem of allCells) {
+
+      // APPLY LEVEL DATA TO GRID INFO CELLS!
+      let levelData2Row = 'row'+elem.number.x;
+      let elemLevelData = this.['levelData'+this.gridWidth][levelData2Row][elem.number.y];
+
+      if (
+        (elemLevelData.split('_')[1] !== "*" &&
+        this.terrainLevelDataRef[elemLevelData.split('_')[3]].type === 'deep') ||
+        (elemLevelData.split('_')[1] !== "*" && this.terrainLevelDataRef[elemLevelData.split('_')[3]].type === 'void')
+      ) {
+        elemLevelData = elemLevelData.replaceAt(3, '*');
+      }
+      elem.levelData = elemLevelData;
+      // console.log('level data processing',elem.levelData);
+
+
+      // '**_*_0.0_a_0**'
+      // barrierType(a,b,c)BarrierPosition(n,s,e,w)_obstacle_x.y_terrain_elevationNumber(0,1,2)ElevationType(a,b,c)ElevationPosition(n,s,e,w)
+
+
+      elem.terrain = this.terrainLevelDataRef[elem.levelData.split('_')[3]]
+      if (elem.terrain.name === 'void') {
+        elem.void.state = true
+      }
+
+      elem.elevation.number = parseInt(elem.levelData.split('_')[4].charAt(0));
+      if (elem.levelData.split('_')[4].charAt(1) !== '*') {
+        elem.elevation.type = this.elevationTypeLevelDataRef[elem.levelData.split('_')[4].charAt(1)]
+      }
+
+
+      if (elem.levelData.split('_')[4].charAt(1) !== '*') {
+        switch (elem.levelData.split('_')[4].charAt(2)) {
+          case 'n':
+            elem.elevation = {
+              number: elem.elevation.number,
+              type: elem.elevation.type,
+              position: 'north',
+            }
+          break;
+          case 's':
+            elem.elevation = {
+              number: elem.elevation.number,
+              type: elem.elevation.type,
+              position: 'south',
+            }
+          break;
+          case 'e':
+            elem.elevation = {
+              number: elem.elevation.number,
+              type: elem.elevation.type,
+              position: 'east',
+            }
+          break;
+          case 'w':
+            elem.elevation = {
+              number: elem.elevation.number,
+              type: elem.elevation.type,
+              position: 'west',
+            }
+          break;
+          default:
+
+          break
+        }
+      }
+
+
+      // OBSTACLE
+      if (elem.levelData.split('_')[1] !== '*') {
+        elem.obstacle = this.obstacleLevelDataRef[elem.levelData.split('_')[1]];
+      }
+
+      // BARRIER
+      if (elem.levelData.split('_')[0] !== '**') {
+        elem.barrier = this.barrierLevelDataRef[elem.levelData.split('_')[0].charAt(0)];
+
+        switch (elem.levelData.split('_')[0].charAt(1)) {
+          case 'n':
+            elem.barrier = {
+              state: elem.barrier.state,
+              name: elem.barrier.name,
+              type: elem.barrier.type,
+              hp: elem.barrier.hp,
+              destructible: elem.barrier.destructible,
+              locked: elem.barrier.locked,
+              position: 'north',
+              height: elem.barrier.height,
+            }
+          break;
+          case 's':
+            elem.barrier = {
+              state: elem.barrier.state,
+              name: elem.barrier.name,
+              type: elem.barrier.type,
+              hp: elem.barrier.hp,
+              destructible: elem.barrier.destructible,
+              locked: elem.barrier.locked,
+              position: 'south',
+              height: elem.barrier.height,
+            }
+          break;
+          case 'e':
+            elem.barrier = {
+              state: elem.barrier.state,
+              name: elem.barrier.name,
+              type: elem.barrier.type,
+              hp: elem.barrier.hp,
+              destructible: elem.barrier.destructible,
+              locked: elem.barrier.locked,
+              position: 'east',
+              height: elem.barrier.height,
+            }
+          break;
+          case 'w':
+            elem.barrier = {
+              state: elem.barrier.state,
+              name: elem.barrier.name,
+              type: elem.barrier.type,
+              hp: elem.barrier.hp,
+              destructible: elem.barrier.destructible,
+              locked: elem.barrier.locked,
+              position: 'west',
+              height: elem.barrier.height,
+            }
+          break;
+          default:
+          break;
+        }
+      }
+
+      // console.log('oo2',elem.levelData,elem.number,elem.terrain);
+
+      // SET EDGES!
+      if (elem.number.x === 0) {
+        elem.edge = {
+          state: true,
+          side: 'west'
+        }
+      }
+      if (elem.number.x === this.gridWidth) {
+        elem.edge = {
+          state: true,
+          side: 'east'
+        }
+      }
+      if (elem.number.y === this.gridWidth) {
+        elem.edge = {
+          state: true,
+          side: 'south'
+        }
+      }
+      if (elem.number.y === 0) {
+        elem.edge = {
+          state: true,
+          side: 'north'
+        }
+      }
+
+    }
+
+
+    for(const elem2 of this.settingsGridInfo) {
+
+      // SET LEVEL DATA!
+      let levelData2Row = 'row'+elem2.number.x;
+      let elemLevelData = this.['levelData'+this.settingsGridWidth][levelData2Row][elem2.number.y];
+      if (
+        (elemLevelData.split('_')[1] !== "*" &&
+        this.terrainLevelDataRef[elemLevelData.split('_')[3]].type === 'deep') ||
+        (elemLevelData.split('_')[1] !== "*" && this.terrainLevelDataRef[elemLevelData.split('_')[3]].type === 'void')
+      ) {
+        elemLevelData = elemLevelData.replaceAt(3, '*');
+      }
+      elem2.levelData = elemLevelData;
+
+      // TERRAIN
+      elem2.terrain = this.terrainLevelDataRef[elem2.levelData.split('_')[3]]
+      if (elem2.terrain.name === 'void') {
+        elem2.void.state = true
+      }
+
+      // ELEVATION NUMBER
+      elem2.elevation.number = parseInt(elem2.levelData.split('_')[4].charAt(0));
+      if (elem2.levelData.split('_')[4].charAt(1) !== '*') {
+        elem2.elevation.type = this.elevationTypeLevelDataRef[elem2.levelData.split('_')[4].charAt(1)]
+      }
+
+      // ELEVATION POSITION
+      if (elem2.levelData.split('_')[4].charAt(1) !== '*') {
+        switch (elem2.levelData.split('_')[4].charAt(2)) {
+          case 'n':
+            elem2.elevation = {
+              number: elem2.elevation.number,
+              type: elem2.elevation.type,
+              position: 'north',
+            }
+          break;
+          case 's':
+            elem2.elevation = {
+              number: elem2.elevation.number,
+              type: elem2.elevation.type,
+              position: 'south',
+            }
+          break;
+          case 'e':
+            elem2.elevation = {
+              number: elem2.elevation.number,
+              type: elem2.elevation.type,
+              position: 'east',
+            }
+          break;
+          case 'w':
+            elem2.elevation = {
+              number: elem2.elevation.number,
+              type: elem2.elevation.type,
+              position: 'west',
+            }
+          break;
+          default:
+        }
+      }
+
+      // OBSTACLE
+      if (elem2.levelData.split('_')[1] !== '*') {
+        elem2.obstacle = this.obstacleLevelDataRef[elem2.levelData.split('_')[1]];
+      }
+
+      // BARRIER
+      if (elem2.levelData.split('_')[0] !== '**') {
+        elem2.barrier = this.barrierLevelDataRef[elem2.levelData.split('_')[0].charAt(0)];
+
+        switch (elem2.levelData.split('_')[0].charAt(1)) {
+          case 'n':
+            elem2.barrier = {
+              state: elem2.barrier.state,
+              name: elem2.barrier.name,
+              type: elem2.barrier.type,
+              hp: elem2.barrier.hp,
+              destructible: elem2.barrier.destructible,
+              locked: elem2.barrier.locked,
+              position: 'north',
+              height: elem2.barrier.height,
+            }
+          break;
+          case 's':
+            elem2.barrier = {
+              state: elem2.barrier.state,
+              name: elem2.barrier.name,
+              type: elem2.barrier.type,
+              hp: elem2.barrier.hp,
+              destructible: elem2.barrier.destructible,
+              locked: elem2.barrier.locked,
+              position: 'south',
+              height: elem2.barrier.height,
+            }
+          break;
+          case 'e':
+            elem2.barrier = {
+              state: elem2.barrier.state,
+              name: elem2.barrier.name,
+              type: elem2.barrier.type,
+              hp: elem2.barrier.hp,
+              destructible: elem2.barrier.destructible,
+              locked: elem2.barrier.locked,
+              position: 'east',
+              height: elem2.barrier.height,
+            }
+          break;
+          case 'w':
+            elem2.barrier = {
+              state: elem2.barrier.state,
+              name: elem2.barrier.name,
+              type: elem2.barrier.type,
+              hp: elem2.barrier.hp,
+              destructible: elem2.barrier.destructible,
+              locked: elem2.barrier.locked,
+              position: 'west',
+              height: elem2.barrier.height,
+            }
+          break;
+          default:
+        }
+
+      }
+
+      // console.log('oo2',elem.levelData,elem.number,elem.terrain);
+
+      // SET EDGES!
+      if (elem2.number.x === 0) {
+        elem2.edge = {
+          state: true,
+          side: 'west'
+        }
+      }
+      if (elem2.number.x === this.settingsGridWidth) {
+        elem2.edge = {
+          state: true,
+          side: 'east'
+        }
+      }
+      if (elem2.number.y === this.settingsGridWidth) {
+        elem2.edge = {
+          state: true,
+          side: 'south'
+        }
+      }
+      if (elem2.number.y === 0) {
+        elem2.edge = {
+          state: true,
+          side: 'north'
+        }
+      }
+
+    }
+
+    // gridInfo to 2D array
+    let gridInfo2d = [];
+    for (let i = 0; i <= this.gridWidth; i++) {
+    // for (let i = 9; i >= 0; i--) {
+      let newArray = [];
+      for (var j = 0; j < allCells.length; j++) {
+        if (allCells[j]['number'].x === i) {
+          newArray.push(allCells[j])
+        }
+      }
+      gridInfo2d.push(newArray)
+    }
+
+
+    this.gridInfo2D = gridInfo2d;
+    // console.log('gridInfo2d',this.gridInfo2D);
+    this.gridInfo = allCells;
+
+    // this.settingsFormAiGridInfo = this.gridInfo;
+    // console.log('post parse gridInfo',this.gridInfo);
+
+    // console.log('yyy',allCells.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
+    // console.log('yyy2',this.settingsGridInfo.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
+
+    this.updatePathArray()
+
+
+  }
+  drawGridInit = (canvas, context, canvas2, context2) => {
+    // console.log('drawing initial');
+
+
+    context.clearRect(0,0,this.canvasWidth,this.canvasHeight)
+    context2.clearRect(0,0,this.canvasWidth,this.canvasHeight)
+
+    let gridInfo = [];
+    class Point {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    this.popupImageRef = {
+      attackStart: this.refs.preAttackIndicate,
+      preAction1: this.refs.preAction1Indicate,
+      preAction2: this.refs.preAction2Indicate,
+      attacking: this.refs.attack3Indicate,
+      attacking1: this.refs.attack1Indicate,
+      attacking2: this.refs.attack2Indicate,
+      missedAttack: this.refs.missedIndicate,
+      attackingBlunt: this.refs.attackBluntIndicate2,
+      attackingUnarmed: this.refs.attackUnarmedIndicate,
+      attacked1: this.refs.attack1Indicate,
+      attacked2: this.refs.attack2Indicate,
+      attackDefended: this.refs.attackBreakIndicate,
+      attackParried: this.refs.attackParriedIndicate,
+      boltKilled: this.refs.boltKilledIndicate,
+      attackCancelled: this.refs.attackBreakIndicate,
+      injured: this.refs.deflectInjuredIndicate,
+      hpDown: this.refs.deflectInjuredIndicate2,
+      hpUp: this.refs.healIndicate,
+      defending: this.refs.defendIndicate,
+      defending_1: this.refs.defendIndicate1,
+      defending_2: this.refs.defendIndicate2,
+      defending_3: this.refs.defendIndicate3,
+      defending_4: this.refs.defendIndicate4,
+      defendSuccess: this.refs.defendSuccessIndicate,
+      guardBroken: this.refs.defendBreakIndicate,
+      deflected: this.refs.deflectBluntIndicate,
+      dodgeStart: this.refs.preAction2Indicate,
+      dodgeSuccess: this.refs.dodgeIndicate,
+      dodging: this.refs.dodgeIndicate,
+      flanking: this.refs.flankIndicate,
+      pushedBack: this.refs.pushbackIndicate,
+      falling: this.refs.fallingIndicate,
+      outOfStamina: this.refs.outOfStaminaIndicate,
+      outOfAmmo: this.refs.outOfAmmoIndicate,
+      missionEngage: this.refs.deflectIndicate2,
+      missionPursue: this.refs.pursueMissionIndicate2,
+      missionRetrieve: this.refs.retrieveMissionIndicate,
+      missionDefend: this.refs.defendMissionIndicate,
+      missionPatrol: this.refs.patrolMissionIndicate,
+      missionRetreat: this.refs.retreatIndicate,
+      missionEnroute: this.refs.enrouteIndicate,
+      missionComplete: this.refs.completeMissionIndicate,
+      thinking: this.refs.thinkingIndicate,
+      alarmed: this.refs.preAttack2Indicate,
+      pathSwitch: this.refs.pathSwitchIndicate,
+      targetSwitch: this.refs.targetSwitchIndicate,
+      aggressiveMode: this.refs.aggressiveModeIndicate,
+      passiveMode: this.refs.passiveModeIndicate,
+      pickupWeapon: this.refs.pickupWeaponIndicate,
+      pickupArmor: this.refs.pickupArmorIndicate,
+      dropWeapon: this.refs.dropWeaponIndicate,
+      dropArmor: this.refs.dropArmorIndicate,
+      pickupBuff: this.refs.pickupBuffIndicate,
+      pickupDebuff: this.refs.pickupDebuffIndicate,
+      pickupAmmo: this.refs.pickupAmmoIndicate,
+      inventoryFull: this.refs.inventoryFullIndicate,
+      stop: this.refs.boltDefendIndicate,
+      dropWeapon: this.refs.dropWeaponIndicate,
+      dropArmor: this.refs.dropArmorIndicate,
+      drowning: this.refs.drowningIndicate,
+      terrainSlowdown: this.refs.terrainSlowdownIndicate,
+      terrainSpeedup: this.refs.terrainSpeedupIndicate,
+      terrainInjured: this.refs.terrainInjuredIndicate,
+      destroyedItem: this.refs.destroyedItemIndicate,
+      sword: this.refs.itemSword,
+      spear: this.refs.itemSpear,
+      crossbow: this.refs.itemCrossbow,
+      longbow: this.refs.itemBow,
+      helmet: this.refs.itemHelmet1,
+      mail: this.refs.itemMail1,
+      greaves: this.refs.itemGreaves1,
+
+      missedAttack2: this.refs.missedIndicate2,
+      prePush: this.refs.prePushIndicate,
+      canPush: this.refs.canPushIndicate,
+      noPush: this.refs.noPushingIndicate,
+      pushing: this.refs.pushingIndicate,
+      prePull: this.refs.prePullIndicate,
+      canPull: this.refs.canPullIndicate,
+      noPull: this.refs.noPullingIndicate,
+      pulling: this.refs.pullingIndicate,
+      pushedPulled: this.refs.pushedPulledIndicate,
+      unbreakable: this.refs.unbreakableIndicate,
+      dodging2: this.refs.dodgeIndicate2,
+      attackFeint: this.refs.attackFeintIndicate,
+      attackFeint2: this.refs.attackFeintIndicate2,
+      attackFeint3: this.refs.attackFeintIndicate3,
+      defendFeint: this.refs.defendFeintIndicate,
+      defendFeint2: this.refs.defendFeintIndicate2,
+      defendFeint3: this.refs.defendFeintIndicate3,
+      dodgeFeint: this.refs.dodgeFeintIndicate,
+      dodgeFeint2: this.refs.dodgeFeintIndicate2,
+      boltDefend2: this.refs.boltDefendIndicate2,
+      flanking2: this.refs.flankIndicate2,
+      noFlanking: this.refs.noFlankIndicate,
+      cellVoiding: this.refs.cellVoidingIndicate,
+      cellVoiding2: this.refs.cellVoidingIndicate2,
+    };
+    this.indicatorImgs = {
+      preAttack: this.refs.preAttackIndicate,
+      preAttack2: this.refs.preAttack2Indicate,
+      attack1: this.refs.attack1Indicate,
+      attack2: this.refs.attack2Indicate,
+      attack3: this.refs.attack3Indicate,
+      attackUnarmed: this.refs.attackUnarmedIndicate,
+      attackBlunt: this.refs.attackBluntIndicate,
+      attackSuccess: this.refs.attackSuccessIndicate,
+      defend: this.refs.defendIndicate,
+      deflect: this.refs.deflectIndicate,
+      deflectInjured: this.refs.deflectInjuredIndicate,
+      deflectBlunt: this.refs.deflectBluntIndicate,
+      pushback: this.refs.pushbackIndicate,
+      ghost: this.refs.ghostIndicate,
+      death: this.refs.deathIndicate,
+      attackBreak: this.refs.attackBreakIndicate,
+      defendBreak: this.refs.defendBreakIndicate,
+      dodge: this.refs.dodgeIndicate,
+    }
+    this.playerImgs = [
+      {
+        idle: {
+          unarmed: this.refs.playerImgIdleSheet,
+          sword: this.refs.playerImgIdleSheet,
+          spear: this.refs.playerImgIdleSheet,
+          crossbow: this.refs.playerImgIdleSheet,
+        },
+        walking: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        jumping: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        dodging: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        flanking: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        strafing: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        attacking: {
+          unarmed: this.refs.player1ImgAttackSheet,
+          sword: this.refs.player1ImgAttackSheet,
+          spear: this.refs.player1ImgAttackSheet,
+          crossbow: this.refs.player1ImgAttackSheet,
+        },
+        defending: {
+          unarmed: this.refs.player1ImgDefendSheet,
+          sword: this.refs.player1ImgDefendSheet,
+          spear: this.refs.player1ImgDefendSheet,
+          crossbow: this.refs.player1ImgDefendSheet,
+        },
+        deflected: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        pushBack: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        falling: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        pushing: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        pulling: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        pushed: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        pulled: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+      },
+      {
+        idle: {
+          unarmed: this.refs.player2ImgIdleSheet,
+          sword: this.refs.player2ImgIdleSheet,
+          spear: this.refs.player2ImgIdleSheet,
+          crossbow: this.refs.player2ImgIdleSheet,
+        },
+        walking: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        jumping: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        dodging: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        flanking: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        strafing: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        attacking: {
+          unarmed: this.refs.player2ImgAttackSheet,
+          sword: this.refs.player2ImgAttackSheet,
+          spear: this.refs.player2ImgAttackSheet,
+          crossbow: this.refs.player2ImgAttackSheet,
+        },
+        defending: {
+          unarmed: this.refs.player2ImgDefendSheet,
+          sword: this.refs.player2ImgDefendSheet,
+          spear: this.refs.player2ImgDefendSheet,
+          crossbow: this.refs.player2ImgDefendSheet,
+        },
+        deflected: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        pushBack: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        falling: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        pushing: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        pulling: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        pushed: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        pulled: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+      },
+      {
+        idle: {
+          unarmed: this.refs.playerComAImgIdleSheet,
+          sword: this.refs.playerComAImgIdleSheet,
+          spear: this.refs.playerComAImgIdleSheet,
+          crossbow: this.refs.playerComAImgIdleSheet,
+        },
+        walking: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        jumping: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        dodging: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        flanking: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        strafing: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        attacking: {
+          unarmed: this.refs.comAImgAttackSheet,
+          sword: this.refs.comAImgAttackSheet,
+          spear: this.refs.comAImgAttackSheet,
+          crossbow: this.refs.comAImgAttackSheet,
+        },
+        defending: {
+          unarmed: this.refs.comAImgDefendSheet,
+          sword: this.refs.comAImgDefendSheet,
+          spear: this.refs.comAImgDefendSheet,
+          crossbow: this.refs.comAImgDefendSheet,
+        },
+        deflected: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        pushBack: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        falling: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        pushing: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        pulling: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        pushed: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        pulled: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+      },
+      {
+        idle: {
+          unarmed: this.refs.playerComBImgIdleSheet,
+          sword: this.refs.playerComBImgIdleSheet,
+          spear: this.refs.playerComBImgIdleSheet,
+          crossbow: this.refs.playerComBImgIdleSheet,
+        },
+        walking: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        jumping: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        dodging: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        flanking: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        strafing: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        attacking: {
+          unarmed: this.refs.comBImgAttackSheet,
+          sword: this.refs.comBImgAttackSheet,
+          spear: this.refs.comBImgAttackSheet,
+          crossbow: this.refs.comBImgAttackSheet,
+        },
+        defending: {
+          unarmed: this.refs.comBImgDefendSheet,
+          sword: this.refs.comBImgDefendSheet,
+          spear: this.refs.comBImgDefendSheet,
+          crossbow: this.refs.comBImgDefendSheet,
+        },
+        deflected: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        pushBack: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        falling: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        pushing: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        pulling: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        pushed: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        pulled: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+      },
+    ]
+    this.itemImgs = {
+      moveSpeedUp: this.refs.itemSpdUp,
+      moveSpeedDown: this.refs.itemSpdDown,
+      hpUp: this.refs.itemHpUp,
+      hpDown: this.refs.itemHpDown,
+      focusUp: this.refs.itemFocusUp,
+      focusDown: this.refs.itemFocusDown,
+      strengthUp: this.refs.itemStrUp,
+      strengthDown: this.refs.itemStrDown,
+      sword: this.refs.itemSword,
+      spear: this.refs.itemSpear,
+      crossbow: this.refs.itemBow,
+      helmet: this.refs.itemHelmet1,
+      ammo5: this.refs.itemAmmo,
+      ammo10: this.refs.itemAmmo,
+      mail: this.refs.itemMail1,
+      greaves: this.refs.itemGreaves1,
+    };
+    this.boltImgs = {
+      north: this.refs.itemBoltNorth,
+      south: this.refs.itemBoltSouth,
+      east: this.refs.itemBoltEast,
+      west: this.refs.itemBoltWest,
+    }
+    this.floorImgs = {
+      grass: this.refs.floorGrass,
+      stone: this.refs.floorStone,
+      dirt: this.refs.floorDirt,
+      pond: this.refs.floorPond,
+      mud: this.refs.floorMud,
+      sand: this.refs.floorSand,
+      ice: this.refs.floorIce,
+      lava: this.refs.floorLava,
+      bramble: this.refs.floorBramble,
+      river: this.refs.floorRiver,
+      void: this.refs.floorVoid,
+      void2: this.refs.floorVoid2,
+      void3: this.refs.floorVoid3,
+      rubble: this.refs.floorRubble,
+    }
+    this.obstacleImgs = {
+      table: this.refs.obstacleAHalf,
+      closet: this.refs.obstacleAFull,
+      chair: this.refs.obstacleBHalf,
+      shelf: this.refs.obstacleBFull,
+      smallBox: this.refs.obstacleCHalf,
+      largeBox: this.refs.obstacleCFull,
+      counter: this.refs.obstacleDHalf,
+      chest: this.refs.obstacleEHalf,
+      crate: this.refs.obstacleCrate,
+      barrel: this.refs.obstacleBarrel,
+      chest: this.refs.obstacleCrate,
+      table: this.refs.obstacleCrate,
+      chair: this.refs.obstacleCrate,
+      shelf: this.refs.obstacleCrate,
+      counter: this.refs.obstacleCrate,
+      smallBox: this.refs.obstacleCrate,
+      largeBox: this.refs.obstacleBarrel,
+    }
+    this.barrierImgs = {
+      wall: {
+        north: this.refs.barrierANorth,
+        south: this.refs.barrierASouth,
+        east: this.refs.barrierAEast,
+        west: this.refs.barrierAWest,
+      },
+      door: {
+        north: this.refs.barrierANorth,
+        south: this.refs.barrierASouth,
+        east: this.refs.barrierAEast,
+        west: this.refs.barrierAWest,
+      },
+      balcony: {
+        north: this.refs.barrierANorth,
+        south: this.refs.barrierASouth,
+        east: this.refs.barrierAEast,
+        west: this.refs.barrierAWest,
+      },
+    }
+
+    // LOAD CROSSBOW AMMO
+    for (const plyr of this.players) {
+      if (plyr.currentWeapon.type === 'crossbow') {
+        let ammo = parseInt(plyr.currentWeapon.effect.split('+')[1])
+        plyr.items.ammo = plyr.items.ammo + ammo;
+      }
+    }
+
+    let floor;
+    let wall = this.refs.wall;
+    let wall2 = this.refs.wall2;
+    let wall3 = this.refs.wall3;
+
+    canvas.width = this.canvasWidth;
+    canvas.height = this.canvasHeight;
+
+    let floorImageWidth = this.floorImageWidth;
+    let floorImageHeight = this.floorImageHeight;
+    let wallImageWidth = this.wallImageWidth;
+    let wallImageHeight = this.wallImageHeight;
+    let sceneX = this.canvasWidth/2;
+    let sceneY = this.sceneY;
+    let tileWidth = this.tileWidth;
+
+    this.startProcessLevelData(canvas);
+    // gridInfo = this.gridInfo;
+
+    this.processLevelData(this.gridInfo);
+    // console.log('post process barrier check init',this.gridInfo.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
+
+    if (this.camera.fixed !== true) {
+      // this.setCameraFocus('init', canvas, context, canvas2, context2);
+    }
+    this.findFocusCell('panToCell',{},canvas,context)
+
+
+    // CENTER LARGER GRIDS
+    if (window.innerWidth < 1100 && this.gridWidth >= 12) {
+      // this.camera.zoom.x = 0.7;
+      // this.camera.zoom.y = 0.7;
+
+      this.setInitZoom = {
+        state: true,
+        windowWidth: window.innerWidth,
+        gridWidth: this.gridWidth,
+      }
+    }
+    if (window.innerWidth > 1100 && this.gridWidth >= 12) {
+      // this.camera.zoom.x = 1;
+      // this.camera.zoom.y = 1;
+
+      this.setInitZoom = {
+        state: true,
+        windowWidth: window.innerWidth,
+        gridWidth: this.gridWidth,
+      }
+    }
+    if (window.innerWidth < 1100 && this.gridWidth < 12) {
+      // this.camera.zoom.x = 1;
+      // this.camera.zoom.y = 1;
+
+      this.setInitZoom = {
+        state: true,
+        windowWidth: window.innerWidth,
+        gridWidth: this.gridWidth,
+      }
+    }
+
+    let diff = 1 - this.camera.zoom.x;
+
+    // FOCUSED ZOOMING INIT SET
+    this.camera.pan.x = (diff*this.canvasWidth/2);
+    this.camera.pan.y = (diff*this.canvasWidth/2)-(diff*350);
+    if (this.camera.pan.x === 0) {
+      this.camera.pan.x = -1
+      this.camera.pan.y = -1
+    }
+
+
+    if (this.showSettingsCanvasData.state === true) {
+      this.settingsFormGridWidthUpdate(this.settingsGridWidth)
+    }
+
+
+    this.placeItems({init: true, items: ''});
+
+
+    // CELL COLOR REF
+    let preCellColorRef = this.gridInfo.map(x => x = {x:x.number.x,y:x.number.y,color:''});
+    for(const cell of preCellColorRef) {
+      let colorCheckPass = false;
+      while (colorCheckPass === false) {
+        let randomColor = `rgb(${this.rnJesus(0,255)},${this.rnJesus(0,255)},${this.rnJesus(0,255)})`;
+        let colorsInUse = preCellColorRef.filter(x => x.color !== '').map(y => y === y.color);
+        if (colorsInUse.find(x => x === randomColor)) {
+          colorCheckPass = false;
+        }
+        else {
+          cell.color = randomColor;
+          colorCheckPass = true;
+        }
+      }
+    };
+    this.cellColorRef = preCellColorRef;
+
+
+    for (var x = 0; x < this.gridWidth+1; x++) {
+      for (var y = 0; y < this.gridWidth+1; y++) {
+        let p = new Point();
+        p.x = x * tileWidth;
+        p.y = y * tileWidth;
+
+        let iso = this.cartesianToIsometric(p);
+        let offset = {x: floorImageWidth/2, y: floorImageHeight}
+
+        // apply offset to center scene for a better view
+        iso.x += sceneX
+        iso.y += sceneY
+
+
+        let center = {
+          x: iso.x - offset.x/2+this.cellCenterOffsetX,
+          y: iso.y - offset.y/2-this.cellCenterOffsetY,
+        }
+
+
+        let cell = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
+        let cellLevelData = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y).levelData;
+
+
+        floor = this.floorImgs[cell.terrain.name]
+
+        if (cell.void.state === true) {
+          // drawFloor = false;
+          floor = this.floorImgs.void3
+        }
+
+
+        // context.drawImage(floor, iso.x - offset.x, iso.y - offset.y, 100, 100);
+        context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
+
+        context.fillStyle = 'black';
+        context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12);
+
+        context.fillStyle = "black";
+        context.fillRect(center.x, center.y,5,5);
+
+
+        // INITIAL ITEM DISTRIBUTION!!
+        let cell2 = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
+        if (cell2.item.name !== '') {
+          // console.log('found cell with item');
+          if (cell2.item.initDrawn === false) {
+            // console.log('found cell with item undrawn');
+            let itemImg;
+            let fillClr;
+            if (cell2.item.type === 'item') {
+              switch(cell2.item.name) {
+                case 'moveSpeedUp' :
+                  fillClr = "purple";
+                  itemImg = this.itemImgs[cell2.item.name];
+                break;
+                case 'moveSpeedDown' :
+                  fillClr = "blue";
+                  itemImg = this.itemImgs[cell2.item.name];
+                break;
+                case 'hpUp' :
+                  fillClr = "yellow";
+                  itemImg = this.itemImgs[cell2.item.name];
+                break;
+                case 'hpDown' :
+                  fillClr = "brown";
+                  itemImg = this.itemImgs[cell2.item.name];
+                break;
+                case 'focusUp' :
+                  fillClr = "white";
+                  itemImg = this.itemImgs[cell2.item.name];
+                break;
+                case 'focusDown' :
+                  fillClr = "black";
+                  itemImg = this.itemImgs[cell2.item.name];
+                break;
+                case 'strengthUp' :
+                  fillClr = "green";
+                  itemImg = this.itemImgs[cell2.item.name];
+                break;
+                case 'strengthDown' :
+                  fillClr = "red";
+                  itemImg = this.itemImgs[cell2.item.name];
+                break;
+                case 'ammo5' :
+                  fillClr = '#283618';
+                  itemImg = this.itemImgs[cell2.item.name];
+                break;
+                case 'ammo10' :
+                  fillClr = '#283618';
+                  itemImg = this.itemImgs[cell2.item.name];
+                break;
+              }
+            }
+            else if (cell2.item.type === 'weapon') {
+              switch(cell2.item.subType) {
+                case 'sword' :
+                  fillClr = "orange";
+                  itemImg = this.itemImgs[cell2.item.subType];
+                break;
+                case 'spear' :
+                  fillClr = "maroon";
+                  itemImg = this.itemImgs[cell2.item.subType];
+                break;
+                case 'crossbow' :
+                  fillClr = "navy";
+                  itemImg = this.itemImgs[cell2.item.subType];
+                break;
+              }
+            }
+            else if (cell2.item.type === 'armor') {
+              switch(cell2.item.subType) {
+                case 'helmet' :
+                  fillClr = "grey";
+                  itemImg = this.itemImgs[cell2.item.subType];
+                break;
+                case 'mail' :
+                  fillClr = "olive";
+                  itemImg = this.itemImgs[cell2.item.subType];
+                break;
+                case 'greaves' :
+                  fillClr = "#b5179e";
+                  itemImg = this.itemImgs[cell2.item.subType];
+                break;
+              }
+            }
+
+
+            // context.fillStyle = fillClr;
+            // context.beginPath();
+            // context.arc(center.x, center.y, 15, 0, 2 * Math.PI);
+            // context.fill();
+
+            context.drawImage(itemImg ,center.x-15, center.y-15, 30,30);
+          }
+        }
+
+
+        let vertices = [
+          {x:center.x, y:center.y+tileWidth/2},
+          {x:center.x+tileWidth, y:center.y},
+          {x:center.x, y:center.y-tileWidth/2},
+          {x:center.x-tileWidth, y:center.y},
+        ];
+        for (const vertex of vertices) {
+          context.fillStyle = "yellow";
+          context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
+        }
+
+
+        for (const player of this.players) {
+
+          if (
+            x === player.startPosition.cell.number.x &&
+            y === player.startPosition.cell.number.y
+          ) {
+
+            let playerImg;
+            let playerImgIndex;
+            let atkType = player.currentWeapon.type;
+            if (player.currentWeapon.name === "") {
+              atkType = "unarmed";
+            }
+
+            if (player.ai.state === true) {
+
+              if (player.ai.imgType === "A") {
+                playerImgIndex = 2;
+              }
+              else if (player.ai.imgType === "B") {
+                playerImgIndex = 3;
+              }
+
+              playerImg = this.playerImgs[playerImgIndex].idle[atkType];
+            } else {
+              playerImg = this.playerImgs[player.number-1].idle[atkType];
+            }
+
+
+            let dirs = ['north','south','east','west']
+            let dirIndex = dirs.indexOf(player.direction);
+            let sHeight = this.charSpriteHeight;
+            let sWidth = this.charSpriteWidth;
+            let sy = dirIndex * sHeight;
+            let sx = 0 * sWidth;
+
+
+            // player.speed.move = .1;
+            player.dead.state = false;
+            player.dead.count = 0;
+
+            let point = {
+              x: 0,
+              y: 0,
+            };
+
+            let cell = this.gridInfo.find(elem => elem.number.x === player.startPosition.cell.number.x && elem.number.y === player.startPosition.cell.number.y)
+            point.x = cell.center.x;
+            point.y = cell.center.y;
+
+            player.currentPosition.cell = {
+              number: {
+                x: player.startPosition.cell.number.x,
+                y: player.startPosition.cell.number.y
+              },
+              center : {
+                x: point.x,
+                y: point.y
+              }
+            }
+            player.moving = {
+              state: false,
+              step: 0,
+              course: '',
+              origin: {
+                number: {
+                  x: player.startPosition.cell.number.x,
+                  y: player.startPosition.cell.number.y,
+                },
+                center: {
+                  x: point.x,
+                  y: point.y,
+                },
+              },
+              destination: {
+                x: 0,
+                y: 0,
+              }
+            }
+            player.nextPosition = {
+              x: point.x,
+              y: point.y
+            }
+
+            this.players[player.number-1] = player;
+
+            this.getTarget(player);
+
+            context.drawImage(playerImg, sx, sy, sWidth, sHeight, point.x-30, point.y-30, this.playerDrawWidth, this.playerDrawHeight);
+
+          }
+
+        }
+
+        // OBSTACLES & BARRIERS
+        if (cell.barrier.state === true && cell.void.state !== true) {
+          let barrierImg = this.barrierImgs[cell.barrier.type][cell.barrier.position];
+          context.drawImage(barrierImg, iso.x - offset.x, iso.y - barrierImg.height, barrierImg.width, barrierImg.height);
+        }
+
+        if (cell.obstacle.state === true && cell.void.state !== true) {
+          let obstacleImg = this.obstacleImgs[cell.obstacle.type]
+          context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
+        }
+
+
+        this.init = false;
+        this.setState({
+          loading: false,
+        })
+
+      }
+    }
+
+  }
+
+
+  gameLoop = () => {
+
+    // IF PRESSED SETTINGS KEY, COUNT
+    // PAUSE GAME IF SETTINGS OPENED
+    if (this.showSettingsKeyPress.state === true) {
+      if (this.showSettingsKeyPress.count < this.showSettingsKeyPress.limit) {
+        this.showSettingsKeyPress.count++;
+      }
+      if (this.showSettingsKeyPress.count >= this.showSettingsKeyPress.limit) {
+        if (this.state.showSettings !== true) {
+          this.setState({
+            showSettings: true
+          })
+          if (this.showSettingsCanvasData.state === true) {
+            this.settingsFormGridWidthUpdate(this.settingsGridWidth)
+          }
+
+          // this.redrawSettingsGrid();
+        } else {
+
+          // this.updateSettingsFormAiDataData = {};
+          this.settingsFormAiStartPosList = [];
+          this.setState({
+            showSettings: false
+          })
+        }
+        this.showSettingsKeyPress = {
+          state: false,
+          count: 0,
+          limit: this.showSettingsKeyPress.limit,
+        }
+      }
+
+    }
+
+    if (this.state.showSettings !== true) {
+
+      // let ts = window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
+      this.stepper.currentTime = (new Date()).getTime();
+      this.stepper.deltaTime = (this.stepper.currentTime-this.stepper.lastTime);
+
+      if(this.stepper.deltaTime > this.stepper.interval) {
+
+        this.time++;
+
+        if (this.time === 300) {
+        //   this.openVoid = true;
+        // OR
+        //   this.customCellToVoid({x:2,y:2})
+
+        // this.players[1].ai.retreating.state = false;
+        // this.players[1].ai.retreating.checkin = undefined;
+        // this.players[1].ai.mission = 'retreat';
+        // this.players[1].ai.retreating.safe = false;
+        }
+
+
+        this.setState({
+          stateUpdater: '..'
+        })
+
+
+        if (this.gamepad === true) {
+          this.pollGamepads();
+        }
+
+
+        // REMOVE AI PLAYER!
+        if (this.removeAi && this.addAiCount.state !== true) {
+
+          let aiPlayer = this.players[this.removeAi-1]
+          let newArray = this.players.filter(x=> x !== aiPlayer);
+          this.players = [];
+          this.players = newArray;
+          this.removeAi = undefined;
+        }
+
+
+        for (const player of this.players) {
+
+          this.playerUpdate(player, this.state.canvas, this.state.context, this.state.canvas2, this.state.context2, this.state.canvas3, this.state.context3);
+        }
+
+
+        this.stepper.lastTime = this.stepper.currentTime - (this.stepper.deltaTime % this.stepper.interval);
+      }
+
+    }
+
+    requestAnimationFrame(this.gameLoop);
+
+  }
+  playerUpdate = (player, canvas, context, canvas2, context2, canvas3, context3) => {
+    // console.log('updating player',player.number);
+
+    let keyPressedDirection;
+    if (player.ai.state === true && player.dead.state === true) {
+
+    }
+    else {
+      for (const [key, value] of Object.entries(this.keyPressed[player.number-1])) {
+        // console.log(`${key}: ${value} ....${player.number}`);
+
+        if (
+          key !== 'strafe' &&
+          key !== 'attack' &&
+          key !== 'defend' &&
+          key !== 'dodge' &&
+          value === true
+        ) {
+          // if (player.ai.state === true) {
+          //   console.log('ai pressed',key,'plyr',player.number);
+          // }
+          // console.log('pressed1',key,'plyr',player.number);
+
+          keyPressedDirection = key;
+        }
+
+
+      }
+    }
+
+    let nextPosition;
+
+
+    if (player.dead.state === true) {
+
+      if (player.dead.count > 0 && player.dead.count < player.dead.limit+1) {
+        player.dead.count++
+        // console.log('player',player.number,'dying',player.dead.count);
+      }
+      else if (player.dead.count >= player.dead.limit) {
+        player.dead.count = 0;
+      }
+
+    }
+    if (player.dead.state === true && player.dead.count === 0) {
+      // console.log('done dying remove from board');
+      player.nextPosition = {
+        x: -30,
+        y: -30,
+      }
+    }
+
+
+    // OPEN VOID!!???
+    if (this.openVoid === true) {
+
+      if (this.cellToVoid.state !== true) {
+        // console.log('set a new cell to void');
+
+        let cell = {
+          x: 0,
+          y: 0
+        }
+
+        let voidChance = Math.round(1000/this.gridWidth)
+        let openVoid = this.rnJesus(1,voidChance);
+
+        if (openVoid === 1) {
+          // console.log('boom');
+          cell.x = this.rnJesus(0,this.gridWidth)
+          cell.y = this.rnJesus(0,this.gridWidth)
+
+          this.cellToVoid.state = true;
+          this.cellToVoid.x = cell.x;
+          this.cellToVoid.y = cell.y;
+          this.cellToVoid.count = 1;
+        }
+
+      }
+      else if (this.cellToVoid.state === true) {
+        // console.log('already voiding a cell');
+        if (this.cellToVoid.count < this.cellToVoid.limit) {
+          this.cellToVoid.count++
+          // console.log('cv',this.cellToVoid.count);
+        }
+        else if (this.cellToVoid.count >= this.cellToVoid.limit) {
+          // console.log('summon void now',this.cellToVoid.x,this.cellToVoid.y);
+
+          let cell = {
+            x: this.cellToVoid.x,
+            y: this.cellToVoid.y,
+          }
+
+          this.voidSummon(cell);
+
+          this.cellToVoid = {
+            state: false,
+            x: 0,
+            y: 0,
+            count: 0,
+            limit: this.cellToVoid.limit,
+          }
+
+
+
+          if (this.voidCustomCell === true) {
+            // console.log('void custom cell switch off');
+            this.openVoid = false
+            this.voidCustomCell = false;
+          }
+
+        }
+
+      }
+
+    }
+    // LIMIT CELL VOID EVENT!!
+    if (this.voidTimer.count < this.voidTimer.limit) {
+      this.voidTimer.count++
+      // console.log('void count',this.voidTimer.count);
+    }
+    if (this.voidTimer.count >= this.voidTimer.limit) {
+      this.openVoid = false;
+      // console.log('void off');
+    }
+
+
+    // BLOOD SACRIFICE!!
+    if (this.bloodSacrificeEvent.state === true) {
+
+      if (this.bloodSacrificeEvent.count < this.bloodSacrificeEvent.limit) {
+        this.bloodSacrificeEvent.count++;
+      } else if (this.bloodSacrificeEvent.count >= this.bloodSacrificeEvent.limit) {
+        if (this.cellToVoid.state !== true) {
+          this.bloodSacrificeEvent.state = false;
+          this.openVoid = false;
+          console.log('Blood Sacrifice event is now over.');
+          if (this.bloodSacrificeEvent.restore === true) {
+
+
+            for (const cell of this.bloodSacrificeVoidedCells) {
+              // console.log('restoring cells after blood Sacrifice',cell);
+              if (cell.terrain.name !== 'void') {
+                cell.void.state = false;
+              }
+            }
+
+            this.bloodSacrificeVoidedCells = [];
+            this.bloodSacrificeEvent.restore = false;
+          }
+        }
+
+      }
+    }
+
+
+    // STAMINA!!
+    if (player.stamina.current < player.stamina.max) {
+
+      player.stamina.current += .05;
+      player.stamina.current = +(Math.round((player.stamina.current) + "e+" + 3)  + "e-" + 3);
+
+      if (player.stamina.current >= player.stamina.max) {
+        player.stamina.current = player.stamina.max;
+      }
+      if (player.stamina.current === 1) {
+        // console.log('OUT OF STAMINA @ player update');
+        player.flanking = {
+          checking: false,
+          preFlankDirection: '',
+          direction: '',
+          state: false,
+          step: 0,
+          target1: {x:0 ,y:0},
+          target2: {x:0 ,y:0},
+        }
+        player.dodging = {
+          countState: false,
+          state: false,
+          count: 0,
+          limit: 20,
+          peak: {
+            start: 5,
+            end: 10,
+          }
+        }
+
+        this.attackedCancel(player);
+
+        if (player.success.deflected.state !== true) {
+
+          this.players[player.number-1].success.deflected = {
+            state: true,
+            count: 1,
+            limit: this.deflectedLengthRef.outOfStamina,
+            predeflect: this.players[player.number-1].success.deflected.predeflect,
+            type: 'outOfStamina',
+          };
+
+
+          if (this.aiDeflectedCheck.includes(this.players[player.number-1].number) !== true) {
+            this.aiDeflectedCheck.push(this.players[player.number-1].number)
+          }
+        }
+
+        if (!player.popups.find(x => x.msg === 'outOfStamina')) {
+          player.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 20,
+              type: '',
+              position: '',
+              msg: 'outOfStamina',
+              img: '',
+
+            }
+          )
+        }
+
+
+      }
+
+      // AI RETREAT ON LOW STAMINA
+      if (player.stamina.current <= 4) {
+        if (player.ai.state === true) {
+          console.log('ai player',player.number,' almost out of stamina. Retreat');
+          player.ai.mission = 'retreat';
+
+          if (!player.popups.find(x=>x.msg === 'missionRetreat')) {
+            player.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: 30,
+                type: '',
+                position: '',
+                msg: 'missionRetreat',
+                img: '',
+
+              }
+            )
+          }
+
+        }
+      }
+    }
+
+
+    // CHECK AND SET DEFLECTION!!
+    if (player.success.deflected.state === true && player.success.deflected.count < player.success.deflected.limit) {
+      player.action = 'deflected';
+      player.success.deflected.count++
+
+      if (player.success.deflected.count === 2) {
+        // console.log('count',player.success.deflected.count,'limit',player.success.deflected.limit,'type',player.success.deflected.type);
+
+        if (
+          player.success.deflected.type === 'blunt_attacked' ||
+          player.success.deflected.type === 'defended'
+        ) {
+
+          if (!player.popups.find(x=>x.msg === "guardBroken")) {
+            player.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: player.success.deflected.limit,
+                type: '',
+                position: '',
+                msg: 'guardBroken',
+                img: '',
+
+              }
+            )
+          }
+
+        }
+
+        if (player.success.deflected.type === 'attack') {
+          if (!player.popups.find(x=>x.msg === "attackParried")) {
+            player.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: player.success.deflected.limit,
+                type: '',
+                position: '',
+                msg: 'attackParried',
+                img: '',
+
+              }
+            )
+          }
+
+        }
+        if (player.success.deflected.type === 'attacked') {
+          if (!player.popups.find(x=>x.msg === "injured")) {
+            player.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: player.success.deflected.limit,
+                type: '',
+                position: '',
+                msg: 'injured',
+                img: '',
+
+              }
+            )
+          }
+        }
+        if (player.success.deflected.type === 'outOfStamina') {
+
+          if (!player.popups.find(x=>x.msg === player.success.deflected.type)) {
+            player.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: player.success.deflected.limit,
+                type: '',
+                position: '',
+                msg: player.success.deflected.type,
+                img: '',
+
+              }
+            )
+          }
+        }
+
+      }
+
+
+      // if (player.ai.state === true) {
+      //   player.ai.instructions = []
+      //   player.ai.currentInstruction = 0
+      //   if (player.ai.mission === 'engage') {
+      //     player.ai.engaging.targetAction = ''
+      //   }
+      // }
+
+    }
+    //END DEFLECTION, SPIN & DROP
+    else if (player.success.deflected.state === true && player.success.deflected.count >= player.success.deflected.limit) {
+      // console.log('deflect end',player.success.deflected.type);
+      // DEFLECT SPIN!
+      let shouldSpin;
+      if (player.success.deflected.type === "attack") {
+        shouldSpin = this.rnJesus(1,3);
+      }
+      if (player.success.deflected.type === "defended") {
+        shouldSpin = this.rnJesus(1,10);
+      }
+      let newDirection;
+      if (shouldSpin === 1) {
+        switch(player.direction) {
+          case 'north':
+            if (shouldSpin === 1) {
+              newDirection = 'east';
+            } else {
+              newDirection = 'west';
+            }
+          break;
+          case 'south':
+            if (shouldSpin === 1) {
+              newDirection = 'east';
+            } else {
+              newDirection = 'west';
+            }
+          break;
+          case 'east':
+            if (shouldSpin === 1) {
+              newDirection = 'north';
+            } else {
+              newDirection = 'south';
+            }
+          break;
+          case 'west':
+            if (shouldSpin === 1) {
+              newDirection = 'north';
+            } else {
+              newDirection = 'south';
+            }
+          break;
+        }
+        player.direction = newDirection;
+      }
+
+      player.action = 'idle';
+      player.success.deflected = {
+        state: false,
+        count: 0,
+        limit: player.success.deflected.limit,
+        predeflect: player.success.deflected.predeflect,
+        type: '',
+      }
+
+      let indx = this.aiDeflectedCheck.indexOf(player.number)
+      // this.aiDeflectedCheck.splice(indx,1)
+      let newArr = this.aiDeflectedCheck.filter(x=>x !== player.number)
+      this.aiDeflectedCheck = newArr;
+      // console.log('this.aiDeflectedCheck',this.aiDeflectedCheck);
+
+
+      // CANCEL AI ATTACK, DEFEND!!
+      if (player.ai.state === true) {
+        if (player.ai.state === true) {
+          player.attacking = {
+            state: false,
+            count: 0,
+            limit: 15,
+          };
+        }
+
+        player.defending = {
+          state: false,
+          count: 0,
+          limit: player.defending.limit,
+        }
+
+        player.ai.targetAqcuiredReset = true
+
+      }
+
+
+      if (player.dead.state !== true && player.falling.state !== true) {
+        let shouldDeflectDrop = this.rnJesus(1,player.crits.guardBreak)
+        if (shouldDeflectDrop === 1) {
+          this.deflectDrop(player)
+        }
+
+      }
+
+
+    }
+
+
+    // CELLS TO HIGHLIGHT V2!!
+    for (const cell3 of this.cellsToHighlight2) {
+      if (cell3.limit > 0) {
+        if (cell3.count < cell3.limit) {
+          cell3.count++
+        }
+        else if (cell3.count >= cell3.limit) {
+          let index = this.cellsToHighlight2.indexOf(cell3)
+          this.cellsToHighlight2.splice(index,1)
+        }
+      }
+    };
+
+
+    // MOUSED OVER CELL
+    if (this.mouseOverCell.cell && this.mouseOverCell.state === false && this.mouseMoving !== true) {
+
+      if (this.mouseOverCell.count < this.mouseOverCell.threshold) {
+        this.mouseOverCell.count++;
+        // console.log('mouse not moving but moused over cell is counting',this.mouseOverCell.count);
+      }
+      if (this.mouseOverCell.count >= this.mouseOverCell.threshold) {
+        this.mouseOverCell.count = 0;
+        this.mouseOverCell.state = true;
+        this.clicked.cell = this.mouseOverCell.cell;
+        let plyrPresent = false;
+        for(const plyr of this.players) {
+          if (plyr.currentPosition.cell.number.x === this.mouseOverCell.cell.number.x && plyr.currentPosition.cell.number.y === this.mouseOverCell.cell.number.y) {
+            this.clicked.player = plyr;
+            plyrPresent = true;
+          }
+        }
+        if (plyrPresent !== true) {
+          this.clicked.player = undefined;
+        }
+        this.showCellInfoBox = true;
+      }
+    };
+    // SWITCH OFF ATER TIME IF MOUSE MOVED OUT OF GRID
+    if (this.mouseOverCellSwitchOff.state === true) {
+      if (this.mouseOverCellSwitchOff.count < this.mouseOverCellSwitchOff.limit) {
+        this.mouseOverCellSwitchOff.count++;
+      }
+      if (this.mouseOverCellSwitchOff.count >= this.mouseOverCellSwitchOff.limit) {
+        this.mouseOverCellSwitchOff = {
+          state: false,
+          count: 0,
+          limit: this.mouseOverCellSwitchOff.limit,
+        }
+        this.showCellInfoBox = false;
+        this.mouseOverCell = {
+          state: false,
+          cell: undefined,
+          count: 0,
+          threshold: this.mouseOverCell.threshold,
+        };
+      }
+    };
+    this.mouseMoving = false;
+
+
+    // DEFLECTED PLAYER CAN'T DO ANYTHING!!
+    if (player.success.deflected.state === false && player.dead.state !== true && this.camera.state !== true) {
+
+
+      // AI STRAFE SWITCH ON!!
+      if (player.ai.state === true && this.keyPressed[player.number-1]) {
+        if (this.keyPressed[player.number-1].strafe === true) {
+          this.players[player.number-1].strafing.state = true;
+        }
+      }
+
+
+      // DON'T READ INPUTS. JUST MOVE!!
+      if (player.moving.state === true) {
+
+        // console.log('player',player.number,player.action);
+        nextPosition = this.lineCrementer(player);
+        // player.currentPosition.cell = player.target.cell;
+        player.nextPosition = nextPosition;
+        // console.log('plyr',player.number,'nextPosition',nextPosition,'dest',player.target.cell.center);
+
+
+        let atDestRanges = [false,false,false,false];
+
+
+        if (player.target.cell1.void === true) {
+          if (player.falling.state === true) {
+            // console.log('...');
+          }
+          else {
+            player.action = 'moving';
+            // console.log('stepping into the void',player.action,player.moving.step);
+          }
+
+        }
+
+        if (player.jumping.state !== true) {
+
+
+
+          let destRngIndx = undefined;
+          if (
+            nextPosition.x >= player.target.cell1.center.x-1 &&
+            nextPosition.x <= player.target.cell1.center.x+1 &&
+            nextPosition.y >= player.target.cell1.center.y-1 &&
+            nextPosition.y <= player.target.cell1.center.y+1
+          ) {
+            atDestRanges[0] = true;
+            destRngIndx = 0;
+          }
+          if (
+            nextPosition.x === player.target.cell1.center.x-0.25 &&
+            nextPosition.y === player.target.cell1.center.y+0.5
+          ) {
+            atDestRanges[1] = true;
+            destRngIndx = 1;
+          }
+          if (
+            nextPosition.x === player.target.cell1.center.x &&
+            nextPosition.y === player.target.cell1.center.y
+          ) {
+            atDestRanges[2] = true;
+            destRngIndx = 2;
+          }
+          if (
+            nextPosition.x === player.target.cell1.center.x-5 &&
+            nextPosition.y === player.target.cell1.center.y-5
+          ) {
+            atDestRanges[3] = true;
+            destRngIndx = 3;
+          }
+
+          // FLANKING POPUP 1
+          if (player.flanking.state === true || player.action === "flanking2" ) {
+            if (!player.popups.find(x=>x.msg === "flanking2")) {
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 20,
+                  type: '',
+                  position: '',
+                  msg: 'flanking2',
+                  img: '',
+                }
+              )
+            }
+          }
+          if (player.popups.find(x=>x.msg === 'dodging')) {
+            player.popups.splice(player.popups.findIndex(x=>x.msg === 'dodging'),1)
+          }
+
+
+          for (const el of atDestRanges) {
+            if (el === true) {
+
+              let indx = atDestRanges.indexOf(el);
+              // console.log('indx',atDestRanges.indexOf(el),'next position is destination ',player.number,player.target,nextPosition.x === player.target.cell.center.x,nextPosition.x === player.target.cell.center.y);
+
+              player.newMoveDelay.state = true;
+
+              if (player.target.cell1.void === false) {
+
+                player.currentPosition.cell.number = player.target.cell1.number;
+                player.currentPosition.cell.center = player.target.cell1.center;
+                player.action = 'idle';
+                player.moving = {
+                  state: false,
+                  step: 0,
+                  course: '',
+                  origin: {
+                    number: {
+                      x: player.target.cell1.number.x,
+                      y: player.target.cell1.number.y
+                    },
+                    center: {
+                      x: player.target.cell1.center.x,
+                      y: player.target.cell1.center.y
+                    },
+                  },
+                  destination: {
+                    x: 0,
+                    y: 0,
+                  }
+                }
+
+                if (player.strafing.state === true) {
+
+                  if (
+                    player.pulling.state === true ||
+                    player.pushed.state === true ||
+                    player.pulled.state === true
+                  ) {
+                    // player.strafing.direction = '';
+                    player.strafeReleaseHook = true;
+                  }
+
+                  // CONTINUOUS STRAFING CHECK
+                  if (this.keyPressed[player.number-1].strafe !== true) {
+                    // console.log('continuous strafe check');
+                    player.strafing.state = false;
+                  }
+                  else {
+                    // console.log('continuous strafe check 2');
+                    player.strafing.direction = '';
+                  }
+
+                }
+
+
+                // PULLED, PUSHED PLAYERS
+                if (player.pushing.state === true) {
+                  player.pushing = {
+                    state: false,
+                    targetCell: undefined,
+                    moveSpeed: 0,
+                  }
+                }
+                if (player.pulling.state === true) {
+                  player.pulling = {
+                    state: false,
+                    targetCell: undefined,
+                    moveSpeed: 0,
+                  }
+                  player.postPull.state = true;
+
+                }
+                let deflectPullPushedPlayer = false;
+                if (player.pulled.state === true) {
+                  player.pulled = {
+                    state: false,
+                    puller: 0,
+                    moveSpeed: 0,
+                  }
+                  deflectPullPushedPlayer = true;
+                }
+                if (player.pushed.state === true) {
+                  player.pushed = {
+                    state: false,
+                    pusher: 0,
+                    moveSpeed: 0,
+                  }
+                  deflectPullPushedPlayer = true;
+                }
+
+
+                if (
+                  deflectPullPushedPlayer === true &&
+                  this.gridInfo.find(x => x.number.x === player.currentPosition.cell.number.x && x.number.y === player.currentPosition.cell.number.y).terrain.type !== "deep"
+                ) {
+                  // console.log('pulled pushed player at destination. deflect?');
+
+                  if (this.rnJesus(1,player.crits.guardBreak) === 1) {
+                    this.players[player.number-1].action = 'deflected';
+
+                    this.players[player.number-1].success.deflected = {
+                      state: true,
+                      count: 1,
+                      limit: this.deflectedLengthRef.bluntAttacked,
+                      predeflect: this.players[player.number-1].success.deflected.predeflect,
+                      type: 'blunt_attacked',
+                    };
+                    if (this.aiDeflectedCheck.includes(this.players[player.number-1].number) !== true) {
+                      this.aiDeflectedCheck.push(this.players[player.number-1].number)
+                    }
+                  }
+
+                }
+
+
+                this.checkDestination(player);
+                if (player.drowning !== true && player.pushBack.state !== true) {
+                  this.getTarget(player);
+                }
+
+
+              }
+
+              // PUSHBACK MOVEMENT
+              if (player.pushBack.state === true && player.target.cell1.void !== true) {
+                console.log('player',player.number,'finished moving pushed back',player.flanking.state);
+
+                // CANCEL AI ATTACK, DEFEND!!
+                if (player.ai.state === true) {
+                  if (player.ai.state === true) {
+                    player.attacking = {
+                      state: false,
+                      count: 0,
+                      limit: 15,
+                    };
+                  }
+
+                  player.defending = {
+                    state: false,
+                    count: 0,
+                    limit: player.defending.limit,
+                  }
+
+                  player.ai.targetAqcuiredReset = true
+                }
+
+
+                player.pushBack.state = false;
+                player.strafing = {
+                  state: false,
+                  direction: ''
+                }
+                player.moving.state = false;
+                player.speed.move = player.pushBack.prePushMoveSpeed;
+                this.getTarget(player);
+
+
+
+              }
+
+
+              // TARGET IS VOID, START FALLING!
+              if (
+
+                // nextPosition.x === player.target.cell.center.x &&
+                // nextPosition.y === player.target.cell.center.y &&
+                nextPosition.x === player.target.cell1.center.x &&
+                nextPosition.y === player.target.cell1.center.y ||
+                nextPosition.x === player.target.cell1.center.x-5 &&
+                nextPosition.y === player.target.cell1.center.y-5 ||
+                nextPosition.x === player.target.cell1.center.x-0.25 &&
+                nextPosition.y === player.target.cell1.center.y+0.5 ||
+                nextPosition.x >= player.target.cell1.center.x-1 &&
+                nextPosition.x <= player.target.cell1.center.x+1 &&
+                nextPosition.y >= player.target.cell1.center.y-1 &&
+                nextPosition.y <= player.target.cell1.center.y+1 &&
+                player.target.cell1.void === true
+              ) {
+                // console.log('falling....');
+                player.falling.state = true;
+                player.action = 'falling';
+
+                if (!player.popups.find(x=>x.msg === "falling")) {
+                  player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 30,
+                      type: '',
+                      position: '',
+                      msg: 'falling',
+                      img: '',
+
+                    }
+                  )
+                }
+
+              }
+              break;
+
+            }
+          }
+
+        }
+
+        if (player.jumping.state === true) {
+          // console.log('mid jump');
+
+
+          if (
+            nextPosition.x >= player.target.cell2.center.x-1 &&
+            nextPosition.x <= player.target.cell2.center.x+1 &&
+            nextPosition.y >= player.target.cell2.center.y-1 &&
+            nextPosition.y <= player.target.cell2.center.y+1
+          ) {
+            atDestRanges[0] = true;
+          }
+
+          if (
+            nextPosition.x === player.target.cell2.center.x-0.25 &&
+            nextPosition.y === player.target.cell2.center.y+0.5
+          ) {
+            atDestRanges[1] = true;
+          }
+
+          if (
+            nextPosition.x === player.target.cell2.center.x &&
+            nextPosition.y === player.target.cell2.center.y
+          ) {
+            atDestRanges[2] = true;
+          }
+
+          if (
+            nextPosition.x === player.target.cell2.center.x-5 &&
+            nextPosition.y === player.target.cell2.center.y-5
+          ) {
+            atDestRanges[3] = true;
+          }
+
+
+          for (const el of atDestRanges) {
+            if (el === true) {
+
+              // console.log('at jump destination',player.target.cell2.number);
+              // console.log('next position is destination a',player.number);
+              player.newMoveDelay.state = true;
+
+
+              let pushBack = false;
+              let opp;
+
+              for (const plyr of this.players) {
+                if (
+                  // plyr.currentPosition.cell.number.x === player.currentPosition.cell.number.x &&
+                  // plyr.currentPosition.cell.number.y === player.currentPosition.cell.number.y
+                  // plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
+                  // plyr.currentPosition.cell.number.y === player.target.cell2.number.y
+                  plyr.target.cell1.number.x === player.target.cell2.number.x &&
+                  plyr.target.cell1.number.y === player.target.cell2.number.y &&
+                  plyr.moving.state === true
+                ) {
+
+                  // console.log('jump destination occupied, fall into target 1',player.direction);
+
+                  pushBack = true;
+                  opp = plyr;
+                }
+              }
+
+              // Jump dest cell not void
+              if (player.target.cell2.void === false) {
+
+
+                player.jumping.state = false;
+                player.currentPosition.cell.number = player.target.cell2.number;
+                player.currentPosition.cell.center = player.target.cell2.center;
+                player.strafing.state = false;
+                player.action = 'idle';
+                player.moving = {
+                  state: false,
+                  step: 0,
+                  course: '',
+                  origin: {
+                    number: {
+                      x: player.target.cell2.number.x,
+                      y: player.target.cell2.number.y
+                    },
+                    center: {
+                      x: player.target.cell2.center.x,
+                      y: player.target.cell2.center.y
+                    },
+                  },
+                  destination: {
+                    x: 0,
+                    y: 0,
+                  }
+                }
+
+                this.checkDestination(player);
+                // let trgt = this.getTarget(player);
+
+                if (pushBack === true ) {
+
+                  let playerAPushDir = this.getOppositeDirection(opp.direction);
+                  let playerBPushDir = this.getOppositeDirection(player.direction);
+
+
+                  player.strafing = {
+                    state: true,
+                    direction: playerAPushDir
+                  }
+                  player.action = 'strafe moving';
+                  player.moving = {
+                    state: true,
+                    step: 0,
+                    course: '',
+                    origin: {
+                      number: {
+                        x: player.currentPosition.cell.number.x,
+                        y: player.currentPosition.cell.number.y
+                      },
+                      center: {
+                        x: player.currentPosition.cell.center,
+                        y: player.currentPosition.cell.center
+                      },
+                    },
+                    destination: player.target.cell2.center
+                  }
+                  player.target.void = true;
+                  let nextPosition = this.lineCrementer(player);
+                  player.nextPosition = nextPosition;
+
+
+
+                }
+
+              }
+
+              // let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y)
+              if (player.target.cell2.void === true) {
+                player.falling.state = true;
+                player.action = 'falling';
+
+                if (!player.popups.find(x=>x.msg === "falling")) {
+                  player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 30,
+                      type: '',
+                      position: '',
+                      msg: 'falling',
+                      img: '',
+
+                    }
+                  )
+                }
+
+              }
+
+              break;
+
+            }
+          }
+
+        }
+
+      }
+
+
+      // CAN READ INPUTS
+      else if (player.moving.state === false) {
+
+
+        // COLLISION/ MOVEMENT OVERLAP PUSHBACK!!
+          // if neither is pulling/pushng or pulled/pushed
+        for (const plyr4 of this.players) {
+
+          if (
+            player.number !== plyr4.number &&
+            player.currentPosition.cell.number.x === plyr4.currentPosition.cell.number.x &&
+            player.currentPosition.cell.number.y === plyr4.currentPosition.cell.number.y &&
+            player.pushBack.state !== true &&
+            plyr4.pushBack.state !== true
+          ) {
+
+            let nopushpull = true;
+            if (
+              player.pulled.state === true ||
+              player.pushed.state === true ||
+              player.pulling.state === true ||
+              player.pushing.state === true ||
+              plyr4.pulled.state === true ||
+              plyr4.pushed.state === true ||
+              plyr4.pulling.state === true ||
+              plyr4.pushing.state === true
+            ) {
+              nopushpull = false;
+              console.log('player cell overlap but 1 is pushing/pulling the other');
+            }
+            console.log('buck up btwn plyrs',player.number,plyr4.number,"@",player.currentPosition.cell.number,plyr4.currentPosition.cell.number);
+            // console.log('plyrs pushed back?',player.pushBack.state,plyr4.pushBack.state);
+            // console.log('plyrs moving?',player.moving.state,plyr4.moving.state);
+            if (nopushpull === true) {
+              let playerAPushDir2;
+              let playerBPushDir2;
+              switch(plyr4.direction) {
+                case 'north' :
+                  playerAPushDir2 = 'south';
+                break;
+                case 'south' :
+                  playerAPushDir2 = 'north';
+                break;
+                case 'east' :
+                  playerAPushDir2 = 'west';
+                break;
+                case 'west' :
+                  playerAPushDir2 = 'east';
+                break;
+              }
+              switch(player.direction) {
+                case 'north' :
+                  playerBPushDir2 = 'south';
+                break;
+                case 'south' :
+                  playerBPushDir2 = 'north';
+                break;
+                case 'east' :
+                  playerBPushDir2 = 'west';
+                break;
+                case 'west' :
+                  playerBPushDir2 = 'east';
+                break;
+              }
+
+              if (player.flanking.state === true || player.action === "flanking") {
+                player.flanking = {
+                  checking: false,
+                  direction: '',
+                  state: false,
+                  step: 0,
+                  target1: {x:0 ,y:0},
+                  target2: {x:0 ,y:0},
+                }
+                player.action = "idle";
+              };
+              if (plyr4.flanking.state === true || plyr4.action === "flanking") {
+                plyr4.flanking = {
+                  checking: false,
+                  direction: '',
+                  state: false,
+                  step: 0,
+                  target1: {x:0 ,y:0},
+                  target2: {x:0 ,y:0},
+                }
+                plyr4.action = "idle";
+              };
+              // playerAPushDir2 = "north";
+              if (playerAPushDir2 === playerBPushDir2) {
+                playerBPushDir2 = ['north','south','east','west'].filter(x=>x !== playerAPushDir2)[0];
+              }
+              let canPush = this.pushBack(plyr4,playerAPushDir2)
+              let canPush2 = this.pushBack(player,playerBPushDir2)
+            }
+
+
+          }
+        }
+
+
+        // CHECK CELL UNDER ATTACK & PRE ATTACK!!
+        for (const cell of this.cellsUnderAttack) {
+          if (cell.limit > 0) {
+            if (cell.count < cell.limit) {
+              cell.count++
+            }
+            else if (cell.count >= cell.limit) {
+              let index = this.cellsUnderAttack.indexOf(cell)
+              this.cellsUnderAttack.splice(index,1)
+            }
+          }
+
+        };
+        for (const cell2 of this.cellsUnderPreAttack) {
+          if (cell2.limit > 0) {
+            if (cell2.count < cell2.limit) {
+              cell2.count++
+            }
+            else if (cell2.count >= cell2.limit) {
+              let index = this.cellsUnderPreAttack.indexOf(cell2)
+              this.cellsUnderPreAttack.splice(index,1)
+            }
+          }
+        };
+        // CELLS TO HIGHLIGHT V2!!
+        // for (const cell3 of this.cellsToHighlight2) {
+        //   if (cell3.limit > 0) {
+        //     if (cell3.count < cell3.limit) {
+        //       cell3.count++
+        //     }
+        //     else if (cell3.count >= cell3.limit) {
+        //       let index = this.cellsToHighlight2.indexOf(cell3)
+        //       this.cellsToHighlight2.splice(index,1)
+        //     }
+        //   }
+        // }
+
+
+
+        // // IDLE ANIM STEPPER!
+        if (player.action === 'idle') {
+          // player.idleAnim.state = true
+          if (player.idleAnim.count < player.idleAnim.limit) {
+            // console.log('player.idleAnim.count',player.idleAnim.count);
+            player.idleAnim.count++
+
+          }
+          if (player.idleAnim.count >= player.idleAnim.limit) {
+            player.idleAnim.count = 0;
+            player.idleAnim.state = false;
+          }
+        }
+        else if (player.action !== 'idle') {
+          // player.idleAnim.state = false;
+          player.idleAnim.count = 0;
+        }
+
+
+        // BREAK ANIM STEPPERS!
+        if (player.breakAnim.attack.state === true) {
+          if (player.breakAnim.attack.count > 0 && player.breakAnim.attack.count < player.breakAnim.attack.limit) {
+            player.breakAnim.attack.count++
+          }
+          else if (player.breakAnim.attack.count >= player.breakAnim.attack.limit) {
+            player.breakAnim.attack = {
+              state: false,
+              count: 0,
+              limit: player.breakAnim.attack.limit
+            }
+          }
+        }
+        if (player.breakAnim.defend.state === true) {
+          if (player.breakAnim.defend.count > 0 && player.breakAnim.defend.count < player.breakAnim.defend.limit) {
+            player.breakAnim.defend.count++
+          }
+          else if (player.breakAnim.defend.count >= player.breakAnim.defend.limit) {
+            player.breakAnim.defend = {
+              state: false,
+              count: 0,
+              limit: player.breakAnim.defend.limit
+            }
+          }
+        }
+
+
+        // TURNER!!
+        // OLD TURNER
+        // if (player.turning.state === true && player.turning.toDirection === this.players[player.number-1].turnCheckerDirection) {
+        //   console.log('player',player.number,' turn-ing');
+        //   if (this.keyPressed[this.currentPlayer-1][this.players[player.number-1].turnCheckerDirection] === false) {
+        //     console.log('player',player.number,' turn-stop');
+        //     player.turning.state = false;
+        //   }
+        // }
+        // OLD TURNER COMPLETE
+        // if (player.turning.state === false && player.flanking.state !== true) {
+        //   console.log('turn complete');
+        //   player.direction = player.turning.toDirection;
+        //   player.nextPosition = {
+        //     x: player.currentPosition.cell.center.x,
+        //     y: player.currentPosition.cell.center.y
+        //   }
+        //   player.moving = {
+        //     state: false,
+        //     step: 0,
+        //     course: '',
+        //     origin: {
+        //       number: {
+        //         x: player.currentPosition.cell.number.x,
+        //         y: player.currentPosition.cell.number.y
+        //       },
+        //       center: {
+        //         x: player.currentPosition.cell.center.x,
+        //         y: player.currentPosition.cell.center.y
+        //       },
+        //     },
+        //     destination: player.target.cell.center
+        //   }
+        //   player.turning.toDirection = '';
+        //   player.turning.state = undefined;
+        //   this.getTarget(player);
+        // }
+        if (player.turning.state === true && player.flanking.state !== true ) {
+          if (player.turning.delayCount < player.turning.limit) {
+            player.turning.delayCount++;
+            // console.log('turning...',player.turning.delayCount);
+          }
+          if (player.turning.delayCount >= player.turning.limit) {
+            player.direction = player.turning.toDirection;
+            player.turnCheckerDirection = "";
+            player.turning = {
+              state: false,
+              toDirection: '',
+              delayCount: 0,
+              limit: player.turning.limit,
+            }
+
+
+            this.getTarget(player);
+            // console.log('turned/ turn complete');
+          }
+
+
+        }
+
+
+        // KEY PRESS RELEASE CHECKS!!
+
+        // DEFEND/PRE PULL FEINT
+        if (this.keyPressed[player.number-1].defend === false && player.defending.state === true) {
+          // console.log('player',player.number,' defend key release');
+          player.defending = {
+            state: false,
+            count: 0,
+            limit: player.defending.limit
+          }
+          player.action = 'idle';
+
+          player.defendDecay = {
+            state: false,
+            count: 0,
+            limit: player.defendDecay.limit,
+          }
+          player.stamina.current += this.staminaCostRef.defend.pre;
+
+          if (player.prePull.state === true) {
+            console.log('player was pre pulling. reset');
+            player.prePull = {
+              state: false,
+              count: 0,
+              limit: player.prePull.limit,
+              targetCell: undefined,
+              direction: '',
+              puller: 0,
+            }
+
+
+            if (player.newPushPullDelay.state !== true) {
+              player.newPushPullDelay.state = true
+            }
+
+
+          }
+
+
+
+          if (player.popups.find(x=>x.msg === 'defending')) {
+            player.popups.splice(player.popups.findIndex(x=>x.msg === 'defending'),1)
+          }
+          if (player.falling.state !== true && player.moving.state !== true) {
+            player.action = 'idle';
+          }
+          if (!player.popups.find(x=>x.msg === 'defendFeint3')) {
+            player.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: 15,
+                type: '',
+                position: '',
+                msg: 'defendFeint3',
+                img: '',
+
+              }
+            )
+          }
+
+        }
+
+
+        // ATTACK FEINT
+        if (this.keyPressed[player.number-1].attack === false && player.attacking.state === true) {
+
+            let atkPeak;
+            let atkType = player.currentWeapon.type;
+            let blunt = 'normal';
+            if (player.currentWeapon.name === "") {
+              atkPeak = this.attackAnimRef.peak.unarmed;
+            }
+            else {
+              atkPeak = this.attackAnimRef.peak[player.currentWeapon.type];
+            }
+            if (player.bluntAttack === true) {
+              blunt = 'blunt';
+            }
+
+            if (player.attacking.count < atkPeak) {
+                // console.log('attack windup key release before peak. feinting. refund stamina part');
+                player.bluntAttack = false
+                player.action = 'idle';
+                player.attacking = {
+                  state: false,
+                  count: 0,
+                  limit: player.attacking.limit,
+                }
+                player.attackStrength = 0;
+                player.stamina.current += this.staminaCostRef.attack[atkType][blunt].pre;
+            }
+            let popup = player.popups.find(x=>x.msg === 'attacking')
+            if (popup) {
+              player.popups.splice(player.popups.findIndex(x=>x.msg === 'attacking'),1)
+            }
+
+            if (!player.popups.find(x=>x.msg === 'attackFeint3')) {
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 15,
+                  type: '',
+                  position: '',
+                  msg: 'attackFeint3',
+                  img: '',
+
+                }
+              )
+            }
+
+        }
+
+
+        // DODGE RELEASE/FEINT
+        if (player.dodging.countState === true && player.dodging.count <= (player.dodging.peak.start - player.crits.dodge) && this.keyPressed[player.number-1].dodge !== true && player.flanking.state !== true) {
+          // console.log('released dodge key while winding up. cancel dodge.');
+          player.stamina.current += this.staminaCostRef.dodge.pre;
+          player.action = 'idle';
+          player.dodging = {
+            countState: false,
+            state: false,
+            count: 0,
+            limit: player.dodging.limit,
+            peak: {
+              start: player.dodging.peak.start,
+              end: player.dodging.peak.end,
+            }
+          }
+
+          if (player.popups.find(x=>x.msg === 'dodging')) {
+            player.popups.splice(player.popups.findIndex(x=>x.msg === 'dodging'),1)
+          }
+          if (!player.popups.find(x=>x.msg === 'dodgeFeint')) {
+            player.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: 15,
+                type: '',
+                position: '',
+                msg: 'dodgeFeint',
+                img: '',
+
+              }
+            )
+          }
+        }
+
+
+        // STRAFE RELEASE
+        if (player.strafeReleaseHook === true ) {
+          player.strafing.state = false;
+          player.strafeReleaseHook = false;
+          this.getTarget(player);
+        }
+
+
+        // RESET MOVE SPEED POST PUSHBACK
+        if (player.pushBack.state !== true && player.pushBack.prePushBackMoveSpeed !== 0) {
+
+          player.speed.move = player.player.pushBack.prePushBackMoveSpeed;
+          player.player.pushBack.prePushBackMoveSpeed = 0;
+        }
+
+
+        // ITEM PICKUP/DROP ANIM COUNTER!
+        if (player.itemDrop.state === true) {
+          if (player.itemDrop.count < player.itemDrop.limit) {
+            player.itemDrop.count++
+            // console.log('dropping item anim');
+          }
+          else if (player.itemDrop.count >= player.itemDrop.limit) {
+            player.itemDrop = {
+              state: false,
+              count: 0,
+              limit: 10,
+              item: {
+                name: '',
+              },
+              gear: {
+                type: '',
+              }
+            }
+          }
+        }
+        if (player.itemPickup.state === true) {
+          if (player.itemPickup.count < player.itemPickup.limit) {
+            player.itemPickup.count++
+            // console.log('picking item anim');
+          }
+          else if (player.itemPickup.count >= player.itemPickup.limit) {
+            player.itemPickup = {
+              state: false,
+              count: 0,
+              limit: 10,
+              item: {
+                name: '',
+              },
+              gear: {
+                type: '',
+              }
+            };
+          }
+        }
+
+
+        // CELL BY CELL MOVEMENT DELAY COUNTER!
+        if (player.newMoveDelay.state === true) {
+          if (player.newMoveDelay.count < player.newMoveDelay.limit) {
+            player.newMoveDelay.count++;
+            // console.log('newMoveDelay.count',player.newMoveDelay.count);
+          }
+          if (player.newMoveDelay.count >= player.newMoveDelay.limit) {
+            player.newMoveDelay = {
+              state: false,
+              count: 0,
+              limit: player.newMoveDelay.limit,
+            }
+          }
+        }
+
+
+        // ATTACKING!
+        if (player.attacking.state === true) {
+
+
+          let attackPeak = this.attackAnimRef.peak[player.currentWeapon.type];
+          let stamAtkType = player.currentWeapon.type;
+
+          if (player.currentWeapon.type === '') {
+            this.players[player.number-1].attacking.limit = this.attackAnimRef.limit.unarmed;
+            attackPeak = this.attackAnimRef.peak.unarmed;
+            stamAtkType = 'unarmed';
+          }
+          let blunt = 'normal';
+          if (player.bluntAttack === true) {
+            blunt = 'blunt';
+          }
+          player.attacking.limit = this.attackAnimRef.limit[stamAtkType];
+
+
+          // STEP ATTACK COUNT & CELLS UDER PRE-ATTACK
+          if (player.attacking.count < this.attackAnimRef.limit[stamAtkType]) {
+            if (player.attacking.count < attackPeak) {
+              // console.log('attack wind up',player.attacking.count,'player',player.number);
+            }
+            player.attackPeak = false;
+            player.action = 'attacking';
+            player.attacking.count++;
+
+            if (player.attacking.count <= 2) {
+              if (!player.popups.find(x => x.msg === 'attackStart')) {
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 5,
+                    type: '',
+                    position: '',
+                    msg: 'attackStart',
+                    img: '',
+
+                  }
+                )
+              }
+
+
+                this.getTarget(player)
+                // CELLS UNDER PRE ATTACK!
+                let cellUnderPreAttack1 = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y)
+                let cellUnderPreAttack2;
+                if (player.currentWeapon.type === 'spear') {
+                  cellUnderPreAttack2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y)
+                }
+                if (player.currentWeapon.type === 'spear') {
+                  // console.log('spear target',player.target);
+                  // if (cellUnderPreAttack1 && cellUnderPreAttack1.terrain.type !== 'deep') {
+                  //   this.cellsUnderPreAttack.push(
+                  //     {
+                  //       number: {
+                  //         x: player.target.cell.number.x,
+                  //         y: player.target.cell.number.y,
+                  //       },
+                  //       count: 1,
+                  //       limit: 8,
+                  //     },
+                  //   )
+                  // }
+                  // if (cellUnderPreAttack2 && cellUnderPreAttack2.terrain.type !== 'deep') {
+                  //   this.cellsUnderPreAttack.push(
+                  //     {
+                  //       number: {
+                  //         x: player.target.cell2.number.x,
+                  //         y: player.target.cell2.number.y,
+                  //       },
+                  //       count: 1,
+                  //       limit: 8,
+                  //     },
+                  //   )
+                  //
+                  // }
+
+                  this.cellsUnderPreAttack.push(
+                    {
+                      number: {
+                        x: player.target.cell.number.x,
+                        y: player.target.cell.number.y,
+                      },
+                      count: 1,
+                      limit: 8,
+                    },
+                  )
+                  this.cellsUnderPreAttack.push(
+                    {
+                      number: {
+                        x: player.target.cell2.number.x,
+                        y: player.target.cell2.number.y,
+                      },
+                      count: 1,
+                      limit: 8,
+                    },
+                  )
+
+
+                }
+                else if (player.currentWeapon.type === 'sword' || player.currentWeapon.type === '') {
+                  // console.log('sword target',player.target);
+
+                  // if (cellUnderPreAttack1 && cellUnderPreAttack1.terrain.type !== 'deep') {
+                  //   this.cellsUnderPreAttack.push({
+                  //     number: {
+                  //       x: player.target.cell.number.x,
+                  //       y: player.target.cell.number.y,
+                  //     },
+                  //     count: 1,
+                  //     limit: 8,
+                  //   })
+                  // }
+                  this.cellsUnderPreAttack.push({
+                    number: {
+                      x: player.target.cell.number.x,
+                      y: player.target.cell.number.y,
+                    },
+                    count: 1,
+                    limit: 8,
+                  })
+
+                }
+
+                // console.log('this.cellsUnderPreAttack',this.cellsUnderPreAttack[0],this.cellsUnderPreAttack[1]);
+
+                // CAMERA ATTACK FOCUS
+                if (
+                  this.settingAutoCamera === false &&
+                  player.ai.state !== true &&
+                  this.camera.preInstructions.length === 0 &&
+                  this.camera.instructions.length === 0
+                ) {
+                  // this.setAutoCamera('attackFocus',player)
+                }
+                else {
+                  console.log('no setting auto cam: attackFocus');
+                }
+
+            }
+            if (player.attacking.count > 2) {
+
+              if (!player.popups.find(x => x.msg === "attacking")) {
+                let limit = this.attackAnimRef.limit[stamAtkType]-player.attacking.count;
+                if (limit === 0) {
+                  limit = 5;
+                }
+                if (!player.popups.find(x=>x.msg === "attacking")) {
+                  player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: limit,
+                      type: '',
+                      position: '',
+                      msg: 'attacking',
+                      img: '',
+
+                    }
+                  )
+                }
+
+              }
+              // else {
+              //   console.log('beep2',this.attackAnimRef.limit[stamAtkType]-player.attacking.count);
+              //   player.popups.find(x => x.msg === "attacking").limit = this.attackAnimRef.limit[stamAtkType]-player.attacking.count
+              // }
+            }
+
+          }
+
+
+          // TIME TO ATTACK IS NOW!
+          if (player.attacking.count === attackPeak) {
+
+            // console.log('attack peak',player.attacking.count,'plyr',player.number);
+
+            // WEAPON STAMINA COST!!
+            if (player.stamina.current - this.staminaCostRef.attack[stamAtkType][blunt].peak >= 0) {
+                player.stamina.current -= this.staminaCostRef.attack[stamAtkType][blunt].peak;
+                player.attackPeak = true;
+
+              // CREATE NEW PROJECTILE
+              if (player.currentWeapon.type === 'crossbow' && player.bluntAttack !== true && player.items.ammo > 0) {
+                // console.log('firing crossbow');
+
+                let plyrX = player;
+                let origin = plyrX.currentPosition.cell;
+                let currentPosition = plyrX.currentPosition.cell;
+                let nextPosition = plyrX.currentPosition.cell.center;
+                let elevation = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y).elevation.number;
+
+
+                let projectileId = this.projectiles.length;
+                let boltx = {
+                  id: '000'+projectileId+'',
+                  type: 'bolt',
+                  owner: plyrX.number,
+                  origin: origin,
+                  direction: plyrX.direction,
+                  moving: {
+                    state: false,
+                    step: 0,
+                    course: '',
+                    origin: {
+                      number: currentPosition.number,
+                      center: currentPosition.center,
+                    },
+                    destination: {
+                      x: 0,
+                      y: 0,
+                    }
+                  },
+                  currentPosition: {
+                    number: currentPosition.number,
+                    center: currentPosition.center
+                  },
+                  nextPosition: {
+                    x: nextPosition.x,
+                    y: nextPosition.y,
+                  },
+                  target: {
+                    path: [],
+                    free: true,
+                    occupant: {
+                      type: '',
+                      player: '',
+                    },
+                    void: false,
+                  },
+                  speed: this.projectileSpeed,
+                  elevation: elevation,
+                  kill: false,
+                }
+                this.projectiles.push(boltx)
+                player.items.ammo--
+                player.currentWeapon.effect = 'ammo+0';
+
+                this.getBoltTarget(boltx)
+
+
+                // STAMINA COST!!
+
+                // this.players[player.number-1].stamina.current = this.players[player.number-1].stamina.current - this.staminaCostRef.attack.crossbow;
+                // console.log('start projectile',boltx.currentPosition.number, this.players[boltx.owner-1].currentPosition.cell.number,this.projectiles);
+
+                // this.boltCrementer(bolt)
+              }
+              // NO PROJECTILE AMMO
+              if (player.currentWeapon.type === 'crossbow' && player.bluntAttack !== true && player.items.ammo <= 0) {
+                // console.log('no ammo!');
+                this.players[player.number-1].statusDisplay = {
+                  state: true,
+                  status: 'out of ammo',
+                  count: 1,
+                  limit: this.players[player.number-1].statusDisplay.limit,
+                }
+                player.currentWeapon.effect = 'ammo+0'
+
+                if (!player.popups.find(x=>x.msg === 'outOfAmmo')) {
+                  player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 30,
+                      type: '',
+                      position: '',
+                      msg: 'outOfAmmo',
+                      img: '',
+
+                    }
+                  )
+                }
+
+              }
+              // CROSSBOW BLUNT ATTAK
+              if (player.currentWeapon.type === 'crossbow' && player.bluntAttack === true && player.target.occupant.type === 'player') {
+                console.log('blunt attack w/ crossbow');
+                if (this.players[player.target.occupant.player-1].defending.state === false || this.players[player.target.occupant.player-1].direction === player.direction) {
+
+                  if (!player.popups.find(x=>x.msg === "attackingBlunt")) {
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: (this.attackAnimRef.limit.crossbow-this.attackAnimRef.peak.crossbow),
+                        type: '',
+                        position: '',
+                        msg: 'attackingBlunt',
+                        img: '',
+
+                      }
+                    )
+                  }
+
+
+                  this.players[player.target.occupant.player-1].action = 'deflected';
+
+                  this.players[player.target.occupant.player-1].stamina.current = this.players[player.target.occupant.player-1].stamina.current - 3;
+                  this.players[player.target.occupant.player-1].success.deflected = {
+                    state: true,
+                    count: 1,
+                    limit: this.deflectedLengthRef.bluntAttacked,
+                    predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
+                    type: 'blunt_attacked',
+                  };
+
+
+                  if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
+                    this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
+                  }
+                }
+              }
+
+              // MELEE ATTACK!!
+              else if (player.currentWeapon.type !== 'crossbow' ) {
+
+                this.getTarget(player)
+
+                // CELLS UNDER ATTACK!
+                let cellUnderAttack1 = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y)
+                let cellUnderAttack2;
+                if (player.currentWeapon.type === 'spear') {
+                  cellUnderAttack2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y)
+                }
+                if (player.currentWeapon.type === 'spear') {
+                  // console.log('spear target',player.target);
+
+                  // if (cellUnderAttack1 && cellUnderAttack1.terrain.type !== 'deep') {
+                  //   this.cellsUnderAttack.push(
+                  //     {
+                  //       number: {
+                  //         x: player.target.cell.number.x,
+                  //         y: player.target.cell.number.y,
+                  //       },
+                  //       count: 1,
+                  //       limit: 8,
+                  //     },
+                  //   )
+                  // }
+                  // if (cellUnderAttack2 && cellUnderAttack2.terrain.type !== 'deep') {
+                  //   this.cellsUnderAttack.push(
+                  //     {
+                  //       number: {
+                  //         x: player.target.cell2.number.x,
+                  //         y: player.target.cell2.number.y,
+                  //       },
+                  //       count: 1,
+                  //       limit: 8,
+                  //     },
+                  //   )
+                  //
+                  // }
+
+                  this.cellsUnderAttack.push(
+                    {
+                      number: {
+                        x: player.target.cell.number.x,
+                        y: player.target.cell.number.y,
+                      },
+                      count: 1,
+                      limit: 8,
+                    },
+                  )
+                  this.cellsUnderAttack.push(
+                    {
+                      number: {
+                        x: player.target.cell2.number.x,
+                        y: player.target.cell2.number.y,
+                      },
+                      count: 1,
+                      limit: 8,
+                    },
+                  )
+
+
+                }
+                else if (player.currentWeapon.type === 'sword' || player.currentWeapon.type === '') {
+                  // console.log('sword target',player.target);
+
+                  // if (cellUnderAttack1 && cellUnderAttack1.terrain.type !== 'deep') {
+                  //   this.cellsUnderAttack.push({
+                  //     number: {
+                  //       x: player.target.cell.number.x,
+                  //       y: player.target.cell.number.y,
+                  //     },
+                  //     count: 1,
+                  //     limit: 8,
+                  //   })
+                  // }
+                  this.cellsUnderAttack.push({
+                    number: {
+                      x: player.target.cell.number.x,
+                      y: player.target.cell.number.y,
+                    },
+                    count: 1,
+                    limit: 8,
+                  })
+
+                }
+
+                console.log('xyz',{...player.target});
+
+                // ATTACK PROJECTILES!!
+                for (const bolt of this.projectiles) {
+                  if (player.currentWeapon.type === 'spear') {
+                    if (
+                      cellUnderAttack2.number.x === bolt.currentPosition.number.x &&
+                      cellUnderAttack2.number.y === bolt.currentPosition.number.y
+                    ) {
+                      bolt.kill = true;
+
+                      if (!player.popups.find(x=>x.msg === "boltKilled")) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 30,
+                            type: '',
+                            position: '',
+                            msg: 'boltKilled',
+                            img: '',
+
+                          }
+                        )
+                      }
+
+                    }
+                  }
+                  if (player.currentWeapon.type === 'sword') {
+                    if (
+                      cellUnderAttack1.number.x === bolt.currentPosition.number.x &&
+                      cellUnderAttack1.number.y === bolt.currentPosition.number.y
+                    ) {
+                      bolt.kill = true;
+
+                      if (!player.popups.find(x=>x.msg === "boltKilled")) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 30,
+                            type: '',
+                            position: '',
+                            msg: 'boltKilled',
+                            img: '',
+
+                          }
+                        )
+                      }
+
+                    }
+                  }
+                }
+
+
+                // ATTACK TARGET IS OCCUPIED!!
+                if (player.target.occupant.type === 'player') {
+
+
+                  let targetDefending = false;
+                  let defendType = this.players[player.target.occupant.player-1].currentWeapon.type;
+                  if (this.players[player.target.occupant.player-1].currentWeapon.name === "") {
+                    defendType  = "unarmed";
+                  }
+                  let defendPeak = this.defendAnimRef.peak[defendType];
+                  if (this.players[player.target.occupant.player-1].defending.count === defendPeak || this.players[player.target.occupant.player-1].defendDecay.state === true) {
+                    targetDefending = true;
+                    console.log('valid defend');
+                  }
+
+                  // TARGET PLAYER ISN'T DEFENDING OR BACK TURNED, ATTACK SUCCESS!!
+                  if (targetDefending !== true || this.players[player.target.occupant.player-1].direction === player.direction) {
+                    // console.log('attack success');
+
+                    player.success.attackSuccess = {
+                      state: true,
+                      count: 1,
+                      limit: player.success.attackSuccess.limit
+                    }
+
+
+                    // BACK ATTACK CHECK!
+                    let backAttack = false;
+                    if (this.players[player.target.occupant.player-1].direction === player.direction) {
+                      // console.log('back attack!!');
+                      backAttack = true;
+                    }
+
+
+                    // CALCULATE ATTACKER DOUBLE HIT!
+                    let doubleHitChance = player.crits.doubleHit;
+                    let singleHitChance = player.crits.singleHit;
+                    if (backAttack === true) {
+                      if (doubleHitChance > 2) {
+                        let diff = doubleHitChance - 2;
+                        doubleHitChance = doubleHitChance - diff;
+                      }
+                    }
+
+
+                    // ATTACK STRENGTH ARMOR MOD CHECK!
+                    if (this.players[player.target.occupant.player-1].currentArmor.name !== '') {
+                      // console.log('opponent armour found');
+                      switch(this.players[player.target.occupant.player-1].currentArmor.effect) {
+                        case 'dblhit-5' :
+                          doubleHitChance = player.crits.doubleHit+5;
+                        break;
+                        case 'dblhit-10' :
+                          doubleHitChance = player.crits.doubleHit+10;
+                        break;
+                        case 'dblhit-15' :
+                          doubleHitChance = player.crits.doubleHit+15;
+                        break;
+                        // case 'dblhit-30' :
+                        //   doubleHitChance = player.crits.doubleHit+30;
+                        // break;
+                        case 'snghit-5' :
+                          singleHitChance = player.crits.singleHit+5;
+                        break;
+                        case 'snghit-10' :
+                          singleHitChance = player.crits.singleHit+10;
+                        break;
+                      }
+                    }
+
+                    let doubleHit = this.rnJesus(1,doubleHitChance);
+                    let singleHit = this.rnJesus(1,singleHitChance);
+
+  // -----------
+                    // doubleHit = 2
+                    // singleHit = 1
+  // ---------------
+
+                    // UNARMED ATTACK!
+                    if ( player.currentWeapon.type === '') {
+                      console.log('unarmed attack');
+                      doubleHit = 2;
+                      if (singleHitChance === 1) {
+                        let singleHit = this.rnJesus(1,2);
+                      }
+
+                      if (!player.popups.find(x=>x.msg === "attackingUnarmed")) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: (this.attackAnimRef.limit.unarmed-this.attackAnimRef.peak.unarmed),
+                            type: '',
+                            position: '',
+                            msg: 'attackingUnarmed',
+                            img: '',
+
+                          }
+                        )
+                      }
+
+                    }
+
+
+                    // BLUNT ATTACK MOD DAMAGE!!
+                    if (player.bluntAttack === true) {
+                      // console.log('blunt attack');
+
+                      singleHit = 2;
+                      doubleHit = 2;
+
+                      this.players[player.number-1].statusDisplay = {
+                        state: true,
+                        status: 'blunt attack!',
+                        count: 1,
+                        limit: this.players[player.number-1].statusDisplay.limit,
+                      }
+
+
+                      let weapon = player.currentWeapon.type;
+                      if (weapon === '') {
+                        weapon = 'unarmed';
+                      }
+
+                      if (!player.popups.find(x=>x.msg === "attackingBlunt")) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
+                            type: '',
+                            position: '',
+                            msg: 'attackingBlunt',
+                            img: '',
+
+                          }
+                        )
+                      }
+
+                    }
+
+
+                    // DODGED CHECK!
+                    if (this.players[player.target.occupant.player-1].dodging.state === true) {
+
+                      let canDodge = true;
+                      if (backAttack === true && player.crits.dodge < 4) {
+                        canDodge = false
+                      }
+
+                      if (canDodge === true) {
+
+                        console.log('opponent has dodged you');
+                        singleHit = 2;
+                        doubleHit = 2;
+                        if (player.bluntAttack === true) {
+                          player.bluntAttack = false;
+                        }
+
+                      }
+                    }
+
+
+                    // ATTACK LANDED!!
+                    if (doubleHit === 1) {
+                      // console.log('double hit attack plyr ',player.number,'against plyr ',player.target.occupant.player);
+                      this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 2;
+                      player.attackStrength = 2;
+                      this.attackedCancel(this.players[player.target.occupant.player-1])
+
+
+                      if (!player.popups.find(x=>x.msg === 'attacking2')) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
+                            type: '',
+                            position: '',
+                            msg: 'attacking2',
+                            img: '',
+
+                          }
+                        )
+                      }
+
+                      if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg.split("_")[0] === "hpDown")) {
+                        this.players[player.target.occupant.player-1].popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 30,
+                            type: '',
+                            position: '',
+                            msg: 'hpDown_'+'-'+2+'',
+                            img: '',
+
+                          }
+                        )
+                      }
+
+                    }
+                    else if (singleHit === 1) {
+                      // console.log('single hit attack plyr ',player.number,'against plyr ',player.target.occupant.player);
+                      this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
+                      player.attackStrength = 1;
+                      this.attackedCancel(this.players[player.target.occupant.player-1])
+
+                      let weapon = player.currentWeapon.type;
+                      if (weapon === '') {
+                        weapon = 'unarmed'
+                      }
+
+                      // if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'alarmed')) {
+                      //   this.players[player.target.occupant.player-1].popups.push(
+                      //     {
+                      //       state: false,
+                      //       count: 0,
+                      //       limit:25,
+                      //       type: '',
+                      //       position: '',
+                      //       msg: 'alarmed',
+                      //       img: '',
+                      //
+                      //     }
+                      //   )
+                      // }
+
+                      if (!player.popups.find(x=>x.msg === 'attacking1')) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
+                            type: '',
+                            position: '',
+                            msg: 'attacking1',
+                            img: '',
+
+                          }
+                        )
+                      }
+                      if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg.split("_")[0] === "hpDown")) {
+                        this.players[player.target.occupant.player-1].popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 30,
+                            type: '',
+                            position: '',
+                            msg: 'hpDown_'+'-'+1+'',
+                            img: '',
+
+                          }
+                        )
+                      }
+
+
+                    }
+
+                    // ADJUST TARGET PLYR SPEED ON INJURY: OLD
+                    // if (doubleHit === 1 || singleHit === 1) {
+                    //   let currentMoveSpeedIndx = this.players[player.target.occupant.player-1].speed.range.indexOf(this.players[player.target.occupant.player-1].speed.move)
+                    //   if (currentMoveSpeedIndx > 0) {
+                    //     this.players[player.target.occupant.player-1].speed.move = this.players[player.target.occupant.player-1].speed.range[currentMoveSpeedIndx-1]
+                    //   }
+                    // }
+
+
+                    // CHECK FOR MISS!
+                    let missed = false;
+                    if (doubleHit !== 1 && singleHit !== 1 && player.bluntAttack !== true) {
+                      console.log('attacked but no damage');
+                      missed = true;
+                      this.players[player.number-1].statusDisplay = {
+                        state: true,
+                        status: 'attack missed!',
+                        count: 1,
+                        limit: this.players[player.number-1].statusDisplay.limit,
+                      }
+
+                      let weapon = player.currentWeapon.type;
+                      if (player.currentWeapon.name === '') {
+                        weapon = 'unarmed';
+                      }
+
+                      if (!player.popups.find(x=>x.msg === "attackingBlunt")) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
+                            type: '',
+                            position: '',
+                            msg: 'attackingBlunt',
+                            img: '',
+
+                          }
+                        )
+                      }
+
+                    }
+
+
+                    // ADJUST TARGET PLYR SPEED ON INJURY
+                    if (this.players[player.target.occupant.player-1].hp === 1) {
+                      // this.players[player.target.occupant.player-1].speed.move = .05;
+                      let currentMoveSpeedIndx = this.players[player.target.occupant.player-1].speed.range.indexOf(this.players[player.target.occupant.player-1].speed.move)
+                      if (currentMoveSpeedIndx > 0) {
+                        this.players[player.target.occupant.player-1].speed.move = this.players[player.target.occupant.player-1].speed.range[currentMoveSpeedIndx-1]
+                      }
+                    }
+
+
+                    // KILL OPPONENT!
+                    if (this.players[player.target.occupant.player-1].hp <= 0) {
+                      this.killPlayer(this.players[player.target.occupant.player-1]);
+
+                      let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+                      this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+                      player.points++;
+
+                      this.pointChecker(player)
+
+                      if (player.ai.state === true && player.ai.mode === 'aggressive') {
+                        console.log('check for evidence of retrieval here and resume retrieve if so',player.ai.retrieving,player.ai.mission);
+
+                        if (player.ai.retrieving.checkin) {
+
+                          player.ai.mission = 'retrieve';
+
+                          if (!player.popups.find(x=>x.msg === 'missionRetrieve')) {
+                            player.popups.push(
+                              {
+                                state: false,
+                                count: 0,
+                                limit: 30,
+                                type: '',
+                                position: '',
+                                msg: 'missionRetrieve',
+                                img: '',
+
+                              }
+                            )
+                          }
+
+                          let targetSafeData = this.scanTargetAreaThreat({
+                            player: player.number,
+                            point: {
+                              x: player.ai.retrieving.point.x,
+                              y: player.ai.retrieving.point.y,
+                            },
+                            range: 3,
+                          })
+
+                          player.ai.retrieving.safe = targetSafeData.isSafe;
+
+                        }
+
+                      }
+
+                    }
+
+                    // ATTACK -> DEFLECT OPPONENT!
+                    else if (missed !== true && player.bluntAttack !== true) {
+                      this.players[player.target.occupant.player-1].action = 'deflected';
+                      this.players[player.target.occupant.player-1].success.deflected = {
+                        state: true,
+                        count: 1,
+                        limit: this.deflectedLengthRef.attacked,
+                        predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
+                        type: 'attacked',
+                      };
+
+
+                      if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
+                        this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
+                      }
+
+
+                    }
+
+                    // BLUNT ATTACK -> DEFLECT/GUARD BREAK -!
+                    else if (player.bluntAttack === true) {
+                      this.players[player.target.occupant.player-1].action = 'deflected';
+
+                      this.players[player.target.occupant.player-1].stamina.current = this.players[player.target.occupant.player-1].stamina.current - 3;
+                      this.players[player.target.occupant.player-1].success.deflected = {
+                        state: true,
+                        count: 1,
+                        limit: this.deflectedLengthRef.bluntAttacked,
+                        predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
+                        type: 'blunt_attacked',
+                      };
+
+                      if (!player.popups.find(x=>x.msg === "attackingBlunt")) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 30,
+                            type: '',
+                            position: '',
+                            msg: 'attackingBlunt',
+                            img: '',
+
+                          }
+                        )
+                      }
+
+
+                      if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
+                        this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
+                      }
+
+                    }
+
+                  }
+
+                  // ATTACK DEFENDED!!
+                  else {
+                    // console.log('attack defended by ',player.target.occupant.player,'target defending?',this.players[player.target.occupant.player-1].defending.state,'against plyr ',player.number);
+
+
+                    let shouldDefend = false;
+                    let bluntAttackBreakDefense = false;
+
+                    // DEFENDER IS UNARMED
+                    if (this.players[player.target.occupant.player-1].currentWeapon.name === "" && this.players[player.target.occupant.player-1].currentWeapon.type === "") {
+
+                      // console.log('player is unarmed');
+                      if (player.currentWeapon.name === "" && player.currentWeapon.type === "") {
+                        console.log('target and attacker unarmed. target defend');
+                        shouldDefend = true;
+                        if (player.bluntAttack === true) {
+                          bluntAttackBreakDefense = true;
+                        }
+                      }
+
+                      // player is armed
+                      else {
+                        console.log('armed player attacked unarmed target defense: cancel target defend and attack them');
+                        shouldDefend = false;
+
+                        if (player.bluntAttack === true) {
+                          bluntAttackBreakDefense = true;
+                        }
+                        else {
+
+                          // console.log('single hit attack plyr ',player.number,'against plyr ',player.target.occupant.player);
+                          this.players[player.target.occupant.player-1].hp = this.players[player.target.occupant.player-1].hp - 1;
+                          player.attackStrength = 1;
+                          this.attackedCancel(this.players[player.target.occupant.player-1])
+
+                          this.players[player.target.occupant.player-1].success.deflected = {
+                            state: true,
+                            count: 1,
+                            limit: this.deflectedLengthRef.attack,
+                            predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
+                            type: 'attack'
+                          }
+
+                          if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
+                            this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
+                          }
+
+                          if (this.players[player.target.occupant.player-1].hp === 1) {
+                            this.players[player.target.occupant.player-1].speed.move = .05;
+                          }
+
+                          if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'alarmed')) {
+                            this.players[player.target.occupant.player-1].popups.push(
+                              {
+                                state: false,
+                                count: 0,
+                                limit:30,
+                                type: '',
+                                position: '',
+                                msg: 'alarmed',
+                                img: '',
+
+                              }
+                            )
+                          }
+
+                          // if (!player.popups.find(x=>x.msg === 'attacking')) {
+                          //   player.popups.push(
+                          //     {
+                          //       state: false,
+                          //       count: 0,
+                          //       limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
+                          //       type: '',
+                          //       position: '',
+                          //       msg: 'attacking',
+                          //       img: '',
+                          //
+                          //     }
+                          //   )
+                          // }
+
+                          // KILL PLAYER
+                          if (this.players[player.target.occupant.player-1].hp <= 0) {
+                            this.killPlayer(this.players[player.target.occupant.player-1]);
+
+                            let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+                            this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+                            player.points++;
+
+                            this.pointChecker(player)
+
+                            if (player.ai.state === true && player.ai.mode === 'aggressive') {
+                              console.log('check for evidence of retrieval here and resume retrieve if so',player.ai.retrieving,player.ai.mission);
+
+                              if (player.ai.retrieving.checkin) {
+
+                                player.ai.mission = 'retrieve';
+
+                                if (!player.popups.find(x=>x.msg === 'missionRetrieve')) {
+                                  player.popups.push(
+                                    {
+                                      state: false,
+                                      count: 0,
+                                      limit: 30,
+                                      type: '',
+                                      position: '',
+                                      msg: 'missionRetrieve',
+                                      img: '',
+
+                                    }
+                                  )
+                                }
+
+                                let targetSafeData = this.scanTargetAreaThreat({
+                                  player: player.number,
+                                  point: {
+                                    x: player.ai.retrieving.point.x,
+                                    y: player.ai.retrieving.point.y,
+                                  },
+                                  range: 3,
+                                })
+
+                                player.ai.retrieving.safe = targetSafeData.isSafe;
+
+                              }
+
+                            }
+
+                          }
+
+                        }
+
+                      }
+
+
+                    }
+                    // DEFENDER IS ARMED
+                    else {
+
+                      // player unarmed
+                      if (player.currentWeapon.name === "" && player.currentWeapon.type === "") {
+                        console.log('player unarmed attacked armed target defense: cancel player attack and check crits or otherwise roll for attacker damage');
+                        shouldDefend = false;
+
+                        // console.log('single hit attack plyr ',player.target.occupant.player,'against plyr ',player.number,);
+
+                        player.hp--;
+                        this.players[player.target.occupant.player-1].attackStrength = 1;
+                        this.attackedCancel(player)
+
+                        player.success.deflected = {
+                          state: true,
+                          count: 1,
+                          limit: this.deflectedLengthRef.attack,
+                          predeflect: player.success.deflected.predeflect,
+                          type: 'attack'
+                        }
+
+                        if (this.aiDeflectedCheck.includes(player.number) !== true) {
+                          this.aiDeflectedCheck.push(player.number)
+                        }
+
+
+                        if (player.hp === 1) {
+                          player.speed.move = .05;
+                        }
+
+
+                        if (!player.popups.find(x=>x.msg === 'alarmed')) {
+                          player.popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit:30,
+                              type: '',
+                              position: '',
+                              msg: 'alarmed',
+                              img: '',
+
+                            }
+                          )
+                        }
+
+                        if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'attacking1')) {
+                          this.players[player.target.occupant.player-1].popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit: (this.attackAnimRef.limit[this.players[player.target.occupant.player-1].currentWeapon.type]-this.attackAnimRef.peak[this.players[player.target.occupant.player-1].currentWeapon.type]),
+                              type: '',
+                              position: '',
+                              msg: 'attacking1',
+                              img: '',
+
+                            }
+                          )
+                        }
+
+                        if (player.hp <= 0) {
+
+                          let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+                          this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+                          this.players[player.target.occupant.player-1].points++;
+
+                          this.pointChecker(this.players[player.target.occupant.player-1])
+
+                          if (this.players[player.target.occupant.player-1].ai.state === true && this.players[player.target.occupant.player-1].ai.mode === 'aggressive') {
+                            console.log('check for evidence of retrieval here and resume retrieve if so',player.ai.retrieving,player.ai.mission);
+
+                            if (this.players[player.target.occupant.player-1].ai.retrieving.checkin) {
+
+                              this.players[player.target.occupant.player-1].ai.mission = 'retrieve';
+
+                              if (!this.players[player.target.occupant.player-1].popups.find(x=>x.msg === 'missionRetrieve')) {
+                                this.players[player.target.occupant.player-1].popups.push(
+                                  {
+                                    state: false,
+                                    count: 0,
+                                    limit: 25,
+                                    type: '',
+                                    position: '',
+                                    msg: 'missionRetrieve',
+                                    img: '',
+
+                                  }
+                                )
+                              }
+
+                              let targetSafeData = this.scanTargetAreaThreat({
+                                player: this.players[player.target.occupant.player-1].number,
+                                point: {
+                                  x: this.players[player.target.occupant.player-1].ai.retrieving.point.x,
+                                  y: this.players[player.target.occupant.player-1].ai.retrieving.point.y,
+                                },
+                                range: 3,
+                              })
+
+                              this.players[player.target.occupant.player-1].ai.retrieving.safe = targetSafeData.isSafe;
+
+                            }
+
+                          }
+
+                          this.killPlayer(player);
+
+                        }
+
+                      }
+                      // player armed
+                      else {
+
+                        if (player.bluntAttack === true) {
+                          console.log('target and attacker are armed but blunt atk. target defend break');
+                          bluntAttackBreakDefense = true;
+                        }
+                        else {
+                          console.log('target and attacker are armed. target defend');
+                          shouldDefend = true;
+                        }
+                      }
+                    }
+
+
+                    if (bluntAttackBreakDefense === true) {
+                      shouldDefend = false;
+                      this.attackedCancel(this.players[player.target.occupant.player-1])
+                      this.players[player.target.occupant.player-1].action = 'deflected';
+
+                      this.players[player.target.occupant.player-1].stamina.current = this.players[player.target.occupant.player-1].stamina.current - 3;
+                      this.players[player.target.occupant.player-1].success.deflected = {
+                        state: true,
+                        count: 1,
+                        limit: this.deflectedLengthRef.bluntAttacked,
+                        predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
+                        type: 'blunt_attacked',
+                      };
+
+                      if (!player.popups.find(x=>x.msg === "attackingBlunt")) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 30,
+                            type: '',
+                            position: '',
+                            msg: 'attackingBlunt',
+                            img: '',
+
+                          }
+                        )
+                      }
+
+
+                      if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
+                        this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
+                      }
+
+                    }
+                    // DEFENDER DEFEND SUCCESS, DETERMINE DEFLECT OR PUSHBACK
+                    if (shouldDefend === true) {
+
+                      if (!player.popups.find(x=>x.msg === "attackingBlunt")) {
+                        player.popups.push(
+                          {
+                            state: false,
+                            count: 0,
+                            limit: 30,
+                            type: '',
+                            position: '',
+                            msg: 'attackingBlunt',
+                            img: '',
+
+                          }
+                        )
+                      }
+
+                      // if (this.players[player.target.occupant.player-1].direction === player.direction) {
+                      //   console.log('defend the rear!!');
+                      // }
+
+                      this.moveSpeed = .1;
+
+
+                      // DEFENDED STATUS DISPLAY!
+                      this.players[player.target.occupant.player-1].success.defendSuccess = {
+                        state: true,
+                        count: 1,
+                        limit: this.players[player.target.occupant.player-1].success.defendSuccess.limit
+                      }
+                      this.players[player.target.occupant.player-1].popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 25,
+                          type: '',
+                          position: '',
+                          msg: 'defendSuccess',
+                          img: '',
+
+                        }
+                      )
+
+                      let defenderParry = false;
+                      if (this.players[player.target.occupant.player-1].defendPeak === true) {
+                        defenderParry = true;
+                        this.players[player.target.occupant.player-1].stamina.current += this.staminaCostRef.defend.peak;
+                      }
+
+
+                      // PUSHBACK OPPONENT!
+                      // let shouldPushBackDefender = 2;
+                      let shouldPushBackDefender = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.pushBack*2);
+                      if (defenderParry === true) {
+                        shouldPushBackDefender = 0;
+                      }
+                      // shouldPushBackDefender = 1;
+                      if (shouldPushBackDefender === 1) {
+                        // console.log('pushback opponent');
+                        let canPushback = this.pushBack(this.players[player.target.occupant.player-1],player.direction);
+
+                      }
+
+                      // DON'T PUSHBACK OPPONENT, JUST DEFLECT/GUARD BREAK
+                      else {
+
+
+                        // OPPONENT GUARD BREAK ROLL!
+                        // let deflectDefender = this.rnJesus(1,1);
+                        let deflectDefender = this.rnJesus(1,this.players[player.target.occupant.player-1].crits.guardBreak);
+                        if (player.bluntAttack === true && defenderParry !== true) {
+                          deflectDefender = 1;
+                        }
+                        // deflectDefender = 1
+                        if (defenderParry === true) {
+                          deflectDefender = 0;
+                        }
+
+                        // DEFLECT OPPONENT!
+                        if (deflectDefender === 1) {
+                          console.log('opponent guard break player',player.target.occupant.player);
+                          this.players[player.target.occupant.player-1].breakAnim.defend = {
+                            state: true,
+                            count: 1,
+                            limit: player.breakAnim.defend.limit,
+                          };
+
+                          this.attackedCancel(player);
+
+                          this.players[player.target.occupant.player-1].success.deflected = {
+                            state: true,
+                            count: 1,
+                            limit: this.deflectedLengthRef.defended,
+                            predeflect: this.players[player.target.occupant.player-1].success.deflected.predeflect,
+                            type: 'defended',
+                          };
+                          this.players[player.target.occupant.player-1].stamina.current = this.players[player.target.occupant.player-1].stamina.current - 3;
+
+
+                          if (this.aiDeflectedCheck.includes(this.players[player.target.occupant.player-1].number) !== true) {
+                            this.aiDeflectedCheck.push(this.players[player.target.occupant.player-1].number)
+                          }
+
+
+                        }
+
+                      }
+
+
+                      // ATTACKER PUSHBACK/DEFLECT!!??
+
+                      let shouldDeflectAttacker;
+
+                      // let shouldDeflectAttacker = this.rnJesus(1,2);
+
+                      let shouldDeflectPushBackAttacker;
+
+                      shouldDeflectAttacker = this.rnJesus(1,player.crits.guardBreak);
+                      shouldDeflectPushBackAttacker = this.rnJesus(1,player.crits.pushBack);
+
+                      // PEAK DEFEND/PARRY!!
+                      if (this.players[player.target.occupant.player-1].defendPeak) {
+                        console.log('peak defend/parry attacker',player.number,'defender',player.target.occupant.player);
+                        shouldDeflectAttacker = this.rnJesus(1,1);
+                        shouldDeflectPushBackAttacker = this.rnJesus(1,1);
+
+                        player.statusDisplay = {
+                          state: true,
+                          status: 'Parry!',
+                          count: 1,
+                          limit: this.players[player.number-1].statusDisplay.limit,
+                        }
+
+                        if (!player.popups.find(x=>x.msg === "attackParried")) {
+                          player.popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit: 30,
+                              type: '',
+                              position: '',
+                              msg: 'attackParried',
+                              img: '',
+
+                            }
+                          )
+                        }
+
+                      }
+
+                      // OFF PEAK DEFEND
+                      else {
+                        console.log('off peak defend');
+                        shouldDeflectAttacker = this.rnJesus(1,player.crits.pushBack);
+                        shouldDeflectPushBackAttacker = this.rnJesus(1,player.crits.pushBack);
+
+                        player.statusDisplay = {
+                          state: true,
+                          status: 'Defend',
+                          count: 1,
+                          limit: this.players[player.number-1].statusDisplay.limit,
+                        }
+
+                        if (!player.popups.find(x=>x.msg === "attackDefended")) {
+                          player.popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit: 30,
+                              type: '',
+                              position: '',
+                              msg: 'attackDefended',
+                              img: '',
+
+                            }
+                          )
+                        }
+
+                      }
+
+                      // shouldDeflectPushBackAttacker = 1;
+                      // shouldDeflectAttacker = 1;
+
+                      if (shouldDeflectPushBackAttacker === 1) {
+                        let pushBackDirection = this.getOppositeDirection(player.direction)
+
+                        let canPushback = this.pushBack(player,pushBackDirection);
+                        // console.log('canPushback',canPushback);
+
+                        if (canPushback === true && shouldDeflectAttacker === 1) {
+                          // console.log('predeflect --> pushback');
+                          player.success.deflected.predeflect = true;
+                        }
+                        else if (canPushback === false && shouldDeflectAttacker === 1) {
+                          // console.log('no pushback ---> just deflect');
+
+                          player.defending = {
+                            state: false,
+                            count: 0,
+                            limit: player.defending.limit,
+                            // limit: this.players[player.target.occupant.player-1].defending.limit,
+                          }
+                          player.attacking = {
+                            state: false,
+                            count: 0,
+                            limit: player.attacking.limit,
+                            // limit: this.players[player.target.occupant.player-1].attacking.limit,
+                          }
+
+                          player.success.deflected = {
+                            state: true,
+                            count: 1,
+                            limit: this.deflectedLengthRef.attack,
+                            predeflect: player.success.deflected.predeflect,
+                            type: 'attack'
+                          }
+
+
+                          if (this.aiDeflectedCheck.includes(player.number) !== true) {
+                            this.aiDeflectedCheck.push(player.number)
+                          }
+
+                        }
+
+                        if (this.aiDeflectedCheck.includes(player.number) !== true) {
+                          this.aiDeflectedCheck.push(player.number)
+                        }
+
+                      }
+
+                      // ATTACKER NO PUSHBACK, JUST DEFLECT!
+                      else if (shouldDeflectPushBackAttacker !== 1 && shouldDeflectAttacker === 1) {
+                        console.log('no pushback ---> just deflect');
+
+                        player.defending = {
+                          state: false,
+                          count: 0,
+                          limit: this.players[player.target.occupant.player-1].defending.limit,
+                        }
+                        player.attacking = {
+                          state: false,
+                          count: 0,
+                          limit: this.players[player.target.occupant.player-1].attacking.limit,
+                        }
+
+                        player.success.deflected = {
+                          state: true,
+                          count: 1,
+                          limit: this.deflectedLengthRef.attack,
+                          predeflect: player.success.deflected.predeflect,
+                          type: 'attack'
+                        }
+                        player.stamina.current = player.stamina.current - this.staminaCostRef.deflected.defended;
+
+
+                        if (this.aiDeflectedCheck.includes(player.number) !== true) {
+                          this.aiDeflectedCheck.push(player.number)
+                        }
+
+                      }
+
+                      // ATTACKER NO DEFLECT NO PUSHBACK!
+                      else if (shouldDeflectPushBackAttacker !== 1 && shouldDeflectAttacker !== 1) {
+                        // console.log('attacker not deflected or pushed back');
+                      }
+
+                    }
+
+                  }
+                }
+
+                // ATTACK BARRIERS, OBSTACLES, ITEMS!
+
+                let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y );
+                let targetCell2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y );
+                let myCell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y );
+
+                if (player.target.occupant.type !== 'player' && player.target.free !== true) {
+
+
+                  // let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y );
+                  // let targetCell2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y );
+                  // let myCell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y );
+
+                  this.attackCellContents('melee',player,targetCell,targetCell2,myCell,undefined)
+
+                }
+
+
+                // CHECK FOR ITEMS OR MISS
+                if (player.target.free === true) {
+                  if (
+                    targetCell.rubble === true ||
+                    targetCell2.rubble === true ||
+                    targetCell.item.name !== "" ||
+                    targetCell2.item.name !== ""
+                  ) {
+                    this.attackCellContents('melee',player,targetCell,targetCell2,myCell,undefined)
+                  }
+                  else {
+                    if (!player.popups.find(x => x.msg === "missedAttack")) {
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 30,
+                          type: '',
+                          position: '',
+                          msg: 'missedAttack2',
+                          img: '',
+
+                        }
+                      )
+                    }
+
+
+                  }
+                }
+              }
+
+            }
+
+            // OUT OF STAMINA
+            else {
+              player.attacking.count = attackPeak+1;
+              player.stamina.current = 0;
+              player.statusDisplay = {
+                state: true,
+                status: "Out of Stamina",
+                count: 1,
+                limit: player.statusDisplay.limit,
+              }
+            }
+
+          }
+
+
+          // ATTACK COOLDOWN AND END!
+          if (player.attacking.count > attackPeak && player.attacking.count < this.attackAnimRef.limit[stamAtkType]) {
+            // console.log('attack cooldown',player.attacking.count);
+            player.attackPeak = false;
+          }
+          if (player.attacking.count >= this.attackAnimRef.limit[stamAtkType]) {
+            // console.log('attack end',player.attacking.count);
+
+            player.attacking = {
+              state: false,
+              count: 0,
+              limit: player.attacking.limit
+            }
+            player.attackStrength = 0;
+            player.bluntAttack = false;
+            player.action = 'idle';
+
+            if (
+              this.settingAutoCamera === false &&
+              player.ai.state !== true &&
+              this.camera.preInstructions.length === 0 &&
+              this.camera.instructions.length === 0
+            ) {
+              // this.setAutoCamera('attackFocusBreak',player)
+            }
+
+            else {
+              console.log('no setting auto cam: attackFocusBreak');
+            }
+
+            // if (player.popups.find(x=>x.msg === 'attacking')) {
+            //   player.popups.splice(player.popups.findIndex(x=>x.msg === 'attacking'),1)
+            // }
+
+            // console.log('attack end');
+
+          }
+
+        }
+
+
+        // DEFENDING!!
+        if (player.defending.state === true) {
+
+          let defendType = player.currentWeapon.type;
+          if ( player.currentWeapon.name === "") {
+            defendType  = "unarmed";
+          }
+          let defendPeak = this.defendAnimRef.peak[defendType];
+          player.defending.limit = this.defendAnimRef.limit[defendType];
+
+          if (player.defending.count < defendPeak && player.defendDecay.state !== true) {
+            player.defending.count++;
+            player.action = 'defending';
+            player.defendPeak = false;
+            // console.log('defend winding up',player.defending.count, 'player',player.number,defendPeak);
+            if (!player.popups.find(x=>x.msg === 'defending')) {
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: player.defending.limit,
+                  type: '',
+                  position: '',
+                  msg: 'defending',
+                  img: '',
+
+                }
+              )
+
+            }
+          }
+
+          // PEAK, START DECAY
+          else if (player.defending.count >= defendPeak && player.defendDecay.state !== true) {
+           // console.log('peak defend player',player.number);
+
+           if (player.stamina.current - this.staminaCostRef.defend.peak >= 0) {
+
+             player.defending = {
+               state: true,
+               count: 0,
+               limit: player.defending.limit,
+             }
+             player.defendPeak = true;
+             player.stamina.current = player.stamina.current - this.staminaCostRef.defend.peak;
+             player.defendDecay = {
+               state: true,
+               count: 0,
+               limit: player.defending.limit-defendPeak,
+             }
+
+             if (!player.popups.find(x=>x.msg === 'defending')) {
+               player.popups.push(
+                 {
+                   state: false,
+                   count: 0,
+                   limit: player.defending.limit,
+                   type: '',
+                   position: '',
+                   msg: 'defending',
+                   img: '',
+
+                 }
+               )
+
+             }
+
+           }
+           else {
+
+             console.log('not enough stamina for peak defend. reset stamina');
+             player.action = "idle";
+             player.defending = {
+               state: false,
+               count: 0,
+               limit: player.defending.limit,
+             }
+             player.defendDecay = {
+               state: true,
+               count: player.defendDecay.limit-7,
+               limit: player.defendDecay.limit,
+             }
+             player.stamina.current = 0;
+             player.statusDisplay = {
+               state: true,
+               status: "Out of Stamina",
+               count: 1,
+               limit: player.statusDisplay.limit,
+             }
+
+             // player.popups.push(
+             //   {
+             //     state: false,
+             //     count: 0,
+             //     limit: 10,
+             //     type: '',
+             //     position: '',
+             //     msg: 'outOfStamina',
+             //     img: '',
+             //
+             //   }
+             // )
+           }
+
+         };
+
+          // DECAY!!
+          if (player.defendDecay.state === true) {
+            if (player.defendDecay.count < player.defendDecay.limit) {
+              player.defendDecay.count++;
+              if (player.defendDecay.count === 5 ) {
+                player.defendPeak = false;
+              }
+
+              if (!player.popups.find(x=>x.msg === 'defending')) {
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: player.defendDecay.limit,
+                    type: '',
+                    position: '',
+                    msg: 'defending',
+                    img: '',
+
+                  }
+                )
+
+              }
+              // console.log('defend decay count',player.defendDecay.count,player.defending.state,player.action);
+            }
+
+
+            if (player.defendDecay.count >= player.defendDecay.limit) {
+              player.defending = {
+                state: false,
+                count: 0,
+                limit: player.defending.limit,
+              }
+              player.action = 'idle';
+              // console.log('defend decay limit. drop defense',player.defending.state);
+              player.defendDecay = {
+                state: false,
+                count: 0,
+                limit: player.defendDecay.limit,
+              }
+
+              if (player.popups.find(x=>x.msg === 'defending')) {
+                player.popups.splice(player.popups.findIndex(x=>x.msg === 'defending'),1)
+              }
+            }
+
+          }
+
+
+        }
+
+
+
+        // PUSHING/PULLING
+        // NEW PUSH/PULL DELAY AFTER LAST ATTEMPT
+        if (player.newPushPullDelay.state === true) {
+          if (player.newPushPullDelay.count < player.newPushPullDelay.limit) {
+            player.newPushPullDelay.count++;
+            // console.log('new push pull delay');
+          }
+          if (player.newPushPullDelay.count >= player.newPushPullDelay.limit) {
+            player.newPushPullDelay.state = false;
+            player.newPushPullDelay.count = 0;
+
+          }
+        }
+        // PUSH KEY RELEASE
+        if (player.prePush.state === true && this.keyPressed[player.number-1][player.prePush.direction] !== true) {
+          // console.log('mid prePush but key released. reset prePush');
+          player.prePush = {
+            state: false,
+            count: 0,
+            limit: player.prePush.limit,
+            targetCell: undefined,
+            direction: "",
+            pusher: undefined,
+          }
+
+          if (player.newPushPullDelay.state !== true) {
+            player.newPushPullDelay.state = true
+          }
+        }
+        // key release prepull check??
+        // if (player.prePull.state === true && this.keyPressed[player.number-1][player.prePush.direction] !== true) {
+        //   console.log('mid prePull but key released. reset prePull');
+        //   player.prePull = {
+        //     state: false,
+        //     count: 0,
+        //     limit: player.prePull.limit,
+        //     targetCell: undefined,
+        //     direction: "",
+        //     puller: undefined,
+        //   }
+        // }
+
+
+        // PULL CHECK
+        if (this.keyPressed[player.number-1].defend === true && player.pulling.state !== true && player.turning.state !== true && player.postPull.state !== true) {
+          this.getTarget(player);
+
+          if (player.direction === 'south' && this.keyPressed[player.number-1].north === true) {
+            if (player.target.cell1.occupant.type === "obstacle" && player.pulling.state !== true) {
+              // console.log('pulling obstacle trigger north',player.prePull.state,player.prePull.count);
+              this.preObstaclePullCheck(player,player.target,'north')
+            }
+            if (player.target.cell1.occupant.type === "player" && player.pulling.state !== true) {
+              // console.log('pulling player trigger north',player.prePull.state,player.prePull.count);
+              this.prePlayerPullCheck(player,player.target,'north')
+            }
+          }
+          if (player.direction === 'north' && this.keyPressed[player.number-1].south === true) {
+
+            if (player.target.cell1.occupant.type === "obstacle" && player.pulling.state !== true) {
+              // console.log('pulling obstacle trigger south',player.prePull.state,player.prePull.count);
+              this.preObstaclePullCheck(player,player.target,'south')
+            }
+            if (player.target.cell1.occupant.type === "player" && player.pulling.state !== true) {
+              // console.log('pulling player trigger south',player.prePull.state,player.prePull.count);
+              this.prePlayerPullCheck(player,player.target,'south')
+            }
+          }
+          if (player.direction === 'west' && this.keyPressed[player.number-1].east === true) {
+
+            if (player.target.cell1.occupant.type === "obstacle" && player.pulling.state !== true) {
+              // console.log('pulling obstacle trigger east',player.prePull.state,player.prePull.count);
+              this.preObstaclePullCheck(player,player.target,'east')
+            }
+            if (player.target.cell1.occupant.type === "player" && player.pulling.state !== true) {
+              // console.log('pulling player trigger east',player.prePull.state,player.prePull.count);
+              this.prePlayerPullCheck(player,player.target,'east')
+            }
+          }
+          if (player.direction === 'east' && this.keyPressed[player.number-1].west === true) {
+
+            if (player.target.cell1.occupant.type === "obstacle" && player.pulling.state !== true) {
+              // console.log('pulling obstacle trigger west',player.prePull.state,player.prePull.count);
+              this.preObstaclePullCheck(player,player.target,'west')
+            }
+            if (player.target.cell1.occupant.type === "player" && player.pulling.state !== true) {
+              // console.log('pulling player trigger west',player.prePull.state,player.prePull.count);
+              this.prePlayerPullCheck(player,player.target,'west')
+            }
+          }
+
+        }
+        if (player.postPull.state === true) {
+          if (player.postPull.count < player.postPull.limit) {
+            player.postPull.count++;
+            // console.log('post pull count',player.postPull.count);
+          }
+          if (player.postPull.count >= player.postPull.limit) {
+            // console.log('post pull limit');
+            player.postPull = {
+              state: false,
+              count: 0,
+              limit: player.postPull.limit
+            };
+          }
+        }
+
+
+        // // DODGE STEPPER!
+        let dodgeCondition = false;
+        if (player.crits.dodge > 4) {
+          player.crits.dodge = 4;
+        }
+        if (player.dodging.countState === true && player.dodging.count <= (player.dodging.peak.start - player.crits.dodge) && this.keyPressed[player.number-1].dodge === true) {
+          dodgeCondition = true;
+        }
+        if (player.dodging.countState === true && player.dodging.count > (player.dodging.peak.start - player.crits.dodge)) {
+          dodgeCondition = true;
+        }
+        if (dodgeCondition === true && player.flanking.state !== true) {
+
+          let startMod = player.crits.dodge;
+          let endMod = player.crits.dodge;
+          if (player.crits.dodge > 5) {
+            player.crits.dodge = 5;
+          }
+          if (player.dodging.peak.start - startMod < 2) {
+            startMod = player.dodging.peak.start-2;
+          }
+          if ((player.dodging.peak.end + endMod) > player.dodging.limit-2) {
+            endMod = player.dodging.limit-(2+player.dodging.peak.end);
+          }
+
+          // HAVE STAMIN FOR DODGE
+          if (player.dodging.count === 0) {
+
+            if (player.stamina.current - this.staminaCostRef.dodge.peak >= 0) {
+              player.stamina.current = player.stamina.current - this.staminaCostRef.dodge.peak;
+              player.dodging.count++;
+              player.action = 'dodging';
+            }
+
+            else {
+
+              player.stamina.current = 0;
+              player.dodging = {
+                countState: false,
+                state: false,
+                count: 0,
+                limit: player.dodging.limit,
+                peak: {
+                  start: player.dodging.peak.start,
+                  end: player.dodging.peak.end,
+                }
+              }
+              player.action = 'idle';
+              player.statusDisplay = {
+                state: true,
+                status: "Out of Stamina",
+                count: 1,
+                limit: player.statusDisplay.limit,
+              }
+            }
+
+            if (!player.popups.find(x => x.msg === "dodgeStart")) {
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 5,
+                  type: '',
+                  position: '',
+                  msg: 'dodgeStart',
+                  img: '',
+
+                }
+              )
+            }
+
+
+          }
+          if (player.dodging.count >= 1 && player.dodging.count < player.dodging.limit) {
+            player.dodging.count++
+            player.action = 'dodging';
+            // console.log('dodge count',player.dodging.count);
+
+
+            if (!player.popups.find(x => x.msg === "dodging")) {
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: player.dodging.limit,
+                  type: '',
+                  position: '',
+                  msg: 'dodging',
+                  img: '',
+
+                }
+              )
+            }
+          }
+          // PEAK START
+          if (player.dodging.count === (player.dodging.peak.start - startMod)) {
+
+            // player.popups.push(
+            //   {
+            //     state: false,
+            //     count: 0,
+            //     limit: (player.dodging.peak.end + endMod)-(player.dodging.peak.start + startMod),
+            //     type: '',
+            //     position: '',
+            //     msg: 'dodgeSuccess',
+            //     img: '',
+            //
+            //   }
+            // )
+          }
+          if (player.dodging.count > (player.dodging.peak.start - startMod) && player.dodging.count < (player.dodging.peak.end + endMod)) {
+            player.dodging.state = true;
+
+            // console.log('dodge peak',player.dodging.count,'crit',player.crits.dodge);
+          }
+
+          // CHOOSE DODGE DIRECTION
+          if (player.dodging.count === (player.dodging.peak.start - startMod)) {
+            let whichDirection = this.rnJesus(1,2);
+            let dodgeDirection;
+            switch(player.direction) {
+                case 'north':
+                if (whichDirection === 1) {
+                  dodgeDirection = 'east';
+                } else {
+                  dodgeDirection = 'west';
+                }
+                break;
+                case 'south':
+                if (whichDirection === 1) {
+                  dodgeDirection = 'east';
+                } else {
+                  dodgeDirection = 'west';
+                }
+                break;
+                case 'east':
+                if (whichDirection === 1) {
+                  dodgeDirection = 'north';
+                } else {
+                  dodgeDirection = 'south';
+                }
+                break;
+                case 'west':
+                if (whichDirection === 1) {
+                  dodgeDirection = 'north';
+                } else {
+                  dodgeDirection = 'south';
+                }
+                break;
+            }
+            player.dodgeDirection = dodgeDirection;
+          }
+
+          // IF DODGE IS BEFORE OR AFTER PEAK, STATE OFF
+          if (player.dodging.count < (player.dodging.peak.start - startMod) || player.dodging.count > (player.dodging.peak.end + endMod)) {
+            player.dodging.state = false;
+            player.dodgeDirection = '';
+            // console.log('dodge peak off');
+          }
+          if (player.dodging.count >= player.dodging.limit) {
+            player.action = 'idle';
+            player.dodging = {
+              countState: false,
+              state: false,
+              count: 0,
+              limit: player.dodging.limit,
+              peak: {
+                start: player.dodging.peak.start,
+                end: player.dodging.peak.end,
+              }
+            }
+          }
+
+
+
+        }
+
+
+        // COMPLETE PUSHBACK DEFLECT FLOW!
+        if (player.pushBack.state === false && player.success.deflected.predeflect === true && player.moving.state === false) {
+          // console.log('predefelct --> pushback ---> deflect');
+          player.success.deflected = {
+            state: true,
+            count: 1,
+            limit: this.deflectedLengthRef.attack,
+            predeflect: false,
+            type: player.success.deflected.type,
+          }
+
+
+          if (this.aiDeflectedCheck.includes(player.number) !== true) {
+            this.aiDeflectedCheck.push(player.number)
+          }
+
+
+        }
+
+
+        // DISCARD GEAR!!
+        if (
+          this.keyPressed[player.number-1].defend === true &&
+          this.keyPressed[player.number-1].cycleWeapon === true &&
+          player.discardGear.state !== true
+        ) {
+
+            this.discardGear(player,"weapon")
+            player.discardGear.state = true;
+        }
+        if (
+          this.keyPressed[player.number-1].defend === true &&
+          this.keyPressed[player.number-1].cycleArmor === true &&
+          player.discardGear.state !== true
+        ) {
+
+            this.discardGear(player,"armor")
+            player.discardGear.state = true;
+        }
+        // DISCARD GEAR STEPPER!!
+        if (player.discardGear.state === true) {
+          if (player.discardGear.count < player.discardGear.limit) {
+            player.discardGear.count++
+          }
+          else if (player.discardGear.count >= player.discardGear.limit) {
+            player.discardGear = {
+              state: false,
+              count: 0,
+              limit: player.discardGear.limit,
+            }
+          }
+        }
+
+
+        // WEAPON/ARMOR CYCLE CHECK!!
+        if (this.keyPressed[player.number-1].cycleWeapon === true && player.cycleWeapon.state === false && player.defending.state !== true && this.keyPressed[player.number-1].defend === false) {
+          if (player.cycleWeapon.count < player.cycleWeapon.limit) {
+            player.cycleWeapon.count++
+            // console.log('player.cycleWeapon.count',player.cycleWeapon.count);
+          }
+          if (player.cycleWeapon.count >= player.cycleWeapon.limit) {
+
+            if (
+              this.keyPressed[player.number-1].cycleWeapon === true &&
+              player.items.weapons.length > 1
+            ) {
+              // console.log('cycling weapon',player.items);
+
+              // let currentIndex = player.items.weapons.indexOf(player.currentWeapon);
+              let currentIndex = player.items.weaponIndex;
+              let newIndex;
+              // console.log(player.items.weapons,player.currentWeapon,currentIndex,player.items.weapons[currentIndex]);
+              if (currentIndex + 1 > player.items.weapons.length - 1) {
+                newIndex = 0
+              } else {
+                newIndex = currentIndex+1;
+              }
+              player.items.weaponIndex = newIndex;
+              player.currentWeapon = player.items.weapons[newIndex]
+
+              if (!player.popups.find(x=>x.msg === player.items.weapons[newIndex].type)) {
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 30,
+                    type: '',
+                    position: '',
+                    msg: player.items.weapons[newIndex].type,
+                    img: '',
+
+                  }
+                )
+              }
+
+              // console.log(player.items.weapons,player.currentWeapon,newIndex,player.items.weapons[newIndex]);
+
+            }
+            if (
+              this.keyPressed[player.number-1].cycleWeapon === true &&
+              player.items.weapons.length === 1
+            ) {
+
+              if (player.currentWeapon.type === 'crossbow' && player.items.ammo === 0) {
+                player.currentWeapon = {
+                  name: '',
+                  type: '',
+                  effect: ''
+                }
+                console.log('only have empty crossbow left, switching to unarmed');
+              } else {
+
+
+              player.currentWeapon = player.items.weapons[0];
+              // console.log('nothing to cycle through');
+              this.players[player.number-1].statusDisplay = {
+                state: true,
+                status: 'no weapons to cycle!',
+                count: 1,
+                limit: this.players[player.number-1].statusDisplay.limit,
+              }
+
+              if (!player.popups.find(x=>x.msg === 'stop')) {
+                player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 30,
+                      type: '',
+                      position: '',
+                      msg: 'stop',
+                      img: '',
+
+                    }
+                  )
+              }
+
+              }
+
+
+            }
+
+            player.cycleWeapon = {
+              state: false,
+              count: 0,
+              limit: player.cycleWeapon.limit,
+            }
+
+            let myCell = this.gridInfo.find(cell => cell.number.x === player.currentPosition.cell.number.x && cell.number.y === player.currentPosition.cell.number.y)
+            if (myCell.item.name !== '') {
+              // console.log('found an item. picking it up');
+              this.checkDestination(player)
+            }
+          }
+
+        }
+        else if (this.keyPressed[player.number-1].cycleWeapon === true && player.cycleWeapon.state === true) {
+          console.log('already cycling weapon');
+        }
+        if (this.keyPressed[player.number-1].cycleArmor === true && player.cycleArmor.state === false && player.defending.state !== true && this.keyPressed[player.number-1].defend === false) {
+          if (player.cycleArmor.count < player.cycleArmor.limit) {
+            player.cycleArmor.count++
+            // console.log('player.cycleArmor.count',player.cycleArmor.count);
+          }
+          if (player.cycleArmor.count >= player.cycleArmor.limit) {
+
+            if (
+              this.keyPressed[player.number-1].cycleArmor === true &&
+              player.items.armor.length > 0
+            ) {
+              // console.log('cycling armor');
+
+              // let currentIndex = player.items.armor.indexOf(player.currentArmor);
+              let currentIndex = player.items.armorIndex;
+              let newIndex;
+              if (currentIndex + 1 > player.items.armor.length - 1) {
+                newIndex = 0
+              } else {
+                newIndex = currentIndex+1;
+              }
+
+
+              switch(player.currentArmor.effect) {
+                case 'hpUp' :
+                  if (player.hp > 1) {
+                    // console.log('armor cycle debuff hp',player.hp);
+                    player.hp = player.hp - 1;
+                    // console.log('armor cycle debuff hp',player.hp);
+                  }
+                break;
+                case 'speedUp' :
+                  let currentSpd1 = player.speed.range.indexOf(player.speed.move);
+                  if (player.speed.move > .05) {
+                    // console.log('armor cycle debuff speed',player.speed.move);
+                    player.speed.move = player.speed.range[currentSpd1-1];
+                    // console.log('armor cycle debuff speed',player.speed.move);
+                  }
+                break;
+              }
+
+              switch(player.items.armor[newIndex].effect) {
+                case 'hpUp' :
+                  if (player.hp < 3) {
+                    // console.log('armor cycle buff hp',player.hp);
+                    player.hp = player.hp + 1
+                    // console.log('armor cycle buff hp',player.hp);
+
+                    player.statusDisplay = {
+                      state: true,
+                      status: 'hpUp',
+                      count: 1,
+                      limit: player.statusDisplay.limit,
+                    }
+                  }
+                break;
+                case 'speedUp' :
+                  let currentSpd2 = player.speed.range.indexOf(player.speed.move)
+                  if (player.speed.move < .2) {
+
+                    // console.log('armor cycle buff speed',player.speed.move);
+                    player.speed.move = player.speed.range[currentSpd2+1]
+                    // console.log('armor cycle buff speed',player.speed.move);
+
+                    player.statusDisplay = {
+                      state: true,
+                      status: 'speedUp',
+                      count: 1,
+                      limit: player.statusDisplay.limit,
+                    }
+                  }
+                break;
+              }
+
+              player.items.armorIndex = newIndex;
+              player.currentArmor = player.items.armor[newIndex]
+
+              if (player.items.armor[newIndex].type !== '' && !player.popups.find(x=>x.msg === player.items.armor[newIndex].type)) {
+                player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 30,
+                      type: '',
+                      position: '',
+                      msg: player.items.armor[newIndex].type,
+                      img: '',
+
+                    }
+                  )
+              }
+              if (player.items.armor[newIndex].type === '' && !player.popups.find(x=>x.msg === 'stop')) {
+                player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 30,
+                      type: '',
+                      position: '',
+                      msg: 'stop',
+                      img: '',
+
+                    }
+                  )
+              }
+
+
+            }
+            if (
+              this.keyPressed[player.number-1].cycleArmor === true &&
+              player.items.armor.length === 0
+            ) {
+              console.log('no armor to cycle through');
+              this.players[player.number-1].statusDisplay = {
+                state: true,
+                status: 'no armor to cycle!',
+                count: 1,
+                limit: this.players[player.number-1].statusDisplay.limit,
+              }
+
+              if (!player.popups.find(x=>x.msg === 'stop')) {
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 30,
+                    type: '',
+                    position: '',
+                    msg: 'stop',
+                    img: '',
+
+                  }
+                )
+              }
+
+            }
+
+            player.cycleArmor = {
+              state: false,
+              count: 0,
+              limit: player.cycleArmor.limit,
+            }
+
+            let myCell = this.gridInfo.find(cell => cell.number.x === player.currentPosition.cell.number.x && cell.number.y === player.currentPosition.cell.number.y)
+            if (myCell.item.name !== '') {
+              // console.log('found an item. picking it up');
+              this.checkDestination(player)
+            }
+          }
+        }
+        else if (this.keyPressed[player.number-1].cycleArmor === true && player.cycleArmor.state === true) {
+          console.log('already cycling armor');
+        }
+
+
+        // FLANKING!
+        if (player.flanking.state === true) {
+
+          // RESET DODGING
+          this.players[player.number-1].dodging = {
+            countState: false,
+            state: false,
+            count: 0,
+            limit: player.dodging.limit,
+            peak: {
+              start: player.dodging.peak.start,
+              end: player.dodging.peak.end,
+            }
+          }
+          if (this.players[player.number-1].popups.find(x=>x.msg === 'dodging')) {
+            this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'dodging'),1)
+          }
+
+
+          if (player.flanking.step === 2) {
+            // console.log('flanking step 2',player.direction,'flank dir',player.flanking.direction,"current position",player.currentPosition.cell.number,'move step',player.moving.step);
+            switch(player.flanking.direction) {
+              case 'north' :
+                player.direction = 'south';
+                player.turning.toDirection = 'south';
+              break;
+              case 'south' :
+                player.direction = 'north';
+                player.turning.toDirection = 'north';
+              break;
+              case 'east' :
+                player.direction = 'west';
+                player.turning.toDirection = 'west';
+              break;
+              case 'west' :
+                player.direction = 'east';
+                player.turning.toDirection = 'east';
+              break;
+            }
+            player.flanking = {
+              checking: false,
+              direction: '',
+              preFlankDirection: '',
+              state: false,
+              step: 0,
+              target1: {x:0 ,y:0},
+              target2: {x:0 ,y:0},
+            }
+
+            // if (player.popups.find(x=>x.msg === 'flanking2')) {
+            //   player.popups.splice(player.popups.findIndex(y=>y.msg === 'flanking2'),1)
+            // }
+
+          }
+          if (player.flanking.step === 1) {
+            // console.log('flanking step 1',player.direction,'flank dir',player.flanking.direction,"current position",player.currentPosition.cell.number,'move step',player.moving.step);
+            let target = this.getTarget(player);
+            if (target.cell1.free === true) {
+              player.flanking.step = 2;
+              player.flanking.target2 = target.cell1.number;
+              // player.action = 'moving';
+              player.action = 'flanking';
+              player.moving = {
+                state: true,
+                step: 0,
+                course: '',
+                origin: {
+                  number: {
+                    x: player.currentPosition.cell.number.x,
+                    y: player.currentPosition.cell.number.y
+                  },
+                  center: {
+                    x: player.currentPosition.cell.center.x,
+                    y: player.currentPosition.cell.center.y
+                  },
+                },
+                destination: target.cell1.center
+              }
+              nextPosition = this.lineCrementer(player);
+              player.nextPosition = nextPosition;
+
+              if (player.ai.state === true) {
+                this.keyPressed[player.number-1].dodge = false
+              }
+
+              if (!player.popups.find(x=>x.msg === "flanking2")) {
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 20,
+                    type: '',
+                    position: '',
+                    msg: 'flanking2',
+                    img: '',
+                  }
+                )
+              }
+              if (this.players[player.number-1].popups.find(x=>x.msg === 'dodging')) {
+                this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'dodging'),1)
+              }
+            }
+            else {
+              // console.log('cancel flanking');
+              this.players[player.number-1].statusDisplay = {
+                state: true,
+                status: 'flanking cancelled!',
+                count: 1,
+                limit: this.players[player.number-1].statusDisplay.limit,
+              }
+              player.flanking = {
+                checking: false,
+                direction: '',
+                state: false,
+                step: 0,
+                target1: {x:0 ,y:0},
+                target2: {x:0 ,y:0},
+              }
+
+              if (player.popups.find(x=>x.msg === 'flanking2')) {
+                player.popups.splice(player.popups.findIndex(y=>y.msg === 'flanking2'),1)
+              }
+              if (!player.popups.find(x=>x.msg === "noFlanking")) {
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 30,
+                    type: '',
+                    position: '',
+                    msg: 'noFlanking',
+                    img: '',
+                  }
+                )
+              }
+            }
+          }
+        }
+        // START
+        if (this.keyPressed[player.number-1].dodge === true && player.flanking.state !== true) {
+
+
+          if (
+            this.keyPressed[player.number-1].north === true ||
+            this.keyPressed[player.number-1].south === true ||
+            this.keyPressed[player.number-1].east === true ||
+            this.keyPressed[player.number-1].west === true &&
+            player.strafing.state !== true &&
+            player.flanking.state !== true
+          ) {
+
+            // RESET DODGING
+            this.players[player.number-1].dodging = {
+              countState: false,
+              state: false,
+              count: 0,
+              limit: player.dodging.limit,
+              peak: {
+                start: player.dodging.peak.start,
+                end: player.dodging.peak.end,
+              }
+            }
+
+
+            if (player.dodging.countState === true || player.dodging.state === true) {
+
+              this.players[player.number-1].stamina.current += this.staminaCostRef.dodge.pre;
+
+            }
+
+            if (keyPressedDirection !== player.direction) {
+
+              let canFlank = false;
+              switch(player.direction) {
+                case 'north' :
+                  if (keyPressedDirection === 'east' || keyPressedDirection === 'west') {
+                    canFlank = true;
+                  }
+                break;
+                case 'south' :
+                  if (keyPressedDirection === 'east' || keyPressedDirection === 'west') {
+                    canFlank = true;
+                  }
+                break;
+                case 'west' :
+                  if (keyPressedDirection === 'north' || keyPressedDirection === 'south') {
+                    canFlank = true;
+                  }
+                break;
+                case 'east' :
+                  if (keyPressedDirection === 'north' || keyPressedDirection === 'south') {
+                    canFlank = true;
+                  }
+                break;
+              }
+
+              if (canFlank === true) {
+
+                if (player.stamina.current - this.staminaCostRef.flank >= 0) {
+
+                  // console.log('flanking step',keyPressedDirection,player.direction);
+                  this.players[player.number-1].flanking.checking = true;
+                  this.players[player.number-1].flanking.direction = keyPressedDirection;
+                  this.players[player.number-1].flanking.preFlankDirection = player.direction;
+
+                  let target = this.getTarget(player);
+                  if (target.cell1.free === true ) {
+
+                    player.stamina.current = player.stamina.current - this.staminaCostRef.flank;
+                    // console.log('flank stam check1. cost',this.staminaCostRef.flank,'stam',player.stamina.current);
+
+                    // this.players[player.number-1].dodging = {
+                    //   countState: false,
+                    //   state: false,
+                    //   count: 0,
+                    //   limit: player.dodging.limit,
+                    //   peak: {
+                    //     start: player.dodging.peak.start,
+                    //     end: player.dodging.peak.end,
+                    //   }
+                    // }
+
+
+                    this.players[player.number-1].flanking.checking = false;
+                    this.players[player.number-1].flanking.state = true;
+                    this.players[player.number-1].flanking.step =  1;
+                    this.players[player.number-1].flanking.target1 = target.cell1.number;
+                    // console.log('this.players[player.number-1].flanking.target1',this.players[player.number-1].flanking.target1);
+                    // player.action = 'moving';
+
+                    if (!player.popups.find(x=>x.msg === "preAction2") && !player.popups.find(x=>x.msg === "dodgeStart")) {
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 5,
+                          type: '',
+                          position: '',
+                          msg: 'preAction2',
+                          img: '',
+                        }
+                      )
+                    }
+
+                    // console.log('flanking step 0/1',player.direction,'flank dir',player.flanking.direction,"current position",player.currentPosition.cell.number,'move step',player.moving.step);
+                    player.action = 'flanking';
+                    player.moving = {
+                      state: true,
+                      step: 0,
+                      course: '',
+                      origin: {
+                        number: {
+                          x: player.currentPosition.cell.number.x,
+                          y: player.currentPosition.cell.number.y
+                        },
+                        center: {
+                          x: player.currentPosition.cell.center.x,
+                          y: player.currentPosition.cell.center.y
+                        },
+                      },
+                      destination: target.cell1.center
+                    }
+                    nextPosition = this.lineCrementer(player);
+                    player.nextPosition = nextPosition;
+
+                    if (
+                      this.mouseOverCell.state === true &&
+                      this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
+                      this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
+                    ) {
+                      this.clicked.player = undefined;
+                    }
+
+                  }
+                  else {
+                    // console.log('cancel flanking');
+                  }
+
+
+                }
+                else {
+                  // console.log('flank stam check. cost',this.staminaCostRef.flank,'stam',player.stamina.current);
+                  player.action = 'idle';
+                  player.stamina.current = 0;
+                  player.statusDisplay = {
+                    state: true,
+                    status: "Out of Stamina",
+                    count: 1,
+                    limit: player.statusDisplay.limit,
+                  }
+
+                }
+
+
+              } else {
+                // console.log('cant flank2');
+              }
+
+            }
+            if (keyPressedDirection !== player.direction) {
+              console.log('!! dodge roll key combo!!');
+            }
+            else {
+              // console.log('cant flank2');
+            }
+          }
+
+        }
+
+
+        // BREAK FROM PULLED/PUSHED CHECK
+        let plyrPullPushed = false;
+        let plyrPullPushedPlyr = 0;
+        let breakPulledPushed = false;
+        for(const plyr of this.players) {
+          if (plyr.prePush.state === true) {
+            if (plyr.target.cell1.number.x === player.currentPosition.cell.number.x && plyr.target.cell1.number.y === player.currentPosition.cell.number.y) {
+              // console.log('player is being pre pushed by plyr',plyr.number);
+              plyrPullPushed = true;
+              plyrPullPushedPlyr = plyr.number;
+            }
+          }
+          if (plyr.prePull.state === true) {
+            if (plyr.target.cell1.number.x === player.currentPosition.cell.number.x && plyr.target.cell1.number.y === player.currentPosition.cell.number.y) {
+              // console.log('player is being pre pulled by plyr',plyr.number);
+              plyrPullPushed = true;
+              plyrPullPushedPlyr = plyr.number;
+            }
+          }
+        }
+
+
+        // CAN READ MOVE INPUTS!!
+        if (
+          player.attacking.state === false &&
+          player.defending.state === false &&
+          player.defending.count < 1 &&
+          player.dodging.state === false &&
+          player.dodging.countState === false &&
+          player.turning.state !== true &&
+          player.postPull.state !== true &&
+          player.defendDecay.state !== true &&
+          player.flanking.state !== true &&
+          player.jumping.state !== true &&
+          player.turning.state !== true
+        ) {
+          // CONFIRM MOVE KEYPRESS!!
+          if (
+            this.keyPressed[player.number-1].north === true ||
+            this.keyPressed[player.number-1].south === true ||
+            this.keyPressed[player.number-1].east === true ||
+            this.keyPressed[player.number-1].west === true ||
+            this.keyPressed[player.number-1].northEast === true ||
+            this.keyPressed[player.number-1].northWest === true ||
+            this.keyPressed[player.number-1].southEast === true ||
+            this.keyPressed[player.number-1].southWest === true
+          ) {
+
+            if (plyrPullPushed === true) {
+              breakPulledPushed = true;
+            }
+
+            if (player.newMoveDelay.state !== true) {
+
+              // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
+              if (keyPressedDirection === player.direction && player.strafing.state === false) {
+
+                let target = this.getTarget(player)
+
+                if (target.cell1.free === true && player.target.cell1.void === false) {
+
+                  if (player.dead.state === true && player.dead.count === 0) {
+
+                    player.nextPosition = {
+                      x: -30,
+                      y: -30,
+                    }
+
+                  }
+                  else if (player.turning.delayCount === 0) {
+
+                    if (player.stamina.current - this.staminaCostRef.move >= 0) {
+
+                      player.stamina.current -= this.staminaCostRef.move;
+
+                      player.action = 'moving';
+                      player.moving = {
+                        state: true,
+                        step: 0,
+                        course: '',
+                        origin: {
+                          number: {
+                            x: player.currentPosition.cell.number.x,
+                            y: player.currentPosition.cell.number.y
+                          },
+                          center: {
+                            x: player.currentPosition.cell.center,
+                            y: player.currentPosition.cell.center
+                          },
+                        },
+                        destination: target.cell1.center
+                      }
+                      nextPosition = this.lineCrementer(player);
+                      player.nextPosition = nextPosition;
+
+                      if (
+                        this.mouseOverCell.state === true &&
+                        this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
+                        this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
+                      ) {
+                        this.clicked.player = undefined;
+                      }
+
+                    }
+                    else {
+
+                      player.stamina.current = 0;
+                      player.statusDisplay = {
+                        state: true,
+                        status: 'Out of Stamina',
+                        count: 0,
+                        limit: player.statusDisplay.limit,
+                      }
+
+                    }
+
+
+                  }
+
+                }
+
+                if (target.cell1.free !== true) {
+                  if (target.cell1.occupant.type === "obstacle" && player.pushing.state !== true) {
+                    this.preObstaclePushCheck(player,target)
+                  }
+                  if (target.cell1.occupant.type === "player" && player.pushing.state !== true) {
+                    this.prePlayerPushCheck(player,target)
+                  }
+                  if (player.pushing.state === true) {
+                    // console.log('You are already pushing something');
+                  }
+                }
+
+                if (player.target.cell1.void === true) {
+                  // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
+
+
+                  if (player.stamina.current - this.staminaCostRef.move >= 0) {
+
+                    player.stamina.current -= this.staminaCostRef.move;
+
+                    this.moveSpeed = player.speed.move;
+
+                    player.moving = {
+                      state: true,
+                      step: 0,
+                      course: '',
+                      origin: {
+                        number: player.currentPosition.cell.number,
+                        center: player.currentPosition.cell.center,
+                      },
+                      destination: target.cell1.center
+                    }
+
+                    nextPosition = this.lineCrementer(player);
+                    player.nextPosition = nextPosition;
+
+                    if (
+                      this.mouseOverCell.state === true &&
+                      this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
+                      this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
+                    ) {
+                      this.clicked.player = undefined;
+                    }
+
+                  }
+                  else {
+
+                    player.stamina.current = 0;
+                    player.statusDisplay = {
+                      state: true,
+                      status: 'Out of Stamina',
+                      count: 0,
+                      limit: player.statusDisplay.limit,
+                    }
+
+                  }
+
+
+                }
+
+              }
+
+            }
+
+            // CHANGE DIRECTION IF NOT STRAFING!!
+            if (keyPressedDirection !== player.direction && player.strafing.state === false) {
+
+              // console.log('change player direction to',keyPressedDirection);
+              // console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
+
+              if (player.stamina.current - this.staminaCostRef.turn >= 0) {
+
+                player.stamina.current -= this.staminaCostRef.turn;
+
+                // console.log('start turning');
+                player.turning.state = true;
+                player.turning.toDirection = keyPressedDirection;
+
+              }
+              else {
+
+                player.stamina.current = 0;
+                player.statusDisplay = {
+                  state: true,
+                  status: 'Out of Stamina',
+                  count: 0,
+                  limit: player.statusDisplay.limit,
+                }
+
+              }
+
+            }
+
+
+            if (player.newMoveDelay.state !== true) {
+
+              // MOVE WHILE STRAFING!!
+              if (keyPressedDirection !== player.direction && player.strafing.state === true) {
+
+                player.strafing.direction = keyPressedDirection;
+                let target = this.getTarget(player);
+
+                if (target.cell1.free === true) {
+
+                  if (player.stamina.current - this.staminaCostRef.strafe >= 0) {
+
+                    player.stamina.current -= this.staminaCostRef.strafe;
+                    this.moveSpeed = player.speed.move;
+
+                    // console.log('start strafing');
+                    player.action = 'strafe moving';
+                    player.moving = {
+                      state: true,
+                      step: 0,
+                      course: '',
+                      origin: {
+                        number: {
+                          x: player.currentPosition.cell.number.x,
+                          y: player.currentPosition.cell.number.y
+                        },
+                        center: {
+                          x: player.currentPosition.cell.center.x,
+                          y: player.currentPosition.cell.center.y
+                        },
+                      },
+                      destination: target.cell1.center
+                    }
+                    nextPosition = this.lineCrementer(player);
+                    player.nextPosition = nextPosition;
+
+                    if (
+                      this.mouseOverCell.state === true &&
+                      this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
+                      this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
+                    ) {
+                      this.clicked.player = undefined;
+                    }
+
+                  }
+                  else {
+
+                    player.stamina.current = 0;
+                    player.statusDisplay = {
+                      state: true,
+                      status: 'Out of Stamina',
+                      count: 0,
+                      limit: player.statusDisplay.limit,
+                    }
+
+                  }
+
+                }
+
+                if (target.cell1.free === false) {
+                  // console.log('here',player.direction);
+                }
+              }
+
+              // JUMPING!!
+              if (keyPressedDirection === player.direction && player.strafing.state === true && player.jumping.checking !== true && player.jumping.state !== true) {
+
+
+
+                this.players[player.number-1].jumping.checking = true;
+                let target = this.getTarget(player);
+
+                let myCell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y)
+                let cell1 = this.gridInfo.find(elem => elem.number.x === target.cell1.number.x && elem.number.y === target.cell1.number.y)
+                let cell2 = this.gridInfo.find(elem => elem.number.x === target.cell2.number.x && elem.number.y === target.cell2.number.y)
+                // console.log('cell1',cell1);
+                // console.log('cell2',cell2);
+
+                let cellsWithinBounds = true;
+                if (!cell1 || !cell2) {
+                  cellsWithinBounds = false;
+                } else {
+                  if (cell1.number.x < 0 || cell1.number.x > this.gridWidth) {
+                    cellsWithinBounds = false;
+                  }
+                  if (cell1.number.y < 0 || cell1.number.y > this.gridWidth) {
+                    cellsWithinBounds = false;
+                  }
+                }
+
+                if (cellsWithinBounds === true) {
+
+                  // CAN ONLY JUMP OVER HAZARDS, DEEP OR VOID
+                  if (
+                    cell1.void.state === true ||
+                    cell1.terrain.type === 'deep' ||
+                    cell1.terrain.type === 'hazard'
+                  ) {
+                    // console.log('a');
+
+                    // CHECK ALL 3 JUMPING CELLS FOR BARRIERS BASED ON POSITION
+                    let myCellBlocked = false;
+                    let cell1BarrierFacing = false;
+                    let cell2BarrierFacing = false;
+                    if (myCell.barrier.state === true && myCell.barrier.position === player.direction) {
+                      myCellBlocked = true;
+                    }
+                    if (cell1.barrier.state === true) {
+                      switch (cell1.barrier.position) {
+                        case 'north':
+                          if (
+                            player.direction === 'south' ||
+                            player.direction === 'north'
+                          ) {
+                            cell1BarrierFacing = true;
+                          }
+                          break;
+                        case 'south':
+                          if (
+                            player.direction === 'south' ||
+                            player.direction === 'north'
+                          ) {
+                            cell1BarrierFacing = true;
+                          }
+                          break;
+                        case 'east':
+                          if (
+                            player.direction === 'east' ||
+                            player.direction === 'west'
+                          ) {
+                            cell1BarrierFacing = true;
+                          }
+                          break;
+                        case 'west':
+                          if (
+                            player.direction === 'east' ||
+                            player.direction === 'west'
+                          ) {
+                            cell1BarrierFacing = true;
+                          }
+                          break;
+                        default:
+
+                      }
+                    }
+                    if (cell2.barrier.state === true) {
+                      switch (cell2.barrier.position) {
+                        case 'north':
+                          if (player.direction === 'south') {
+                            cell2BarrierFacing = true;
+                          }
+                          break;
+                        case 'south':
+                          if (player.direction === 'north') {
+                            cell2BarrierFacing = true;
+                          }
+                          break;
+                        case 'east':
+                          if (player.direction === 'west') {
+                            cell2BarrierFacing = true;
+                          }
+                          break;
+                        case 'west':
+                          if (player.direction === 'east') {
+                            cell2BarrierFacing = true;
+                          }
+                          break;
+                        default:
+
+                      }
+                    }
+
+                    if (
+                      cell1.obstacle.state !== true &&
+                      cell2.obstacle.state !== true &&
+                      cell1BarrierFacing !== true &&
+                      cell2BarrierFacing !== true &&
+                      myCellBlocked !== true
+                    ) {
+                      // console.log('no obstacles at jump destination');
+
+                      if (
+                        cell2.void.state !== true &&
+                        cell2.terrain.type !== 'deep'
+                      ) {
+
+
+                        if (player.stamina.current - this.staminaCostRef.jump >= 0) {
+
+                          // console.log('can jump',player.stamina.current);
+                          this.players[player.number-1].jumping.checking = false;
+                          this.players[player.number-1].jumping.state = true;
+                          player.action = 'jumping'
+                          player.stamina.current = player.stamina.current - this.staminaCostRef.jump;
+
+                          player.moving = {
+                            state: true,
+                            step: 0,
+                            course: '',
+                            origin: {
+                              number: player.currentPosition.cell.number,
+                              center: player.currentPosition.cell.center,
+                            },
+                            destination: target.cell2.center
+                          }
+
+                          nextPosition = this.lineCrementer(player);
+                          // nextPosition = this.jumpCrementer(player);
+                          player.nextPosition = nextPosition;
+
+                          // RESET CELL INFO PLAYER
+                          if (
+                            this.mouseOverCell.state === true &&
+                            this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
+                            this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
+                          ) {
+                            this.clicked.player = undefined;
+                          }
+
+                        }
+                        else {
+                          // this.getTarget(player);
+                          this.players[player.number-1].jumping.checking = false;
+                          player.action = 'idle';
+                          player.stamina.current = 0;
+                          player.statusDisplay = {
+                            state: true,
+                            status: 'Out of Stamina',
+                            count: 0,
+                            limit: player.statusDisplay.limit,
+                          }
+                        }
+
+                      } else {
+                        // console.log('can only jump over voids or deep water cell 2');
+                        this.players[player.number-1].jumping.checking = false;
+                      }
+
+
+                      // JUMPING INTO PLYR OCCUPIED CELL CAUSES OVERLAP PUSHBACK. IF NOT USE THE FOLLOWING
+                      // let targetOccupied = false;
+                      // for (const plyr of this.players) {
+                      //   if (
+                      //     plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
+                      //     plyr.currentPosition.cell.number.y === player.target.cell2.number.y
+                      //   ) {
+                      //     // console.log('c');
+                      //     targetOccupied = true
+                      //   }
+                      //
+                      // }
+                      //
+                      // if (targetOccupied !== true) {
+                      //   if (
+                      //     cell2.void.state !== true &&
+                      //     cell2.terrain.type !== 'deep'
+                      //   ) {
+                      //     // console.log('can jump');
+                      //     this.players[player.number-1].jumping.checking = false;
+                      //     this.players[player.number-1].jumping.state = true;
+                      //     player.action = 'jumping'
+                      //     player.stamina.current = player.stamina.current - this.staminaCostRef.jump;
+                      //
+                      //     player.moving = {
+                      //       state: true,
+                      //       step: 0,
+                      //       course: '',
+                      //       origin: {
+                      //         number: player.currentPosition.cell.number,
+                      //         center: player.currentPosition.cell.center,
+                      //       },
+                      //       destination: target.cell2.center
+                      //     }
+                      //
+                      //     nextPosition = this.lineCrementer(player);
+                      //     // nextPosition = this.jumpCrementer(player);
+                      //     player.nextPosition = nextPosition;
+                      //   } else {
+                      //     // console.log('can only jump over voids or deep water cell 2');
+                      //     this.players[player.number-1].jumping.checking = false;
+                      //   }
+                      // }
+                      // else {
+                      //   // console.log('jump destination occupied');
+                      //   this.players[player.number-1].jumping.checking = false;
+                      // }
+
+                    }
+                    else {
+                      // console.log('jump obstacle detected');
+                      this.players[player.number-1].jumping.checking = false;
+
+                      if (cell1.obstacle.state === true) {
+                        console.log("can't jump! obstacle in cell1");
+                      }
+                      if (cell2.obstacle.state === true) {
+                        console.log("can't jump! obstacle in cell2");
+                      }
+                      if (myCellBlocked === true) {
+                        console.log("can't jump! barrier in player cell blocking");
+                      }
+                      if (cell1BarrierFacing === true) {
+                        console.log("can't jump! barrier cell 1 blocking");
+                      }
+                      if (cell2BarrierFacing === true) {
+                        console.log("can't jump! barrier cell 2 blocking");
+                      }
+
+                    }
+                  } else {
+                    // console.log('can only jump over voids, hazards or deep water cell 2');
+                    this.players[player.number-1].jumping.checking = false;
+                  }
+                } else {
+                  // console.log('cell out of bounds');
+                  this.players[player.number-1].jumping.checking = false;
+                }
+
+              }
+
+            }
+
+          }
+        }
+
+
+        // CAN READ NON-MOVE INPUTS!!
+        if (player.strafing.state === false && player.turning.state !== true && player.postPull.state !== true) {
+
+          if (this.keyPressed[player.number-1].attack === true || this.keyPressed[player.number-1].defend === true) {
+
+            // ALREADY ATTACKING/DEFENDING!!
+            if (player.attacking.state === true || player.defending.state === true) {
+
+              if (this.keyPressed[player.number-1].attack === true) {
+                // console.log('already attacking');
+              }
+              if (this.keyPressed[player.number-1].defend === true) {
+                // console.log('already defending',player.number);
+              }
+            }
+
+
+            // START ATTACK/DEFEND!!
+            if (player.attacking.state === false && player.defending.state === false && player.defendDecay.state !== true) {
+
+              if (this.keyPressed[player.number-1].attack === true && player.success.deflected.state !== true && this.keyPressed[player.number-1].defend !== true) {
+
+                let atkType = player.currentWeapon.type;
+                let blunt = 'normal';
+                if (player.bluntAttack === true) {
+                  atkType = 'blunt';
+                  blunt = 'blunt';
+                }
+                if (player.currentWeapon.name === "") {
+                  atkType = 'unarmed';
+                }
+
+                // BLUNT ATTACK!!
+                if (this.keyPressed[player.number-1].dodge === true) {
+                  // console.log('start blunt attack');
+                  if (player.dodging.countState === true || player.dodging.state === true) {
+                    console.log('was dodging, now blunt attacking. cancel dodge. return dodge stamina');
+                    player.stamina.current += this.staminaCostRef.dodge.peak;
+                    player.dodging = {
+                      countState: false,
+                      state: false,
+                      count: 0,
+                      limit: 20,
+                      peak: {
+                        start: 5,
+                        end: 10,
+                      }
+                    };
+                  }
+                  player.bluntAttack = true;
+                  atkType = 'blunt';
+                }
+
+                player.action = 'attacking';
+                player.attacking = {
+                  state: true,
+                  count: 1,
+                  limit: player.attacking.limit,
+                }
+                // console.log('start attack');
+
+                if (plyrPullPushed === true) {
+                  breakPulledPushed = true;
+                }
+
+              }
+
+              if (this.keyPressed[player.number-1].defend === true && player.defendDecay.state !== true && this.keyPressed[player.number-1].attack !== true) {
+                // console.log('start defending',player.number);
+
+                // console.log('start defending');
+                if (plyrPullPushed === true) {
+                  breakPulledPushed = true;
+                }
+
+                if (player.defending.count === 0 && player.defendDecay.state !== true) {
+                  player.defending = {
+                    state: true,
+                    count: 1,
+                    limit: player.defending.limit,
+                  }
+
+                  if (!player.popups.find(x=>x.msg === 'preAction1')) {
+                    player.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 5,
+                        type: '',
+                        position: '',
+                        msg: 'preAction1',
+                        img: '',
+
+                      }
+                    )
+                  }
+
+                } else {
+                  // console.log('cant start defend. might already be in progress');
+                }
+
+
+              }
+            }
+          }
+
+          // DODGE START
+          else if (this.keyPressed[player.number-1].dodge === true) {
+            if (player.dodging.state !== true && player.dodging.countState !== true) {
+              // console.log('start dodge wind up');
+              player.dodging.countState = true;
+
+              if (plyrPullPushed === true) {
+                breakPulledPushed = true;
+              }
+
+            } else {
+              // console.log('already dodging');
+            }
+          }
+        }
+
+
+        // BREAK FROM PULLED, PUSHED COMPLETE
+        if (breakPulledPushed === true) {
+          console.log('player ',player.number,' was being pre-pulled/pushed by ',plyrPullPushedPlyr,' break pulling/pushing and deflect?');
+
+          let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+          if (shouldDeflect === 1) {
+            this.players[plyrPullPushedPlyr-1].success.deflected = {
+              state: true,
+              count: 1,
+              limit: this.deflectedLengthRef.bluntAttacked,
+              predeflect: this.players[plyrPullPushedPlyr-1].success.deflected.predeflect,
+              type: 'blunt_attacked',
+            };
+            this.players[plyrPullPushedPlyr-1].action = "deflected";
+
+            if (this.aiDeflectedCheck.includes(this.players[player.target.cell1.occupant.player-1].number) !== true) {
+              this.aiDeflectedCheck.push(this.players[player.target.cell1.occupant.player-1].number)
+            }
+
+          }
+
+          // POPUPS
+          if (this.players[plyrPullPushedPlyr-1].prePush.state === true) {
+            if (!this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === "noPush")) {
+              this.players[plyrPullPushedPlyr-1].popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 25,
+                  type: '',
+                  position: '',
+                  msg: 'noPush',
+                  img: '',
+                }
+              )
+            }
+
+            if (this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === 'prePush')) {
+              this.players[plyrPullPushedPlyr-1].popups.splice(this.players[plyrPullPushedPlyr-1].popups.findIndex(x=>x.msg === 'prePush'),1)
+            }
+            if (this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === 'noPush')) {
+              this.players[plyrPullPushedPlyr-1].popups.splice(this.players[plyrPullPushedPlyr-1].popups.findIndex(x=>x.msg === 'canPush'),1)
+            }
+
+
+          }
+          if (this.players[plyrPullPushedPlyr-1].prePull.state === true) {
+            if (!this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === "noPull")) {
+              this.players[plyrPullPushedPlyr-1].popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 25,
+                  type: '',
+                  position: '',
+                  msg: 'noPull',
+                  img: '',
+                }
+              )
+            }
+
+            if (this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === 'prePull')) {
+              this.players[plyrPullPushedPlyr-1].popups.splice(this.players[plyrPullPushedPlyr-1].popups.findIndex(x=>x.msg === 'prePull'),1)
+            }
+            if (this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === 'canPull')) {
+              this.players[plyrPullPushedPlyr-1].popups.splice(this.players[plyrPullPushedPlyr-1].popups.findIndex(x=>x.msg === 'canPull'),1)
+            }
+
+
+          }
+
+          this.players[plyrPullPushedPlyr-1].pushing = {
+            state: false,
+            targetCell: undefined,
+            moveSpeed: 0,
+          };
+          this.players[plyrPullPushedPlyr-1].pulling = {
+            state: false,
+            targetCell: undefined,
+            moveSpeed: 0,
+          };
+          this.players[plyrPullPushedPlyr-1].prePush = {
+            state: false,
+            count: 0,
+            limit: this.players[plyrPullPushedPlyr-1].prePush.limit,
+            targetCell: undefined,
+            direction: "",
+            pusher: undefined,
+          };
+          this.players[plyrPullPushedPlyr-1].prePull = {
+            state: false,
+            count: 0,
+            limit: this.players[plyrPullPushedPlyr-1].prePull.limit,
+            targetCell: undefined,
+            direction: "",
+            puller: undefined,
+          };
+
+          if (this.players[plyrPullPushedPlyr-1].newPushPullDelay.state !== true) {
+            this.players[plyrPullPushedPlyr-1].newPushPullDelay.state = true
+          }
+
+
+
+          if (this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === 'prePush')) {
+            this.players[plyrPullPushedPlyr-1].popups.splice(this.players[plyrPullPushedPlyr-1].popups.findIndex(x=>x.msg === 'prePush'),1)
+          }
+          if (this.players[plyrPullPushedPlyr-1].popups.find(x=>x.msg === 'prePull')) {
+            this.players[plyrPullPushedPlyr-1].popups.splice(this.players[plyrPullPushedPlyr-1].popups.findIndex(x=>x.msg === 'prePull'),1)
+          }
+
+
+        }
+
+
+      }
+
+
+      // DISPLAY ATTACK AND DEFENSE SUCCESS!
+      if (player.success.attackSuccess.state === true) {
+        if (player.success.attackSuccess.count < player.success.attackSuccess.limit) {
+          player.success.attackSuccess.count++
+        }
+        else if (player.success.attackSuccess.count >= player.success.attackSuccess.limit) {
+          player.success.attackSuccess = {
+            state: false,
+            count: 0,
+            limit: player.success.attackSuccess.limit
+          }
+        }
+      }
+      if (player.success.defendSuccess.state === true) {
+        if (player.success.defendSuccess.count < player.success.defendSuccess.limit) {
+          player.success.defendSuccess.count++
+        }
+        else if (player.success.defendSuccess.count >= player.success.defendSuccess.limit) {
+          player.success.defendSuccess = {
+            state: false,
+            count: 0,
+            limit: player.success.defendSuccess.limit
+          }
+        }
+      }
+
+    }
+    else {
+      // console.log('sorry no key presses right now. you are deflected');
+    }
+
+
+
+    // OBSTACLE
+    // MOVING & FALLING
+    for(const cell of this.gridInfo) {
+
+
+      if (cell.obstacle.state === true && cell.obstacle.moving.state === true && cell.obstacle.moving.falling.state !== true) {
+        // console.log('tracking moving obstacle',cell.obstacle.moving.origin);
+
+        let destCellRef = this.gridInfo.find(x => x.number.x === cell.obstacle.moving.destination.number.x && x.number.y === cell.obstacle.moving.destination.number.y)
+
+        let obstacleCrementObj = undefined;
+        if (!destCellRef) {
+          obstacleCrementObj = this.obstacleMoveCrementer(cell,{center:cell.obstacle.moving.destination.center});
+        }
+        else {
+          obstacleCrementObj = this.obstacleMoveCrementer(cell,destCellRef);
+        }
+
+
+
+        cell.obstacle.moving.nextPosition = obstacleCrementObj.pos;
+        cell.obstacle.moving.step = obstacleCrementObj.step;
+        nextPosition = obstacleCrementObj.pos;
+
+        let atDestRanges = [false,false,false,false];
+
+        let destRngIndx = undefined;
+        if (
+          nextPosition.x >= cell.obstacle.moving.destination.center.x-1 &&
+          nextPosition.x <= cell.obstacle.moving.destination.center.x+1 &&
+          nextPosition.y >= cell.obstacle.moving.destination.center.y-1 &&
+          nextPosition.y <= cell.obstacle.moving.destination.center.y+1
+        ) {
+          atDestRanges[0] = true;
+          destRngIndx = 0;
+        }
+        if (
+          nextPosition.x === cell.obstacle.moving.destination.center.x-0.25 &&
+          nextPosition.y === cell.obstacle.moving.destination.center.y+0.5
+        ) {
+          atDestRanges[1] = true;
+          destRngIndx = 1;
+        }
+        if (
+          nextPosition.x === cell.obstacle.moving.destination.center.x &&
+          nextPosition.y === cell.obstacle.moving.destination.center.y
+        ) {
+          atDestRanges[2] = true;
+          destRngIndx = 2;
+        }
+        if (
+          nextPosition.x === cell.obstacle.moving.destination.center.x-5 &&
+          nextPosition.y === cell.obstacle.moving.destination.center.y-5
+        ) {
+          atDestRanges[3] = true;
+          destRngIndx = 3;
+        }
+
+
+        for (const el of atDestRanges) {
+          if (el === true) {
+
+            let indx = atDestRanges.indexOf(el);
+            // console.log('obstacle at destination');
+
+            if (destCellRef) {
+              // console.log('obstacle at in bounds destination',cell.obstacle.moving.nextPosition);
+
+              let cell2 = cell;
+              let originLevelData = cell2.levelData.split("_");
+              originLevelData[1] = "*";
+
+              let originCellRef = this.gridInfo.find(x => x.number.x === cell.obstacle.moving.origin.number.x && x.number.y === cell.obstacle.moving.origin.number.y)
+              let destCellRef = this.gridInfo.find(x => x.number.x === cell.obstacle.moving.destination.number.x && x.number.y === cell.obstacle.moving.destination.number.y)
+
+
+              if (destCellRef.void.state === true || destCellRef.terrain.type === "deep") {
+
+                destCellRef.obstacle = {
+                  state: true,
+                  name: cell2.obstacle.name,
+                  type: cell2.obstacle.type,
+                  hp: cell2.obstacle.hp,
+                  destructible: cell2.obstacle.destructible,
+                  locked: cell2.obstacle.locked,
+                  weight: cell2.obstacle.weight,
+                  height: cell2.obstacle.height,
+                  items: cell2.obstacle.items,
+                  effects: cell2.obstacle.effects,
+                  moving: {
+                    state: false,
+                    step: 0,
+                    origin: {
+                      number: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                      center: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                    },
+                    destination: {
+                      number: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                      center: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                    },
+                    currentPosition: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                    nextPosition: {
+                      x: destCellRef.center.x,
+                      y: destCellRef.center.y,
+                    },
+                    moveSpeed: 0,
+                    pushable: true,
+                    pushed: false,
+                    pusher: undefined,
+                    falling: {
+                      state: true,
+                      count: 0,
+                      limit: cell2.obstacle.moving.falling.limit,
+                    }
+                  }
+                };
+
+
+                destCellRef.obstacle.moving.nextPosition.x -= this.floorImageWidth/2;
+                destCellRef.obstacle.moving.nextPosition.y -= this.floorImageHeight/2;
+
+              }
+              if (destCellRef.void.state !== true && destCellRef.terrain.type !== "deep") {
+                destCellRef.obstacle = {
+                  state: true,
+                  name: cell2.obstacle.name,
+                  type: cell2.obstacle.type,
+                  hp: cell2.obstacle.hp,
+                  destructible: cell2.obstacle.destructible,
+                  locked: cell2.obstacle.locked,
+                  weight: cell2.obstacle.weight,
+                  height: cell2.obstacle.height,
+                  items: cell2.obstacle.items,
+                  effects: cell2.obstacle.effects,
+                  moving: {
+                    state: false,
+                    step: 0,
+                    origin: {
+                      number: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                      center: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                    },
+                    destination: {
+                      number: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                      center: {
+                        x: undefined,
+                        y: undefined,
+                      },
+                    },
+                    currentPosition: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                    nextPosition: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                    moveSpeed: 0,
+                    pushable: true,
+                    pushed: false,
+                    pusher: undefined,
+                    falling: cell2.obstacle.moving.falling,
+                  }
+                };
+              }
+
+              destCellRef.levelData = cell2.levelData;
+
+              originCellRef.obstacle = {
+                state: false,
+                name: '',
+                type: '',
+                hp: 0,
+                destructible: {
+                  state: false,
+                  weapons: [],
+                  leaveRubble: false,
+                },
+                locked: {
+                  state: false,
+                  key: '',
+                },
+                weight: 1,
+                height: 0.5,
+                items: [],
+                effects: [],
+                moving: {
+                  state: false,
+                  step: 0,
+                  origin: {
+                    number: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                    center: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                  },
+                  destination: {
+                    number: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                    center: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                  },
+                  currentPosition: {
+                    x: undefined,
+                    y: undefined,
+                  },
+                  nextPosition: {
+                    x: undefined,
+                    y: undefined,
+                  },
+                  moveSpeed: 0,
+                  pushable: true,
+                  pushed: false,
+                  pusher: undefined,
+                  falling: {
+                    state: false,
+                    count: 0,
+                    limit: 25,
+                  },
+                }
+              };
+              originCellRef.levelData = originLevelData.join("_");
+
+
+              for(const obs of this.obstacleBarrierToDestroy) {
+                if (originCellRef.number.x === obs.cell.number.x && originCellRef.number.y === obs.cell.number.y && destCellRef.void.state !== true) {
+                  this.obstacleBarrierToDestroy.push({
+                    type: 'obstacle',
+                    action: 'damage',
+                    count: 0,
+                    limit: 30,
+                    complete: false,
+                    cell: destCellRef,
+                  })
+                }
+              };
+
+              this.obstacleCheckDestination(destCellRef,player);
+
+
+            }
+            else {
+
+              // console.log('obstacle at out of bounds destination',cell.obstacle.moving.origin.center,cell.obstacle.moving.nextPosition);
+              let cell2 = cell;
+              let originLevelData = cell2.levelData.split("_");
+              originLevelData[1] = "*";
+
+
+              cell2.obstacle.moving.falling = {
+                state: true,
+                count: 0,
+                limit: cell2.obstacle.moving.falling.limit,
+              };
+
+
+              cell2.obstacle.moving.nextPosition.x -= this.floorImageWidth/2;
+              cell2.obstacle.moving.nextPosition.y -= this.floorImageHeight/2;
+
+              this.obstaclesOutOfBoundsFall.push(cell2.obstacle);
+
+              let originCellRef = this.gridInfo.find(x => x.number.x === cell.obstacle.moving.origin.number.x && x.number.y === cell.obstacle.moving.origin.number.y)
+
+
+              originCellRef.obstacle = {
+                state: false,
+                name: '',
+                type: '',
+                hp: 0,
+                destructible: {
+                  state: false,
+                  weapons: [],
+                  leaveRubble: false,
+                },
+                locked: {
+                  state: false,
+                  key: '',
+                },
+                weight: 1,
+                height: 0.5,
+                items: [],
+                effects: [],
+                moving: {
+                  state: false,
+                  step: 0,
+                  origin: {
+                    number: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                    center: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                  },
+                  destination: {
+                    number: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                    center: {
+                      x: undefined,
+                      y: undefined,
+                    },
+                  },
+                  currentPosition: {
+                    x: undefined,
+                    y: undefined,
+                  },
+                  nextPosition: {
+                    x: undefined,
+                    y: undefined,
+                  },
+                  moveSpeed: 0,
+                  pushable: true,
+                  pushed: false,
+                  pusher: undefined,
+                  falling: {
+                    state: false,
+                    count: 0,
+                    limit: 25,
+                  },
+                }
+              };
+              originCellRef.levelData = originLevelData.join("_");
+
+            }
+
+
+            break;
+          }
+        }
+
+        // if (cell.obstacle.moving.step >= 1) {
+        //
+        // }
+
+      }
+
+      // step falling.count
+      if (cell.obstacle.state === true && cell.obstacle.moving.falling.state === true) {
+        // console.log('falling obstacle');
+        if (cell.obstacle.moving.falling.count < cell.obstacle.moving.falling.limit) {
+          cell.obstacle.moving.falling.count++;
+          // console.log('obstacle falling in bounds a count',cell.obstacle.moving.falling.count,'position',cell.obstacle.moving.nextPosition);
+        }
+        if (cell.obstacle.moving.falling.count >= cell.obstacle.moving.falling.limit) {
+          let cell2 = cell;
+          let levelData = cell2.levelData.split("_");
+          levelData[1] = "*";
+          cell.levelData = levelData.join("_");
+          cell.obstacle = {
+            state: false,
+            name: '',
+            type: '',
+            hp: 0,
+            destructible: {
+              state: false,
+              weapons: [],
+              leaveRubble: false,
+            },
+            locked: {
+              state: false,
+              key: '',
+            },
+            weight: 1,
+            height: 0.5,
+            items: [],
+            effects: [],
+            moving: {
+              state: false,
+              step: 0,
+              origin: {
+                number: {
+                  x: undefined,
+                  y: undefined,
+                },
+                center: {
+                  x: undefined,
+                  y: undefined,
+                },
+              },
+              destination: {
+                number: {
+                  x: undefined,
+                  y: undefined,
+                },
+                center: {
+                  x: undefined,
+                  y: undefined,
+                },
+              },
+              currentPosition: {
+                x: undefined,
+                y: undefined,
+              },
+              nextPosition: {
+                x: undefined,
+                y: undefined,
+              },
+              moveSpeed: 0,
+              pushable: true,
+              pushed: false,
+              pusher: undefined,
+              falling: {
+                state: false,
+                count: 0,
+                limit: 10,
+              },
+            }
+          };
+          // console.log('obstacle falling in bounds over');
+        }
+      }
+    }
+    for(const elem of this.obstaclesOutOfBoundsFall) {
+      if (elem.moving.falling.count < elem.moving.falling.limit) {
+        elem.moving.falling.count++;
+        // obstacle.moving.nextPosition.y += (obstacle.moving.falling.count*5)
+        // console.log('obstacle falling out of bounds a count',elem.moving.falling.count,'position',elem.moving.nextPosition);
+      }
+      if (elem.moving.falling.count >= elem.moving.falling.limit) {
+        // console.log('obstacle falling out of bounds over');
+        let index = this.obstaclesOutOfBoundsFall.indexOf(elem)
+        this.obstaclesOutOfBoundsFall.splice(index,1)
+      }
+    }
+    // OBSTACLE/BARRIER DAMAGE/DESTROY
+    for(const cell of this.obstacleBarrierToDestroy) {
+      if (cell.limit > 0) {
+        if (cell.count < cell.limit) {
+          cell.count++
+        }
+        else if (cell.count >= cell.limit) {
+          let index = this.obstacleBarrierToDestroy.indexOf(cell)
+          this.obstacleBarrierToDestroy.splice(index,1)
+        }
+      }
+    }
+
+    // ITEMS TO DROP
+    // -call itemdrop crementer and set position like w/ movement
+    for(const cell of this.obstacleItemsToDrop) {
+      if (cell.limit > 0) {
+        if (cell.count < cell.limit) {
+          cell.count++
+        }
+        else if (cell.count >= cell.limit) {
+          let index = this.obstacleItemsToDrop.indexOf(cell)
+          this.obstacleItemsToDrop.splice(index,1)
+        }
+      }
+    }
+
+    // ITEMS FALLING/SINKING
+
+
+
+    // STATUS DISPLAY STEPPER!!
+    if (player.statusDisplay.state === true && player.statusDisplay.count < player.statusDisplay.limit) {
+      // console.log('stepping status display');
+      player.statusDisplay.count++
+    }
+    else if (player.statusDisplay.state === true && player.statusDisplay.count >= player.statusDisplay.limit) {
+      // console.log('hide status display');
+      player.statusDisplay = {
+        state: false,
+        status: '',
+        count: 0,
+        limit: player.statusDisplay.limit,
+      }
+    }
+
+
+    // POPUPS
+    // Testing
+    if (this.time === 100 || this.time === 300) {
+
+
+      let newArray = [];
+      let x = 0;
+      let y = 0;
+      for (const [key, value] of Object.entries(this.popupImageRef)) {
+        newArray.push(key);
+      }
+      for (var i = 0; i < 20; i++) {
+        // if (
+        //   !player.popups.find(x => x.msg === newArray[i]) &&
+        //   // player.number === 2 &&
+        //   newArray[i] !==  "hpUp" &&
+        //   newArray[i] !==  "hpDown"
+        // ) {
+        //   player.popups.push(
+        //     {
+        //       state: false,
+        //       count: 0,
+        //       limit: 30,
+        //       type: '',
+        //       position: '',
+        //       msg: newArray[i],
+        //       img: '',
+        //       // cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 4)
+        //     }
+        //   )
+        // }
+        // if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 1 && x.cell.number.y === 5)) {
+        //   this.cellPopups.push(
+        //     {
+        //       state: false,
+        //       count: 0,
+        //       limit: 35,
+        //       type: '',
+        //       position: '',
+        //       msg: newArray[i],
+        //       img: '',
+        //       cell: this.gridInfo.find(x => x.number.x === 1 && x.number.y === 5)
+        //     }
+        //   )
+        // }
+        // if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 4 && x.cell.number.y === 3)) {
+        //   this.cellPopups.push(
+        //     {
+        //       state: false,
+        //       count: 0,
+        //       limit: 35,
+        //       type: '',
+        //       position: '',
+        //       msg: newArray[i],
+        //       color: '',
+        //       img: '',
+        //       cell: this.gridInfo.find(x => x.number.x === 4 && x.number.y === 3)
+        //     }
+        //   )
+        // }
+      };
+    }
+    //PLAYER
+    if (player.popups.length > 0) {
+
+      for (const popup of player.popups) {
+        let indx = player.popups.findIndex(x=>x===popup);
+        if (popup.state === true && popup.position !== "northWest") {
+          if (popup.limit > 0) {
+            if (popup.state === true && popup.count < popup.limit) {
+              popup.count++
+            }
+            if (popup.count >= popup.limit) {
+              player.popups.splice(indx,1)
+            }
+          }
+          if (popup.limit === 0) {
+            // check if the player state it relates to is true, if not remove it
+          }
+
+        }
+
+
+      }
+
+      let currentPopupCount = player.popups.filter(x=>x.state === true).length;
+      for (const popup2 of player.popups) {
+        if (currentPopupCount < 8) {
+          let indx = player.popups.findIndex(x=>x===popup2);
+          if (popup2.state === false) {
+            popup2.state = true;
+            currentPopupCount++;
+            // console.log('turn on new popup',popup2.msg);
+          }
+        } else {
+          // console.log('currentPopup display full..',popup2.msg);
+        }
+      }
+
+    }
+    // CELL
+    if (this.cellPopups.length > 0) {
+
+      for (const popup of this.cellPopups) {
+        let indx = this.cellPopups.findIndex(x=>x===popup);
+        if (popup.state === true) {
+          if (popup.limit > 0) {
+            if (popup.state === true && popup.count < popup.limit) {
+              popup.count++
+            }
+            if (popup.count >= popup.limit) {
+              this.cellPopups.splice(indx,1)
+            }
+          }
+          if (popup.limit === 0) {
+            // check if the player state it relates to is true, if not remove it
+          }
+
+        }
+
+
+      }
+
+      let currentPopupCount = this.cellPopups.filter(x=>x.state === true).length;
+      for (const popup2 of this.cellPopups) {
+        if (currentPopupCount < 8) {
+          let indx = this.cellPopups.findIndex(x=>x===popup2);
+          if (popup2.state === false) {
+            popup2.state = true;
+            currentPopupCount++;
+            // console.log('turn on new popup',popup2.msg);
+          }
+        } else {
+          // console.log('currentPopup display full..',popup2.msg);
+        }
+      }
+
+    }
+
+
+    // CAMERA
+    // SWITCH ON
+    if (this.setInitZoom.state === true) {
+
+
+        if (this.setInitZoom.gridWidth >= 12) {
+
+          if (this.setInitZoom.windowWidth < 1100) {
+
+            if ((this.camera.zoom.x-1) >= -.25) {
+
+              this.camera.zoom.x -= .04 ;
+              this.camera.zoom.y -= .04 ;
+              this.camera.zoomDirection = 'out';
+
+              let zoom = this.camera.zoom.x;
+              let diff = 1 - zoom;
+
+              this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
+              this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
+
+              // this.setCameraFocus('input',canvas, context, canvas2, context2);
+              this.findFocusCell('panToCell',{},canvas,context)
+            }
+
+            if ((this.camera.zoom.x-1) < -.25) {
+              this.setInitZoom.state = false;
+            }
+
+          }
+          if (this.setInitZoom.windowWidth > 1100) {
+
+          }
+        }
+
+        if (this.setInitZoom.gridWidth < 12) {
+
+          if (this.setInitZoom.windowWidth < 1100) {
+
+            if ((this.camera.zoom.x-1) >= -.05) {
+
+              this.camera.zoom.x -= .04 ;
+              this.camera.zoom.y -= .04 ;
+              this.camera.zoomDirection = 'out';
+
+              let zoom = this.camera.zoom.x;
+              let diff = 1 - zoom;
+
+              this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
+              this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
+
+              // this.setCameraFocus('input',canvas, context, canvas2, context2);
+              this.findFocusCell('panToCell',{},canvas,context)
+            }
+
+            if ((this.camera.zoom.x-1) < -.05) {
+              this.setInitZoom.state = false;
+            }
+
+          }
+
+        }
+
+    }
+    //INPUT MODE SWITCH
+    if (this.toggleCameraMode === false && this.camera.state === true) {
+      this.camera.startCount = 0;
+    }
+    if (this.camera.state === false && this.toggleCameraMode === false && this.camera.startCount >= this.camera.startLimit  && this.camera.instructionType === 'default') {
+      // console.log('welcome to camera mode');
+      this.camera.startCount = 0;
+      this.camera.state = true;
+      this.camera.fixed = true;
+    }
+    if (this.toggleCameraMode === true) {
+
+      let state = this.toggleCameraMode;
+      if (this.camera.state === false && state === true && this.camera.startCount < this.camera.startLimit) {
+
+        this.camera.startCount++;
+      }
+      if (this.camera.state === true && state === true && this.camera.startCount < this.camera.startLimit) {
+        // console.log('leaving camera mode ...');
+        this.camera.startCount++;
+      }
+      if (this.camera.state === true && state === true && this.camera.startCount >= this.camera.startLimit) {
+        // console.log('thank you for using the camera');
+        this.camera.startCount = 0;
+        this.camera.state = false;
+        this.camera.fixed = false;
+      }
+
+
+    }
+    //INDICATOR COUNTER
+    if (this.camera.limits.state.zoom === true || this.camera.limits.state.pan === true) {
+      if (this.camera.limits.state.count < this.camera.limits.state.limit) {
+        this.camera.limits.state.count++
+      }
+
+    };
+    if (this.camera.limits.state.zoom === true || this.camera.limits.state.pan === true) {
+      if (this.camera.limits.state.count >= this.camera.limits.state.limit) {
+        this.camera.limits.state.count = 0;
+        this.camera.limits.state.zoom = false;
+        this.camera.limits.state.pan = false;
+      }
+
+    };
+    //INPUT MODE CONTROLS
+    if (this.camera.state === true && this.camera.instructionType === 'default') {
+
+      let setFocus = false;
+      let setZoomPan = false;
+      let findFocusCell = false;
+
+
+      // IDLE ANIM STEPPER!
+      if (player.action === 'idle') {
+        // player.idleAnim.state = true
+        if (player.idleAnim.count < player.idleAnim.limit) {
+          // console.log('player.idleAnim.count',player.idleAnim.count);
+          player.idleAnim.count++
+
+        }
+        if (player.idleAnim.count >= player.idleAnim.limit) {
+          player.idleAnim.count = 0;
+          player.idleAnim.state = false;
+        }
+      }
+      else if (player.action !== 'idle') {
+        // player.idleAnim.state = false;
+        player.idleAnim.count = 0;
+      }
+
+
+      if (this.keyPressed[player.number-1].attack === true) {
+        // if mode is pan and x or y are outside threshold +/- 2, log pan value, special value = true
+        this.camera.mode = 'zoom';
+      }
+      if (this.keyPressed[player.number-1].defend === true) {
+        this.camera.mode = 'pan';
+      }
+
+      if (this.camera.mode === 'zoom') {
+
+        if (
+          this.keyPressed[player.number-1].north === true &&
+          this.keyPressed[player.number-1].south !== true &&
+          this.camera.zoom.x < this.camera.limits.zoom.max
+        ) {
+
+          this.camera.zoom.x += .02 ;
+          this.camera.zoom.y += .02 ;
+          this.camera.zoomDirection = 'in';
+          setFocus = true;
+          setZoomPan = true;
+
+          // console.log('zooming in');
+        }
+        if (this.keyPressed[player.number-1].north === true && this.camera.zoom.x >= this.camera.limits.zoom.max) {
+          this.camera.limits.state.zoom = true;
+          console.log('zoom in limit',this.camera.limits.state.zoom);
+
+        }
+        if (
+          this.keyPressed[player.number-1].south === true &&
+          this.keyPressed[player.number-1].north !== true &&
+          this.camera.zoom.x > this.camera.limits.zoom.min
+        ) {
+
+          this.camera.zoom.x -= .02 ;
+          this.camera.zoom.y -= .02 ;
+          this.camera.zoomDirection = 'out';
+          setFocus = true;
+          setZoomPan = true;
+
+          // console.log('zooming out');
+        }
+        if (this.keyPressed[player.number-1].south === true && this.camera.zoom.x <= this.camera.limits.zoom.min) {
+          console.log('zoom out limit');
+          this.camera.limits.state.zoom = true;
+        }
+
+      }
+
+      if (this.camera.mode === 'pan') {
+
+        // ONLY PAN IF CANT SEE WHOLE MAP
+        let canPan = false;
+        if (window.innerWidth < 1100) {
+          if (this.gridWidth >= 12) {
+            if (this.camera.zoom.x > .7) {
+              canPan = true;
+            }
+          } else {
+            if (this.camera.zoom.x > 1) {
+              canPan = true;
+            }
+          }
+        } else {
+          if (this.camera.zoom.x > 1) {
+            canPan = true;
+          }
+        }
+
+        if (canPan === true) {
+
+          if (
+            this.keyPressed[player.number-1].north === true &&
+            this.keyPressed[player.number-1].south !== true &&
+            this.keyPressed[player.number-1].east !== true &&
+            this.keyPressed[player.number-1].west !== true &&
+            this.camera.pan.y < this.camera.limits.pan.y.max
+          ) {
+            this.camera.pan.y += 10;
+            this.camera.adjustedPan.y += (10*this.camera.zoom.x);
+            this.camera.panDirection = 'north';
+            setFocus = true;
+            setZoomPan = true;
+            findFocusCell = true;
+
+            // console.log('panning north');
+
+          }
+          if (this.keyPressed[player.number-1].north === true && this.camera.pan.y >= this.camera.limits.pan.y.max) {
+            console.log('pan limit north');
+            this.camera.limits.state.pan = true;
+          }
+          if (
+            this.keyPressed[player.number-1].south === true &&
+            this.keyPressed[player.number-1].north !== true &&
+            this.keyPressed[player.number-1].west !== true &&
+            this.keyPressed[player.number-1].east !== true &&
+            this.camera.pan.y > this.camera.limits.pan.y.min
+          ) {
+            this.camera.pan.y -= 10;
+            this.camera.adjustedPan.y -= (10*this.camera.zoom.x);
+            this.camera.panDirection = 'south';
+            setFocus = true;
+            setZoomPan = true;
+            findFocusCell = true;
+
+            // console.log('panning south');
+
+          }
+          if (this.keyPressed[player.number-1].south === true && this.camera.pan.y <= this.camera.limits.pan.y.min) {
+            console.log('pan limit south');
+            this.camera.limits.state.pan = true;
+          }
+          if (
+            this.keyPressed[player.number-1].east === true &&
+            this.keyPressed[player.number-1].west !== true &&
+            this.keyPressed[player.number-1].north !== true &&
+            this.keyPressed[player.number-1].south !== true &&
+            this.camera.pan.x > this.camera.limits.pan.x.min
+          ) {
+            this.camera.pan.x -= 10;
+            this.camera.adjustedPan.x -= (10*this.camera.zoom.x);
+            this.camera.panDirection = 'east';
+            setFocus = true;
+            setZoomPan = true;
+            findFocusCell = true;
+
+            // console.log('panning east');
+          }
+          if (this.keyPressed[player.number-1].east === true && this.camera.pan.x <= this.camera.limits.pan.x.min) {
+            console.log('pan limit east');
+            this.camera.limits.state.pan = true;
+          }
+          if (
+            this.keyPressed[player.number-1].west === true &&
+            this.keyPressed[player.number-1].east !== true &&
+            this.keyPressed[player.number-1].north !== true &&
+            this.keyPressed[player.number-1].south !== true &&
+            this.camera.pan.x < this.camera.limits.pan.x.max
+          ) {
+            this.camera.pan.x += 10;
+            this.camera.adjustedPan.x += (10*this.camera.zoom.x);
+            this.camera.panDirection = 'west';
+            setFocus = true;
+            setZoomPan = true;
+            findFocusCell = true;
+
+            // console.log('panning west');
+          }
+          if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
+            console.log('pan limit west');
+            this.camera.limits.state.pan = true;
+          }
+
+        } else {
+          // console.log('cant pan at this zoom');
+          // this.camera.limits.state.pan = true;
+
+          if (
+            this.keyPressed[player.number-1].north === true ||
+            this.keyPressed[player.number-1].south === true ||
+            this.keyPressed[player.number-1].east === true ||
+            this.keyPressed[player.number-1].west === true
+          ) {
+            this.camera.limits.state.pan = true;
+          }
+        }
+      }
+
+
+      // ADJUST PAN WHEN ZOOMING TO KEEP CENTERED
+      if (setZoomPan === true) {
+        let zoom = this.camera.zoom.x;
+
+
+        // if mode is zoom
+
+
+        let diff;
+        if (zoom === 1) {
+
+          this.camera.pan.x = -1;
+          this.camera.pan.y = -1;
+          this.camera.zoomFocusPan.x = -1;
+          this.camera.zoomFocusPan.y = -1;
+          this.camera.adjustedPan.x = -1;
+          this.camera.adjustedPan.y = -1;
+
+          this.camera.focus.x = (canvas.width/2);
+          this.camera.focus.y = (canvas.height/2);
+
+        }
+
+
+        // ZOOMING IN & OUT ABOVE THRESHOLD
+        if (zoom < 1) {
+
+          diff = 1 - zoom;
+
+          this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
+          this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
+
+        }
+
+
+        // ZOOMING BELOW THRESHOLD
+        if (zoom > 1) {
+
+          diff = zoom - 1;
+          let diffx;
+          let diffy;
+
+          if (this.camera.mode === 'pan') {
+
+            this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+            this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+
+          }
+          if (this.camera.mode === 'zoom') {
+
+            // ZOOM INTO WHAT CAMERA IS CENTERED ON (MAGIC FORMULA!!!)
+            if (this.camera.zoomDirection === "in") {
+
+              this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+              this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+
+            }
+
+            // WHEN ZOOMING OUT INSIDE THRESHOLD, TEND TOWARDS A CENTER ALIGNMENT
+            if (this.camera.zoomDirection === "out") {
+
+
+              // ADJUST PAN INCREMENT FOR ZOOM OUT CENTERING
+
+              if (this.camera.pan.x > -1) {
+                this.camera.pan.x -= 6;
+                // this.camera.adjustedPan.x -= (this.camera.pan.x*(this.camera.zoom.x-1));
+                // this.camera.adjustedPan.x -= (6*(this.camera.zoom.x-1));
+                this.camera.adjustedPan.x -= (3*(this.camera.zoom.x-1));
+                // this.camera.adjustedPan.x -= (6*this.camera.zoom.x);
+                this.camera.panDirection = 'east';
+                setFocus = true;
+              }
+              if (this.camera.pan.x < -1) {
+                this.camera.pan.x += 6;
+                // this.camera.adjustedPan.x += (this.camera.pan.x*(this.camera.zoom.x-1));
+                // this.camera.adjustedPan.x += (6*(this.camera.zoom.x-1));
+                this.camera.adjustedPan.x += (3*(this.camera.zoom.x-1));
+                // this.camera.adjustedPan.x += (6*this.camera.zoom.x);
+                this.camera.panDirection = 'west';
+                setFocus = true;
+              }
+              if (this.camera.pan.y < -1) {
+                this.camera.pan.y += 3.5;
+                // this.camera.adjustedPan.y += (this.camera.pan.y*(this.camera.zoom.x-1));
+                // this.camera.adjustedPan.y += (3.5*(this.camera.zoom.x-1));
+                // this.camera.adjustedPan.y += (1.5*this.camera.zoom.x);
+                this.camera.adjustedPan.y += (1.5*(this.camera.zoom.x-1));
+                // this.camera.adjustedPan.y += (3.5*this.camera.zoom.x);
+                this.camera.panDirection = 'north';
+                setFocus = true;
+              }
+              if (this.camera.pan.y > -1) {
+                this.camera.pan.y -= 3.5;
+                // this.camera.adjustedPan.y -= (this.camera.pan.y*(this.camera.zoom.x-1));
+                // this.camera.adjustedPan.y -= (3.5*(this.camera.zoom.x-1));
+                // this.camera.adjustedPan.y -= (1.5*this.camera.zoom.x);
+                this.camera.adjustedPan.y -= (1.5*(this.camera.zoom.x-1));
+                // this.camera.adjustedPan.y -= (3.5*this.camera.zoom.x);
+                this.camera.panDirection = 'south';
+                setFocus = true;
+              }
+
+              // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)-((this.camera.adjustedPan.x+this.camera.pan.x)*(1-zoom));
+              // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)-((this.camera.adjustedPan.y+this.camera.pan.y)*(1-zoom));
+
+
+              this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+              this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+
+              findFocusCell = true;
+
+            }
+
+          }
+
+
+
+
+        }
+
+        // console.log('ZFP!',this.camera.zoomFocusPan.x.toFixed(2),',',this.camera.zoomFocusPan.y.toFixed(2));
+
+      }
+
+
+      //SET CAMERA FOCUS
+      if (setFocus === true) {
+        // this.setCameraFocus('input',canvas, context, canvas2, context2);
+      }
+
+      if (findFocusCell) {
+        this.findFocusCell('panToCell',{},canvas,context)
+      }
+
+
+    };
+    // RESET
+    if (this.resetCameraSwitch === true) {
+      // console.log('resetting camera');
+
+      this.resetCameraSwitch = false;
+      this.camera = {
+        state: true,
+        startCount: 0,
+        startLimit: 4,
+        mode: 'pan',
+        fixed: false,
+        target: {
+          type: 'player',
+          plyrNo: 1,
+          cell: {
+            x: undefined,
+            y: undefined,
+          }
+        },
+        focus: {
+          x: undefined,
+          y: undefined,
+        },
+        focusCell: {
+          x: this.camera.focusCell.x,
+          y: this.camera.focusCell.y,
+        },
+        cellToPanOrigin: {
+          x: undefined,
+          y: undefined,
+        },
+        zoom: {
+          x: 1,
+          y: 1,
+        },
+        zoomDirection: 'in',
+        pan: {
+          x: 1,
+          y: 1,
+        },
+        panDirection: 'east',
+        zoomFocusPan: {
+          x: -1,
+          y: -1,
+        },
+        adjustedPan: {
+          x: 1,
+          y: 1,
+        },
+        limits: {
+          zoom: {
+            min: .5,
+            max: 2.5,
+          },
+          pan: {
+            x: {
+              min: -700,
+              max: 600,
+            },
+            y: {
+              min: -700,
+              max: 600,
+            }
+          },
+          state: {
+            count: 0,
+            limit: 10,
+            zoom: false,
+            pan: false,
+          }
+        },
+        instructionType: 'default',
+        currentPreInstruction: 0,
+        preInstructions: [],
+        currentInstruction: 0,
+        instructions: [],
+      };
+
+
+
+      // this.setCameraFocus('reset', canvas, context, canvas2, context2);
+
+    };
+    // AUTO CAMERA
+    if (this.camera.state !== true && this.camera.fixed !== true) {
+
+      if (this.camera.instructionType === 'default') {
+
+        // PRE/RAW INSTRUCTIONS!!
+        if (this.camera.preInstructions.length > 0  && this.camera.instructions.length === 0 ) {
+          // console.log('step through auto camera pre instructions',this.camera.preInstructions);
+
+          let preInstruction = this.camera.preInstructions[this.camera.currentPreInstruction];
+          // let indx = this.camera.preInstructions.indexOf(preInstruction)
+          let focusCell = {
+            x: undefined,
+            y: undefined,
+          }
+          // console.log('Step through pre instructions...','preInstructions',preInstruction);
+
+          switch (preInstruction.split("_")[0]) {
+            case 'moveTo':
+
+            let speed = preInstruction.split("_")[3];
+              if (preInstruction.split("_")[0] === "moveTo") {
+                focusCell.x = parseInt(preInstruction.split("_")[1])
+                focusCell.y = parseInt(preInstruction.split("_")[2])
+
+                this.findFocusCell('cellToPan',focusCell,canvas,context,speed)
+
+              }
+            break;
+            case 'zoom':
+              this.camera.instructions.push(
+                {
+                  action:'zoom_'+preInstruction.split("_")[1],
+                  action2:'',
+                  count: 0,
+                  count2: 0,
+                  limit: parseInt(preInstruction.split("_")[2]),
+                  limit2: 0,
+                  speed: "",
+                }
+              )
+            break;
+            case 'waitFor':
+
+              this.camera.instructions.push(
+                {
+                  action:'wait',
+                  action2:'',
+                  count: 0,
+                  count2: 0,
+                  limit: parseInt(preInstruction.split("_")[1]),
+                  limit2: 0,
+                  speed: "",
+                }
+              )
+
+            break;
+          }
+
+          if (this.camera.currentPreInstruction ===  this.camera.preInstructions.length-1) {
+            // console.log('this is the last preInstruction. Empty array');
+            this.camera.preInstructions = [];
+            this.camera.currentPreInstruction = 0;
+            // console.log('camera instructions',this.camera.instructions);
+          } else {
+            this.camera.currentPreInstruction++;
+          }
+
+        }
+
+
+        // PARSED INSTRUCTIONS!
+        if (this.camera.instructions.length > 0 && this.camera.currentInstruction < this.camera.instructions.length) {
+          // console.log('stepping through all instructions... current',this.camera.currentInstruction,this.camera.instructions[this.camera.currentInstruction]);
+
+          if (this.camera.instructions[this.camera.currentInstruction].speed === 'fast') {
+
+            if (this.camera.instructions[this.camera.currentInstruction].count < this.camera.instructions[this.camera.currentInstruction].limit) {
+
+              if (this.camera.instructions[this.camera.currentInstruction].action === 'wait') {
+
+                  // console.log('single instruction: auto camera waiting. count:',this.camera.instructions[this.camera.currentInstruction].count);
+                  this.camera.instructions[this.camera.currentInstruction].count++;
+
+              } else {
+
+
+                for (var i = 0; i < this.camera.instructions[this.camera.currentInstruction].limit; i++) {
+                    // console.log('single instruction: auto camera',this.camera.instructions[this.camera.currentInstruction].action,' count:',this.camera.instructions[this.camera.currentInstruction].count);
+
+                    if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'pan') {
+                      // console.log('auto camera panning/moving',this.camera.instructions[this.camera.currentInstruction].count);
+
+                      if (this.camera.zoom.x <= 1) {
+
+
+                        // this.camera.instructions[this.camera.currentInstruction]
+                        // this.camera.currentInstruction--;
+
+                        // console.log('moving zoom to panable amount');
+                        this.camera.zoom.x += .04 ;
+                        this.camera.zoom.y += .04 ;
+                        this.camera.zoomDirection = 'in';
+
+                        let zoom = this.camera.zoom.x;
+                        let diff = 1 - zoom;
+
+                        this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
+                        this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
+
+                        // this.setCameraFocus('input',canvas, context, canvas2, context2);
+                        this.findFocusCell('panToCell',{},canvas,context)
+
+                      }
+
+                      // console.log('single instruction: adjusting pan x/y -/+ based on direction');
+
+                      switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
+                        case 'north':
+                          this.camera.pan.y += 1;
+                          this.camera.adjustedPan.y += (1*this.camera.zoom.x);
+                          this.camera.panDirection = 'north';
+                        break;
+                        case 'south':
+                        this.camera.pan.y -= 1;
+                        this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
+                        this.camera.panDirection = 'south';
+                        break;
+                        case 'east':
+                          this.camera.pan.x -= 1;
+                          this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
+                          this.camera.panDirection = 'east';
+                        break;
+                        case 'west':
+                          this.camera.pan.x += 1;
+                          this.camera.adjustedPan.x += (1*this.camera.zoom.x);
+                          this.camera.panDirection = 'west';
+                        break;
+                      }
+
+                      let zoom = this.camera.zoom.x;
+                      this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+                      this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+
+                      // this.setCameraFocus('input',canvas, context, canvas2, context2);
+                      this.findFocusCell('panToCell',{},canvas,context)
+
+                      if (this.camera.instructions[this.camera.currentInstruction].count === this.camera.instructions[this.camera.currentInstruction].limit) {
+                        // console.log('last count on pan instruction',this.camera.instructions[this.camera.currentInstruction].dest);
+                      }
+
+                    }
+                    if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'zoom') {
+                      // console.log('single instruction: adjusting zoom x -/+ based on direction',this.camera.instructions[this.camera.currentInstruction].count,this.camera.instructions[this.camera.currentInstruction].limit);
+
+                      switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
+                        case 'in':
+                          this.camera.zoom.x += .02 ;
+                          this.camera.zoom.y += .02 ;
+                          this.camera.zoomDirection = 'in';
+                        break;
+                        case 'out':
+                          this.camera.zoom.x -= .02 ;
+                          this.camera.zoom.y -= .02 ;
+                          this.camera.zoomDirection = 'out';
+                        break;
+                      }
+
+                      // ZOOMING IN & OUT ABOVE THRESHOLD
+                      let zoom = this.camera.zoom.x;
+                      if (zoom < 1) {
+
+                        let diff = 1 - zoom;
+
+                        this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
+                        this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
+
+                      }
+
+
+                      // ZOOMING BELOW THRESHOLD
+                      if (zoom > 1) {
+
+                        let diff = zoom - 1;
+                        let diffx;
+                        let diffy;
+
+                        // ZOOM INTO WHAT CAMERA IS CENTERED ON (MAGIC FORMULA!!!)
+                        if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1] === "in") {
+
+                          this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+                          this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+
+                        }
+
+                        // WHEN ZOOMING OUT INSIDE THRESHOLD, TEND TOWARDS A CENTER ALIGNMENT
+                        if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1] === "out") {
+
+
+                          // ADJUST PAN INCREMENT FOR ZOOM OUT CENTERING
+                          if (this.camera.pan.x > -1) {
+                            this.camera.pan.x -= 6;
+                            this.camera.adjustedPan.x -= (3*(this.camera.zoom.x-1));
+                            this.camera.panDirection = 'east';
+                          }
+                          if (this.camera.pan.x < -1) {
+                            this.camera.pan.x += 6;
+                            this.camera.adjustedPan.x += (3*(this.camera.zoom.x-1));
+                            this.camera.panDirection = 'west';
+                          }
+                          if (this.camera.pan.y < -1) {
+                            this.camera.pan.y += 3.5;
+                            this.camera.adjustedPan.y += (1.5*(this.camera.zoom.x-1));
+                            this.camera.panDirection = 'north';
+                          }
+                          if (this.camera.pan.y > -1) {
+                            this.camera.pan.y -= 3.5;
+                            this.camera.adjustedPan.y -= (1.5*(this.camera.zoom.x-1));
+                            this.camera.panDirection = 'south';
+                          }
+
+                          // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)-((this.camera.adjustedPan.x+this.camera.pan.x)*(1-zoom));
+                          // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)-((this.camera.adjustedPan.y+this.camera.pan.y)*(1-zoom));
+
+                          this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+                          this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+
+                        }
+
+                      }
+
+                      // this.setCameraFocus('input',canvas, context, canvas2, context2);
+                      this.findFocusCell('panToCell',{},canvas,context)
+
+                    }
+                    this.camera.instructions[this.camera.currentInstruction].count++;
+
+                }
+              }
+
+            }
+            else if (
+              this.camera.instructions[this.camera.currentInstruction].count >= this.camera.instructions[this.camera.currentInstruction].limit
+            ) {
+
+              if (this.camera.instructions[this.camera.currentInstruction].action2 === "" && this.camera.currentInstruction < this.camera.instructions.length) {
+                // console.log('single instruction finished w/ no secondaries. step to next instruction');
+                this.camera.currentInstruction++;
+              }
+
+            }
+
+            if (
+              this.camera.instructions[this.camera.currentInstruction] &&
+              this.camera.instructions[this.camera.currentInstruction].action2 !== "" &&
+              this.camera.instructions[this.camera.currentInstruction].count2 < this.camera.instructions[this.camera.currentInstruction].limit2
+            ) {
+
+              for (var i = 0; i < this.camera.instructions[this.camera.currentInstruction].limit2; i++) {
+                // console.log('single instruction2: auto camera',this.camera.instructions[this.camera.currentInstruction].action2,' count:',this.camera.instructions[this.camera.currentInstruction].count2);
+
+                switch (this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1]) {
+                  case 'north':
+                    this.camera.pan.y += 1;
+                    this.camera.adjustedPan.y += (1*this.camera.zoom.x);
+                    this.camera.panDirection = 'north';
+                  break;
+                  case 'south':
+                  this.camera.pan.y -= 1;
+                  this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
+                  this.camera.panDirection = 'south';
+                  break;
+                  case 'east':
+                    this.camera.pan.x -= 1;
+                    this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
+                    this.camera.panDirection = 'east';
+                  break;
+                  case 'west':
+                    this.camera.pan.x += 1;
+                    this.camera.adjustedPan.x += (1*this.camera.zoom.x);
+                    this.camera.panDirection = 'west';
+                  break;
+                }
+                let zoom = this.camera.zoom.x;
+                this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+                this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+
+                // this.setCameraFocus('input',canvas, context, canvas2, context2);
+                this.findFocusCell('panToCell',{},canvas,context)
+                this.camera.instructions[this.camera.currentInstruction].count2++;
+
+              }
+
+            }
+            else if (
+              this.camera.instructions[this.camera.currentInstruction] &&
+              this.camera.instructions[this.camera.currentInstruction].action2 !== "" &&
+              this.camera.instructions[this.camera.currentInstruction].count2 >= this.camera.instructions[this.camera.currentInstruction].limit2
+            ) {
+
+              this.camera.currentInstruction++;
+
+            }
+
+          }
+
+          if (this.camera.instructions[this.camera.currentInstruction]) {
+
+
+          if (
+            this.camera.instructions[this.camera.currentInstruction].speed === 'slow' ||
+            this.camera.instructions[this.camera.currentInstruction].speed === ''
+          ) {
+
+            if (this.camera.instructions[this.camera.currentInstruction].count < this.camera.instructions[this.camera.currentInstruction].limit) {
+              // console.log('step through a single instruction',this.camera.instructions[this.camera.currentInstruction],'count',this.camera.instructions[this.camera.currentInstruction].count);
+
+              if (this.camera.instructions[this.camera.currentInstruction].action === 'wait') {
+                // console.log('single instruction: auto camera waiting');
+              }
+              if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'pan') {
+                // console.log('auto camera panning/moving',this.camera.instructions[this.camera.currentInstruction].count);
+
+                if (this.camera.zoom.x <= 1) {
+
+
+                  // this.camera.instructions[this.camera.currentInstruction]
+                  // this.camera.currentInstruction--;
+
+                  // console.log('moving zoom to panable amount');
+                  this.camera.zoom.x += .04 ;
+                  this.camera.zoom.y += .04 ;
+                  this.camera.zoomDirection = 'in';
+
+                  let zoom = this.camera.zoom.x;
+                  let diff = 1 - zoom;
+
+                  this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
+                  this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
+
+                  // this.setCameraFocus('input',canvas, context, canvas2, context2);
+                  this.findFocusCell('panToCell',{},canvas,context)
+
+                }
+
+                // console.log('single instruction: adjusting pan x/y -/+ based on direction');
+
+                switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
+                  case 'north':
+                    this.camera.pan.y += 1;
+                    this.camera.adjustedPan.y += (1*this.camera.zoom.x);
+                    this.camera.panDirection = 'north';
+                  break;
+                  case 'south':
+                  this.camera.pan.y -= 1;
+                  this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
+                  this.camera.panDirection = 'south';
+                  break;
+                  case 'east':
+                    this.camera.pan.x -= 1;
+                    this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
+                    this.camera.panDirection = 'east';
+                  break;
+                  case 'west':
+                    this.camera.pan.x += 1;
+                    this.camera.adjustedPan.x += (1*this.camera.zoom.x);
+                    this.camera.panDirection = 'west';
+                  break;
+                }
+
+                let zoom = this.camera.zoom.x;
+                this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+                this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+
+                // this.setCameraFocus('input',canvas, context, canvas2, context2);
+                this.findFocusCell('panToCell',{},canvas,context)
+
+                if (this.camera.instructions[this.camera.currentInstruction].count === this.camera.instructions[this.camera.currentInstruction].limit) {
+                  // console.log('last count on pan instruction',this.camera.instructions[this.camera.currentInstruction].dest);
+                }
+
+              }
+              if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'zoom') {
+                // console.log('single instruction: adjusting zoom x -/+ based on direction',this.camera.instructions[this.camera.currentInstruction].count,this.camera.instructions[this.camera.currentInstruction].limit);
+
+                switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
+                  case 'in':
+                    this.camera.zoom.x += .02 ;
+                    this.camera.zoom.y += .02 ;
+                    this.camera.zoomDirection = 'in';
+                  break;
+                  case 'out':
+                    this.camera.zoom.x -= .02 ;
+                    this.camera.zoom.y -= .02 ;
+                    this.camera.zoomDirection = 'out';
+                  break;
+                }
+
+                // ZOOMING IN & OUT ABOVE THRESHOLD
+                let zoom = this.camera.zoom.x;
+                if (zoom < 1) {
+
+                  let diff = 1 - zoom;
+
+                  this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
+                  this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
+
+                }
+
+
+                // ZOOMING BELOW THRESHOLD
+                if (zoom > 1) {
+
+                  let diff = zoom - 1;
+                  let diffx;
+                  let diffy;
+
+                  // ZOOM INTO WHAT CAMERA IS CENTERED ON (MAGIC FORMULA!!!)
+                  if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1] === "in") {
+
+                    this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+                    this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+
+                  }
+
+                  // WHEN ZOOMING OUT INSIDE THRESHOLD, TEND TOWARDS A CENTER ALIGNMENT
+                  if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1] === "out") {
+
+
+                    // ADJUST PAN INCREMENT FOR ZOOM OUT CENTERING
+                    if (this.camera.pan.x > -1) {
+                      this.camera.pan.x -= 6;
+                      this.camera.adjustedPan.x -= (3*(this.camera.zoom.x-1));
+                      this.camera.panDirection = 'east';
+                    }
+                    if (this.camera.pan.x < -1) {
+                      this.camera.pan.x += 6;
+                      this.camera.adjustedPan.x += (3*(this.camera.zoom.x-1));
+                      this.camera.panDirection = 'west';
+                    }
+                    if (this.camera.pan.y < -1) {
+                      this.camera.pan.y += 3.5;
+                      this.camera.adjustedPan.y += (1.5*(this.camera.zoom.x-1));
+                      this.camera.panDirection = 'north';
+                    }
+                    if (this.camera.pan.y > -1) {
+                      this.camera.pan.y -= 3.5;
+                      this.camera.adjustedPan.y -= (1.5*(this.camera.zoom.x-1));
+                      this.camera.panDirection = 'south';
+                    }
+
+                    // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)-((this.camera.adjustedPan.x+this.camera.pan.x)*(1-zoom));
+                    // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)-((this.camera.adjustedPan.y+this.camera.pan.y)*(1-zoom));
+
+                    this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+                    this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+
+                  }
+
+                }
+
+                // this.setCameraFocus('input',canvas, context, canvas2, context2);
+                this.findFocusCell('panToCell',{},canvas,context)
+
+              }
+
+              this.camera.instructions[this.camera.currentInstruction].count++;
+
+            }
+            else if (
+              this.camera.instructions[this.camera.currentInstruction].count >= this.camera.instructions[this.camera.currentInstruction].limit
+            ) {
+
+              // if (this.camera.instructions[this.camera.currentInstruction].action2 === "") {
+              if (this.camera.instructions[this.camera.currentInstruction].action2 === "" && this.camera.currentInstruction < this.camera.instructions.length) {
+                // console.log('single instruction finished w/ no secondaries. step to next instruction');
+                this.camera.currentInstruction++;
+              }
+
+            }
+
+            if (
+              this.camera.instructions[this.camera.currentInstruction] &&
+              this.camera.instructions[this.camera.currentInstruction].action2 !== "" &&
+              this.camera.instructions[this.camera.currentInstruction].count2 < this.camera.instructions[this.camera.currentInstruction].limit2
+            ) {
+
+              // console.log('step through a single secondary instruction',this.camera.instructions[this.camera.currentInstruction],'count2',this.camera.instructions[this.camera.currentInstruction].count2);
+
+              switch (this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1]) {
+                case 'north':
+                  this.camera.pan.y += 1;
+                  this.camera.adjustedPan.y += (1*this.camera.zoom.x);
+                  this.camera.panDirection = 'north';
+                break;
+                case 'south':
+                this.camera.pan.y -= 1;
+                this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
+                this.camera.panDirection = 'south';
+                break;
+                case 'east':
+                  this.camera.pan.x -= 1;
+                  this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
+                  this.camera.panDirection = 'east';
+                break;
+                case 'west':
+                  this.camera.pan.x += 1;
+                  this.camera.adjustedPan.x += (1*this.camera.zoom.x);
+                  this.camera.panDirection = 'west';
+                break;
+              }
+
+              let zoom = this.camera.zoom.x;
+              this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+              this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+
+              // this.setCameraFocus('input',canvas, context, canvas2, context2);
+              this.findFocusCell('panToCell',{},canvas,context)
+
+              this.camera.instructions[this.camera.currentInstruction].count2++;
+            }
+            else if (
+              this.camera.instructions[this.camera.currentInstruction] &&
+              this.camera.instructions[this.camera.currentInstruction].action2 !== "" &&
+              this.camera.instructions[this.camera.currentInstruction].count2 >= this.camera.instructions[this.camera.currentInstruction].limit2
+            ) {
+
+              // if (this.camera.instructions[this.camera.currentInstruction].action2 !== "") {
+              // if (this.camera.currentInstruction < this.camera.instructions.length-1) {
+                // console.log('single secondary instruction finished. step to next instruction');
+                this.camera.currentInstruction++;
+              // }
+
+            }
+
+          }
+          }
+
+
+          // }
+          if (this.camera.currentInstruction >= this.camera.instructions.length) {
+            console.log('finished camera instructions');
+            this.camera.instructions = [];
+            this.camera.currentInstruction = 0;
+            this.settingAutoCamera = false;
+          }
+
+
+        }
+
+      }
+
+      if (this.camera.instructionType === 'story') {
+
+        // if there are nstructions, execute and step instructions.count, remove from array
+        //
+        // use a cameraInstructionRef to adjust the camera values accordingly, and push to this.camera.instructions
+        //
+        // if this is the last instruction, set the instructionType back to default
+
+      }
+
+    }
+
+
+    // MENU
+    // add count up then turn on
+    if (player.ai.state !== true && this.keyPressed[player.number-1].cycleWeapon === true && this.keyPressed[player.number-1].cycleArmor === true) {
+      // toggle the menu here
+    }
+
+
+    // // CHECK PROJECTILES!!
+    for (const bolt of this.projectiles) {
+      if (bolt.kill === true) {
+        let index = this.projectiles.findIndex(blt => blt.id === bolt.id);
+        this.projectiles.splice(index, 1);
+        // console.log('kill bolt',bolt.currentPosition.number, this.players[bolt.owner-1].currentPosition.cell.number,this.projectiles);
+      }
+      if (bolt.type === 'bolt' && bolt.moving.state === true && bolt.kill !== true) {
+        // console.log('traking projectile');
+
+        let index = this.projectiles.findIndex(blt => blt.id === bolt.id);
+        bolt.currentPosition.center = bolt.nextPosition;
+
+
+        let boltNextPosition = this.boltCrementer(bolt);
+        bolt.nextPosition = boltNextPosition;
+
+        // CHECK WHICH CELL BOLT IS AT
+        for (const cell of bolt.target.path) {
+          let point = [bolt.currentPosition.center.x,bolt.currentPosition.center.y];
+          let polygon = [];
+          for (const vertex of cell.vertices) {
+            let vertexPoint = [vertex.x-10,vertex.y-5];
+            // let vertexPoint = [vertex.x,vertex.y];
+            polygon.push(vertexPoint)
+          }
+          let pip = pointInPolygon(point, polygon)
+          if (pip === true) {
+            // console.log('bolt passing through cell',cell.number);
+            bolt.currentPosition.number = cell.number;
+
+            let infoCell = this.gridInfo.find(x => x.number.x === cell.number.x && x.number.y === cell.number.y);
+
+            if (infoCell.elevation.number === bolt.elevation) {
+
+              let fwdBarrier = false;
+
+
+              if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
+                fwdBarrier = this.checkForwardBarrier(bolt.direction,infoCell)
+              }
+
+              let dodged = false;
+              if (fwdBarrier !== true) {
+                for (const plyr of this.players) {
+                  if (
+                    plyr.currentPosition.cell.number.x === cell.number.x &&
+                    plyr.currentPosition.cell.number.y === cell.number.y &&
+                    plyr.number !== bolt.owner
+                  ) {
+                    // console.log('bolt hit a player',plyr);
+                    this.cellsUnderAttack.push(
+                      {
+                        number: {
+                          x: cell.number.x,
+                          y: cell.number.y,
+                        },
+                        count: 1,
+                        limit: 8,
+                      },
+                    )
+
+
+
+                    let targetDefending = false;
+                    let defendType = plyr.currentWeapon.type;
+                    if ( plyr.currentWeapon.name === "") {
+                      defendType  = "unarmed";
+                    }
+                    let defendPeak = this.defendAnimRef.peak[defendType];
+                    if (plyr.defending.count === defendPeak || plyr.defendDecay.state === true) {
+                      targetDefending = true;
+                    }
+
+                    if (
+                      targetDefending !== true ||
+                      this.players[plyr.number-1].direction === bolt.direction
+                    ) {
+                      // console.log('attack success');
+
+                      let backAttack = false;
+                      if (this.players[plyr.number-1].direction === bolt.direction) {
+                        console.log('back attack');
+                        backAttack = true;
+                      }
+
+                      this.players[bolt.owner-1].success.attackSuccess = {
+                        state: true,
+                        count: 1,
+                        limit: this.players[bolt.owner-1].success.attackSuccess.limit
+                      }
+
+
+                      // CALCULATE ATTACKER DOUBLE HIT!
+                      let doubleHitChance = this.players[bolt.owner-1].crits.doubleHit;
+                      let singleHitChance = this.players[bolt.owner-1].crits.singleHit;
+                      if (backAttack === true) {
+                        if (doubleHitChance > 2) {
+                          let diff = doubleHitChance - 2;
+                          doubleHitChance = doubleHitChance - diff;
+                        }
+                      }
+
+                      // FACTOR OPPONENT ARMOUR
+                      if (this.players[plyr.number-1].currentArmor.name !== '') {
+                        // console.log('opponent armour found');
+                        switch(this.players[plyr.number-1].currentArmor.effect) {
+                          case 'dblhit-5' :
+                            doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+5;
+                          break;
+                          case 'dblhit-10' :
+                            doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+10;
+                          break;
+                          case 'dblhit-15' :
+                            doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+15;
+                          break;
+                          // case 'dblhit-30' :
+                          //   doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+30;
+                          // break;
+                          case 'snghit-5' :
+                            singleHitChance = this.players[bolt.owner-1].crits.singleHit+5;
+                          break;
+                          case 'snghit-10' :
+                            singleHitChance = this.players[bolt.owner-1].crits.singleHit+10;
+                          break;
+                        }
+                      }
+
+                      let doubleHit = this.rnJesus(1,doubleHitChance);
+                      let singleHit = this.rnJesus(1,singleHitChance);
+
+    // -----------
+                      // doubleHit = 2;
+                      // singleHit = 2;
+                      // ----------------
+
+
+                      // DODGED CHECK!
+
+                      if (plyr.dodging.state === true) {
+
+                        let canDodge = true;
+                        if (backAttack === true && plyr.crits.dodge < 4) {
+                          canDodge = false
+                        }
+
+                        if (canDodge === true) {
+                          dodged = true;
+                          console.log('you dodged a bolt');
+                          singleHit = 2;
+                          doubleHit = 2;
+                          if (plyr.bluntAttack === true) {
+                            plyr.bluntAttack = false;
+                          }
+
+                        }
+                      }
+
+
+                      let miss;
+                      if (doubleHit === 1) {
+                        console.log('bolt double hit attack');
+                        this.players[plyr.number-1].hp = this.players[plyr.number-1].hp - 2;
+                        this.attackedCancel(this.players[plyr.number-1]);
+
+                        // if (!this.players[plyr.number-1].popups.find(x=>x.msg === 'alarmed')) {
+                        //   this.players[plyr.number-1].popups.push(
+                        //     {
+                        //       state: false,
+                        //       count: 0,
+                        //       limit:25,
+                        //       type: '',
+                        //       position: '',
+                        //       msg: 'alarmed',
+                        //       img: '',
+                        //
+                        //     }
+                        //   )
+                        // }
+
+                        if (!this.players[plyr.number-1].popups.find(x=>x.msg.split("_")[0] === "hpDown")) {
+                          this.players[plyr.number-1].popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit: 30,
+                              type: '',
+                              position: '',
+                              msg: 'hpDown_'+'-'+2+'',
+                              img: '',
+
+                            }
+                          )
+                        }
+
+                      }
+                      else if (singleHit === 1) {
+                        console.log('bolt single hit attack');
+                        this.players[plyr.number-1].hp = this.players[plyr.number-1].hp - 1;
+                        this.attackedCancel(this.players[plyr.number-1]);
+
+                        // if (!this.players[plyr.number-1].popups.find(x=>x.msg === 'alarmed')) {
+                        //   this.players[plyr.number-1].popups.push(
+                        //     {
+                        //       state: false,
+                        //       count: 0,
+                        //       limit:25,
+                        //       type: '',
+                        //       position: '',
+                        //       msg: 'alarmed',
+                        //       img: '',
+                        //
+                        //     }
+                        //   )
+                        // }
+                        if (!this.players[plyr.number-1].popups.find(x=>x.msg.split("_")[0] === "hpDown")) {
+                          this.players[plyr.number-1].popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit: 30,
+                              type: '',
+                              position: '',
+                              msg: 'hpDown_'+'-'+1+'',
+                              img: '',
+
+                            }
+                          )
+                        }
+
+                      }
+                      else if (doubleHit !== 1 && singleHit !== 1) {
+                        console.log('bolt attack but no damage');
+                        miss = true;
+                        this.players[bolt.owner-1].statusDisplay = {
+                          state: true,
+                          status: 'attack missed!',
+                          count: 1,
+                          limit: this.players[bolt.owner-1].statusDisplay.limit,
+                        }
+                      }
+
+                      if (this.players[plyr.number-1].hp === 1) {
+                        this.players[plyr.number-1].speed.move = .05;
+                      }
+
+                      if (this.players[plyr.number-1].hp <= 0) {
+                        this.killPlayer(this.players[plyr.number-1]);
+
+                        let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+                        this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+                        this.players[bolt.owner-1].points++;
+                        this.pointChecker(this.players[bolt.owner-1])
+
+                      }
+                      else if (miss !== true) {
+                        this.players[plyr.number-1].action = 'deflected';
+
+                        this.players[plyr.number-1].defending = {
+                          state: false,
+                          count: 0,
+                          limit: this.players[plyr.number-1].defending.limit,
+                        }
+                        this.players[plyr.number-1].attacking = {
+                          state: false,
+                          count: 0,
+                          limit: this.players[plyr.number-1].attacking.limit,
+                        }
+
+                        this.players[plyr.number-1].success.deflected = {
+                          state: true,
+                          count: 1,
+                          limit: this.deflectedLengthRef.attacked,
+                          predeflect: this.players[plyr.number-1].success.deflected.predeflect,
+                          type: 'attacked',
+                        };
+
+
+                        if (this.aiDeflectedCheck.includes(this.players[plyr.number-1].number) !== true) {
+                          this.aiDeflectedCheck.push(this.players[plyr.number-1].number)
+                        }
+
+
+                      }
+
+
+                    }
+
+
+                    // ATTACK DEFENDED!!
+                    else {
+
+
+                      // CAN'T DEFLECT BOLT UNARMED
+                      if (this.players[plyr.number-1].currentWeapon.name === "") {
+                        console.log('cant deflect bolt unarmed');
+                        let backAttack = false;
+                        if (this.players[plyr.number-1].direction === bolt.direction) {
+                          console.log('back attack');
+                          backAttack = true;
+                        }
+
+                        this.players[bolt.owner-1].success.attackSuccess = {
+                          state: true,
+                          count: 1,
+                          limit: this.players[bolt.owner-1].success.attackSuccess.limit
+                        }
+
+                        // CALCULATE ATTACKER DOUBLE HIT!
+                        let doubleHitChance = this.players[bolt.owner-1].crits.doubleHit;
+                        let singleHitChance = this.players[bolt.owner-1].crits.singleHit;
+                        if (backAttack === true) {
+                          if (doubleHitChance > 2) {
+                            let diff = doubleHitChance - 2;
+                            doubleHitChance = doubleHitChance - diff;
+                          }
+                        }
+
+                        if (this.players[plyr.number-1].currentArmor.name !== '') {
+                          // console.log('opponent armour found');
+                          switch(this.players[plyr.number-1].currentArmor.effect) {
+                            case 'dblhit-5' :
+                              doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+5;
+                            break;
+                            case 'dblhit-10' :
+                              doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+10;
+                            break;
+                            case 'dblhit-15' :
+                              doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+15;
+                            break;
+                            // case 'dblhit-30' :
+                            //   doubleHitChance = this.players[bolt.owner-1].crits.doubleHit+30;
+                            // break;
+                            case 'snghit-5' :
+                              singleHitChance = this.players[bolt.owner-1].crits.singleHit+5;
+                            break;
+                            case 'snghit-10' :
+                              singleHitChance = this.players[bolt.owner-1].crits.singleHit+10;
+                            break;
+                          }
+                        }
+
+                        let doubleHit = this.rnJesus(1,doubleHitChance);
+                        let singleHit = this.rnJesus(1,singleHitChance);
+
+                        let miss;
+                        if (doubleHit === 1) {
+                          console.log('bolt double hit attack');
+                          this.players[plyr.number-1].hp = this.players[plyr.number-1].hp - 2;
+                          this.attackedCancel(this.players[plyr.number-1]);
+
+                          if (!this.players[plyr.number-1].popups.find(x=>x.msg === 'alarmed')) {
+                            this.players[plyr.number-1].popups.push(
+                              {
+                                state: false,
+                                count: 0,
+                                limit:25,
+                                type: '',
+                                position: '',
+                                msg: 'alarmed',
+                                img: '',
+
+                              }
+                            )
+                          }
+
+                        }
+                        else if (singleHit === 1) {
+                          console.log('bolt single hit attack');
+                          this.players[plyr.number-1].hp = this.players[plyr.number-1].hp - 1;
+                          this.attackedCancel(this.players[plyr.number-1]);
+
+                          if (!this.players[plyr.number-1].popups.find(x=>x.msg === 'alarmed')) {
+                            this.players[plyr.number-1].popups.push(
+                              {
+                                state: false,
+                                count: 0,
+                                limit:25,
+                                type: '',
+                                position: '',
+                                msg: 'alarmed',
+                                img: '',
+
+                              }
+                            )
+                          }
+
+                        }
+                        else if (doubleHit !== 1 && singleHit !== 1) {
+                          console.log('bolt attack but no damage');
+                          miss = true;
+                          this.players[bolt.owner-1].statusDisplay = {
+                            state: true,
+                            status: 'attack missed!',
+                            count: 1,
+                            limit: this.players[bolt.owner-1].statusDisplay.limit,
+                          }
+                        }
+
+                        if (this.players[plyr.number-1].hp === 1) {
+                          this.players[plyr.number-1].speed.move = .05;
+                        }
+
+                        if (this.players[plyr.number-1].hp <= 0) {
+                          this.killPlayer(this.players[plyr.number-1]);
+
+                          let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+                          this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+                          this.players[bolt.owner-1].points++;
+                          this.pointChecker(this.players[bolt.owner-1])
+
+                        }
+                        else if (miss !== true) {
+                          this.players[plyr.number-1].action = 'deflected';
+
+                          this.players[plyr.number-1].defending = {
+                            state: false,
+                            count: 0,
+                            limit: this.players[plyr.number-1].defending.limit,
+                          }
+                          this.players[plyr.number-1].attacking = {
+                            state: false,
+                            count: 0,
+                            limit: this.players[plyr.number-1].attacking.limit,
+                          }
+
+                          this.players[plyr.number-1].success.deflected = {
+                            state: true,
+                            count: 1,
+                            limit: this.deflectedLengthRef.attacked,
+                            predeflect: this.players[plyr.number-1].success.deflected.predeflect,
+                            type: 'attacked',
+                          };
+
+
+                          if (this.aiDeflectedCheck.includes(this.players[plyr.number-1].number) !== true) {
+                            this.aiDeflectedCheck.push(this.players[plyr.number-1].number)
+                          }
+
+
+                        }
+                      }
+                      // BLOCKED BOLT
+                      else {
+                        console.log('bullet blocked');
+
+
+                        this.players[plyr.number-1].success.defendSuccess = {
+                          state: true,
+                          count: 1,
+                          limit: this.players[plyr.number-1].success.defendSuccess.limit
+                        }
+
+                        if (!plyr.popups.find(x=> x.msg === "defendSuccess")) {
+                          plyr.popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit: 30,
+                              type: '',
+                              position: '',
+                              msg: 'defendSuccess',
+                              img: '',
+
+                            }
+                          )
+                        }
+                        if (!plyr.popups.find(x=> x.msg === 'boltDefend2')) {
+                          plyr.popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit: 30,
+                              type: '',
+                              position: '',
+                              msg: 'boltDefend2',
+                              img: '',
+
+                            }
+                          )
+                        }
+
+
+
+                        // GUARD BREAK!
+                        // let deflectDefender = this.rnJesus(1,3);
+                        let deflectDefender = 0;
+
+                        // PEAK DEFEND/PARRY!!
+                        if (this.players[plyr.number-1].peakDefend === true || plyr.defending.count === defendPeak) {
+                          console.log('peak bolt defend/parry');
+                          deflectDefender = 0;
+
+
+                          this.players[plyr.number-1].statusDisplay = {
+                            state: true,
+                            status: 'Parry!',
+                            count: 1,
+                            limit: this.players[player.number-1].statusDisplay.limit,
+                          }
+
+                          this.players[plyr.number-1].popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit: 25,
+                              type: '',
+                              position: '',
+                              msg: 'attackParried',
+                              img: '',
+
+                            }
+                          )
+                        }
+
+                        // OFF PEAK DEFEND
+                        else {
+                          console.log('off peak bolt defend');
+                          deflectDefender = this.rnJesus(1,this.players[plyr.number-1].crits.guardBreak);
+
+                          this.players[plyr.number-1].statusDisplay = {
+                            state: true,
+                            status: 'Defend',
+                            count: 1,
+                            limit: this.players[player.number-1].statusDisplay.limit,
+                          }
+
+                          this.players[plyr.number-1].popups.push(
+                            {
+                              state: false,
+                              count: 0,
+                              limit: 25,
+                              type: '',
+                              position: '',
+                              msg: 'attackDefended',
+                              img: '',
+
+                            }
+                          )
+                        }
+
+
+                        if (deflectDefender === 1) {
+                          this.players[plyr.number-1].breakAnim.defend = {
+                            state: true,
+                            count: 1,
+                            limit: player.breakAnim.defend.limit,
+                          };
+                          this.players[plyr.number-1].success.deflected = {
+                            state: true,
+                            count: 1,
+                            limit: this.deflectedLengthRef.defended,
+                            predeflect: this.players[plyr.number-1].success.deflected.predeflect,
+                            type: 'defended',
+                          };
+
+
+                          if (this.aiDeflectedCheck.includes(this.players[plyr.number-1].number) !== true) {
+                            this.aiDeflectedCheck.push(this.players[plyr.number-1].number)
+                          }
+
+
+                        }
+                      }
+
+
+                    }
+
+                    if (dodged !== true) {
+                        bolt.kill = true;
+                    }
+
+
+                  }
+                }
+
+
+                // CHECK FOR OBSTACLE &  REAR BARRIER COLLISION
+
+                if (infoCell.obstacle.state === true && infoCell.obstacle.height >= 1) {
+
+                  this.attackCellContents('bolt',this.players[bolt.owner-1],infoCell,undefined,undefined,bolt)
+
+                  // bolt.kill = true;
+                }
+
+                else if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
+
+                  this.attackCellContents('bolt',this.players[bolt.owner-1],infoCell,undefined,undefined,bolt)
+                  // bolt.kill = true;
+                }
+
+              }
+              else {
+
+                // HANDLE FWD BARRIER BOLT COLLISION
+                if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
+
+                  this.attackCellContents('bolt',this.players[bolt.owner-1],infoCell,undefined,undefined,bolt)
+
+                  // bolt.kill = true;
+                }
+
+              }
+
+            }
+
+
+            else {
+              if (infoCell.elevation.number < bolt.elevation) {
+                console.log('bolt moving over lower cell. ');
+
+                  this.attackCellContents('flyOverBolt',this.players[bolt.owner-1],infoCell,undefined,undefined,bolt)
+
+              }
+              if (infoCell.elevation.number > bolt.elevation) {
+                console.log('bolt hit cell of higher elevation.');
+                bolt.kill = true;
+              }
+            }
+
+
+          }
+        }
+
+        // BOLT WENT OUT OF CANVAS BOUNDS
+        if (
+          bolt.currentPosition.center.x < 0 ||
+          bolt.currentPosition.center.y < 0 ||
+          bolt.currentPosition.center.x > 1300 ||
+          bolt.currentPosition.center.y > 800
+        ) {
+          console.log('bolt went out of canvas bounds');
+          bolt.kill = true;
+        }
+
+      }
+
+      if (bolt.type === 'arc' && bolt.moving.state === true && bolt.kill !== true) {
+
+      }
+    }
+
+
+    // ADD COM PLAYER!
+    if (this.addAiPlayerKeyPress === true) {
+      // this.addAiRandomPlayer('random')
+      // this.addAiRandomPlayer('pursue')
+      // this.addAiRandomPlayer('patrol')
+      // this.addAiRandomPlayer('defend')
+      this.addAiPlayer()
+    }
+    if (this.addAiCount.state === true) {
+      if (this.addAiCount.count < this.addAiCount.limit) {
+        this.addAiCount.count++
+      }
+      if (this.addAiCount.count >= this.addAiCount.limit) {
+        this.addAiCount = {
+          state: false,
+          count: 0,
+          limit: this.addAiCount.limit,
+        }
+      }
+    }
+
+
+    // SYNC W/ GLOBAL PLAYER DATA
+    this.players[player.number-1] = player;
+
+
+    // AI EVALUATE
+    if (player.ai.state === true ) {
+      this.aiEvaluate(player)
+    }
+
+
+    // DRAW EVERYTHING
+    this.drawPlayerStep(player.number, canvas, context, canvas2, context2);
+
+
+  }
+  drawPlayerStep = (playerNumber, canvas, context, canvas2, context2) => {
+    // console.log('drawing player step',playerNumber);
+
+    let gridInfo = [];
+    class Point {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    let wall = this.refs.wall;
+    let wall2 = this.refs.wall2;
+    let wall3 = this.refs.wall3;
+
+    canvas.width = this.canvasWidth;
+    canvas.height = this.canvasHeight;
+
+
+    let floorImageWidth = this.floorImageWidth;
+    let floorImageHeight = this.floorImageHeight;
+    let wallImageWidth = this.wallImageWidth;
+    let wallImageHeight = this.wallImageHeight;
+    let sceneX = (this.canvasWidth/2);
+    let sceneY = this.sceneY;
+    let tileWidth = this.tileWidth;
+
+
+    gridInfo = this.gridInfo;
+
+    let player = this.players[playerNumber-1]
+
+    let updatedPlayerImg;
+    let newDirection;
+
+    if (player.falling.state === true) {
+      // console.log('player',player.number,'falling count',player.falling.count,'position',player.nextPosition);
+      if (player.falling.count === player.falling.limit) {
+        this.killPlayer(player)
+      }
+    }
+
+    context.clearRect(0,0,this.canvasWidth,this.canvasHeight);
+    context2.clearRect(0,0,this.canvasWidth,this.canvasHeight);
+
+    context.translate(this.camera.zoomFocusPan.x,this.camera.zoomFocusPan.y);
+    context2.translate(this.camera.zoomFocusPan.x,this.camera.zoomFocusPan.y);
+
+    context.scale(this.camera.zoom.x,this.camera.zoom.y);
+    context2.scale(this.camera.zoom.x,this.camera.zoom.y);
+
+
+    for (var x = 0; x < this.gridWidth+1; x++) {
+      for (var y = 0; y < this.gridWidth+1; y++) {
+
+
+        let p = new Point();
+        p.x = x * tileWidth;
+        p.y = y * tileWidth;
+        let iso = this.cartesianToIsometric(p);
+        let offset = {x: floorImageWidth/2, y: floorImageHeight}
+        iso.x += sceneX
+        iso.y += sceneY
+        let center = {
+          x: iso.x - offset.x/2+23,
+          y: iso.y - offset.y/2-2,
+        }
+
+        let floor;
+        let drawFloor = true;
+        let gridInfoCell = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
+        gridInfoCell.center = center;
+        gridInfoCell.drawCenter = center;
+        floor = this.floorImgs[gridInfoCell.terrain.name]
+
+
+        // VOID
+        // FLOOR
+        if (gridInfoCell.void.state === true) {
+          // drawFloor = false;
+          floor = this.floorImgs.void3
+        }
+        //BLINKER!!
+        if (
+          this.cellToVoid.state === true &&
+          this.cellToVoid.x === x &&
+          this.cellToVoid.y === y
+        ) {
+          if (this.cellToVoid.count === 1) {
+            if (!this.cellPopups.find(x => x.msg === "cellVoiding" && x.cell.number.x === gridInfoCell.number.x && x.cell.number.y === gridInfoCell.number.y)) {
+              this.cellPopups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 35,
+                  type: '',
+                  position: '',
+                  msg: 'cellVoiding',
+                  color: '',
+                  img: '',
+                  cell: this.gridInfo.find(x => x.number.x === gridInfoCell.number.x && x.number.y === gridInfoCell.number.y)
+                }
+              )
+            }
+          }
+          if(this.cellToVoid.count % 5 === 0) {
+            floor = this.floorImgs.void3;
+            // drawFloor = false;
+          } else {
+            floor = this.floorImgs.void2;
+            // drawFloor = true;
+          }
+        }
+
+        // DROWNING
+        for (const plyrb of this.players) {
+          if (plyrb.drowning === true) {
+            if (
+              plyrb.currentPosition.cell.number.x === x &&
+              plyrb.currentPosition.cell.number.y === y
+            ) {
+              // console.log('player',plyrb.number,'drowning count',plyrb.falling.count,'position',plyrb.nextPosition);
+              if(plyrb.falling.count % 2 === 0) {
+                // drawFloor = false;
+                floor = this.floorImgs.void3;
+              } else {
+                // floor = floorImgs.stone
+                floor = this.floorImgs[gridInfoCell.terrain.name]
+              }
+            }
+          }
+        }
+
+        // FALLING OBSTACLE DEEP BLINKER
+        if (gridInfoCell.obstacle.state === true && gridInfoCell.obstacle.moving.falling.state === true && gridInfoCell.terrain.type === "deep") {
+          if(gridInfoCell.obstacle.moving.falling.count % 3 === 0) {
+            floor = this.floorImgs.void3;
+          } else {
+            floor = this.floorImgs[gridInfoCell.terrain.name]
+          }
+        }
+
+
+        // CELLS UNDER ATTACK & PREATTACK!!
+        if (this.cellsUnderAttack.length > 0) {
+          for (const cll of this.cellsUnderAttack) {
+            if (
+              cll.number.x === x &&
+              cll.number.y === y
+            ) {
+              floor = this.refs.floorAttack;
+            }
+          }
+        }
+        if (this.cellsUnderPreAttack.length > 0) {
+          for (const cll2 of this.cellsUnderPreAttack) {
+            if (
+              cll2.number.x === x &&
+              cll2.number.y === y
+            ) {
+              floor = this.refs.floorAttack2;
+            }
+          }
+        }
+        // CELLS TO HIGHLIGHT
+        if (this.cellsToHighlight.length > 0) {
+          for (const cll2 of this.cellsToHighlight) {
+            if (
+              cll2.x === x &&
+              cll2.y === y
+            ) {
+              floor = this.refs.floorVoid;
+            }
+          }
+        }
+        // CELLS TO HIGHLIGHT V2!!
+        if (this.cellsToHighlight2.length > 0) {
+
+          for (const cll3 of this.cellsToHighlight2) {
+            if (
+              cll3.number.x === x &&
+              cll3.number.y === y
+            ) {
+              floor = this.refs.floorHighlight;
+            }
+          }
+        }
+
+
+        // FLOOR
+        if (drawFloor === true) {
+          context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
+        }
+
+        // RUBBLE
+        if (gridInfoCell.rubble === true) {
+          context.drawImage(this.floorImgs.rubble, iso.x - offset.x, iso.y - offset.y);
+        }
+
+
+        // CELL COORD LABEL
+        context.fillStyle = 'black';
+        context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12)
+        context.fillStyle = "black";
+        context.fillRect(center.x, center.y,5,5);
+
+
+        // CELL VERTEX POINTS
+        let vertices = [
+          {x:center.x, y:center.y+tileWidth/2},
+          {x:center.x+tileWidth, y:center.y},
+          {x:center.x, y:center.y-tileWidth/2},
+          {x:center.x-tileWidth, y:center.y},
+        ];
+        for (const vertex of vertices) {
+          context.fillStyle = "yellow";
+          context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
+
+        }
+        gridInfoCell.vertices = vertices;
+
+
+        // TARGET HIGHLIGHT!!
+        let floorHighlight;
+        for (const plyr3 of this.players) {
+          if (
+            x === plyr3.target.cell1.number.x &&
+            y === plyr3.target.cell1.number.y
+          ) {
+            if (plyr3.ai.state !== true && plyr3.dead.state !== true && plyr3.falling.state !== true && plyr3.drowning !== true) {
+              switch(plyr3.number) {
+                case 1:
+                  floorHighlight = 'purple';
+                break;
+                case 2:
+                  floorHighlight = 'red';
+                break;
+              }
+            }
+            if (plyr3.ai.state === true && plyr3.dead.state !== true && plyr3.falling.state !== true && plyr3.drowning !== true) {
+              floorHighlight = 'brown';
+            }
+            if (plyr3.dead.state !== true) {
+              context.lineWidth = 5;
+              context.beginPath();
+              for (const vertex of vertices) {
+                context.strokeStyle = floorHighlight;
+
+                context.lineTo(vertex.x, vertex.y);
+              }
+              context.closePath();
+              context.stroke();
+            }
+          }
+        }
+
+        // MOUSED OVER CELL
+        if (this.mouseOverCell.state === true && x === this.mouseOverCell.cell.number.x && y === this.mouseOverCell.cell.number.y) {
+          context.lineWidth = 5;
+          context.beginPath();
+          for (const vertex of vertices) {
+            context.strokeStyle = 'orange';
+            context.lineTo(vertex.x, vertex.y);
+          }
+          context.closePath();
+          context.stroke();
+        }
+
+
+        // IN GAME ITEM PLACEMENT!!
+        if (gridInfoCell.item.name !== '' && gridInfoCell.void.state !== true) {
+
+          let hide = false;
+          if (this.obstacleItemsToDrop.length > 0) {
+            for(const cell of this.obstacleItemsToDrop) {
+              if (gridInfoCell.number.x === cell.target.x && gridInfoCell.number.y === cell.target.y && gridInfoCell.item.name === cell.item.name) {
+                hide = true;
+              }
+            }
+          }
+
+
+          if (hide !== true) {
+
+            let itemImg;
+            let fillClr;
+            if (gridInfoCell.item.type === 'item') {
+              switch(gridInfoCell.item.name) {
+                case 'moveSpeedUp' :
+                  fillClr = "purple";
+                  itemImg = this.itemImgs[gridInfoCell.item.name];
+                break;
+                case 'moveSpeedDown' :
+                  fillClr = "blue";
+                  itemImg = this.itemImgs[gridInfoCell.item.name];
+                break;
+                case 'hpUp' :
+                  fillClr = "yellow";
+                  itemImg = this.itemImgs[gridInfoCell.item.name];
+                break;
+                case 'hpDown' :
+                  fillClr = "brown";
+                  itemImg = this.itemImgs[gridInfoCell.item.name];
+                break;
+                case 'focusUp' :
+                  fillClr = "white";
+                  itemImg = this.itemImgs[gridInfoCell.item.name];
+                break;
+                case 'focusDown' :
+                  fillClr = "black";
+                  itemImg = this.itemImgs[gridInfoCell.item.name];
+                break;
+                case 'strengthUp' :
+                  fillClr = "green";
+                  itemImg = this.itemImgs[gridInfoCell.item.name];
+                break;
+                case 'strengthDown' :
+                  fillClr = "red";
+                  itemImg = this.itemImgs[gridInfoCell.item.name];
+                break;
+                case 'ammo5' :
+                  fillClr = "#283618";
+                  itemImg = this.itemImgs[gridInfoCell.item.name];
+                break;
+                case 'ammo10' :
+                  fillClr = "#283618";
+                  itemImg = this.itemImgs[gridInfoCell.item.name];
+                break;
+              }
+            }
+            else if (gridInfoCell.item.type === 'weapon') {
+              switch(gridInfoCell.item.subType) {
+                case 'sword' :
+                  fillClr = "orange";
+                  itemImg = this.itemImgs[gridInfoCell.item.subType];
+                break;
+                case 'spear' :
+                  fillClr = "maroon";
+                  itemImg = this.itemImgs[gridInfoCell.item.subType];
+                break;
+                case 'crossbow' :
+                  fillClr = "navy";
+                  itemImg = this.itemImgs[gridInfoCell.item.subType];
+                break;
+              }
+            }
+            else if (gridInfoCell.item.type === 'armor') {
+              switch(gridInfoCell.item.subType) {
+                case 'helmet' :
+                  fillClr = "grey";
+                  itemImg = this.itemImgs[gridInfoCell.item.subType];
+                break;
+                case 'mail' :
+                  fillClr = "olive";
+                  itemImg = this.itemImgs[gridInfoCell.item.subType];
+                break;
+                case 'greaves' :
+                  fillClr = "#b5179e";
+                  itemImg = this.itemImgs[gridInfoCell.item.subType];
+                break;
+              }
+            }
+
+            context.drawImage(itemImg, center.x-15, center.y-15);
+
+            // context.fillStyle = fillClr;
+            // context.beginPath();
+            // context.arc(center.x, center.y, 10, 0, 2 * Math.PI);
+            // context.fill();
+
+          }
+
+
+        }
+
+
+        //POPUPS
+        // CELL HIGHLIGHT
+        for(const popup of this.cellPopups) {
+          if (popup.state === true && x === popup.cell.number.x && y === popup.cell.number.y) {
+            context.lineWidth = 5;
+            context.beginPath();
+            for (const vertex of vertices) {
+              context.strokeStyle = popup.color;
+              context.lineTo(vertex.x, vertex.y);
+            }
+            context.closePath();
+            context.stroke();
+          }
+        }
+        // CELL POPUPS
+        if (x === this.gridWidth && y === this.gridWidth) {
+          // console.log(this.refs.pickupAmmo);
+
+
+          let drawBubble = (ctx,x,y,w,h,radius,px,py,color) => {
+
+             var r = x + w;
+             var b = y + h;
+             if(py<y || py>y+h){
+              var con1 = Math.min(Math.max(x+radius,px-10),r-radius-20);
+              var con2 = Math.min(Math.max(x+radius+20,px+10),r-radius);
+             }
+             else{
+              var con1 = Math.min(Math.max(y+radius,py-10),b-radius-20);
+              var con2 = Math.min(Math.max(y+radius+20,py+10),b-radius);
+             }
+             var dir;
+             if(py < y) dir = 2;
+             if(py > y) dir = 3;
+             if(px < x && py>=y && py<=b) dir = 0;
+             if(px > x && py>=y && py<=b) dir = 1;
+             if(px >= x && px <= r && py >= y && py <= b) dir = -1;
+             ctx.clearRect(x,y,this.popupSize,this.popupSize);
+             ctx.beginPath();
+             ctx.strokeStyle=color;
+             ctx.lineWidth="1";
+             ctx.moveTo(x+radius,y);
+             if(dir==2){
+              ctx.lineTo(con1,y);
+              ctx.lineTo(px,py);
+              ctx.lineTo(con2,y);
+              ctx.lineTo(r-radius,y);
+             }
+             else ctx.lineTo(r-radius,y);
+             ctx.quadraticCurveTo(r,y,r,y+radius);
+             if(dir==1){
+              ctx.lineTo(r,con1);
+              ctx.lineTo(px,py);
+              ctx.lineTo(r,con2);
+              ctx.lineTo(r,b-radius);
+             }
+             else ctx.lineTo(r,b-radius);
+             ctx.quadraticCurveTo(r, b, r-radius, b);
+             if(dir==3){
+              ctx.lineTo(con2,b);
+              ctx.lineTo(px,py);
+              ctx.lineTo(con1,b);
+              ctx.lineTo(x+radius,b);
+             }
+             else ctx.lineTo(x+radius,b);
+             ctx.quadraticCurveTo(x, b, x, b-radius);
+             if(dir==0){
+              ctx.lineTo(x,con2);
+              ctx.lineTo(px,py);
+              ctx.lineTo(x,con1);
+              ctx.lineTo(x,y+radius);
+             }
+             else ctx.lineTo(x,y+radius);
+             ctx.quadraticCurveTo(x, y, x+radius, y);
+             context.fillStyle = 'white';
+             ctx.fill();
+             ctx.stroke();
+             // ctx.globalCompositeOperation = "source-over";
+             ctx.closePath();
+          }
+
+          for (const popup of this.cellPopups) {
+
+            let popupBorderColor = 'black';
+            if (popup.state === true) {
+              // console.log('drawing a popup');
+              let popupDrawCoords;
+              if (popup.position === '' || !popup.position) {
+                let currentPopups = this.cellPopups.filter(x=>x.state === true);
+                let currentPopupsThisCell = this.cellPopups.filter(x=>x.state === true && x.cell.number.x === popup.cell.number.x && x.cell.number.y === popup.cell.number.y);
+                let positions = ['north','east','south','west','northEast','northWest','southEast','southWest'];
+
+
+                if (popup.color === '') {
+                    popup.color = this.cellColorRef.find(x => x.x === popup.cell.number.x && x.y === popup.cell.number.y).color;
+                }
+
+
+                // REMOVE POSITIONS OF POPUPS ALREADY DRAWN FOR THIS CELL
+                for (const popup2 of currentPopupsThisCell) {
+                  if (popup2.position && popup2.position !== '') {
+
+                    let indx = positions.indexOf(popup2.position);
+                    positions.splice(indx,1)
+                  }
+
+                }
+
+                let dir = undefined;
+                let dirs = [];
+
+                for (const plyr2 of this.players) {
+                  if (plyr2.ai.state !== true) {
+                    let myPos = popup.cell.number;
+                    let invalidPos = this.players[plyr2.number-1].currentPosition.cell.number;
+                    // let invalidPositions = [invalidPos];
+
+                    // GET DIRECTION OF PLAYER CELL RELATIVE TO ME
+                    if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
+                      dir = 'north';
+                    }
+                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y-1) {
+                      dir = 'northWest';
+                    }
+                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y) {
+                      dir = 'west';
+                    }
+                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y+1) {
+                      dir = 'southWest';
+                    }
+                    if (invalidPos.x === myPos.x && invalidPos.y === myPos.y+1) {
+                      dir = 'south';
+                    }
+                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y+1) {
+                      dir = 'southEast';
+                    }
+                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y) {
+                      dir = 'east';
+                    }
+                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y-1) {
+                      dir = 'northEast';
+                    }
+                    if (dir && positions.includes(dir) === true) {
+                      positions.splice(positions.indexOf(dir),1);
+                      // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                    }
+
+
+                    // GET DIRECTION THAT ALL OTHER PLAYER'S POPUPS OCCUPY, RELATIVE TO ME
+                    for(const pop of plyr2.popups) {
+
+                      dir = undefined;
+
+                      if (pop.state === true) {
+
+                        let invalidPos2 = {
+                          x: undefined,
+                          y: undefined,
+                        }
+
+                        switch (pop.position) {
+                          case 'north':
+                            invalidPos2 = {
+                              x: invalidPos.x,
+                              y: invalidPos.y-1,
+                            }
+                            break;
+                          case 'northEast':
+                            invalidPos2 = {
+                              x: invalidPos.x+1,
+                              y: invalidPos.y-1,
+                            }
+                            break;
+                          case 'northWest':
+                            invalidPos2 = {
+                              x: invalidPos.x-1,
+                              y: invalidPos.y-1,
+                            }
+                            break;
+                          case 'south':
+                            invalidPos2 = {
+                              x: invalidPos.x,
+                              y: invalidPos.y+1,
+                            }
+                            break;
+                          case 'southEast':
+                            invalidPos2 = {
+                              x: invalidPos.x+1,
+                              y: invalidPos.y+1,
+                            }
+                            break;
+                          case 'southWest':
+                            invalidPos2 = {
+                              x: invalidPos.x-1,
+                              y: invalidPos.y+1,
+                            }
+                            break;
+                          case 'east':
+                            invalidPos2 = {
+                              x: invalidPos.x-1,
+                              y: invalidPos.y,
+                            }
+                            break;
+                          case 'west':
+                            invalidPos2 = {
+                              x: invalidPos.x+1,
+                              y: invalidPos.y,
+                            }
+                            break;
+                          default:
+
+                        }
+
+                        // let dir = undefined;
+
+                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
+                          dir = 'north';
+                        }
+                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
+                          dir = 'northWest';
+                        }
+                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
+                          dir = 'west';
+                        }
+                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
+                          dir = 'southWest';
+                        }
+                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
+                          dir = 'south';
+                        }
+                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
+                          dir = 'southEast';
+                        }
+                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
+                          dir = 'east';
+                        }
+                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
+                          dir = 'northEast';
+                        }
+                        if (dir && positions.includes(dir) === true) {
+                          positions.splice(positions.indexOf(dir),1);
+                          // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                        }
+
+                      }
+
+                    }
+
+
+                  }
+                }
+
+                // GET DIRECTION OF CELLS THAT AREN'T THIS CELL'S POPUPS' POPUPS CELLS RELATIVE TO ME
+                for (const popup2 of currentPopups) {
+
+                  dir = undefined;
+
+
+                  if (
+                    popup.cell.number.x !== popup2.cell.number.x &&
+                    popup.cell.number.y !== popup2.cell.number.y &&
+                    popup2.msg !== popup.msg &&
+                    popup2.state === true
+                  ) {
+
+                    let myPos = popup.cell.number;
+                    let cellPos = popup2.cell.number;
+                    let invalidPos2 = {
+                      x: undefined,
+                      y: undefined,
+                    }
+
+                    switch (popup2.position) {
+                      case 'north':
+                        invalidPos2 = {
+                          x: cellPos.x,
+                          y: cellPos.y-1,
+                        }
+                        break;
+                      case 'northEast':
+                        invalidPos2 = {
+                          x: cellPos.x+1,
+                          y: cellPos.y-1,
+                        }
+                        break;
+                      case 'northWest':
+                        invalidPos2 = {
+                          x: cellPos.x-1,
+                          y: cellPos.y-1,
+                        }
+                        break;
+                      case 'south':
+                        invalidPos2 = {
+                          x: cellPos.x,
+                          y: cellPos.y+1,
+                        }
+                        break;
+                      case 'southEast':
+                        invalidPos2 = {
+                          x: cellPos.x+1,
+                          y: cellPos.y+1,
+                        }
+                        break;
+                      case 'southWest':
+                        invalidPos2 = {
+                          x: cellPos.x-1,
+                          y: cellPos.y+1,
+                        }
+                        break;
+                      case 'east':
+                        invalidPos2 = {
+                          x: cellPos.x-1,
+                          y: cellPos.y,
+                        }
+                        break;
+                      case 'west':
+                        invalidPos2 = {
+                          x: cellPos.x+1,
+                          y: cellPos.y,
+                        }
+                        break;
+                      default:
+
+                    }
+
+                    if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
+                      dir = 'north';
+                    }
+                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
+                      dir = 'northWest';
+                    }
+                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
+                      dir = 'west';
+                    }
+                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
+                      dir = 'southWest';
+                    }
+                    if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
+                      dir = 'south';
+                    }
+                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
+                      dir = 'southEast';
+                    }
+                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
+                      dir = 'east';
+                    }
+                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
+                      dir = 'northEast';
+                    }
+                    if (dir && positions.includes(dir) === true) {
+                      positions.splice(positions.indexOf(dir),1);
+                      // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                    }
+
+                  }
+
+                }
+
+                if (!positions[0]) {
+                  // console.log('no open positions for', popup.msg);
+                  popup.state = false;
+                  popup.count = 0;
+                } else {
+                  popup.position = positions[0];
+                }
+
+
+                popup.img = this.popupImageRef[popup.msg]
+
+                popupDrawCoords = this.popupDrawCalc(popup.position,{x:popup.cell.center.x-25,y:popup.cell.center.y-15},0);
+                // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
+                drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popup.color)
+                // context.fillStyle = 'black';
+                // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
+                // console.log('popup.msg',popup.msg,popup.img);
+                let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
+                context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
+
+
+
+              }
+              else {
+
+                let dir = undefined;
+                let dirs = [];
+
+
+                let currentPopupsNotThis = this.cellPopups.filter(x=>x.state === true && x.msg !== popup.msg && x.cell.number.x !== popup.cell.number.x && x.cell.number.y !== popup.cell.number.y);
+
+                for (const plyr2 of this.players) {
+                  if (plyr2.ai.state !== true) {
+                    let myPos = popup.cell.number;
+                    let invalidPos = this.players[plyr2.number-1].currentPosition.cell.number;
+
+
+                    // invalidpostions2 push plyr2 position
+                    // for player popups
+                    //   invalid cell = pop.cell.number + popup position mod, invalposits2 push invalidcell
+                    //
+
+
+                    if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
+                      dir = 'north';
+                    }
+                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y-1) {
+                      dir = 'northWest';
+                    }
+                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y) {
+                      dir = 'west';
+                    }
+                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y+1) {
+                      dir = 'southWest';
+                    }
+                    if (invalidPos.x === myPos.x && invalidPos.y === myPos.y+1) {
+                      dir = 'south';
+                    }
+                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y+1) {
+                      dir = 'southEast';
+                    }
+                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y) {
+                      dir = 'east';
+                    }
+                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y-1) {
+                      dir = 'northEast';
+                    }
+
+                    dirs.push(dir);
+
+
+                    for(const pop of plyr2.popups) {
+
+                      if (pop.state === true) {
+
+                        let invalidPos2 = {
+                          x: undefined,
+                          y: undefined,
+                        }
+
+                        switch (pop.position) {
+                          case 'north':
+                            invalidPos2 = {
+                              x: invalidPos.x,
+                              y: invalidPos.y-1,
+                            }
+                            break;
+                          case 'northEast':
+                            invalidPos2 = {
+                              x: invalidPos.x+1,
+                              y: invalidPos.y-1,
+                            }
+                            break;
+                          case 'northWest':
+                            invalidPos2 = {
+                              x: invalidPos.x-1,
+                              y: invalidPos.y-1,
+                            }
+                            break;
+                          case 'south':
+                            invalidPos2 = {
+                              x: invalidPos.x,
+                              y: invalidPos.y+1,
+                            }
+                            break;
+                          case 'southEast':
+                            invalidPos2 = {
+                              x: invalidPos.x+1,
+                              y: invalidPos.y+1,
+                            }
+                            break;
+                          case 'southWest':
+                            invalidPos2 = {
+                              x: invalidPos.x-1,
+                              y: invalidPos.y+1,
+                            }
+                            break;
+                          case 'east':
+                            invalidPos2 = {
+                              x: invalidPos.x-1,
+                              y: invalidPos.y,
+                            }
+                            break;
+                          case 'west':
+                            invalidPos2 = {
+                              x: invalidPos.x+1,
+                              y: invalidPos.y,
+                            }
+                            break;
+                          default:
+
+                        }
+
+
+                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
+                          dir = 'north';
+                        }
+                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
+                          dir = 'northWest';
+                        }
+                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
+                          dir = 'west';
+                        }
+                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
+                          dir = 'southWest';
+                        }
+                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
+                          dir = 'south';
+                        }
+                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
+                          dir = 'southEast';
+                        }
+                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
+                          dir = 'east';
+                        }
+                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
+                          dir = 'northEast';
+                        }
+                        // if (dir && positions.includes(dir) === true) {
+                        //   positions.splice(positions.indexOf(dir),1);
+                        //   // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                        // }
+                        dirs.push(dir);
+
+                      }
+
+                    }
+
+
+                  }
+                }
+
+                for (const popup2 of currentPopupsNotThis) {
+
+                  dir = undefined;
+
+                  if (popup2.msg !== popup.msg && popup2.state === true) {
+
+                    let myPos = popup.cell.number;
+
+                    let cellPos = popup2.cell.number;
+                    let invalidPos2 = {
+                      x: undefined,
+                      y: undefined,
+                    }
+
+
+                    switch (popup2.position) {
+                      case 'north':
+                        invalidPos2 = {
+                          x: cellPos.x,
+                          y: cellPos.y-1,
+                        }
+                        break;
+                      case 'northEast':
+                        invalidPos2 = {
+                          x: cellPos.x+1,
+                          y: cellPos.y-1,
+                        }
+                        break;
+                      case 'northWest':
+                        invalidPos2 = {
+                          x: cellPos.x-1,
+                          y: cellPos.y-1,
+                        }
+                        break;
+                      case 'south':
+                        invalidPos2 = {
+                          x: cellPos.x,
+                          y: cellPos.y+1,
+                        }
+                        break;
+                      case 'southEast':
+                        invalidPos2 = {
+                          x: cellPos.x+1,
+                          y: cellPos.y+1,
+                        }
+                        break;
+                      case 'southWest':
+                        invalidPos2 = {
+                          x: cellPos.x-1,
+                          y: cellPos.y+1,
+                        }
+                        break;
+                      case 'east':
+                        invalidPos2 = {
+                          x: cellPos.x-1,
+                          y: cellPos.y,
+                        }
+                        break;
+                      case 'west':
+                        invalidPos2 = {
+                          x: cellPos.x+1,
+                          y: cellPos.y,
+                        }
+                        break;
+                      default:
+
+                    }
+
+                    if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
+                      dir = 'north';
+                    }
+                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
+                      dir = 'northWest';
+                    }
+                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
+                      dir = 'west';
+                    }
+                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
+                      dir = 'southWest';
+                    }
+                    if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
+                      dir = 'south';
+                    }
+                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
+                      dir = 'southEast';
+                    }
+                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
+                      dir = 'east';
+                    }
+                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
+                      dir = 'northEast';
+                    }
+
+                    dirs.push(dir);
+
+                  }
+
+                }
+
+
+                // if (popup.position === dir ) {
+                if (dirs.find(x => x === popup.position) ) {
+                  // for (const pop of this.cellPopups) {
+                  //   pop.position = '';
+                  //   pop.state = false;
+                  // }
+                  this.cellPopups.find(x => x.msg === popup.msg && x.cell.number.x === popup.cell.number.x && x.cell.number.x === popup.cell.number.x).state = false;
+                  this.cellPopups.find(x => x.msg === popup.msg && x.cell.number.x === popup.cell.number.x && x.cell.number.x === popup.cell.number.x).position = '';
+                  // console.log('reconsidering...',popup.msg);
+                }
+                else {
+                  popup.img = this.popupImageRef[popup.msg]
+                  popupDrawCoords = this.popupDrawCalc(popup.position,{x:popup.cell.center.x-25,y:popup.cell.center.y-15},0);
+                  // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
+                  drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popup.color)
+                  // context.fillStyle = 'black';
+                  // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
+                  // console.log('popup.msg',popup.msg);
+                  let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
+                  context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
+
+                }
+
+
+              }
+            }
+          }
+
+        }
+
+
+
+        // DRAWN PLAYERS!!
+        function playerDrawLog (x,y,plyr) {
+          console.log('** playerDrawLog **');
+          console.log('-- player --',plyr.number);
+          console.log('-- strafing --',plyr.strafing.state);
+          console.log('-- turning --',plyr.turning.state);
+          console.log('-- currently drawing --',x,y);
+          console.log('-- current position --',plyr.currentPosition.cell.number.x,plyr.currentPosition.cell.number.y);
+          console.log('-- moving state --',plyr.moving.state);
+          console.log('-- moving step --',plyr.moving.step);
+          console.log('-- target --',plyr.target.cell1.number.x,plyr.target.cell1.number.y);
+          console.log('-- direction --',plyr.direction);
+          console.log('-- origin --',plyr.moving.origin.number.x,plyr.moving.origin.number.y);
+          console.log('-- action --',plyr.action);
+        }
+        for (const plyr of this.players) {
+
+          let point = {
+            x: plyr.nextPosition.x,
+            y: plyr.nextPosition.y,
+          };
+
+          let weapon = plyr.currentWeapon.type;
+          if (plyr.currentWeapon.type === '' || !plyr.currentWeapon.type) {
+            weapon = 'unarmed'
+          }
+
+          let finalAnimIndex;
+
+          if (plyr.attacking.state === true && plyr.success.deflected.state !== true) {
+            plyr.action = 'attacking'
+          }
+
+
+          // FOR TESTING BY CALLING ONLY @ 1 CELL
+          // if (
+          //   plyr.currentPosition.cell.number.x === x &&
+          //   plyr.currentPosition.cell.number.y === y
+          // ) {
+          //   switch(plyr.action) {
+          //     case 'moving':
+          //       let moveSpeed = plyr.speed.move;
+          //       if (plyr.terrainMoveSpeed.state === true) {
+          //         moveSpeed = plyr.terrainMoveSpeed.speed;
+          //       }
+          //       if (plyr.pushing.state === true) {
+          //         moveSpeed = plyr.pushing.moveSpeed;
+          //       }
+          //       if (plyr.pulling.state === true) {
+          //         moveSpeed = plyr.pulling.moveSpeed;
+          //       }
+          //       if (plyr.pushed.state === true) {
+          //         moveSpeed = plyr.pushed.moveSpeed;
+          //       }
+          //       if (plyr.pulled.state === true) {
+          //         moveSpeed = plyr.pulled.moveSpeed;
+          //       }
+          //       let rangeIndex = plyr.speed.range.indexOf(moveSpeed)
+          //       let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
+          //       finalAnimIndex = moveAnimIndex;
+          //       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+          //       if (plyr.target.void == true) {
+          //         // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+          //       }
+          //     break;
+          //     case 'jumping':
+          //       let rangeIndex4 = plyr.speed.range.indexOf(.1)
+          //       let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(plyr.moving.step)
+          //       finalAnimIndex = moveAnimIndex4;
+          //       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+          //     break;
+          //     case 'strafe moving':
+          //       if (plyr.pushBack.state === true ) {
+          //         let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
+          //         let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
+          //         finalAnimIndex = moveAnimIndex3;
+          //         // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+          //       } else {
+          //         let moveSpeed = plyr.speed.move;
+          //         // if (plyr.pushing.state === true) {
+          //         //   moveSpeed = plyr.pushing.moveSpeed;
+          //         // }
+          //         if (plyr.pulling.state === true) {
+          //           moveSpeed = plyr.pulling.moveSpeed;
+          //         }
+          //         if (plyr.pushed.state === true) {
+          //           moveSpeed = plyr.pushed.moveSpeed;
+          //         }
+          //         if (plyr.pulled.state === true) {
+          //           moveSpeed = plyr.pulled.moveSpeed;
+          //         }
+          //         let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed)
+          //         let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
+          //         finalAnimIndex = moveAnimIndex2;
+          //         // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+          //       }
+          //     break;
+          //     case 'flanking':
+          //       let rangeIndex6 = plyr.speed.range.indexOf(.2)
+          //       let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(plyr.moving.step)
+          //       finalAnimIndex = moveAnimIndex6;
+          //       // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
+          //       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+          //     break;
+          //     case 'attacking':
+          //       let animIndex = plyr.attacking.count -1;
+          //       finalAnimIndex = animIndex;
+          //       // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
+          //     break;
+          //     case 'defending':
+          //       if (plyr.defending.count > 0) {
+          //         let animIndex2 = plyr.defending.count -1;
+          //         finalAnimIndex = animIndex2;
+          //         // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
+          //       }
+          //       if (plyr.defending.count === 0) {
+          //         let animIndex2a = 4;
+          //         finalAnimIndex = animIndex2a;
+          //         console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
+          //       }
+          //     break;
+          //     case 'idle':
+          //       if (plyr.number === 1) {
+          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+          //       }
+          //       if (plyr.number === 2) {
+          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+          //       }
+          //       let animIndex3 = plyr.idleAnim.count+1;
+          //       finalAnimIndex = animIndex3;
+          //     break;
+          //     case 'falling':
+          //       let animIndex4 = plyr.falling.count -1;
+          //       finalAnimIndex = animIndex4;
+          //       // console.log('anim testing fall',plyr.falling.count,'final anim indx',finalAnimIndex,'plyr',plyr.number);
+          //     break;
+          //     case 'deflected':
+          //       let animIndex5 = plyr.success.deflected.count -1;
+          //       // let animIndex5;
+          //       if (plyr.success.deflected.count > 10 && plyr.success.deflected.count < 21) {
+          //         animIndex5 = (plyr.success.deflected.count-10);
+          //       }
+          //       if (plyr.success.deflected.count > 20 && plyr.success.deflected.count < 31) {
+          //         animIndex5 = (plyr.success.deflected.count-20);
+          //       }
+          //       if (plyr.success.deflected.count > 30 && plyr.success.deflected.count < 41) {
+          //         animIndex5 = (plyr.success.deflected.count-30);
+          //       }
+          //       if (plyr.success.deflected.count > 40 && plyr.success.deflected.count < 51) {
+          //         animIndex5 = (plyr.success.deflected.count-40);
+          //       }
+          //       finalAnimIndex = animIndex5;
+          //       // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
+          //     break;
+          //     case 'dodging':
+          //       let animIndex7 = plyr.dodging.count -1;
+          //       finalAnimIndex = animIndex7;
+          //       // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
+          //     break;
+          //   }
+          // }
+          // FOR TESTING BY CALLING ONLY @ 1 CELL
+
+
+          switch(plyr.action) {
+            case 'moving':
+              let moveSpeed = plyr.speed.move;
+              if (plyr.terrainMoveSpeed.state === true) {
+                moveSpeed = plyr.terrainMoveSpeed.speed;
+              }
+              if (plyr.pushing.state === true) {
+                moveSpeed = plyr.pushing.moveSpeed;
+              }
+              if (plyr.pulling.state === true) {
+                moveSpeed = plyr.pulling.moveSpeed;
+              }
+              if (plyr.pushed.state === true) {
+                moveSpeed = plyr.pushed.moveSpeed;
+              }
+              if (plyr.pulled.state === true) {
+                moveSpeed = plyr.pulled.moveSpeed;
+              }
+              let rangeIndex = plyr.speed.range.indexOf(moveSpeed)
+              let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
+              finalAnimIndex = moveAnimIndex;
+              // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+              if (plyr.target.void == true) {
+                // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+              }
+            break;
+            case 'jumping':
+              let rangeIndex4 = plyr.speed.range.indexOf(.1)
+              let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(plyr.moving.step)
+              finalAnimIndex = moveAnimIndex4;
+              // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+            break;
+            case 'strafe moving':
+              if (plyr.pushBack.state === true ) {
+                let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
+                let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
+                finalAnimIndex = moveAnimIndex3;
+                // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+              } else {
+                let moveSpeed = plyr.speed.move;
+                // if (plyr.pushing.state === true) {
+                //   moveSpeed = plyr.pushing.moveSpeed;
+                // }
+                if (plyr.pulling.state === true) {
+                  moveSpeed = plyr.pulling.moveSpeed;
+                }
+                if (plyr.pushed.state === true) {
+                  moveSpeed = plyr.pushed.moveSpeed;
+                }
+                if (plyr.pulled.state === true) {
+                  moveSpeed = plyr.pulled.moveSpeed;
+                }
+                let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed)
+                let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
+                finalAnimIndex = moveAnimIndex2;
+                // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+              }
+            break;
+            case 'flanking':
+              let rangeIndex6 = plyr.speed.range.indexOf(.2)
+              let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(plyr.moving.step)
+              finalAnimIndex = moveAnimIndex6;
+              // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
+              // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+            break;
+            case 'attacking':
+              let animIndex = plyr.attacking.count -1;
+              finalAnimIndex = animIndex;
+              // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
+            break;
+            case 'defending':
+              if (plyr.defending.count > 0) {
+                let animIndex2 = plyr.defending.count -1;
+                finalAnimIndex = animIndex2;
+                // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
+              }
+              if (plyr.defending.count === 0) {
+                let animIndex2a = 5;
+                finalAnimIndex = animIndex2a;
+                // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
+              }
+            break;
+            case 'idle':
+              if (plyr.number === 1) {
+                // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+              }
+              if (plyr.number === 2) {
+                // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+              }
+              let animIndex3 = plyr.idleAnim.count +1;
+              finalAnimIndex = animIndex3;
+            break;
+            case 'falling':
+              let animIndex4 = plyr.falling.count -1;
+              finalAnimIndex = animIndex4;
+              // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
+            break;
+            case 'deflected':
+              let animIndex5 = plyr.success.deflected.count -1;
+              // let animIndex5;
+              if (plyr.success.deflected.count > 10 && plyr.success.deflected.count < 21) {
+                animIndex5 = (plyr.success.deflected.count-10);
+              }
+              if (plyr.success.deflected.count > 20 && plyr.success.deflected.count < 31) {
+                animIndex5 = (plyr.success.deflected.count-20);
+              }
+              if (plyr.success.deflected.count > 30 && plyr.success.deflected.count < 41) {
+                animIndex5 = (plyr.success.deflected.count-30);
+              }
+              if (plyr.success.deflected.count > 40 && plyr.success.deflected.count < 51) {
+                animIndex5 = (plyr.success.deflected.count-40);
+              }
+              finalAnimIndex = animIndex5;
+              // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
+            break;
+            case 'dodging':
+              let animIndex7 = plyr.dodging.count -1;
+              finalAnimIndex = animIndex7;
+              // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
+            break;
+          }
+
+
+          // SPRITE SHEET CHAR AVATAR & ACTION SWITCH!
+          if (plyr.ai.state === false) {
+            switch(plyr.action) {
+              case 'idle':
+                updatedPlayerImg = this.playerImgs[plyr.number-1].idle[weapon];
+              break;
+              case 'moving':
+              if (plyr.pushing.state === true) {
+                updatedPlayerImg = this.playerImgs[plyr.number-1].pushing[weapon];
+              }
+              if (plyr.pulled.state === true) {
+                updatedPlayerImg = this.playerImgs[plyr.number-1].pulled[weapon];
+              }
+              if (plyr.pushed.state === true) {
+                updatedPlayerImg = this.playerImgs[plyr.number-1].pushed[weapon];
+              }
+              else {
+                updatedPlayerImg = this.playerImgs[plyr.number-1].walking[weapon];
+              }
+
+              break;
+              case 'jumping':
+                updatedPlayerImg = this.playerImgs[plyr.number-1].jumping[weapon];
+              break;
+              case 'flanking':
+                updatedPlayerImg = this.playerImgs[plyr.number-1].flanking[weapon];
+              break;
+              case 'strafe moving':
+                if (plyr.pushBack.state === true) {
+                  updatedPlayerImg = this.playerImgs[plyr.number-1].pushBack[weapon];
+                }
+                if (plyr.pulling.state === true) {
+                  updatedPlayerImg = this.playerImgs[plyr.number-1].pulling[weapon];
+                }
+                if (plyr.pulled.state === true) {
+                  updatedPlayerImg = this.playerImgs[plyr.number-1].pulled[weapon];
+                }
+                if (plyr.pushed.state === true) {
+                  updatedPlayerImg = this.playerImgs[plyr.number-1].pushed[weapon];
+                }
+                else {
+                   updatedPlayerImg = this.playerImgs[plyr.number-1].strafing[weapon];
+                }
+              break;
+              case 'falling':
+                updatedPlayerImg = this.playerImgs[plyr.number-1].falling[weapon];
+              break;
+              case 'attacking':
+                updatedPlayerImg = this.playerImgs[plyr.number-1].attacking[weapon];
+              break;
+              case 'defending':
+                updatedPlayerImg = this.playerImgs[plyr.number-1].defending[weapon];
+              break;
+              case 'deflected' :
+                updatedPlayerImg = this.playerImgs[plyr.number-1].deflected[weapon];
+              break;
+              case 'dodging' :
+                updatedPlayerImg = this.playerImgs[plyr.number-1].dodging[weapon];
+              break;
+              case 'dead':
+                updatedPlayerImg = this.playerImgs[plyr.number-1].idle[weapon];
+              break;
+            }
+          }
+          if (plyr.ai.state === true) {
+            let plyrImgIndex;
+            if (plyr.ai.imgType === "A") {
+              plyrImgIndex = 2;
+            }
+            else if (plyr.ai.imgType === "B") {
+              plyrImgIndex = 3;
+            }
+
+            switch(plyr.action) {
+              case 'idle':
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].idle[weapon];
+              break;
+              case 'moving':
+                if (plyr.pushing.state === true) {
+                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pushing[weapon];
+                }
+                if (plyr.pulled.state === true) {
+                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pulled[weapon];
+                }
+                if (plyr.pushed.state === true) {
+                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pushed[weapon];
+                }
+                else {
+                  updatedPlayerImg = this.playerImgs[plyrImgIndex].walking[weapon];
+                }
+              break;
+              case 'jumping':
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].jumping[weapon];
+              break;
+              case 'flanking':
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].flanking[weapon];
+              break;
+              case 'strafe moving':
+              if (plyr.pushBack.state === true) {
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].pushBack[weapon];
+              }
+              if (plyr.pulling.state === true) {
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].pulling[weapon];
+              }
+              if (plyr.pulled.state === true) {
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].pulled[weapon];
+              }
+              if (plyr.pushed.state === true) {
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].pushed[weapon];
+              }
+              else {
+                 updatedPlayerImg = this.playerImgs[plyrImgIndex].strafing[weapon];
+              }
+              break;
+              case 'falling':
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].falling[weapon];
+              break;
+              case 'attacking':
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].attacking[weapon];
+              break;
+              case 'defending':
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].defending[weapon];
+              break;
+              case 'deflected' :
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].deflected[weapon];
+              break;
+              case 'dodging' :
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].dodging[weapon];
+              break;
+              case 'dead':
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].idle[weapon];
+              break;
+            }
+          }
+
+
+          // SET SPRITE SHEET CLIP LOCATION!
+          let dirs = ['north','south','east','west']
+          let dirIndex = dirs.indexOf(plyr.direction);
+          let sHeight = this.charSpriteHeight;
+          let sWidth = this.charSpriteWidth;
+          let sy = dirIndex * sHeight;
+          let sx = (finalAnimIndex - 1)* sWidth;
+
+
+          //PLAYER DEPTH SORTING!!
+          if (plyr.target.cell1.void === false && plyr.moving.state === true && plyr.falling.state !== true && plyr.jumping.state !== true) {
+            let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
+            // console.log('move',finalAnimIndex);
+            // if (plyr.direction === 'north' || plyr.direction === 'northWest' || plyr.direction === 'west') {
+            //   if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+            //     // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
+            //
+            //     if (plyr.jumping.state === true) {
+            //       context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
+            //     } else {
+            //       context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
+            //     }
+            //
+            //     // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
+            //
+            //   }
+            // }
+            if (plyr.direction === 'north') {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+                // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
+
+                if (plyr.jumping.state === true) {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
+                } else {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
+                }
+
+                // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
+
+              }
+            }
+            if (plyr.direction === 'west') {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+                // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
+
+                if (plyr.jumping.state === true) {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
+                } else {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
+                }
+
+                // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
+
+              }
+            }
+            // if (plyr.direction === 'east' || plyr.direction === 'south' || plyr.direction === 'southEast') {
+            //   if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+            //     // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
+            //     console.log('here',x,y);
+            //     if (plyr.jumping.state === true) {
+            //       context2.translate(this.camera.pan.x,this.camera.pan.y);
+            //       context2.scale(this.camera.zoom.x,this.camera.zoom.y);
+            //       context2.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
+            //
+            //     } else {
+            //       context2.translate(this.camera.pan.x,this.camera.pan.y);
+            //       context2.scale(this.camera.zoom.x,this.camera.zoom.y);
+            //       context2.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-25, point.y-25, this.playerDrawWidth, this.playerDrawHeight);
+            //
+            //     }
+            //     // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
+            //     // playerDrawLog(x,y,plyr)
+            //   }
+            // }
+            if (plyr.direction === 'east') {
+              if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
+                // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
+                // console.log('here',x,y);
+                if (plyr.jumping.state === true) {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
+
+                } else {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
+
+                }
+                // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
+                // playerDrawLog(x,y,plyr)
+              }
+            }
+            if (plyr.direction === 'south') {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
+                // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
+                if (plyr.jumping.state === true) {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
+                } else {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
+                }
+                // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
+                // playerDrawLog(x,y,plyr)
+              }
+            }
+
+            if (plyr.pushBack.state === true) {
+
+              // context.drawImage(indicatorImgs.pushback, point.x-20, point.y-20, 35,35);
+            }
+
+          }
+          else if (plyr.moving.state === false && plyr.ghost.state !== true && plyr.dodging.state !== true) {
+
+            if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y && plyr.success.deflected.state === false) {
+              // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
+
+              // console.log('updatedPlayerImg',finalAnimIndex,sx, sy, sWidth, sHeight,point);
+              context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
+
+              if (plyr.attacking.state === true) {
+                // console.log('ff atk',plyr.action ,finalAnimIndex,'plyr #', player.number);
+
+                // if (plyr.attacking.count > 0 && plyr.attacking.count < 3) {
+                //   // console.log('ff atk pre',plyr.action ,finalAnimIndex,'plyr #', player.number,'time',this.time);
+                //   context.drawImage(indicatorImgs.preAttack, point.x-35, point.y-35, 35,35);
+                // }
+
+                let attackPeak = this.attackAnimRef.peak.sword;
+                if (player.currentWeapon.type === 'spear') {
+                  attackPeak = this.attackAnimRef.peak.spear;
+                }
+                if (player.currentWeapon.type === 'crossbow') {
+                  attackPeak = this.attackAnimRef.peak.crossbow;
+                }
+                if (player.currentWeapon.type === '') {
+                  attackPeak = this.attackAnimRef.peak.unarmed;
+                }
+
+                if (plyr.attacking.count === attackPeak) {
+                  // console.log('ff atk peak',plyr.action ,finalAnimIndex,'plyr #', player.number,'time',this.time);
+                }
+                if (plyr.attacking.count > attackPeak && plyr.attacking.count < plyr.attacking.limit+1) {
+                  if (plyr.attackStrength === 1) {
+
+                    // context.fillStyle = fillClr2;
+                    // context.beginPath();
+                    // context.arc(pos.x-10, pos.y, 10, 0, 2 * Math.PI);
+                    // context.fill();
+
+                    // context.beginPath();
+                    // context.rect(20, 20, 150, 100);
+                    // context.stroke();
+
+                    // context.drawImage(indicatorImgs.attack1, point.x-35, point.y-35, 35,35);
+                  }
+                  if (plyr.attackStrength === 2) {
+                    // context.drawImage(indicatorImgs.attack2, point.x-35, point.y-35, 35,35);
+                  }
+                  if (plyr.bluntAttack === true) {
+                    // context.drawImage(indicatorImgs.attackBlunt, point.x-35, point.y-35, 35,35);
+                  }
+                  if (plyr.currentWeapon.type === '') {
+                    // context.drawImage(indicatorImgs.attackUnarmed, point.x-35, point.y-35, 35,35);
+                  }
+
+                  else if (plyr.currentWeapon.type !== '') {
+                    // context.drawImage(indicatorImgs.attack3, point.x-35, point.y-35, 35,35);
+                  }
+                }
+
+              }
+
+              if (plyr.defending.state === true) {
+                // context.drawImage(this.indicatorImgs.defend, point.x-35, point.y-35, 35,35);
+              }
+              if (plyr.success.attackSuccess === true) {
+                context.drawImage(this.indicatorImgs.attackSuccess, point.x-35, point.y-35, 35,35);
+              }
+              if (plyr.dodging.countState === true && plyr.dodging.count < 3) {
+                // context.drawImage(indicatorImgs.preAttack2, point.x-45, point.y-35, 35,35);
+              }
+
+              if (plyr.defending.count > 0 && plyr.defending.count < plyr.defending.limit ) {
+                // context2.drawImage(indicatorImgs.preAttack, point.x-35, point.y-35, 35,35);
+              }
+              // context.fillStyle = 'white';
+              // context.beginPath();
+              // context.rect(point.x-25, point.y-25, 50, 50);
+              // context.stroke();
+              // if (plyr.dodging.state === true) {
+              //   context.drawImage(indicatorImgs.dodge, point.x-45, point.y-35, 35,35);
+              // }
+
+              // playerDrawLog(x,y,plyr)
+            }
+          }
+          else if (plyr.target.cell1.void === true && plyr.moving.state === true && plyr.falling.state !== true && plyr.jumping.state !== true) {
+
+            // console.log('heading for thevoid @ draw step');
+            // if (
+            //   x === plyr.currentPosition.cell.number.x &&
+            //   y === plyr.currentPosition.cell.number.y
+            // ) {
+            //   console.log('heading for thevoid @ draw step',plyr.target.cell1.number);
+            // }
+
+
+            if (plyr.moving.origin.number.x === this.gridWidth && plyr.moving.origin.number.y !== 0 && plyr.moving.origin.number.y !== this.gridWidth) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y + 1) {
+
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
+                // context.fillStyle = "black";
+                // context.fillRect(point.x, point.y,5,5);
+              }
+            }
+            if (plyr.moving.origin.number.x === this.gridWidthd && plyr.moving.origin.number.y === 0) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
+                // context.fillStyle = "black";
+                // context.fillRect(point.x, point.y,5,5);
+              }
+            }
+            if (plyr.moving.origin.number.x === this.gridWidthd && plyr.moving.origin.number.y === this.gridWidthd) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
+                // context.fillStyle = "black";
+                // context.fillRect(point.x, point.y,5,5);
+              }
+            }
+            if (plyr.moving.origin.number.x === 0 && plyr.moving.origin.number.y === this.gridWidthd) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
+                // context.fillStyle = "black";
+                // context.fillRect(point.x, point.y,5,5);
+              }
+            }
+            if (plyr.moving.origin.number.x === 0 && plyr.moving.origin.number.y === 0) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
+                // context.fillStyle = "black";
+                // context.fillRect(point.x, point.y,5,5);
+              }
+            }
+            else {
+              if (x === plyr.moving.origin.number.x + 1 && y === plyr.moving.origin.number.y) {
+
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
+                // context.fillStyle = "black";
+                // context.fillRect(point.x, point.y,5,5);
+              }
+            }
+          }
+          if (plyr.jumping.state === true ) {
+            let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
+
+            if (plyr.direction === 'north') {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
+              }
+            }
+            if (plyr.direction === 'west') {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
+              }
+            }
+            if (plyr.direction === 'east') {
+              if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
+              }
+            }
+            if (plyr.direction === 'south') {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
+              }
+            }
+          }
+
+          if (plyr.strafing.state === true && plyr.falling.state !== true && plyr.jumping.state !== true) {
+            if (plyr.strafing.direction === 'north' || plyr.strafing.direction === 'northWest' || plyr.strafing.direction === 'west') {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
+                // playerDrawLog(x,y,plyr)
+              }
+
+            }
+            if (plyr.strafing.direction === 'east' || plyr.direction === 'east') {
+              if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
+              // if (x === plyr.target.cell1.number.x && y === plyr.target.cell1.number.y) {
+                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
+                // playerDrawLog(x,y)
+              }
+
+            }
+            if (plyr.strafing.direction === 'south' || plyr.direction === 'south') {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
+              // if (x === plyr.moving.destination.number.x && y === plyr.moving.destination.number.y) {
+              // if (x === plyr.target.cell1.number.x && y === plyr.target.cell1.number.y) {
+                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
+                // playerDrawLog(x,y)
+              }
+
+            }
+            if (plyr.strafing.direction === 'northEast') {
+              if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
+                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
+                // playerDrawLog(x,y)
+              }
+            }
+            if (plyr.strafing.direction === 'southWest') {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
+                // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
+                // playerDrawLog(x,y)
+              }
+            }
+          }
+          if (plyr.flanking.state === true && plyr.falling.state !== true) {
+
+            if (
+              plyr.currentPosition.cell.number.x === x &&
+              plyr.currentPosition.cell.number.y === y
+            ){
+              // console.log('flanking @ draw','finalAnimIndex',finalAnimIndex);
+            }
+
+            if (plyr.direction === 'east') {
+              if (plyr.flanking.direction === 'north') {
+                if (plyr.flanking.step === 1) {
+                  if (
+                    x === plyr.currentPosition.cell.number.x &&
+                    y === plyr.currentPosition.cell.number.y
+                  ) {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
+                  }
+                }
+                if (plyr.flanking.step === 2) {
+                  if (
+                    // x === plyr.flanking.target1.x &&
+                    // y === plyr.flanking.target1.y
+                    x === plyr.currentPosition.cell.number.x &&
+                    y === plyr.currentPosition.cell.number.y+1
+                  ) {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
+                  }
+                }
+              }
+            }
+            if (plyr.direction === 'west') {
+              if (plyr.flanking.direction === 'south') {
+                if (plyr.flanking.step === 1) {
+                  if (
+                    // x === plyr.currentPosition.cell.number.x &&
+                    // y === plyr.currentPosition.cell.number.y
+                    x === plyr.flanking.target1.x &&
+                    y === plyr.flanking.target1.y
+                  ) {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
+                  }
+                }
+                if (plyr.flanking.step === 2) {
+                  if (
+                    x === plyr.flanking.target1.x &&
+                    y === plyr.flanking.target1.y
+                  ) {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
+                  }
+                }
+              }
+            }
+            if (plyr.direction === 'north') {
+              if (plyr.flanking.direction === 'east') {
+                if (plyr.flanking.step === 1) {
+                  if (
+                    x === plyr.flanking.target1.x &&
+                    y === plyr.flanking.target1.y
+                  ) {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
+                  }
+                }
+                if (plyr.flanking.step === 2) {
+                  if (
+                    x === plyr.flanking.target1.x &&
+                    y === plyr.flanking.target1.y
+                  ) {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
+                  }
+                }
+              }
+            }
+            if (plyr.direction === 'south') {
+              if (plyr.flanking.direction === 'west') {
+                if (plyr.flanking.step === 1) {
+                  if (
+                    x === plyr.currentPosition.cell.number.x &&
+                    y === plyr.currentPosition.cell.number.y
+                  ) {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
+                  }
+                }
+                if (plyr.flanking.step === 2) {
+                  if (
+                    x === plyr.flanking.target2.x &&
+                    y === plyr.flanking.target2.y
+                  ) {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
+                  }
+                }
+              }
+            }
+          }
+          if (plyr.falling.state === true) {
+
+            if (
+              x === plyr.target.cell1.number.x &&
+              y === plyr.target.cell1.number.y
+            ) {
+              context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
+              // playerDrawLog(x,y,plyr)
+            }
+
+            if (
+              plyr.target.cell1.number.x < 0 ||
+              plyr.target.cell1.number.y < 0 ||
+              plyr.target.cell1.number.x > this.gridWidth ||
+              plyr.target.cell1.number.y > this.gridWidth
+            ) {
+              if (
+                x === plyr.moving.origin.number.x &&
+                y === plyr.moving.origin.number.y
+              ) {
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
+                // playerDrawLog(x,y,plyr)
+              }
+            }
+
+          }
+
+          if (plyr.success.deflected.state === true) {
+            // console.log('updatedPlayerImg, sx, sy', sx, sy,'points',point.x-35, point.y-20,'dodge',plyr.dodging.state);
+
+            if (plyr.direction === 'north') {
+              if (
+                x === plyr.moving.origin.number.x &&
+                y === plyr.moving.origin.number.y+1
+              ) {
+
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  point.x-35, point.y-20, this.playerDrawWidth, this.playerDrawHeight)
+
+                if (plyr.success.deflected.type === 'attack') {
+                  // context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
+                }
+                else if (plyr.success.deflected.type === 'attacked') {
+                  // context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
+                }
+                else if (plyr.success.deflected.type === 'blunt_attacked') {
+                  // context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
+                }
+              }
+            }
+            if (plyr.direction === 'east') {
+              if (
+                x === plyr.currentPosition.cell.number.x &&
+                y === plyr.currentPosition.cell.number.y
+              ) {
+
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-35, point.y-30, this.playerDrawWidth,this.playerDrawHeight);
+
+                if (plyr.success.deflected.type === 'attack') {
+                  // context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
+                }
+                else if (plyr.success.deflected.type === 'attacked') {
+                  // context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
+                }
+                else if (plyr.success.deflected.type === 'blunt_attacked') {
+                  // context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
+                }
+              }
+            }
+            if (plyr.direction === 'west') {
+              if (
+                x === plyr.currentPosition.cell.number.x+1 &&
+                y === plyr.currentPosition.cell.number.y
+              ) {
+
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-15, point.y-20, this.playerDrawWidth,this.playerDrawHeight);
+
+                if (plyr.success.deflected.type === 'attack') {
+                  // context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
+                }
+                else if (plyr.success.deflected.type === 'attacked') {
+                  // context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
+                }
+                else if (plyr.success.deflected.type === 'blunt_attacked') {
+                  // context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
+                }
+              }
+            }
+            if (plyr.direction === 'south') {
+              if (
+                x === plyr.currentPosition.cell.number.x+1 &&
+                y === plyr.currentPosition.cell.number.y
+              ) {
+
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-15, point.y-30, this.playerDrawWidth,this.playerDrawHeight);
+
+                if (plyr.success.deflected.type === 'attack') {
+                  // context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
+                }
+                else if (plyr.success.deflected.type === 'attacked') {
+                  // context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
+                }
+                else if (plyr.success.deflected.type === 'blunt_attacked') {
+                  // context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
+                }
+              }
+            }
+
+
+          }
+          if (plyr.dodging.state === true && plyr.success.deflected.state !== true) {
+
+            if (plyr.direction === 'north' || plyr.direction === 'south') {
+              if (
+                // x === plyr.moving.origin.number.x &&
+                // y === plyr.moving.origin.number.y+1
+                x === plyr.currentPosition.cell.number.x &&
+                y === plyr.currentPosition.cell.number.y
+              ) {
+                if (plyr.dodgeDirection === 'east') {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  point.x-45, point.y-35, this.playerDrawWidth, this.playerDrawHeight)
+                } else {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  point.x-10, point.y-20, this.playerDrawWidth, this.playerDrawHeight)
+                }
+              }
+            }
+            if (plyr.direction === 'east' || plyr.direction === 'west') {
+              let cll = this.gridInfo.find(elem => elem.number.x === plyr.currentPosition.cell.number.x && elem.number.y === plyr.currentPosition.cell.number.y)
+              if (cll.edge.state === true && cll.edge.side === "south") {
+                if (
+                  x === plyr.currentPosition.cell.number.x &&
+                  y === plyr.currentPosition.cell.number.y
+                ) {
+                  if (plyr.dodgeDirection === 'north') {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-10, point.y-35, this.playerDrawWidth,this.playerDrawHeight);
+                  } else {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-40, point.y-15, this.playerDrawWidth,this.playerDrawHeight);
+                  }
+                }
+              } else {
+                if (
+                  x === plyr.currentPosition.cell.number.x &&
+                  y === plyr.currentPosition.cell.number.y+1
+                ) {
+                  if (plyr.dodgeDirection === 'north') {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-10, point.y-35, this.playerDrawWidth,this.playerDrawHeight);
+                  } else {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-40, point.y-15, this.playerDrawWidth,this.playerDrawHeight);
+                  }
+                }
+              }
+
+            }
+            // context.drawImage(indicatorImgs.dodge, point.x-45, point.y-35, 35,35);
+
+          }
+          // DEPTH SORTING!!
+
+
+          if (plyr.respawn === true) {
+
+            if (
+              x === plyr.startPosition.cell.number.x &&
+              y === plyr.startPosition.cell.number.y
+            ) {
+              // console.log('respawning... confirm dead player',plyr.dead.state,x,y);
+
+                let respawnPoint = {
+                  number: {
+                    x: 0,
+                    y: 0,
+                  },
+                  center: {
+                    x: 0,
+                    y: 0,
+                  }
+                }
+                let altRespawnPoint = {
+                  number: {
+                    x: 0,
+                    y: 0,
+                  },
+                  center: {
+                    x: 0,
+                    y: 0,
+                  }
+                }
+                let altRespawnPoint2 = {
+                  number: {
+                    x: 0,
+                    y: 0,
+                  },
+                  center: {
+                    x: 0,
+                    y: 0,
+                  }
+                }
+                let respawnCellOccupied = false;
+
+                // console.log('matching grid info with start position');
+                let elem1 = this.gridInfo.find(gridCell => gridCell.number.x === this.gridWidth && gridCell.number.y === this.gridWidth);
+                altRespawnPoint.number.x = elem1.number.x;
+                altRespawnPoint.number.y = elem1.number.y;
+                altRespawnPoint.center.x = elem1.center.x;
+                altRespawnPoint.center.y = elem1.center.y;
+
+                let elem2 = this.gridInfo.find(gridCell => gridCell.number.x === this.gridWidth && gridCell.number.y === 0);
+                altRespawnPoint2.number.x = elem2.number.x;
+                altRespawnPoint2.number.y = elem2.number.y;
+                altRespawnPoint2.center.x = elem2.center.x;
+                altRespawnPoint2.center.y = elem2.center.y;
+
+
+                // '**_*_0.0_a_0**'
+                // barrierbarrierPosition_obstacle_x.y_terrain_elevationNumberelevationTypeelevationPosition
+
+
+                let elem3 = this.gridInfo.find(gridCell => gridCell.number.x === plyr.startPosition.cell.number.x && gridCell.number.y === plyr.startPosition.cell.number.y);
+                for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
+                  for (const cell of row) {
+                    if (
+                      cell.split('_')[0] !== "**" ||
+                      cell.split('_')[1] !== "*"
+                      // cell.charAt(0) === 'y' ||
+                      // cell.charAt(0) ===  'z'
+                    ) {
+                      let obstaclePosition = {
+                        // x: Number(cell.charAt(1)),
+                        x: Number(cell.split("_")[2].charAt(0)),
+                        y: row.indexOf(cell),
+                      }
+                      // console.log('found obstacle during map scan @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
+                      if (
+                        elem3.number.x === obstaclePosition.x &&
+                        elem3.number.y === obstaclePosition.y
+                      ) {
+                        // console.log('an obstacle is in your way');
+                        respawnCellOccupied = true;
+                      }
+                    }
+                  }
+                }
+                if (elem3.void.state === true ) {
+                  respawnCellOccupied = true;
+                }
+                for (const plyr2 of this.players) {
+                  if (plyr2.number !== plyr.number) {
+                    if (
+                      elem3.number.x === plyr2.currentPosition.cell.number.x &&
+                      elem3.number.y === plyr2.currentPosition.cell.number.y
+                    ) {
+                      respawnCellOccupied = true;
+                    }
+                  }
+                }
+
+                if (
+                  respawnCellOccupied === false
+                ) {
+
+                  respawnPoint.number.x = elem3.number.x;
+                  respawnPoint.number.y = elem3.number.y;
+                  respawnPoint.center.x = elem3.center.x;
+                  respawnPoint.center.y = elem3.center.y;
+
+
+
+                  plyr.dead.state = false;
+                  plyr.currentPosition.cell = respawnPoint;
+                  plyr.nextPosition = respawnPoint.center;
+                  this.getTarget(plyr)
+                  plyr.moving = {
+                    state: false,
+                    step: 0,
+                    course: '',
+                    origin: {
+                      number: {
+                        x: respawnPoint.number.x,
+                        y: respawnPoint.number.y
+                      },
+                      center: {
+                        x: respawnPoint.center.x,
+                        y: respawnPoint.center.y
+                      },
+                    },
+                    destination: {
+                      x: this.players[plyr.number-1].target.cell1.center.x,
+                      y: this.players[plyr.number-1].target.cell1.center.y
+                    }
+                  }
+
+                  plyr.direction = 'north';
+                  plyr.respawn = false;
+                  this.players[plyr.number-1] = plyr;
+
+                  // context.drawImage(updatedPlayerImg, respawnPoint.center.x-25, respawnPoint.center.y-50, 55,55);
+
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  respawnPoint.center.x-25, respawnPoint.center.y-50,this.playerDrawWidth, this.playerDrawHeight)
+
+                  if (
+                      this.settingAutoCamera === false &&
+                      player.ai.state !== true &&
+                      this.camera.preInstructions.length === 0 &&
+                      this.camera.instructions.length === 0
+                    ) {
+                    this.setAutoCamera('playerSpawnFocus',plyr)
+                  }
+                  else {
+                    console.log('no setting auto cam: playerSpawnFocus');
+                  }
+
+
+                }
+                else if (respawnCellOccupied === true) {
+
+                  console.log("no free cells for respawn");
+                  alert("no free cells for respawn");
+
+                  // if (plyr.number === 1) {
+                  //   respawnPoint = altRespawnPoint;
+                  // }
+                  // if (plyr.number === 2) {
+                  //   respawnPoint = altRespawnPoint2;
+                  // }
+
+                }
+
+              }
+
+            }
+          if (plyr.dead.state === true && player.dead.count > 0 && plyr.dead.count < plyr.dead.limit) {
+
+            if (
+              x === plyr.ghost.position.cell.number.x &&
+              y === plyr.ghost.position.cell.number.y
+            ) {
+              // console.log('player',plyr.number,'dying',player.dead.count);
+              context.drawImage(this.indicatorImgs.death, plyr.ghost.position.cell.center.x-15, plyr.ghost.position.cell.center.y-15, 25,25);
+            }
+          }
+          if (plyr.ghost.state === true && player.dead.count === 0) {
+            if (x === plyr.ghost.position.cell.number.x && y === plyr.ghost.position.cell.number.y) {
+              // console.log('player ',plyr.number,'ghost @',plyr.ghost.position.cell.number,plyr.ghost.position.cell.center);
+              context.drawImage(this.indicatorImgs.ghost, plyr.ghost.position.cell.center.x-20, plyr.ghost.position.cell.center.y-20, 25,25);
+            }
+          }
+
+
+          this.players[plyr.number-1] = plyr;
+
+
+          // PLAYER POPUPS & TRACKING OUTLINES
+          if (x === this.gridWidth && y === this.gridWidth ) {
+
+
+
+
+
+            let popupBorderColor = this.playerColourRef['player'+plyr.number+'']
+            let drawBubble = (ctx,x,y,w,h,radius,px,py,color) => {
+
+               var r = x + w;
+               var b = y + h;
+               if(py<y || py>y+h){
+                var con1 = Math.min(Math.max(x+radius,px-10),r-radius-20);
+                var con2 = Math.min(Math.max(x+radius+20,px+10),r-radius);
+               }
+               else{
+                var con1 = Math.min(Math.max(y+radius,py-10),b-radius-20);
+                var con2 = Math.min(Math.max(y+radius+20,py+10),b-radius);
+               }
+               var dir;
+               if(py < y) dir = 2;
+               if(py > y) dir = 3;
+               if(px < x && py>=y && py<=b) dir = 0;
+               if(px > x && py>=y && py<=b) dir = 1;
+               if(px >= x && px <= r && py >= y && py <= b) dir = -1;
+               ctx.clearRect(x,y,this.popupSize,this.popupSize);
+               ctx.beginPath();
+               ctx.strokeStyle=color;
+               ctx.lineWidth="1";
+               ctx.moveTo(x+radius,y);
+               if(dir==2){
+                ctx.lineTo(con1,y);
+                ctx.lineTo(px,py);
+                ctx.lineTo(con2,y);
+                ctx.lineTo(r-radius,y);
+               }
+               else ctx.lineTo(r-radius,y);
+               ctx.quadraticCurveTo(r,y,r,y+radius);
+               if(dir==1){
+                ctx.lineTo(r,con1);
+                ctx.lineTo(px,py);
+                ctx.lineTo(r,con2);
+                ctx.lineTo(r,b-radius);
+               }
+               else ctx.lineTo(r,b-radius);
+               ctx.quadraticCurveTo(r, b, r-radius, b);
+               if(dir==3){
+                ctx.lineTo(con2,b);
+                ctx.lineTo(px,py);
+                ctx.lineTo(con1,b);
+                ctx.lineTo(x+radius,b);
+               }
+               else ctx.lineTo(x+radius,b);
+               ctx.quadraticCurveTo(x, b, x, b-radius);
+               if(dir==0){
+                ctx.lineTo(x,con2);
+                ctx.lineTo(px,py);
+                ctx.lineTo(x,con1);
+                ctx.lineTo(x,y+radius);
+               }
+               else ctx.lineTo(x,y+radius);
+               ctx.quadraticCurveTo(x, y, x+radius, y);
+               context.fillStyle = 'white';
+               ctx.fill();
+               ctx.stroke();
+               // ctx.globalCompositeOperation = "source-over";
+               ctx.closePath();
+            }
+
+
+            if (plyr.dead.state !== true && plyr.popups.length > 0) {
+
+
+              for (const popup of plyr.popups) {
+                if (popup.state === true) {
+                  // console.log('drawing a popup');
+                  let popupDrawCoords;
+                  if (popup.position === '' || !popup.position) {
+                    let currentPopups = plyr.popups.filter(x=>x.state === true);
+                    // let positions = ['north','east','south','west','northEast','southEast','southWest']
+                    let positions = ['north','east','south','west','northEast','northWest','southEast','southWest']
+
+                    // REMOVE POSITIONS ALREADY TAKEN BY PLAYERS' OTHER POPUPS
+                    for (const popup2 of currentPopups) {
+                      if (popup2.position && popup2.position !== '') {
+
+                        let indx = positions.indexOf(popup2.position);
+                        positions.splice(indx,1)
+                      }
+
+                    }
+
+                    let dir = undefined;
+
+                    // CHECK OTHER PLAYER'S POSITION AND THE POPUPS POSITION
+                    for (const plyr2 of this.players) {
+                      if (plyr2.ai.state !== true && plyr2.number !== plyr.number) {
+                        let myPos = plyr.currentPosition.cell.number;
+                        let invalidPos = this.players[plyr2.number-1].currentPosition.cell.number;
+
+                        dir = undefined;
+                        // let invalidPositions = [invalidPos];
+
+                        // GET DIRECTION OF OTHER PLAYER CELL RELATIVE TO ME
+                        if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
+                          dir = 'north';
+                        }
+                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y-1) {
+                          dir = 'northWest';
+                        }
+                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y) {
+                          dir = 'west';
+                        }
+                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y+1) {
+                          dir = 'southWest';
+                        }
+                        if (invalidPos.x === myPos.x && invalidPos.y === myPos.y+1) {
+                          dir = 'south';
+                        }
+                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y+1) {
+                          dir = 'southEast';
+                        }
+                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y) {
+                          dir = 'east';
+                        }
+                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y-1) {
+                          dir = 'northEast';
+                        }
+
+                        if (dir && positions.includes(dir) === true) {
+                          positions.splice(positions.indexOf(dir),1);
+                          // console.log('player popups (unset): human player position is close to player',plyr.number,' @ ',invalidPos,'dir',dir);
+                          // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                        }
+
+
+                        // GET DIRECTION OF ALL OTHER PLAYERS' POPUPS OCCUPY, RELATIVE TO ME
+                        for(const pop of plyr2.popups) {
+
+                          dir = undefined;
+
+                          if (pop.state === true) {
+
+                            let invalidPos2 = {
+                              x: undefined,
+                              y: undefined,
+                            }
+
+                            switch (pop.position) {
+                              case 'north':
+                                invalidPos2 = {
+                                  x: invalidPos.x,
+                                  y: invalidPos.y-1,
+                                }
+                                break;
+                              case 'northEast':
+                                invalidPos2 = {
+                                  x: invalidPos.x+1,
+                                  y: invalidPos.y-1,
+                                }
+                                break;
+                              case 'northWest':
+                                invalidPos2 = {
+                                  x: invalidPos.x-1,
+                                  y: invalidPos.y-1,
+                                }
+                                break;
+                              case 'south':
+                                invalidPos2 = {
+                                  x: invalidPos.x,
+                                  y: invalidPos.y+1,
+                                }
+                                break;
+                              case 'southEast':
+                                invalidPos2 = {
+                                  x: invalidPos.x+1,
+                                  y: invalidPos.y+1,
+                                }
+                                break;
+                              case 'southWest':
+                                invalidPos2 = {
+                                  x: invalidPos.x-1,
+                                  y: invalidPos.y+1,
+                                }
+                                break;
+                              case 'east':
+                                invalidPos2 = {
+                                  x: invalidPos.x-1,
+                                  y: invalidPos.y,
+                                }
+                                break;
+                              case 'west':
+                                invalidPos2 = {
+                                  x: invalidPos.x+1,
+                                  y: invalidPos.y,
+                                }
+                                break;
+                              default:
+
+                            }
+
+
+                            if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
+                              dir = 'north';
+                            }
+                            if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
+                              dir = 'northWest';
+                            }
+                            if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
+                              dir = 'west';
+                            }
+                            if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
+                              dir = 'southWest';
+                            }
+                            if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
+                              dir = 'south';
+                            }
+                            if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
+                              dir = 'southEast';
+                            }
+                            if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
+                              dir = 'east';
+                            }
+                            if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
+                              dir = 'northEast';
+                            }
+
+                            if (dir && positions.includes(dir) === true) {
+                              positions.splice(positions.indexOf(dir),1);
+                              // console.log('player popups (unset): human player popup position is close to player',plyr.number,' @ ',invalidPos2,'dir',dir);
+                              // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                            }
+
+                          }
+
+                        }
+
+
+                      }
+                    }
+
+
+                    // GET DIRECTION OF CELL POPUPS' POPUPS  CELLS RELATIVE TO ME
+                    for (const popup2 of this.cellPopups) {
+
+                      dir = undefined;
+
+                      if (popup2.state === true) {
+
+                        let myPos = plyr.currentPosition.cell.number;
+                        let cellPos = popup2.cell.number;
+                        let invalidPos2 = {
+                          x: undefined,
+                          y: undefined,
+                        }
+
+
+                        switch (popup2.position) {
+                          case 'north':
+                            invalidPos2 = {
+                              x: cellPos.x,
+                              y: cellPos.y-1,
+                            }
+                            break;
+                          case 'northEast':
+                            invalidPos2 = {
+                              x: cellPos.x+1,
+                              y: cellPos.y-1,
+                            }
+                            break;
+                          case 'northWest':
+                            invalidPos2 = {
+                              x: cellPos.x-1,
+                              y: cellPos.y-1,
+                            }
+                            break;
+                          case 'south':
+                            invalidPos2 = {
+                              x: cellPos.x,
+                              y: cellPos.y+1,
+                            }
+                            break;
+                          case 'southEast':
+                            invalidPos2 = {
+                              x: cellPos.x+1,
+                              y: cellPos.y+1,
+                            }
+                            break;
+                          case 'southWest':
+                            invalidPos2 = {
+                              x: cellPos.x-1,
+                              y: cellPos.y+1,
+                            }
+                            break;
+                          case 'east':
+                            invalidPos2 = {
+                              x: cellPos.x-1,
+                              y: cellPos.y,
+                            }
+                            break;
+                          case 'west':
+                            invalidPos2 = {
+                              x: cellPos.x+1,
+                              y: cellPos.y,
+                            }
+                            break;
+                          default:
+
+                        }
+
+                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
+                          dir = 'north';
+                        }
+                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
+                          dir = 'northWest';
+                        }
+                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
+                          dir = 'west';
+                        }
+                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
+                          dir = 'southWest';
+                        }
+                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
+                          dir = 'south';
+                        }
+                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
+                          dir = 'southEast';
+                        }
+                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
+                          dir = 'east';
+                        }
+                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
+                          dir = 'northEast';
+                        }
+                        if (dir && positions.includes(dir) === true) {
+                          positions.splice(positions.indexOf(dir),1);
+                          // console.log('player popups (unset): cell popup position is close to player',plyr.number,' @ ',invalidPos2,'dir',dir);
+                          // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                        }
+
+
+                        // let indx = positions.indexOf(popup2.position);
+                        // positions.splice(indx,1)
+                      }
+
+                    }
+
+
+                    // console.log('new or postponed popup ',popup.msg,'position',positions[0]);
+
+                    if (!positions[0]) {
+                      // console.log('no open positions for new or postponed popup', popup.msg);
+                      popup.state = false;
+                      popup.count = 0;
+                    } else {
+                      popup.position = positions[0];
+                    }
+
+
+                    let popupProgress = false;
+                    let showProgress = false;
+                    let writeValue = false;
+                    if (
+                      plyr.prePush.state === true ||
+                      plyr.prePull.state === true ||
+                      plyr.dodging.state === true ||
+                      plyr.action === 'dodging' ||
+                      plyr.action === 'defending' ||
+                      plyr.action === 'attacking' ||
+                      plyr.attacking.state === true
+                    ) {
+                      showProgress = true;
+                    }
+                    if (
+                      popup.msg === "attacking1" ||
+                      popup.msg === "attacking2" ||
+                      popup.msg === "defending" ||
+                      popup.msg === "prePush" ||
+                      popup.msg === "prePull" ||
+                      popup.msg === "dodging"
+                    ) {
+                      popupProgress = true;
+                    }
+
+                    if (popup.img === "") {
+                      popup.img = this.popupImageRef[popup.msg];
+                    }
+
+                    if (popup.msg.split("_")) {
+                      if (popup.msg.split("_")[0] === "hpUp" || popup.msg.split("_")[0] === "hpDown") {
+                        writeValue = true;
+                        popup.img = this.popupImageRef[popup.msg.split("_")[0]]
+                      }
+                    }
+
+
+                    popupDrawCoords = this.popupDrawCalc(popup.position,{x:point.x-25,y:point.y-25},plyr.number);
+
+                    drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor);
+                    let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
+
+                    if (showProgress === true  && popupProgress === true) {
+                      let perc = this.playerPopupProgressCalc(plyr,popup)
+                      context.fillStyle = this.popupProgressImgGradColor2;
+                      context.beginPath();
+                      context.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
+                      context.stroke();
+                      context.fillStyle = this.popupProgressImgGradColor1;
+                      context.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
+                      context.fill();
+                    }
+
+
+                    if (writeValue === true) {
+                      context.font = "15px Arial";
+                      context.fillStyle = 'black';
+                      context.fillText(popup.msg.split("_")[1],popupDrawCoords.origin.x+((this.popupSize-(popup.msg.split("_")[1].length*7))/2),popupDrawCoords.origin.y+15);
+
+                      centerPopupOffset = (this.popupSize-this.popupImgSize*.75)/2;
+                      context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+(centerPopupOffset+5),this.popupImgSize*.75,this.popupImgSize*.75);
+                    }
+                    else {
+                      context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
+                    }
+
+
+
+                  }
+                  else if (popup.position !== 'northWest') {
+
+
+                    let dir = undefined;
+                    let dirs = [];
+
+                    let currentPopups = this.cellPopups.filter(x=>x.state === true);
+
+                    // HAVE ANY OTHER PLAYERS OR OTHER PLAYERS' POPUPS MOVED TO INVALID POSITIONS SINCE POPUP'S 1ST DRAW
+                    for (const plyr2 of this.players) {
+                      if (plyr2.ai.state !== true && plyr2.number !== plyr.number) {
+                        let myPos = plyr.currentPosition.cell.number;
+                        let invalidPos = this.players[plyr2.number-1].currentPosition.cell.number;
+
+
+                        if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
+                          dir = 'north';
+                        }
+                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y-1) {
+                          dir = 'northWest';
+                        }
+                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y) {
+                          dir = 'west';
+                        }
+                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y+1) {
+                          dir = 'southWest';
+                        }
+                        if (invalidPos.x === myPos.x && invalidPos.y === myPos.y+1) {
+                          dir = 'south';
+                        }
+                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y+1) {
+                          dir = 'southEast';
+                        }
+                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y) {
+                          dir = 'east';
+                        }
+                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y-1) {
+                          dir = 'northEast';
+                        }
+
+                        if (dir) {
+                          // console.log('player popups (set): human player position is close to player',plyr.number,' @ ',invalidPos,' dir ',dir);
+                          dirs.push(dir);
+                        }
+
+
+                        for(const pop of plyr2.popups) {
+
+
+                          dir = undefined;
+                          let invalidPos2 = {
+                            x: undefined,
+                            y: undefined,
+                          }
+
+                          switch (pop.position) {
+                            case 'north':
+                              invalidPos2 = {
+                                x: invalidPos.x,
+                                y: invalidPos.y-1,
+                              }
+                              break;
+                            case 'northEast':
+                              invalidPos2 = {
+                                x: invalidPos.x+1,
+                                y: invalidPos.y-1,
+                              }
+                              break;
+                            case 'northWest':
+                              invalidPos2 = {
+                                x: invalidPos.x-1,
+                                y: invalidPos.y-1,
+                              }
+                              break;
+                            case 'south':
+                              invalidPos2 = {
+                                x: invalidPos.x,
+                                y: invalidPos.y+1,
+                              }
+                              break;
+                            case 'southEast':
+                              invalidPos2 = {
+                                x: invalidPos.x+1,
+                                y: invalidPos.y+1,
+                              }
+                              break;
+                            case 'southWest':
+                              invalidPos2 = {
+                                x: invalidPos.x-1,
+                                y: invalidPos.y+1,
+                              }
+                              break;
+                            case 'east':
+                              invalidPos2 = {
+                                x: invalidPos.x-1,
+                                y: invalidPos.y,
+                              }
+                              break;
+                            case 'west':
+                              invalidPos2 = {
+                                x: invalidPos.x+1,
+                                y: invalidPos.y,
+                              }
+                              break;
+                            default:
+
+                          }
+
+
+                          if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
+                            dir = 'north';
+                          }
+                          if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
+                            dir = 'northWest';
+                          }
+                          if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
+                            dir = 'west';
+                          }
+                          if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
+                            dir = 'southWest';
+                          }
+                          if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
+                            dir = 'south';
+                          }
+                          if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
+                            dir = 'southEast';
+                          }
+                          if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
+                            dir = 'east';
+                          }
+                          if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
+                            dir = 'northEast';
+                          }
+                          // if (dir && positions.includes(dir) === true) {
+                          //   positions.splice(positions.indexOf(dir),1);
+                          //   // console.log('dont draw over player @',dir,'choose frome these position',positions);
+                          // }
+                          if (dir) {
+                            // console.log('player popups (set): human player popup position is close to player',plyr.number,' @ ',invalidPos2,' dir ',dir);
+                            dirs.push(dir);
+                          }
+
+                        }
+
+                      }
+                    }
+
+                    // HAVE ANY CELL POPUPS MOVED TO A NEARBY CELL TO ME
+                    for (const popup2 of currentPopups) {
+
+                      dir = undefined;
+
+                      let myPos = plyr.currentPosition.cell.number;
+
+                      let cellPos = popup2.cell.number;
+                      let invalidPos2 = {
+                        x: undefined,
+                        y: undefined,
+                      }
+
+
+                      switch (popup2.position) {
+                        case 'north':
+                          invalidPos2 = {
+                            x: cellPos.x,
+                            y: cellPos.y-1,
+                          }
+                          break;
+                        case 'northEast':
+                          invalidPos2 = {
+                            x: cellPos.x+1,
+                            y: cellPos.y-1,
+                          }
+                          break;
+                        case 'northWest':
+                          invalidPos2 = {
+                            x: cellPos.x-1,
+                            y: cellPos.y-1,
+                          }
+                          break;
+                        case 'south':
+                          invalidPos2 = {
+                            x: cellPos.x,
+                            y: cellPos.y+1,
+                          }
+                          break;
+                        case 'southEast':
+                          invalidPos2 = {
+                            x: cellPos.x+1,
+                            y: cellPos.y+1,
+                          }
+                          break;
+                        case 'southWest':
+                          invalidPos2 = {
+                            x: cellPos.x-1,
+                            y: cellPos.y+1,
+                          }
+                          break;
+                        case 'east':
+                          invalidPos2 = {
+                            x: cellPos.x-1,
+                            y: cellPos.y,
+                          }
+                          break;
+                        case 'west':
+                          invalidPos2 = {
+                            x: cellPos.x+1,
+                            y: cellPos.y,
+                          }
+                          break;
+                        default:
+
+                      }
+
+                      if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
+                        dir = 'north';
+                      }
+                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
+                        dir = 'northWest';
+                      }
+                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
+                        dir = 'west';
+                      }
+                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
+                        dir = 'southWest';
+                      }
+                      if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
+                        dir = 'south';
+                      }
+                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
+                        dir = 'southEast';
+                      }
+                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
+                        dir = 'east';
+                      }
+                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
+                        dir = 'northEast';
+                      }
+
+                      if (dir) {
+                        // console.log('player popups (set): cell popup position is close to player',plyr.number,' @ ',invalidPos2,' dir ',dir);
+                        dirs.push(dir);
+                      }
+
+                      // if (popup2.msg !== popup.msg) {
+                      //
+                      //   let myPos = plyr.currentPosition.cell.number;
+                      //
+                      //   let cellPos = popup2.cell.number;
+                      //   let invalidPos2 = {
+                      //     x: undefined,
+                      //     y: undefined,
+                      //   }
+                      //
+                      //
+                      //   switch (popup2.position) {
+                      //     case 'north':
+                      //       invalidPos2 = {
+                      //         x: cellPos.x,
+                      //         y: cellPos.y-1,
+                      //       }
+                      //       break;
+                      //     case 'northEast':
+                      //       invalidPos2 = {
+                      //         x: cellPos.x+1,
+                      //         y: cellPos.y-1,
+                      //       }
+                      //       break;
+                      //     case 'northWest':
+                      //       invalidPos2 = {
+                      //         x: cellPos.x-1,
+                      //         y: cellPos.y-1,
+                      //       }
+                      //       break;
+                      //     case 'south':
+                      //       invalidPos2 = {
+                      //         x: cellPos.x,
+                      //         y: cellPos.y+1,
+                      //       }
+                      //       break;
+                      //     case 'southEast':
+                      //       invalidPos2 = {
+                      //         x: cellPos.x+1,
+                      //         y: cellPos.y+1,
+                      //       }
+                      //       break;
+                      //     case 'southWest':
+                      //       invalidPos2 = {
+                      //         x: cellPos.x-1,
+                      //         y: cellPos.y+1,
+                      //       }
+                      //       break;
+                      //     case 'east':
+                      //       invalidPos2 = {
+                      //         x: cellPos.x-1,
+                      //         y: cellPos.y,
+                      //       }
+                      //       break;
+                      //     case 'west':
+                      //       invalidPos2 = {
+                      //         x: cellPos.x+1,
+                      //         y: cellPos.y,
+                      //       }
+                      //       break;
+                      //     default:
+                      //
+                      //   }
+                      //
+                      //   if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
+                      //     dir = 'north';
+                      //   }
+                      //   if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
+                      //     dir = 'northWest';
+                      //   }
+                      //   if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
+                      //     dir = 'west';
+                      //   }
+                      //   if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
+                      //     dir = 'southWest';
+                      //   }
+                      //   if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
+                      //     dir = 'south';
+                      //   }
+                      //   if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
+                      //     dir = 'southEast';
+                      //   }
+                      //   if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
+                      //     dir = 'east';
+                      //   }
+                      //   if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
+                      //     dir = 'northEast';
+                      //   }
+                      //
+                      //   if (dir) {
+                      //     dirs.push(dir);
+                      //   }
+                      //
+                      //
+                      //
+                      //   // let indx = positions.indexOf(popup2.position);
+                      //   // positions.splice(indx,1)
+                      // }
+
+                    }
+
+                    // console.log('dirs',dirs,'popup.position',popup.position);
+                    // if (popup.position === dir ) {
+                    if (dirs.find(x => x === popup.position) ) {
+
+                      plyr.popups.find(x => x.msg === popup.msg).position = '';
+                      plyr.popups.find(x => x.msg === popup.msg).state = false;
+                      // console.log("A new invalid direction === popup's position. reconsidering...",popup.msg);
+                    }
+                    else {
+
+
+                      let popupProgress = false;
+                      let showProgress = false;
+                      let writeValue = false;
+                      if (
+                        plyr.prePush.state === true ||
+                        plyr.prePull.state === true ||
+                        plyr.dodging.state === true ||
+                        plyr.action === 'dodging' ||
+                        plyr.action === 'defending' ||
+                        plyr.action === 'attacking' ||
+                        plyr.attacking.state === true
+                      ) {
+                        showProgress = true;
+                      }
+                      if (
+                        popup.msg === "attacking" ||
+                        popup.msg === "attacking1" ||
+                        popup.msg === "attacking2" ||
+                        popup.msg === "defending" ||
+                        popup.msg === "prePush" ||
+                        popup.msg === "prePull" ||
+                        popup.msg === "dodging"
+                      ) {
+                        popupProgress = true;
+                      }
+
+                      if (popup.img === "") {
+                        popup.img = this.popupImageRef[popup.msg];
+                      }
+
+                      if (popup.msg.split("_")) {
+                        if (popup.msg.split("_")[0] === "hpUp" || popup.msg.split("_")[0] === "hpDown") {
+                          writeValue = true;
+                          popup.img = this.popupImageRef[popup.msg.split("_")[0]]
+                        }
+                      }
+
+
+                      popupDrawCoords = this.popupDrawCalc(popup.position,{x:point.x-25,y:point.y-25},plyr.number);
+                      drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor);
+                      let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
+
+                      if (showProgress === true && popupProgress === true) {
+                        let perc = this.playerPopupProgressCalc(plyr,popup)
+                        context.fillStyle = this.popupProgressImgGradColor2;
+                        context.beginPath();
+                        context.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
+                        context.stroke();
+                        context.fillStyle = this.popupProgressImgGradColor1;
+                        context.roundRect(popupDrawCoords.origin.x,(popupDrawCoords.origin.y)+this.popupSize, this.popupSize, this.popupSize*perc, 5);
+                        context.fill();
+                      }
+
+
+                      if (writeValue === true) {
+                        context.font = "15px Arial";
+                        context.fillStyle = 'black';
+                        context.fillText(popup.msg.split("_")[1],popupDrawCoords.origin.x+((this.popupSize-(popup.msg.split("_")[1].length*7))/2),popupDrawCoords.origin.y+15)
+
+                        centerPopupOffset = (this.popupSize-this.popupImgSize*.75)/2
+                        context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+(centerPopupOffset+5),this.popupImgSize*.75,this.popupImgSize*.75);
+                      }
+                      else {
+                        context.drawImage(popup.img, popupDrawCoords.origin.x+centerPopupOffset,popupDrawCoords.origin.y+centerPopupOffset,this.popupImgSize,this.popupImgSize);
+                      }
+
+
+                    }
+
+
+                  }
+                }
+              }
+            }
+
+          }
+
+
+        }
+
+
+        // OBSTACLES & BARRIERS
+        // FALLING
+        // IN BOUNDS
+        if (gridInfoCell.obstacle.state === true && gridInfoCell.obstacle.moving.falling.state === true) {
+
+          let obstacleImg = this.obstacleImgs[gridInfoCell.obstacle.type]
+
+          context.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x, gridInfoCell.obstacle.moving.nextPosition.y);
+          gridInfoCell.obstacle.moving.nextPosition.y += 2
+
+          // console.log('falling obstacle',gridInfoCell.obstacle.moving.nextPosition,'x/y',x,y);
+        }
+        // OUT OF BOUNDS
+        for(const obstacle of this.obstaclesOutOfBoundsFall) {
+          // here!! draw at origin cell x/y
+          // if (x === 0 && y === 0) {
+          if (x === obstacle.moving.origin.number.x && y === obstacle.moving.origin.number.y) {
+            // console.log('obstacle falling out of bounds b count',obstacle.moving.origin.center,'position',obstacle.moving.nextPosition);
+            let obstacleImg = this.obstacleImgs[obstacle.type]
+            context.drawImage(obstacleImg, obstacle.moving.nextPosition.x, obstacle.moving.nextPosition.y);
+            obstacle.moving.nextPosition = {
+              x: obstacle.moving.nextPosition.x,
+              y: obstacle.moving.nextPosition.y + 2
+              // y: obstacle.moving.nextPosition.y+obstacle.moving.falling.count*5
+            }
+
+          }
+        }
+
+        // STATIONARY
+        if (gridInfoCell.obstacle.state === true && gridInfoCell.void.state !== true && gridInfoCell.terrain.type !== "deep" && gridInfoCell.obstacle.moving.falling.state !== true) {
+
+          let hide = false;
+
+          if (this.obstacleBarrierToDestroy.length > 0) {
+            for(const cell of this.obstacleBarrierToDestroy) {
+              if (cell.type === 'obstacle' && gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y && gridInfoCell.obstacle.name === cell.cell.obstacle.name) {
+                hide = true;
+              }
+            }
+          }
+
+          if (hide !== true) {
+            let obstacleImg = this.obstacleImgs[gridInfoCell.obstacle.type]
+
+            if (gridInfoCell.obstacle.moving.state !== true) {
+              context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
+            }
+            else {
+              // console.log('x/y',x,y);
+              // context.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x-offset.x, gridInfoCell.obstacle.moving.nextPosition.y- Math.ceil(obstacleImg.height/2));
+            }
+
+          }
+
+        }
+
+        // MOVING
+        for(const cell of this.gridInfo) {
+
+          if (cell.obstacle.state === true && cell.obstacle.moving.state === true) {
+
+            let drawHere = {
+              x: cell.obstacle.moving.origin.number.x,
+              y: cell.obstacle.moving.origin.number.y
+            }
+            let direction = undefined;
+            if (cell.obstacle.moving.destination.number.y === cell.obstacle.moving.origin.number.y+1) {
+              direction = 'south';
+            }
+            if (cell.obstacle.moving.destination.number.y === cell.obstacle.moving.origin.number.y-1) {
+              direction = 'north';
+            }
+            if (cell.obstacle.moving.destination.number.x === cell.obstacle.moving.origin.number.x-1) {
+              direction = 'west';
+            }
+            if (cell.obstacle.moving.destination.number.x === cell.obstacle.moving.origin.number.x+1) {
+              direction = 'east';
+            }
+
+            if (
+              cell.obstacle.moving.destination.number.x !== null &&
+              cell.obstacle.moving.destination.number.x > -1 &&
+              cell.obstacle.moving.destination.number.x < this.gridWidth+1
+            ) {
+              if(direction === 'south' || direction === 'east') {
+
+                drawHere = cell.obstacle.moving.destination.number;
+              }
+            }
+
+
+            if (x === drawHere.x && y === drawHere.y ) {
+              // console.log('x/y',x,y,direction,cell.obstacle.moving.step);
+
+              let obstacleImg = this.obstacleImgs[cell.obstacle.type];
+              context.drawImage(obstacleImg, cell.obstacle.moving.nextPosition.x-offset.x, cell.obstacle.moving.nextPosition.y- Math.ceil(obstacleImg.height/2, 30, 30));
+
+            }
+
+            // console.log('falling obstacle',gridInfoCell.obstacle.moving.nextPosition,'x/y',x,y);
+          }
+        }
+
+        // DROP ITEMS & DAMAGE/DESTROY OBSTACLES & BARRIERS
+        for(const cell of this.obstacleBarrierToDestroy) {
+          if (gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y && cell.cell.obstacle.type) {
+          // if (gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y && cell.cell.obstacle.state === true) {
+            if(cell.count % 3 === 0) {
+              if (cell.type === "obstacle") {
+                let obstacleImg = this.obstacleImgs[cell.cell.obstacle.type];
+                context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
+              }
+              if (cell.type === "barrier") {
+                let barrierImg = this.barrierImgs[cell.cell.barrier.type][cell.cell.barrier.position];
+                context.drawImage(barrierImg, iso.x - offset.x, iso.y - barrierImg.height, barrierImg.width, barrierImg.height);
+              }
+
+            }
+          }
+        }
+        for(const cell of this.obstacleItemsToDrop) {
+          // console.log('obstacleItemsToDrop',cell);
+          if (gridInfoCell.number.x === cell.target.x && gridInfoCell.number.y === cell.target.y) {
+            if(cell.count % 3 === 0) {
+              let itemImg;
+              if (cell.item.type === "item") {
+                itemImg = this.itemImgs[cell.item.name];
+              }
+              if (cell.item.type === "weapon" || cell.item.type === "armor") {
+                itemImg = this.itemImgs[cell.item.subType];
+              }
+              context.drawImage(itemImg, center.x-15, center.y-15);
+            }
+          }
+        }
+
+        // STATIONARY BARRIERS
+        if (gridInfoCell.barrier.state === true && gridInfoCell.void.state !== true) {
+
+
+          let hide = false;
+
+          if (this.obstacleBarrierToDestroy.length > 0) {
+            for(const cell of this.obstacleBarrierToDestroy) {
+              if (cell.type === 'barrier' && gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y && gridInfoCell.barrier.name === cell.cell.barrier.name) {
+                hide = true;
+              }
+            }
+          }
+
+          if (hide !== true) {
+
+            let barrierImg = this.barrierImgs[gridInfoCell.barrier.type][gridInfoCell.barrier.position];
+            context.drawImage(barrierImg, iso.x - offset.x, iso.y - barrierImg.height, barrierImg.width, barrierImg.height);
+
+          }
+
+
+
+        }
+
+
+        // PROJECTILES
+        for (const bolt of this.projectiles) {
+
+          if (
+            bolt.currentPosition.number.x === x &&
+            bolt.currentPosition.number.y === y
+          ) {
+            let boltImg;
+            switch(bolt.direction) {
+              case 'north':
+                boltImg = this.boltImgs[bolt.direction]
+              break;
+              case 'south':
+                boltImg = this.boltImgs[bolt.direction]
+              break;
+              case 'east':
+                boltImg = this.boltImgs[bolt.direction]
+              break;
+              case 'west':
+                boltImg = this.boltImgs[bolt.direction]
+              break;
+            }
+            // console.log('dd',boltImg,bolt.direction);
+
+             // context2.fillStyle = "black";
+             // context2.fillRect(bolt.currentPosition.center.x, bolt.currentPosition.center.y,10,5);
+             // this.testDraw.push({color:'green',x:bolt.currentPosition.center.x,y:bolt.currentPosition.center.y})
+             context.drawImage(boltImg, bolt.currentPosition.center.x-15, bolt.currentPosition.center.y-15, 35,35);
+          }
+        }
+
+
+        // CAMERA FOCUS POINT
+        if (x === this.gridWidth && y === this.gridWidth ) {
+          // console.log('Camera centered');
+          // context.fillStyle = 'yellow';
+          // context.beginPath();
+          // context.arc(this.camera.focus.x, this.camera.focus.y, 10, 0, 2 * Math.PI);
+          // context.arc(this.camera.zoomFocusPan.x, this.camera.zoomFocusPan.y, 10, 0, 2 * Math.PI);
+          // context.fill();
+
+        }
+
+
+        // TEST DRAW
+        for (const point of this.testDraw ) {
+          context.fillStyle = point.color;
+          context.beginPath();
+          context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+          context.fill();
+        }
+
+
+      }
+    }
+
+
+    this.players[player.number-1] = player;
+
+
+    // if (player.ai.state === true ) {
+    //   this.aiEvaluate(player)
+    // }
+
+  }
 
 
 
@@ -37114,8 +37105,6 @@ class App extends Component {
               disableInitItems={this.disableInitItems}
             />
           )}
-
-
 
 
           <svg className="popupProgressSvg hidden" ref="popupProgressSvg"  xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 30 30" shape-rendering="crispEdges">
