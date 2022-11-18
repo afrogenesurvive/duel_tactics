@@ -5778,8 +5778,9 @@ class App extends Component {
 
     return direction;
   }
-  getCellFromDirection = (range,originCellNumber,direction) => {
 
+  getCellFromDirection = (range,originCellNumber,direction) => {
+    
     let cellNumber = {
       x: undefined,
       y: undefined,
@@ -5905,119 +5906,6 @@ class App extends Component {
     return oppositeDirection;
   }
   aiBoltPathCheck = (aiPlayer) => {
-
-    // let path = [];
-    // let originCell = {
-    //   x: aiPlayer.currentPosition.cell.number.x,
-    //   y: aiPlayer.currentPosition.cell.number.y,
-    // };
-    // let nextCell = {
-    //   number: {
-    //     x: 0,
-    //     y: 0,
-    //   },
-    //   center: {
-    //     x: 0,
-    //     y: 0,
-    //   },
-    //   vertices: [],
-    // };
-    //
-    // while (
-    //   nextCell.number.x >= 0 &&
-    //   nextCell.number.y >= 0 &&
-    //   nextCell.number.x <= this.gridWidth &&
-    //   nextCell.number.y <= this.gridWidth
-    // ) {
-    //   // console.log(originCell.x,originCell.y);
-    //   let cell = {
-    //     number: {
-    //       x: 0,
-    //       y: 0,
-    //     },
-    //     center: {
-    //       x: 0,
-    //       y: 0,
-    //     },
-    //     vertices: [],
-    //   }
-    //
-    //   switch(direction) {
-    //     case 'north' :
-    //       cell.number = {
-    //         x: originCell.x,
-    //         y: originCell.y-1,
-    //       }
-    //     break;
-    //     case 'northEast' :
-    //       cell.number = {
-    //         x: originCell.x+1,
-    //         y: originCell.y-1,
-    //       }
-    //     break;
-    //     case 'northWest' :
-    //       cell.number = {
-    //         x: originCell.x-1,
-    //         y: originCell.y-1,
-    //       }
-    //     break;
-    //     case 'south' :
-    //       cell.number = {
-    //         x: originCell.x,
-    //         y: originCell.y+1,
-    //       }
-    //     break;
-    //     case 'southEast' :
-    //       cell.number = {
-    //         x: originCell.x+1,
-    //         y: originCell.y+1,
-    //       }
-    //     break;
-    //     case 'southWest' :
-    //       cell.number = {
-    //         x: originCell.x-1,
-    //         y: originCell.y+1,
-    //       }
-    //     break;
-    //     case 'west' :
-    //       cell.number = {
-    //         x: originCell.x-1,
-    //         y: originCell.y,
-    //       }
-    //     break;
-    //     case 'east' :
-    //       cell.number = {
-    //         x: originCell.x+1,
-    //         y: originCell.y,
-    //       }
-    //     break;
-    //   };
-    //
-    //   nextCell = cell;
-    //   originCell = nextCell.number;
-    //   path.push(cell);
-    // }
-    // if (path.length > 1) {
-    //   path.splice(path.length-1,1)
-    // }
-    //
-    // console.log('bolt path',path);
-    // let clearToShoot = true;
-    //
-    // for (const cell of path) {
-    //   let cellRef = this.gridInfo.find(x=>x.number.x === cell.number.x && x.number.y === cell.number.y)
-    //   if (
-    //     cellRef &&
-    //     cellRef.levelData.charAt(0) ===  'z' ||
-    //     cellRef.levelData.charAt(0) ===  'y'
-    //   ) {
-    //     clearToShoot = false;
-    //   }
-    //
-    // }
-    //
-    // return clearToShoot;
-
 
 
     // console.log('aiPlayer.ai.targetPlayer',aiPlayer.ai.targetPlayer);
@@ -6158,56 +6046,9 @@ class App extends Component {
         vertices: [],
       }
 
-      switch(this.players[bolt.owner-1].direction) {
-        case 'north' :
-          cell.number = {
-            x: originCell.x,
-            y: originCell.y-1,
-          }
-        break;
-        case 'northEast' :
-          cell.number = {
-            x: originCell.x+1,
-            y: originCell.y-1,
-          }
-        break;
-        case 'northWest' :
-          cell.number = {
-            x: originCell.x-1,
-            y: originCell.y-1,
-          }
-        break;
-        case 'south' :
-          cell.number = {
-            x: originCell.x,
-            y: originCell.y+1,
-          }
-        break;
-        case 'southEast' :
-          cell.number = {
-            x: originCell.x+1,
-            y: originCell.y+1,
-          }
-        break;
-        case 'southWest' :
-          cell.number = {
-            x: originCell.x-1,
-            y: originCell.y+1,
-          }
-        break;
-        case 'west' :
-          cell.number = {
-            x: originCell.x-1,
-            y: originCell.y,
-          }
-        break;
-        case 'east' :
-          cell.number = {
-            x: originCell.x+1,
-            y: originCell.y,
-          }
-        break;
-      }
+
+      cell.number = this.getCellFromDirection(1,originCell.number,this.players[bolt.owner-1].direction);
+
 
       nextCell = cell;
       originCell = nextCell.number;
@@ -8362,7 +8203,7 @@ class App extends Component {
 
         if (destCellRef.barrier.state === true) {
           let barrier = this.checkForwardBarrier(impactDirection,destCellRef);
-
+          let destCell = this.getCellFromDirection(1,targetCell.number,impactDirection);
 
 
           if (barrier === true) {
@@ -8377,7 +8218,7 @@ class App extends Component {
         if (targetCell.barrier.state === true) {
 
           // --------------
-          let barrier = let barrier = this.checkForwardBarrier(impactDirection,targetCell);
+          let barrier = this.checkForwardBarrier(impactDirection,targetCell);
 
 
 
@@ -9680,7 +9521,7 @@ class App extends Component {
 
         if (destCellRef.barrier.state === true) {
 
-          let barrier = let barrier = this.checkForwardBarrier(impactDirection,destCellRef);
+          let barrier = this.checkForwardBarrier(impactDirection,destCellRef);
 
 
           if (barrier === true) {
@@ -33978,58 +33819,7 @@ class App extends Component {
                         }
 
                         invalidPos2 = this.getCellFromDirection(1,invalidPos,pop.position);
-                        // switch (pop.position) {
-                        //   case 'north':
-                        //     invalidPos2 = {
-                        //       x: invalidPos.x,
-                        //       y: invalidPos.y-1,
-                        //     }
-                        //     break;
-                        //   case 'northEast':
-                        //     invalidPos2 = {
-                        //       x: invalidPos.x+1,
-                        //       y: invalidPos.y-1,
-                        //     }
-                        //     break;
-                        //   case 'northWest':
-                        //     invalidPos2 = {
-                        //       x: invalidPos.x-1,
-                        //       y: invalidPos.y-1,
-                        //     }
-                        //     break;
-                        //   case 'south':
-                        //     invalidPos2 = {
-                        //       x: invalidPos.x,
-                        //       y: invalidPos.y+1,
-                        //     }
-                        //     break;
-                        //   case 'southEast':
-                        //     invalidPos2 = {
-                        //       x: invalidPos.x+1,
-                        //       y: invalidPos.y+1,
-                        //     }
-                        //     break;
-                        //   case 'southWest':
-                        //     invalidPos2 = {
-                        //       x: invalidPos.x-1,
-                        //       y: invalidPos.y+1,
-                        //     }
-                        //     break;
-                        //   case 'east':
-                        //     invalidPos2 = {
-                        //       x: invalidPos.x-1,
-                        //       y: invalidPos.y,
-                        //     }
-                        //     break;
-                        //   case 'west':
-                        //     invalidPos2 = {
-                        //       x: invalidPos.x+1,
-                        //       y: invalidPos.y,
-                        //     }
-                        //     break;
-                        //   default:
-                        //
-                        // }
+
 
                         // let dir = undefined;
 
@@ -34069,58 +33859,7 @@ class App extends Component {
                     }
 
                     invalidPos2 = this.getCellFromDirection(1,cellPos,popup2.position);
-                    // switch (popup2.position) {
-                    //   case 'north':
-                    //     invalidPos2 = {
-                    //       x: cellPos.x,
-                    //       y: cellPos.y-1,
-                    //     }
-                    //     break;
-                    //   case 'northEast':
-                    //     invalidPos2 = {
-                    //       x: cellPos.x+1,
-                    //       y: cellPos.y-1,
-                    //     }
-                    //     break;
-                    //   case 'northWest':
-                    //     invalidPos2 = {
-                    //       x: cellPos.x-1,
-                    //       y: cellPos.y-1,
-                    //     }
-                    //     break;
-                    //   case 'south':
-                    //     invalidPos2 = {
-                    //       x: cellPos.x,
-                    //       y: cellPos.y+1,
-                    //     }
-                    //     break;
-                    //   case 'southEast':
-                    //     invalidPos2 = {
-                    //       x: cellPos.x+1,
-                    //       y: cellPos.y+1,
-                    //     }
-                    //     break;
-                    //   case 'southWest':
-                    //     invalidPos2 = {
-                    //       x: cellPos.x-1,
-                    //       y: cellPos.y+1,
-                    //     }
-                    //     break;
-                    //   case 'east':
-                    //     invalidPos2 = {
-                    //       x: cellPos.x-1,
-                    //       y: cellPos.y,
-                    //     }
-                    //     break;
-                    //   case 'west':
-                    //     invalidPos2 = {
-                    //       x: cellPos.x+1,
-                    //       y: cellPos.y,
-                    //     }
-                    //     break;
-                    //   default:
-                    //
-                    // }
+
 
                     dir = this.getDirectionFromCells(myPos,invalidPos2);
 
@@ -34190,58 +33929,7 @@ class App extends Component {
                         }
 
                         invalidPos2 = this.getCellFromDirection(1,invalidPos,pop.position);
-                        // switch (pop.position) {
-                        //   case 'north':
-                        //     invalidPos2 = {
-                        //       x: invalidPos.x,
-                        //       y: invalidPos.y-1,
-                        //     }
-                        //     break;
-                        //   case 'northEast':
-                        //     invalidPos2 = {
-                        //       x: invalidPos.x+1,
-                        //       y: invalidPos.y-1,
-                        //     }
-                        //     break;
-                        //   case 'northWest':
-                        //     invalidPos2 = {
-                        //       x: invalidPos.x-1,
-                        //       y: invalidPos.y-1,
-                        //     }
-                        //     break;
-                        //   case 'south':
-                        //     invalidPos2 = {
-                        //       x: invalidPos.x,
-                        //       y: invalidPos.y+1,
-                        //     }
-                        //     break;
-                        //   case 'southEast':
-                        //     invalidPos2 = {
-                        //       x: invalidPos.x+1,
-                        //       y: invalidPos.y+1,
-                        //     }
-                        //     break;
-                        //   case 'southWest':
-                        //     invalidPos2 = {
-                        //       x: invalidPos.x-1,
-                        //       y: invalidPos.y+1,
-                        //     }
-                        //     break;
-                        //   case 'east':
-                        //     invalidPos2 = {
-                        //       x: invalidPos.x-1,
-                        //       y: invalidPos.y,
-                        //     }
-                        //     break;
-                        //   case 'west':
-                        //     invalidPos2 = {
-                        //       x: invalidPos.x+1,
-                        //       y: invalidPos.y,
-                        //     }
-                        //     break;
-                        //   default:
-                        //
-                        // }
+
 
                         dir = this.getDirectionFromCells(myPos,invalidPos2);
 
@@ -34274,58 +33962,7 @@ class App extends Component {
                     }
 
                     invalidPos2 = this.getCellFromDirection(1,cellPos,popup2.position);
-                    // switch (popup2.position) {
-                    //   case 'north':
-                    //     invalidPos2 = {
-                    //       x: cellPos.x,
-                    //       y: cellPos.y-1,
-                    //     }
-                    //     break;
-                    //   case 'northEast':
-                    //     invalidPos2 = {
-                    //       x: cellPos.x+1,
-                    //       y: cellPos.y-1,
-                    //     }
-                    //     break;
-                    //   case 'northWest':
-                    //     invalidPos2 = {
-                    //       x: cellPos.x-1,
-                    //       y: cellPos.y-1,
-                    //     }
-                    //     break;
-                    //   case 'south':
-                    //     invalidPos2 = {
-                    //       x: cellPos.x,
-                    //       y: cellPos.y+1,
-                    //     }
-                    //     break;
-                    //   case 'southEast':
-                    //     invalidPos2 = {
-                    //       x: cellPos.x+1,
-                    //       y: cellPos.y+1,
-                    //     }
-                    //     break;
-                    //   case 'southWest':
-                    //     invalidPos2 = {
-                    //       x: cellPos.x-1,
-                    //       y: cellPos.y+1,
-                    //     }
-                    //     break;
-                    //   case 'east':
-                    //     invalidPos2 = {
-                    //       x: cellPos.x-1,
-                    //       y: cellPos.y,
-                    //     }
-                    //     break;
-                    //   case 'west':
-                    //     invalidPos2 = {
-                    //       x: cellPos.x+1,
-                    //       y: cellPos.y,
-                    //     }
-                    //     break;
-                    //   default:
-                    //
-                    // }
+
 
                     dir = this.getDirectionFromCells(myPos,invalidPos2);
 
@@ -35560,6 +35197,7 @@ class App extends Component {
           if (x === this.gridWidth && y === this.gridWidth ) {
 
 
+            // PLAYER OUTLINES
             let popupCoordObject = {
               north: this.popupDrawCalc("north",{x:plyr.nextPosition.x-25,y:plyr.nextPosition.y-25},plyr.number),
               west: this.popupDrawCalc("west",{x:plyr.nextPosition.x-25,y:plyr.nextPosition.y-25},plyr.number),
@@ -35647,58 +35285,7 @@ class App extends Component {
                             }
 
                             invalidPos2 = this.getCellFromDirection(1,invalidPos,pop.position);
-                            // switch (pop.position) {
-                            //   case 'north':
-                            //     invalidPos2 = {
-                            //       x: invalidPos.x,
-                            //       y: invalidPos.y-1,
-                            //     }
-                            //     break;
-                            //   case 'northEast':
-                            //     invalidPos2 = {
-                            //       x: invalidPos.x+1,
-                            //       y: invalidPos.y-1,
-                            //     }
-                            //     break;
-                            //   case 'northWest':
-                            //     invalidPos2 = {
-                            //       x: invalidPos.x-1,
-                            //       y: invalidPos.y-1,
-                            //     }
-                            //     break;
-                            //   case 'south':
-                            //     invalidPos2 = {
-                            //       x: invalidPos.x,
-                            //       y: invalidPos.y+1,
-                            //     }
-                            //     break;
-                            //   case 'southEast':
-                            //     invalidPos2 = {
-                            //       x: invalidPos.x+1,
-                            //       y: invalidPos.y+1,
-                            //     }
-                            //     break;
-                            //   case 'southWest':
-                            //     invalidPos2 = {
-                            //       x: invalidPos.x-1,
-                            //       y: invalidPos.y+1,
-                            //     }
-                            //     break;
-                            //   case 'east':
-                            //     invalidPos2 = {
-                            //       x: invalidPos.x-1,
-                            //       y: invalidPos.y,
-                            //     }
-                            //     break;
-                            //   case 'west':
-                            //     invalidPos2 = {
-                            //       x: invalidPos.x+1,
-                            //       y: invalidPos.y,
-                            //     }
-                            //     break;
-                            //   default:
-                            //
-                            // }
+
 
                             dir = this.getDirectionFromCells(myPos,invalidPos2);
 
@@ -35733,58 +35320,7 @@ class App extends Component {
 
 
                         invalidPos2 = this.getCellFromDirection(1,cellPos,popup2.position);
-                        // switch (popup2.position) {
-                        //   case 'north':
-                        //     invalidPos2 = {
-                        //       x: cellPos.x,
-                        //       y: cellPos.y-1,
-                        //     }
-                        //     break;
-                        //   case 'northEast':
-                        //     invalidPos2 = {
-                        //       x: cellPos.x+1,
-                        //       y: cellPos.y-1,
-                        //     }
-                        //     break;
-                        //   case 'northWest':
-                        //     invalidPos2 = {
-                        //       x: cellPos.x-1,
-                        //       y: cellPos.y-1,
-                        //     }
-                        //     break;
-                        //   case 'south':
-                        //     invalidPos2 = {
-                        //       x: cellPos.x,
-                        //       y: cellPos.y+1,
-                        //     }
-                        //     break;
-                        //   case 'southEast':
-                        //     invalidPos2 = {
-                        //       x: cellPos.x+1,
-                        //       y: cellPos.y+1,
-                        //     }
-                        //     break;
-                        //   case 'southWest':
-                        //     invalidPos2 = {
-                        //       x: cellPos.x-1,
-                        //       y: cellPos.y+1,
-                        //     }
-                        //     break;
-                        //   case 'east':
-                        //     invalidPos2 = {
-                        //       x: cellPos.x-1,
-                        //       y: cellPos.y,
-                        //     }
-                        //     break;
-                        //   case 'west':
-                        //     invalidPos2 = {
-                        //       x: cellPos.x+1,
-                        //       y: cellPos.y,
-                        //     }
-                        //     break;
-                        //   default:
-                        //
-                        // }
+
 
                         dir = this.getDirectionFromCells(myPos,invalidPos2);
 
@@ -35915,58 +35451,7 @@ class App extends Component {
                           }
 
                           invalidPos2 = this.getCellFromDirection(1,invalidPos,pop.position);
-                          // switch (pop.position) {
-                          //   case 'north':
-                          //     invalidPos2 = {
-                          //       x: invalidPos.x,
-                          //       y: invalidPos.y-1,
-                          //     }
-                          //     break;
-                          //   case 'northEast':
-                          //     invalidPos2 = {
-                          //       x: invalidPos.x+1,
-                          //       y: invalidPos.y-1,
-                          //     }
-                          //     break;
-                          //   case 'northWest':
-                          //     invalidPos2 = {
-                          //       x: invalidPos.x-1,
-                          //       y: invalidPos.y-1,
-                          //     }
-                          //     break;
-                          //   case 'south':
-                          //     invalidPos2 = {
-                          //       x: invalidPos.x,
-                          //       y: invalidPos.y+1,
-                          //     }
-                          //     break;
-                          //   case 'southEast':
-                          //     invalidPos2 = {
-                          //       x: invalidPos.x+1,
-                          //       y: invalidPos.y+1,
-                          //     }
-                          //     break;
-                          //   case 'southWest':
-                          //     invalidPos2 = {
-                          //       x: invalidPos.x-1,
-                          //       y: invalidPos.y+1,
-                          //     }
-                          //     break;
-                          //   case 'east':
-                          //     invalidPos2 = {
-                          //       x: invalidPos.x-1,
-                          //       y: invalidPos.y,
-                          //     }
-                          //     break;
-                          //   case 'west':
-                          //     invalidPos2 = {
-                          //       x: invalidPos.x+1,
-                          //       y: invalidPos.y,
-                          //     }
-                          //     break;
-                          //   default:
-                          //
-                          // }
+
 
 
                           dir = this.getDirectionFromCells(myPos,invalidPos2);
@@ -36000,58 +35485,7 @@ class App extends Component {
 
 
                       invalidPos2 = this.getCellFromDirection(1,cellPos,popup2.position);
-                      // switch (popup2.position) {
-                      //   case 'north':
-                      //     invalidPos2 = {
-                      //       x: cellPos.x,
-                      //       y: cellPos.y-1,
-                      //     }
-                      //     break;
-                      //   case 'northEast':
-                      //     invalidPos2 = {
-                      //       x: cellPos.x+1,
-                      //       y: cellPos.y-1,
-                      //     }
-                      //     break;
-                      //   case 'northWest':
-                      //     invalidPos2 = {
-                      //       x: cellPos.x-1,
-                      //       y: cellPos.y-1,
-                      //     }
-                      //     break;
-                      //   case 'south':
-                      //     invalidPos2 = {
-                      //       x: cellPos.x,
-                      //       y: cellPos.y+1,
-                      //     }
-                      //     break;
-                      //   case 'southEast':
-                      //     invalidPos2 = {
-                      //       x: cellPos.x+1,
-                      //       y: cellPos.y+1,
-                      //     }
-                      //     break;
-                      //   case 'southWest':
-                      //     invalidPos2 = {
-                      //       x: cellPos.x-1,
-                      //       y: cellPos.y+1,
-                      //     }
-                      //     break;
-                      //   case 'east':
-                      //     invalidPos2 = {
-                      //       x: cellPos.x-1,
-                      //       y: cellPos.y,
-                      //     }
-                      //     break;
-                      //   case 'west':
-                      //     invalidPos2 = {
-                      //       x: cellPos.x+1,
-                      //       y: cellPos.y,
-                      //     }
-                      //     break;
-                      //   default:
-                      //
-                      // }
+
 
                       dir = this.getDirectionFromCells(myPos,invalidPos2);
 
