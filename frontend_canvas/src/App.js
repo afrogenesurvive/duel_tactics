@@ -5520,6 +5520,11 @@ class App extends Component {
   }
 
 
+  rnJesus = (min,max) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
   getTarget = (player) => {
     // console.log('checking target',player.number,'dir',player.direction);
 
@@ -5782,6 +5787,37 @@ class App extends Component {
       myCellBlock: false,
     };
   }
+  getDirectionFromCells = (cell1Number,cell2Number) => {
+
+    let direction = "";
+
+    if (cell2Number.x === cell1Number.x && cell2Number.y === cell1Number.y-1) {
+      direction = 'north';
+    }
+    if (cell2Number.x === cell1Number.x-1 && cell2Number.y === cell1Number.y-1) {
+      direction = 'northWest';
+    }
+    if (cell2Number.x === cell1Number.x-1 && cell2Number.y === cell1Number.y) {
+      direction = 'west';
+    }
+    if (cell2Number.x === cell1Number.x-1 && cell2Number.y === cell1Number.y+1) {
+      direction = 'southWest';
+    }
+    if (cell2Number.x === cell1Number.x && cell2Number.y === cell1Number.y+1) {
+      direction = 'south';
+    }
+    if (cell2Number.x === cell1Number.x+1 && cell2Number.y === cell1Number.y+1) {
+      direction = 'southEast';
+    }
+    if (cell2Number.x === cell1Number.x+1 && cell2Number.y === cell1Number.y) {
+      direction = 'east';
+    }
+    if (cell2Number.x === cell1Number.x+1 && cell2Number.y === cell1Number.y-1) {
+      direction = 'northEast';
+    }
+
+    return direction;
+  }
   checkForwardBarrier = (direction,cell) => {
 
     let fwdBarrier = false;
@@ -5837,70 +5873,6 @@ class App extends Component {
     }
     return oppositeDirection;
   }
-  drawPopupBubble = (ctx,x,y,w,h,radius,px,py,color) => {
-
-    var r = x + w;
-    var b = y + h;
-    if(py<y || py>y+h){
-     var con1 = Math.min(Math.max(x+radius,px-10),r-radius-20);
-     var con2 = Math.min(Math.max(x+radius+20,px+10),r-radius);
-    }
-    else{
-     var con1 = Math.min(Math.max(y+radius,py-10),b-radius-20);
-     var con2 = Math.min(Math.max(y+radius+20,py+10),b-radius);
-    }
-    var dir;
-    if(py < y) dir = 2;
-    if(py > y) dir = 3;
-    if(px < x && py>=y && py<=b) dir = 0;
-    if(px > x && py>=y && py<=b) dir = 1;
-    if(px >= x && px <= r && py >= y && py <= b) dir = -1;
-    ctx.clearRect(x,y,this.popupSize,this.popupSize);
-    ctx.beginPath();
-    ctx.strokeStyle=color;
-    ctx.lineWidth="1";
-    ctx.moveTo(x+radius,y);
-    if(dir==2){
-     ctx.lineTo(con1,y);
-     ctx.lineTo(px,py);
-     ctx.lineTo(con2,y);
-     ctx.lineTo(r-radius,y);
-    }
-    else ctx.lineTo(r-radius,y);
-    ctx.quadraticCurveTo(r,y,r,y+radius);
-    if(dir==1){
-     ctx.lineTo(r,con1);
-     ctx.lineTo(px,py);
-     ctx.lineTo(r,con2);
-     ctx.lineTo(r,b-radius);
-    }
-    else ctx.lineTo(r,b-radius);
-    ctx.quadraticCurveTo(r, b, r-radius, b);
-    if(dir==3){
-     ctx.lineTo(con2,b);
-     ctx.lineTo(px,py);
-     ctx.lineTo(con1,b);
-     ctx.lineTo(x+radius,b);
-    }
-    else ctx.lineTo(x+radius,b);
-    ctx.quadraticCurveTo(x, b, x, b-radius);
-    if(dir==0){
-     ctx.lineTo(x,con2);
-     ctx.lineTo(px,py);
-     ctx.lineTo(x,con1);
-     ctx.lineTo(x,y+radius);
-    }
-    else ctx.lineTo(x,y+radius);
-    ctx.quadraticCurveTo(x, y, x+radius, y);
-    ctx.fillStyle = 'white';
-    ctx.fill();
-    ctx.stroke();
-    // ctx.globalCompositeOperation = "source-over";
-    ctx.closePath();
-
-  }
-
-
   aiBoltPathCheck = (aiPlayer) => {
 
     // let path = [];
@@ -7522,591 +7494,6 @@ class App extends Component {
 
     }
 
-  }
-  popupDrawCalc = (position,playerOrigin,plyrNo) => {
-
-    let offset = (this.playerDrawWidth-this.popupSize)/2;
-    let pointerLength = this.popupSize/3;
-    let offset2 = pointerLength+offset;
-
-
-    let playerCorners = [
-      {x:playerOrigin.x,y:playerOrigin.y},
-      {x:undefined,y:undefined},
-      {x:undefined,y:undefined},
-      {x:undefined,y:undefined},
-    ];
-
-    playerCorners[1] = {
-      x: (playerCorners[0].x+this.playerDrawWidth),
-      y: playerCorners[0].y
-    }
-    playerCorners[2] = {
-      x: playerCorners[1].x,
-      y: (playerCorners[1].y+this.playerDrawHeight)
-    }
-    playerCorners[3] = {
-      x: playerCorners[0].x,
-      y: (playerCorners[0].y+this.playerDrawHeight)
-    }
-
-
-    let popupCoords = {
-      playerOrigin: playerCorners[0],
-      origin: {x:undefined,y:undefined},
-      pt2: {x:undefined,y:undefined},
-      pt3: {x:undefined,y:undefined},
-      pt4: {x:undefined,y:undefined},
-      anchor: {x:undefined,y:undefined},
-      midpoint: {x:undefined,y:undefined},
-    }
-    let midpoint;
-
-
-    switch (position) {
-      case 'northWest':
-        popupCoords.origin = {
-          x: playerCorners[0].x+offset,
-          y: playerCorners[0].y-(this.popupSize+offset2)
-        };
-        popupCoords.pt2 = {
-          x: popupCoords.origin.x+this.popupSize,
-          y: popupCoords.origin.y,
-        }
-        popupCoords.pt3 = {
-          x: popupCoords.pt2.x,
-          y: popupCoords.pt2.y+this.popupSize,
-        }
-        popupCoords.pt4 = {
-          x: popupCoords.origin.x,
-          y: popupCoords.origin.y+this.popupSize,
-        }
-        midpoint = {
-          x: popupCoords.pt3.x+(popupCoords.pt4.x-popupCoords.pt3.x)*0.50,
-          y: popupCoords.pt3.y+(popupCoords.pt4.y-popupCoords.pt3.y)*0.50,
-        }
-        popupCoords.anchor = {
-          x: midpoint.x,
-          y: midpoint.y+pointerLength,
-        }
-        popupCoords.midpoint = {
-          x: midpoint.x,
-          y: midpoint.y,
-        }
-      break;
-      case 'southEast':
-        popupCoords.origin = {
-          x: playerCorners[3].x+offset,
-          y: playerCorners[3].y+offset2,
-        };
-        popupCoords.pt2 = {
-          x: popupCoords.origin.x+this.popupSize,
-          y: popupCoords.origin.y,
-        }
-        popupCoords.pt3 = {
-          x: popupCoords.pt2.x,
-          y: popupCoords.pt2.y+this.popupSize,
-        }
-        popupCoords.pt4 = {
-          x: popupCoords.origin.x,
-          y: popupCoords.origin.y+this.popupSize,
-        }
-        midpoint = {
-          x: popupCoords.origin.x+(popupCoords.pt2.x-popupCoords.origin.x)*0.50,
-          y: popupCoords.origin.y+(popupCoords.pt2.y-popupCoords.origin.y)*0.50,
-        }
-        popupCoords.anchor = {
-          x: midpoint.x,
-          y: midpoint.y-pointerLength,
-        }
-        popupCoords.midpoint = {
-          x: midpoint.x,
-          y: midpoint.y,
-        }
-      break;
-      case 'northEast':
-        popupCoords.origin = {
-          x: playerCorners[1].x+offset2,
-          y: playerCorners[1].y+offset,
-        };
-        popupCoords.pt2 = {
-          x: popupCoords.origin.x+this.popupSize,
-          y: popupCoords.origin.y,
-        }
-        popupCoords.pt3 = {
-          x: popupCoords.pt2.x,
-          y: popupCoords.pt2.y+this.popupSize,
-        }
-        popupCoords.pt4 = {
-          x: popupCoords.origin.x,
-          y: popupCoords.origin.y+this.popupSize,
-        }
-        midpoint = {
-          x: popupCoords.origin.x+(popupCoords.pt4.x-popupCoords.origin.x)*0.50,
-          y: popupCoords.origin.y+(popupCoords.pt4.y-popupCoords.origin.y)*0.50,
-        }
-        popupCoords.anchor = {
-          x: midpoint.x-pointerLength,
-          y: midpoint.y,
-        }
-        popupCoords.midpoint = {
-          x: midpoint.x,
-          y: midpoint.y,
-        }
-      break;
-      case 'southWest':
-        popupCoords.origin = {
-          x: playerCorners[0].x-(offset2+this.popupSize),
-          y: playerCorners[0].y+offset,
-        };
-        popupCoords.pt2 = {
-          x: popupCoords.origin.x+this.popupSize,
-          y: popupCoords.origin.y,
-        }
-        popupCoords.pt3 = {
-          x: popupCoords.pt2.x,
-          y: popupCoords.pt2.y+this.popupSize,
-        }
-        popupCoords.pt4 = {
-          x: popupCoords.origin.x,
-          y: popupCoords.origin.y+this.popupSize,
-        }
-        midpoint = {
-          x: popupCoords.pt2.x+(popupCoords.pt3.x-popupCoords.pt2.x)*0.50,
-          y: popupCoords.pt2.y+(popupCoords.pt3.y-popupCoords.pt2.y)*0.50,
-        }
-        popupCoords.anchor = {
-          x: midpoint.x+pointerLength,
-          y: midpoint.y,
-        }
-        popupCoords.midpoint = {
-          x: midpoint.x,
-          y: midpoint.y,
-        }
-      break;
-      case 'west':
-
-        popupCoords.origin = {
-          x: playerCorners[0].x-(offset2+this.popupSize),
-          // y: playerCorners[0].y,
-          y: playerCorners[0].y-(this.popupSize)-5,
-        };
-        popupCoords.pt2 = {
-          x: popupCoords.origin.x+this.popupSize,
-          y: popupCoords.origin.y,
-        }
-        popupCoords.pt3 = {
-          x: popupCoords.pt2.x,
-          y: popupCoords.pt2.y+this.popupSize,
-        }
-        popupCoords.pt4 = {
-          x: popupCoords.origin.x,
-          y: popupCoords.origin.y+this.popupSize,
-        }
-        midpoint = {
-          x: popupCoords.pt2.x+(popupCoords.pt3.x-popupCoords.pt2.x)*0.50,
-          y: popupCoords.pt2.y+(popupCoords.pt3.y-popupCoords.pt2.y)*0.50,
-        }
-        popupCoords.anchor = {
-          x: popupCoords.pt3.x+pointerLength,
-          y: popupCoords.pt3.y,
-        }
-        popupCoords.midpoint = {
-          x: midpoint.x,
-          y: midpoint.y,
-        }
-      break;
-      case 'north':
-        popupCoords.origin = {
-          x: playerCorners[1].x+offset2,
-          y: playerCorners[1].y-(this.popupSize)-5,
-        };
-        popupCoords.pt2 = {
-          x: popupCoords.origin.x+this.popupSize,
-          y: popupCoords.origin.y,
-        }
-        popupCoords.pt3 = {
-          x: popupCoords.pt2.x,
-          y: popupCoords.pt2.y+this.popupSize,
-        }
-        popupCoords.pt4 = {
-          x: popupCoords.origin.x,
-          y: popupCoords.origin.y+this.popupSize,
-        }
-        midpoint = {
-          x: popupCoords.pt2.x+(popupCoords.pt3.x-popupCoords.pt2.x)*0.50,
-          y: popupCoords.pt2.y+(popupCoords.pt3.y-popupCoords.pt2.y)*0.50,
-        }
-        popupCoords.anchor = {
-          x: popupCoords.pt4.x-pointerLength,
-          y: popupCoords.pt4.y,
-        }
-        popupCoords.midpoint = {
-          x: midpoint.x,
-          y: midpoint.y,
-        }
-      break;
-      case 'south':
-        popupCoords.origin = {
-          x: playerCorners[3].x-(this.popupSize+offset2),
-          y: playerCorners[3].y+5,
-        };
-        popupCoords.pt2 = {
-          x: popupCoords.origin.x+this.popupSize,
-          y: popupCoords.origin.y,
-        }
-        popupCoords.pt3 = {
-          x: popupCoords.pt2.x,
-          y: popupCoords.pt2.y+this.popupSize,
-        }
-        popupCoords.pt4 = {
-          x: popupCoords.origin.x,
-          y: popupCoords.origin.y+this.popupSize,
-        }
-        midpoint = {
-          x: popupCoords.pt2.x+(popupCoords.pt3.x-popupCoords.pt2.x)*0.50,
-          y: popupCoords.pt2.y+(popupCoords.pt3.y-popupCoords.pt2.y)*0.50,
-        }
-        popupCoords.anchor = {
-          x: popupCoords.pt2.x+pointerLength,
-          y: popupCoords.pt2.y,
-        }
-        popupCoords.midpoint = {
-          x: midpoint.x,
-          y: midpoint.y,
-        }
-      break;
-      case 'east':
-        popupCoords.origin = {
-          x: playerCorners[2].x+offset2,
-          y: playerCorners[2].y+5,
-        };
-        popupCoords.pt2 = {
-          x: popupCoords.origin.x+this.popupSize,
-          y: popupCoords.origin.y,
-        }
-        popupCoords.pt3 = {
-          x: popupCoords.pt2.x,
-          y: popupCoords.pt2.y+this.popupSize,
-        }
-        popupCoords.pt4 = {
-          x: popupCoords.origin.x,
-          y: popupCoords.origin.y+this.popupSize,
-        }
-        midpoint = {
-          x: popupCoords.pt2.x+(popupCoords.pt3.x-popupCoords.pt2.x)*0.50,
-          y: popupCoords.pt2.y+(popupCoords.pt3.y-popupCoords.pt2.y)*0.50,
-        }
-        popupCoords.anchor = {
-          x: popupCoords.origin.x-pointerLength,
-          y: popupCoords.origin.y,
-        }
-        popupCoords.midpoint = {
-          x: midpoint.x,
-          y: midpoint.y,
-        }
-      break;
-    }
-
-    return popupCoords;
-
-  }
-  playerPopupProgressCalc = (player,popup) => {
-
-      // this.refs.popupProgressSvg.children[2].setAttribute("height","0")
-      // this.refs.popupProgressSvg.children[2].setAttribute("fill","white")
-
-    let path = this.refs.popupProgressSvg.children[1];
-    let rect = this.refs.popupProgressSvg.children[2];
-
-    let phase = "";
-    let perc = 0;
-    let arr = this.popupProgressBorderSvgPath.split(" ");
-    path.setAttribute("fill","blue")
-    let start = 0;
-    let end = 0;
-    let count = 0;
-    let upperIndex = Math.ceil(arr.length*(perc/100));
-    let fillPath = false;
-    let emptyPath = true;
-
-
-    // plyr.prePush.state === true ||
-    // plyr.prePull.state === true ||
-
-
-    if (player.action === "defending") {
-
-      let defendType = player.currentWeapon.type;
-      if ( player.currentWeapon.name === "") {
-        defendType  = "unarmed";
-      }
-      let defendPeak = this.defendAnimRef.peak[defendType];
-      player.defending.limit = this.defendAnimRef.limit[defendType];
-
-      if (player.defending.count < defendPeak && player.defendDecay.state !== true) {
-        phase = "windup";
-        perc = (player.defending.count/defendPeak)*100;
-      }
-      else if (player.defending.count === defendPeak && player.defendDecay.state !== true) {
-          phase = "peak";
-      }
-      if (player.defendDecay.state === true) {
-        if (player.defendDecay.count < 5) {
-          phase = "peak";
-        }
-        if (player.defendDecay.count < player.defendDecay.limit && player.defendDecay.count > 5) {
-          phase = "cooldown";
-          perc = (player.defendDecay.count/player.defendDecay.limit)*100;
-        }
-        if (player.defendDecay.count >= player.defendDecay.limit) {
-          phase = "off";
-        }
-      }
-
-    }
-    if (player.action === "attacking") {
-
-      let atkType = player.currentWeapon.type;
-      if (player.currentWeapon.name === "") {
-        atkType = "unarmed";
-      }
-      let end = this.attackAnimRef.limit[atkType]
-      let attackPeak = this.attackAnimRef.peak[atkType];
-
-      if (player.attacking.count < attackPeak) {
-        phase = "windup";
-        perc = (player.attacking.count/attackPeak)*100;
-      }
-      if (player.attacking.count === attackPeak) {
-        phase = "peak";
-      }
-      if (player.attacking.count > attackPeak && player.attacking.count < end) {
-        if (player.attacking.count < attackPeak + 5) {
-          phase = "peak";
-        }
-        if (player.attacking.count > attackPeak + 5) {
-          phase = "cooldown";
-          perc = (player.attacking.count-(attackPeak+5))/(end-(attackPeak+5))*100;
-        }
-      }
-      if (player.attacking.count >= end) {
-        phase = "off";
-      }
-
-    }
-    if (player.action === "dodging") {
-      // console.log('popup progress dodging',this.time);
-      let dodgeCondition = false;
-      if (player.dodging.countState === true && player.dodging.count <= (player.dodging.peak.start - player.crits.dodge) && this.keyPressed[player.number-1].dodge === true) {
-        // console.log('dodge condition 1: true');
-        dodgeCondition = true;
-      }
-      if (player.dodging.countState === true && player.dodging.count > (player.dodging.peak.start - player.crits.dodge)) {
-        // console.log('dodge condition 2: true');
-        dodgeCondition = true;
-      }
-
-      let startMod = player.crits.dodge;
-      let endMod = player.crits.dodge;
-      if (player.crits.dodge > 5) {
-        player.crits.dodge = 5;
-      }
-      if (player.dodging.peak.start - startMod < 2) {
-        startMod = player.dodging.peak.start-2;
-      }
-      if ((player.dodging.peak.end + endMod) > player.dodging.limit-2) {
-        endMod = player.dodging.limit-(2+player.dodging.peak.end);
-      }
-      if (dodgeCondition === true) {
-
-      }
-
-      if (player.dodging.count === 0) {
-        // console.log('windup',player.dodging.count);
-        phase = "windup";
-        perc = (player.dodging.count/(player.dodging.peak.start - startMod))*100
-      }
-      if ( player.dodging.count >= 1 && player.dodging.count < (player.dodging.peak.start - startMod)) {
-        // console.log('windup start:',1,'count:',player.dodging.count,'limit:',(player.dodging.peak.start - startMod));
-        phase = "windup";
-        perc = (player.dodging.count/(player.dodging.peak.start - startMod))*100;
-      }
-      if (player.dodging.count >= (player.dodging.peak.start - startMod) && player.dodging.count < (player.dodging.peak.end + endMod)) {
-        // console.log('peak start:',(player.dodging.peak.start - startMod),'count:',player.dodging.count,'limit:',(player.dodging.peak.end + endMod));
-        phase = "peak";
-      }
-
-      if (player.dodging.count > (player.dodging.peak.end + endMod)) {
-        // console.log('cooldown start:',(player.dodging.peak.end + endMod),'count:',player.dodging.count,'limit:',player.dodging.limit);
-        phase = "cooldown";
-        // perc = ((player.dodging.count-(player.dodging.peak.end + endMod))/(player.dodging.limit-(player.dodging.peak.end + endMod)))*100;
-        perc = (player.dodging.count/player.dodging.limit)*100;
-      }
-      if (player.dodging.count >= player.dodging.limit) {
-        // console.log('end count',player.dodging.count);
-        phase = "off";
-      }
-    }
-    if (player.prePush.state === true) {
-      if (player.prePush.count < player.prePush.limit) {
-        phase = "windup";
-        perc = (player.prePush.count/player.prePush.limit)*100;
-      }
-      if (player.prePush.count >= player.prePush.limit) {
-        phase = "off";
-      }
-
-    }
-    if (player.prePull.state === true) {
-      if (player.prePull.count < player.prePull.limit) {
-        phase = "windup";
-        perc = (player.prePull.count/player.prePull.limit)*100;
-      }
-      if (player.prePull.count >= player.prePull.limit) {
-        phase = "off";
-      }
-    }
-
-
-
-    if (phase === 'windup') {
-      fillPath = true;
-    }
-    if (phase === "peak") {
-      perc = 100;
-      path.setAttribute("d",arr.join(" "));
-      fillPath = false;
-      emptyPath = false;
-    }
-    if (phase === "cooldown") {
-      perc = 100-perc;
-      emptyPath = true;
-    }
-    if (phase === "off") {
-      perc = 0;
-      // perc = 100;
-      path.setAttribute("d",arr.join(" "));
-      fillPath = false;
-      emptyPath = false;
-    }
-    switch (phase) {
-      case "windup":
-          path.setAttribute("fill","red")
-        break;
-      case "peak":
-          path.setAttribute("fill","green")
-        break;
-      case "cooldown":
-          path.setAttribute("fill","blue")
-        break;
-      case "off":
-          path.setAttribute("fill","yellow")
-        break;
-      default:
-
-    }
-
-    let baseColor = "";
-    if (perc >= 0 && perc <= 40) {
-      rect.setAttribute("fill", "red")
-      baseColor = "red";
-    }
-    if (perc >= 40 && perc <= 60) {
-      rect.setAttribute("fill", "orange")
-      baseColor = "orange";
-    }
-    if (perc >= 60 && perc <= 70) {
-      rect.setAttribute("fill", "yellow")
-      baseColor = "yellow";
-    }
-    if (perc >= 70 && perc <= 80) {
-      rect.setAttribute("fill", "blue")
-      baseColor = "blue";
-    }
-    if (perc >= 80) {
-      rect.setAttribute("fill", "green")
-      baseColor = "green";
-    }
-
-    // Gradients:
-    // rect.setAttribute("fill","url(#grad)");
-    this.popupProgressImgGradColor1 = baseColor;
-    switch (phase) {
-      case "windup" || "off":
-          this.popupProgressImgGradColor2 = "red";
-        break;
-      case "peak":
-          this.popupProgressImgGradColor2 = "green";
-        break;
-      case "cooldown":
-          this.popupProgressImgGradColor2 = "blue";
-        break;
-      default:
-
-    }
-
-
-    // if (fillPath === true) {
-    //   let newArr = [];
-    //   for (var i = 0; i < upperIndex+1; i++) {
-    //     newArr.push(arr[i]);
-    //   }
-    //   this.refs.popupProgressSvg.children[2].setAttribute("d",newArr.join(" "));
-    // }
-    // if (emptyPath === true) {
-    //   let newArr = arr;
-    //   this.refs.popupProgressSvg.children[2].setAttribute("d",arr.join(" "));
-    //   for (var i = 0; i < upperIndex+1; i++) {
-    //     newArr.pop();
-    //   }
-    //   this.refs.popupProgressSvg.children[2].setAttribute("d",newArr.join(" "));
-    // }
-
-    // function svgToPng(svg, callback) {
-    //   const url = getSvgUrl(svg);
-    // }
-    // function getSvgUrl(svg) {
-    //   return URL.createObjectURL(new Blob([svg], {
-    //     type: 'image/svg+xml'
-    //   }));
-    // }
-    // svgToPng(svg, (imgData) => {
-    //   pngImage.src = imgData;
-    // });
-
-    // SET SVG IMAGE filter
-    // var xml = new XMLSerializer().serializeToString(this.refs.popupProgressSvg);
-    // var svg64 = btoa(xml); //for utf8: btoa(unescape(encodeURIComponent(xml)))
-    // var b64start = 'data:image/svg+xml;base64,';
-    // var image64 = b64start + svg64;
-    // this.refs.popupProgressImg.src = image64;
-
-    // console.log("playerPopupProgressCalc perc: ",((100-perc)/100).toFixed(2) ,(perc/100).toFixed(2));
-
-    // return (100-perc)/100;
-    return -(perc/100).toFixed(2);
-
-  }
-  cartesianToIsometric = (cartPt) => {
-
-    class Point {
-        constructor(x, y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-    var tempPt = new Point();
-    tempPt.x = cartPt.x - cartPt.y;
-    tempPt.y = (cartPt.x + cartPt.y) / 2;
-    return (tempPt);
-
-  }
-  rnJesus = (min,max) => {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
 
@@ -11154,6 +10541,648 @@ class App extends Component {
 
 
     return {pos:newPosition, step:step};
+
+  }
+  drawPopupBubble = (ctx,x,y,w,h,radius,px,py,color) => {
+
+    var r = x + w;
+    var b = y + h;
+    if(py<y || py>y+h){
+     var con1 = Math.min(Math.max(x+radius,px-10),r-radius-20);
+     var con2 = Math.min(Math.max(x+radius+20,px+10),r-radius);
+    }
+    else{
+     var con1 = Math.min(Math.max(y+radius,py-10),b-radius-20);
+     var con2 = Math.min(Math.max(y+radius+20,py+10),b-radius);
+    }
+    var dir;
+    if(py < y) dir = 2;
+    if(py > y) dir = 3;
+    if(px < x && py>=y && py<=b) dir = 0;
+    if(px > x && py>=y && py<=b) dir = 1;
+    if(px >= x && px <= r && py >= y && py <= b) dir = -1;
+    ctx.clearRect(x,y,this.popupSize,this.popupSize);
+    ctx.beginPath();
+    ctx.strokeStyle=color;
+    ctx.lineWidth="1";
+    ctx.moveTo(x+radius,y);
+    if(dir==2){
+     ctx.lineTo(con1,y);
+     ctx.lineTo(px,py);
+     ctx.lineTo(con2,y);
+     ctx.lineTo(r-radius,y);
+    }
+    else ctx.lineTo(r-radius,y);
+    ctx.quadraticCurveTo(r,y,r,y+radius);
+    if(dir==1){
+     ctx.lineTo(r,con1);
+     ctx.lineTo(px,py);
+     ctx.lineTo(r,con2);
+     ctx.lineTo(r,b-radius);
+    }
+    else ctx.lineTo(r,b-radius);
+    ctx.quadraticCurveTo(r, b, r-radius, b);
+    if(dir==3){
+     ctx.lineTo(con2,b);
+     ctx.lineTo(px,py);
+     ctx.lineTo(con1,b);
+     ctx.lineTo(x+radius,b);
+    }
+    else ctx.lineTo(x+radius,b);
+    ctx.quadraticCurveTo(x, b, x, b-radius);
+    if(dir==0){
+     ctx.lineTo(x,con2);
+     ctx.lineTo(px,py);
+     ctx.lineTo(x,con1);
+     ctx.lineTo(x,y+radius);
+    }
+    else ctx.lineTo(x,y+radius);
+    ctx.quadraticCurveTo(x, y, x+radius, y);
+    ctx.fillStyle = 'white';
+    ctx.fill();
+    ctx.stroke();
+    // ctx.globalCompositeOperation = "source-over";
+    ctx.closePath();
+
+  }
+  popupDrawCalc = (position,playerOrigin,plyrNo) => {
+
+    let offset = (this.playerDrawWidth-this.popupSize)/2;
+    let pointerLength = this.popupSize/3;
+    let offset2 = pointerLength+offset;
+
+
+    let playerCorners = [
+      {x:playerOrigin.x,y:playerOrigin.y},
+      {x:undefined,y:undefined},
+      {x:undefined,y:undefined},
+      {x:undefined,y:undefined},
+    ];
+
+    playerCorners[1] = {
+      x: (playerCorners[0].x+this.playerDrawWidth),
+      y: playerCorners[0].y
+    }
+    playerCorners[2] = {
+      x: playerCorners[1].x,
+      y: (playerCorners[1].y+this.playerDrawHeight)
+    }
+    playerCorners[3] = {
+      x: playerCorners[0].x,
+      y: (playerCorners[0].y+this.playerDrawHeight)
+    }
+
+
+    let popupCoords = {
+      playerOrigin: playerCorners[0],
+      origin: {x:undefined,y:undefined},
+      pt2: {x:undefined,y:undefined},
+      pt3: {x:undefined,y:undefined},
+      pt4: {x:undefined,y:undefined},
+      anchor: {x:undefined,y:undefined},
+      midpoint: {x:undefined,y:undefined},
+    }
+    let midpoint;
+
+
+    switch (position) {
+      case 'northWest':
+        popupCoords.origin = {
+          x: playerCorners[0].x+offset,
+          y: playerCorners[0].y-(this.popupSize+offset2)
+        };
+        popupCoords.pt2 = {
+          x: popupCoords.origin.x+this.popupSize,
+          y: popupCoords.origin.y,
+        }
+        popupCoords.pt3 = {
+          x: popupCoords.pt2.x,
+          y: popupCoords.pt2.y+this.popupSize,
+        }
+        popupCoords.pt4 = {
+          x: popupCoords.origin.x,
+          y: popupCoords.origin.y+this.popupSize,
+        }
+        midpoint = {
+          x: popupCoords.pt3.x+(popupCoords.pt4.x-popupCoords.pt3.x)*0.50,
+          y: popupCoords.pt3.y+(popupCoords.pt4.y-popupCoords.pt3.y)*0.50,
+        }
+        popupCoords.anchor = {
+          x: midpoint.x,
+          y: midpoint.y+pointerLength,
+        }
+        popupCoords.midpoint = {
+          x: midpoint.x,
+          y: midpoint.y,
+        }
+      break;
+      case 'southEast':
+        popupCoords.origin = {
+          x: playerCorners[3].x+offset,
+          y: playerCorners[3].y+offset2,
+        };
+        popupCoords.pt2 = {
+          x: popupCoords.origin.x+this.popupSize,
+          y: popupCoords.origin.y,
+        }
+        popupCoords.pt3 = {
+          x: popupCoords.pt2.x,
+          y: popupCoords.pt2.y+this.popupSize,
+        }
+        popupCoords.pt4 = {
+          x: popupCoords.origin.x,
+          y: popupCoords.origin.y+this.popupSize,
+        }
+        midpoint = {
+          x: popupCoords.origin.x+(popupCoords.pt2.x-popupCoords.origin.x)*0.50,
+          y: popupCoords.origin.y+(popupCoords.pt2.y-popupCoords.origin.y)*0.50,
+        }
+        popupCoords.anchor = {
+          x: midpoint.x,
+          y: midpoint.y-pointerLength,
+        }
+        popupCoords.midpoint = {
+          x: midpoint.x,
+          y: midpoint.y,
+        }
+      break;
+      case 'northEast':
+        popupCoords.origin = {
+          x: playerCorners[1].x+offset2,
+          y: playerCorners[1].y+offset,
+        };
+        popupCoords.pt2 = {
+          x: popupCoords.origin.x+this.popupSize,
+          y: popupCoords.origin.y,
+        }
+        popupCoords.pt3 = {
+          x: popupCoords.pt2.x,
+          y: popupCoords.pt2.y+this.popupSize,
+        }
+        popupCoords.pt4 = {
+          x: popupCoords.origin.x,
+          y: popupCoords.origin.y+this.popupSize,
+        }
+        midpoint = {
+          x: popupCoords.origin.x+(popupCoords.pt4.x-popupCoords.origin.x)*0.50,
+          y: popupCoords.origin.y+(popupCoords.pt4.y-popupCoords.origin.y)*0.50,
+        }
+        popupCoords.anchor = {
+          x: midpoint.x-pointerLength,
+          y: midpoint.y,
+        }
+        popupCoords.midpoint = {
+          x: midpoint.x,
+          y: midpoint.y,
+        }
+      break;
+      case 'southWest':
+        popupCoords.origin = {
+          x: playerCorners[0].x-(offset2+this.popupSize),
+          y: playerCorners[0].y+offset,
+        };
+        popupCoords.pt2 = {
+          x: popupCoords.origin.x+this.popupSize,
+          y: popupCoords.origin.y,
+        }
+        popupCoords.pt3 = {
+          x: popupCoords.pt2.x,
+          y: popupCoords.pt2.y+this.popupSize,
+        }
+        popupCoords.pt4 = {
+          x: popupCoords.origin.x,
+          y: popupCoords.origin.y+this.popupSize,
+        }
+        midpoint = {
+          x: popupCoords.pt2.x+(popupCoords.pt3.x-popupCoords.pt2.x)*0.50,
+          y: popupCoords.pt2.y+(popupCoords.pt3.y-popupCoords.pt2.y)*0.50,
+        }
+        popupCoords.anchor = {
+          x: midpoint.x+pointerLength,
+          y: midpoint.y,
+        }
+        popupCoords.midpoint = {
+          x: midpoint.x,
+          y: midpoint.y,
+        }
+      break;
+      case 'west':
+
+        popupCoords.origin = {
+          x: playerCorners[0].x-(offset2+this.popupSize),
+          // y: playerCorners[0].y,
+          y: playerCorners[0].y-(this.popupSize)-5,
+        };
+        popupCoords.pt2 = {
+          x: popupCoords.origin.x+this.popupSize,
+          y: popupCoords.origin.y,
+        }
+        popupCoords.pt3 = {
+          x: popupCoords.pt2.x,
+          y: popupCoords.pt2.y+this.popupSize,
+        }
+        popupCoords.pt4 = {
+          x: popupCoords.origin.x,
+          y: popupCoords.origin.y+this.popupSize,
+        }
+        midpoint = {
+          x: popupCoords.pt2.x+(popupCoords.pt3.x-popupCoords.pt2.x)*0.50,
+          y: popupCoords.pt2.y+(popupCoords.pt3.y-popupCoords.pt2.y)*0.50,
+        }
+        popupCoords.anchor = {
+          x: popupCoords.pt3.x+pointerLength,
+          y: popupCoords.pt3.y,
+        }
+        popupCoords.midpoint = {
+          x: midpoint.x,
+          y: midpoint.y,
+        }
+      break;
+      case 'north':
+        popupCoords.origin = {
+          x: playerCorners[1].x+offset2,
+          y: playerCorners[1].y-(this.popupSize)-5,
+        };
+        popupCoords.pt2 = {
+          x: popupCoords.origin.x+this.popupSize,
+          y: popupCoords.origin.y,
+        }
+        popupCoords.pt3 = {
+          x: popupCoords.pt2.x,
+          y: popupCoords.pt2.y+this.popupSize,
+        }
+        popupCoords.pt4 = {
+          x: popupCoords.origin.x,
+          y: popupCoords.origin.y+this.popupSize,
+        }
+        midpoint = {
+          x: popupCoords.pt2.x+(popupCoords.pt3.x-popupCoords.pt2.x)*0.50,
+          y: popupCoords.pt2.y+(popupCoords.pt3.y-popupCoords.pt2.y)*0.50,
+        }
+        popupCoords.anchor = {
+          x: popupCoords.pt4.x-pointerLength,
+          y: popupCoords.pt4.y,
+        }
+        popupCoords.midpoint = {
+          x: midpoint.x,
+          y: midpoint.y,
+        }
+      break;
+      case 'south':
+        popupCoords.origin = {
+          x: playerCorners[3].x-(this.popupSize+offset2),
+          y: playerCorners[3].y+5,
+        };
+        popupCoords.pt2 = {
+          x: popupCoords.origin.x+this.popupSize,
+          y: popupCoords.origin.y,
+        }
+        popupCoords.pt3 = {
+          x: popupCoords.pt2.x,
+          y: popupCoords.pt2.y+this.popupSize,
+        }
+        popupCoords.pt4 = {
+          x: popupCoords.origin.x,
+          y: popupCoords.origin.y+this.popupSize,
+        }
+        midpoint = {
+          x: popupCoords.pt2.x+(popupCoords.pt3.x-popupCoords.pt2.x)*0.50,
+          y: popupCoords.pt2.y+(popupCoords.pt3.y-popupCoords.pt2.y)*0.50,
+        }
+        popupCoords.anchor = {
+          x: popupCoords.pt2.x+pointerLength,
+          y: popupCoords.pt2.y,
+        }
+        popupCoords.midpoint = {
+          x: midpoint.x,
+          y: midpoint.y,
+        }
+      break;
+      case 'east':
+        popupCoords.origin = {
+          x: playerCorners[2].x+offset2,
+          y: playerCorners[2].y+5,
+        };
+        popupCoords.pt2 = {
+          x: popupCoords.origin.x+this.popupSize,
+          y: popupCoords.origin.y,
+        }
+        popupCoords.pt3 = {
+          x: popupCoords.pt2.x,
+          y: popupCoords.pt2.y+this.popupSize,
+        }
+        popupCoords.pt4 = {
+          x: popupCoords.origin.x,
+          y: popupCoords.origin.y+this.popupSize,
+        }
+        midpoint = {
+          x: popupCoords.pt2.x+(popupCoords.pt3.x-popupCoords.pt2.x)*0.50,
+          y: popupCoords.pt2.y+(popupCoords.pt3.y-popupCoords.pt2.y)*0.50,
+        }
+        popupCoords.anchor = {
+          x: popupCoords.origin.x-pointerLength,
+          y: popupCoords.origin.y,
+        }
+        popupCoords.midpoint = {
+          x: midpoint.x,
+          y: midpoint.y,
+        }
+      break;
+    }
+
+    return popupCoords;
+
+  }
+  playerPopupProgressCalc = (player,popup) => {
+
+      // this.refs.popupProgressSvg.children[2].setAttribute("height","0")
+      // this.refs.popupProgressSvg.children[2].setAttribute("fill","white")
+
+    let path = this.refs.popupProgressSvg.children[1];
+    let rect = this.refs.popupProgressSvg.children[2];
+
+    let phase = "";
+    let perc = 0;
+    let arr = this.popupProgressBorderSvgPath.split(" ");
+    path.setAttribute("fill","blue")
+    let start = 0;
+    let end = 0;
+    let count = 0;
+    let upperIndex = Math.ceil(arr.length*(perc/100));
+    let fillPath = false;
+    let emptyPath = true;
+
+
+    // plyr.prePush.state === true ||
+    // plyr.prePull.state === true ||
+
+
+    if (player.action === "defending") {
+
+      let defendType = player.currentWeapon.type;
+      if ( player.currentWeapon.name === "") {
+        defendType  = "unarmed";
+      }
+      let defendPeak = this.defendAnimRef.peak[defendType];
+      player.defending.limit = this.defendAnimRef.limit[defendType];
+
+      if (player.defending.count < defendPeak && player.defendDecay.state !== true) {
+        phase = "windup";
+        perc = (player.defending.count/defendPeak)*100;
+      }
+      else if (player.defending.count === defendPeak && player.defendDecay.state !== true) {
+          phase = "peak";
+      }
+      if (player.defendDecay.state === true) {
+        if (player.defendDecay.count < 5) {
+          phase = "peak";
+        }
+        if (player.defendDecay.count < player.defendDecay.limit && player.defendDecay.count > 5) {
+          phase = "cooldown";
+          perc = (player.defendDecay.count/player.defendDecay.limit)*100;
+        }
+        if (player.defendDecay.count >= player.defendDecay.limit) {
+          phase = "off";
+        }
+      }
+
+    }
+    if (player.action === "attacking") {
+
+      let atkType = player.currentWeapon.type;
+      if (player.currentWeapon.name === "") {
+        atkType = "unarmed";
+      }
+      let end = this.attackAnimRef.limit[atkType]
+      let attackPeak = this.attackAnimRef.peak[atkType];
+
+      if (player.attacking.count < attackPeak) {
+        phase = "windup";
+        perc = (player.attacking.count/attackPeak)*100;
+      }
+      if (player.attacking.count === attackPeak) {
+        phase = "peak";
+      }
+      if (player.attacking.count > attackPeak && player.attacking.count < end) {
+        if (player.attacking.count < attackPeak + 5) {
+          phase = "peak";
+        }
+        if (player.attacking.count > attackPeak + 5) {
+          phase = "cooldown";
+          perc = (player.attacking.count-(attackPeak+5))/(end-(attackPeak+5))*100;
+        }
+      }
+      if (player.attacking.count >= end) {
+        phase = "off";
+      }
+
+    }
+    if (player.action === "dodging") {
+      // console.log('popup progress dodging',this.time);
+      let dodgeCondition = false;
+      if (player.dodging.countState === true && player.dodging.count <= (player.dodging.peak.start - player.crits.dodge) && this.keyPressed[player.number-1].dodge === true) {
+        // console.log('dodge condition 1: true');
+        dodgeCondition = true;
+      }
+      if (player.dodging.countState === true && player.dodging.count > (player.dodging.peak.start - player.crits.dodge)) {
+        // console.log('dodge condition 2: true');
+        dodgeCondition = true;
+      }
+
+      let startMod = player.crits.dodge;
+      let endMod = player.crits.dodge;
+      if (player.crits.dodge > 5) {
+        player.crits.dodge = 5;
+      }
+      if (player.dodging.peak.start - startMod < 2) {
+        startMod = player.dodging.peak.start-2;
+      }
+      if ((player.dodging.peak.end + endMod) > player.dodging.limit-2) {
+        endMod = player.dodging.limit-(2+player.dodging.peak.end);
+      }
+      if (dodgeCondition === true) {
+
+      }
+
+      if (player.dodging.count === 0) {
+        // console.log('windup',player.dodging.count);
+        phase = "windup";
+        perc = (player.dodging.count/(player.dodging.peak.start - startMod))*100
+      }
+      if ( player.dodging.count >= 1 && player.dodging.count < (player.dodging.peak.start - startMod)) {
+        // console.log('windup start:',1,'count:',player.dodging.count,'limit:',(player.dodging.peak.start - startMod));
+        phase = "windup";
+        perc = (player.dodging.count/(player.dodging.peak.start - startMod))*100;
+      }
+      if (player.dodging.count >= (player.dodging.peak.start - startMod) && player.dodging.count < (player.dodging.peak.end + endMod)) {
+        // console.log('peak start:',(player.dodging.peak.start - startMod),'count:',player.dodging.count,'limit:',(player.dodging.peak.end + endMod));
+        phase = "peak";
+      }
+
+      if (player.dodging.count > (player.dodging.peak.end + endMod)) {
+        // console.log('cooldown start:',(player.dodging.peak.end + endMod),'count:',player.dodging.count,'limit:',player.dodging.limit);
+        phase = "cooldown";
+        // perc = ((player.dodging.count-(player.dodging.peak.end + endMod))/(player.dodging.limit-(player.dodging.peak.end + endMod)))*100;
+        perc = (player.dodging.count/player.dodging.limit)*100;
+      }
+      if (player.dodging.count >= player.dodging.limit) {
+        // console.log('end count',player.dodging.count);
+        phase = "off";
+      }
+    }
+    if (player.prePush.state === true) {
+      if (player.prePush.count < player.prePush.limit) {
+        phase = "windup";
+        perc = (player.prePush.count/player.prePush.limit)*100;
+      }
+      if (player.prePush.count >= player.prePush.limit) {
+        phase = "off";
+      }
+
+    }
+    if (player.prePull.state === true) {
+      if (player.prePull.count < player.prePull.limit) {
+        phase = "windup";
+        perc = (player.prePull.count/player.prePull.limit)*100;
+      }
+      if (player.prePull.count >= player.prePull.limit) {
+        phase = "off";
+      }
+    }
+
+
+
+    if (phase === 'windup') {
+      fillPath = true;
+    }
+    if (phase === "peak") {
+      perc = 100;
+      path.setAttribute("d",arr.join(" "));
+      fillPath = false;
+      emptyPath = false;
+    }
+    if (phase === "cooldown") {
+      perc = 100-perc;
+      emptyPath = true;
+    }
+    if (phase === "off") {
+      perc = 0;
+      // perc = 100;
+      path.setAttribute("d",arr.join(" "));
+      fillPath = false;
+      emptyPath = false;
+    }
+    switch (phase) {
+      case "windup":
+          path.setAttribute("fill","red")
+        break;
+      case "peak":
+          path.setAttribute("fill","green")
+        break;
+      case "cooldown":
+          path.setAttribute("fill","blue")
+        break;
+      case "off":
+          path.setAttribute("fill","yellow")
+        break;
+      default:
+
+    }
+
+    let baseColor = "";
+    if (perc >= 0 && perc <= 40) {
+      rect.setAttribute("fill", "red")
+      baseColor = "red";
+    }
+    if (perc >= 40 && perc <= 60) {
+      rect.setAttribute("fill", "orange")
+      baseColor = "orange";
+    }
+    if (perc >= 60 && perc <= 70) {
+      rect.setAttribute("fill", "yellow")
+      baseColor = "yellow";
+    }
+    if (perc >= 70 && perc <= 80) {
+      rect.setAttribute("fill", "blue")
+      baseColor = "blue";
+    }
+    if (perc >= 80) {
+      rect.setAttribute("fill", "green")
+      baseColor = "green";
+    }
+
+    // Gradients:
+    // rect.setAttribute("fill","url(#grad)");
+    this.popupProgressImgGradColor1 = baseColor;
+    switch (phase) {
+      case "windup" || "off":
+          this.popupProgressImgGradColor2 = "red";
+        break;
+      case "peak":
+          this.popupProgressImgGradColor2 = "green";
+        break;
+      case "cooldown":
+          this.popupProgressImgGradColor2 = "blue";
+        break;
+      default:
+
+    }
+
+
+    // if (fillPath === true) {
+    //   let newArr = [];
+    //   for (var i = 0; i < upperIndex+1; i++) {
+    //     newArr.push(arr[i]);
+    //   }
+    //   this.refs.popupProgressSvg.children[2].setAttribute("d",newArr.join(" "));
+    // }
+    // if (emptyPath === true) {
+    //   let newArr = arr;
+    //   this.refs.popupProgressSvg.children[2].setAttribute("d",arr.join(" "));
+    //   for (var i = 0; i < upperIndex+1; i++) {
+    //     newArr.pop();
+    //   }
+    //   this.refs.popupProgressSvg.children[2].setAttribute("d",newArr.join(" "));
+    // }
+
+    // function svgToPng(svg, callback) {
+    //   const url = getSvgUrl(svg);
+    // }
+    // function getSvgUrl(svg) {
+    //   return URL.createObjectURL(new Blob([svg], {
+    //     type: 'image/svg+xml'
+    //   }));
+    // }
+    // svgToPng(svg, (imgData) => {
+    //   pngImage.src = imgData;
+    // });
+
+    // SET SVG IMAGE filter
+    // var xml = new XMLSerializer().serializeToString(this.refs.popupProgressSvg);
+    // var svg64 = btoa(xml); //for utf8: btoa(unescape(encodeURIComponent(xml)))
+    // var b64start = 'data:image/svg+xml;base64,';
+    // var image64 = b64start + svg64;
+    // this.refs.popupProgressImg.src = image64;
+
+    // console.log("playerPopupProgressCalc perc: ",((100-perc)/100).toFixed(2) ,(perc/100).toFixed(2));
+
+    // return (100-perc)/100;
+    return -(perc/100).toFixed(2);
+
+  }
+  cartesianToIsometric = (cartPt) => {
+
+    class Point {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    var tempPt = new Point();
+    tempPt.x = cartPt.x - cartPt.y;
+    tempPt.y = (cartPt.x + cartPt.y) / 2;
+    return (tempPt);
 
   }
 
@@ -31752,7 +31781,11 @@ class App extends Component {
         //     }
         //   )
         // }
-        // if (!this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 1 && x.cell.number.y === 5)) {
+        // if (
+        //   newArray[i] !==  "hpUp" &&
+        //   newArray[i] !==  "hpDown" &&
+        //   !this.cellPopups.find(x => x.msg === newArray[i] && x.cell.number.x === 1 && x.cell.number.y === 5)
+        // ) {
         //   this.cellPopups.push(
         //     {
         //       state: false,
@@ -34037,68 +34070,6 @@ class App extends Component {
           // console.log(this.refs.pickupAmmo);
 
 
-          // let drawBubble = (ctx,x,y,w,h,radius,px,py,color) => {
-          //
-          //    var r = x + w;
-          //    var b = y + h;
-          //    if(py<y || py>y+h){
-          //     var con1 = Math.min(Math.max(x+radius,px-10),r-radius-20);
-          //     var con2 = Math.min(Math.max(x+radius+20,px+10),r-radius);
-          //    }
-          //    else{
-          //     var con1 = Math.min(Math.max(y+radius,py-10),b-radius-20);
-          //     var con2 = Math.min(Math.max(y+radius+20,py+10),b-radius);
-          //    }
-          //    var dir;
-          //    if(py < y) dir = 2;
-          //    if(py > y) dir = 3;
-          //    if(px < x && py>=y && py<=b) dir = 0;
-          //    if(px > x && py>=y && py<=b) dir = 1;
-          //    if(px >= x && px <= r && py >= y && py <= b) dir = -1;
-          //    ctx.clearRect(x,y,this.popupSize,this.popupSize);
-          //    ctx.beginPath();
-          //    ctx.strokeStyle=color;
-          //    ctx.lineWidth="1";
-          //    ctx.moveTo(x+radius,y);
-          //    if(dir==2){
-          //     ctx.lineTo(con1,y);
-          //     ctx.lineTo(px,py);
-          //     ctx.lineTo(con2,y);
-          //     ctx.lineTo(r-radius,y);
-          //    }
-          //    else ctx.lineTo(r-radius,y);
-          //    ctx.quadraticCurveTo(r,y,r,y+radius);
-          //    if(dir==1){
-          //     ctx.lineTo(r,con1);
-          //     ctx.lineTo(px,py);
-          //     ctx.lineTo(r,con2);
-          //     ctx.lineTo(r,b-radius);
-          //    }
-          //    else ctx.lineTo(r,b-radius);
-          //    ctx.quadraticCurveTo(r, b, r-radius, b);
-          //    if(dir==3){
-          //     ctx.lineTo(con2,b);
-          //     ctx.lineTo(px,py);
-          //     ctx.lineTo(con1,b);
-          //     ctx.lineTo(x+radius,b);
-          //    }
-          //    else ctx.lineTo(x+radius,b);
-          //    ctx.quadraticCurveTo(x, b, x, b-radius);
-          //    if(dir==0){
-          //     ctx.lineTo(x,con2);
-          //     ctx.lineTo(px,py);
-          //     ctx.lineTo(x,con1);
-          //     ctx.lineTo(x,y+radius);
-          //    }
-          //    else ctx.lineTo(x,y+radius);
-          //    ctx.quadraticCurveTo(x, y, x+radius, y);
-          //    context.fillStyle = 'white';
-          //    ctx.fill();
-          //    ctx.stroke();
-          //    // ctx.globalCompositeOperation = "source-over";
-          //    ctx.closePath();
-          // }
-
           for (const popup of this.cellPopups) {
 
             let popupBorderColor = 'black';
@@ -34136,30 +34107,8 @@ class App extends Component {
                     // let invalidPositions = [invalidPos];
 
                     // GET DIRECTION OF PLAYER CELL RELATIVE TO ME
-                    if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
-                      dir = 'north';
-                    }
-                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y-1) {
-                      dir = 'northWest';
-                    }
-                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y) {
-                      dir = 'west';
-                    }
-                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y+1) {
-                      dir = 'southWest';
-                    }
-                    if (invalidPos.x === myPos.x && invalidPos.y === myPos.y+1) {
-                      dir = 'south';
-                    }
-                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y+1) {
-                      dir = 'southEast';
-                    }
-                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y) {
-                      dir = 'east';
-                    }
-                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y-1) {
-                      dir = 'northEast';
-                    }
+                    dir = this.getDirectionFromCells(myPos,invalidPos);
+
                     if (dir && positions.includes(dir) === true) {
                       positions.splice(positions.indexOf(dir),1);
                       // console.log('dont draw over player @',dir,'choose frome these position',positions);
@@ -34233,30 +34182,8 @@ class App extends Component {
 
                         // let dir = undefined;
 
-                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
-                          dir = 'north';
-                        }
-                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
-                          dir = 'northWest';
-                        }
-                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
-                          dir = 'west';
-                        }
-                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
-                          dir = 'southWest';
-                        }
-                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
-                          dir = 'south';
-                        }
-                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
-                          dir = 'southEast';
-                        }
-                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
-                          dir = 'east';
-                        }
-                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
-                          dir = 'northEast';
-                        }
+                        dir = this.getDirectionFromCells(myPos,invalidPos2);
+
                         if (dir && positions.includes(dir) === true) {
                           positions.splice(positions.indexOf(dir),1);
                           // console.log('dont draw over player @',dir,'choose frome these position',positions);
@@ -34343,30 +34270,9 @@ class App extends Component {
 
                     }
 
-                    if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
-                      dir = 'north';
-                    }
-                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
-                      dir = 'northWest';
-                    }
-                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
-                      dir = 'west';
-                    }
-                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
-                      dir = 'southWest';
-                    }
-                    if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
-                      dir = 'south';
-                    }
-                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
-                      dir = 'southEast';
-                    }
-                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
-                      dir = 'east';
-                    }
-                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
-                      dir = 'northEast';
-                    }
+                    dir = this.getDirectionFromCells(myPos,invalidPos2);
+
+
                     if (dir && positions.includes(dir) === true) {
                       positions.splice(positions.indexOf(dir),1);
                       // console.log('dont draw over player @',dir,'choose frome these position',positions);
@@ -34388,7 +34294,6 @@ class App extends Component {
                 popup.img = this.popupImageRef[popup.msg]
 
                 popupDrawCoords = this.popupDrawCalc(popup.position,{x:popup.cell.center.x-25,y:popup.cell.center.y-15},0);
-                // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
                 this.drawPopupBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popup.color)
                 // context.fillStyle = 'black';
                 // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
@@ -34418,31 +34323,7 @@ class App extends Component {
                     //   invalid cell = pop.cell.number + popup position mod, invalposits2 push invalidcell
                     //
 
-
-                    if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
-                      dir = 'north';
-                    }
-                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y-1) {
-                      dir = 'northWest';
-                    }
-                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y) {
-                      dir = 'west';
-                    }
-                    if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y+1) {
-                      dir = 'southWest';
-                    }
-                    if (invalidPos.x === myPos.x && invalidPos.y === myPos.y+1) {
-                      dir = 'south';
-                    }
-                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y+1) {
-                      dir = 'southEast';
-                    }
-                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y) {
-                      dir = 'east';
-                    }
-                    if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y-1) {
-                      dir = 'northEast';
-                    }
+                    dir = this.getDirectionFromCells(myPos,invalidPos);
 
                     dirs.push(dir);
 
@@ -34509,31 +34390,8 @@ class App extends Component {
 
                         }
 
+                        dir = this.getDirectionFromCells(myPos,invalidPos2);
 
-                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
-                          dir = 'north';
-                        }
-                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
-                          dir = 'northWest';
-                        }
-                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
-                          dir = 'west';
-                        }
-                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
-                          dir = 'southWest';
-                        }
-                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
-                          dir = 'south';
-                        }
-                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
-                          dir = 'southEast';
-                        }
-                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
-                          dir = 'east';
-                        }
-                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
-                          dir = 'northEast';
-                        }
                         // if (dir && positions.includes(dir) === true) {
                         //   positions.splice(positions.indexOf(dir),1);
                         //   // console.log('dont draw over player @',dir,'choose frome these position',positions);
@@ -34616,30 +34474,7 @@ class App extends Component {
 
                     }
 
-                    if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
-                      dir = 'north';
-                    }
-                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
-                      dir = 'northWest';
-                    }
-                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
-                      dir = 'west';
-                    }
-                    if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
-                      dir = 'southWest';
-                    }
-                    if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
-                      dir = 'south';
-                    }
-                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
-                      dir = 'southEast';
-                    }
-                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
-                      dir = 'east';
-                    }
-                    if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
-                      dir = 'northEast';
-                    }
+                    dir = this.getDirectionFromCells(myPos,invalidPos2);
 
                     dirs.push(dir);
 
@@ -35900,68 +35735,7 @@ class App extends Component {
 
 
 
-            let popupBorderColor = this.playerColourRef['player'+plyr.number+'']
-            // let drawBubble = (ctx,x,y,w,h,radius,px,py,color) => {
-            //
-            //    var r = x + w;
-            //    var b = y + h;
-            //    if(py<y || py>y+h){
-            //     var con1 = Math.min(Math.max(x+radius,px-10),r-radius-20);
-            //     var con2 = Math.min(Math.max(x+radius+20,px+10),r-radius);
-            //    }
-            //    else{
-            //     var con1 = Math.min(Math.max(y+radius,py-10),b-radius-20);
-            //     var con2 = Math.min(Math.max(y+radius+20,py+10),b-radius);
-            //    }
-            //    var dir;
-            //    if(py < y) dir = 2;
-            //    if(py > y) dir = 3;
-            //    if(px < x && py>=y && py<=b) dir = 0;
-            //    if(px > x && py>=y && py<=b) dir = 1;
-            //    if(px >= x && px <= r && py >= y && py <= b) dir = -1;
-            //    ctx.clearRect(x,y,this.popupSize,this.popupSize);
-            //    ctx.beginPath();
-            //    ctx.strokeStyle=color;
-            //    ctx.lineWidth="1";
-            //    ctx.moveTo(x+radius,y);
-            //    if(dir==2){
-            //     ctx.lineTo(con1,y);
-            //     ctx.lineTo(px,py);
-            //     ctx.lineTo(con2,y);
-            //     ctx.lineTo(r-radius,y);
-            //    }
-            //    else ctx.lineTo(r-radius,y);
-            //    ctx.quadraticCurveTo(r,y,r,y+radius);
-            //    if(dir==1){
-            //     ctx.lineTo(r,con1);
-            //     ctx.lineTo(px,py);
-            //     ctx.lineTo(r,con2);
-            //     ctx.lineTo(r,b-radius);
-            //    }
-            //    else ctx.lineTo(r,b-radius);
-            //    ctx.quadraticCurveTo(r, b, r-radius, b);
-            //    if(dir==3){
-            //     ctx.lineTo(con2,b);
-            //     ctx.lineTo(px,py);
-            //     ctx.lineTo(con1,b);
-            //     ctx.lineTo(x+radius,b);
-            //    }
-            //    else ctx.lineTo(x+radius,b);
-            //    ctx.quadraticCurveTo(x, b, x, b-radius);
-            //    if(dir==0){
-            //     ctx.lineTo(x,con2);
-            //     ctx.lineTo(px,py);
-            //     ctx.lineTo(x,con1);
-            //     ctx.lineTo(x,y+radius);
-            //    }
-            //    else ctx.lineTo(x,y+radius);
-            //    ctx.quadraticCurveTo(x, y, x+radius, y);
-            //    context.fillStyle = 'white';
-            //    ctx.fill();
-            //    ctx.stroke();
-            //    // ctx.globalCompositeOperation = "source-over";
-            //    ctx.closePath();
-            // }
+            let popupBorderColor = this.playerColourRef['player'+plyr.number+''];
 
 
             if (plyr.dead.state !== true && plyr.popups.length > 0) {
@@ -35998,30 +35772,7 @@ class App extends Component {
                         // let invalidPositions = [invalidPos];
 
                         // GET DIRECTION OF OTHER PLAYER CELL RELATIVE TO ME
-                        if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
-                          dir = 'north';
-                        }
-                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y-1) {
-                          dir = 'northWest';
-                        }
-                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y) {
-                          dir = 'west';
-                        }
-                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y+1) {
-                          dir = 'southWest';
-                        }
-                        if (invalidPos.x === myPos.x && invalidPos.y === myPos.y+1) {
-                          dir = 'south';
-                        }
-                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y+1) {
-                          dir = 'southEast';
-                        }
-                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y) {
-                          dir = 'east';
-                        }
-                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y-1) {
-                          dir = 'northEast';
-                        }
+                        dir = this.getDirectionFromCells(myPos,invalidPos);
 
                         if (dir && positions.includes(dir) === true) {
                           positions.splice(positions.indexOf(dir),1);
@@ -36095,31 +35846,7 @@ class App extends Component {
 
                             }
 
-
-                            if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
-                              dir = 'north';
-                            }
-                            if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
-                              dir = 'northWest';
-                            }
-                            if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
-                              dir = 'west';
-                            }
-                            if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
-                              dir = 'southWest';
-                            }
-                            if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
-                              dir = 'south';
-                            }
-                            if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
-                              dir = 'southEast';
-                            }
-                            if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
-                              dir = 'east';
-                            }
-                            if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
-                              dir = 'northEast';
-                            }
+                            dir = this.getDirectionFromCells(myPos,invalidPos2);
 
                             if (dir && positions.includes(dir) === true) {
                               positions.splice(positions.indexOf(dir),1);
@@ -36204,30 +35931,8 @@ class App extends Component {
 
                         }
 
-                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
-                          dir = 'north';
-                        }
-                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
-                          dir = 'northWest';
-                        }
-                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
-                          dir = 'west';
-                        }
-                        if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
-                          dir = 'southWest';
-                        }
-                        if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
-                          dir = 'south';
-                        }
-                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
-                          dir = 'southEast';
-                        }
-                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
-                          dir = 'east';
-                        }
-                        if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
-                          dir = 'northEast';
-                        }
+                        dir = this.getDirectionFromCells(myPos,invalidPos2);
+
                         if (dir && positions.includes(dir) === true) {
                           positions.splice(positions.indexOf(dir),1);
                           // console.log('player popups (unset): cell popup position is close to player',plyr.number,' @ ',invalidPos2,'dir',dir);
@@ -36337,30 +36042,7 @@ class App extends Component {
                         let invalidPos = this.players[plyr2.number-1].currentPosition.cell.number;
 
 
-                        if (invalidPos.x === myPos.x && invalidPos.y === myPos.y-1) {
-                          dir = 'north';
-                        }
-                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y-1) {
-                          dir = 'northWest';
-                        }
-                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y) {
-                          dir = 'west';
-                        }
-                        if (invalidPos.x === myPos.x-1 && invalidPos.y === myPos.y+1) {
-                          dir = 'southWest';
-                        }
-                        if (invalidPos.x === myPos.x && invalidPos.y === myPos.y+1) {
-                          dir = 'south';
-                        }
-                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y+1) {
-                          dir = 'southEast';
-                        }
-                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y) {
-                          dir = 'east';
-                        }
-                        if (invalidPos.x === myPos.x+1 && invalidPos.y === myPos.y-1) {
-                          dir = 'northEast';
-                        }
+                        dir = this.getDirectionFromCells(myPos,invalidPos);
 
                         if (dir) {
                           // console.log('player popups (set): human player position is close to player',plyr.number,' @ ',invalidPos,' dir ',dir);
@@ -36431,30 +36113,8 @@ class App extends Component {
                           }
 
 
-                          if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
-                            dir = 'north';
-                          }
-                          if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
-                            dir = 'northWest';
-                          }
-                          if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
-                            dir = 'west';
-                          }
-                          if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
-                            dir = 'southWest';
-                          }
-                          if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
-                            dir = 'south';
-                          }
-                          if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
-                            dir = 'southEast';
-                          }
-                          if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
-                            dir = 'east';
-                          }
-                          if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
-                            dir = 'northEast';
-                          }
+                          dir = this.getDirectionFromCells(myPos,invalidPos2);
+
                           // if (dir && positions.includes(dir) === true) {
                           //   positions.splice(positions.indexOf(dir),1);
                           //   // console.log('dont draw over player @',dir,'choose frome these position',positions);
@@ -36536,134 +36196,13 @@ class App extends Component {
 
                       }
 
-                      if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
-                        dir = 'north';
-                      }
-                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
-                        dir = 'northWest';
-                      }
-                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
-                        dir = 'west';
-                      }
-                      if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
-                        dir = 'southWest';
-                      }
-                      if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
-                        dir = 'south';
-                      }
-                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
-                        dir = 'southEast';
-                      }
-                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
-                        dir = 'east';
-                      }
-                      if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
-                        dir = 'northEast';
-                      }
+                      dir = this.getDirectionFromCells(myPos,invalidPos2);
 
                       if (dir) {
                         // console.log('player popups (set): cell popup position is close to player',plyr.number,' @ ',invalidPos2,' dir ',dir);
                         dirs.push(dir);
                       }
 
-                      // if (popup2.msg !== popup.msg) {
-                      //
-                      //   let myPos = plyr.currentPosition.cell.number;
-                      //
-                      //   let cellPos = popup2.cell.number;
-                      //   let invalidPos2 = {
-                      //     x: undefined,
-                      //     y: undefined,
-                      //   }
-                      //
-                      //
-                      //   switch (popup2.position) {
-                      //     case 'north':
-                      //       invalidPos2 = {
-                      //         x: cellPos.x,
-                      //         y: cellPos.y-1,
-                      //       }
-                      //       break;
-                      //     case 'northEast':
-                      //       invalidPos2 = {
-                      //         x: cellPos.x+1,
-                      //         y: cellPos.y-1,
-                      //       }
-                      //       break;
-                      //     case 'northWest':
-                      //       invalidPos2 = {
-                      //         x: cellPos.x-1,
-                      //         y: cellPos.y-1,
-                      //       }
-                      //       break;
-                      //     case 'south':
-                      //       invalidPos2 = {
-                      //         x: cellPos.x,
-                      //         y: cellPos.y+1,
-                      //       }
-                      //       break;
-                      //     case 'southEast':
-                      //       invalidPos2 = {
-                      //         x: cellPos.x+1,
-                      //         y: cellPos.y+1,
-                      //       }
-                      //       break;
-                      //     case 'southWest':
-                      //       invalidPos2 = {
-                      //         x: cellPos.x-1,
-                      //         y: cellPos.y+1,
-                      //       }
-                      //       break;
-                      //     case 'east':
-                      //       invalidPos2 = {
-                      //         x: cellPos.x-1,
-                      //         y: cellPos.y,
-                      //       }
-                      //       break;
-                      //     case 'west':
-                      //       invalidPos2 = {
-                      //         x: cellPos.x+1,
-                      //         y: cellPos.y,
-                      //       }
-                      //       break;
-                      //     default:
-                      //
-                      //   }
-                      //
-                      //   if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y-1) {
-                      //     dir = 'north';
-                      //   }
-                      //   if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y-1) {
-                      //     dir = 'northWest';
-                      //   }
-                      //   if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y) {
-                      //     dir = 'west';
-                      //   }
-                      //   if (invalidPos2.x === myPos.x-1 && invalidPos2.y === myPos.y+1) {
-                      //     dir = 'southWest';
-                      //   }
-                      //   if (invalidPos2.x === myPos.x && invalidPos2.y === myPos.y+1) {
-                      //     dir = 'south';
-                      //   }
-                      //   if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y+1) {
-                      //     dir = 'southEast';
-                      //   }
-                      //   if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y) {
-                      //     dir = 'east';
-                      //   }
-                      //   if (invalidPos2.x === myPos.x+1 && invalidPos2.y === myPos.y-1) {
-                      //     dir = 'northEast';
-                      //   }
-                      //
-                      //   if (dir) {
-                      //     dirs.push(dir);
-                      //   }
-                      //
-                      //
-                      //
-                      //   // let indx = positions.indexOf(popup2.position);
-                      //   // positions.splice(indx,1)
-                      // }
 
                     }
 
