@@ -5606,50 +5606,10 @@ class App extends Component {
 
 
     // SET CELL 1 & 2 NUMBERS
-    switch(direction) {
-      case 'north' :
-        target.cell1.number = {
-          x: currentPosition.x,
-          y: currentPosition.y-1
-        }
-        target.cell2.number = {
-          x: currentPosition.x,
-          y: currentPosition.y-2
-        }
-      break;
-      case 'east' :
-        target.cell1.number = {
-          x: currentPosition.x+1,
-          y: currentPosition.y
-        }
-        target.cell2.number = {
-          x: currentPosition.x+2,
-          y: currentPosition.y
-        }
-      break;
-      case 'west' :
-        target.cell1.number = {
-          x: currentPosition.x-1,
-          y: currentPosition.y
-        }
-        target.cell2.number = {
-          x: currentPosition.x-2,
-          y: currentPosition.y
-        }
-      break;
-      case 'south' :
-        target.cell1.number = {
-          x: currentPosition.x,
-          y: currentPosition.y+1
-        }
-        target.cell2.number = {
-          x: currentPosition.x,
-          y: currentPosition.y+2
-        }
-      break;
-      default:
-      break;
-    }
+
+    target.cell1.number = this.getCellFromDirection(1,currentPosition,direction);
+    target.cell2.number = this.getCellFromDirection(2,currentPosition,direction);
+
 
     let targetCell1Ref = this.gridInfo.find(x => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y)
     let targetCell2Ref = this.gridInfo.find(x => x.number.x === target.cell2.number.x && x.number.y === target.cell2.number.y)
@@ -7734,26 +7694,9 @@ class App extends Component {
       // pushStrengthPlayer += 5;
 
 
-      let destCell = {
-        x: obstacleCell.number.x,
-        y: obstacleCell.number.y,
-      } ;
-      switch (impactDirection) {
-        case "north":
-          destCell.y -= 1;
-          break;
-        case "south":
-          destCell.y += 1;
-          break;
-        case "east":
-          destCell.x += 1;
-          break;
-        case "west":
-          destCell.x -= 1;
-          break;
-        default:
-          break;
-      }
+      let destCell = this.getCellFromDirection(1,obstacleCell.number,impactDirection);
+
+
       let destCellRef = this.gridInfo.find(x => x.number.x === destCell.x && x.number.y === destCell.y);
       let destCellOccupant = "";
 
@@ -8389,26 +8332,8 @@ class App extends Component {
       // pushStrengthPlayer += 15;
 
 
-      let destCell = {
-        x: targetCell.number.x,
-        y: targetCell.number.y,
-      } ;
-      switch (impactDirection) {
-        case "north":
-          destCell.y -= 1;
-          break;
-        case "south":
-          destCell.y += 1;
-          break;
-        case "east":
-          destCell.x += 1;
-          break;
-        case "west":
-          destCell.x -= 1;
-          break;
-        default:
-          break;
-      }
+      let destCell = this.getCellFromDirection(1,targetCell.number,impactDirection);
+
       let destCellRef = this.gridInfo.find(x => x.number.x === destCell.x && x.number.y === destCell.y);
       let destCellOccupant = "";
 
@@ -8436,31 +8361,9 @@ class App extends Component {
         }
 
         if (destCellRef.barrier.state === true) {
-          let barrier = false;
-          switch (impactDirection) {
-            case "north":
-              if (destCellRef.barrier.position === "south") {
-                barrier = true;
-              }
-              break;
-            case "south":
-              if (destCellRef.barrier.position === "north") {
-                barrier = true;
-              }
-              break;
-            case "east":
-              if (destCellRef.barrier.position === "west") {
-                barrier = true;
-              }
-              break;
-            case "west":
-              if (destCellRef.barrier.position === "east") {
-                barrier = true;
-              }
-              break;
-            default:
-              break;
-          }
+          let barrier = this.checkForwardBarrier(impactDirection,destCellRef);
+
+
 
           if (barrier === true) {
               canPushTargetFree = false;
@@ -8474,31 +8377,9 @@ class App extends Component {
         if (targetCell.barrier.state === true) {
 
           // --------------
-          let barrier = false;
-          switch (impactDirection) {
-            case "north":
-              if (targetCell.barrier.position === "south") {
-                barrier = true;
-              }
-              break;
-            case "south":
-              if (targetCell.barrier.position === "north") {
-                barrier = true;
-              }
-              break;
-            case "east":
-              if (targetCell.barrier.position === "west") {
-                barrier = true;
-              }
-              break;
-            case "west":
-              if (targetCell.barrier.position === "east") {
-                barrier = true;
-              }
-              break;
-            default:
-              break;
-          }
+          let barrier = let barrier = this.checkForwardBarrier(impactDirection,targetCell);
+
+
 
           if (barrier === true) {
             console.log('barrier in obstacle cell in front of target player');
@@ -9093,26 +8974,10 @@ class App extends Component {
       pullStrengthPlayer += (player.crits.guardBreak-2);
       let playerCellRef = this.gridInfo.find(x => x.number.x === player.currentPosition.cell.number.x && x.number.y === player.currentPosition.cell.number.y)
 
-      let destCell = {
-        x: player.currentPosition.cell.number.x,
-        y: player.currentPosition.cell.number.y,
-      } ;
-      switch (impactDirection) {
-        case "north":
-          destCell.y -= 1;
-          break;
-        case "south":
-          destCell.y += 1;
-          break;
-        case "east":
-          destCell.x += 1;
-          break;
-        case "west":
-          destCell.x -= 1;
-          break;
-        default:
-          break;
-      }
+
+      let destCell = this.getCellFromDirection(1,player.currentPosition.cell.number,impactDirection);
+
+
       let destCellRef = this.gridInfo.find(x => x.number.x === destCell.x && x.number.y === destCell.y);
       let destCellOccupant = "";
 
@@ -9144,31 +9009,9 @@ class App extends Component {
         }
 
         if (destCellRef.barrier.state === true) {
-          let barrier = false;
-          switch (impactDirection) {
-            case "north":
-              if (destCellRef.barrier.position === "south") {
-                barrier = true;
-              }
-              break;
-            case "south":
-              if (destCellRef.barrier.position === "north") {
-                barrier = true;
-              }
-              break;
-            case "east":
-              if (destCellRef.barrier.position === "west") {
-                barrier = true;
-              }
-              break;
-            case "west":
-              if (destCellRef.barrier.position === "east") {
-                barrier = true;
-              }
-              break;
-            default:
-              break;
-          }
+
+          let barrier = this.checkForwardBarrier(impactDirection,destCellRef);
+
 
           if (barrier === true) {
               canPullTargetFree = false;
@@ -9806,26 +9649,8 @@ class App extends Component {
       // pullStrengthPlayer += 15;
 
 
-      let destCell = {
-        x: puller.currentPosition.cell.number.x,
-        y: puller.currentPosition.cell.number.y,
-      } ;
-      switch (impactDirection) {
-        case "north":
-          destCell.y -= 1;
-          break;
-        case "south":
-          destCell.y += 1;
-          break;
-        case "east":
-          destCell.x += 1;
-          break;
-        case "west":
-          destCell.x -= 1;
-          break;
-        default:
-          break;
-      }
+      let destCell = this.getCellFromDirection(1,puller.currentPosition.cell.number,impactDirection);
+
       // console.log('destCell',destCell,'pull pos',puller.currentPosition.cell.number,'impact dir',impactDirection);
       let destCellRef = this.gridInfo.find(x => x.number.x === destCell.x && x.number.y === destCell.y);
       let destCellOccupant = "";
@@ -9854,31 +9679,9 @@ class App extends Component {
         }
 
         if (destCellRef.barrier.state === true) {
-          let barrier = false;
-          switch (impactDirection) {
-            case "north":
-              if (destCellRef.barrier.position === "south") {
-                barrier = true;
-              }
-              break;
-            case "south":
-              if (destCellRef.barrier.position === "north") {
-                barrier = true;
-              }
-              break;
-            case "east":
-              if (destCellRef.barrier.position === "west") {
-                barrier = true;
-              }
-              break;
-            case "west":
-              if (destCellRef.barrier.position === "east") {
-                barrier = true;
-              }
-              break;
-            default:
-              break;
-          }
+
+          let barrier = let barrier = this.checkForwardBarrier(impactDirection,destCellRef);
+
 
           if (barrier === true) {
               canPullTargetFree = false;
@@ -9892,31 +9695,7 @@ class App extends Component {
         if (targetCell.barrier.state === true) {
 
           // --------------
-          let barrier = false;
-          switch (impactDirection) {
-            case "north":
-              if (targetCell.barrier.position === "south") {
-                barrier = true;
-              }
-              break;
-            case "south":
-              if (targetCell.barrier.position === "north") {
-                barrier = true;
-              }
-              break;
-            case "east":
-              if (targetCell.barrier.position === "west") {
-                barrier = true;
-              }
-              break;
-            case "west":
-              if (targetCell.barrier.position === "east") {
-                barrier = true;
-              }
-              break;
-            default:
-              break;
-          }
+          let barrier = this.checkForwardBarrier(impactDirection,targetCell);
 
           if (barrier === true) {
             console.log('barrier in obstacle cell in front of target player');
