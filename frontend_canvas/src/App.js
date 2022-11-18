@@ -5837,6 +5837,68 @@ class App extends Component {
     }
     return oppositeDirection;
   }
+  drawPopupBubble = (ctx,x,y,w,h,radius,px,py,color) => {
+
+    var r = x + w;
+    var b = y + h;
+    if(py<y || py>y+h){
+     var con1 = Math.min(Math.max(x+radius,px-10),r-radius-20);
+     var con2 = Math.min(Math.max(x+radius+20,px+10),r-radius);
+    }
+    else{
+     var con1 = Math.min(Math.max(y+radius,py-10),b-radius-20);
+     var con2 = Math.min(Math.max(y+radius+20,py+10),b-radius);
+    }
+    var dir;
+    if(py < y) dir = 2;
+    if(py > y) dir = 3;
+    if(px < x && py>=y && py<=b) dir = 0;
+    if(px > x && py>=y && py<=b) dir = 1;
+    if(px >= x && px <= r && py >= y && py <= b) dir = -1;
+    ctx.clearRect(x,y,this.popupSize,this.popupSize);
+    ctx.beginPath();
+    ctx.strokeStyle=color;
+    ctx.lineWidth="1";
+    ctx.moveTo(x+radius,y);
+    if(dir==2){
+     ctx.lineTo(con1,y);
+     ctx.lineTo(px,py);
+     ctx.lineTo(con2,y);
+     ctx.lineTo(r-radius,y);
+    }
+    else ctx.lineTo(r-radius,y);
+    ctx.quadraticCurveTo(r,y,r,y+radius);
+    if(dir==1){
+     ctx.lineTo(r,con1);
+     ctx.lineTo(px,py);
+     ctx.lineTo(r,con2);
+     ctx.lineTo(r,b-radius);
+    }
+    else ctx.lineTo(r,b-radius);
+    ctx.quadraticCurveTo(r, b, r-radius, b);
+    if(dir==3){
+     ctx.lineTo(con2,b);
+     ctx.lineTo(px,py);
+     ctx.lineTo(con1,b);
+     ctx.lineTo(x+radius,b);
+    }
+    else ctx.lineTo(x+radius,b);
+    ctx.quadraticCurveTo(x, b, x, b-radius);
+    if(dir==0){
+     ctx.lineTo(x,con2);
+     ctx.lineTo(px,py);
+     ctx.lineTo(x,con1);
+     ctx.lineTo(x,y+radius);
+    }
+    else ctx.lineTo(x,y+radius);
+    ctx.quadraticCurveTo(x, y, x+radius, y);
+    ctx.fillStyle = 'white';
+    ctx.fill();
+    ctx.stroke();
+    // ctx.globalCompositeOperation = "source-over";
+    ctx.closePath();
+
+  }
 
 
   aiBoltPathCheck = (aiPlayer) => {
@@ -33975,67 +34037,67 @@ class App extends Component {
           // console.log(this.refs.pickupAmmo);
 
 
-          let drawBubble = (ctx,x,y,w,h,radius,px,py,color) => {
-
-             var r = x + w;
-             var b = y + h;
-             if(py<y || py>y+h){
-              var con1 = Math.min(Math.max(x+radius,px-10),r-radius-20);
-              var con2 = Math.min(Math.max(x+radius+20,px+10),r-radius);
-             }
-             else{
-              var con1 = Math.min(Math.max(y+radius,py-10),b-radius-20);
-              var con2 = Math.min(Math.max(y+radius+20,py+10),b-radius);
-             }
-             var dir;
-             if(py < y) dir = 2;
-             if(py > y) dir = 3;
-             if(px < x && py>=y && py<=b) dir = 0;
-             if(px > x && py>=y && py<=b) dir = 1;
-             if(px >= x && px <= r && py >= y && py <= b) dir = -1;
-             ctx.clearRect(x,y,this.popupSize,this.popupSize);
-             ctx.beginPath();
-             ctx.strokeStyle=color;
-             ctx.lineWidth="1";
-             ctx.moveTo(x+radius,y);
-             if(dir==2){
-              ctx.lineTo(con1,y);
-              ctx.lineTo(px,py);
-              ctx.lineTo(con2,y);
-              ctx.lineTo(r-radius,y);
-             }
-             else ctx.lineTo(r-radius,y);
-             ctx.quadraticCurveTo(r,y,r,y+radius);
-             if(dir==1){
-              ctx.lineTo(r,con1);
-              ctx.lineTo(px,py);
-              ctx.lineTo(r,con2);
-              ctx.lineTo(r,b-radius);
-             }
-             else ctx.lineTo(r,b-radius);
-             ctx.quadraticCurveTo(r, b, r-radius, b);
-             if(dir==3){
-              ctx.lineTo(con2,b);
-              ctx.lineTo(px,py);
-              ctx.lineTo(con1,b);
-              ctx.lineTo(x+radius,b);
-             }
-             else ctx.lineTo(x+radius,b);
-             ctx.quadraticCurveTo(x, b, x, b-radius);
-             if(dir==0){
-              ctx.lineTo(x,con2);
-              ctx.lineTo(px,py);
-              ctx.lineTo(x,con1);
-              ctx.lineTo(x,y+radius);
-             }
-             else ctx.lineTo(x,y+radius);
-             ctx.quadraticCurveTo(x, y, x+radius, y);
-             context.fillStyle = 'white';
-             ctx.fill();
-             ctx.stroke();
-             // ctx.globalCompositeOperation = "source-over";
-             ctx.closePath();
-          }
+          // let drawBubble = (ctx,x,y,w,h,radius,px,py,color) => {
+          //
+          //    var r = x + w;
+          //    var b = y + h;
+          //    if(py<y || py>y+h){
+          //     var con1 = Math.min(Math.max(x+radius,px-10),r-radius-20);
+          //     var con2 = Math.min(Math.max(x+radius+20,px+10),r-radius);
+          //    }
+          //    else{
+          //     var con1 = Math.min(Math.max(y+radius,py-10),b-radius-20);
+          //     var con2 = Math.min(Math.max(y+radius+20,py+10),b-radius);
+          //    }
+          //    var dir;
+          //    if(py < y) dir = 2;
+          //    if(py > y) dir = 3;
+          //    if(px < x && py>=y && py<=b) dir = 0;
+          //    if(px > x && py>=y && py<=b) dir = 1;
+          //    if(px >= x && px <= r && py >= y && py <= b) dir = -1;
+          //    ctx.clearRect(x,y,this.popupSize,this.popupSize);
+          //    ctx.beginPath();
+          //    ctx.strokeStyle=color;
+          //    ctx.lineWidth="1";
+          //    ctx.moveTo(x+radius,y);
+          //    if(dir==2){
+          //     ctx.lineTo(con1,y);
+          //     ctx.lineTo(px,py);
+          //     ctx.lineTo(con2,y);
+          //     ctx.lineTo(r-radius,y);
+          //    }
+          //    else ctx.lineTo(r-radius,y);
+          //    ctx.quadraticCurveTo(r,y,r,y+radius);
+          //    if(dir==1){
+          //     ctx.lineTo(r,con1);
+          //     ctx.lineTo(px,py);
+          //     ctx.lineTo(r,con2);
+          //     ctx.lineTo(r,b-radius);
+          //    }
+          //    else ctx.lineTo(r,b-radius);
+          //    ctx.quadraticCurveTo(r, b, r-radius, b);
+          //    if(dir==3){
+          //     ctx.lineTo(con2,b);
+          //     ctx.lineTo(px,py);
+          //     ctx.lineTo(con1,b);
+          //     ctx.lineTo(x+radius,b);
+          //    }
+          //    else ctx.lineTo(x+radius,b);
+          //    ctx.quadraticCurveTo(x, b, x, b-radius);
+          //    if(dir==0){
+          //     ctx.lineTo(x,con2);
+          //     ctx.lineTo(px,py);
+          //     ctx.lineTo(x,con1);
+          //     ctx.lineTo(x,y+radius);
+          //    }
+          //    else ctx.lineTo(x,y+radius);
+          //    ctx.quadraticCurveTo(x, y, x+radius, y);
+          //    context.fillStyle = 'white';
+          //    ctx.fill();
+          //    ctx.stroke();
+          //    // ctx.globalCompositeOperation = "source-over";
+          //    ctx.closePath();
+          // }
 
           for (const popup of this.cellPopups) {
 
@@ -34327,7 +34389,7 @@ class App extends Component {
 
                 popupDrawCoords = this.popupDrawCalc(popup.position,{x:popup.cell.center.x-25,y:popup.cell.center.y-15},0);
                 // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
-                drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popup.color)
+                this.drawPopupBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popup.color)
                 // context.fillStyle = 'black';
                 // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
                 // console.log('popup.msg',popup.msg,popup.img);
@@ -34599,8 +34661,8 @@ class App extends Component {
                 else {
                   popup.img = this.popupImageRef[popup.msg]
                   popupDrawCoords = this.popupDrawCalc(popup.position,{x:popup.cell.center.x-25,y:popup.cell.center.y-15},0);
-                  // drawBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
-                  drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popup.color)
+                  // this.drawPopupBubble2(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,2)
+                  this.drawPopupBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popup.color)
                   // context.fillStyle = 'black';
                   // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
                   // console.log('popup.msg',popup.msg);
@@ -35810,71 +35872,96 @@ class App extends Component {
           if (x === this.gridWidth && y === this.gridWidth ) {
 
 
+            let popupCoordObject = {
+              north: this.popupDrawCalc("north",{x:plyr.nextPosition.x-25,y:plyr.nextPosition.y-25},plyr.number),
+              west: this.popupDrawCalc("west",{x:plyr.nextPosition.x-25,y:plyr.nextPosition.y-25},plyr.number),
+              south: this.popupDrawCalc("south",{x:plyr.nextPosition.x-25,y:plyr.nextPosition.y-25},plyr.number),
+            };
+            let origin = popupCoordObject.west;
+            let width = popupCoordObject.north.pt4.x - origin.pt3.x;
+            let height = popupCoordObject.south.pt2.y - origin.pt3.y;
+            context.strokeStyle = 'white';
+            context.lineWidth = 2;
+            context.beginPath();
+            context.roundRect(origin.pt3.x,origin.pt3.y, width, height, 2);
+            context.stroke();
+
+            let origin2 = {x:plyr.nextPosition.x-(this.floorImageHeight/2),y:plyr.nextPosition.y-(this.floorImageHeight)};
+            let height2 = (plyr.nextPosition.y+(this.floorImageHeight/2))+2-(plyr.nextPosition.y-(this.floorImageHeight));
+            let width2 = this.playerDrawWidth+2;
+            context.strokeStyle = 'white';
+            context.lineWidth = 2;
+            context.beginPath();
+            context.roundRect(origin2.x,origin2.y, width2+2, this.playerDrawHeight*1.5, 2);
+            // context.roundRect(origin2.x,origin2.y, width2, height2, 2);
+            // context.roundRect(origin2.x,origin2.y, this.playerDrawWidth, this.playerDrawHeight*1.5, 2);
+            // context.roundRect(origin2.x,origin2.y, this.playerDrawWidth+2, this.floorImageHeight*1.5, 2);
+            context.stroke();
 
 
 
             let popupBorderColor = this.playerColourRef['player'+plyr.number+'']
-            let drawBubble = (ctx,x,y,w,h,radius,px,py,color) => {
-
-               var r = x + w;
-               var b = y + h;
-               if(py<y || py>y+h){
-                var con1 = Math.min(Math.max(x+radius,px-10),r-radius-20);
-                var con2 = Math.min(Math.max(x+radius+20,px+10),r-radius);
-               }
-               else{
-                var con1 = Math.min(Math.max(y+radius,py-10),b-radius-20);
-                var con2 = Math.min(Math.max(y+radius+20,py+10),b-radius);
-               }
-               var dir;
-               if(py < y) dir = 2;
-               if(py > y) dir = 3;
-               if(px < x && py>=y && py<=b) dir = 0;
-               if(px > x && py>=y && py<=b) dir = 1;
-               if(px >= x && px <= r && py >= y && py <= b) dir = -1;
-               ctx.clearRect(x,y,this.popupSize,this.popupSize);
-               ctx.beginPath();
-               ctx.strokeStyle=color;
-               ctx.lineWidth="1";
-               ctx.moveTo(x+radius,y);
-               if(dir==2){
-                ctx.lineTo(con1,y);
-                ctx.lineTo(px,py);
-                ctx.lineTo(con2,y);
-                ctx.lineTo(r-radius,y);
-               }
-               else ctx.lineTo(r-radius,y);
-               ctx.quadraticCurveTo(r,y,r,y+radius);
-               if(dir==1){
-                ctx.lineTo(r,con1);
-                ctx.lineTo(px,py);
-                ctx.lineTo(r,con2);
-                ctx.lineTo(r,b-radius);
-               }
-               else ctx.lineTo(r,b-radius);
-               ctx.quadraticCurveTo(r, b, r-radius, b);
-               if(dir==3){
-                ctx.lineTo(con2,b);
-                ctx.lineTo(px,py);
-                ctx.lineTo(con1,b);
-                ctx.lineTo(x+radius,b);
-               }
-               else ctx.lineTo(x+radius,b);
-               ctx.quadraticCurveTo(x, b, x, b-radius);
-               if(dir==0){
-                ctx.lineTo(x,con2);
-                ctx.lineTo(px,py);
-                ctx.lineTo(x,con1);
-                ctx.lineTo(x,y+radius);
-               }
-               else ctx.lineTo(x,y+radius);
-               ctx.quadraticCurveTo(x, y, x+radius, y);
-               context.fillStyle = 'white';
-               ctx.fill();
-               ctx.stroke();
-               // ctx.globalCompositeOperation = "source-over";
-               ctx.closePath();
-            }
+            // let drawBubble = (ctx,x,y,w,h,radius,px,py,color) => {
+            //
+            //    var r = x + w;
+            //    var b = y + h;
+            //    if(py<y || py>y+h){
+            //     var con1 = Math.min(Math.max(x+radius,px-10),r-radius-20);
+            //     var con2 = Math.min(Math.max(x+radius+20,px+10),r-radius);
+            //    }
+            //    else{
+            //     var con1 = Math.min(Math.max(y+radius,py-10),b-radius-20);
+            //     var con2 = Math.min(Math.max(y+radius+20,py+10),b-radius);
+            //    }
+            //    var dir;
+            //    if(py < y) dir = 2;
+            //    if(py > y) dir = 3;
+            //    if(px < x && py>=y && py<=b) dir = 0;
+            //    if(px > x && py>=y && py<=b) dir = 1;
+            //    if(px >= x && px <= r && py >= y && py <= b) dir = -1;
+            //    ctx.clearRect(x,y,this.popupSize,this.popupSize);
+            //    ctx.beginPath();
+            //    ctx.strokeStyle=color;
+            //    ctx.lineWidth="1";
+            //    ctx.moveTo(x+radius,y);
+            //    if(dir==2){
+            //     ctx.lineTo(con1,y);
+            //     ctx.lineTo(px,py);
+            //     ctx.lineTo(con2,y);
+            //     ctx.lineTo(r-radius,y);
+            //    }
+            //    else ctx.lineTo(r-radius,y);
+            //    ctx.quadraticCurveTo(r,y,r,y+radius);
+            //    if(dir==1){
+            //     ctx.lineTo(r,con1);
+            //     ctx.lineTo(px,py);
+            //     ctx.lineTo(r,con2);
+            //     ctx.lineTo(r,b-radius);
+            //    }
+            //    else ctx.lineTo(r,b-radius);
+            //    ctx.quadraticCurveTo(r, b, r-radius, b);
+            //    if(dir==3){
+            //     ctx.lineTo(con2,b);
+            //     ctx.lineTo(px,py);
+            //     ctx.lineTo(con1,b);
+            //     ctx.lineTo(x+radius,b);
+            //    }
+            //    else ctx.lineTo(x+radius,b);
+            //    ctx.quadraticCurveTo(x, b, x, b-radius);
+            //    if(dir==0){
+            //     ctx.lineTo(x,con2);
+            //     ctx.lineTo(px,py);
+            //     ctx.lineTo(x,con1);
+            //     ctx.lineTo(x,y+radius);
+            //    }
+            //    else ctx.lineTo(x,y+radius);
+            //    ctx.quadraticCurveTo(x, y, x+radius, y);
+            //    context.fillStyle = 'white';
+            //    ctx.fill();
+            //    ctx.stroke();
+            //    // ctx.globalCompositeOperation = "source-over";
+            //    ctx.closePath();
+            // }
 
 
             if (plyr.dead.state !== true && plyr.popups.length > 0) {
@@ -36205,7 +36292,7 @@ class App extends Component {
 
                     popupDrawCoords = this.popupDrawCalc(popup.position,{x:point.x-25,y:point.y-25},plyr.number);
 
-                    drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor);
+                    this.drawPopupBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor);
                     let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
 
                     if (showProgress === true  && popupProgress === true) {
@@ -36630,7 +36717,7 @@ class App extends Component {
 
 
                       popupDrawCoords = this.popupDrawCalc(popup.position,{x:point.x-25,y:point.y-25},plyr.number);
-                      drawBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor);
+                      this.drawPopupBubble(context,popupDrawCoords.origin.x,popupDrawCoords.origin.y,this.popupSize,this.popupSize,5,popupDrawCoords.anchor.x,popupDrawCoords.anchor.y,popupBorderColor);
                       let centerPopupOffset = (this.popupSize-this.popupImgSize)/2;
 
                       if (showProgress === true && popupProgress === true) {
