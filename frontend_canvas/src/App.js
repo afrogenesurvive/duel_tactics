@@ -5541,47 +5541,6 @@ class App extends Component {
     let midGridVoid2 = false;
     let edgeVoid1 = false;
     let edgeVoid2 = false;
-    let getVoidCenter = (cellNo,voidDirection,refCell) => {
-      let voidCenter = {
-        x: undefined,
-        y: undefined
-      };
-      let xMod = this.floorImageWidth/2;
-      let yMod = this.floorImageHeight/2;
-      if (cellNo === 2) {
-        xMod = this.floorImageWidth;
-        yMod = this.floorImageHeight;
-      }
-      switch(voidDirection) {
-        case 'north' :
-          voidCenter = {
-            x: player.currentPosition.cell.center.x+xMod,
-            y: player.currentPosition.cell.center.y-yMod,
-          }
-        break;
-        case 'south' :
-          voidCenter = {
-            x: player.currentPosition.cell.center.x-xMod,
-            y: player.currentPosition.cell.center.y+yMod,
-          }
-        break;
-        case 'west' :
-          voidCenter = {
-            x: player.currentPosition.cell.center.x-xMod,
-            y: player.currentPosition.cell.center.y-yMod,
-          }
-        break;
-        case 'east' :
-          voidCenter = {
-            x: player.currentPosition.cell.center.x+xMod,
-            y: player.currentPosition.cell.center.y+yMod,
-          }
-        break;
-      }
-
-
-      return voidCenter;
-    }
 
 
     // DIRECTION MOD: STRAFING
@@ -5623,7 +5582,7 @@ class App extends Component {
     if (!targetCell1Ref) {
       target.cell1.void = true;
       edgeVoid1 = true;
-      target.cell1.center = getVoidCenter(1,voidDirection,currentPosition);
+      target.cell1.center = this.getVoidCenter(1,voidDirection,player.currentPosition.cell.center);
       // this.testDraw.push({color:'red',x:target.cell1.center.x,y:target.cell1.center.y})
     }
     if (targetCell1Ref) {
@@ -5636,7 +5595,7 @@ class App extends Component {
     if (!targetCell2Ref) {
       target.cell2.void = true;
       edgeVoid2 = true;
-      target.cell2.center = getVoidCenter(2,voidDirection,currentPosition);
+      target.cell2.center = this.getVoidCenter(2,voidDirection,player.currentPosition.cell.center);
       // this.testDraw.push({color:'red',x:target.cell2.center.x,y:target.cell2.center.y})
     }
     if (targetCell2Ref) {
@@ -5778,9 +5737,50 @@ class App extends Component {
 
     return direction;
   }
+  getVoidCenter = (range,direction,originCenter) => {
 
+    let voidCenter = {
+      x: undefined,
+      y: undefined
+    };
+    let xMod = this.floorImageWidth/2;
+    let yMod = this.floorImageHeight/2;
+    if (range === 2) {
+      xMod = this.floorImageWidth;
+      yMod = this.floorImageHeight;
+    }
+    switch(direction) {
+      case 'north' :
+        voidCenter = {
+          x: originCenter.x+xMod,
+          y: originCenter.y-yMod,
+        }
+      break;
+      case 'south' :
+        voidCenter = {
+          x: originCenter.x-xMod,
+          y: originCenter.y+yMod,
+        }
+      break;
+      case 'west' :
+        voidCenter = {
+          x: originCenter.x-xMod,
+          y: originCenter.y-yMod,
+        }
+      break;
+      case 'east' :
+        voidCenter = {
+          x: originCenter.x+xMod,
+          y: originCenter.y+yMod,
+        }
+      break;
+    }
+
+
+    return voidCenter;
+  }
   getCellFromDirection = (range,originCellNumber,direction) => {
-    
+
     let cellNumber = {
       x: undefined,
       y: undefined,
@@ -7665,60 +7665,7 @@ class App extends Component {
 
 
 
-        let voidCenter = {
-          x: undefined,
-          y: undefined
-        }
-        switch(impactDirection) {
-          case 'north' :
-            voidCenter = {
-              x: obstacleCell.center.x+50,
-              y: obstacleCell.center.y-30,
-            }
-          break;
-          case 'south' :
-          if (
-            obstacleCell.number.x === 0 &&
-            obstacleCell.number.y === 9
-          ) {
-            voidCenter = {
-              // x: obstacleCell.center.x-30,
-              // y: obstacleCell.center.y+15,
-              x: obstacleCell.center.x-50,
-              y: obstacleCell.center.y+30,
-            }
-          } else {
-            voidCenter = {
-              x: obstacleCell.center.x-50,
-              y: obstacleCell.center.y+30,
-            }
-          }
-          break;
-          case 'west' :
-          if (
-            obstacleCell.number.x === 0 &&
-            obstacleCell.number.y === 9
-          ) {
-            voidCenter = {
-              // x: obstacleCell.center.x-30,
-              // y: obstacleCell.center.y-15,
-              x: obstacleCell.center.x-50,
-              y: obstacleCell.center.y-30,
-            }
-          } else {
-            voidCenter = {
-              x: obstacleCell.center.x-50,
-              y: obstacleCell.center.y-30,
-            }
-          }
-          break;
-          case 'east' :
-            voidCenter = {
-              x: obstacleCell.center.x+50,
-              y: obstacleCell.center.y+30,
-            }
-          break;
-        }
+        let voidCenter = this.getVoidCenter(1,impactDirection,obstacleCell.center);
 
 
         let obstacleCrementObj = this.obstacleMoveCrementer(obstacleCell,{center:voidCenter});
@@ -8912,60 +8859,8 @@ class App extends Component {
         }
 
 
-        let voidCenter = {
-          x: undefined,
-          y: undefined
-        }
-        switch(impactDirection) {
-          case 'north' :
-            voidCenter = {
-              x: playerCellRef.center.x+50,
-              y: playerCellRef.center.y-30,
-            }
-          break;
-          case 'south' :
-          if (
-            playerCellRef.number.x === 0 &&
-            playerCellRef.number.y === 9
-          ) {
-            voidCenter = {
-              // x: obstacleCell.center.x-30,
-              // y: obstacleCell.center.y+15,
-              x: playerCellRef.center.x-50,
-              y: playerCellRef.center.y+30,
-            }
-          } else {
-            voidCenter = {
-              x: playerCellRef.center.x-50,
-              y: playerCellRef.center.y+30,
-            }
-          }
-          break;
-          case 'west' :
-          if (
-            playerCellRef.number.x === 0 &&
-            playerCellRef.number.y === 9
-          ) {
-            voidCenter = {
-              // x: obstacleCell.center.x-30,
-              // y: obstacleCell.center.y-15,
-              x: playerCellRef.center.x-50,
-              y: playerCellRef.center.y-30,
-            }
-          } else {
-            voidCenter = {
-              x: playerCellRef.center.x-50,
-              y: playerCellRef.center.y-30,
-            }
-          }
-          break;
-          case 'east' :
-            voidCenter = {
-              x: playerCellRef.center.x+50,
-              y: playerCellRef.center.y+30,
-            }
-          break;
-        }
+        let voidCenter = this.getVoidCenter(1,impactDirection,playerCellRef.center);
+
 
 
         this.players[player.number-1].defending = {
@@ -9607,60 +9502,9 @@ class App extends Component {
 
 
 
-        let voidCenter = {
-          x: undefined,
-          y: undefined
-        }
-        switch(impactDirection) {
-          case 'north' :
-            voidCenter = {
-              x: pullerCellRef.center.x+50,
-              y: pullerCellRef.center.y-30,
-            }
-          break;
-          case 'south' :
-          if (
-            pullerCellRef.number.x === 0 &&
-            pullerCellRef.number.y === 9
-          ) {
-            voidCenter = {
-              // x: obstacleCell.center.x-30,
-              // y: obstacleCell.center.y+15,
-              x: pullerCellRef.center.x-50,
-              y: pullerCellRef.center.y+30,
-            }
-          } else {
-            voidCenter = {
-              x: pullerCellRef.center.x-50,
-              y: pullerCellRef.center.y+30,
-            }
-          }
-          break;
-          case 'west' :
-          if (
-            pullerCellRef.number.x === 0 &&
-            pullerCellRef.number.y === 9
-          ) {
-            voidCenter = {
-              // x: obstacleCell.center.x-30,
-              // y: obstacleCell.center.y-15,
-              x: pullerCellRef.center.x-50,
-              y: pullerCellRef.center.y-30,
-            }
-          } else {
-            voidCenter = {
-              x: pullerCellRef.center.x-50,
-              y: pullerCellRef.center.y-30,
-            }
-          }
-          break;
-          case 'east' :
-            voidCenter = {
-              x: pullerCellRef.center.x+50,
-              y: pullerCellRef.center.y+30,
-            }
-          break;
-        }
+
+        let voidCenter = this.getVoidCenter(1,impactDirection,pullerCellRef.center);
+
 
 
         // MOVE TARGET PLAYER
