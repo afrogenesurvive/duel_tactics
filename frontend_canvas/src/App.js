@@ -5595,7 +5595,7 @@ class App extends Component {
     if (!targetCell2Ref) {
       target.cell2.void = true;
       edgeVoid2 = true;
-      target.cell2.center = this.getVoidCenter(2,voidDirection,player.currentPosition.cell.center);
+        target.cell2.center = this.getVoidCenter(2,voidDirection,player.currentPosition.cell.center);
       // this.testDraw.push({color:'red',x:target.cell2.center.x,y:target.cell2.center.y})
     }
     if (targetCell2Ref) {
@@ -5653,11 +5653,18 @@ class App extends Component {
 
 
       }
+
+      if (targetCell1Ref.item.name !== "") {
+        target.cell1.occupant.type = "item";
+      }
     }
     if (targetCell2Ref) {
       if (targetCell2Ref.obstacle.state === true) {
         target.cell2.occupant.type = "obstacle";
         target.cell2.free = false;
+      }
+      if (targetCell2Ref.item.name !== "") {
+        target.cell2.occupant.type = "item";
       }
     }
 
@@ -12262,414 +12269,120 @@ class App extends Component {
     }
 
   }
+  meleeAttackPeak = (player) => {
 
+    if (player.target.myCellBlock !== true) {
 
-  findFocusCell = (inputType,focus,canvas,context,speed) => {
+      if (player.currentWeapon.type === "spear") {
 
-    let cell = {
-      x: undefined,
-      y: undefined
-    }
-    let direction = "";
-    let cellOffsetX = 0;
-    let cellOffsetY = 0;
-    let centerCellRef = {
-      x: 4,
-      y: 4,
-    }
-    let newCell = {
-      x: undefined,
-      y: undefined,
-    }
-
-
-    if (inputType === 'cellToPan') {
-
-
-      let destCell = focus;
-      let originCell = {
-        x: this.camera.focusCell.x,
-        y: this.camera.focusCell.y,
-      };
-      // let originCell = this.camera.cellToPanOrigin;
-      let x1 = originCell.x;
-      let y1 = originCell.y;
-      let x2 = destCell.x;
-      let y2 = destCell.y;
-      let xSteps = 0;
-      let ySteps = 0;
-      let xDirection = "";
-      let yDirection = "";
-      let preInstructions = [];
-
-      if (x1 > x2) {
-        xDirection = "west";
-        xSteps = x1-x2;
-      }
-      if (x2 > x1) {
-        xDirection = "east";
-        xSteps = x2-x1;
-      }
-      if (y1 > y2) {
-        yDirection = "north";
-        ySteps = y1-y2;
-      }
-      if (y2 > y1) {
-        yDirection = "south";
-        ySteps = y2-y1;
-      }
-
-      for (var i = 0; i < xSteps; i++) {
-        preInstructions.push(
-          xDirection
+        this.cellsUnderAttack.push(
+          {
+            number: {
+              x: player.target.cell1.number.x,
+              y: player.target.cell1.number.y,
+            },
+            count: 1,
+            limit: 8,
+          },
+          {
+            number: {
+              x: player.target.cell2.number.x,
+              y: player.target.cell2.number.y,
+            },
+            count: 1,
+            limit: 8,
+          },
         )
+
+        if (player.target.cell1.free !== true || player.target.cell1.occupant.type === "item") {
+          this.meleeAttackParse(player,1)
+        }
+
+        if (player.target.cell1.free === true && player.target.cell1.occupant.type !== "item") {
+
+          if (player.target.cell2.free !== true || player.target.cell2.occupant.type === "item") {
+            this.meleeAttackParse(player,2)
+          }
+
+          if (player.target.cell2.free === true && player.target.cell2.occupant.type !== "item") {
+
+            if (!player.popups.find(x => x.msg === "missedAttack")) {
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 30,
+                  type: '',
+                  position: '',
+                  msg: 'missedAttack2',
+                  img: '',
+
+                }
+              )
+            }
+
+            // remove stamina by atk type.pre
+
+          }
+        }
       }
-      for (var j = 0; j < ySteps; j++) {
-        preInstructions.push(
-          yDirection
+
+      if (player.currentWeapon.type === "sword") {
+
+        this.cellsUnderAttack.push(
+          {
+            number: {
+              x: player.target.cell1.number.x,
+              y: player.target.cell1.number.y,
+            },
+            count: 1,
+            limit: 8,
+          },
         )
-      }
 
-      // console.log('origin',originCell,'destination',destCell,'instructions',preInstructions);
+        if (player.target.cell1.free === true && player.target.cell1.occupant.type !== "item") {
 
-      // this.camera.cellToPanOrigin.x = destCell.x;
-      // this.camera.cellToPanOrigin.y = destCell.y;
-
-
-
-      for (const instruction of preInstructions) {
-        let indx = preInstructions.indexOf(instruction);
-
-        switch (instruction) {
-          case 'north':
-          this.camera.instructions.push(
-            {
-              action:'pan_north',
-              action2:'pan_east',
-              count: 0,
-              count2: 0,
-              limit: 25,
-              limit2: 50,
-              speed: speed,
-            },
-            // {
-            //   action:'pan_north',
-            //   action2:'pan_east',
-            //   count: 0,
-            //   count2: 0,
-            //   limit: 25,
-            //   limit2: 50,
-            // },
-          )
-          break;
-          case 'south':
-          this.camera.instructions.push(
-            {
-              action:'pan_south',
-              action2:'pan_west',
-              count: 0,
-              count2: 0,
-              limit: 25,
-              limit2: 50,
-              speed: speed,
-            },
-            // {
-            //   action:'pan_south',
-            //   action2:'pan_west',
-            //   count: 0,
-            //   count2: 0,
-            //   limit: 25,
-            //   limit2: 50,
-            // },
-          )
-          break;
-          case 'east':
-          this.camera.instructions.push(
-            {
-              action:'pan_south',
-              action2:'pan_east',
-              count: 0,
-              count2: 0,
-              limit: 25,
-              limit2: 50,
-              speed: speed,
-            },
-            // {
-            //   action:'pan_south',
-            //   action2:'pan_east',
-            //   count: 0,
-            //   count2: 0,
-            //   limit: 25,
-            //   limit2: 50,
-            // },
-          )
-          break;
-          case 'west':
-          this.camera.instructions.push(
-            {
-              action:'pan_north',
-              action2:'pan_west',
-              count: 0,
-              count2: 0,
-              limit: 25,
-              limit2: 50,
-              speed: speed,
-            },
-            // {
-            //   action:'pan_north',
-            //   action2:'pan_west',
-            //   count: 0,
-            //   count2: 0,
-            //   limit: 25,
-            //   limit2: 50,
-            // },
-          )
-          break;
-        }
-
-      }
-
-      // console.log('auto camera instructions',this.camera.instructions);
-
-    }
-
-    if (inputType === 'panToCell') {
-
-      let focusCell;
-      const rect = canvas.getBoundingClientRect()
-      const scale = rect.width / canvas.offsetWidth;
-      // console.log('rect.width',rect.width);
-
-      const x = this.canvasWidth/2;
-      const y = this.canvasHeight/2;
-
-      // ADJUSTED FOR CANVAS SCALE & TRANSFORM
-      let newX = (x-this.camera.zoomFocusPan.x)/this.camera.zoom.x;
-      let newY = (y-this.camera.zoomFocusPan.y)/this.camera.zoom.y;
-
-      let insideGrid = false;
-
-      for(const cell of this.gridInfo) {
-        let point = [newX,newY];
-        // let point = [newX,newY];
-        let polygon = [];
-        for (const vertex of cell.vertices) {
-          let vertexPoint = [vertex.x+10,vertex.y+5];
-          polygon.push(vertexPoint)
-        }
-        let pip = pointInPolygon(point, polygon)
-        if (pip === true) {
-          insideGrid = true;
-          // console.log("camera focus cell",cell.number,"x: " + x + " y: " + y);
-          focusCell = cell;
-        }
-      }
-      if ( insideGrid === false ) {
-        // console.log("clicked the canvas", 'x: ',x,'y: ',y);
-        // console.log('clicked outside the grid');
-        // this.showCellInfoBox = false;
-        focusCell = {
-          number:{
-            x:0,
-            y:0
-          },
-          center:{
-            x:0,
-            y:0
-          },
-          drawCenter:{
-            x:0,
-            y:0
-          },
-          vertices: [
-            {
-              x:0,
-              y:0
-            },
-            {
-              x:0,
-              y:0
-            },
-            {
-              x:0,
-              y:0
-            },
-            {
-              x:0,
-              y:0
-            },
-          ],
-          side: 0,
-          levelData: '',
-          edge: {
-            state: false,
-            side: ''
-          },
-          terrain: {
-            name: '',
-            type: '',
-            effect: ''
-          },
-          item: {
-            name: '',
-            type: '',
-            subType: '',
-            effect: '',
-            initDrawn: false
-          },
-          void: {
-            state: false
-          },
-          obstacle: {
-            state: false,
-            name: '',
-            type: '',
-            hp: 2,
-            destructible: {
-              state: false,
-              weapons: [],
-              leaveRubble: false,
-            },
-            locked: {
-              state: false,
-              key: '',
-            },
-            weight: 1,
-            height: 0.5,
-            items: [],
-            effects: [],
-            moving: {
-              state: false,
-              step: 0,
-              origin: {
-                number: {
-                  x: undefined,
-                  y: undefined,
-                },
-                center: {
-                  x: undefined,
-                  y: undefined,
-                },
-              },
-              destination: {
-                number: {
-                  x: undefined,
-                  y: undefined,
-                },
-                center: {
-                  x: undefined,
-                  y: undefined,
-                },
-              },
-              currentPosition: {
-                x: undefined,
-                y: undefined,
-              },
-              nextPosition: {
-                x: undefined,
-                y: undefined,
-              },
-              moveSpeed: 0,
-              pushable: true,
-              pushed: false,
-              pusher: undefined,
-              falling: {
+          if (!player.popups.find(x => x.msg === "missedAttack")) {
+            player.popups.push(
+              {
                 state: false,
                 count: 0,
-                limit: 10,
-              },
-            }
-          },
-          barrier: {
-            state: false,
-            name: '',
-            type: '',
-            hp: 2,
-            destructible: {
-              state: false,
-              weapons: [],
-              leaveRubble: false,
-            },
-            locked: {
-              state: false,
-              key: '',
-            },
-            position: '',
-            height: 1,
-          },
-          elevation: {
-            number: 0,
-            type: '',
-            position: '',
-          },
-          rubble: false,
-        }
-        this.cellsToHighlight2 = [];
-      }
+                limit: 30,
+                type: '',
+                position: '',
+                msg: 'missedAttack2',
+                img: '',
 
-
-      // SEND FOCUS CELL TO cellsToHighlight
-
-      if (insideGrid === true) {
-        // console.log('panToCell using pointInPolygon',focusCell.number);
-        this.camera.focusCell.x = focusCell.number.x;
-        this.camera.focusCell.y = focusCell.number.y;
-        // console.log('panToCell camera.focusCell',this.camera.focusCell);
-        if (this.highlightZoomPanFocusCell === true) {
-          for (const cell2 of this.cellsToHighlight2) {
-            if (cell2.number.x !== focusCell.number.x || cell2.number.y !== focusCell.number.y) {
-              let indx = this.cellsToHighlight2.indexOf(cell2);
-              this.cellsToHighlight2.splice(indx,1)
-            }
-          }
-          if (!this.cellsToHighlight2.find(x=> x.number.x === focusCell.number.x && x.number.y === focusCell.number.y)) {
-            this.cellsToHighlight2.push(
-              {
-                number: {
-                  x: focusCell.number.x,
-                  y: focusCell.number.y,
-                },
-                count: 0,
-                limit: 0,
-              },
+              }
             )
           }
-          // console.log('this.cellsToHighlight2',this.cellsToHighlight2);
+
+          // remove stamina by atk type.pre
+
+        }
+
+        if (player.target.cell1.free !== true || player.target.cell1.occupant.type === "item") {
+          this.meleeAttackParse(player,1)
         }
 
       }
 
+      if (player.currentWeapon.type === "crossbow" || player.currentWeapon.type === "longbow") {
 
-      if (this.camera.pan.x < 0) {
-        direction = 'east';
-        cellOffsetX = parseInt((this.camera.pan.x/50).toFixed(0))
-      }
-      if (this.camera.pan.x > 0) {
-        direction = 'west';
-        cellOffsetX = parseInt((this.camera.pan.x/50).toFixed(0))
-      }
-      if (this.camera.pan.y > 0) {
-        direction = 'north';
-        cellOffsetY = parseInt((this.camera.pan.y/25).toFixed(0))
-      }
-      if (this.camera.pan.y < 0) {
-        direction = 'south';
-        cellOffsetY = parseInt((this.camera.pan.y/25).toFixed(0))
-      }
+        if (player.bluntAttack === true) {
 
-      if (this.camera.pan.x === -1) {
-        cellOffsetX = 0;
+        }
       }
-      if (this.camera.pan.y === -1) {
-        cellOffsetY = 0;
-      }
-
-      // console.log('cellOffsetX',cellOffsetX,'cellOffsetY',cellOffsetY);
-
     }
 
 
+    this.players[player.number- 1] = player;
+
   }
+  meleeAttackParse = (player,cellNo) => {
+
+  }
+
   customCellToVoid = (cell) => {
     console.log('void specific cell');
 
@@ -23316,7 +23029,412 @@ class App extends Component {
 
   }
 
+  findFocusCell = (inputType,focus,canvas,context,speed) => {
 
+    let cell = {
+      x: undefined,
+      y: undefined
+    }
+    let direction = "";
+    let cellOffsetX = 0;
+    let cellOffsetY = 0;
+    let centerCellRef = {
+      x: 4,
+      y: 4,
+    }
+    let newCell = {
+      x: undefined,
+      y: undefined,
+    }
+
+
+    if (inputType === 'cellToPan') {
+
+
+      let destCell = focus;
+      let originCell = {
+        x: this.camera.focusCell.x,
+        y: this.camera.focusCell.y,
+      };
+      // let originCell = this.camera.cellToPanOrigin;
+      let x1 = originCell.x;
+      let y1 = originCell.y;
+      let x2 = destCell.x;
+      let y2 = destCell.y;
+      let xSteps = 0;
+      let ySteps = 0;
+      let xDirection = "";
+      let yDirection = "";
+      let preInstructions = [];
+
+      if (x1 > x2) {
+        xDirection = "west";
+        xSteps = x1-x2;
+      }
+      if (x2 > x1) {
+        xDirection = "east";
+        xSteps = x2-x1;
+      }
+      if (y1 > y2) {
+        yDirection = "north";
+        ySteps = y1-y2;
+      }
+      if (y2 > y1) {
+        yDirection = "south";
+        ySteps = y2-y1;
+      }
+
+      for (var i = 0; i < xSteps; i++) {
+        preInstructions.push(
+          xDirection
+        )
+      }
+      for (var j = 0; j < ySteps; j++) {
+        preInstructions.push(
+          yDirection
+        )
+      }
+
+      // console.log('origin',originCell,'destination',destCell,'instructions',preInstructions);
+
+      // this.camera.cellToPanOrigin.x = destCell.x;
+      // this.camera.cellToPanOrigin.y = destCell.y;
+
+
+
+      for (const instruction of preInstructions) {
+        let indx = preInstructions.indexOf(instruction);
+
+        switch (instruction) {
+          case 'north':
+          this.camera.instructions.push(
+            {
+              action:'pan_north',
+              action2:'pan_east',
+              count: 0,
+              count2: 0,
+              limit: 25,
+              limit2: 50,
+              speed: speed,
+            },
+            // {
+            //   action:'pan_north',
+            //   action2:'pan_east',
+            //   count: 0,
+            //   count2: 0,
+            //   limit: 25,
+            //   limit2: 50,
+            // },
+          )
+          break;
+          case 'south':
+          this.camera.instructions.push(
+            {
+              action:'pan_south',
+              action2:'pan_west',
+              count: 0,
+              count2: 0,
+              limit: 25,
+              limit2: 50,
+              speed: speed,
+            },
+            // {
+            //   action:'pan_south',
+            //   action2:'pan_west',
+            //   count: 0,
+            //   count2: 0,
+            //   limit: 25,
+            //   limit2: 50,
+            // },
+          )
+          break;
+          case 'east':
+          this.camera.instructions.push(
+            {
+              action:'pan_south',
+              action2:'pan_east',
+              count: 0,
+              count2: 0,
+              limit: 25,
+              limit2: 50,
+              speed: speed,
+            },
+            // {
+            //   action:'pan_south',
+            //   action2:'pan_east',
+            //   count: 0,
+            //   count2: 0,
+            //   limit: 25,
+            //   limit2: 50,
+            // },
+          )
+          break;
+          case 'west':
+          this.camera.instructions.push(
+            {
+              action:'pan_north',
+              action2:'pan_west',
+              count: 0,
+              count2: 0,
+              limit: 25,
+              limit2: 50,
+              speed: speed,
+            },
+            // {
+            //   action:'pan_north',
+            //   action2:'pan_west',
+            //   count: 0,
+            //   count2: 0,
+            //   limit: 25,
+            //   limit2: 50,
+            // },
+          )
+          break;
+        }
+
+      }
+
+      // console.log('auto camera instructions',this.camera.instructions);
+
+    }
+
+    if (inputType === 'panToCell') {
+
+      let focusCell;
+      const rect = canvas.getBoundingClientRect()
+      const scale = rect.width / canvas.offsetWidth;
+      // console.log('rect.width',rect.width);
+
+      const x = this.canvasWidth/2;
+      const y = this.canvasHeight/2;
+
+      // ADJUSTED FOR CANVAS SCALE & TRANSFORM
+      let newX = (x-this.camera.zoomFocusPan.x)/this.camera.zoom.x;
+      let newY = (y-this.camera.zoomFocusPan.y)/this.camera.zoom.y;
+
+      let insideGrid = false;
+
+      for(const cell of this.gridInfo) {
+        let point = [newX,newY];
+        // let point = [newX,newY];
+        let polygon = [];
+        for (const vertex of cell.vertices) {
+          let vertexPoint = [vertex.x+10,vertex.y+5];
+          polygon.push(vertexPoint)
+        }
+        let pip = pointInPolygon(point, polygon)
+        if (pip === true) {
+          insideGrid = true;
+          // console.log("camera focus cell",cell.number,"x: " + x + " y: " + y);
+          focusCell = cell;
+        }
+      }
+      if ( insideGrid === false ) {
+        // console.log("clicked the canvas", 'x: ',x,'y: ',y);
+        // console.log('clicked outside the grid');
+        // this.showCellInfoBox = false;
+        focusCell = {
+          number:{
+            x:0,
+            y:0
+          },
+          center:{
+            x:0,
+            y:0
+          },
+          drawCenter:{
+            x:0,
+            y:0
+          },
+          vertices: [
+            {
+              x:0,
+              y:0
+            },
+            {
+              x:0,
+              y:0
+            },
+            {
+              x:0,
+              y:0
+            },
+            {
+              x:0,
+              y:0
+            },
+          ],
+          side: 0,
+          levelData: '',
+          edge: {
+            state: false,
+            side: ''
+          },
+          terrain: {
+            name: '',
+            type: '',
+            effect: ''
+          },
+          item: {
+            name: '',
+            type: '',
+            subType: '',
+            effect: '',
+            initDrawn: false
+          },
+          void: {
+            state: false
+          },
+          obstacle: {
+            state: false,
+            name: '',
+            type: '',
+            hp: 2,
+            destructible: {
+              state: false,
+              weapons: [],
+              leaveRubble: false,
+            },
+            locked: {
+              state: false,
+              key: '',
+            },
+            weight: 1,
+            height: 0.5,
+            items: [],
+            effects: [],
+            moving: {
+              state: false,
+              step: 0,
+              origin: {
+                number: {
+                  x: undefined,
+                  y: undefined,
+                },
+                center: {
+                  x: undefined,
+                  y: undefined,
+                },
+              },
+              destination: {
+                number: {
+                  x: undefined,
+                  y: undefined,
+                },
+                center: {
+                  x: undefined,
+                  y: undefined,
+                },
+              },
+              currentPosition: {
+                x: undefined,
+                y: undefined,
+              },
+              nextPosition: {
+                x: undefined,
+                y: undefined,
+              },
+              moveSpeed: 0,
+              pushable: true,
+              pushed: false,
+              pusher: undefined,
+              falling: {
+                state: false,
+                count: 0,
+                limit: 10,
+              },
+            }
+          },
+          barrier: {
+            state: false,
+            name: '',
+            type: '',
+            hp: 2,
+            destructible: {
+              state: false,
+              weapons: [],
+              leaveRubble: false,
+            },
+            locked: {
+              state: false,
+              key: '',
+            },
+            position: '',
+            height: 1,
+          },
+          elevation: {
+            number: 0,
+            type: '',
+            position: '',
+          },
+          rubble: false,
+        }
+        this.cellsToHighlight2 = [];
+      }
+
+
+      // SEND FOCUS CELL TO cellsToHighlight
+
+      if (insideGrid === true) {
+        // console.log('panToCell using pointInPolygon',focusCell.number);
+        this.camera.focusCell.x = focusCell.number.x;
+        this.camera.focusCell.y = focusCell.number.y;
+        // console.log('panToCell camera.focusCell',this.camera.focusCell);
+        if (this.highlightZoomPanFocusCell === true) {
+          for (const cell2 of this.cellsToHighlight2) {
+            if (cell2.number.x !== focusCell.number.x || cell2.number.y !== focusCell.number.y) {
+              let indx = this.cellsToHighlight2.indexOf(cell2);
+              this.cellsToHighlight2.splice(indx,1)
+            }
+          }
+          if (!this.cellsToHighlight2.find(x=> x.number.x === focusCell.number.x && x.number.y === focusCell.number.y)) {
+            this.cellsToHighlight2.push(
+              {
+                number: {
+                  x: focusCell.number.x,
+                  y: focusCell.number.y,
+                },
+                count: 0,
+                limit: 0,
+              },
+            )
+          }
+          // console.log('this.cellsToHighlight2',this.cellsToHighlight2);
+        }
+
+      }
+
+
+      if (this.camera.pan.x < 0) {
+        direction = 'east';
+        cellOffsetX = parseInt((this.camera.pan.x/50).toFixed(0))
+      }
+      if (this.camera.pan.x > 0) {
+        direction = 'west';
+        cellOffsetX = parseInt((this.camera.pan.x/50).toFixed(0))
+      }
+      if (this.camera.pan.y > 0) {
+        direction = 'north';
+        cellOffsetY = parseInt((this.camera.pan.y/25).toFixed(0))
+      }
+      if (this.camera.pan.y < 0) {
+        direction = 'south';
+        cellOffsetY = parseInt((this.camera.pan.y/25).toFixed(0))
+      }
+
+      if (this.camera.pan.x === -1) {
+        cellOffsetX = 0;
+      }
+      if (this.camera.pan.y === -1) {
+        cellOffsetY = 0;
+      }
+
+      // console.log('cellOffsetX',cellOffsetX,'cellOffsetY',cellOffsetY);
+
+    }
+
+
+  }
   toggleCameraModeUI = (mode) => {
 
     this.camera.mode = mode;
@@ -27161,20 +27279,20 @@ class App extends Component {
           if (player.falling.state !== true && player.moving.state !== true) {
             player.action = 'idle';
           }
-          if (!player.popups.find(x=>x.msg === 'defendFeint3')) {
-            player.popups.push(
-              {
-                state: false,
-                count: 0,
-                limit: 15,
-                type: '',
-                position: '',
-                msg: 'defendFeint3',
-                img: '',
-
-              }
-            )
-          }
+          // if (!player.popups.find(x=>x.msg === 'defendFeint3')) {
+          //   player.popups.push(
+          //     {
+          //       state: false,
+          //       count: 0,
+          //       limit: 15,
+          //       type: '',
+          //       position: '',
+          //       msg: 'defendFeint3',
+          //       img: '',
+          //
+          //     }
+          //   )
+          // }
 
         }
 
@@ -27212,20 +27330,20 @@ class App extends Component {
               player.popups.splice(player.popups.findIndex(x=>x.msg === 'attacking'),1)
             }
 
-            if (!player.popups.find(x=>x.msg === 'attackFeint3')) {
-              player.popups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit: 15,
-                  type: '',
-                  position: '',
-                  msg: 'attackFeint3',
-                  img: '',
-
-                }
-              )
-            }
+            // if (!player.popups.find(x=>x.msg === 'attackFeint3')) {
+            //   player.popups.push(
+            //     {
+            //       state: false,
+            //       count: 0,
+            //       limit: 15,
+            //       type: '',
+            //       position: '',
+            //       msg: 'attackFeint3',
+            //       img: '',
+            //
+            //     }
+            //   )
+            // }
 
         }
 
@@ -27249,20 +27367,20 @@ class App extends Component {
           if (player.popups.find(x=>x.msg === 'dodging')) {
             player.popups.splice(player.popups.findIndex(x=>x.msg === 'dodging'),1)
           }
-          if (!player.popups.find(x=>x.msg === 'dodgeFeint')) {
-            player.popups.push(
-              {
-                state: false,
-                count: 0,
-                limit: 15,
-                type: '',
-                position: '',
-                msg: 'dodgeFeint',
-                img: '',
-
-              }
-            )
-          }
+          // if (!player.popups.find(x=>x.msg === 'dodgeFeint')) {
+          //   player.popups.push(
+          //     {
+          //       state: false,
+          //       count: 0,
+          //       limit: 15,
+          //       type: '',
+          //       position: '',
+          //       msg: 'dodgeFeint',
+          //       img: '',
+          //
+          //     }
+          //   )
+          // }
         }
 
 
@@ -27617,6 +27735,12 @@ class App extends Component {
                 }
 
               }
+
+
+              this.getTarget(player);
+              this.meleeAttackPeak(player);
+
+
               // CROSSBOW BLUNT ATTAK
               if (player.currentWeapon.type === 'crossbow' && player.bluntAttack === true && player.target.occupant.type === 'player') {
                 console.log('blunt attack w/ crossbow');
@@ -28838,6 +28962,8 @@ class App extends Component {
                   }
                 }
               }
+
+
 
             }
 
