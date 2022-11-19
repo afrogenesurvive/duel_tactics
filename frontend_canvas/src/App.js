@@ -5657,6 +5657,8 @@ class App extends Component {
       if (targetCell1Ref.item.name !== "") {
         target.cell1.occupant.type = "item";
       }
+
+
     }
     if (targetCell2Ref) {
       if (targetCell2Ref.obstacle.state === true) {
@@ -5666,6 +5668,7 @@ class App extends Component {
       if (targetCell2Ref.item.name !== "") {
         target.cell2.occupant.type = "item";
       }
+
     }
 
 
@@ -6082,6 +6085,21 @@ class App extends Component {
     bolt.moving.state = true;
 
     this.projectiles[index] = bolt;
+
+  }
+  isBoltInCell = (cellNumber) => {
+
+    let bolt = false;
+    for (const bolt of this.projectiles) {
+      if (
+        cellNumber.x === bolt.currentPosition.number.x &&
+        cellNumber.y === bolt.currentPosition.number.y
+      ) {
+        bolt = true;
+      }
+    }
+
+    return bolt;
 
   }
   checkDestination = (player,checkTerrain) => {
@@ -12273,6 +12291,9 @@ class App extends Component {
 
     if (player.target.myCellBlock !== true) {
 
+      let boltTarget1 = this.isBoltInCell(player.target.cell1.number)
+      let boltTarget2 = this.isBoltInCell(player.target.cell2.number)
+
       if (player.currentWeapon.type === "spear") {
 
         this.cellsUnderAttack.push(
@@ -12294,17 +12315,17 @@ class App extends Component {
           },
         )
 
-        if (player.target.cell1.free !== true || player.target.cell1.occupant.type === "item") {
+        if (player.target.cell1.free !== true || player.target.cell1.occupant.type === "item" || boltTarget1 === true) {
           this.meleeAttackParse(player,1)
         }
 
-        if (player.target.cell1.free === true && player.target.cell1.occupant.type !== "item") {
+        if (player.target.cell1.free === true && player.target.cell1.occupant.type !== "item" && boltTarget1 !== true) {
 
-          if (player.target.cell2.free !== true || player.target.cell2.occupant.type === "item") {
+          if (player.target.cell2.free !== true || player.target.cell2.occupant.type === "item" || boltTarget2 === true) {
             this.meleeAttackParse(player,2)
           }
 
-          if (player.target.cell2.free === true && player.target.cell2.occupant.type !== "item") {
+          if (player.target.cell2.free === true && player.target.cell2.occupant.type !== "item" && boltTarget2 !== true) {
 
             if (!player.popups.find(x => x.msg === "missedAttack")) {
               player.popups.push(
@@ -12340,7 +12361,7 @@ class App extends Component {
           },
         )
 
-        if (player.target.cell1.free === true && player.target.cell1.occupant.type !== "item") {
+        if (player.target.cell1.free === true && player.target.cell1.occupant.type !== "item" && boltTarget1 !== true) {
 
           if (!player.popups.find(x => x.msg === "missedAttack")) {
             player.popups.push(
@@ -12361,7 +12382,7 @@ class App extends Component {
 
         }
 
-        if (player.target.cell1.free !== true || player.target.cell1.occupant.type === "item") {
+        if (player.target.cell1.free !== true || player.target.cell1.occupant.type === "item" || boltTarget1 === true) {
           this.meleeAttackParse(player,1)
         }
 
@@ -12371,16 +12392,44 @@ class App extends Component {
 
         if (player.bluntAttack === true) {
 
+          if (player.target.cell1.free === true && player.target.cell1.occupant.type !== "item" && boltTarget1 !== true) {
+
+            if (!player.popups.find(x => x.msg === "missedAttack")) {
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 30,
+                  type: '',
+                  position: '',
+                  msg: 'missedAttack2',
+                  img: '',
+
+                }
+              )
+            }
+
+            // remove stamina by atk type.pre
+
+          }
+
+          if (player.target.cell1.free !== true || player.target.cell1.occupant.type === "item" || boltTarget1 === true) {
+            this.meleeAttackParse(player,1)
+          }
+
         }
       }
     }
 
 
-    this.players[player.number- 1] = player;
+    this.players[player.number-1] = player;
 
   }
   meleeAttackParse = (player,cellNo) => {
 
+    let boltTarget1 = this.isBoltInCell(player.target.cell1.number)
+    let boltTarget2 = this.isBoltInCell(player.target.cell2.number)
+    // remember blunt attack check
   }
 
   customCellToVoid = (cell) => {
