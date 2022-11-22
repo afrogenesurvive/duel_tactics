@@ -2740,6 +2740,7 @@ class App extends Component {
       attacked: 20,
       bluntAttacked: 25,
       defended: 10,
+      parried: 25,
       attack: 15
     };
     this.projectiles = [];
@@ -9510,11 +9511,140 @@ class App extends Component {
     }
 
   }
+  customCellToVoid = (cell) => {
+    console.log('void specific cell');
+
+    this.cellToVoid.state = true;
+    this.cellToVoid.x = cell.x;
+    this.cellToVoid.y = cell.y;
+    this.cellToVoid.count = 1;
+
+    this.openVoid = true;
+    this.voidCustomCell = true;
+
+  }
+  voidSummon = (cell) => {
+    // console.log('opening void');
+
+      let foundPlayer;
+      let player;
+      let cl = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y)
+
+      if (
+        cl.number.x === this.gridWidth &&
+        cl.number.y === 0
+      ) {
+        // console.log('dont void this');
+      }
+      if (
+        cl.number.x === this.gridWidth &&
+        cl.number.y === this.gridWidth
+      ) {
+        // console.log('dont void this');
+      } else {
+        cl.item = {
+          name: '',
+          type: '',
+          subType: '',
+          effect: '',
+          initDrawn: false
+        };
+        cl.void.state = true;
+
+        if (this.bloodSacrificeEvent.state === true) {
+          // console.log('bloodSacrificeVoidedCells',cl);
+          this.bloodSacrificeVoidedCells.push(cl)
+        }
+        // console.log('voiding',cl.number.x,cl.number.y);
+
+        // if (
+        //   cl.levelData.charAt(0) === 'y'
+        // ) {
+        //   let x = cl.levelData.slice(1,3)
+        //   cl.levelData = "x"+x+"";
+        // }
+        // if (
+        //   cl.levelData.charAt(0) === 'z'
+        // ) {
+        //   let x = cl.levelData.slice(1,3)
+        //   cl.levelData = "x"+x+"";
+        // }
+
+      }
+
+
+      for (const plyr of this.players) {
+        if (
+          plyr.currentPosition.cell.number.x === cell.x &&
+          plyr.currentPosition.cell.number.y === cell.y
+        ) {
+          foundPlayer = true;
+          this.players[plyr.number-1].falling.state = true;
+          this.players[plyr.number-1].action = 'falling';
+
+          this.players[plyr.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 25,
+              type: '',
+              position: '',
+              msg: 'falling',
+              img: '',
+
+            }
+          )
+
+          this.moveSpeed = plyr.speed.move;
+          this.players[plyr.number-1].target = this.resetTarget();
+
+          this.players[plyr.number-1].moving = {
+            state: true,
+            step: 0,
+            course: '',
+            origin: {
+              number: plyr.currentPosition.cell.number,
+              center: plyr.currentPosition.cell.center,
+            },
+            destination: {
+              x: plyr.currentPosition.cell.center.x,
+              y: plyr.currentPosition.cell.center.y,
+            }
+          }
+
+          let nextPosition = this.lineCrementer(plyr);
+          this.players[plyr.number-1].nextPosition = nextPosition;
+
+        }
+      }
+
+    this.updatePathArray();
+
+    this.easyStar.avoidAdditionalPoint(cell.x, cell.y);
+
+    for (const plyr2 of this.players) {
+      if (plyr2.ai.state === true) {
+        plyr2.ai.targetAcquired = false;
+      }
+    }
+
+  }
 
 
   meleeAttackPeak = (player) => {
 
     if (player.target.myCellBlock !== true) {
+
+      let playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].normal;
+      if (player.bluntAttack === true) {
+        playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].blunt;
+      }
+      if (player.currentWeapon.name === "") {
+        playerAttackStamType = this.staminaCostRef.attack.unarmed.normal;
+        if (player.bluntAttack === true) {
+          playerAttackStamType = this.staminaCostRef.attack.unarmed.blunt;
+        }
+      }
 
 
       let boltTarget1 = this.isBoltInCell(player.target.cell1.number)
@@ -9541,19 +9671,23 @@ class App extends Component {
           },
         )
 
+        // TARGET CELL 1 IS NOT FREE OR ITEM, BOLT, ATTACK CELL1
         if (player.target.cell1.free !== true || player.target.cell1.occupant.type === "item" || boltTarget1 === true) {
           this.meleeAttackParse(player,1)
         }
 
+        // TARGET CELL 1 IS FREE NOT ITEM OR BOLT
         if (player.target.cell1.free === true && player.target.cell1.occupant.type !== "item" && boltTarget1 !== true) {
 
+          // TARGET CELL 2 IS NOT FREE HAS ITEM OR BOLT, ATTACK
           if (player.target.cell2.free !== true || player.target.cell2.occupant.type === "item" || boltTarget2 === true) {
             this.meleeAttackParse(player,2)
           }
 
+          // TARGET CELL2 IS FREE AND NOT ITEM OR BOLT, MISS
           if (player.target.cell2.free === true && player.target.cell2.occupant.type !== "item" && boltTarget2 !== true) {
 
-            if (!player.popups.find(x => x.msg === "missedAttack")) {
+            if (!player.popups.find(x => x.msg === "missedAttack2")) {
               player.popups.push(
                 {
                   state: false,
@@ -9568,9 +9702,10 @@ class App extends Component {
               )
             }
 
-            // remove stamina by atk type.pre
+            player.stamina.current -= playerAttackStamType.pre;
 
           }
+
         }
       }
 
@@ -9587,6 +9722,7 @@ class App extends Component {
           },
         )
 
+        // TAGET CELL 1 IS FREE NO ITEM OR BOLT, MISS
         if (player.target.cell1.free === true && player.target.cell1.occupant.type !== "item" && boltTarget1 !== true) {
 
           if (!player.popups.find(x => x.msg === "missedAttack2")) {
@@ -9604,10 +9740,11 @@ class App extends Component {
             )
           }
 
-          // remove stamina by atk type.pre
+          player.stamina.current -= playerAttackStamType.pre;
 
         }
 
+        // TARGET CELL 1 IS NOT FREE OR HAS BOLT OR ITEM, ATTACK
         if (player.target.cell1.free !== true || player.target.cell1.occupant.type === "item" || boltTarget1 === true) {
           this.meleeAttackParse(player,1)
         }
@@ -9616,8 +9753,10 @@ class App extends Component {
 
       if (player.currentWeapon.type === "crossbow" || player.currentWeapon.type === "longbow") {
 
+        // CROSSBOW BLUNT ATTACK
         if (player.bluntAttack === true) {
 
+          // TARGET CELL 1 FREE NO ITEM OR BOLT
           if (player.target.cell1.free === true && player.target.cell1.occupant.type !== "item" && boltTarget1 !== true) {
 
             if (!player.popups.find(x => x.msg === "missedAttack2")) {
@@ -9635,10 +9774,11 @@ class App extends Component {
               )
             }
 
-            // remove stamina by atk type.pre
+            player.stamina.current -= playerAttackStamType.pre;
 
           }
 
+          // TARGET CELL 1 NOT FREE, OR ITEM OR BOLT
           if (player.target.cell1.free !== true || player.target.cell1.occupant.type === "item" || boltTarget1 === true) {
             this.meleeAttackParse(player,1)
           }
@@ -9646,6 +9786,8 @@ class App extends Component {
         }
       }
     }
+
+    // ATTACK MY CELL BARRIER
     else {
 
       let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell1.number.x && elem.number.y === player.target.cell1.number.y );
@@ -9661,14 +9803,80 @@ class App extends Component {
   }
   meleeAttackParse = (player,cellNo) => {
 
-    let boltTarget1 = this.isBoltInCell(player.target.cell1.number)
-    let boltTarget2 = this.isBoltInCell(player.target.cell2.number)
+
     let attackerRef = player;
     let targetPlayerRef = undefined;
 
+    // ATTACK STAM UNARMED CHECK & AND POPUPS SET
+    let playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].normal;
+    if (player.bluntAttack === true) {
+      playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].blunt;
+    }
+    if (player.currentWeapon.name === "") {
+      playerAttackStamType = this.staminaCostRef.attack.unarmed.normal;
+      if (player.bluntAttack === true) {
+        playerAttackStamType = this.staminaCostRef.attack.unarmed.blunt;
+      }
+
+      if (!player.popups.find(x=>x.msg === "attackingUnarmed")) {
+        player.popups.push(
+          {
+            state: false,
+            count: 0,
+            limit: (this.attackAnimRef.limit.unarmed-this.attackAnimRef.peak.unarmed),
+            type: '',
+            position: '',
+            msg: 'attackingUnarmed',
+            img: '',
+
+          }
+        )
+      }
+
+    }
+    else {
+
+      if (player.bluntAttack === true) {
+
+        if (!player.popups.find(x=>x.msg === "attackingBlunt")) {
+          player.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
+              type: '',
+              position: '',
+              msg: 'attackingBlunt',
+              img: '',
+
+            }
+          )
+        }
+
+      }
+      else {
+
+        if (!player.popups.find(x=>x.msg === 'attacking2')) {
+          player.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: (this.attackAnimRef.limit[player.currentWeapon.type]-this.attackAnimRef.peak[player.currentWeapon.type]),
+              type: '',
+              position: '',
+              msg: 'attacking2',
+              img: '',
+
+            }
+          )
+        }
+
+      }
+
+    }
 
 
-    // ATTACK PROJECTILES!!
+    //TARGET IS PROJECTILE!!
     if (this.isBoltInCell(player.target.['cell'+cellNo].number) === true) {
       this.projectiles.find(x=> x.currentPosition.number.x === player.target.['cell'+cellNo].number.x && x.currentPosition.number.y === player.target.['cell'+cellNo].number.y).kill = true;
 
@@ -9685,12 +9893,16 @@ class App extends Component {
 
           }
         )
+      }
 
-        // chance to pushBack
+      if (this.rnJesus(0,player.crits.pushBack)) {
+        this.pushBack(player,this.getOppositeDirection(player.direction));
       }
 
     }
 
+
+    // TARGET IS BARRIER/OBSTACLE/ITEM
     if (
       player.target['cell'+cellNo].occupant.type === 'item' ||
       player.target['cell'+cellNo].occupant.type === 'obstacle' ||
@@ -9704,6 +9916,7 @@ class App extends Component {
       this.attackCellContents('melee',player,targetCell,targetCell2,myCell,undefined);
 
     }
+
 
     // TARGET IS A PLAYER
     if (player.target['cell'+cellNo].occupant.type === 'player') {
@@ -9732,7 +9945,9 @@ class App extends Component {
 
           console.log('player ',player.number,' just dodged player ',targetPlayerRef.number,' back attack');
 
-          // remove player attcking.pre stamina
+
+          player.stamina.current -= playerAttackStamType.pre;
+
 
           if (!player.popups.find(x => x.msg === "missedAttack2")) {
             player.popups.push(
@@ -9755,15 +9970,20 @@ class App extends Component {
 
         }
 
+
         //TARGET NOT DODGING. VULNERABLE TO BACK ATTACK
         else {
 
           if (player.bluntAttack === true) {
-            // set target deflect & attackedCancel
+
+            this.setDeflection(targetPlayerRef,'bluntAttacked',false);
+
           }
 
           else {
-            // handle target damage and set deflect & attackedCancel
+
+            this.handleDamage(player,targetPlayerRef);
+
           }
 
         }
@@ -9781,7 +10001,7 @@ class App extends Component {
 
           console.log('player ',player.number,' just dodged player ',targetPlayerRef.number,' side attack');
 
-          // remove player attcking.pre stamina
+          player.stamina.current -= playerAttackStamType.pre;
 
           if (!player.popups.find(x => x.msg === "missedAttack2")) {
             player.popups.push(
@@ -9804,36 +10024,110 @@ class App extends Component {
 
         }
 
+
         // TARGET PLAYER DEFENDING
         if (targetDefending === true) {
 
+          // BLUNT ATTACK IS MADE FOR BREAKING DEFENSE
+          if (player.bluntAttack === true) {
 
-          // DEFENDER ADVANTAGE
-          if (advantage === 0 || advantage === 2) {
-
-            if (targetPlayerRef.defendPeak === true) {
-              // deflect player & push back
-              // player attacked cancel
-              // defend succes
-            }
-            if (targetPlayerRef.defendDecay.state === true && targetPlayerRef.defendPeak !== true) {
-              // chance to defend (player attack cancel & deflect), // defend succes
-              // else damage + deflect target
-            }
+            this.setDeflection(targetPlayerRef,'bluntAttacked',false);
 
           }
 
-          // ATTACKER/PLAYER ADVANTAGE
+          // ATTACKER NON-BLUNT ATTACK
           else {
 
-            if (player.bluntAttack === true) {
+            // DEFENDER ADVANTAGE
+            if (advantage === 2 || advantage === 0) {
 
-              // break target defense, attackedCancel
+              // PEAK DEFEND/PARRY
+              if (targetPlayerRef.defendPeak === true) {
+
+                this.setDeflection(player,'defended',true);
+
+                targetPlayerRef.stamina.current += this.staminaCostRef.defend.peak;
+                targetPlayerRef.success.defendSuccess = {
+                  state: true,
+                  count: 1,
+                  limit: targetPlayerRef.success.defendSuccess.limit
+                };
+                targetPlayerRef.statusDisplay = {
+                  state: true,
+                  status: 'Parry!',
+                  count: 1,
+                  limit: targetPlayerRef.statusDisplay.limit,
+                };
+                if (!targetPlayerRef.popups.find(x=>x.msg === "attackParried")) {
+                  targetPlayerRef.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 30,
+                      type: '',
+                      position: '',
+                      msg: 'attackParried',
+                      img: '',
+
+                    }
+                  )
+                }
+
+              }
+
+              // OFF PEAK DEFEND. DEFENSE NOT GUARANTEED
+              if (targetPlayerRef.defendDecay.state === true && targetPlayerRef.defendPeak !== true) {
+
+
+                // DEFEND SUCCESS
+                if (this.rnJesus(1,targetPlayerRef.crits.guardBreak) === 1) {
+
+                  this.setDeflection(player,'defended',false);
+                  targetPlayerRef.success.defendSuccess = {
+                    state: true,
+                    count: 1,
+                    limit: targetPlayerRef.success.defendSuccess.limit
+                  };
+                  targetPlayerRef.statusDisplay = {
+                    state: true,
+                    status: 'Defend',
+                    count: 1,
+                    limit: targetPlayerRef.statusDisplay.limit,
+                  }
+                  if (!targetPlayerRef.popups.find(x=>x.msg === "defendSuccess")) {
+                    targetPlayerRef.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 25,
+                        type: '',
+                        position: '',
+                        msg: 'defendSuccess',
+                        img: '',
+
+                      }
+                    )
+                  }
+
+                }
+
+                // DEFEND FAILURE
+                else {
+
+                  this.setDeflection(targetPlayerRef,'attacked',false);
+                  this.handleDamage(player,targetPlayerRef);
+
+                }
+
+              }
+
             }
-            else {
 
-              // defend succes
-              // damage target and set deflection & BREAK DEFENSE (attackedCancel)
+            // ATTACKER/PLAYER ADVANTAGE
+            else if (advantage === 1) {
+
+              this.handleDamage(player,targetPlayerRef);
+              this.setDeflection(targetPlayerRef,'attacked',false);
 
             }
 
@@ -9845,13 +10139,16 @@ class App extends Component {
         else {
 
           if (player.bluntAttack === true) {
-            player.bluntAttack = false;
 
-            // set target deflection
+            player.bluntAttack = false;
+            this.setDeflection(targetPlayerRef,'bluntAttacked',false);
+
           }
           else {
 
-            //target apply damage, & set deflection
+            this.handleDamage(player,targetPlayerRef);
+            this.setDeflection(targetPlayerRef,'attacked',false);
+
           }
 
         }
@@ -9864,24 +10161,83 @@ class App extends Component {
       if (player.direction === this.getOppositeDirection(targetPlayerRef.direction)) {
 
 
+        // TARGET DODGING
+        if (targetPlayerRef.dodging.state === true) {
+
+          console.log('player ',player.number,' just dodged player ',targetPlayerRef.number,' back attack');
+
+
+          player.stamina.current -= playerAttackStamType.pre;
+
+
+          if (!player.popups.find(x => x.msg === "missedAttack2")) {
+            player.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: 30,
+                type: '',
+                position: '',
+                msg: 'missedAttack2',
+                img: '',
+
+              }
+            )
+          }
+
+          if (player.bluntAttack === true) {
+            player.bluntAttack = false;
+          }
+
+        }
+
+
         // TARGET ALSO ATTACKING
         if (targetPlayerRef.attackPeak === true) {
 
           // EVENLY MATCHED. CLASHING
           if (advantage === 0) {
 
-            // set both players clashing
-            // push back 1 or both
+
+            player.clashing.state === true;
+            targetPlayerRef.clashing.state === true;
+
+            // PUSHBACK ATTACKER/PLAYER
+            if (this.rnJesus(0,2) === 0) {
+
+              this.pushBack(player,this.getOppositeDirection(player.direction));
+
+            }
+            // PUSHBACK DEFENDER/TARGET
+            if (this.rnJesus(0,2) === 1) {
+
+              this.pushBack(targetPlayerRef,this.getOppositeDirection(targetPlayerRef.direction));
+
+            }
+            // PUSHBACK BOTH PLAYERS
+            if (this.rnJesus(0,2) === 2) {
+
+              this.pushBack(player,this.getOppositeDirection(player.direction));
+              this.pushBack(targetPlayerRef,this.getOppositeDirection(targetPlayerRef.direction));
+
+            }
+
           }
 
           // PLAYER ADVANTAGE
           if (advantage === 1) {
-            target handle damage, attacked cancel, set deflection
+
+            this.handleDamage(player,targetPlayerRef);
+            this.setDeflection(targetPlayerRef,'attacked',false);
+
           }
 
           // TARGET ADVANTAGE
           if (advantage === 2) {
-            player handle damage, attacked cancel, set deflection
+
+            this.handleDamage(targetPlayerRef,player);
+            this.setDeflection(player,'attacked',false);
+
           }
 
         }
@@ -9889,43 +10245,296 @@ class App extends Component {
         // TARGET DEFENDING
         if (targetDefending === true) {
 
-          // TARGET ADVANTAGE/ EVENLY MATCHED
-          if (advantage === 0 || advantage === 2) {
+          // BLUNT ATTACK IS MADE FOR BREAKING DEFENSE
+          if (player.bluntAttack === true) {
 
-            // PEAK DEFEND
-            if (targetPlayerRef.defendPeak === true) {
+            this.setDeflection(targetPlayerRef,'attacked',false);
 
-              // guaranteed attacker pushback deflect
-              // target defend success
+          }
+          // ATTACKER NON-BLUNT ATTACK
+          else {
+
+            // TARGET ADVANTAGE/ EVENLY MATCHED
+            if (advantage === 0 || advantage === 2) {
+
+              // PEAK DEFEND
+              if (targetPlayerRef.defendPeak === true) {
+
+                this.setDeflection(player,'parried',true);
+
+                targetPlayerRef.stamina.current += this.staminaCostRef.defend.peak;
+                targetPlayerRef.success.defendSuccess = {
+                  state: true,
+                  count: 1,
+                  limit: targetPlayerRef.success.defendSuccess.limit
+                };
+                targetPlayerRef.statusDisplay = {
+                  state: true,
+                  status: 'Parry!',
+                  count: 1,
+                  limit: targetPlayerRef.statusDisplay.limit,
+                };
+                if (!targetPlayerRef.popups.find(x=>x.msg === "attackParried")) {
+                  targetPlayerRef.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 30,
+                      type: '',
+                      position: '',
+                      msg: 'attackParried',
+                      img: '',
+
+                    }
+                  )
+                }
+
+
+              }
+
+              // OFF PEAK DEFEND
+              if (targetPlayerRef.defendDecay.state === true && targetPlayerRef.defendPeak !== true) {
+
+                // PUSHBACK AND/OR DEFLECT ATTACKER/PLAYER?
+                if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                  this.setDeflection(player,'defended',true);
+                }
+                // JUST DEFLECT
+                else {
+                  this.setDeflection(player,'defended',false);
+                }
+
+
+                targetPlayerRef.success.defendSuccess = {
+                    state: true,
+                    count: 1,
+                    limit: targetPlayerRef.success.defendSuccess.limit
+                  };
+                targetPlayerRef.statusDisplay = {
+                  state: true,
+                  status: 'Defend',
+                  count: 1,
+                  limit: targetPlayerRef.statusDisplay.limit,
+                }
+                if (!targetPlayerRef.popups.find(x=>x.msg === "defendSuccess")) {
+                    targetPlayerRef.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 25,
+                        type: '',
+                        position: '',
+                        msg: 'defendSuccess',
+                        img: '',
+
+                      }
+                    )
+                  }
+
+              }
+
             }
 
-            // OFF PEAK DEFEND
-            if (targetPlayerRef.defendDecay.state === true && targetPlayerRef.defendPeak !== true) {
-              // chance to pushback deflect OR just deflect
-              // target defend success
+            // PLAYER/ATTACKER ADVANTAGE
+            if (advantage === 1) {
+
+              this.handleDamage(player,targetPlayerRef);
+              this.setDeflection(targetPlayerRef,'attacked',false);
+
             }
+
           }
 
-          // PLAYER/ATTACKER ADVANTAGE
-          if (advantage === 1) {
-
-            // target handle damage, attack cancel & set deflection
-          }
         }
 
       }
 
     }
 
+    this.players[player.number-1] = player;
+    this.players[targetPlayerRef.number-1] = targetPlayerRef;
 
 
-    // remember blunt attack check
   }
-  setDeflection = (player,type) => {
+  setDeflection = (player,type,pushBack) => {
 
-    // call attackedCancel
+
+    // this.deflectedLengthRef = {
+    //   outOfStamina: 50,
+    //   attacked: 20,
+    //   bluntAttacked: 25,
+    //   defended: 10,
+      // parried: 25
+    // };
+
+    player.action = 'deflected';
+    player.success.deflected = {
+      state: true,
+      count: 1,
+      limit: this.deflectedLengthRef[type],
+      predeflect: player.success.deflected.predeflect,
+      type: type
+    }
+
+    if (this.aiDeflectedCheck.includes(player.number) !== true) {
+      this.aiDeflectedCheck.push(player.number)
+    }
+
+    this.attackedCancel(player)
+
+    if (pushBack === true) {
+
+      player.success.deflected.predeflect = true;
+
+      this.pushBack(player);
+    }
+
+    this.players[player.number-1] = player;
+
+
   }
   handleDamage = (player,targetPlayer) => {
+
+    // DAMAGE THE TARGET!!!
+
+    let damage = 0;
+
+    let doubleHit = this.rnJesus(1,doubleHitChance);
+    let singleHit = this.rnJesus(1,singleHitChance);
+
+    if (targetPlayer.currentArmor.name !== '') {
+      // console.log('opponent armour found');
+      switch(targetPlayer.currentArmor.effect) {
+        case 'dblhit-5' :
+          doubleHitChance = player.crits.doubleHit+5;
+        break;
+        case 'dblhit-10' :
+          doubleHitChance = player.crits.doubleHit+10;
+        break;
+        case 'dblhit-15' :
+          doubleHitChance = player.crits.doubleHit+15;
+        break;
+        // case 'dblhit-30' :
+        //   doubleHitChance = player.crits.doubleHit+30;
+        // break;
+        case 'snghit-5' :
+          singleHitChance = player.crits.singleHit+5;
+        break;
+        case 'snghit-10' :
+          singleHitChance = player.crits.singleHit+10;
+        break;
+      }
+    }
+
+
+
+
+
+    if back attack damage = 2
+    if singleHit === 1, damg = 1
+    if double hit & single === 1, damage = 2
+
+    player.success.attackSuccess = {
+      state: true,
+      count: 1,
+      limit: player.success.attackSuccess.limit
+    }
+
+    if unarmed, dbl = 0, single = 1
+    if bluntAttack, damage 0
+
+
+
+
+    if (!targetPlayer.popups.find(x=>x.msg.split("_")[0] === "hpDown")) {
+      targetPlayer.popups.push(
+        {
+          state: false,
+          count: 0,
+          limit: 30,
+          type: '',
+          position: '',
+          msg: 'hpDown_'+'-'+damage+'',
+          img: '',
+
+        }
+      )
+    }
+
+    targetPlayer.hp -= damage;
+    if (targetPlayer.hp === 1) {
+
+      targetPlayer.attackStrength = 1;
+
+      // ADJUST TARGET MOVE SPEED
+      let currentMoveSpeedIndx = targetPlayer.speed.range.indexOf(targetPlayer.speed.move)
+      if (currentMoveSpeedIndx > 0) {
+        targetPlayer.speed.move = targetPlayer.speed.range[currentMoveSpeedIndx-1]
+      }
+      // player.speed.move = .05;
+
+    }
+
+
+    // KILL OPPONENT!
+    if (targetPlayer.hp <= 0) {
+
+      this.killPlayer(targetPlayer]);
+
+      let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+      this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+      player.points++;
+
+      this.pointChecker(player)
+
+      if (player.ai.state === true && player.ai.mode === 'aggressive') {
+        console.log('check for evidence of retrieval here and resume retrieve if so',player.ai.retrieving,player.ai.mission);
+
+        if (player.ai.retrieving.checkin) {
+
+          player.ai.mission = 'retrieve';
+
+          if (!player.popups.find(x=>x.msg === 'missionRetrieve')) {
+            player.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: 30,
+                type: '',
+                position: '',
+                msg: 'missionRetrieve',
+                img: '',
+
+              }
+            )
+          }
+
+          let targetSafeData = this.scanTargetAreaThreat({
+            player: player.number,
+            point: {
+              x: player.ai.retrieving.point.x,
+              y: player.ai.retrieving.point.y,
+            },
+            range: 3,
+          })
+
+          player.ai.retrieving.safe = targetSafeData.isSafe;
+
+        }
+
+      }
+
+    }
+
+    this.attackedCancel(targetPlayer)
+
+    take stamina from injured target
+
+
+    this.players[player.number-1] = player;
+    this.players[targetPlayerRef.number-1] = targetPlayer;
+
 
   }
   checkCombatAdvantage = (player1,player2) => {
@@ -17920,124 +18529,6 @@ class App extends Component {
   }
 
 
-  customCellToVoid = (cell) => {
-    console.log('void specific cell');
-
-    this.cellToVoid.state = true;
-    this.cellToVoid.x = cell.x;
-    this.cellToVoid.y = cell.y;
-    this.cellToVoid.count = 1;
-
-    this.openVoid = true;
-    this.voidCustomCell = true;
-
-  }
-  voidSummon = (cell) => {
-    // console.log('opening void');
-
-      let foundPlayer;
-      let player;
-      let cl = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y)
-
-      if (
-        cl.number.x === this.gridWidth &&
-        cl.number.y === 0
-      ) {
-        // console.log('dont void this');
-      }
-      if (
-        cl.number.x === this.gridWidth &&
-        cl.number.y === this.gridWidth
-      ) {
-        // console.log('dont void this');
-      } else {
-        cl.item = {
-          name: '',
-          type: '',
-          subType: '',
-          effect: '',
-          initDrawn: false
-        };
-        cl.void.state = true;
-
-        if (this.bloodSacrificeEvent.state === true) {
-          // console.log('bloodSacrificeVoidedCells',cl);
-          this.bloodSacrificeVoidedCells.push(cl)
-        }
-        // console.log('voiding',cl.number.x,cl.number.y);
-
-        // if (
-        //   cl.levelData.charAt(0) === 'y'
-        // ) {
-        //   let x = cl.levelData.slice(1,3)
-        //   cl.levelData = "x"+x+"";
-        // }
-        // if (
-        //   cl.levelData.charAt(0) === 'z'
-        // ) {
-        //   let x = cl.levelData.slice(1,3)
-        //   cl.levelData = "x"+x+"";
-        // }
-
-      }
-
-
-      for (const plyr of this.players) {
-        if (
-          plyr.currentPosition.cell.number.x === cell.x &&
-          plyr.currentPosition.cell.number.y === cell.y
-        ) {
-          foundPlayer = true;
-          this.players[plyr.number-1].falling.state = true;
-          this.players[plyr.number-1].action = 'falling';
-
-          this.players[plyr.number-1].popups.push(
-            {
-              state: false,
-              count: 0,
-              limit: 25,
-              type: '',
-              position: '',
-              msg: 'falling',
-              img: '',
-
-            }
-          )
-
-          this.moveSpeed = plyr.speed.move;
-          this.players[plyr.number-1].target = this.resetTarget();
-
-          this.players[plyr.number-1].moving = {
-            state: true,
-            step: 0,
-            course: '',
-            origin: {
-              number: plyr.currentPosition.cell.number,
-              center: plyr.currentPosition.cell.center,
-            },
-            destination: {
-              x: plyr.currentPosition.cell.center.x,
-              y: plyr.currentPosition.cell.center.y,
-            }
-          }
-
-          let nextPosition = this.lineCrementer(plyr);
-          this.players[plyr.number-1].nextPosition = nextPosition;
-
-        }
-      }
-
-    this.updatePathArray();
-
-    this.easyStar.avoidAdditionalPoint(cell.x, cell.y);
-
-    for (const plyr2 of this.players) {
-      if (plyr2.ai.state === true) {
-        plyr2.ai.targetAcquired = false;
-      }
-    }
-
-  }
 
 
 
@@ -24666,7 +25157,6 @@ class App extends Component {
   }
 
 
-
   startProcessLevelData = (canvas) => {
 
     let gridInfo = [];
@@ -26534,6 +27024,9 @@ class App extends Component {
       if (player.stamina.current >= player.stamina.max) {
         player.stamina.current = player.stamina.max;
       }
+      if (player.stamina.current < 0) {
+        player.stamina.current = 0;
+      }
       if (player.stamina.current === 1) {
         // console.log('OUT OF STAMINA @ player update');
         player.flanking = {
@@ -26627,7 +27120,7 @@ class App extends Component {
         // console.log('count',player.success.deflected.count,'limit',player.success.deflected.limit,'type',player.success.deflected.type);
 
         if (
-          player.success.deflected.type === 'blunt_attacked' ||
+          player.success.deflected.type === 'bluntAttacked' ||
           player.success.deflected.type === 'defended'
         ) {
 
@@ -26648,7 +27141,7 @@ class App extends Component {
 
         }
 
-        if (player.success.deflected.type === 'attack') {
+        if (player.success.deflected.type === 'parried') {
           if (!player.popups.find(x=>x.msg === "attackParried")) {
             player.popups.push(
               {
@@ -26716,7 +27209,7 @@ class App extends Component {
       // console.log('deflect end',player.success.deflected.type);
       // DEFLECT SPIN!
       let shouldSpin;
-      if (player.success.deflected.type === "attack") {
+      if (player.success.deflected.type === "attacked") {
         shouldSpin = this.rnJesus(1,3);
       }
       if (player.success.deflected.type === "defended") {
