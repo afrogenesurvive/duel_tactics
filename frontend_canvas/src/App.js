@@ -1478,6 +1478,11 @@ class App extends Component {
         attackPeak: false,
         defendPeak: false,
         bluntAttack: false,
+        clashing: {
+          state: false,
+          count: 0,
+          limit: 10,
+        },
         dodging: {
           countState: false,
           state: false,
@@ -1927,6 +1932,11 @@ class App extends Component {
         attackPeak: false,
         defendPeak: false,
         bluntAttack: false,
+        clashing: {
+          state: false,
+          count: 0,
+          limit: 10,
+        },
         dodging: {
           countState: false,
           state: false,
@@ -2716,7 +2726,7 @@ class App extends Component {
         attacked: 3,
         bluntAttacked: 2,
         defended: 3,
-        attack: 5,
+        parried: 5,
       },
       defend: {
         pre: 1.5,
@@ -9806,6 +9816,7 @@ class App extends Component {
 
     let attackerRef = player;
     let targetPlayerRef = undefined;
+    let weapon = player.currentWeapon.type;
 
     // ATTACK STAM UNARMED CHECK & AND POPUPS SET
     let playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].normal;
@@ -9817,6 +9828,7 @@ class App extends Component {
       if (player.bluntAttack === true) {
         playerAttackStamType = this.staminaCostRef.attack.unarmed.blunt;
       }
+      weapon = 'unarmed';
 
       if (!player.popups.find(x=>x.msg === "attackingUnarmed")) {
         player.popups.push(
@@ -9982,7 +9994,7 @@ class App extends Component {
 
           else {
 
-            this.handleDamage(player,targetPlayerRef);
+            this.handleMeleeDamage(player,targetPlayerRef);
 
           }
 
@@ -10115,7 +10127,7 @@ class App extends Component {
                 else {
 
                   this.setDeflection(targetPlayerRef,'attacked',false);
-                  this.handleDamage(player,targetPlayerRef);
+                  this.handleMeleeDamage(player,targetPlayerRef);
 
                 }
 
@@ -10126,7 +10138,7 @@ class App extends Component {
             // ATTACKER/PLAYER ADVANTAGE
             else if (advantage === 1) {
 
-              this.handleDamage(player,targetPlayerRef);
+              this.handleMeleeDamage(player,targetPlayerRef);
               this.setDeflection(targetPlayerRef,'attacked',false);
 
             }
@@ -10146,7 +10158,7 @@ class App extends Component {
           }
           else {
 
-            this.handleDamage(player,targetPlayerRef);
+            this.handleMeleeDamage(player,targetPlayerRef);
             this.setDeflection(targetPlayerRef,'attacked',false);
 
           }
@@ -10199,8 +10211,8 @@ class App extends Component {
           if (advantage === 0) {
 
 
-            player.clashing.state === true;
-            targetPlayerRef.clashing.state === true;
+            player.clashing.state = true;
+            targetPlayerRef.clashing.state = true;
 
             // PUSHBACK ATTACKER/PLAYER
             if (this.rnJesus(0,2) === 0) {
@@ -10227,7 +10239,7 @@ class App extends Component {
           // PLAYER ADVANTAGE
           if (advantage === 1) {
 
-            this.handleDamage(player,targetPlayerRef);
+            this.handleMeleeDamage(player,targetPlayerRef);
             this.setDeflection(targetPlayerRef,'attacked',false);
 
           }
@@ -10235,7 +10247,7 @@ class App extends Component {
           // TARGET ADVANTAGE
           if (advantage === 2) {
 
-            this.handleDamage(targetPlayerRef,player);
+            this.handleMeleeDamage(targetPlayerRef,player);
             this.setDeflection(player,'attacked',false);
 
           }
@@ -10338,7 +10350,7 @@ class App extends Component {
             // PLAYER/ATTACKER ADVANTAGE
             if (advantage === 1) {
 
-              this.handleDamage(player,targetPlayerRef);
+              this.handleMeleeDamage(player,targetPlayerRef);
               this.setDeflection(targetPlayerRef,'attacked',false);
 
             }
@@ -10354,6 +10366,151 @@ class App extends Component {
     this.players[player.number-1] = player;
     this.players[targetPlayerRef.number-1] = targetPlayerRef;
 
+
+  }
+  projectileAttackParse = (bolt,player) => {
+
+
+    let weapon = player.currentWeapon.type;
+
+    // ATTACK STAM UNARMED CHECK & AND POPUPS SET
+    let playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].normal;
+    if (player.bluntAttack === true) {
+      playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].blunt;
+    }
+    if (player.currentWeapon.name === "") {
+      weapon = "unarmed";
+    }
+
+    // IS TARGET DEFENDING?
+    let playerDefending = false;
+    let defendType = player.currentWeapon.type;
+    if (player.currentWeapon.name === "") {
+      defendType  = "unarmed";
+    }
+    let defendPeak = this.defendAnimRef.peak[defendType];
+    if (player.defending.count === defendPeak || player.defendDecay.state === true) {
+      playerDefending = true;
+    }
+
+    this.cellsUnderAttack.push(
+      {
+        number: {
+          x: player.currentPosition.cell.number.x,
+          y: player.currentPosition.cell.number.y,
+        },
+        count: 1,
+        limit: 8,
+      },
+    )
+
+
+    //BOLT TARGET DODGING
+    if (player.dodging.state === true) {
+
+      console.log('player ',player.number,' just dodged a bolt from ',bolt.owner);
+
+
+    }
+    else {
+
+      // BOLT TARGET NOT DODGING
+      // BACK ATTACK
+      if (player.direction === bolt.direction) {
+
+        this.handleProjectileDamage(bolt,player);
+        this.setDeflection(player,'attacked',false);
+
+      }
+
+      // SIDE ATTACK
+      if (
+        player.direction !== bolt.direction &&
+        player.direction !== this.getOppositeDirection(bolt.direction)
+      ) {
+
+        // PLAYER IS ATTACKING ARMED, CHANCE TO KILL BOLT OR BE INJURED
+        if (player.attackPeak === true && weapon !== 'unarmed') {
+
+          if (this.rnJesus(1,player.crits.pushBack) === 1) {
+
+            bolt.kill = true;
+            this.pushBack(player,this.getOppositeDirection(player.direction));
+
+          }
+          else {
+
+            this.handleProjectileDamage(bolt,player);
+            this.setDeflection(player,'attacked',false);
+
+          }
+
+
+
+        }
+
+
+        if (playerDefending === true) {
+
+          if (weapon === 'unarmed') {
+
+            this.handleProjectileDamage(bolt,player);
+            this.setDeflection(player,'attacked',false);
+
+          }
+          else {
+
+            if (targetPlayerRef.defendPeak === true) {
+
+              // defend success, kill bolt
+
+            }
+            if (targetPlayerRef.defendDecay.state === true && targetPlayerRef.defendPeak !== true) {
+
+              kill bolt,
+              defend success
+              chance to pushback player
+              chance to damage, deflect + pushback
+            }
+
+          }
+        }
+
+        if (playerDefending !== true && player.attackPeak === true) {
+
+          damage and deflect player
+        }
+
+      }
+
+      // FRONTAL ATTACK
+      if (bolt.direction === this.getOppositeDirection(player.direction)) {
+
+        if target peak attack,
+          kill bolt, chance to pushback
+
+        if defending,
+          kill bolt
+          if unarmed,
+            if peak defend,
+              high chance to defend succcess,
+              or damage & deflect player
+            if off peak defend,
+              small chance to defend success
+              or damage & deflect player
+          if armed,
+            guaranteed defend success
+
+        if not defending or attackpeak
+          damage and deflect player
+
+      }
+
+    }
+
+
+    this.players[player.number-1] = player;
+    this.projectiles.find(x => x.id === bolt.id) = bolt;
 
   }
   setDeflection = (player,type,pushBack) => {
@@ -10375,6 +10532,7 @@ class App extends Component {
       predeflect: player.success.deflected.predeflect,
       type: type
     }
+    player.stamina.current -= this.staminaCostRef.deflected[type];
 
     if (this.aiDeflectedCheck.includes(player.number) !== true) {
       this.aiDeflectedCheck.push(player.number)
@@ -10393,14 +10551,14 @@ class App extends Component {
 
 
   }
-  handleDamage = (player,targetPlayer) => {
+  handleMeleeDamage = (player,targetPlayer) => {
 
     // DAMAGE THE TARGET!!!
 
     let damage = 0;
+    let doubleHitChance = player.crits.doubleHit;
+    let singleHitChance = player.crits.singleHit;
 
-    let doubleHit = this.rnJesus(1,doubleHitChance);
-    let singleHit = this.rnJesus(1,singleHitChance);
 
     if (targetPlayer.currentArmor.name !== '') {
       // console.log('opponent armour found');
@@ -10426,24 +10584,35 @@ class App extends Component {
       }
     }
 
+    let doubleHit = this.rnJesus(1,doubleHitChance);
+    let singleHit = this.rnJesus(1,singleHitChance);
 
 
+    // BACK ATTACK
+    if (player.direction === targetPlayer.direction) {
+      damage = 2;
+    }
+    if (player.currentWeapon.name === "") {
+      singleHit = 1;
+      doubleHit = 0;
+    }
 
+    if (singleHit === 1) {
+      damage = 1;
+    }
+    if (doubleHit === 1) {
+      damage = 2;
+    }
+    if (player.bluntAttack === true) {
+      damage = 0;
+    }
 
-    if back attack damage = 2
-    if singleHit === 1, damg = 1
-    if double hit & single === 1, damage = 2
 
     player.success.attackSuccess = {
       state: true,
       count: 1,
       limit: player.success.attackSuccess.limit
     }
-
-    if unarmed, dbl = 0, single = 1
-    if bluntAttack, damage 0
-
-
 
 
     if (!targetPlayer.popups.find(x=>x.msg.split("_")[0] === "hpDown")) {
@@ -10475,17 +10644,17 @@ class App extends Component {
 
     }
 
+    if (targetPlayer.hp > 0) {
+      this.attackedCancel(targetPlayer)
+    }
+
 
     // KILL OPPONENT!
-    if (targetPlayer.hp <= 0) {
+    else {
 
-      this.killPlayer(targetPlayer]);
-
-      let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-      this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
-
-      player.points++;
-
+      this.killPlayer(targetPlayer);
+      this.placeItems({init: false, item: this.itemList[this.rnJesus(0,this.itemList.length-1)].name})
+      player.points++
       this.pointChecker(player)
 
       if (player.ai.state === true && player.ai.mode === 'aggressive') {
@@ -10527,14 +10696,21 @@ class App extends Component {
 
     }
 
-    this.attackedCancel(targetPlayer)
 
-    take stamina from injured target
 
 
     this.players[player.number-1] = player;
-    this.players[targetPlayerRef.number-1] = targetPlayer;
+    this.players[targetPlayer.number-1] = targetPlayer;
 
+
+  }
+  handleProjectileDamage = (bolt,player) => {
+
+
+    bolt.kill = true;
+
+    this.players[player.number-1] = player;
+    this.projectiles.find(x => x.id === bolt.id) = bolt;
 
   }
   checkCombatAdvantage = (player1,player2) => {
@@ -10544,7 +10720,7 @@ class App extends Component {
     for (const plyr of players) {
       let indx = players.indexOf(plyr);
       if (this.players[indx+1].currentWeapon !== "") {
-        plyr+1;
+        players[indx]+=1;
       }
     }
     if (players[0] === players[1]) {
@@ -18802,6 +18978,11 @@ class App extends Component {
           attackPeak: false,
           defendPeak: false,
           bluntAttack: false,
+          clashing: {
+            state: false,
+            count: 0,
+            limit: 10,
+          },
           dodging: {
             countState: false,
             state: false,
@@ -27025,6 +27206,7 @@ class App extends Component {
         player.stamina.current = player.stamina.max;
       }
       if (player.stamina.current < 0) {
+        console.log('stamina lower limit reset for player ',player.number);
         player.stamina.current = 0;
       }
       if (player.stamina.current === 1) {
@@ -29861,6 +30043,21 @@ class App extends Component {
           }
 
         }
+        // CLASHING
+        if (player.clashing.state === true) {
+          if (player.clashing.count < player.clashing.limit) {
+            player.clashing.count++;
+          }
+          if (player.clashing.count >= player.clashing.limit) {
+            player.clashing = {
+              state: false,
+              count: 0,
+              limit: 10,
+            }
+          }
+
+        }
+
 
 
         // DEFENDING!!
@@ -33544,6 +33741,10 @@ class App extends Component {
                     plyr.currentPosition.cell.number.y === cell.number.y &&
                     plyr.number !== bolt.owner
                   ) {
+
+
+                    this.projectileAttackParse(bolt,player);
+
                     // console.log('bolt hit a player',plyr);
                     this.cellsUnderAttack.push(
                       {
@@ -34069,7 +34270,12 @@ class App extends Component {
                     }
 
 
+
+
+
+
                   }
+
                 }
 
 
