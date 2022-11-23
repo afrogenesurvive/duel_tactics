@@ -7923,7 +7923,7 @@ class App extends Component {
     return voidCenter;
   }
   getCellFromDirection = (range,originCellNumber,direction) => {
-
+    console.log('there',originCellNumber);
     let cellNumber = {
       x: undefined,
       y: undefined,
@@ -8190,7 +8190,8 @@ class App extends Component {
       }
 
 
-      cell.number = this.getCellFromDirection(1,originCell.number,this.players[bolt.owner-1].direction);
+      // cell.number = this.getCellFromDirection(1,originCell.number,this.players[bolt.owner-1].direction);
+      cell.number = this.getCellFromDirection(1,originCell,this.players[bolt.owner-1].direction);
 
 
       nextCell = cell;
