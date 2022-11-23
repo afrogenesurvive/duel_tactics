@@ -7923,7 +7923,7 @@ class App extends Component {
     return voidCenter;
   }
   getCellFromDirection = (range,originCellNumber,direction) => {
-    console.log('there',originCellNumber);
+
     let cellNumber = {
       x: undefined,
       y: undefined,
@@ -9647,6 +9647,7 @@ class App extends Component {
 
 
   meleeAttackPeak = (player) => {
+    // console.log('meleeAttackPeak');
 
     if (player.target.myCellBlock !== true) {
 
@@ -9817,7 +9818,7 @@ class App extends Component {
 
   }
   meleeAttackParse = (player,cellNo) => {
-
+    // console.log('meleeAttackParse',player.target['cell'+cellNo].occupant.type,this.players[player.target['cell'+cellNo].occupant.player-1]);
 
     let attackerRef = player;
     let targetPlayerRef = undefined;
@@ -9938,10 +9939,9 @@ class App extends Component {
     // TARGET IS A PLAYER
     if (player.target['cell'+cellNo].occupant.type === 'player') {
 
-      targetPlayerRef = this.players[player.target['cell'+cellNo].occupant.player];
+      targetPlayerRef = this.players[player.target['cell'+cellNo].occupant.player-1];
 
       if (targetPlayerRef) {
-
 
         // IS TARGET DEFENDING?
         let targetDefending = false;
@@ -10896,7 +10896,7 @@ class App extends Component {
 
   }
   handleMeleeDamage = (player,targetPlayer) => {
-
+    console.log('handleMeleeDamage');
     // DAMAGE THE TARGET!!!
 
     let damage = 0;
@@ -11040,12 +11040,8 @@ class App extends Component {
 
     }
 
-
-
-
     this.players[player.number-1] = player;
     this.players[targetPlayer.number-1] = targetPlayer;
-
 
   }
   handleProjectileDamage = (bolt,player) => {
@@ -11197,7 +11193,7 @@ class App extends Component {
     let players = [0,0];
     for (const plyr of players) {
       let indx = players.indexOf(plyr);
-      if (this.players[indx+1].currentWeapon !== "") {
+      if (this.players[indx].currentWeapon !== "") {
         players[indx]+=1;
       }
     }
