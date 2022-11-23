@@ -7500,6 +7500,7 @@ class App extends Component {
 
     }
 
+    // SET MOVING BG COLOR
     let baseColor = "";
     if (perc >= 0 && perc <= 40) {
       rect.setAttribute("fill", "red")
@@ -7519,6 +7520,9 @@ class App extends Component {
     }
     if (perc >= 80) {
       rect.setAttribute("fill", "green")
+      baseColor = "green";
+    }
+    if (player.action === "defending" && phase === 'cooldown') {
       baseColor = "green";
     }
 
@@ -9935,166 +9939,133 @@ class App extends Component {
 
       targetPlayerRef = this.players[player.target['cell'+cellNo].occupant.player];
 
-      // IS TARGET DEFENDING?
-      let targetDefending = false;
-      let defendType = targetPlayerRef.currentWeapon.type;
-      if (targetPlayerRef.currentWeapon.name === "") {
-        defendType  = "unarmed";
-      }
-      let defendPeak = this.defendAnimRef.peak[defendType];
-      if (targetPlayerRef.defending.count === defendPeak || targetPlayerRef.defendDecay.state === true) {
-        targetDefending = true;
-      }
-
-      let advantage = this.checkCombatAdvantage(player,targetPlayerRef);
-
-      // BACK ATTACK
-      if (player.direction === targetPlayerRef.direction) {
+      if (targetPlayerRef) {
 
 
-        // TARGET DODGING BACK ATTACK
-        if (targetPlayerRef.dodging.state === true) {
-
-          console.log('player ',player.number,' just dodged player ',targetPlayerRef.number,' back attack');
-
-          player.stamina.current -= playerAttackStamType.pre;
-          targetPlayerRef.stamina.current += this.staminaCostRef.dodge.pre;
-
-          if (!player.popups.find(x => x.msg === "missedAttack2")) {
-            player.popups.push(
-              {
-                state: false,
-                count: 0,
-                limit: 30,
-                type: '',
-                position: '',
-                msg: 'missedAttack2',
-                img: '',
-
-              }
-            )
-          }
-
-          if (player.bluntAttack === true) {
-            player.bluntAttack = false;
-          }
-
+        // IS TARGET DEFENDING?
+        let targetDefending = false;
+        let defendType = targetPlayerRef.currentWeapon.type;
+        if (targetPlayerRef.currentWeapon.name === "") {
+          defendType  = "unarmed";
+        }
+        let defendPeak = this.defendAnimRef.peak[defendType];
+        if (targetPlayerRef.defending.count === defendPeak || targetPlayerRef.defendDecay.state === true) {
+          targetDefending = true;
         }
 
+        let advantage = this.checkCombatAdvantage(player,targetPlayerRef);
 
-        //TARGET NOT DODGING. VULNERABLE TO BACK ATTACK
-        else {
-
-          if (player.bluntAttack === true) {
-
-            this.setDeflection(targetPlayerRef,'bluntAttacked',false);
-
-          }
-
-          else {
-
-            this.handleMeleeDamage(player,targetPlayerRef);
-
-          }
-
-        }
-
-      }
-
-      // SIDE ATTACK
-      if (
-        targetPlayerRef.direction !== player.direction &&
-        targetPlayerRef.direction !== this.getOppositeDirection(player.direction)
-      ) {
-
-        // TARGET PLAYER IS DODGING
-        if (targetPlayerRef.dodging.state === true) {
-
-          console.log('player ',player.number,' just dodged player ',targetPlayerRef.number,' side attack');
-
-          player.stamina.current -= playerAttackStamType.pre;
-          targetPlayerRef.stamina.current += this.staminaCostRef.dodge.pre;
-
-          if (!player.popups.find(x => x.msg === "missedAttack2")) {
-            player.popups.push(
-              {
-                state: false,
-                count: 0,
-                limit: 30,
-                type: '',
-                position: '',
-                msg: 'missedAttack2',
-                img: '',
-
-              }
-            )
-          }
-
-          if (player.bluntAttack === true) {
-            player.bluntAttack = false;
-          }
-
-        }
+        // BACK ATTACK
+        if (player.direction === targetPlayerRef.direction) {
 
 
-        // TARGET PLAYER DEFENDING
-        if (targetDefending === true) {
+          // TARGET DODGING BACK ATTACK
+          if (targetPlayerRef.dodging.state === true) {
 
-          // BLUNT ATTACK IS MADE FOR BREAKING DEFENSE
-          if (player.bluntAttack === true) {
+            console.log('player ',player.number,' just dodged player ',targetPlayerRef.number,' back attack');
 
-            this.setDeflection(targetPlayerRef,'bluntAttacked',false);
+            player.stamina.current -= playerAttackStamType.pre;
+            targetPlayerRef.stamina.current += this.staminaCostRef.dodge.pre;
 
-          }
+            if (!player.popups.find(x => x.msg === "missedAttack2")) {
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 30,
+                  type: '',
+                  position: '',
+                  msg: 'missedAttack2',
+                  img: '',
 
-          // ATTACKER NON-BLUNT ATTACK
-          else {
-
-            // DEFENDER ADVANTAGE
-            if (advantage === 2 || advantage === 0) {
-
-              // PEAK DEFEND/PARRY
-              if (targetPlayerRef.defendPeak === true) {
-
-                this.setDeflection(player,'defended',true);
-
-                targetPlayerRef.stamina.current += this.staminaCostRef.defend.peak;
-                targetPlayerRef.success.defendSuccess = {
-                  state: true,
-                  count: 1,
-                  limit: targetPlayerRef.success.defendSuccess.limit
-                };
-                targetPlayerRef.statusDisplay = {
-                  state: true,
-                  status: 'Parry!',
-                  count: 1,
-                  limit: targetPlayerRef.statusDisplay.limit,
-                };
-                if (!targetPlayerRef.popups.find(x=>x.msg === "attackParried")) {
-                  targetPlayerRef.popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit: 30,
-                      type: '',
-                      position: '',
-                      msg: 'attackParried',
-                      img: '',
-
-                    }
-                  )
                 }
+              )
+            }
 
-              }
+            if (player.bluntAttack === true) {
+              player.bluntAttack = false;
+            }
 
-              // OFF PEAK DEFEND. DEFENSE NOT GUARANTEED
-              if (targetPlayerRef.defendDecay.state === true && targetPlayerRef.defendPeak !== true) {
+          }
 
 
-                // DEFEND SUCCESS
-                if (this.rnJesus(1,targetPlayerRef.crits.guardBreak) === 1) {
+          //TARGET NOT DODGING. VULNERABLE TO BACK ATTACK
+          else {
 
-                  this.setDeflection(player,'defended',false);
+            if (player.bluntAttack === true) {
+
+              this.setDeflection(targetPlayerRef,'bluntAttacked',false);
+
+            }
+
+            else {
+
+              this.handleMeleeDamage(player,targetPlayerRef);
+
+            }
+
+          }
+
+        }
+
+        // SIDE ATTACK
+        if (
+          targetPlayerRef.direction !== player.direction &&
+          targetPlayerRef.direction !== this.getOppositeDirection(player.direction)
+        ) {
+
+          // TARGET PLAYER IS DODGING
+          if (targetPlayerRef.dodging.state === true) {
+
+            console.log('player ',player.number,' just dodged player ',targetPlayerRef.number,' side attack');
+
+            player.stamina.current -= playerAttackStamType.pre;
+            targetPlayerRef.stamina.current += this.staminaCostRef.dodge.pre;
+
+            if (!player.popups.find(x => x.msg === "missedAttack2")) {
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 30,
+                  type: '',
+                  position: '',
+                  msg: 'missedAttack2',
+                  img: '',
+
+                }
+              )
+            }
+
+            if (player.bluntAttack === true) {
+              player.bluntAttack = false;
+            }
+
+          }
+
+
+          // TARGET PLAYER DEFENDING
+          if (targetDefending === true) {
+
+            // BLUNT ATTACK IS MADE FOR BREAKING DEFENSE
+            if (player.bluntAttack === true) {
+
+              this.setDeflection(targetPlayerRef,'bluntAttacked',false);
+
+            }
+
+            // ATTACKER NON-BLUNT ATTACK
+            else {
+
+              // DEFENDER ADVANTAGE
+              if (advantage === 2 || advantage === 0) {
+
+                // PEAK DEFEND/PARRY
+                if (targetPlayerRef.defendPeak === true) {
+
+                  this.setDeflection(player,'defended',true);
+
+                  targetPlayerRef.stamina.current += this.staminaCostRef.defend.peak;
                   targetPlayerRef.success.defendSuccess = {
                     state: true,
                     count: 1,
@@ -10102,19 +10073,19 @@ class App extends Component {
                   };
                   targetPlayerRef.statusDisplay = {
                     state: true,
-                    status: 'Defend',
+                    status: 'Parry!',
                     count: 1,
                     limit: targetPlayerRef.statusDisplay.limit,
-                  }
-                  if (!targetPlayerRef.popups.find(x=>x.msg === "defendSuccess")) {
+                  };
+                  if (!targetPlayerRef.popups.find(x=>x.msg === "attackParried")) {
                     targetPlayerRef.popups.push(
                       {
                         state: false,
                         count: 0,
-                        limit: 25,
+                        limit: 30,
                         type: '',
                         position: '',
-                        msg: 'defendSuccess',
+                        msg: 'attackParried',
                         img: '',
 
                       }
@@ -10123,20 +10094,89 @@ class App extends Component {
 
                 }
 
-                // DEFEND FAILURE
-                else {
+                // OFF PEAK DEFEND. DEFENSE NOT GUARANTEED
+                if (targetPlayerRef.defendDecay.state === true && targetPlayerRef.defendPeak !== true) {
 
-                  this.setDeflection(targetPlayerRef,'attacked',false);
-                  this.handleMeleeDamage(player,targetPlayerRef);
 
+                  // DEFEND SUCCESS
+                  if (this.rnJesus(1,targetPlayerRef.crits.guardBreak) === 1) {
+
+                    this.setDeflection(player,'defended',false);
+                    targetPlayerRef.success.defendSuccess = {
+                      state: true,
+                      count: 1,
+                      limit: targetPlayerRef.success.defendSuccess.limit
+                    };
+                    targetPlayerRef.statusDisplay = {
+                      state: true,
+                      status: 'Defend',
+                      count: 1,
+                      limit: targetPlayerRef.statusDisplay.limit,
+                    }
+                    if (!targetPlayerRef.popups.find(x=>x.msg === "defendSuccess")) {
+                      targetPlayerRef.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 25,
+                          type: '',
+                          position: '',
+                          msg: 'defendSuccess',
+                          img: '',
+
+                        }
+                      )
+                    }
+
+                  }
+
+                  // DEFEND FAILURE
+                  else {
+
+                    this.setDeflection(targetPlayerRef,'attacked',false);
+                    this.handleMeleeDamage(player,targetPlayerRef);
+
+                  }
+
+                }
+
+              }
+
+              // ATTACKER/PLAYER ADVANTAGE
+              else if (advantage === 1) {
+
+                this.handleMeleeDamage(player,targetPlayerRef);
+                this.setDeflection(targetPlayerRef,'attacked',false);
+                player.success.attackSuccess = {
+                  state: true,
+                  count: 1,
+                  limit: player.success.attackSuccess.limit
                 }
 
               }
 
             }
 
-            // ATTACKER/PLAYER ADVANTAGE
-            else if (advantage === 1) {
+          }
+
+          // TARGET PLAYER NOT DODGING OR DEFENDING
+          else {
+
+            // PLAYER BLUNT ATK SUCCESS, TARGET DEFLECTED
+            if (player.bluntAttack === true) {
+
+              player.bluntAttack = false;
+              this.setDeflection(targetPlayerRef,'bluntAttacked',false);
+              player.success.attackSuccess = {
+                state: true,
+                count: 1,
+                limit: player.success.attackSuccess.limit
+              }
+
+            }
+
+            // PLAYER ATK SUCCESS, TARGET DEFLECTED + DAMAGE
+            else {
 
               this.handleMeleeDamage(player,targetPlayerRef);
               this.setDeflection(targetPlayerRef,'attacked',false);
@@ -10150,237 +10190,78 @@ class App extends Component {
 
           }
 
-        }
-
-        // TARGET PLAYER NOT DODGING OR DEFENDING
-        else {
-
-          // PLAYER BLUNT ATK SUCCESS, TARGET DEFLECTED
-          if (player.bluntAttack === true) {
-
-            player.bluntAttack = false;
-            this.setDeflection(targetPlayerRef,'bluntAttacked',false);
-            player.success.attackSuccess = {
-              state: true,
-              count: 1,
-              limit: player.success.attackSuccess.limit
-            }
-
-          }
-
-          // PLAYER ATK SUCCESS, TARGET DEFLECTED + DAMAGE
-          else {
-
-            this.handleMeleeDamage(player,targetPlayerRef);
-            this.setDeflection(targetPlayerRef,'attacked',false);
-            player.success.attackSuccess = {
-              state: true,
-              count: 1,
-              limit: player.success.attackSuccess.limit
-            }
-
-          }
 
         }
 
 
-      }
+        // TARGET & PLAYER ARE FACE TO FACE
+        if (player.direction === this.getOppositeDirection(targetPlayerRef.direction)) {
 
 
-      // TARGET & PLAYER ARE FACE TO FACE
-      if (player.direction === this.getOppositeDirection(targetPlayerRef.direction)) {
+          // TARGET DODGING
+          if (targetPlayerRef.dodging.state === true) {
+
+            console.log('player ',player.number,' just dodged player ',targetPlayerRef.number,' back attack');
 
 
-        // TARGET DODGING
-        if (targetPlayerRef.dodging.state === true) {
+            player.stamina.current -= playerAttackStamType.pre;
+            targetPlayerRef.stamina.current += this.staminaCostRef.dodge.pre;
 
-          console.log('player ',player.number,' just dodged player ',targetPlayerRef.number,' back attack');
+            if (!player.popups.find(x => x.msg === "missedAttack2")) {
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 30,
+                  type: '',
+                  position: '',
+                  msg: 'missedAttack2',
+                  img: '',
+
+                }
+              )
+            }
+
+            if (player.bluntAttack === true) {
+              player.bluntAttack = false;
+            }
+
+          }
 
 
-          player.stamina.current -= playerAttackStamType.pre;
-          targetPlayerRef.stamina.current += this.staminaCostRef.dodge.pre;
+          // TARGET ALSO ATTACKING
+          if (targetPlayerRef.attackPeak === true) {
 
-          if (!player.popups.find(x => x.msg === "missedAttack2")) {
-            player.popups.push(
-              {
-                state: false,
-                count: 0,
-                limit: 30,
-                type: '',
-                position: '',
-                msg: 'missedAttack2',
-                img: '',
+            // EVENLY MATCHED. CLASHING
+            if (advantage === 0) {
+
+
+              player.clashing.state = true;
+              targetPlayerRef.clashing.state = true;
+
+              // PUSHBACK ATTACKER/PLAYER
+              if (this.rnJesus(0,2) === 0) {
+
+                this.pushBack(player,this.getOppositeDirection(player.direction));
 
               }
-            )
-          }
+              // PUSHBACK DEFENDER/TARGET
+              if (this.rnJesus(0,2) === 1) {
 
-          if (player.bluntAttack === true) {
-            player.bluntAttack = false;
-          }
-
-        }
-
-
-        // TARGET ALSO ATTACKING
-        if (targetPlayerRef.attackPeak === true) {
-
-          // EVENLY MATCHED. CLASHING
-          if (advantage === 0) {
-
-
-            player.clashing.state = true;
-            targetPlayerRef.clashing.state = true;
-
-            // PUSHBACK ATTACKER/PLAYER
-            if (this.rnJesus(0,2) === 0) {
-
-              this.pushBack(player,this.getOppositeDirection(player.direction));
-
-            }
-            // PUSHBACK DEFENDER/TARGET
-            if (this.rnJesus(0,2) === 1) {
-
-              this.pushBack(targetPlayerRef,this.getOppositeDirection(targetPlayerRef.direction));
-
-            }
-            // PUSHBACK BOTH PLAYERS
-            if (this.rnJesus(0,2) === 2) {
-
-              this.pushBack(player,this.getOppositeDirection(player.direction));
-              this.pushBack(targetPlayerRef,this.getOppositeDirection(targetPlayerRef.direction));
-
-            }
-
-          }
-
-          // PLAYER ADVANTAGE
-          if (advantage === 1) {
-
-            this.handleMeleeDamage(player,targetPlayerRef);
-            this.setDeflection(targetPlayerRef,'attacked',false);
-            player.success.attackSuccess = {
-              state: true,
-              count: 1,
-              limit: player.success.attackSuccess.limit
-            }
-
-          }
-
-          // TARGET ADVANTAGE
-          if (advantage === 2) {
-
-            this.handleMeleeDamage(targetPlayerRef,player);
-            this.setDeflection(player,'attacked',false);
-            targetPlayerRef.success.attackSuccess = {
-              state: true,
-              count: 1,
-              limit: targetPlayerRef.success.attackSuccess.limit
-            }
-
-          }
-
-        }
-
-        // TARGET DEFENDING
-        if (targetDefending === true) {
-
-          // BLUNT ATTACK IS MADE FOR BREAKING DEFENSE
-          if (player.bluntAttack === true) {
-
-            this.setDeflection(targetPlayerRef,'attacked',false);
-            player.success.attackSuccess = {
-              state: true,
-              count: 1,
-              limit: player.success.attackSuccess.limit
-            }
-
-          }
-          // ATTACKER NON-BLUNT ATTACK
-          else {
-
-            // TARGET ADVANTAGE/ EVENLY MATCHED
-            if (advantage === 0 || advantage === 2) {
-
-              // PEAK DEFEND
-              if (targetPlayerRef.defendPeak === true) {
-
-                this.setDeflection(player,'parried',true);
-
-                targetPlayerRef.stamina.current += this.staminaCostRef.defend.peak;
-                targetPlayerRef.success.defendSuccess = {
-                  state: true,
-                  count: 1,
-                  limit: targetPlayerRef.success.defendSuccess.limit
-                };
-                targetPlayerRef.statusDisplay = {
-                  state: true,
-                  status: 'Parry!',
-                  count: 1,
-                  limit: targetPlayerRef.statusDisplay.limit,
-                };
-                if (!targetPlayerRef.popups.find(x=>x.msg === "attackParried")) {
-                  targetPlayerRef.popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit: 30,
-                      type: '',
-                      position: '',
-                      msg: 'attackParried',
-                      img: '',
-
-                    }
-                  )
-                }
-
+                this.pushBack(targetPlayerRef,this.getOppositeDirection(targetPlayerRef.direction));
 
               }
+              // PUSHBACK BOTH PLAYERS
+              if (this.rnJesus(0,2) === 2) {
 
-              // OFF PEAK DEFEND
-              if (targetPlayerRef.defendDecay.state === true && targetPlayerRef.defendPeak !== true) {
-
-                // PUSHBACK AND/OR DEFLECT ATTACKER/PLAYER?
-                if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                  this.setDeflection(player,'defended',true);
-                }
-                // JUST DEFLECT
-                else {
-                  this.setDeflection(player,'defended',false);
-                }
-
-
-                targetPlayerRef.success.defendSuccess = {
-                    state: true,
-                    count: 1,
-                    limit: targetPlayerRef.success.defendSuccess.limit
-                  };
-                targetPlayerRef.statusDisplay = {
-                  state: true,
-                  status: 'Defend',
-                  count: 1,
-                  limit: targetPlayerRef.statusDisplay.limit,
-                }
-                if (!targetPlayerRef.popups.find(x=>x.msg === "defendSuccess")) {
-                    targetPlayerRef.popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: '',
-                        position: '',
-                        msg: 'defendSuccess',
-                        img: '',
-
-                      }
-                    )
-                  }
+                this.pushBack(player,this.getOppositeDirection(player.direction));
+                this.pushBack(targetPlayerRef,this.getOppositeDirection(targetPlayerRef.direction));
 
               }
 
             }
 
-            // PLAYER/ATTACKER ADVANTAGE
+            // PLAYER ADVANTAGE
             if (advantage === 1) {
 
               this.handleMeleeDamage(player,targetPlayerRef);
@@ -10393,16 +10274,147 @@ class App extends Component {
 
             }
 
+            // TARGET ADVANTAGE
+            if (advantage === 2) {
+
+              this.handleMeleeDamage(targetPlayerRef,player);
+              this.setDeflection(player,'attacked',false);
+              targetPlayerRef.success.attackSuccess = {
+                state: true,
+                count: 1,
+                limit: targetPlayerRef.success.attackSuccess.limit
+              }
+
+            }
+
+          }
+
+          // TARGET DEFENDING
+          if (targetDefending === true) {
+
+            // BLUNT ATTACK IS MADE FOR BREAKING DEFENSE
+            if (player.bluntAttack === true) {
+
+              this.setDeflection(targetPlayerRef,'attacked',false);
+              player.success.attackSuccess = {
+                state: true,
+                count: 1,
+                limit: player.success.attackSuccess.limit
+              }
+
+            }
+            // ATTACKER NON-BLUNT ATTACK
+            else {
+
+              // TARGET ADVANTAGE/ EVENLY MATCHED
+              if (advantage === 0 || advantage === 2) {
+
+                // PEAK DEFEND
+                if (targetPlayerRef.defendPeak === true) {
+
+                  this.setDeflection(player,'parried',true);
+
+                  targetPlayerRef.stamina.current += this.staminaCostRef.defend.peak;
+                  targetPlayerRef.success.defendSuccess = {
+                    state: true,
+                    count: 1,
+                    limit: targetPlayerRef.success.defendSuccess.limit
+                  };
+                  targetPlayerRef.statusDisplay = {
+                    state: true,
+                    status: 'Parry!',
+                    count: 1,
+                    limit: targetPlayerRef.statusDisplay.limit,
+                  };
+                  if (!targetPlayerRef.popups.find(x=>x.msg === "attackParried")) {
+                    targetPlayerRef.popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 30,
+                        type: '',
+                        position: '',
+                        msg: 'attackParried',
+                        img: '',
+
+                      }
+                    )
+                  }
+
+
+                }
+
+                // OFF PEAK DEFEND
+                if (targetPlayerRef.defendDecay.state === true && targetPlayerRef.defendPeak !== true) {
+
+                  // PUSHBACK AND/OR DEFLECT ATTACKER/PLAYER?
+                  if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                    this.setDeflection(player,'defended',true);
+                  }
+                  // JUST DEFLECT
+                  else {
+                    this.setDeflection(player,'defended',false);
+                  }
+
+
+                  targetPlayerRef.success.defendSuccess = {
+                      state: true,
+                      count: 1,
+                      limit: targetPlayerRef.success.defendSuccess.limit
+                    };
+                  targetPlayerRef.statusDisplay = {
+                    state: true,
+                    status: 'Defend',
+                    count: 1,
+                    limit: targetPlayerRef.statusDisplay.limit,
+                  }
+                  if (!targetPlayerRef.popups.find(x=>x.msg === "defendSuccess")) {
+                      targetPlayerRef.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 25,
+                          type: '',
+                          position: '',
+                          msg: 'defendSuccess',
+                          img: '',
+
+                        }
+                      )
+                    }
+
+                }
+
+              }
+
+              // PLAYER/ATTACKER ADVANTAGE
+              if (advantage === 1) {
+
+                this.handleMeleeDamage(player,targetPlayerRef);
+                this.setDeflection(targetPlayerRef,'attacked',false);
+                player.success.attackSuccess = {
+                  state: true,
+                  count: 1,
+                  limit: player.success.attackSuccess.limit
+                }
+
+              }
+
+            }
+
           }
 
         }
+
+
+        this.players[targetPlayerRef.number-1] = targetPlayerRef;
 
       }
 
     }
 
     this.players[player.number-1] = player;
-    this.players[targetPlayerRef.number-1] = targetPlayerRef;
+    // this.players[targetPlayerRef.number-1] = targetPlayerRef;
 
 
   }
@@ -18616,7 +18628,6 @@ class App extends Component {
   }
 
 
-
   respawn = (player) => {
     // console.log('respawning',player.number);
     this.players[player.number-1].respawn = true;
@@ -19168,9 +19179,6 @@ class App extends Component {
 
 
   }
-
-
-
 
 
   addAiPlayer = () => {
@@ -25803,1616 +25811,6 @@ class App extends Component {
   }
 
 
-  startProcessLevelData = (canvas) => {
-
-    let gridInfo = [];
-    let settingsGridInfo = [];
-
-    canvas.width = this.canvasWidth;
-    canvas.height = this.canvasHeight;
-
-    let floorImageWidth = this.floorImageWidth;
-    let floorImageHeight = this.floorImageHeight;
-    let wallImageWidth = this.wallImageWidth;
-    let wallImageHeight = this.wallImageHeight;
-    let sceneX = this.canvasWidth/2;
-    let sceneY = this.sceneY;
-    let tileWidth = this.tileWidth;
-
-    class Point {
-        constructor(x, y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-
-    for (var x = 0; x < this.gridWidth+1; x++) {
-      for (var y = 0; y < this.gridWidth+1; y++) {
-
-        let p = new Point();
-        p.x = x * tileWidth;
-        p.y = y * tileWidth;
-
-
-        let iso = this.cartesianToIsometric(p);
-        let offset = {x: floorImageWidth/2, y: floorImageHeight}
-
-        // apply offset to center scene for a better view
-        iso.x += sceneX
-        iso.y += sceneY
-
-        let center = {
-          x: Math.round(iso.x - offset.x/2+this.cellCenterOffsetX),
-          y: Math.round(iso.y - offset.y/2-this.cellCenterOffsetY),
-        }
-
-        gridInfo.push({
-          number:{x:x,y:y},
-          center:{x:center.x,y:center.y},
-          drawCenter:{x:center.x,y:center.y},
-          vertices: [
-            {x:center.x, y:center.y+this.tileWidth/2},
-            {x:center.x+this.tileWidth, y:center.y},
-            {x:center.x, y:center.y-this.tileWidth/2},
-            {x:center.x-this.tileWidth, y:center.y},
-          ],
-          side: Math.sqrt((this.tileWidth/2)^2+(this.tileWidth)^2),
-          levelData: '',
-          edge: {
-            state: false,
-            side: ''
-          },
-          terrain: {
-            name: '',
-            type: '',
-            effect: ''
-          },
-          item: {
-            name: '',
-            type: '',
-            subType: '',
-            effect: '',
-            initDrawn: false
-          },
-          void: {
-            state: false
-          },
-          obstacle: {
-            state: false,
-            name: '',
-            type: '',
-            hp: 2,
-            destructible: {
-              state: false,
-              weapons: [],
-              leaveRubble: false,
-            },
-            locked: {
-              state: false,
-              key: '',
-            },
-            weight: 1,
-            height: 0.5,
-            items: [],
-            effects: [],
-            moving: {
-              state: false,
-              step: 0,
-              origin: {
-                number: {
-                  x: undefined,
-                  y: undefined,
-                },
-                center: {
-                  x: undefined,
-                  y: undefined,
-                },
-              },
-              destination: {
-                number: {
-                  x: undefined,
-                  y: undefined,
-                },
-                center: {
-                  x: undefined,
-                  y: undefined,
-                },
-              },
-              currentPosition: {
-                x: undefined,
-                y: undefined,
-              },
-              nextPosition: {
-                x: undefined,
-                y: undefined,
-              },
-              moveSpeed: 0,
-              pushable: true,
-              pushed: false,
-              pusher: undefined,
-              falling: {
-                state: false,
-                count: 0,
-                limit: 10,
-              },
-            }
-          },
-          barrier: {
-            state: false,
-            name: '',
-            type: '',
-            hp: 2,
-            destructible: {
-              state: false,
-              weapons: [],
-              leaveRubble: false,
-            },
-            locked: {
-              state: false,
-              key: '',
-            },
-            position: '',
-            height: 1,
-          },
-          elevation: {
-            number: 0,
-            type: '',
-            position: '',
-          },
-          rubble: false,
-        })
-
-      }
-    }
-
-    for (var x = 0; x < this.settingsGridWidth+1; x++) {
-      for (var y = 0; y < this.settingsGridWidth+1; y++) {
-
-        let p2 = new Point();
-        p2.x = x * tileWidth/2;
-        p2.y = y * tileWidth/2;
-
-        let iso2 = this.cartesianToIsometric(p2);
-        let offset2 = {x: (floorImageWidth/2)/2, y: (floorImageHeight/2)}
-
-        // apply offset to center scene for a better view
-
-        iso2.x += this.settingsSceneX;
-        iso2.y += this.settingsSceneY;
-
-        let center2 = {
-          x: Math.round(iso2.x - offset2.x/2+(this.cellCenterOffsetX/2)),
-          y: Math.round(iso2.y - offset2.y/2-(this.cellCenterOffsetY/2)),
-        }
-
-
-        settingsGridInfo.push({
-          number:{x:x,y:y},
-          center:{x:center2.x,y:center2.y},
-          drawCenter:{x:center2.x,y:center2.y},
-          vertices: [
-            {x:center2.x, y:center2.y+this.tileWidth/4},
-            {x:center2.x+this.tileWidth/2, y:center2.y},
-            {x:center2.x, y:center2.y-this.tileWidth/4},
-            {x:center2.x-this.tileWidth/2, y:center2.y},
-          ],
-          side: Math.sqrt(((this.tileWidth/2)/2)^2+((this.tileWidth/2))^2),
-          levelData: '',
-          edge: {
-            state: false,
-            side: ''
-          },
-          terrain: {
-            name: '',
-            type: '',
-            effect: ''
-          },
-          item: {
-            name: '',
-            type: '',
-            subType: '',
-            effect: '',
-            initDrawn: false
-          },
-          void: {
-            state: false
-          },
-          obstacle: {
-            state: false,
-            name: '',
-            type: '',
-            hp: 2,
-            destructible: {
-              state: false,
-              weapons: [],
-              leaveRubble: false,
-            },
-            locked: {
-              state: false,
-              key: '',
-            },
-            weight: 1,
-            height: 0.5,
-            items: [],
-            effects: [],
-            moving: {
-              state: false,
-              step: 0,
-              origin: {
-                number: {
-                  x: undefined,
-                  y: undefined,
-                },
-                center: {
-                  x: undefined,
-                  y: undefined,
-                },
-              },
-              destination: {
-                number: {
-                  x: undefined,
-                  y: undefined,
-                },
-                center: {
-                  x: undefined,
-                  y: undefined,
-                },
-              },
-              currentPosition: {
-                x: undefined,
-                y: undefined,
-              },
-              nextPosition: {
-                x: undefined,
-                y: undefined,
-              },
-              moveSpeed: 0,
-              pushable: true,
-              pushed: false,
-              pusher: undefined,
-              falling: {
-                state: false,
-                count: 0,
-                limit: 10,
-              },
-            }
-          },
-          barrier: {
-            state: false,
-            name: '',
-            type: '',
-            hp: 2,
-            destructible: {
-              state: false,
-              weapons: [],
-              leaveRubble: false,
-            },
-            locked: {
-              state: false,
-              key: '',
-            },
-            position: '',
-            height: 1,
-          },
-          elevation: {
-            number: 0,
-            type: '',
-            position: '',
-          },
-          rubble: false,
-        })
-
-      }
-    }
-
-    this.settingsGridInfo = settingsGridInfo;
-    this.gridInfo = gridInfo;
-
-  }
-  processLevelData = (allCells) => {
-    // console.log('processing level data','grid width',this.gridWidth);
-
-    for(const elem of allCells) {
-
-      // APPLY LEVEL DATA TO GRID INFO CELLS!
-      let levelData2Row = 'row'+elem.number.x;
-      let elemLevelData = this.['levelData'+this.gridWidth][levelData2Row][elem.number.y];
-
-      if (
-        (elemLevelData.split('_')[1] !== "*" &&
-        this.terrainLevelDataRef[elemLevelData.split('_')[3]].type === 'deep') ||
-        (elemLevelData.split('_')[1] !== "*" && this.terrainLevelDataRef[elemLevelData.split('_')[3]].type === 'void')
-      ) {
-        elemLevelData = elemLevelData.replaceAt(3, '*');
-      }
-      elem.levelData = elemLevelData;
-      // console.log('level data processing',elem.levelData);
-
-
-      // '**_*_0.0_a_0**'
-      // barrierType(a,b,c)BarrierPosition(n,s,e,w)_obstacle_x.y_terrain_elevationNumber(0,1,2)ElevationType(a,b,c)ElevationPosition(n,s,e,w)
-
-
-      elem.terrain = this.terrainLevelDataRef[elem.levelData.split('_')[3]]
-      if (elem.terrain.name === 'void') {
-        elem.void.state = true
-      }
-
-      elem.elevation.number = parseInt(elem.levelData.split('_')[4].charAt(0));
-      if (elem.levelData.split('_')[4].charAt(1) !== '*') {
-        elem.elevation.type = this.elevationTypeLevelDataRef[elem.levelData.split('_')[4].charAt(1)]
-      }
-
-
-      if (elem.levelData.split('_')[4].charAt(1) !== '*') {
-        switch (elem.levelData.split('_')[4].charAt(2)) {
-          case 'n':
-            elem.elevation = {
-              number: elem.elevation.number,
-              type: elem.elevation.type,
-              position: 'north',
-            }
-          break;
-          case 's':
-            elem.elevation = {
-              number: elem.elevation.number,
-              type: elem.elevation.type,
-              position: 'south',
-            }
-          break;
-          case 'e':
-            elem.elevation = {
-              number: elem.elevation.number,
-              type: elem.elevation.type,
-              position: 'east',
-            }
-          break;
-          case 'w':
-            elem.elevation = {
-              number: elem.elevation.number,
-              type: elem.elevation.type,
-              position: 'west',
-            }
-          break;
-          default:
-
-          break
-        }
-      }
-
-
-      // OBSTACLE
-      if (elem.levelData.split('_')[1] !== '*') {
-        elem.obstacle = this.obstacleLevelDataRef[elem.levelData.split('_')[1]];
-      }
-
-      // BARRIER
-      if (elem.levelData.split('_')[0] !== '**') {
-        elem.barrier = this.barrierLevelDataRef[elem.levelData.split('_')[0].charAt(0)];
-
-        switch (elem.levelData.split('_')[0].charAt(1)) {
-          case 'n':
-            elem.barrier = {
-              state: elem.barrier.state,
-              name: elem.barrier.name,
-              type: elem.barrier.type,
-              hp: elem.barrier.hp,
-              destructible: elem.barrier.destructible,
-              locked: elem.barrier.locked,
-              position: 'north',
-              height: elem.barrier.height,
-            }
-          break;
-          case 's':
-            elem.barrier = {
-              state: elem.barrier.state,
-              name: elem.barrier.name,
-              type: elem.barrier.type,
-              hp: elem.barrier.hp,
-              destructible: elem.barrier.destructible,
-              locked: elem.barrier.locked,
-              position: 'south',
-              height: elem.barrier.height,
-            }
-          break;
-          case 'e':
-            elem.barrier = {
-              state: elem.barrier.state,
-              name: elem.barrier.name,
-              type: elem.barrier.type,
-              hp: elem.barrier.hp,
-              destructible: elem.barrier.destructible,
-              locked: elem.barrier.locked,
-              position: 'east',
-              height: elem.barrier.height,
-            }
-          break;
-          case 'w':
-            elem.barrier = {
-              state: elem.barrier.state,
-              name: elem.barrier.name,
-              type: elem.barrier.type,
-              hp: elem.barrier.hp,
-              destructible: elem.barrier.destructible,
-              locked: elem.barrier.locked,
-              position: 'west',
-              height: elem.barrier.height,
-            }
-          break;
-          default:
-          break;
-        }
-      }
-
-      // console.log('oo2',elem.levelData,elem.number,elem.terrain);
-
-      // SET EDGES!
-      if (elem.number.x === 0) {
-        elem.edge = {
-          state: true,
-          side: 'west'
-        }
-      }
-      if (elem.number.x === this.gridWidth) {
-        elem.edge = {
-          state: true,
-          side: 'east'
-        }
-      }
-      if (elem.number.y === this.gridWidth) {
-        elem.edge = {
-          state: true,
-          side: 'south'
-        }
-      }
-      if (elem.number.y === 0) {
-        elem.edge = {
-          state: true,
-          side: 'north'
-        }
-      }
-
-    }
-
-
-    for(const elem2 of this.settingsGridInfo) {
-
-      // SET LEVEL DATA!
-      let levelData2Row = 'row'+elem2.number.x;
-      let elemLevelData = this.['levelData'+this.settingsGridWidth][levelData2Row][elem2.number.y];
-      if (
-        (elemLevelData.split('_')[1] !== "*" &&
-        this.terrainLevelDataRef[elemLevelData.split('_')[3]].type === 'deep') ||
-        (elemLevelData.split('_')[1] !== "*" && this.terrainLevelDataRef[elemLevelData.split('_')[3]].type === 'void')
-      ) {
-        elemLevelData = elemLevelData.replaceAt(3, '*');
-      }
-      elem2.levelData = elemLevelData;
-
-      // TERRAIN
-      elem2.terrain = this.terrainLevelDataRef[elem2.levelData.split('_')[3]]
-      if (elem2.terrain.name === 'void') {
-        elem2.void.state = true
-      }
-
-      // ELEVATION NUMBER
-      elem2.elevation.number = parseInt(elem2.levelData.split('_')[4].charAt(0));
-      if (elem2.levelData.split('_')[4].charAt(1) !== '*') {
-        elem2.elevation.type = this.elevationTypeLevelDataRef[elem2.levelData.split('_')[4].charAt(1)]
-      }
-
-      // ELEVATION POSITION
-      if (elem2.levelData.split('_')[4].charAt(1) !== '*') {
-        switch (elem2.levelData.split('_')[4].charAt(2)) {
-          case 'n':
-            elem2.elevation = {
-              number: elem2.elevation.number,
-              type: elem2.elevation.type,
-              position: 'north',
-            }
-          break;
-          case 's':
-            elem2.elevation = {
-              number: elem2.elevation.number,
-              type: elem2.elevation.type,
-              position: 'south',
-            }
-          break;
-          case 'e':
-            elem2.elevation = {
-              number: elem2.elevation.number,
-              type: elem2.elevation.type,
-              position: 'east',
-            }
-          break;
-          case 'w':
-            elem2.elevation = {
-              number: elem2.elevation.number,
-              type: elem2.elevation.type,
-              position: 'west',
-            }
-          break;
-          default:
-        }
-      }
-
-      // OBSTACLE
-      if (elem2.levelData.split('_')[1] !== '*') {
-        elem2.obstacle = this.obstacleLevelDataRef[elem2.levelData.split('_')[1]];
-      }
-
-      // BARRIER
-      if (elem2.levelData.split('_')[0] !== '**') {
-        elem2.barrier = this.barrierLevelDataRef[elem2.levelData.split('_')[0].charAt(0)];
-
-        switch (elem2.levelData.split('_')[0].charAt(1)) {
-          case 'n':
-            elem2.barrier = {
-              state: elem2.barrier.state,
-              name: elem2.barrier.name,
-              type: elem2.barrier.type,
-              hp: elem2.barrier.hp,
-              destructible: elem2.barrier.destructible,
-              locked: elem2.barrier.locked,
-              position: 'north',
-              height: elem2.barrier.height,
-            }
-          break;
-          case 's':
-            elem2.barrier = {
-              state: elem2.barrier.state,
-              name: elem2.barrier.name,
-              type: elem2.barrier.type,
-              hp: elem2.barrier.hp,
-              destructible: elem2.barrier.destructible,
-              locked: elem2.barrier.locked,
-              position: 'south',
-              height: elem2.barrier.height,
-            }
-          break;
-          case 'e':
-            elem2.barrier = {
-              state: elem2.barrier.state,
-              name: elem2.barrier.name,
-              type: elem2.barrier.type,
-              hp: elem2.barrier.hp,
-              destructible: elem2.barrier.destructible,
-              locked: elem2.barrier.locked,
-              position: 'east',
-              height: elem2.barrier.height,
-            }
-          break;
-          case 'w':
-            elem2.barrier = {
-              state: elem2.barrier.state,
-              name: elem2.barrier.name,
-              type: elem2.barrier.type,
-              hp: elem2.barrier.hp,
-              destructible: elem2.barrier.destructible,
-              locked: elem2.barrier.locked,
-              position: 'west',
-              height: elem2.barrier.height,
-            }
-          break;
-          default:
-        }
-
-      }
-
-      // console.log('oo2',elem.levelData,elem.number,elem.terrain);
-
-      // SET EDGES!
-      if (elem2.number.x === 0) {
-        elem2.edge = {
-          state: true,
-          side: 'west'
-        }
-      }
-      if (elem2.number.x === this.settingsGridWidth) {
-        elem2.edge = {
-          state: true,
-          side: 'east'
-        }
-      }
-      if (elem2.number.y === this.settingsGridWidth) {
-        elem2.edge = {
-          state: true,
-          side: 'south'
-        }
-      }
-      if (elem2.number.y === 0) {
-        elem2.edge = {
-          state: true,
-          side: 'north'
-        }
-      }
-
-    }
-
-    // gridInfo to 2D array
-    let gridInfo2d = [];
-    for (let i = 0; i <= this.gridWidth; i++) {
-    // for (let i = 9; i >= 0; i--) {
-      let newArray = [];
-      for (var j = 0; j < allCells.length; j++) {
-        if (allCells[j]['number'].x === i) {
-          newArray.push(allCells[j])
-        }
-      }
-      gridInfo2d.push(newArray)
-    }
-
-
-    this.gridInfo2D = gridInfo2d;
-    // console.log('gridInfo2d',this.gridInfo2D);
-    this.gridInfo = allCells;
-
-    // this.settingsFormAiGridInfo = this.gridInfo;
-    // console.log('post parse gridInfo',this.gridInfo);
-
-    // console.log('yyy',allCells.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
-    // console.log('yyy2',this.settingsGridInfo.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
-
-    this.updatePathArray()
-
-
-  }
-  drawGridInit = (canvas, context, canvas2, context2) => {
-    // console.log('drawing initial');
-
-
-    context.clearRect(0,0,this.canvasWidth,this.canvasHeight)
-    context2.clearRect(0,0,this.canvasWidth,this.canvasHeight)
-
-    let gridInfo = [];
-    class Point {
-        constructor(x, y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-    this.popupImageRef = {
-      attackStart: this.refs.preAttackIndicate,
-      preAction1: this.refs.preAction1Indicate,
-      preAction2: this.refs.preAction2Indicate,
-      attacking: this.refs.attack3Indicate,
-      attacking1: this.refs.attack1Indicate,
-      attacking2: this.refs.attack2Indicate,
-      missedAttack: this.refs.missedIndicate,
-      attackingBlunt: this.refs.attackBluntIndicate2,
-      attackingUnarmed: this.refs.attackUnarmedIndicate,
-      attacked1: this.refs.attack1Indicate,
-      attacked2: this.refs.attack2Indicate,
-      attackDefended: this.refs.attackBreakIndicate,
-      attackParried: this.refs.attackParriedIndicate,
-      boltKilled: this.refs.boltKilledIndicate,
-      attackCancelled: this.refs.attackBreakIndicate,
-      injured: this.refs.deflectInjuredIndicate,
-      hpDown: this.refs.deflectInjuredIndicate2,
-      hpUp: this.refs.healIndicate,
-      defending: this.refs.defendIndicate,
-      defending_1: this.refs.defendIndicate1,
-      defending_2: this.refs.defendIndicate2,
-      defending_3: this.refs.defendIndicate3,
-      defending_4: this.refs.defendIndicate4,
-      defendSuccess: this.refs.defendSuccessIndicate,
-      guardBroken: this.refs.defendBreakIndicate,
-      deflected: this.refs.deflectBluntIndicate,
-      dodgeStart: this.refs.preAction2Indicate,
-      dodgeSuccess: this.refs.dodgeIndicate,
-      dodging: this.refs.dodgeIndicate,
-      flanking: this.refs.flankIndicate,
-      pushedBack: this.refs.pushbackIndicate,
-      falling: this.refs.fallingIndicate,
-      outOfStamina: this.refs.outOfStaminaIndicate,
-      outOfAmmo: this.refs.outOfAmmoIndicate,
-      missionEngage: this.refs.deflectIndicate2,
-      missionPursue: this.refs.pursueMissionIndicate2,
-      missionRetrieve: this.refs.retrieveMissionIndicate,
-      missionDefend: this.refs.defendMissionIndicate,
-      missionPatrol: this.refs.patrolMissionIndicate,
-      missionRetreat: this.refs.retreatIndicate,
-      missionEnroute: this.refs.enrouteIndicate,
-      missionComplete: this.refs.completeMissionIndicate,
-      thinking: this.refs.thinkingIndicate,
-      alarmed: this.refs.preAttack2Indicate,
-      pathSwitch: this.refs.pathSwitchIndicate,
-      targetSwitch: this.refs.targetSwitchIndicate,
-      aggressiveMode: this.refs.aggressiveModeIndicate,
-      passiveMode: this.refs.passiveModeIndicate,
-      pickupWeapon: this.refs.pickupWeaponIndicate,
-      pickupArmor: this.refs.pickupArmorIndicate,
-      dropWeapon: this.refs.dropWeaponIndicate,
-      dropArmor: this.refs.dropArmorIndicate,
-      pickupBuff: this.refs.pickupBuffIndicate,
-      pickupDebuff: this.refs.pickupDebuffIndicate,
-      pickupAmmo: this.refs.pickupAmmoIndicate,
-      inventoryFull: this.refs.inventoryFullIndicate,
-      stop: this.refs.boltDefendIndicate,
-      dropWeapon: this.refs.dropWeaponIndicate,
-      dropArmor: this.refs.dropArmorIndicate,
-      drowning: this.refs.drowningIndicate,
-      terrainSlowdown: this.refs.terrainSlowdownIndicate,
-      terrainSpeedup: this.refs.terrainSpeedupIndicate,
-      terrainInjured: this.refs.terrainInjuredIndicate,
-      destroyedItem: this.refs.destroyedItemIndicate,
-      sword: this.refs.itemSword,
-      spear: this.refs.itemSpear,
-      crossbow: this.refs.itemCrossbow,
-      longbow: this.refs.itemBow,
-      helmet: this.refs.itemHelmet1,
-      mail: this.refs.itemMail1,
-      greaves: this.refs.itemGreaves1,
-
-      missedAttack2: this.refs.missedIndicate2,
-      prePush: this.refs.prePushIndicate,
-      canPush: this.refs.canPushIndicate,
-      noPush: this.refs.noPushingIndicate,
-      pushing: this.refs.pushingIndicate,
-      prePull: this.refs.prePullIndicate,
-      canPull: this.refs.canPullIndicate,
-      noPull: this.refs.noPullingIndicate,
-      pulling: this.refs.pullingIndicate,
-      pushedPulled: this.refs.pushedPulledIndicate,
-      unbreakable: this.refs.unbreakableIndicate,
-      dodging2: this.refs.dodgeIndicate2,
-      attackFeint: this.refs.attackFeintIndicate,
-      attackFeint2: this.refs.attackFeintIndicate2,
-      attackFeint3: this.refs.attackFeintIndicate3,
-      defendFeint: this.refs.defendFeintIndicate,
-      defendFeint2: this.refs.defendFeintIndicate2,
-      defendFeint3: this.refs.defendFeintIndicate3,
-      dodgeFeint: this.refs.dodgeFeintIndicate,
-      dodgeFeint2: this.refs.dodgeFeintIndicate2,
-      boltDefend2: this.refs.boltDefendIndicate2,
-      flanking2: this.refs.flankIndicate2,
-      noFlanking: this.refs.noFlankIndicate,
-      cellVoiding: this.refs.cellVoidingIndicate,
-      cellVoiding2: this.refs.cellVoidingIndicate2,
-    };
-    this.indicatorImgs = {
-      preAttack: this.refs.preAttackIndicate,
-      preAttack2: this.refs.preAttack2Indicate,
-      attack1: this.refs.attack1Indicate,
-      attack2: this.refs.attack2Indicate,
-      attack3: this.refs.attack3Indicate,
-      attackUnarmed: this.refs.attackUnarmedIndicate,
-      attackBlunt: this.refs.attackBluntIndicate,
-      attackSuccess: this.refs.attackSuccessIndicate,
-      defend: this.refs.defendIndicate,
-      deflect: this.refs.deflectIndicate,
-      deflectInjured: this.refs.deflectInjuredIndicate,
-      deflectBlunt: this.refs.deflectBluntIndicate,
-      pushback: this.refs.pushbackIndicate,
-      ghost: this.refs.ghostIndicate,
-      death: this.refs.deathIndicate,
-      attackBreak: this.refs.attackBreakIndicate,
-      defendBreak: this.refs.defendBreakIndicate,
-      dodge: this.refs.dodgeIndicate,
-    }
-    this.playerImgs = [
-      {
-        idle: {
-          unarmed: this.refs.playerImgIdleSheet,
-          sword: this.refs.playerImgIdleSheet,
-          spear: this.refs.playerImgIdleSheet,
-          crossbow: this.refs.playerImgIdleSheet,
-        },
-        walking: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        jumping: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        dodging: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        flanking: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        strafing: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        attacking: {
-          unarmed: this.refs.player1ImgAttackSheet,
-          sword: this.refs.player1ImgAttackSheet,
-          spear: this.refs.player1ImgAttackSheet,
-          crossbow: this.refs.player1ImgAttackSheet,
-        },
-        defending: {
-          unarmed: this.refs.player1ImgDefendSheet,
-          sword: this.refs.player1ImgDefendSheet,
-          spear: this.refs.player1ImgDefendSheet,
-          crossbow: this.refs.player1ImgDefendSheet,
-        },
-        deflected: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        pushBack: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        falling: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        pushing: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        pulling: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        pushed: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-        pulled: {
-          unarmed: this.refs.playerImgMoveSheet,
-          sword: this.refs.playerImgMoveSheet,
-          spear: this.refs.playerImgMoveSheet,
-          crossbow: this.refs.playerImgMoveSheet,
-        },
-      },
-      {
-        idle: {
-          unarmed: this.refs.player2ImgIdleSheet,
-          sword: this.refs.player2ImgIdleSheet,
-          spear: this.refs.player2ImgIdleSheet,
-          crossbow: this.refs.player2ImgIdleSheet,
-        },
-        walking: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        jumping: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        dodging: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        flanking: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        strafing: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        attacking: {
-          unarmed: this.refs.player2ImgAttackSheet,
-          sword: this.refs.player2ImgAttackSheet,
-          spear: this.refs.player2ImgAttackSheet,
-          crossbow: this.refs.player2ImgAttackSheet,
-        },
-        defending: {
-          unarmed: this.refs.player2ImgDefendSheet,
-          sword: this.refs.player2ImgDefendSheet,
-          spear: this.refs.player2ImgDefendSheet,
-          crossbow: this.refs.player2ImgDefendSheet,
-        },
-        deflected: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        pushBack: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        falling: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        pushing: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        pulling: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        pushed: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-        pulled: {
-          unarmed: this.refs.player2ImgMoveSheet,
-          sword: this.refs.player2ImgMoveSheet,
-          spear: this.refs.player2ImgMoveSheet,
-          crossbow: this.refs.player2ImgMoveSheet,
-        },
-      },
-      {
-        idle: {
-          unarmed: this.refs.playerComAImgIdleSheet,
-          sword: this.refs.playerComAImgIdleSheet,
-          spear: this.refs.playerComAImgIdleSheet,
-          crossbow: this.refs.playerComAImgIdleSheet,
-        },
-        walking: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        jumping: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        dodging: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        flanking: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        strafing: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        attacking: {
-          unarmed: this.refs.comAImgAttackSheet,
-          sword: this.refs.comAImgAttackSheet,
-          spear: this.refs.comAImgAttackSheet,
-          crossbow: this.refs.comAImgAttackSheet,
-        },
-        defending: {
-          unarmed: this.refs.comAImgDefendSheet,
-          sword: this.refs.comAImgDefendSheet,
-          spear: this.refs.comAImgDefendSheet,
-          crossbow: this.refs.comAImgDefendSheet,
-        },
-        deflected: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        pushBack: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        falling: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        pushing: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        pulling: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        pushed: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-        pulled: {
-          unarmed: this.refs.comAImgMoveSheet,
-          sword: this.refs.comAImgMoveSheet,
-          spear: this.refs.comAImgMoveSheet,
-          crossbow: this.refs.comAImgMoveSheet,
-        },
-      },
-      {
-        idle: {
-          unarmed: this.refs.playerComBImgIdleSheet,
-          sword: this.refs.playerComBImgIdleSheet,
-          spear: this.refs.playerComBImgIdleSheet,
-          crossbow: this.refs.playerComBImgIdleSheet,
-        },
-        walking: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        jumping: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        dodging: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        flanking: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        strafing: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        attacking: {
-          unarmed: this.refs.comBImgAttackSheet,
-          sword: this.refs.comBImgAttackSheet,
-          spear: this.refs.comBImgAttackSheet,
-          crossbow: this.refs.comBImgAttackSheet,
-        },
-        defending: {
-          unarmed: this.refs.comBImgDefendSheet,
-          sword: this.refs.comBImgDefendSheet,
-          spear: this.refs.comBImgDefendSheet,
-          crossbow: this.refs.comBImgDefendSheet,
-        },
-        deflected: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        pushBack: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        falling: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        pushing: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        pulling: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        pushed: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-        pulled: {
-          unarmed: this.refs.comBImgMoveSheet,
-          sword: this.refs.comBImgMoveSheet,
-          spear: this.refs.comBImgMoveSheet,
-          crossbow: this.refs.comBImgMoveSheet,
-        },
-      },
-    ]
-    this.itemImgs = {
-      moveSpeedUp: this.refs.itemSpdUp,
-      moveSpeedDown: this.refs.itemSpdDown,
-      hpUp: this.refs.itemHpUp,
-      hpDown: this.refs.itemHpDown,
-      focusUp: this.refs.itemFocusUp,
-      focusDown: this.refs.itemFocusDown,
-      strengthUp: this.refs.itemStrUp,
-      strengthDown: this.refs.itemStrDown,
-      sword: this.refs.itemSword,
-      spear: this.refs.itemSpear,
-      crossbow: this.refs.itemBow,
-      helmet: this.refs.itemHelmet1,
-      ammo5: this.refs.itemAmmo,
-      ammo10: this.refs.itemAmmo,
-      mail: this.refs.itemMail1,
-      greaves: this.refs.itemGreaves1,
-    };
-    this.boltImgs = {
-      north: this.refs.itemBoltNorth,
-      south: this.refs.itemBoltSouth,
-      east: this.refs.itemBoltEast,
-      west: this.refs.itemBoltWest,
-    }
-    this.floorImgs = {
-      grass: this.refs.floorGrass,
-      stone: this.refs.floorStone,
-      dirt: this.refs.floorDirt,
-      pond: this.refs.floorPond,
-      mud: this.refs.floorMud,
-      sand: this.refs.floorSand,
-      ice: this.refs.floorIce,
-      lava: this.refs.floorLava,
-      bramble: this.refs.floorBramble,
-      river: this.refs.floorRiver,
-      void: this.refs.floorVoid,
-      void2: this.refs.floorVoid2,
-      void3: this.refs.floorVoid3,
-      rubble: this.refs.floorRubble,
-    }
-    this.obstacleImgs = {
-      table: this.refs.obstacleAHalf,
-      closet: this.refs.obstacleAFull,
-      chair: this.refs.obstacleBHalf,
-      shelf: this.refs.obstacleBFull,
-      smallBox: this.refs.obstacleCHalf,
-      largeBox: this.refs.obstacleCFull,
-      counter: this.refs.obstacleDHalf,
-      chest: this.refs.obstacleEHalf,
-      crate: this.refs.obstacleCrate,
-      barrel: this.refs.obstacleBarrel,
-      chest: this.refs.obstacleCrate,
-      table: this.refs.obstacleCrate,
-      chair: this.refs.obstacleCrate,
-      shelf: this.refs.obstacleCrate,
-      counter: this.refs.obstacleCrate,
-      smallBox: this.refs.obstacleCrate,
-      largeBox: this.refs.obstacleBarrel,
-    }
-    this.barrierImgs = {
-      wall: {
-        north: this.refs.barrierANorth,
-        south: this.refs.barrierASouth,
-        east: this.refs.barrierAEast,
-        west: this.refs.barrierAWest,
-      },
-      door: {
-        north: this.refs.barrierANorth,
-        south: this.refs.barrierASouth,
-        east: this.refs.barrierAEast,
-        west: this.refs.barrierAWest,
-      },
-      balcony: {
-        north: this.refs.barrierANorth,
-        south: this.refs.barrierASouth,
-        east: this.refs.barrierAEast,
-        west: this.refs.barrierAWest,
-      },
-    }
-
-    // LOAD CROSSBOW AMMO
-    for (const plyr of this.players) {
-      if (plyr.currentWeapon.type === 'crossbow') {
-        let ammo = parseInt(plyr.currentWeapon.effect.split('+')[1])
-        plyr.items.ammo = plyr.items.ammo + ammo;
-      }
-    }
-
-    let floor;
-    let wall = this.refs.wall;
-    let wall2 = this.refs.wall2;
-    let wall3 = this.refs.wall3;
-
-    canvas.width = this.canvasWidth;
-    canvas.height = this.canvasHeight;
-
-    let floorImageWidth = this.floorImageWidth;
-    let floorImageHeight = this.floorImageHeight;
-    let wallImageWidth = this.wallImageWidth;
-    let wallImageHeight = this.wallImageHeight;
-    let sceneX = this.canvasWidth/2;
-    let sceneY = this.sceneY;
-    let tileWidth = this.tileWidth;
-
-    this.startProcessLevelData(canvas);
-    // gridInfo = this.gridInfo;
-
-    this.processLevelData(this.gridInfo);
-    // console.log('post process barrier check init',this.gridInfo.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
-
-    if (this.camera.fixed !== true) {
-      // this.setCameraFocus('init', canvas, context, canvas2, context2);
-    }
-    this.findFocusCell('panToCell',{},canvas,context)
-
-
-    // CENTER LARGER GRIDS
-    if (window.innerWidth < 1100 && this.gridWidth >= 12) {
-      // this.camera.zoom.x = 0.7;
-      // this.camera.zoom.y = 0.7;
-
-      this.setInitZoom = {
-        state: true,
-        windowWidth: window.innerWidth,
-        gridWidth: this.gridWidth,
-      }
-    }
-    if (window.innerWidth > 1100 && this.gridWidth >= 12) {
-      // this.camera.zoom.x = 1;
-      // this.camera.zoom.y = 1;
-
-      this.setInitZoom = {
-        state: true,
-        windowWidth: window.innerWidth,
-        gridWidth: this.gridWidth,
-      }
-    }
-    if (window.innerWidth < 1100 && this.gridWidth < 12) {
-      // this.camera.zoom.x = 1;
-      // this.camera.zoom.y = 1;
-
-      this.setInitZoom = {
-        state: true,
-        windowWidth: window.innerWidth,
-        gridWidth: this.gridWidth,
-      }
-    }
-
-    let diff = 1 - this.camera.zoom.x;
-
-    // FOCUSED ZOOMING INIT SET
-    this.camera.pan.x = (diff*this.canvasWidth/2);
-    this.camera.pan.y = (diff*this.canvasWidth/2)-(diff*350);
-    if (this.camera.pan.x === 0) {
-      this.camera.pan.x = -1
-      this.camera.pan.y = -1
-    }
-
-
-    if (this.showSettingsCanvasData.state === true) {
-      this.settingsFormGridWidthUpdate(this.settingsGridWidth)
-    }
-
-
-    this.placeItems({init: true, items: ''});
-
-
-    // CELL COLOR REF
-    let preCellColorRef = this.gridInfo.map(x => x = {x:x.number.x,y:x.number.y,color:''});
-    for(const cell of preCellColorRef) {
-      let colorCheckPass = false;
-      while (colorCheckPass === false) {
-        let randomColor = `rgb(${this.rnJesus(0,255)},${this.rnJesus(0,255)},${this.rnJesus(0,255)})`;
-        let colorsInUse = preCellColorRef.filter(x => x.color !== '').map(y => y === y.color);
-        if (colorsInUse.find(x => x === randomColor)) {
-          colorCheckPass = false;
-        }
-        else {
-          cell.color = randomColor;
-          colorCheckPass = true;
-        }
-      }
-    };
-    this.cellColorRef = preCellColorRef;
-
-
-    for (var x = 0; x < this.gridWidth+1; x++) {
-      for (var y = 0; y < this.gridWidth+1; y++) {
-        let p = new Point();
-        p.x = x * tileWidth;
-        p.y = y * tileWidth;
-
-        let iso = this.cartesianToIsometric(p);
-        let offset = {x: floorImageWidth/2, y: floorImageHeight}
-
-        // apply offset to center scene for a better view
-        iso.x += sceneX
-        iso.y += sceneY
-
-
-        let center = {
-          x: iso.x - offset.x/2+this.cellCenterOffsetX,
-          y: iso.y - offset.y/2-this.cellCenterOffsetY,
-        }
-
-
-        let cell = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
-        let cellLevelData = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y).levelData;
-
-
-        floor = this.floorImgs[cell.terrain.name]
-
-        if (cell.void.state === true) {
-          // drawFloor = false;
-          floor = this.floorImgs.void3
-        }
-
-
-        // context.drawImage(floor, iso.x - offset.x, iso.y - offset.y, 100, 100);
-        context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
-
-        context.fillStyle = 'black';
-        context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12);
-
-        context.fillStyle = "black";
-        context.fillRect(center.x, center.y,5,5);
-
-
-        // INITIAL ITEM DISTRIBUTION!!
-        let cell2 = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
-        if (cell2.item.name !== '') {
-          // console.log('found cell with item');
-          if (cell2.item.initDrawn === false) {
-            // console.log('found cell with item undrawn');
-            let itemImg;
-            let fillClr;
-            if (cell2.item.type === 'item') {
-              switch(cell2.item.name) {
-                case 'moveSpeedUp' :
-                  fillClr = "purple";
-                  itemImg = this.itemImgs[cell2.item.name];
-                break;
-                case 'moveSpeedDown' :
-                  fillClr = "blue";
-                  itemImg = this.itemImgs[cell2.item.name];
-                break;
-                case 'hpUp' :
-                  fillClr = "yellow";
-                  itemImg = this.itemImgs[cell2.item.name];
-                break;
-                case 'hpDown' :
-                  fillClr = "brown";
-                  itemImg = this.itemImgs[cell2.item.name];
-                break;
-                case 'focusUp' :
-                  fillClr = "white";
-                  itemImg = this.itemImgs[cell2.item.name];
-                break;
-                case 'focusDown' :
-                  fillClr = "black";
-                  itemImg = this.itemImgs[cell2.item.name];
-                break;
-                case 'strengthUp' :
-                  fillClr = "green";
-                  itemImg = this.itemImgs[cell2.item.name];
-                break;
-                case 'strengthDown' :
-                  fillClr = "red";
-                  itemImg = this.itemImgs[cell2.item.name];
-                break;
-                case 'ammo5' :
-                  fillClr = '#283618';
-                  itemImg = this.itemImgs[cell2.item.name];
-                break;
-                case 'ammo10' :
-                  fillClr = '#283618';
-                  itemImg = this.itemImgs[cell2.item.name];
-                break;
-              }
-            }
-            else if (cell2.item.type === 'weapon') {
-              switch(cell2.item.subType) {
-                case 'sword' :
-                  fillClr = "orange";
-                  itemImg = this.itemImgs[cell2.item.subType];
-                break;
-                case 'spear' :
-                  fillClr = "maroon";
-                  itemImg = this.itemImgs[cell2.item.subType];
-                break;
-                case 'crossbow' :
-                  fillClr = "navy";
-                  itemImg = this.itemImgs[cell2.item.subType];
-                break;
-              }
-            }
-            else if (cell2.item.type === 'armor') {
-              switch(cell2.item.subType) {
-                case 'helmet' :
-                  fillClr = "grey";
-                  itemImg = this.itemImgs[cell2.item.subType];
-                break;
-                case 'mail' :
-                  fillClr = "olive";
-                  itemImg = this.itemImgs[cell2.item.subType];
-                break;
-                case 'greaves' :
-                  fillClr = "#b5179e";
-                  itemImg = this.itemImgs[cell2.item.subType];
-                break;
-              }
-            }
-
-
-            // context.fillStyle = fillClr;
-            // context.beginPath();
-            // context.arc(center.x, center.y, 15, 0, 2 * Math.PI);
-            // context.fill();
-
-            context.drawImage(itemImg ,center.x-15, center.y-15, 30,30);
-          }
-        }
-
-
-        let vertices = [
-          {x:center.x, y:center.y+tileWidth/2},
-          {x:center.x+tileWidth, y:center.y},
-          {x:center.x, y:center.y-tileWidth/2},
-          {x:center.x-tileWidth, y:center.y},
-        ];
-        for (const vertex of vertices) {
-          context.fillStyle = "yellow";
-          context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
-        }
-
-
-        for (const player of this.players) {
-
-          if (
-            x === player.startPosition.cell.number.x &&
-            y === player.startPosition.cell.number.y
-          ) {
-
-            let playerImg;
-            let playerImgIndex;
-            let atkType = player.currentWeapon.type;
-            if (player.currentWeapon.name === "") {
-              atkType = "unarmed";
-            }
-
-            if (player.ai.state === true) {
-
-              if (player.ai.imgType === "A") {
-                playerImgIndex = 2;
-              }
-              else if (player.ai.imgType === "B") {
-                playerImgIndex = 3;
-              }
-
-              playerImg = this.playerImgs[playerImgIndex].idle[atkType];
-            } else {
-              playerImg = this.playerImgs[player.number-1].idle[atkType];
-            }
-
-
-            let dirs = ['north','south','east','west']
-            let dirIndex = dirs.indexOf(player.direction);
-            let sHeight = this.charSpriteHeight;
-            let sWidth = this.charSpriteWidth;
-            let sy = dirIndex * sHeight;
-            let sx = 0 * sWidth;
-
-
-            // player.speed.move = .1;
-            player.dead.state = false;
-            player.dead.count = 0;
-
-            let point = {
-              x: 0,
-              y: 0,
-            };
-
-            let cell = this.gridInfo.find(elem => elem.number.x === player.startPosition.cell.number.x && elem.number.y === player.startPosition.cell.number.y)
-            point.x = cell.center.x;
-            point.y = cell.center.y;
-
-            player.currentPosition.cell = {
-              number: {
-                x: player.startPosition.cell.number.x,
-                y: player.startPosition.cell.number.y
-              },
-              center : {
-                x: point.x,
-                y: point.y
-              }
-            }
-            player.moving = {
-              state: false,
-              step: 0,
-              course: '',
-              origin: {
-                number: {
-                  x: player.startPosition.cell.number.x,
-                  y: player.startPosition.cell.number.y,
-                },
-                center: {
-                  x: point.x,
-                  y: point.y,
-                },
-              },
-              destination: {
-                x: 0,
-                y: 0,
-              }
-            }
-            player.nextPosition = {
-              x: point.x,
-              y: point.y
-            }
-
-            this.players[player.number-1] = player;
-
-            this.getTarget(player);
-
-            context.drawImage(playerImg, sx, sy, sWidth, sHeight, point.x-30, point.y-30, this.playerDrawWidth, this.playerDrawHeight);
-
-          }
-
-        }
-
-        // OBSTACLES & BARRIERS
-        if (cell.barrier.state === true && cell.void.state !== true) {
-          let barrierImg = this.barrierImgs[cell.barrier.type][cell.barrier.position];
-          context.drawImage(barrierImg, iso.x - offset.x, iso.y - barrierImg.height, barrierImg.width, barrierImg.height);
-        }
-
-        if (cell.obstacle.state === true && cell.void.state !== true) {
-          let obstacleImg = this.obstacleImgs[cell.obstacle.type]
-          context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
-        }
-
-
-        this.init = false;
-        this.setState({
-          loading: false,
-        })
-
-      }
-    }
-
-  }
   gameLoop = () => {
 
     // IF PRESSED SETTINGS KEY, COUNT
@@ -28989,44 +27387,18 @@ class App extends Component {
 
                 this.getTarget(player)
                 // CELLS UNDER PRE ATTACK!
-                let cellUnderPreAttack1 = this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y)
+                let cellUnderPreAttack1 = this.gridInfo.find(elem => elem.number.x === player.target.cell1.number.x && elem.number.y === player.target.cell1.number.y)
                 let cellUnderPreAttack2;
                 if (player.currentWeapon.type === 'spear') {
                   cellUnderPreAttack2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y)
                 }
                 if (player.currentWeapon.type === 'spear') {
-                  // console.log('spear target',player.target);
-                  // if (cellUnderPreAttack1 && cellUnderPreAttack1.terrain.type !== 'deep') {
-                  //   this.cellsUnderPreAttack.push(
-                  //     {
-                  //       number: {
-                  //         x: player.target.cell.number.x,
-                  //         y: player.target.cell.number.y,
-                  //       },
-                  //       count: 1,
-                  //       limit: 8,
-                  //     },
-                  //   )
-                  // }
-                  // if (cellUnderPreAttack2 && cellUnderPreAttack2.terrain.type !== 'deep') {
-                  //   this.cellsUnderPreAttack.push(
-                  //     {
-                  //       number: {
-                  //         x: player.target.cell2.number.x,
-                  //         y: player.target.cell2.number.y,
-                  //       },
-                  //       count: 1,
-                  //       limit: 8,
-                  //     },
-                  //   )
-                  //
-                  // }
 
                   this.cellsUnderPreAttack.push(
                     {
                       number: {
-                        x: player.target.cell.number.x,
-                        y: player.target.cell.number.y,
+                        x: player.target.cell1.number.x,
+                        y: player.target.cell1.number.y,
                       },
                       count: 1,
                       limit: 8,
@@ -29060,8 +27432,8 @@ class App extends Component {
                   // }
                   this.cellsUnderPreAttack.push({
                     number: {
-                      x: player.target.cell.number.x,
-                      y: player.target.cell.number.y,
+                      x: player.target.cell1.number.x,
+                      y: player.target.cell1.number.y,
                     },
                     count: 1,
                     limit: 8,
@@ -37298,6 +35670,1618 @@ class App extends Component {
     // if (player.ai.state === true ) {
     //   this.aiEvaluate(player)
     // }
+
+  }
+
+
+  startProcessLevelData = (canvas) => {
+
+    let gridInfo = [];
+    let settingsGridInfo = [];
+
+    canvas.width = this.canvasWidth;
+    canvas.height = this.canvasHeight;
+
+    let floorImageWidth = this.floorImageWidth;
+    let floorImageHeight = this.floorImageHeight;
+    let wallImageWidth = this.wallImageWidth;
+    let wallImageHeight = this.wallImageHeight;
+    let sceneX = this.canvasWidth/2;
+    let sceneY = this.sceneY;
+    let tileWidth = this.tileWidth;
+
+    class Point {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+
+    for (var x = 0; x < this.gridWidth+1; x++) {
+      for (var y = 0; y < this.gridWidth+1; y++) {
+
+        let p = new Point();
+        p.x = x * tileWidth;
+        p.y = y * tileWidth;
+
+
+        let iso = this.cartesianToIsometric(p);
+        let offset = {x: floorImageWidth/2, y: floorImageHeight}
+
+        // apply offset to center scene for a better view
+        iso.x += sceneX
+        iso.y += sceneY
+
+        let center = {
+          x: Math.round(iso.x - offset.x/2+this.cellCenterOffsetX),
+          y: Math.round(iso.y - offset.y/2-this.cellCenterOffsetY),
+        }
+
+        gridInfo.push({
+          number:{x:x,y:y},
+          center:{x:center.x,y:center.y},
+          drawCenter:{x:center.x,y:center.y},
+          vertices: [
+            {x:center.x, y:center.y+this.tileWidth/2},
+            {x:center.x+this.tileWidth, y:center.y},
+            {x:center.x, y:center.y-this.tileWidth/2},
+            {x:center.x-this.tileWidth, y:center.y},
+          ],
+          side: Math.sqrt((this.tileWidth/2)^2+(this.tileWidth)^2),
+          levelData: '',
+          edge: {
+            state: false,
+            side: ''
+          },
+          terrain: {
+            name: '',
+            type: '',
+            effect: ''
+          },
+          item: {
+            name: '',
+            type: '',
+            subType: '',
+            effect: '',
+            initDrawn: false
+          },
+          void: {
+            state: false
+          },
+          obstacle: {
+            state: false,
+            name: '',
+            type: '',
+            hp: 2,
+            destructible: {
+              state: false,
+              weapons: [],
+              leaveRubble: false,
+            },
+            locked: {
+              state: false,
+              key: '',
+            },
+            weight: 1,
+            height: 0.5,
+            items: [],
+            effects: [],
+            moving: {
+              state: false,
+              step: 0,
+              origin: {
+                number: {
+                  x: undefined,
+                  y: undefined,
+                },
+                center: {
+                  x: undefined,
+                  y: undefined,
+                },
+              },
+              destination: {
+                number: {
+                  x: undefined,
+                  y: undefined,
+                },
+                center: {
+                  x: undefined,
+                  y: undefined,
+                },
+              },
+              currentPosition: {
+                x: undefined,
+                y: undefined,
+              },
+              nextPosition: {
+                x: undefined,
+                y: undefined,
+              },
+              moveSpeed: 0,
+              pushable: true,
+              pushed: false,
+              pusher: undefined,
+              falling: {
+                state: false,
+                count: 0,
+                limit: 10,
+              },
+            }
+          },
+          barrier: {
+            state: false,
+            name: '',
+            type: '',
+            hp: 2,
+            destructible: {
+              state: false,
+              weapons: [],
+              leaveRubble: false,
+            },
+            locked: {
+              state: false,
+              key: '',
+            },
+            position: '',
+            height: 1,
+          },
+          elevation: {
+            number: 0,
+            type: '',
+            position: '',
+          },
+          rubble: false,
+        })
+
+      }
+    }
+
+    for (var x = 0; x < this.settingsGridWidth+1; x++) {
+      for (var y = 0; y < this.settingsGridWidth+1; y++) {
+
+        let p2 = new Point();
+        p2.x = x * tileWidth/2;
+        p2.y = y * tileWidth/2;
+
+        let iso2 = this.cartesianToIsometric(p2);
+        let offset2 = {x: (floorImageWidth/2)/2, y: (floorImageHeight/2)}
+
+        // apply offset to center scene for a better view
+
+        iso2.x += this.settingsSceneX;
+        iso2.y += this.settingsSceneY;
+
+        let center2 = {
+          x: Math.round(iso2.x - offset2.x/2+(this.cellCenterOffsetX/2)),
+          y: Math.round(iso2.y - offset2.y/2-(this.cellCenterOffsetY/2)),
+        }
+
+
+        settingsGridInfo.push({
+          number:{x:x,y:y},
+          center:{x:center2.x,y:center2.y},
+          drawCenter:{x:center2.x,y:center2.y},
+          vertices: [
+            {x:center2.x, y:center2.y+this.tileWidth/4},
+            {x:center2.x+this.tileWidth/2, y:center2.y},
+            {x:center2.x, y:center2.y-this.tileWidth/4},
+            {x:center2.x-this.tileWidth/2, y:center2.y},
+          ],
+          side: Math.sqrt(((this.tileWidth/2)/2)^2+((this.tileWidth/2))^2),
+          levelData: '',
+          edge: {
+            state: false,
+            side: ''
+          },
+          terrain: {
+            name: '',
+            type: '',
+            effect: ''
+          },
+          item: {
+            name: '',
+            type: '',
+            subType: '',
+            effect: '',
+            initDrawn: false
+          },
+          void: {
+            state: false
+          },
+          obstacle: {
+            state: false,
+            name: '',
+            type: '',
+            hp: 2,
+            destructible: {
+              state: false,
+              weapons: [],
+              leaveRubble: false,
+            },
+            locked: {
+              state: false,
+              key: '',
+            },
+            weight: 1,
+            height: 0.5,
+            items: [],
+            effects: [],
+            moving: {
+              state: false,
+              step: 0,
+              origin: {
+                number: {
+                  x: undefined,
+                  y: undefined,
+                },
+                center: {
+                  x: undefined,
+                  y: undefined,
+                },
+              },
+              destination: {
+                number: {
+                  x: undefined,
+                  y: undefined,
+                },
+                center: {
+                  x: undefined,
+                  y: undefined,
+                },
+              },
+              currentPosition: {
+                x: undefined,
+                y: undefined,
+              },
+              nextPosition: {
+                x: undefined,
+                y: undefined,
+              },
+              moveSpeed: 0,
+              pushable: true,
+              pushed: false,
+              pusher: undefined,
+              falling: {
+                state: false,
+                count: 0,
+                limit: 10,
+              },
+            }
+          },
+          barrier: {
+            state: false,
+            name: '',
+            type: '',
+            hp: 2,
+            destructible: {
+              state: false,
+              weapons: [],
+              leaveRubble: false,
+            },
+            locked: {
+              state: false,
+              key: '',
+            },
+            position: '',
+            height: 1,
+          },
+          elevation: {
+            number: 0,
+            type: '',
+            position: '',
+          },
+          rubble: false,
+        })
+
+      }
+    }
+
+    this.settingsGridInfo = settingsGridInfo;
+    this.gridInfo = gridInfo;
+
+  }
+  processLevelData = (allCells) => {
+    // console.log('processing level data','grid width',this.gridWidth);
+
+    for(const elem of allCells) {
+
+      // APPLY LEVEL DATA TO GRID INFO CELLS!
+      let levelData2Row = 'row'+elem.number.x;
+      let elemLevelData = this.['levelData'+this.gridWidth][levelData2Row][elem.number.y];
+
+      if (
+        (elemLevelData.split('_')[1] !== "*" &&
+        this.terrainLevelDataRef[elemLevelData.split('_')[3]].type === 'deep') ||
+        (elemLevelData.split('_')[1] !== "*" && this.terrainLevelDataRef[elemLevelData.split('_')[3]].type === 'void')
+      ) {
+        elemLevelData = elemLevelData.replaceAt(3, '*');
+      }
+      elem.levelData = elemLevelData;
+      // console.log('level data processing',elem.levelData);
+
+
+      // '**_*_0.0_a_0**'
+      // barrierType(a,b,c)BarrierPosition(n,s,e,w)_obstacle_x.y_terrain_elevationNumber(0,1,2)ElevationType(a,b,c)ElevationPosition(n,s,e,w)
+
+
+      elem.terrain = this.terrainLevelDataRef[elem.levelData.split('_')[3]]
+      if (elem.terrain.name === 'void') {
+        elem.void.state = true
+      }
+
+      elem.elevation.number = parseInt(elem.levelData.split('_')[4].charAt(0));
+      if (elem.levelData.split('_')[4].charAt(1) !== '*') {
+        elem.elevation.type = this.elevationTypeLevelDataRef[elem.levelData.split('_')[4].charAt(1)]
+      }
+
+
+      if (elem.levelData.split('_')[4].charAt(1) !== '*') {
+        switch (elem.levelData.split('_')[4].charAt(2)) {
+          case 'n':
+            elem.elevation = {
+              number: elem.elevation.number,
+              type: elem.elevation.type,
+              position: 'north',
+            }
+          break;
+          case 's':
+            elem.elevation = {
+              number: elem.elevation.number,
+              type: elem.elevation.type,
+              position: 'south',
+            }
+          break;
+          case 'e':
+            elem.elevation = {
+              number: elem.elevation.number,
+              type: elem.elevation.type,
+              position: 'east',
+            }
+          break;
+          case 'w':
+            elem.elevation = {
+              number: elem.elevation.number,
+              type: elem.elevation.type,
+              position: 'west',
+            }
+          break;
+          default:
+
+          break
+        }
+      }
+
+
+      // OBSTACLE
+      if (elem.levelData.split('_')[1] !== '*') {
+        elem.obstacle = this.obstacleLevelDataRef[elem.levelData.split('_')[1]];
+      }
+
+      // BARRIER
+      if (elem.levelData.split('_')[0] !== '**') {
+        elem.barrier = this.barrierLevelDataRef[elem.levelData.split('_')[0].charAt(0)];
+
+        switch (elem.levelData.split('_')[0].charAt(1)) {
+          case 'n':
+            elem.barrier = {
+              state: elem.barrier.state,
+              name: elem.barrier.name,
+              type: elem.barrier.type,
+              hp: elem.barrier.hp,
+              destructible: elem.barrier.destructible,
+              locked: elem.barrier.locked,
+              position: 'north',
+              height: elem.barrier.height,
+            }
+          break;
+          case 's':
+            elem.barrier = {
+              state: elem.barrier.state,
+              name: elem.barrier.name,
+              type: elem.barrier.type,
+              hp: elem.barrier.hp,
+              destructible: elem.barrier.destructible,
+              locked: elem.barrier.locked,
+              position: 'south',
+              height: elem.barrier.height,
+            }
+          break;
+          case 'e':
+            elem.barrier = {
+              state: elem.barrier.state,
+              name: elem.barrier.name,
+              type: elem.barrier.type,
+              hp: elem.barrier.hp,
+              destructible: elem.barrier.destructible,
+              locked: elem.barrier.locked,
+              position: 'east',
+              height: elem.barrier.height,
+            }
+          break;
+          case 'w':
+            elem.barrier = {
+              state: elem.barrier.state,
+              name: elem.barrier.name,
+              type: elem.barrier.type,
+              hp: elem.barrier.hp,
+              destructible: elem.barrier.destructible,
+              locked: elem.barrier.locked,
+              position: 'west',
+              height: elem.barrier.height,
+            }
+          break;
+          default:
+          break;
+        }
+      }
+
+      // console.log('oo2',elem.levelData,elem.number,elem.terrain);
+
+      // SET EDGES!
+      if (elem.number.x === 0) {
+        elem.edge = {
+          state: true,
+          side: 'west'
+        }
+      }
+      if (elem.number.x === this.gridWidth) {
+        elem.edge = {
+          state: true,
+          side: 'east'
+        }
+      }
+      if (elem.number.y === this.gridWidth) {
+        elem.edge = {
+          state: true,
+          side: 'south'
+        }
+      }
+      if (elem.number.y === 0) {
+        elem.edge = {
+          state: true,
+          side: 'north'
+        }
+      }
+
+    }
+
+
+    for(const elem2 of this.settingsGridInfo) {
+
+      // SET LEVEL DATA!
+      let levelData2Row = 'row'+elem2.number.x;
+      let elemLevelData = this.['levelData'+this.settingsGridWidth][levelData2Row][elem2.number.y];
+      if (
+        (elemLevelData.split('_')[1] !== "*" &&
+        this.terrainLevelDataRef[elemLevelData.split('_')[3]].type === 'deep') ||
+        (elemLevelData.split('_')[1] !== "*" && this.terrainLevelDataRef[elemLevelData.split('_')[3]].type === 'void')
+      ) {
+        elemLevelData = elemLevelData.replaceAt(3, '*');
+      }
+      elem2.levelData = elemLevelData;
+
+      // TERRAIN
+      elem2.terrain = this.terrainLevelDataRef[elem2.levelData.split('_')[3]]
+      if (elem2.terrain.name === 'void') {
+        elem2.void.state = true
+      }
+
+      // ELEVATION NUMBER
+      elem2.elevation.number = parseInt(elem2.levelData.split('_')[4].charAt(0));
+      if (elem2.levelData.split('_')[4].charAt(1) !== '*') {
+        elem2.elevation.type = this.elevationTypeLevelDataRef[elem2.levelData.split('_')[4].charAt(1)]
+      }
+
+      // ELEVATION POSITION
+      if (elem2.levelData.split('_')[4].charAt(1) !== '*') {
+        switch (elem2.levelData.split('_')[4].charAt(2)) {
+          case 'n':
+            elem2.elevation = {
+              number: elem2.elevation.number,
+              type: elem2.elevation.type,
+              position: 'north',
+            }
+          break;
+          case 's':
+            elem2.elevation = {
+              number: elem2.elevation.number,
+              type: elem2.elevation.type,
+              position: 'south',
+            }
+          break;
+          case 'e':
+            elem2.elevation = {
+              number: elem2.elevation.number,
+              type: elem2.elevation.type,
+              position: 'east',
+            }
+          break;
+          case 'w':
+            elem2.elevation = {
+              number: elem2.elevation.number,
+              type: elem2.elevation.type,
+              position: 'west',
+            }
+          break;
+          default:
+        }
+      }
+
+      // OBSTACLE
+      if (elem2.levelData.split('_')[1] !== '*') {
+        elem2.obstacle = this.obstacleLevelDataRef[elem2.levelData.split('_')[1]];
+      }
+
+      // BARRIER
+      if (elem2.levelData.split('_')[0] !== '**') {
+        elem2.barrier = this.barrierLevelDataRef[elem2.levelData.split('_')[0].charAt(0)];
+
+        switch (elem2.levelData.split('_')[0].charAt(1)) {
+          case 'n':
+            elem2.barrier = {
+              state: elem2.barrier.state,
+              name: elem2.barrier.name,
+              type: elem2.barrier.type,
+              hp: elem2.barrier.hp,
+              destructible: elem2.barrier.destructible,
+              locked: elem2.barrier.locked,
+              position: 'north',
+              height: elem2.barrier.height,
+            }
+          break;
+          case 's':
+            elem2.barrier = {
+              state: elem2.barrier.state,
+              name: elem2.barrier.name,
+              type: elem2.barrier.type,
+              hp: elem2.barrier.hp,
+              destructible: elem2.barrier.destructible,
+              locked: elem2.barrier.locked,
+              position: 'south',
+              height: elem2.barrier.height,
+            }
+          break;
+          case 'e':
+            elem2.barrier = {
+              state: elem2.barrier.state,
+              name: elem2.barrier.name,
+              type: elem2.barrier.type,
+              hp: elem2.barrier.hp,
+              destructible: elem2.barrier.destructible,
+              locked: elem2.barrier.locked,
+              position: 'east',
+              height: elem2.barrier.height,
+            }
+          break;
+          case 'w':
+            elem2.barrier = {
+              state: elem2.barrier.state,
+              name: elem2.barrier.name,
+              type: elem2.barrier.type,
+              hp: elem2.barrier.hp,
+              destructible: elem2.barrier.destructible,
+              locked: elem2.barrier.locked,
+              position: 'west',
+              height: elem2.barrier.height,
+            }
+          break;
+          default:
+        }
+
+      }
+
+      // console.log('oo2',elem.levelData,elem.number,elem.terrain);
+
+      // SET EDGES!
+      if (elem2.number.x === 0) {
+        elem2.edge = {
+          state: true,
+          side: 'west'
+        }
+      }
+      if (elem2.number.x === this.settingsGridWidth) {
+        elem2.edge = {
+          state: true,
+          side: 'east'
+        }
+      }
+      if (elem2.number.y === this.settingsGridWidth) {
+        elem2.edge = {
+          state: true,
+          side: 'south'
+        }
+      }
+      if (elem2.number.y === 0) {
+        elem2.edge = {
+          state: true,
+          side: 'north'
+        }
+      }
+
+    }
+
+    // gridInfo to 2D array
+    let gridInfo2d = [];
+    for (let i = 0; i <= this.gridWidth; i++) {
+    // for (let i = 9; i >= 0; i--) {
+      let newArray = [];
+      for (var j = 0; j < allCells.length; j++) {
+        if (allCells[j]['number'].x === i) {
+          newArray.push(allCells[j])
+        }
+      }
+      gridInfo2d.push(newArray)
+    }
+
+
+    this.gridInfo2D = gridInfo2d;
+    // console.log('gridInfo2d',this.gridInfo2D);
+    this.gridInfo = allCells;
+
+    // this.settingsFormAiGridInfo = this.gridInfo;
+    // console.log('post parse gridInfo',this.gridInfo);
+
+    // console.log('yyy',allCells.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
+    // console.log('yyy2',this.settingsGridInfo.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
+
+    this.updatePathArray()
+
+
+  }
+  drawGridInit = (canvas, context, canvas2, context2) => {
+    // console.log('drawing initial');
+
+
+    context.clearRect(0,0,this.canvasWidth,this.canvasHeight)
+    context2.clearRect(0,0,this.canvasWidth,this.canvasHeight)
+
+    let gridInfo = [];
+    class Point {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    this.popupImageRef = {
+      attackStart: this.refs.preAttackIndicate,
+      preAction1: this.refs.preAction1Indicate,
+      preAction2: this.refs.preAction2Indicate,
+      attacking: this.refs.attack3Indicate,
+      attacking1: this.refs.attack1Indicate,
+      attacking2: this.refs.attack2Indicate,
+      missedAttack: this.refs.missedIndicate,
+      attackingBlunt: this.refs.attackBluntIndicate2,
+      attackingUnarmed: this.refs.attackUnarmedIndicate,
+      attacked1: this.refs.attack1Indicate,
+      attacked2: this.refs.attack2Indicate,
+      attackDefended: this.refs.attackBreakIndicate,
+      attackParried: this.refs.attackParriedIndicate,
+      boltKilled: this.refs.boltKilledIndicate,
+      attackCancelled: this.refs.attackBreakIndicate,
+      injured: this.refs.deflectInjuredIndicate,
+      hpDown: this.refs.deflectInjuredIndicate2,
+      hpUp: this.refs.healIndicate,
+      defending: this.refs.defendIndicate,
+      defending_1: this.refs.defendIndicate1,
+      defending_2: this.refs.defendIndicate2,
+      defending_3: this.refs.defendIndicate3,
+      defending_4: this.refs.defendIndicate4,
+      defendSuccess: this.refs.defendSuccessIndicate,
+      guardBroken: this.refs.defendBreakIndicate,
+      deflected: this.refs.deflectBluntIndicate,
+      dodgeStart: this.refs.preAction2Indicate,
+      dodgeSuccess: this.refs.dodgeIndicate,
+      dodging: this.refs.dodgeIndicate,
+      flanking: this.refs.flankIndicate,
+      pushedBack: this.refs.pushbackIndicate,
+      falling: this.refs.fallingIndicate,
+      outOfStamina: this.refs.outOfStaminaIndicate,
+      outOfAmmo: this.refs.outOfAmmoIndicate,
+      missionEngage: this.refs.deflectIndicate2,
+      missionPursue: this.refs.pursueMissionIndicate2,
+      missionRetrieve: this.refs.retrieveMissionIndicate,
+      missionDefend: this.refs.defendMissionIndicate,
+      missionPatrol: this.refs.patrolMissionIndicate,
+      missionRetreat: this.refs.retreatIndicate,
+      missionEnroute: this.refs.enrouteIndicate,
+      missionComplete: this.refs.completeMissionIndicate,
+      thinking: this.refs.thinkingIndicate,
+      alarmed: this.refs.preAttack2Indicate,
+      pathSwitch: this.refs.pathSwitchIndicate,
+      targetSwitch: this.refs.targetSwitchIndicate,
+      aggressiveMode: this.refs.aggressiveModeIndicate,
+      passiveMode: this.refs.passiveModeIndicate,
+      pickupWeapon: this.refs.pickupWeaponIndicate,
+      pickupArmor: this.refs.pickupArmorIndicate,
+      dropWeapon: this.refs.dropWeaponIndicate,
+      dropArmor: this.refs.dropArmorIndicate,
+      pickupBuff: this.refs.pickupBuffIndicate,
+      pickupDebuff: this.refs.pickupDebuffIndicate,
+      pickupAmmo: this.refs.pickupAmmoIndicate,
+      inventoryFull: this.refs.inventoryFullIndicate,
+      stop: this.refs.boltDefendIndicate,
+      dropWeapon: this.refs.dropWeaponIndicate,
+      dropArmor: this.refs.dropArmorIndicate,
+      drowning: this.refs.drowningIndicate,
+      terrainSlowdown: this.refs.terrainSlowdownIndicate,
+      terrainSpeedup: this.refs.terrainSpeedupIndicate,
+      terrainInjured: this.refs.terrainInjuredIndicate,
+      destroyedItem: this.refs.destroyedItemIndicate,
+      sword: this.refs.itemSword,
+      spear: this.refs.itemSpear,
+      crossbow: this.refs.itemCrossbow,
+      longbow: this.refs.itemBow,
+      helmet: this.refs.itemHelmet1,
+      mail: this.refs.itemMail1,
+      greaves: this.refs.itemGreaves1,
+
+      missedAttack2: this.refs.missedIndicate2,
+      prePush: this.refs.prePushIndicate,
+      canPush: this.refs.canPushIndicate,
+      noPush: this.refs.noPushingIndicate,
+      pushing: this.refs.pushingIndicate,
+      prePull: this.refs.prePullIndicate,
+      canPull: this.refs.canPullIndicate,
+      noPull: this.refs.noPullingIndicate,
+      pulling: this.refs.pullingIndicate,
+      pushedPulled: this.refs.pushedPulledIndicate,
+      unbreakable: this.refs.unbreakableIndicate,
+      dodging2: this.refs.dodgeIndicate2,
+      attackFeint: this.refs.attackFeintIndicate,
+      attackFeint2: this.refs.attackFeintIndicate2,
+      attackFeint3: this.refs.attackFeintIndicate3,
+      defendFeint: this.refs.defendFeintIndicate,
+      defendFeint2: this.refs.defendFeintIndicate2,
+      defendFeint3: this.refs.defendFeintIndicate3,
+      dodgeFeint: this.refs.dodgeFeintIndicate,
+      dodgeFeint2: this.refs.dodgeFeintIndicate2,
+      boltDefend2: this.refs.boltDefendIndicate2,
+      flanking2: this.refs.flankIndicate2,
+      noFlanking: this.refs.noFlankIndicate,
+      cellVoiding: this.refs.cellVoidingIndicate,
+      cellVoiding2: this.refs.cellVoidingIndicate2,
+    };
+    this.indicatorImgs = {
+      preAttack: this.refs.preAttackIndicate,
+      preAttack2: this.refs.preAttack2Indicate,
+      attack1: this.refs.attack1Indicate,
+      attack2: this.refs.attack2Indicate,
+      attack3: this.refs.attack3Indicate,
+      attackUnarmed: this.refs.attackUnarmedIndicate,
+      attackBlunt: this.refs.attackBluntIndicate,
+      attackSuccess: this.refs.attackSuccessIndicate,
+      defend: this.refs.defendIndicate,
+      deflect: this.refs.deflectIndicate,
+      deflectInjured: this.refs.deflectInjuredIndicate,
+      deflectBlunt: this.refs.deflectBluntIndicate,
+      pushback: this.refs.pushbackIndicate,
+      ghost: this.refs.ghostIndicate,
+      death: this.refs.deathIndicate,
+      attackBreak: this.refs.attackBreakIndicate,
+      defendBreak: this.refs.defendBreakIndicate,
+      dodge: this.refs.dodgeIndicate,
+    }
+    this.playerImgs = [
+      {
+        idle: {
+          unarmed: this.refs.playerImgIdleSheet,
+          sword: this.refs.playerImgIdleSheet,
+          spear: this.refs.playerImgIdleSheet,
+          crossbow: this.refs.playerImgIdleSheet,
+        },
+        walking: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        jumping: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        dodging: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        flanking: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        strafing: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        attacking: {
+          unarmed: this.refs.player1ImgAttackSheet,
+          sword: this.refs.player1ImgAttackSheet,
+          spear: this.refs.player1ImgAttackSheet,
+          crossbow: this.refs.player1ImgAttackSheet,
+        },
+        defending: {
+          unarmed: this.refs.player1ImgDefendSheet,
+          sword: this.refs.player1ImgDefendSheet,
+          spear: this.refs.player1ImgDefendSheet,
+          crossbow: this.refs.player1ImgDefendSheet,
+        },
+        deflected: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        pushBack: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        falling: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        pushing: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        pulling: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        pushed: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+        pulled: {
+          unarmed: this.refs.playerImgMoveSheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
+        },
+      },
+      {
+        idle: {
+          unarmed: this.refs.player2ImgIdleSheet,
+          sword: this.refs.player2ImgIdleSheet,
+          spear: this.refs.player2ImgIdleSheet,
+          crossbow: this.refs.player2ImgIdleSheet,
+        },
+        walking: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        jumping: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        dodging: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        flanking: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        strafing: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        attacking: {
+          unarmed: this.refs.player2ImgAttackSheet,
+          sword: this.refs.player2ImgAttackSheet,
+          spear: this.refs.player2ImgAttackSheet,
+          crossbow: this.refs.player2ImgAttackSheet,
+        },
+        defending: {
+          unarmed: this.refs.player2ImgDefendSheet,
+          sword: this.refs.player2ImgDefendSheet,
+          spear: this.refs.player2ImgDefendSheet,
+          crossbow: this.refs.player2ImgDefendSheet,
+        },
+        deflected: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        pushBack: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        falling: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        pushing: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        pulling: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        pushed: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+        pulled: {
+          unarmed: this.refs.player2ImgMoveSheet,
+          sword: this.refs.player2ImgMoveSheet,
+          spear: this.refs.player2ImgMoveSheet,
+          crossbow: this.refs.player2ImgMoveSheet,
+        },
+      },
+      {
+        idle: {
+          unarmed: this.refs.playerComAImgIdleSheet,
+          sword: this.refs.playerComAImgIdleSheet,
+          spear: this.refs.playerComAImgIdleSheet,
+          crossbow: this.refs.playerComAImgIdleSheet,
+        },
+        walking: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        jumping: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        dodging: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        flanking: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        strafing: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        attacking: {
+          unarmed: this.refs.comAImgAttackSheet,
+          sword: this.refs.comAImgAttackSheet,
+          spear: this.refs.comAImgAttackSheet,
+          crossbow: this.refs.comAImgAttackSheet,
+        },
+        defending: {
+          unarmed: this.refs.comAImgDefendSheet,
+          sword: this.refs.comAImgDefendSheet,
+          spear: this.refs.comAImgDefendSheet,
+          crossbow: this.refs.comAImgDefendSheet,
+        },
+        deflected: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        pushBack: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        falling: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        pushing: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        pulling: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        pushed: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+        pulled: {
+          unarmed: this.refs.comAImgMoveSheet,
+          sword: this.refs.comAImgMoveSheet,
+          spear: this.refs.comAImgMoveSheet,
+          crossbow: this.refs.comAImgMoveSheet,
+        },
+      },
+      {
+        idle: {
+          unarmed: this.refs.playerComBImgIdleSheet,
+          sword: this.refs.playerComBImgIdleSheet,
+          spear: this.refs.playerComBImgIdleSheet,
+          crossbow: this.refs.playerComBImgIdleSheet,
+        },
+        walking: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        jumping: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        dodging: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        flanking: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        strafing: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        attacking: {
+          unarmed: this.refs.comBImgAttackSheet,
+          sword: this.refs.comBImgAttackSheet,
+          spear: this.refs.comBImgAttackSheet,
+          crossbow: this.refs.comBImgAttackSheet,
+        },
+        defending: {
+          unarmed: this.refs.comBImgDefendSheet,
+          sword: this.refs.comBImgDefendSheet,
+          spear: this.refs.comBImgDefendSheet,
+          crossbow: this.refs.comBImgDefendSheet,
+        },
+        deflected: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        pushBack: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        falling: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        pushing: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        pulling: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        pushed: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+        pulled: {
+          unarmed: this.refs.comBImgMoveSheet,
+          sword: this.refs.comBImgMoveSheet,
+          spear: this.refs.comBImgMoveSheet,
+          crossbow: this.refs.comBImgMoveSheet,
+        },
+      },
+    ]
+    this.itemImgs = {
+      moveSpeedUp: this.refs.itemSpdUp,
+      moveSpeedDown: this.refs.itemSpdDown,
+      hpUp: this.refs.itemHpUp,
+      hpDown: this.refs.itemHpDown,
+      focusUp: this.refs.itemFocusUp,
+      focusDown: this.refs.itemFocusDown,
+      strengthUp: this.refs.itemStrUp,
+      strengthDown: this.refs.itemStrDown,
+      sword: this.refs.itemSword,
+      spear: this.refs.itemSpear,
+      crossbow: this.refs.itemBow,
+      helmet: this.refs.itemHelmet1,
+      ammo5: this.refs.itemAmmo,
+      ammo10: this.refs.itemAmmo,
+      mail: this.refs.itemMail1,
+      greaves: this.refs.itemGreaves1,
+    };
+    this.boltImgs = {
+      north: this.refs.itemBoltNorth,
+      south: this.refs.itemBoltSouth,
+      east: this.refs.itemBoltEast,
+      west: this.refs.itemBoltWest,
+    }
+    this.floorImgs = {
+      grass: this.refs.floorGrass,
+      stone: this.refs.floorStone,
+      dirt: this.refs.floorDirt,
+      pond: this.refs.floorPond,
+      mud: this.refs.floorMud,
+      sand: this.refs.floorSand,
+      ice: this.refs.floorIce,
+      lava: this.refs.floorLava,
+      bramble: this.refs.floorBramble,
+      river: this.refs.floorRiver,
+      void: this.refs.floorVoid,
+      void2: this.refs.floorVoid2,
+      void3: this.refs.floorVoid3,
+      rubble: this.refs.floorRubble,
+    }
+    this.obstacleImgs = {
+      table: this.refs.obstacleAHalf,
+      closet: this.refs.obstacleAFull,
+      chair: this.refs.obstacleBHalf,
+      shelf: this.refs.obstacleBFull,
+      smallBox: this.refs.obstacleCHalf,
+      largeBox: this.refs.obstacleCFull,
+      counter: this.refs.obstacleDHalf,
+      chest: this.refs.obstacleEHalf,
+      crate: this.refs.obstacleCrate,
+      barrel: this.refs.obstacleBarrel,
+      chest: this.refs.obstacleCrate,
+      table: this.refs.obstacleCrate,
+      chair: this.refs.obstacleCrate,
+      shelf: this.refs.obstacleCrate,
+      counter: this.refs.obstacleCrate,
+      smallBox: this.refs.obstacleCrate,
+      largeBox: this.refs.obstacleBarrel,
+    }
+    this.barrierImgs = {
+      wall: {
+        north: this.refs.barrierANorth,
+        south: this.refs.barrierASouth,
+        east: this.refs.barrierAEast,
+        west: this.refs.barrierAWest,
+      },
+      door: {
+        north: this.refs.barrierANorth,
+        south: this.refs.barrierASouth,
+        east: this.refs.barrierAEast,
+        west: this.refs.barrierAWest,
+      },
+      balcony: {
+        north: this.refs.barrierANorth,
+        south: this.refs.barrierASouth,
+        east: this.refs.barrierAEast,
+        west: this.refs.barrierAWest,
+      },
+    }
+
+    // LOAD CROSSBOW AMMO
+    for (const plyr of this.players) {
+      if (plyr.currentWeapon.type === 'crossbow') {
+        let ammo = parseInt(plyr.currentWeapon.effect.split('+')[1])
+        plyr.items.ammo = plyr.items.ammo + ammo;
+      }
+    }
+
+    let floor;
+    let wall = this.refs.wall;
+    let wall2 = this.refs.wall2;
+    let wall3 = this.refs.wall3;
+
+    canvas.width = this.canvasWidth;
+    canvas.height = this.canvasHeight;
+
+    let floorImageWidth = this.floorImageWidth;
+    let floorImageHeight = this.floorImageHeight;
+    let wallImageWidth = this.wallImageWidth;
+    let wallImageHeight = this.wallImageHeight;
+    let sceneX = this.canvasWidth/2;
+    let sceneY = this.sceneY;
+    let tileWidth = this.tileWidth;
+
+    this.startProcessLevelData(canvas);
+    // gridInfo = this.gridInfo;
+
+    this.processLevelData(this.gridInfo);
+    // console.log('post process barrier check init',this.gridInfo.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
+
+    if (this.camera.fixed !== true) {
+      // this.setCameraFocus('init', canvas, context, canvas2, context2);
+    }
+    this.findFocusCell('panToCell',{},canvas,context)
+
+
+    // CENTER LARGER GRIDS
+    if (window.innerWidth < 1100 && this.gridWidth >= 12) {
+      // this.camera.zoom.x = 0.7;
+      // this.camera.zoom.y = 0.7;
+
+      this.setInitZoom = {
+        state: true,
+        windowWidth: window.innerWidth,
+        gridWidth: this.gridWidth,
+      }
+    }
+    if (window.innerWidth > 1100 && this.gridWidth >= 12) {
+      // this.camera.zoom.x = 1;
+      // this.camera.zoom.y = 1;
+
+      this.setInitZoom = {
+        state: true,
+        windowWidth: window.innerWidth,
+        gridWidth: this.gridWidth,
+      }
+    }
+    if (window.innerWidth < 1100 && this.gridWidth < 12) {
+      // this.camera.zoom.x = 1;
+      // this.camera.zoom.y = 1;
+
+      this.setInitZoom = {
+        state: true,
+        windowWidth: window.innerWidth,
+        gridWidth: this.gridWidth,
+      }
+    }
+
+    let diff = 1 - this.camera.zoom.x;
+
+    // FOCUSED ZOOMING INIT SET
+    this.camera.pan.x = (diff*this.canvasWidth/2);
+    this.camera.pan.y = (diff*this.canvasWidth/2)-(diff*350);
+    if (this.camera.pan.x === 0) {
+      this.camera.pan.x = -1
+      this.camera.pan.y = -1
+    }
+
+
+    if (this.showSettingsCanvasData.state === true) {
+      this.settingsFormGridWidthUpdate(this.settingsGridWidth)
+    }
+
+
+    this.placeItems({init: true, items: ''});
+
+
+    // CELL COLOR REF
+    let preCellColorRef = this.gridInfo.map(x => x = {x:x.number.x,y:x.number.y,color:''});
+    for(const cell of preCellColorRef) {
+      let colorCheckPass = false;
+      while (colorCheckPass === false) {
+        let randomColor = `rgb(${this.rnJesus(0,255)},${this.rnJesus(0,255)},${this.rnJesus(0,255)})`;
+        let colorsInUse = preCellColorRef.filter(x => x.color !== '').map(y => y === y.color);
+        if (colorsInUse.find(x => x === randomColor)) {
+          colorCheckPass = false;
+        }
+        else {
+          cell.color = randomColor;
+          colorCheckPass = true;
+        }
+      }
+    };
+    this.cellColorRef = preCellColorRef;
+
+
+    for (var x = 0; x < this.gridWidth+1; x++) {
+      for (var y = 0; y < this.gridWidth+1; y++) {
+        let p = new Point();
+        p.x = x * tileWidth;
+        p.y = y * tileWidth;
+
+        let iso = this.cartesianToIsometric(p);
+        let offset = {x: floorImageWidth/2, y: floorImageHeight}
+
+        // apply offset to center scene for a better view
+        iso.x += sceneX
+        iso.y += sceneY
+
+
+        let center = {
+          x: iso.x - offset.x/2+this.cellCenterOffsetX,
+          y: iso.y - offset.y/2-this.cellCenterOffsetY,
+        }
+
+
+        let cell = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
+        let cellLevelData = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y).levelData;
+
+
+        floor = this.floorImgs[cell.terrain.name]
+
+        if (cell.void.state === true) {
+          // drawFloor = false;
+          floor = this.floorImgs.void3
+        }
+
+
+        // context.drawImage(floor, iso.x - offset.x, iso.y - offset.y, 100, 100);
+        context.drawImage(floor, iso.x - offset.x, iso.y - offset.y);
+
+        context.fillStyle = 'black';
+        context.fillText(""+x+","+y+"",iso.x - offset.x/2 + 18,iso.y - offset.y/2 + 12);
+
+        context.fillStyle = "black";
+        context.fillRect(center.x, center.y,5,5);
+
+
+        // INITIAL ITEM DISTRIBUTION!!
+        let cell2 = this.gridInfo.find(elem => elem.number.x === x && elem.number.y === y);
+        if (cell2.item.name !== '') {
+          // console.log('found cell with item');
+          if (cell2.item.initDrawn === false) {
+            // console.log('found cell with item undrawn');
+            let itemImg;
+            let fillClr;
+            if (cell2.item.type === 'item') {
+              switch(cell2.item.name) {
+                case 'moveSpeedUp' :
+                  fillClr = "purple";
+                  itemImg = this.itemImgs[cell2.item.name];
+                break;
+                case 'moveSpeedDown' :
+                  fillClr = "blue";
+                  itemImg = this.itemImgs[cell2.item.name];
+                break;
+                case 'hpUp' :
+                  fillClr = "yellow";
+                  itemImg = this.itemImgs[cell2.item.name];
+                break;
+                case 'hpDown' :
+                  fillClr = "brown";
+                  itemImg = this.itemImgs[cell2.item.name];
+                break;
+                case 'focusUp' :
+                  fillClr = "white";
+                  itemImg = this.itemImgs[cell2.item.name];
+                break;
+                case 'focusDown' :
+                  fillClr = "black";
+                  itemImg = this.itemImgs[cell2.item.name];
+                break;
+                case 'strengthUp' :
+                  fillClr = "green";
+                  itemImg = this.itemImgs[cell2.item.name];
+                break;
+                case 'strengthDown' :
+                  fillClr = "red";
+                  itemImg = this.itemImgs[cell2.item.name];
+                break;
+                case 'ammo5' :
+                  fillClr = '#283618';
+                  itemImg = this.itemImgs[cell2.item.name];
+                break;
+                case 'ammo10' :
+                  fillClr = '#283618';
+                  itemImg = this.itemImgs[cell2.item.name];
+                break;
+              }
+            }
+            else if (cell2.item.type === 'weapon') {
+              switch(cell2.item.subType) {
+                case 'sword' :
+                  fillClr = "orange";
+                  itemImg = this.itemImgs[cell2.item.subType];
+                break;
+                case 'spear' :
+                  fillClr = "maroon";
+                  itemImg = this.itemImgs[cell2.item.subType];
+                break;
+                case 'crossbow' :
+                  fillClr = "navy";
+                  itemImg = this.itemImgs[cell2.item.subType];
+                break;
+              }
+            }
+            else if (cell2.item.type === 'armor') {
+              switch(cell2.item.subType) {
+                case 'helmet' :
+                  fillClr = "grey";
+                  itemImg = this.itemImgs[cell2.item.subType];
+                break;
+                case 'mail' :
+                  fillClr = "olive";
+                  itemImg = this.itemImgs[cell2.item.subType];
+                break;
+                case 'greaves' :
+                  fillClr = "#b5179e";
+                  itemImg = this.itemImgs[cell2.item.subType];
+                break;
+              }
+            }
+
+
+            // context.fillStyle = fillClr;
+            // context.beginPath();
+            // context.arc(center.x, center.y, 15, 0, 2 * Math.PI);
+            // context.fill();
+
+            context.drawImage(itemImg ,center.x-15, center.y-15, 30,30);
+          }
+        }
+
+
+        let vertices = [
+          {x:center.x, y:center.y+tileWidth/2},
+          {x:center.x+tileWidth, y:center.y},
+          {x:center.x, y:center.y-tileWidth/2},
+          {x:center.x-tileWidth, y:center.y},
+        ];
+        for (const vertex of vertices) {
+          context.fillStyle = "yellow";
+          context.fillRect(vertex.x-2.5, vertex.y-2.5,5,5);
+        }
+
+
+        for (const player of this.players) {
+
+          if (
+            x === player.startPosition.cell.number.x &&
+            y === player.startPosition.cell.number.y
+          ) {
+
+            let playerImg;
+            let playerImgIndex;
+            let atkType = player.currentWeapon.type;
+            if (player.currentWeapon.name === "") {
+              atkType = "unarmed";
+            }
+
+            if (player.ai.state === true) {
+
+              if (player.ai.imgType === "A") {
+                playerImgIndex = 2;
+              }
+              else if (player.ai.imgType === "B") {
+                playerImgIndex = 3;
+              }
+
+              playerImg = this.playerImgs[playerImgIndex].idle[atkType];
+            } else {
+              playerImg = this.playerImgs[player.number-1].idle[atkType];
+            }
+
+
+            let dirs = ['north','south','east','west']
+            let dirIndex = dirs.indexOf(player.direction);
+            let sHeight = this.charSpriteHeight;
+            let sWidth = this.charSpriteWidth;
+            let sy = dirIndex * sHeight;
+            let sx = 0 * sWidth;
+
+
+            // player.speed.move = .1;
+            player.dead.state = false;
+            player.dead.count = 0;
+
+            let point = {
+              x: 0,
+              y: 0,
+            };
+
+            let cell = this.gridInfo.find(elem => elem.number.x === player.startPosition.cell.number.x && elem.number.y === player.startPosition.cell.number.y)
+            point.x = cell.center.x;
+            point.y = cell.center.y;
+
+            player.currentPosition.cell = {
+              number: {
+                x: player.startPosition.cell.number.x,
+                y: player.startPosition.cell.number.y
+              },
+              center : {
+                x: point.x,
+                y: point.y
+              }
+            }
+            player.moving = {
+              state: false,
+              step: 0,
+              course: '',
+              origin: {
+                number: {
+                  x: player.startPosition.cell.number.x,
+                  y: player.startPosition.cell.number.y,
+                },
+                center: {
+                  x: point.x,
+                  y: point.y,
+                },
+              },
+              destination: {
+                x: 0,
+                y: 0,
+              }
+            }
+            player.nextPosition = {
+              x: point.x,
+              y: point.y
+            }
+
+            this.players[player.number-1] = player;
+
+            this.getTarget(player);
+
+            context.drawImage(playerImg, sx, sy, sWidth, sHeight, point.x-30, point.y-30, this.playerDrawWidth, this.playerDrawHeight);
+
+          }
+
+        }
+
+        // OBSTACLES & BARRIERS
+        if (cell.barrier.state === true && cell.void.state !== true) {
+          let barrierImg = this.barrierImgs[cell.barrier.type][cell.barrier.position];
+          context.drawImage(barrierImg, iso.x - offset.x, iso.y - barrierImg.height, barrierImg.width, barrierImg.height);
+        }
+
+        if (cell.obstacle.state === true && cell.void.state !== true) {
+          let obstacleImg = this.obstacleImgs[cell.obstacle.type]
+          context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
+        }
+
+
+        this.init = false;
+        this.setState({
+          loading: false,
+        })
+
+      }
+    }
 
   }
 
