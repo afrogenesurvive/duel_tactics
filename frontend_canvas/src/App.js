@@ -331,13 +331,13 @@ class App extends Component {
     };
     this.levelData9 = {
       row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*','**_i_0.7_a_0a*','**_*_0.8_h_0a*','**_*_0.9_h_0a*'],
-      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_i_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
-      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_k_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
-      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_h_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
+      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_i_0a*','**_*_1.7_i_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
+      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_k_0a*','**_*_2.7_i_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
+      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_h_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_i_0a*','**_*_3.7_k_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
       row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_*_4.3_f_0a*','**_h_4.4_a_0a*','cn_b_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','cn_*_5.2_f_0a*','**_*_5.3_f_0a*','**_*_5.4_k_0a*','**_*_5.5_a_0a*','**_*_5.6_g_0a*','**_*_5.7_a_0a*','ce_*_5.8_a_0a*','**_*_5.9_a_0a*'],
       row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_b_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_b_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
-      row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','**_*_7.5_a_0a*','**_*_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
+      row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','**_*_7.5_a_0a*','**_c_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
       row8: ['**_*_8.0_a_0a*','**_*_8.1_a_0a*','**_*_8.2_a_0a*','**_*_8.3_a_0a*','**_*_8.4_a_0a*','**_*_8.5_a_0a*','**_c_8.6_a_0a*','**_*_8.7_a_0a*','**_*_8.8_a_0a*','**_*_8.9_d_0a*'],
       row9: ['**_*_9.0_a_0a*','**_a_9.1_a_0a*','**_*_9.2_a_0a*','**_*_9.3_a_0a*','**_*_9.4_a_0a*','**_*_9.5_a_0a*','**_*_9.6_a_0a*','**_*_9.7_a_0a*','**_*_9.8_a_0a*','**_*_9.9_a_0a*'],
     };
@@ -9207,7 +9207,7 @@ class App extends Component {
 
       break;
       case 'hazard' :
-        console.log('player',player.number,' stepped in',cell.terrain.name,'type',cell.terrain.type);
+        // console.log('player',player.number,' stepped in',cell.terrain.name,'type',cell.terrain.type);
         let applyHazard;
         if (cell.terrain.name === 'lava') {
           applyHazard = this.rnJesus(1,2)
@@ -9239,7 +9239,7 @@ class App extends Component {
     }
 
     if(cell.rubble === true ) {
-      console.log('stepped on rubble @ check destination. removing it too');
+      // console.log('stepped on rubble @ check destination. removing it too');
 
       let applyHazard = this.rnJesus(1,3);
 
@@ -11093,7 +11093,6 @@ class App extends Component {
   }
   handleMiscPlayerDamage = (player,type) => {
 
-    // add hp down popup
 
     if (type === "obstacleBarrierInvulnurable") {
 
@@ -11108,6 +11107,21 @@ class App extends Component {
         this.pointChecker(player)
       } else {
         this.players[player.number-1].hp -= 1;
+
+        if (!this.players[player.number-1].popups.find(x=>x.msg.split("_")[0] === "hpDown")) {
+          this.players[player.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 30,
+              type: '',
+              position: '',
+              msg: 'hpDown_'+'-'+1+'',
+              img: '',
+
+            }
+          )
+        }
 
         if (this.players[player.number-1].hp === 1) {
 
@@ -11135,11 +11149,26 @@ class App extends Component {
 
         this.pointChecker(player)
       } else {
+
         this.players[player.number-1].hp -= 1;
 
         this.setDeflection(player,'attacked',false);
 
-        if (!player.popups.find(x=>x.msg === 'terrainInjured')) {
+        if (!this.players[player.number-1].popups.find(x=>x.msg.split("_")[0] === "hpDown")) {
+          this.players[player.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 30,
+              type: '',
+              position: '',
+              msg: 'hpDown_'+'-'+1+'',
+              img: '',
+
+            }
+          )
+        }
+        if (!this.players[player.number-1].popups.find(x=>x.msg === 'terrainInjured')) {
           this.players[player.number-1].popups.push(
             {
               state: false,
@@ -26173,7 +26202,7 @@ class App extends Component {
 
 
                 this.checkDestination(player);
-                if (player.drowning !== true && player.pushBack.state !== true) {
+                if (player.drowning !== true && player.pushBack.state !== true && player.dead.state !== true) {
                   this.getTarget(player);
                 }
 
@@ -26385,7 +26414,7 @@ class App extends Component {
                     },
                     destination: player.target.cell2.center
                   }
-                  player.target.void = true;
+                  // player.target.void = true;
                   let nextPosition = this.lineCrementer(player);
                   player.nextPosition = nextPosition;
 
@@ -31829,7 +31858,7 @@ class App extends Component {
               let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
               finalAnimIndex = moveAnimIndex;
               // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-              if (plyr.target.void == true) {
+              if (plyr.target.cell1.void == true) {
                 // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
               }
             break;
