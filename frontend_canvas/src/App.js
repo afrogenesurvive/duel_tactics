@@ -22205,14 +22205,13 @@ class App extends Component {
           let instructions2 = [];
 
 
-
           // ENGAGED TARGET IS OPEN TO ATTAVK!
           if (targetPlayer.defending.state !== true && targetPlayer.attacking.state !== true && targetPlayer.defendDecay.state !== true) {
             // console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,'is neither attacking nor defending')
             if (aiPlayer.ai.safeRange === true) {
               if (oppositeDir) {
 
-                if (aiPlayer.target.free !== true) {
+                if (aiPlayer.target.cell2.occupant.type === "player") {
                   // console.log('target is too close! back it up');
                   instructions2.push(
                     {
@@ -22285,7 +22284,7 @@ class App extends Component {
             if (aiPlayer.ai.safeRange === true) {
               if (oppositeDir) {
 
-                if (aiPlayer.target.free !== true) {
+                if (aiPlayer.target.cell2.occupant.type === "player") {
                   // console.log('target is too close! back it up');
                   instructions2.push(
                     {
@@ -22589,7 +22588,7 @@ class App extends Component {
                 if (oppositeDir) {
                   // console.log('safe sword range attack flow');
 
-                  if (aiPlayer.target.free !== true) {
+                  if (aiPlayer.target.cell1.occupant.type === "player") {
                     // console.log('target is too close! back it up');
                     instructions1.push(
                       {
@@ -22649,7 +22648,7 @@ class App extends Component {
                 if (oppositeDir) {
                   // console.log('safe range attack flow');
 
-                  if (aiPlayer.target.free !== true) {
+                  if (aiPlayer.target.cell1.occupant.type === "player") {
                     // console.log('target is too close! back it up');
                     instructions1.push(
                       {
@@ -22937,7 +22936,7 @@ class App extends Component {
               if (oppositeDir) {
                 // console.log('safe sword range attack flow');
 
-                if (aiPlayer.target.free !== true) {
+                if (aiPlayer.target.cell1.occupant.type === "player") {
                   // console.log('target is too close! back it up');
                   instructions4.push(
                     {
@@ -22998,7 +22997,7 @@ class App extends Component {
               if (oppositeDir) {
                 // console.log('safe range attack flow');
 
-                if (aiPlayer.target.free !== true) {
+                if (aiPlayer.target.cell1.occupant.type === "player") {
                   // console.log('target is too close! back it up');
                   instructions4.push(
                     {
