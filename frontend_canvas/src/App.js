@@ -12622,7 +12622,6 @@ class App extends Component {
                 // WEAPON CHECK
                 if (targetCell.obstacle.destructible.weapons.find(x => x === player.currentWeapon.name)) {
                   if (targetCell.obstacle.hp - damage > 0) {
-                    // this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).obstacle.hp -= damage;
 
                     let hp = targetCell.obstacle.hp - damage;
 
@@ -12707,7 +12706,7 @@ class App extends Component {
                       if (targetCell.obstacle.items[0]) {
                         itemsToDrop = targetCell.obstacle.items;
                       }
-                      // this.gridInfo.find(elem => elem.number.x === player.target.cell.number.x && elem.number.y === player.target.cell.number.y ).obstacle =
+                      // this.gridInfo.find(elem => elem.number.x === player.target.cell1.number.x && elem.number.y === player.target.cell1.number.y ).obstacle =
                       targetCell.obstacle = {
                         state: false,
                         name: targetCell.obstacle.name,
@@ -20816,8 +20815,8 @@ class App extends Component {
           },
           target: {
             number1: {
-              x: targetPlayer.target.cell.number.x,
-              y: targetPlayer.target.cell.number.y,
+              x: targetPlayer.target.cell1.number.x,
+              y: targetPlayer.target.cell1.number.y,
             },
             number2: {
               x: targetPlayer.target.cell2.number.x,
@@ -20894,8 +20893,8 @@ class App extends Component {
                     },
                     target: {
                       number1: {
-                        x: plyr2.target.cell.number.x,
-                        y: plyr2.target.cell.number.y,
+                        x: plyr2.target.cell1.number.x,
+                        y: plyr2.target.cell1.number.y,
                       },
                       number2: {
                         x: plyr2.target.cell2.number.x,
@@ -20953,8 +20952,8 @@ class App extends Component {
                       },
                       target: {
                         number1: {
-                          x: plyr2.target.cell.number.x,
-                          y: plyr2.target.cell.number.y,
+                          x: plyr2.target.cell1.number.x,
+                          y: plyr2.target.cell1.number.y,
                         },
                         number2: {
                           x: plyr2.target.cell2.number.x,
@@ -21022,8 +21021,8 @@ class App extends Component {
                       },
                       target: {
                         number1: {
-                          x: plyr2.target.cell.number.x,
-                          y: plyr2.target.cell.number.y,
+                          x: plyr2.target.cell1.number.x,
+                          y: plyr2.target.cell1.number.y,
                         },
                         number2: {
                           x: plyr2.target.cell2.number.x,
@@ -21075,8 +21074,8 @@ class App extends Component {
                       },
                       target: {
                         number1: {
-                          x: plyr2.target.cell.number.x,
-                          y: plyr2.target.cell.number.y,
+                          x: plyr2.target.cell1.number.x,
+                          y: plyr2.target.cell1.number.y,
                         },
                         number2: {
                           x: plyr2.target.cell2.number.x,
@@ -21136,8 +21135,8 @@ class App extends Component {
                       },
                       target: {
                         number1: {
-                          x: plyr2.target.cell.number.x,
-                          y: plyr2.target.cell.number.y,
+                          x: plyr2.target.cell1.number.x,
+                          y: plyr2.target.cell1.number.y,
                         },
                         number2: {
                           x: plyr2.target.cell2.number.x,
@@ -21193,8 +21192,8 @@ class App extends Component {
                       },
                       target: {
                         number1: {
-                          x: plyr2.target.cell.number.x,
-                          y: plyr2.target.cell.number.y,
+                          x: plyr2.target.cell1.number.x,
+                          y: plyr2.target.cell1.number.y,
                         },
                         number2: {
                           x: plyr2.target.cell2.number.x,
@@ -21257,8 +21256,8 @@ class App extends Component {
                       },
                       target: {
                         number1: {
-                          x: plyr2.target.cell.number.x,
-                          y: plyr2.target.cell.number.y,
+                          x: plyr2.target.cell1.number.x,
+                          y: plyr2.target.cell1.number.y,
                         },
                         number2: {
                           x: plyr2.target.cell2.number.x,
@@ -21305,8 +21304,8 @@ class App extends Component {
                       },
                       target: {
                         number1: {
-                          x: plyr2.target.cell.number.x,
-                          y: plyr2.target.cell.number.y,
+                          x: plyr2.target.cell1.number.x,
+                          y: plyr2.target.cell1.number.y,
                         },
                         number2: {
                           x: plyr2.target.cell2.number.x,
@@ -21358,8 +21357,8 @@ class App extends Component {
                       },
                       target: {
                         number1: {
-                          x: plyr2.target.cell.number.x,
-                          y: plyr2.target.cell.number.y,
+                          x: plyr2.target.cell1.number.x,
+                          y: plyr2.target.cell1.number.y,
                         },
                         number2: {
                           x: plyr2.target.cell2.number.x,
@@ -21405,8 +21404,8 @@ class App extends Component {
                       },
                       target: {
                         number1: {
-                          x: plyr2.target.cell.number.x,
-                          y: plyr2.target.cell.number.y,
+                          x: plyr2.target.cell1.number.x,
+                          y: plyr2.target.cell1.number.y,
                         },
                         number2: {
                           x: plyr2.target.cell2.number.x,
@@ -21592,8 +21591,8 @@ class App extends Component {
                  },
                  target: {
                    number1: {
-                     x: threat2.target.cell.x,
-                     y: threat2.target.cell.y,
+                     x: threat2.target.cell1.x,
+                     y: threat2.target.cell1.y,
                    },
                    number2: {
                      x: threat2.target.cell2.x,
@@ -24801,7 +24800,7 @@ class App extends Component {
     let currentInstruction = plyr.ai.instructions[plyr.ai.currentInstruction];
 
     if (currentInstruction) {
-      let targetCell = this.gridInfo.find(elem => elem.number.x === plyr.target.cell.number.x && elem.number.y === plyr.target.cell.number.y)
+      let targetCell = this.gridInfo.find(elem => elem.number.x === plyr.target.cell1.number.x && elem.number.y === plyr.target.cell1.number.y)
       let playerCell = this.gridInfo.find(elem => elem.number.x === plyr.currentPosition.cell.number.x && elem.number.y === plyr.currentPosition.cell.number.y)
 
       let pathIndx = plyr.ai.pathArray.findIndex(elem => elem.x === plyr.currentPosition.cell.number.x && elem.y === plyr.currentPosition.cell.number.y);
@@ -26018,9 +26017,8 @@ class App extends Component {
 
         // console.log('player',player.number,player.action);
         nextPosition = this.lineCrementer(player);
-        // player.currentPosition.cell = player.target.cell;
+
         player.nextPosition = nextPosition;
-        // console.log('plyr',player.number,'nextPosition',nextPosition,'dest',player.target.cell.center);
 
 
         let atDestRanges = [false,false,false,false];
@@ -26097,7 +26095,6 @@ class App extends Component {
             if (el === true) {
 
               let indx = atDestRanges.indexOf(el);
-              // console.log('indx',atDestRanges.indexOf(el),'next position is destination ',player.number,player.target,nextPosition.x === player.target.cell.center.x,nextPosition.x === player.target.cell.center.y);
 
               player.newMoveDelay.state = true;
 
@@ -26249,9 +26246,6 @@ class App extends Component {
 
               // TARGET IS VOID, START FALLING!
               if (
-
-                // nextPosition.x === player.target.cell.center.x &&
-                // nextPosition.y === player.target.cell.center.y &&
                 nextPosition.x === player.target.cell1.center.x &&
                 nextPosition.y === player.target.cell1.center.y ||
                 nextPosition.x === player.target.cell1.center.x-5 &&
@@ -26672,7 +26666,7 @@ class App extends Component {
         //         y: player.currentPosition.cell.center.y
         //       },
         //     },
-        //     destination: player.target.cell.center
+        //     destination: player.target.cell1.center
         //   }
         //   player.turning.toDirection = '';
         //   player.turning.state = undefined;
@@ -28454,7 +28448,7 @@ class App extends Component {
                 }
 
                 if (player.target.cell1.void === true) {
-                  // console.log('target is VOID!!',target.cell.center.x,target.cell.center.y);
+                  // console.log('target is VOID!!',target.cell1.center.x,target.cell1.center.y);
 
 
                   if (player.stamina.current - this.staminaCostRef.move >= 0) {
