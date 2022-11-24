@@ -32381,12 +32381,12 @@ class App extends Component {
               }
             }
             if (plyr.direction === 'east') {
-              if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
+              if (x === plyr.target.cell2.number.x && y === plyr.target.cell2.number.y) {
                 context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
               }
             }
             if (plyr.direction === 'south') {
-              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
+              if (x === plyr.target.cell2.number.x && y === plyr.target.cell2.number.y) {
                 context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)-(jumpYCalc*3), this.playerDrawWidth, this.playerDrawHeight);
               }
             }
@@ -32437,90 +32437,6 @@ class App extends Component {
           }
           if (plyr.flanking.state === true && plyr.falling.state !== true) {
 
-            // if (plyr.direction === 'east') {
-            //   if (plyr.flanking.direction === 'north') {
-            //     if (plyr.flanking.step === 1) {
-            //       if (
-            //         x === plyr.currentPosition.cell.number.x &&
-            //         y === plyr.currentPosition.cell.number.y
-            //       ) {
-            //         context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-            //       }
-            //     }
-            //     if (plyr.flanking.step === 2) {
-            //       if (
-            //         // x === plyr.flanking.target1.x &&
-            //         // y === plyr.flanking.target1.y
-            //         x === plyr.currentPosition.cell.number.x &&
-            //         y === plyr.currentPosition.cell.number.y+1
-            //       ) {
-            //         context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-            //       }
-            //     }
-            //   }
-            // }
-            // if (plyr.direction === 'west') {
-            //   if (plyr.flanking.direction === 'south') {
-            //     if (plyr.flanking.step === 1) {
-            //       if (
-            //         // x === plyr.currentPosition.cell.number.x &&
-            //         // y === plyr.currentPosition.cell.number.y
-            //         x === plyr.flanking.target1.x &&
-            //         y === plyr.flanking.target1.y
-            //       ) {
-            //         context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-            //       }
-            //     }
-            //     if (plyr.flanking.step === 2) {
-            //       if (
-            //         x === plyr.flanking.target1.x &&
-            //         y === plyr.flanking.target1.y
-            //       ) {
-            //         context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-            //       }
-            //     }
-            //   }
-            // }
-            // if (plyr.direction === 'north') {
-            //   if (plyr.flanking.direction === 'east') {
-            //     if (plyr.flanking.step === 1) {
-            //       if (
-            //         x === plyr.flanking.target1.x &&
-            //         y === plyr.flanking.target1.y
-            //       ) {
-            //         context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-            //       }
-            //     }
-            //     if (plyr.flanking.step === 2) {
-            //       if (
-            //         x === plyr.flanking.target1.x &&
-            //         y === plyr.flanking.target1.y
-            //       ) {
-            //         context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-            //       }
-            //     }
-            //   }
-            // }
-            // if (plyr.direction === 'south') {
-            //   if (plyr.flanking.direction === 'west') {
-            //     if (plyr.flanking.step === 1) {
-            //       if (
-            //         x === plyr.currentPosition.cell.number.x &&
-            //         y === plyr.currentPosition.cell.number.y
-            //       ) {
-            //         context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-            //       }
-            //     }
-            //     if (plyr.flanking.step === 2) {
-            //       if (
-            //         x === plyr.flanking.target2.x &&
-            //         y === plyr.flanking.target2.y
-            //       ) {
-            //         context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-            //       }
-            //     }
-            //   }
-            // }
 
             if (plyr.flanking.step === 1) {
 
