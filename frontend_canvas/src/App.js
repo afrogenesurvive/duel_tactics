@@ -330,8 +330,8 @@ class App extends Component {
       row12: ['**_*_12.0_a_0a*','**_*_12.1_a_0a*','**_*_12.2_a_0a*','**_*_12.3_a_0a*','**_*_12.4_a_0a*','**_*_12.5_a_0a*','**_*_12.6_a_0a*','**_*_12.7_a_0a*','**_*_12.8_a_0a*','**_*_12.9_a_0a*','**_*_12.10_a_0a*','**_*_12.11_a_0a*','**_*_12.12_a_0a*'],
     };
     this.levelData9 = {
-      row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*','**_i_0.7_a_0a*','**_*_0.8_h_0a*','**_*_0.9_h_0a*'],
-      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_i_0a*','**_*_1.7_i_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
+      row0: ['**_a_0.0_a_0a*','**_i_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*','**_i_0.7_a_0a*','**_*_0.8_h_0a*','**_*_0.9_h_0a*'],
+      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_k_0a*','**_*_2.7_i_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_h_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_i_0a*','**_*_3.7_k_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
       row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_*_4.3_f_0a*','**_h_4.4_a_0a*','cn_b_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
@@ -12239,6 +12239,7 @@ class App extends Component {
                         // console.log('leave rubble on ',myCell.number,'removing barrier');
                         myCell.rubble = true;
                         // myCell.terrain.type = 'hazard';
+
                         myCell.barrier =
                         {
                           state: false,
@@ -12275,6 +12276,7 @@ class App extends Component {
 
                       } else {
                         // console.log('no rubble. Just remove barrier');
+
 
                         myCell.barrier =
                         {
@@ -12415,6 +12417,7 @@ class App extends Component {
               if (targetCell.barrier.destructible.weapons.find(x => x === player.currentWeapon.name)) {
                 if (targetCell.barrier.hp - damage > 0) {
 
+
                   let hp = targetCell.barrier.hp - damage;
 
                   targetCell.barrier =
@@ -12445,6 +12448,7 @@ class App extends Component {
                     // console.log('leave rubble on ',targetCell.number,'removing barrier');
                     targetCell.rubble = true;
                     // targetCell.terrain.type = 'hazard';
+
                     targetCell.barrier =
                     {
                       state: false,
@@ -12707,6 +12711,8 @@ class App extends Component {
                         itemsToDrop = targetCell.obstacle.items;
                       }
                       // this.gridInfo.find(elem => elem.number.x === player.target.cell1.number.x && elem.number.y === player.target.cell1.number.y ).obstacle =
+
+
                       targetCell.obstacle = {
                         state: false,
                         name: targetCell.obstacle.name,
@@ -12848,6 +12854,7 @@ class App extends Component {
                      }
                    )
                  }
+
                  if (this.rnJesus(1,player.crits.pushBack) === 1) {
                    this.pushBack(player,this.getOppositeDirection(player.direction))
                  }
@@ -19934,9 +19941,12 @@ class App extends Component {
             console.log('check next priority weapon');
             plyr.ai.organizing.weaponPriorityIndex++;
           }
+
         } else {
+
           havePriorityWeapon = true;
-          plyr.ai.upgradeWeapon = false
+          plyr.ai.upgradeWeapon = false;
+
         }
 
 
@@ -20256,7 +20266,7 @@ class App extends Component {
 
     // RELOAD BOW AMMO
     if (plyr.currentWeapon.type === 'crossbow' && plyr.ai.mission !== 'retrieve' && plyr.ai.mission !== 'retreat') {
-      // if no ammo search field scan, for ammo or bow w/ ammo & retrieve
+
       if (plyr.items.ammo === 0) {
         console.log('my crossbow out of ammo');
         let inTheField = fieldItemScan.find(elem => elem.type === 'crossbow' || elem.name.substr(0,4) === 'ammo')
@@ -26574,18 +26584,6 @@ class App extends Component {
             }
           }
         };
-        // CELLS TO HIGHLIGHT V2!!
-        // for (const cell3 of this.cellsToHighlight2) {
-        //   if (cell3.limit > 0) {
-        //     if (cell3.count < cell3.limit) {
-        //       cell3.count++
-        //     }
-        //     else if (cell3.count >= cell3.limit) {
-        //       let index = this.cellsToHighlight2.indexOf(cell3)
-        //       this.cellsToHighlight2.splice(index,1)
-        //     }
-        //   }
-        // }
 
 
 
@@ -28597,7 +28595,7 @@ class App extends Component {
               if (keyPressedDirection === player.direction && player.strafing.state === true && player.jumping.checking !== true && player.jumping.state !== true) {
 
 
-
+                let alarmedPopup = false;
                 this.players[player.number-1].jumping.checking = true;
                 let target = this.getTarget(player);
 
@@ -28765,6 +28763,8 @@ class App extends Component {
                       } else {
                         // console.log('can only jump over voids or deep water cell 2');
                         this.players[player.number-1].jumping.checking = false;
+                        alarmedPopup = true;
+                        
                       }
 
 
@@ -28820,6 +28820,7 @@ class App extends Component {
                     else {
                       // console.log('jump obstacle detected');
                       this.players[player.number-1].jumping.checking = false;
+                      alarmedPopup = true;
 
                       if (cell1.obstacle.state === true) {
                         console.log("can't jump! obstacle in cell1");
@@ -28841,10 +28842,33 @@ class App extends Component {
                   } else {
                     // console.log('can only jump over voids, hazards or deep water cell 2');
                     this.players[player.number-1].jumping.checking = false;
+                    alarmedPopup = true;
+
                   }
                 } else {
                   // console.log('cell out of bounds');
                   this.players[player.number-1].jumping.checking = false;
+                  alarmedPopup = true;
+
+                }
+
+                if (alarmedPopup === true) {
+
+                  if (!this.players[player.number-1].popups.find(x=>x.msg === 'alarmed')) {
+                    this.players[player.number-1].popups.push(
+                      {
+                        state: false,
+                        count: 0,
+                        limit: 30,
+                        type: '',
+                        position: '',
+                        msg: 'alarmed',
+                        img: '',
+
+                      }
+                    )
+                  }
+
                 }
 
               }
