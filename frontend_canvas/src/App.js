@@ -22205,6 +22205,7 @@ class App extends Component {
           let instructions2 = [];
 
 
+
           // ENGAGED TARGET IS OPEN TO ATTAVK!
           if (targetPlayer.defending.state !== true && targetPlayer.attacking.state !== true && targetPlayer.defendDecay.state !== true) {
             // console.log('ai #',aiPlayer.number,'target  ',targetPlayer.number,'is neither attacking nor defending')
