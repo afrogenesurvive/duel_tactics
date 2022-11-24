@@ -2727,7 +2727,7 @@ class App extends Component {
         bluntAttacked: 2,
         defended: 3,
         parried: 5,
-        knockedOut: 15,
+        knockedOut: 0,
       },
       defend: {
         pre: 1.5,
@@ -2752,7 +2752,7 @@ class App extends Component {
       bluntAttacked: 25,
       defended: 10,
       parried: 25,
-      knockedOut: 15,
+      knockedOut: 65,
     };
     this.projectiles = [];
     this.projectileSpeed = .1;
@@ -10745,6 +10745,7 @@ class App extends Component {
     //   bluntAttacked: 25,
     //   defended: 10,
       // parried: 25
+      // knockedOut: 65,
     // };
 
     player.action = 'deflected';
@@ -19873,6 +19874,12 @@ class App extends Component {
       // console.log('still no targets availible for ai!!');
     }
 
+    if (plyr.ai.mission !== 'engage' && this.aiDeflectedCheck.includes(plyr.number === true)) {
+
+      // console.log('!! AI DEFLECTED BUT NOT ENGAGED, CHECK CIRCUMSTANCES AND BEHAVIOR !!');
+
+    }
+
 
     // ITEM LOGIC
     let fieldItemScan = []
@@ -20793,7 +20800,7 @@ class App extends Component {
         plyr.ai.retrieving.state = false
       }
       if (plyr.ai.mission === 'patrol') {
-
+        console.log('patrol pathfinding reset');
         plyr.ai.patrolling.checkin = undefined
         plyr.ai.patrolling.state = false
       }
@@ -21435,6 +21442,7 @@ class App extends Component {
       }
     }
 
+    // TARGET IN RANGE, SWITCH TO MISSION ENGAGE
     if (targetInRange === true) {
       // console.log('target in range. switch to engage',plyr.ai.targetSet);
       if (plyr.ai.mission === 'patrol') {
@@ -21476,6 +21484,7 @@ class App extends Component {
       // plyr.ai.engaging.state = true;
     }
 
+    // TARGET OUT OF RANGE, REVERT TO PRIMARY MISSION
     if (plyr.ai.mission === 'engage' && targetInRange !== true) {
       // console.log('target out of range. reverting to primary mission',plyr.ai.primaryMission);
 
