@@ -2727,6 +2727,7 @@ class App extends Component {
         bluntAttacked: 2,
         defended: 3,
         parried: 5,
+        knockedOut: 15,
       },
       defend: {
         pre: 1.5,
@@ -2751,7 +2752,7 @@ class App extends Component {
       bluntAttacked: 25,
       defended: 10,
       parried: 25,
-      attack: 15
+      knockedOut: 15,
     };
     this.projectiles = [];
     this.projectileSpeed = .1;
@@ -25871,10 +25872,17 @@ class App extends Component {
       // DEFLECT SPIN!
       let shouldSpin;
       if (player.success.deflected.type === "attacked") {
-        shouldSpin = this.rnJesus(1,3);
+        shouldSpin = this.rnJesus(1,5);
       }
       if (player.success.deflected.type === "defended") {
         shouldSpin = this.rnJesus(1,10);
+      }
+
+      if (player.success.deflected.type === "outOfStamina") {
+        shouldSpin = this.rnJesus(1,2)
+      }
+      if (player.success.deflected.type === "parried") {
+        shouldSpin = 1;
       }
       let newDirection;
       if (shouldSpin === 1) {
