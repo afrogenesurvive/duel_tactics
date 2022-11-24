@@ -9216,61 +9216,24 @@ class App extends Component {
           applyHazard = this.rnJesus(1,3)
         }
         if (applyHazard === 1) {
-          this.players[player.number-1].hp = this.players[player.number-1].hp -1;
 
-          if (!this.players[player.number-1].popups.find(x=>x.msg === 'alarmed')) {
-            this.players[player.number-1].popups.push(
-              {
-                state: false,
-                count: 0,
-                limit:25,
-                type: '',
-                position: '',
-                msg: 'alarmed',
-                img: '',
-
-              }
-            )
-          }
-
-
-          let currentMoveSpeedIndx = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
-          if (currentMoveSpeedIndx > 0) {
-            this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentMoveSpeedIndx-1]
-          }
-
-          // if (player.hp === 1) {
-          //   player.speed.move = .05;
+          // if (!this.players[player.number-1].popups.find(x=>x.msg === 'alarmed')) {
+          //   this.players[player.number-1].popups.push(
+          //     {
+          //       state: false,
+          //       count: 0,
+          //       limit:25,
+          //       type: '',
+          //       position: '',
+          //       msg: 'alarmed',
+          //       img: '',
+          //
+          //     }
+          //   )
           // }
 
-          if (this.players[player.number-1].hp <= 0) {
-            this.killPlayer(this.players[player.number-1]);
+          this.handleMiscPlayerDamage(player,"applyHazard");
 
-            let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-            this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
-
-          }
-
-          else {
-            this.setDeflection(player,'attacked',false);
-
-            if (!player.popups.find(x=>x.msg === 'terrainInjured')) {
-              this.players[player.number-1].popups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit: 25,
-                  type: '',
-                  position: '',
-                  msg: 'terrainInjured',
-                  img: '',
-
-                }
-              )
-            }
-
-
-          }
         }
       break;
     }
@@ -9281,61 +9244,9 @@ class App extends Component {
       let applyHazard = this.rnJesus(1,3);
 
       if (applyHazard === 1) {
-        this.players[player.number-1].hp = this.players[player.number-1].hp -1;
 
-        if (!this.players[player.number-1].popups.find(x=>x.msg === 'alarmed')) {
-          this.players[player.number-1].popups.push(
-            {
-              state: false,
-              count: 0,
-              limit:25,
-              type: '',
-              position: '',
-              msg: 'alarmed',
-              img: '',
+        this.handleMiscPlayerDamage(player,"applyHazard");
 
-            }
-          )
-        }
-
-
-        let currentMoveSpeedIndx = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
-        if (currentMoveSpeedIndx > 0) {
-          this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentMoveSpeedIndx-1]
-        }
-
-        // if (player.hp === 1) {
-        //   player.speed.move = .05;
-        // }
-
-        if (this.players[player.number-1].hp <= 0) {
-          this.killPlayer(this.players[player.number-1]);
-
-          let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-          this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
-
-        }
-
-        else {
-
-          this.setDeflection(player,'attacked',false);
-
-          if (!player.popups.find(x=>x.msg === 'terrainInjured')) {
-            this.players[player.number-1].popups.push(
-              {
-                state: false,
-                count: 0,
-                limit: 25,
-                type: '',
-                position: '',
-                msg: 'terrainInjured',
-                img: '',
-
-              }
-            )
-          }
-
-        }
       }
 
       this.gridInfo.find(x => x.number.x === cell.number.x && x.number.y === cell.number.y).rubble = false;
@@ -11180,6 +11091,86 @@ class App extends Component {
     x = bolt;
 
   }
+  handleMiscPlayerDamage = (player,type) => {
+
+    // add hp down popup
+
+    if (type === "obstacleBarrierInvulnurable") {
+
+      if (player.hp - 1 <= 0) {
+        this.killPlayer(this.players[player.number-1]);
+
+        let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+        this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+        this.players[player.number-1].points--;
+
+        this.pointChecker(player)
+      } else {
+        this.players[player.number-1].hp -= 1;
+
+        if (this.players[player.number-1].hp === 1) {
+
+          // ADJUST TARGET MOVE SPEED
+          let currentMoveSpeedIndx = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
+          if (currentMoveSpeedIndx > 0) {
+            this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentMoveSpeedIndx-1]
+          }
+
+        }
+
+      }
+
+    }
+
+    if (type === "applyHazard") {
+
+      if (player.hp - 1 <= 0) {
+        this.killPlayer(this.players[player.number-1]);
+
+        let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+        this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+        this.players[player.number-1].points--;
+
+        this.pointChecker(player)
+      } else {
+        this.players[player.number-1].hp -= 1;
+
+        this.setDeflection(player,'attacked',false);
+
+        if (!player.popups.find(x=>x.msg === 'terrainInjured')) {
+          this.players[player.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 25,
+              type: '',
+              position: '',
+              msg: 'terrainInjured',
+              img: '',
+
+            }
+          )
+        }
+
+        if (this.players[player.number-1].hp === 1) {
+
+          // ADJUST TARGET MOVE SPEED
+          let currentMoveSpeedIndx = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
+          if (currentMoveSpeedIndx > 0) {
+            this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentMoveSpeedIndx-1]
+          }
+
+        }
+
+      }
+
+
+    }
+
+
+  }
   checkCombatAdvantage = (player1,player2) => {
 
     let advantage = 0;
@@ -12318,18 +12309,9 @@ class App extends Component {
                          console.log('this barrier is stronger than your fist. Take damage?');
                          let takeDamage = this.rnJesus(1,player.crits.guardBreak);
                          if (takeDamage === 1) {
-                           if (player.hp - 1 <= 0) {
-                             this.killPlayer(this.players[player.number-1]);
 
-                             let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                             this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+                           this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
 
-                             this.players[player.number-1].points--;
-
-                             this.pointChecker(player)
-                           } else {
-                             this.players[player.number-1].hp -= 1;
-                           }
                          }
                        }
 
@@ -12366,22 +12348,9 @@ class App extends Component {
                        console.log('this barrier is stronger than your fist. Take damage?');
                        let takeDamage = this.rnJesus(1,player.crits.guardBreak);
                        if (takeDamage === 1) {
-                         if (player.hp - 1 <= 0) {
-                           this.killPlayer(this.players[player.number-1]);
 
-                           let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                           this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+                         this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
 
-                           this.players[player.number-1].points--;
-
-                           this.pointChecker(player)
-                         } else {
-                           this.players[player.number-1].hp -= 1;
-
-                           if (this.players[player.number-1].hp === 1) {
-                             this.players[player.number-1].speed.move = .05;
-                           }
-                         }
                        }
                      }
 
@@ -12546,18 +12515,9 @@ class App extends Component {
                      console.log('this barrier is stronger than your fist. Take damage?');
                      let takeDamage = this.rnJesus(1,player.crits.guardBreak);
                      if (takeDamage === 1) {
-                       if (player.hp - 1 <= 0) {
-                         this.killPlayer(this.players[player.number-1]);
 
-                         let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                         this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+                       this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
 
-                         this.players[player.number-1].points--;
-
-                         this.pointChecker(player)
-                       } else {
-                         this.players[player.number-1].hp -= 1;
-                       }
                      }
                    }
 
@@ -12597,22 +12557,9 @@ class App extends Component {
                    console.log('this barrier is stronger than your fist. Take damage?');
                    let takeDamage = this.rnJesus(1,player.crits.guardBreak);
                    if (takeDamage === 1) {
-                     if (player.hp - 1 <= 0) {
-                       this.killPlayer(this.players[player.number-1]);
 
-                       let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                       this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+                     this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
 
-                       this.players[player.number-1].points--;
-
-                       this.pointChecker(player)
-                     } else {
-                       this.players[player.number-1].hp -= 1;
-
-                       if (this.players[player.number-1].hp === 1) {
-                         this.players[player.number-1].speed.move = .05;
-                       }
-                     }
                    }
                  }
 
@@ -12802,22 +12749,9 @@ class App extends Component {
                        console.log('this obstacle is stronger than your fist. Take damage?');
                        let takeDamage = this.rnJesus(1,player.crits.guardBreak);
                        if (takeDamage === 1) {
-                         if (player.hp - 1 <= 0) {
-                           this.killPlayer(this.players[player.number-1]);
 
-                           let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                           this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+                         this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
 
-                           this.players[player.number-1].points--;
-
-                           this.pointChecker(player)
-                         } else {
-                           this.players[player.number-1].hp -= 1;
-
-                           if (this.players[player.number-1].hp === 1) {
-                             this.players[player.number-1].speed.move = .05;
-                           }
-                         }
                        }
                      }
 
@@ -12861,22 +12795,9 @@ class App extends Component {
                      console.log('this obstacle is stronger than your fist. Take damage?');
                      let takeDamage = this.rnJesus(1,player.crits.guardBreak);
                      if (takeDamage === 1) {
-                       if (player.hp - 1 <= 0) {
-                         this.killPlayer(this.players[player.number-1]);
 
-                         let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                         this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+                       this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
 
-                         this.players[player.number-1].points--;
-
-                         this.pointChecker(player)
-                       } else {
-                         this.players[player.number-1].hp -= 1;
-
-                         if (this.players[player.number-1].hp === 1) {
-                           this.players[player.number-1].speed.move = .05;
-                         }
-                       }
                      }
                    }
 
@@ -13099,18 +13020,9 @@ class App extends Component {
                          console.log('this barrier is stronger than your fist. Take damage?');
                          let takeDamage = this.rnJesus(1,player.crits.guardBreak);
                          if (takeDamage === 1) {
-                           if (player.hp - 1 <= 0) {
-                             this.killPlayer(this.players[player.number-1]);
 
-                             let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                             this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+                           this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
 
-                             this.players[player.number-1].points--;
-
-                             this.pointChecker(player)
-                           } else {
-                             this.players[player.number-1].hp -= 1;
-                           }
                          }
                        }
 
@@ -13150,22 +13062,9 @@ class App extends Component {
                        console.log('this barrier is stronger than your fist. Take damage?');
                        let takeDamage = this.rnJesus(1,player.crits.guardBreak);
                        if (takeDamage === 1) {
-                         if (player.hp - 1 <= 0) {
-                           this.killPlayer(this.players[player.number-1]);
 
-                           let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                           this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+                         this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
 
-                           this.players[player.number-1].points--;
-
-                           this.pointChecker(player)
-                         } else {
-                           this.players[player.number-1].hp -= 1;
-
-                           if (this.players[player.number-1].hp === 1) {
-                             this.players[player.number-1].speed.move = .05;
-                           }
-                         }
                        }
                      }
 
@@ -13964,18 +13863,9 @@ class App extends Component {
                          console.log('this barrier is stronger than your fist. Take damage?');
                          let takeDamage = this.rnJesus(1,player.crits.guardBreak);
                          if (takeDamage === 1) {
-                           if (player.hp - 1 <= 0) {
-                             this.killPlayer(this.players[player.number-1]);
 
-                             let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                             this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+                           this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
 
-                             this.players[player.number-1].points--;
-
-                             this.pointChecker(player)
-                           } else {
-                             this.players[player.number-1].hp -= 1;
-                           }
                          }
                        }
 
@@ -14015,22 +13905,9 @@ class App extends Component {
                        console.log('this barrier is stronger than your fist. Take damage?');
                        let takeDamage = this.rnJesus(1,player.crits.guardBreak);
                        if (takeDamage === 1) {
-                         if (player.hp - 1 <= 0) {
-                           this.killPlayer(this.players[player.number-1]);
 
-                           let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
-                           this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+                         this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
 
-                           this.players[player.number-1].points--;
-
-                           this.pointChecker(player)
-                         } else {
-                           this.players[player.number-1].hp -= 1;
-
-                           if (this.players[player.number-1].hp === 1) {
-                             this.players[player.number-1].speed.move = .05;
-                           }
-                         }
                        }
                      }
 
