@@ -5110,9 +5110,9 @@ class App extends Component {
     let gridInfo;
 
     // ----------------
-    // this.startProcessLevelData(this.state.canvas);
-    // gridInfo = this.gridInfo;
-    // this.processLevelData(gridInfo);
+    this.startProcessLevelData(this.state.canvas);
+    gridInfo = this.gridInfo;
+    this.processLevelData(gridInfo);
     // ----------------
 
 
@@ -5295,7 +5295,6 @@ class App extends Component {
           y: iso2.y - offset2.y/2-(this.cellCenterOffsetY/2),
         }
 
-
         let cell = this.settingsGridInfo.find(elem => elem.number.x === x && elem.number.y === y);
         let cellLevelData = this.settingsGridInfo.find(elem => elem.number.x === x && elem.number.y === y).levelData;
 
@@ -5403,45 +5402,10 @@ class App extends Component {
           // let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
           let obstacleImg = obstacleImgs[cell.obstacle.type]
 
-          // if (cell.obstacle.height > 1) {
-          //   let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
-          //   context3.drawImage(obstacleImg, iso2.x - offset.x, iso2.y - offset.y, 50,50);
-          //   if (context4) {
-          //     context4.drawImage(obstacleImg, iso2.x - offset.x, iso2.y - offset.y, 50,50);
-          //   }
-          //
-          //   let isoHeight = (wallImageHeight/2) - (floorImageHeight/2)
-          //   offset.y += isoHeight
-          //   context3.drawImage(obstacleImg, iso2.x - offset.x, iso2.y - offset.y, 50,50);
-          //   if (context4) {
-          //     context4.drawImage(obstacleImg, iso2.x - offset.x, iso2.y - offset.y, 50,50);
-          //   }
-          // }
-          // if (cell.obstacle.height === 1) {
-          //   let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
-          //   context3.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y), 50, 50);
-          //   if (context4) {
-          //     context4.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y), 50, 50);
-          //   }
-          // }
-          // if (cell.obstacle.height < 1) {
-          //   let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
-          //   context3.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y)+10, 50, 40);
-          //   // context3.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y), 50, 50);
-          //   // context3.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y)+10, 50, 50);
-          //   if (context4) {
-          //     context4.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y)+10, 50, 40);
-          //     // context4.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y), 50, 50);
-          //     // context4.drawImage(obstacleImg, (iso2.x - offset.x), (iso2.y - offset.y)+12.5, 50, 50);
-          //   }
-          // }
-
-
           context3.drawImage(obstacleImg, iso2.x - offset2.x, iso2.y - (obstacleImg.height/2), obstacleImg.width/2, obstacleImg.height/2);
           if (context4) {
             context4.drawImage(obstacleImg, iso2.x - offset2.x, iso2.y - (obstacleImg.height/2), obstacleImg.width/2, obstacleImg.height/2);
           }
-
 
         }
 
@@ -5452,37 +5416,8 @@ class App extends Component {
           if (context4) {
             context4.drawImage(barrierImg, iso2.x - offset2.x, iso2.y - (barrierImg.height/2), barrierImg.width/2, barrierImg.height/2);
           }
-        }
 
-        // let walledTiles = []
-        // if (walledTiles.includes(''+x+','+y+'')) {
-        //   context3.drawImage(wall3, iso2.x - offset2.x, iso2.y - offset2.y, 50,50);
-        //   if (context4) {
-        //     context4.drawImage(wall3, iso2.x - offset2.x, iso2.y - offset2.y, 50,50);
-        //   }
-        // }
-        // if(cellLevelData.charAt(0) === 'y') {
-        //   let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
-        //   context3.drawImage(wall3, (iso2.x) - (offset.x), (iso2.y) - (offset.y), 50,50);
-        //   if (context4) {
-        //     context4.drawImage(wall3, (iso2.x) - (offset.x), (iso2.y) - (offset.y), 50,50);
-        //   }
-        // }
-        // if(cellLevelData.charAt(0) === 'z') {
-        //   let offset = {x: wallImageWidth/4, y: wallImageHeight/2}
-        //   context3.drawImage(wall2, iso2.x - offset.x, iso2.y - offset.y, 50,50);
-        //   if (context4) {
-        //     context4.drawImage(wall2, iso2.x - offset.x, iso2.y - offset.y, 50,50);
-        //   }
-        //
-        //   let isoHeight = (wallImageHeight/2) - (floorImageHeight/2)
-        //   offset.y += isoHeight
-        //   context3.drawImage(wall2, iso2.x - offset.x, iso2.y - offset.y, 50,50);
-        //   if (context4) {
-        //     context4.drawImage(wall2, iso2.x - offset.x, iso2.y - offset.y, 50,50);
-        //   }
-        //
-        // }
+        }
 
       }
     }
@@ -33505,6 +33440,7 @@ class App extends Component {
 
 
   startProcessLevelData = (canvas) => {
+    // console.log('startProcessLevelData',this.gridWidth);
 
     let gridInfo = [];
     let settingsGridInfo = [];
