@@ -332,8 +332,8 @@ class App extends Component {
     this.levelData9 = {
       row0: ['**_a_0.0_a_0a*','**_i_0.1_a_0a*','**_*_0.2_a_0a*','cw_*_0.3_a_0a*','cw_*_0.4_a_0a*','cw_*_0.5_a_0a*','**_*_0.6_a_0a*','**_i_0.7_a_0a*','**_*_0.8_h_0a*','**_*_0.9_h_0a*'],
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','cs_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
-      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_a_0a*','cs_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
-      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_h_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
+      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_*_2.2_a_0a*','**_*_2.3_a_0a*','cw_*_2.4_a_0a*','cn_*_2.5_a_0a*','**_*_2.6_a_0a*','cs_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
+      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_*_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
       row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_*_4.3_f_0a*','**_h_4.4_a_0a*','cn_*_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','cn_*_5.2_f_0a*','**_*_5.3_f_0a*','**_*_5.4_k_0a*','**_*_5.5_a_0a*','**_*_5.6_g_0a*','**_*_5.7_a_0a*','ce_*_5.8_a_0a*','**_*_5.9_a_0a*'],
       row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_b_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_b_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
@@ -7565,6 +7565,7 @@ class App extends Component {
     if (player.strafing.state === true &&  player.strafing.direction !== '') {
       direction = player.strafing.direction;
     }
+
     // DIRECTION MOD: FLANKING!!
     if (player.flanking.checking === true ) {
       if (player.flanking.step === 0) {
@@ -7574,6 +7575,12 @@ class App extends Component {
     if (player.flanking.state === true) {
       if (player.flanking.step === 1) {
         direction = player.flanking.preFlankDirection;
+      }
+    }
+    if (player.flanking.state === true) {
+      if (player.flanking.step === 2) {
+        direction = player.direction;
+        // direction = player.flanking.preFlankDirection;
       }
     }
 
@@ -7626,6 +7633,7 @@ class App extends Component {
 
 
     let myCell = this.gridInfo.find(elem2 => elem2.number.x === player.currentPosition.cell.number.x && elem2.number.y === player.currentPosition.cell.number.y)
+
 
     target.myCellBlock = this.checkMyCellBarrier(direction,myCell);
     // let fwdBarrier = this.checkForwardBarrier(direction,cellRef);
@@ -7688,8 +7696,6 @@ class App extends Component {
       }
 
     }
-
-    // console.log('myCellBlock',target.myCellBlock);
 
 
     player.target = target;
@@ -27979,24 +27985,10 @@ class App extends Component {
 
           if (player.flanking.step === 2) {
             // console.log('flanking step 2 plyr dir: ',player.direction,' pre-flank dir: ',player.flanking.preFlankDirection,' flank dir: ',player.flanking.direction,"current position: ",player.currentPosition.cell.number,' strafing: ',player.strafing.state,' move step: ',player.moving.step);
-            switch(player.flanking.direction) {
-              case 'north' :
-                player.direction = 'south';
-                player.turning.toDirection = 'south';
-              break;
-              case 'south' :
-                player.direction = 'north';
-                player.turning.toDirection = 'north';
-              break;
-              case 'east' :
-                player.direction = 'west';
-                player.turning.toDirection = 'west';
-              break;
-              case 'west' :
-                player.direction = 'east';
-                player.turning.toDirection = 'east';
-              break;
-            }
+
+            player.direction = this.getOppositeDirection(player.flanking.direction);
+            player.turning.toDirection = this.getOppositeDirection(player.flanking.direction);
+
             player.flanking = {
               checking: false,
               direction: '',
@@ -28018,6 +28010,7 @@ class App extends Component {
 
             let myCell = this.gridInfo.find(elem2 => elem2.number.x === player.currentPosition.cell.number.x && elem2.number.y === player.currentPosition.cell.number.y)
             let myCellBlock = this.checkMyCellBarrier(player.direction,myCell);
+
 
             if (target.cell1.free === true && myCellBlock !== true) {
               player.flanking.step = 2;
@@ -28066,7 +28059,7 @@ class App extends Component {
               }
             }
             else {
-              // console.log('cancel flanking');
+              // console.log('cancel flanking 2');
               this.players[player.number-1].statusDisplay = {
                 state: true,
                 status: 'flanking cancelled!',
@@ -28098,6 +28091,7 @@ class App extends Component {
                   }
                 )
               }
+
             }
           }
         }
@@ -28125,6 +28119,7 @@ class App extends Component {
                 end: player.dodging.peak.end,
               }
             }
+            player.action = 'idle';
 
 
 
@@ -28174,21 +28169,11 @@ class App extends Component {
                   let myCell = this.gridInfo.find(elem2 => elem2.number.x === player.currentPosition.cell.number.x && elem2.number.y === player.currentPosition.cell.number.y)
                   let myCellBlock = this.checkMyCellBarrier(keyPressedDirection,myCell);
 
+                  // if (target.cell1.free === true) {
                   if (target.cell1.free === true && myCellBlock !== true) {
 
                     player.stamina.current = player.stamina.current - this.staminaCostRef.flank;
                     // console.log('flank stam check1. cost',this.staminaCostRef.flank,'stam',player.stamina.current);
-
-                    // this.players[player.number-1].dodging = {
-                    //   countState: false,
-                    //   state: false,
-                    //   count: 0,
-                    //   limit: player.dodging.limit,
-                    //   peak: {
-                    //     start: player.dodging.peak.start,
-                    //     end: player.dodging.peak.end,
-                    //   }
-                    // }
 
                     // console.log('flanking step 0 plyr dir: ',player.direction,' pre-flank dir: ',player.flanking.preFlankDirection,' flank dir: ',player.flanking.direction,"current position: ",player.currentPosition.cell.number,' strafing: ',player.strafing.state,' move step: ',player.moving.step);
 
@@ -28244,7 +28229,30 @@ class App extends Component {
 
                   }
                   else {
-                    // console.log('cancel flanking');
+                    // console.log('cancel flanking 1',player.flanking.direction,player.flanking.preFlankDirection,player.direction,player.action);
+                    player.action = 'idle';
+                    player.turning.toDirection = player.direction;
+
+
+                    this.players[player.number-1].flanking.checking = false;
+                    this.players[player.number-1].flanking.state = false;
+                    this.players[player.number-1].flanking.direction = "";
+                    this.players[player.number-1].flanking.preFlankDirection = "";
+
+                    if (!player.popups.find(x=>x.msg === "noFlanking")) {
+                      player.popups.push(
+                        {
+                          state: false,
+                          count: 0,
+                          limit: 30,
+                          type: '',
+                          position: '',
+                          msg: 'noFlanking',
+                          img: '',
+                        }
+                      )
+                    }
+
                   }
 
 
@@ -28262,9 +28270,9 @@ class App extends Component {
 
                 }
 
-
-              } else {
-                // console.log('cant flank2');
+              }
+              else {
+                // console.log('cant flank1');
               }
 
             }
@@ -28395,12 +28403,11 @@ class App extends Component {
 
                     }
 
-
                   }
 
                 }
 
-                if (target.cell1.free !== true && target.myCellBlock !== true) {
+                if (target.cell1.free !== true) {
                   if (target.cell1.occupant.type === "obstacle" && player.pushing.state !== true) {
                     this.preObstaclePushCheck(player,target)
                   }
@@ -28465,7 +28472,7 @@ class App extends Component {
             }
 
             // CHANGE DIRECTION IF NOT STRAFING!!
-            if (keyPressedDirection !== player.direction && player.strafing.state === false) {
+            if (keyPressedDirection !== player.direction && player.strafing.state === false && player.turning.state !== true) {
 
               // console.log('change player direction to',keyPressedDirection);
               // console.log('player',player.number,player.direction,' turn-start',keyPressedDirection);
@@ -32409,24 +32416,28 @@ class App extends Component {
 
               if (plyr.flanking.direction === 'north') {
                 if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+                  // console.log('draw flank north',);
                   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
                 }
               }
 
               if (plyr.flanking.direction === 'west') {
                 if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
+                  // console.log('draw flank west',);
                   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
                 }
               }
 
               if (plyr.flanking.direction === 'east') {
                 if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
+                  // console.log('draw flank east',);
                   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
                 }
               }
 
               if (plyr.flanking.direction === 'south') {
                 if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
+                  // console.log('draw flank south',);
                   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
                 }
               }
