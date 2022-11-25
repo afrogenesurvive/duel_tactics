@@ -7754,6 +7754,8 @@ class App extends Component {
 
     }
 
+    // console.log('myCellBlock',target.myCellBlock);
+
 
     player.target = target;
     this.players[player.number-1] = player;
@@ -28039,6 +28041,7 @@ class App extends Component {
           }
 
 
+
           if (player.flanking.step === 2) {
             // console.log('flanking step 2 plyr dir: ',player.direction,' pre-flank dir: ',player.flanking.preFlankDirection,' flank dir: ',player.flanking.direction,"current position: ",player.currentPosition.cell.number,' strafing: ',player.strafing.state,' move step: ',player.moving.step);
             switch(player.flanking.direction) {
@@ -28077,7 +28080,11 @@ class App extends Component {
           if (player.flanking.step === 1) {
             // console.log('flanking step 1 plyr dir: ',player.direction,' pre-flank dir: ',player.flanking.preFlankDirection,' flank dir: ',player.flanking.direction,"current position: ",player.currentPosition.cell.number,' strafing: ',player.strafing.state,' move step: ',player.moving.step);
             let target = this.getTarget(player);
-            if (target.cell1.free === true) {
+
+            let myCell = this.gridInfo.find(elem2 => elem2.number.x === player.currentPosition.cell.number.x && elem2.number.y === player.currentPosition.cell.number.y)
+            let myCellBlock = this.checkMyCellBarrier(player.direction,myCell);
+
+            if (target.cell1.free === true && myCellBlock !== true) {
               player.flanking.step = 2;
               player.flanking.target2 = target.cell1.number;
               // player.action = 'moving';
@@ -28118,6 +28125,7 @@ class App extends Component {
                   }
                 )
               }
+
               if (this.players[player.number-1].popups.find(x=>x.msg === 'dodging')) {
                 this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'dodging'),1)
               }
@@ -28184,6 +28192,7 @@ class App extends Component {
             }
 
 
+
             if (player.dodging.countState === true || player.dodging.state === true) {
 
               this.players[player.number-1].stamina.current += this.staminaCostRef.dodge.pre;
@@ -28226,7 +28235,11 @@ class App extends Component {
                   this.players[player.number-1].flanking.preFlankDirection = player.direction;
 
                   let target = this.getTarget(player);
-                  if (target.cell1.free === true ) {
+
+                  let myCell = this.gridInfo.find(elem2 => elem2.number.x === player.currentPosition.cell.number.x && elem2.number.y === player.currentPosition.cell.number.y)
+                  let myCellBlock = this.checkMyCellBarrier(keyPressedDirection,myCell);
+
+                  if (target.cell1.free === true && myCellBlock !== true) {
 
                     player.stamina.current = player.stamina.current - this.staminaCostRef.flank;
                     // console.log('flank stam check1. cost',this.staminaCostRef.flank,'stam',player.stamina.current);
@@ -28390,7 +28403,7 @@ class App extends Component {
 
                 let target = this.getTarget(player)
 
-                if (target.cell1.free === true && player.target.cell1.void === false) {
+                if (target.cell1.free === true && player.target.cell1.void === false && target.myCellBlock !== true) {
 
                   if (player.dead.state === true && player.dead.count === 0) {
 
@@ -28452,7 +28465,7 @@ class App extends Component {
 
                 }
 
-                if (target.cell1.free !== true) {
+                if (target.cell1.free !== true && target.myCellBlock !== true) {
                   if (target.cell1.occupant.type === "obstacle" && player.pushing.state !== true) {
                     this.preObstaclePushCheck(player,target)
                   }
@@ -28464,7 +28477,7 @@ class App extends Component {
                   }
                 }
 
-                if (player.target.cell1.void === true) {
+                if (player.target.cell1.void === true && target.myCellBlock !== true) {
                   // console.log('target is VOID!!',target.cell1.center.x,target.cell1.center.y);
 
 
@@ -28554,7 +28567,7 @@ class App extends Component {
                 player.strafing.direction = keyPressedDirection;
                 let target = this.getTarget(player);
 
-                if (target.cell1.free === true) {
+                if (target.cell1.free === true && target.myCellBlock !== true) {
 
                   if (player.stamina.current - this.staminaCostRef.strafe >= 0) {
 
@@ -28605,7 +28618,7 @@ class App extends Component {
 
                 }
 
-                if (target.cell1.free === false) {
+                if (target.cell1.free === false || target.myCellBlock === true) {
                   // console.log('here',player.direction);
                 }
               }
