@@ -2813,6 +2813,7 @@ class App extends Component {
     this.popupSize = 45;
     this.popupImgSize = 25;
     this.movingObstacles = [];
+    this.halfPushBackObstacles = [];
     this.obstacleBarrierToDestroy = [];
     this.obstacleItemsToDrop = [];
     this.obstaclesOutOfBoundsFall = [];
@@ -11623,15 +11624,16 @@ class App extends Component {
     return  canPushBack;
 
   }
-  startHalfPushBack = (targetType,blockType,direction,data) => {
-    console.log('startHalfPushback',type,player);
+  startHalfPushBack = (object,blockType,direction,data) => {
+    console.log('startHalfPushback',object,blockType,direction,data);
 
-    if (player !== "") {
 
-      player.halfPushBack = {
+    if (object === 'player') {
+
+      data.halfPushBack = {
         state: true,
         direction: direction,
-        type: type,
+        type: blockType,
         countUp: {
           state: true,
           count: 0,
@@ -11644,15 +11646,80 @@ class App extends Component {
         },
       }
 
+      this.players[data.number-1] = data;
+
     }
 
-    if (player === "") {
-      console.log('beeep');
-      // handle obstacle pushback
+    if (object === "obstacle") {
+
+      // push to this.halfPushBackObstacles array
+      // {
+          // state: true
+      //   mycellno,
+      //   blockcellno,
+      //   blocktype,
+      //   direction
+      //   obstacle
+      //   countUp: {
+      //     state: true,
+      //     count: 0,
+      //     limit: 0,
+      //   },
+      //   countDown: {
+      //     state: false,
+      //     count: 0,
+      //     limit: 0,
+      //   },
+
+      // }
     }
 
 
-    this.players[player.number-1] = player;
+  }
+  handleHalfPushBackResult = (type,data) => {
+
+    if (type === 'player') {
+
+    }
+
+    if (type === 'obstacle') {
+
+    }
+
+    // let targetCellNumber = this.getCellFromDirection(1,player.currentPosition.cell.number,player.halfPushBack.direction)
+    // let targetCellRef = this.gridInfo.find(x=> x.number.x === targetCellNumber.x && x.number.y === targetCellNumber.y)
+    //
+    //
+    //   switch (player.halfPushBack.type) {
+    //     case "obstacle":
+    //
+    //       break;
+    //     case "player":
+    //
+    //       break;
+    //     case "barrier":
+    //
+    //       break;
+    //     case "higherElevation":
+    //
+    //       break;
+    //     default:
+    //
+    //   }
+
+
+      // player
+      //   handleMiscPlayerDamage('halfPushback_type')
+      //     guranteed deflect, chance to dmg
+      // obstacle
+      //   move, dmg, destroy
+      // barrier
+      //   dmg, destroy,
+      // other plyr
+      //   move, dmg destroy
+      //
+
+
 
   }
   pointChecker = (player) => {
@@ -16616,7 +16683,7 @@ class App extends Component {
       }
       pushStrengthPlayer += (pusher.crits.pushBack-3);
       pushStrengthPlayer += (pusher.crits.guardBreak-2);
-      pushStrengthPlayer += 15;
+      // pushStrengthPlayer += 15;
 
 
 
@@ -27847,43 +27914,6 @@ class App extends Component {
         // CONTINUE, COMPLETE HALF PUSHBACK
         if (player.halfPushBack.state === true) {
 
-          let action = () => {
-
-            let targetCellNumber = this.getCellFromDirection(1,player.currentPosition.cell.number,player.halfPushBack.direction)
-            let targetCellRef = this.gridInfo.find(x=> x.number.x === targetCellNumber.x && x.number.y === targetCellNumber.y)
-              switch (player.halfPushBack.type) {
-                case "obstacle":
-
-                  break;
-                case "player":
-
-                  break;
-                case "barrier":
-
-                  break;
-                case "higherElevation":
-
-                  break;
-                default:
-
-              }
-
-
-              // player
-              //   handleMiscPlayerDamage('halfPushback_type')
-              //     guranteed deflect, chance to dmg
-              // obstacle
-              //   move, dmg, destroy
-              // barrier
-              //   dmg, destroy,
-              // other plyr
-              //   move, dmg destroy
-              //
-
-
-
-
-          }
 
           if (player.halfPushBack.countUp.state === true) {
 
@@ -27903,7 +27933,7 @@ class App extends Component {
                 limit: player.halfPushBack.countUp.limit,
               }
 
-              action();
+              this.handleHalfPushBackResult('player',player);
               player.halfPushBack.countDown.state = true;
             }
 
@@ -27930,6 +27960,9 @@ class App extends Component {
 
 
         }
+
+
+
 
         // DISCARD GEAR!!
         if (
@@ -29847,6 +29880,64 @@ class App extends Component {
           this.obstacleBarrierToDestroy.splice(index,1)
         }
       }
+    }
+    // HALF PUSHED BACK
+    for (const halfPushBackkObstacle of this.halfPushBackObstacles) {
+
+      if (halfPushBackkObstacle.state === true) {
+
+
+        if (halfPushBackkObstacle.countUp.state === true) {
+
+          if (halfPushBackkObstacle.countUp.count < halfPushBackkObstacle.countUp.limit) {
+
+            if (halfPushBackkObstacle.countUp.count <= 2) {
+              // Start
+            }
+
+            halfPushBackkObstacle.countUp.count++;
+          }
+
+          if (halfPushBackkObstacle.countUp.count >= halfPushBackkObstacle.countUp.limit) {
+            halfPushBackkObstacle.countUp = {
+              state: false,
+              count: 0,
+              limit: halfPushBackkObstacle.countUp.limit,
+            }
+
+            this.handleHalfPushBackResult('obstacle',halfPushBackkObstacle);
+            halfPushBackkObstacle.countDown.state = true;
+          }
+
+        }
+
+        if (halfPushBackkObstacle.countDown.state === true) {
+
+          if (halfPushBackkObstacle.countDown.count < halfPushBackkObstacle.countDown.limit) {
+            halfPushBackkObstacle.countDown.count++;
+          }
+
+          if (halfPushBackkObstacle.countDown.count >= halfPushBackkObstacle.countDown.limit) {
+            halfPushBackkObstacle.countDown = {
+              state: false,
+              count: 0,
+              limit: halfPushBackkObstacle.countDown.limit,
+            }
+
+            // end
+            halfPushBackkObstacle.state = false;
+          }
+
+        }
+
+
+      }
+
+      if (halfPushBackkObstacle.state !== true) {
+        let index = this.halfPushBackObstacles.indexOf(halfPushBackkObstacle)
+        this.halfPushBackObstacles.splice(index,1)
+      }
+
     }
 
     // ITEMS TO DROP
