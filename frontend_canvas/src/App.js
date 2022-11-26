@@ -11613,7 +11613,7 @@ class App extends Component {
 
     if (halfPushBack === true) {
 
-      this.startHalfPushBack(player,halfPushBackType,pushBackDirection);
+      this.startHalfPushBack('player',halfPushBackType,pushBackDirection,player);
 
     }
 
@@ -11623,7 +11623,7 @@ class App extends Component {
     return  canPushBack;
 
   }
-  startHalfPushBack = (player,type,direction) => {
+  startHalfPushBack = (targetType,blockType,direction,data) => {
     console.log('startHalfPushback',type,player);
 
     if (player !== "") {
@@ -16073,6 +16073,35 @@ class App extends Component {
         }
 
       }
+      else {
+
+        if (obstacleCell.barrier.state === true) {
+
+          // --------------
+          let barrier = false;
+          if (obstacleCell.barrier.position === this.getOppositeDirection(impactDirection)) {
+            barrier = true;
+          }
+
+          if (barrier === true) {
+            console.log('barrier in obstacle cell in front of obstacle2');
+            canPushTargetFree = false;
+            destCellOccupant = "barrier";
+            resetPush = true;
+          }
+          // --------------
+
+
+          if (obstacleCell.barrier.position === impactDirection) {
+            console.log('barrier in obstacle cell behind obstacle2');
+            canPushTargetFree = false;
+            destCellOccupant = "barrier";
+            resetPush = true;
+          }
+
+        }
+
+      }
 
       let extraPush = 0;
       if (pushStrengthPlayer >= pushStrengthThreshold && obstacleCell.obstacle.moving.pushable === true) {
@@ -16091,7 +16120,8 @@ class App extends Component {
 
 
 
-      if(!destCellRef && pushStrengthPlayer >= pushStrengthThreshold) {
+      // if(!destCellRef && pushStrengthPlayer >= pushStrengthThreshold ) {
+      if(canPushStrength === true && canPushTargetFree === true && !destCellRef) {
 
 
         if (!this.players[player.number-1].popups.find(x=>x.msg === "canPush")) {
@@ -16229,7 +16259,7 @@ class App extends Component {
 
 
       if (canPushTargetFree !== true) {
-        console.log('something is in the way of the obstacle to be pushed');
+        // console.log('something is in the way of the obstacle to be pushed');
         resetPush = true;
       }
 
@@ -16344,7 +16374,6 @@ class App extends Component {
 
       }
 
-      // if target isn't free, 1/2 pushback
 
     }
     else {
@@ -16418,13 +16447,13 @@ class App extends Component {
       }
 
 
-      if (destCellRef && canPushTargetFree === true && destCellOccupant !== "") {
+      if (canPushTargetFree !== true && destCellOccupant !== "") {
 
         let type = destCellOccupant;
-        if (type.split("_")[0]) {
+        if (type.split("_")[1]) {
           type = "player";
         }
-        this.startHalfPushBack("",type,impactDirection);
+        this.startHalfPushBack('obstacle',type,impactDirection,obstacleCell.obstacle);
 
       }
 
@@ -16587,7 +16616,7 @@ class App extends Component {
       }
       pushStrengthPlayer += (pusher.crits.pushBack-3);
       pushStrengthPlayer += (pusher.crits.guardBreak-2);
-      // pushStrengthPlayer += 15;
+      pushStrengthPlayer += 15;
 
 
 
@@ -16671,6 +16700,35 @@ class App extends Component {
         }
 
       }
+      else {
+
+
+        if (targetCell.barrier.state === true) {
+
+          // --------------
+          let barrier = this.checkForwardBarrier(impactDirection,targetCell);
+
+
+
+          if (barrier === true) {
+            console.log('barrier in obstacle cell in front of target player');
+            canPushTargetFree = false;
+            destCellOccupant = "barrier";
+            resetPush = true;
+          }
+          // --------------
+
+
+          if (targetCell.barrier.position === impactDirection) {
+            console.log('barrier in obstacle cell behind target player');
+            canPushTargetFree = false;
+            destCellOccupant = "barrier";
+            resetPush = true;
+          }
+
+        }
+
+      }
 
       let extraPush = 0;
       if (pushStrengthPlayer >= pushStrengthThreshold) {
@@ -16688,7 +16746,7 @@ class App extends Component {
       }
 
 
-      if(!destCellRef && pushStrengthPlayer >= pushStrengthThreshold) {
+      if(canPushStrength === true && canPushTargetFree === true && !destCellRef) {
 
         if (!this.players[pusher.number-1].popups.find(x=>x.msg === "canPush")) {
           this.players[pusher.number-1].popups.push(
@@ -17007,13 +17065,13 @@ class App extends Component {
         this.players[pusher.number-1].popups.splice(this.players[pusher.number-1].popups.findIndex(x=>x.msg === 'canPush'),1)
       }
 
-      if (destCellRef && canPushTargetFree === true && destCellOccupant !== "") {
+      if (canPushTargetFree !== true && destCellOccupant !== "") {
 
         let type = destCellOccupant;
-        if (type.split("_")[0]) {
+        if (type.split("_")[1]) {
           type = "player";
         }
-        this.startHalfPushBack(targetPlayer,type,impactDirection);
+        this.startHalfPushBack('player',type,impactDirection,targetPlayer);
 
       }
 
