@@ -331,10 +331,10 @@ class App extends Component {
     };
     this.levelData9 = {
       row0: ['**_a_0.0_a_0a*','**_i_0.1_a_0a*','**_*_0.2_a_0a*','cw_*_0.3_a_0a*','cw_*_0.4_a_0a*','cw_*_0.5_a_0a*','**_*_0.6_a_0a*','**_i_0.7_a_0a*','**_*_0.8_h_0a*','**_*_0.9_h_0a*'],
-      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','cs_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
-      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_*_2.2_a_0a*','**_*_2.3_a_0a*','cw_*_2.4_a_0a*','cn_*_2.5_a_0a*','**_*_2.6_a_0a*','cs_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
+      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','ce_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','cs_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
+      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_*_2.2_a_0a*','**_*_2.3_a_0a*','cs_*_2.4_a_0a*','cn_*_2.5_a_0a*','**_h_2.6_a_0a*','cs_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_*_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
-      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_*_4.3_f_0a*','**_h_4.4_a_0a*','cn_*_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
+      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_h_4.3_f_0a*','**_*_4.4_a_0a*','cn_*_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','cn_*_5.2_f_0a*','**_*_5.3_f_0a*','**_*_5.4_k_0a*','**_*_5.5_a_0a*','**_*_5.6_g_0a*','**_*_5.7_a_0a*','ce_*_5.8_a_0a*','**_*_5.9_a_0a*'],
       row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_b_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_b_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
       row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','cw_*_7.5_a_0a*','**_c_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
@@ -7684,6 +7684,10 @@ class App extends Component {
         target.cell1.occupant.type = "item";
       }
 
+      if (targetCell1Ref.elevation.number > myCell.elevation.number) {
+        target.cell1.occupant.type = "higherElevation";
+        target.cell1.free = false;
+      }
 
     }
     if (targetCell2Ref) {
@@ -7695,9 +7699,14 @@ class App extends Component {
         target.cell2.occupant.type = "item";
       }
 
+      if (targetCell2Ref.elevation.number > myCell.elevation.number) {
+        target.cell2.occupant.type = "higherElevation";
+        target.cell2.free = false;
+      }
+
     }
 
-
+    // console.log('target',target);
     player.target = target;
     this.players[player.number-1] = player;
 
@@ -10709,7 +10718,7 @@ class App extends Component {
       player.success.deflected.state = false;
       player.success.deflected.predeflect = true;
 
-      this.pushBack(player);
+      this.pushBack(player,this.getOppositeDirection(player.direction));
 
     }
     else {
@@ -11451,10 +11460,16 @@ class App extends Component {
   pushBack = (player,hitByPlayerDirection) => {
     // console.log('pushing back',player.number);
 
+    let canPushBack = false;
+    let halfPushBack = false;
+    let halfPushBackType = "";
+    let myCellBlock = false;
+    let myCell = this.gridInfo.find(x=> x.number.x === player.currentPosition.cell.number.x && x.number.y === player.currentPosition.cell.number.y);
+
     player.pushBack.prePushMoveSpeed = player.speed.move;
     player.speed.move = .125;
 
-    if (player.stamina.current - 7 < 0) {
+    if (player.stamina.current - this.staminaCostRef.pushBack < 0) {
       player.stamina.current = 0;
     } else {
       player.stamina.current = player.stamina.current - this.staminaCostRef.pushBack;
@@ -11467,62 +11482,69 @@ class App extends Component {
       direction: pushBackDirection
     }
 
-    let target = this.getTarget(player)
+    let target = this.getTarget(player);
+    let targetCell = this.gridInfo.find(x=>x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y)
 
-    if (target.cell1.free === true && player.target.cell1.void === false) {
+
+    if (myCell.barrier.state === true && myCell.barrier.position === pushBackDirection) {
+      console.log('here');
+      canPushBack = false;
+      halfPushBack = true;
+      myCellBlock = true;
+    }
+
+
+    if (target.cell1.free === false || myCellBlock === true) {
+      console.log('Pushback target is NOT free. Half push back?',myCellBlock);
+
+      if (target.cell1.occupant.type === "obstacle") {
+
+        canPushBack = false;
+        halfPushBack = true;
+        halfPushBackType = "obstacle";
+
+      }
+
+      if (target.cell1.occupant.type === "player") {
+
+        canPushBack = false;
+        halfPushBack = true;
+        halfPushBackType = "player";
+
+      }
+
+      if (target.cell1.occupant.type === "higherElevation") {
+
+        canPushBack = false;
+        halfPushBack = true;
+        halfPushBackType = "higherElevation";
+
+      }
+
+      if (myCellBlock === true || target.cell1.occupant.type === "barrier") {
+
+        canPushBack = false;
+        halfPushBack = true;
+        halfPushBackType = "barrier";
+
+      }
+
+
+
+      player.pushBack.state = false;
+
+    }
+
+
+    if (player.target.cell1.free === true && canPushBack === true) {
+
       console.log('proceed with pushback',player.number,'to',target.cell1.number);
 
-      player.action = 'strafe moving';
-      player.moving = {
-        state: true,
-        step: 0,
-        course: '',
-        origin: {
-          number: {
-            x: player.currentPosition.cell.number.x,
-            y: player.currentPosition.cell.number.y
-          },
-          center: {
-            x: player.currentPosition.cell.center,
-            y: player.currentPosition.cell.center
-          },
-        },
-        destination: target.cell1.center
+      if (player.target.cell1.void === true) {
+          console.log('pushback target is VOID!!',target.cell1.center.x,target.cell1.center.y);
       }
-      let nextPosition = this.lineCrementer(player);
-      player.nextPosition = nextPosition;
 
-    }
-    if (target.cell1.free === false) {
-          console.log('Pushback target is NOT free');
-          let blockedCell = this.gridInfo.find(x=>x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y)
-          if (
-            // blockedCell.levelData.charAt(0) === 'y' ||
-            // blockedCell.levelData.charAt(0) === 'z'
-            blockedCell.obstacle.state === true
-          ) {
-            console.log("Pushedback into obstacle! Push it, lower hp, destroy it or do nothing.");
-
-
-
-          }
-          if (blockedCell.barrier.state === true) {
-            console.log('Pushedback into barrier. lower hp Break it or do nothing');
-          }
-          for(const plyr of this.players) {
-            if (
-              plyr.currentPosition.cell.number.x === blockedCell.number.x &&
-              plyr.currentPosition.cell.number.y === blockedCell.number.y
-            ) {
-              console.log('pushed back into player, push, damage them or do nothing');
-            }
-          }
-
-          player.pushBack.state = false;
-    }
-
-    if (player.target.cell1.void === true) {
-      console.log('pushback target is VOID!!',target.cell1.center.x,target.cell1.center.y);
+      player.pushBack.state = true;
       player.action = 'strafe moving';
       player.moving = {
         state: true,
@@ -11534,15 +11556,8 @@ class App extends Component {
         },
         destination: target.cell1.center
       }
-
       let nextPosition = this.lineCrementer(player);
       player.nextPosition = nextPosition;
-    }
-
-    this.players[player.number-1] = player;
-
-    if (target.cell1.free === true) {
-      player.pushBack.state = true;
 
       if (!player.popups.find(x=>x.msg === "pushedBack")) {
         player.popups.push(
@@ -11559,14 +11574,25 @@ class App extends Component {
         )
       }
 
-
-      this.players[player.number-1] = player;
-      return true
-    } else {
-      player.pushBack.state = false;
-      this.players[player.number-1] = player;
-      return false
     }
+
+    if (halfPushBack === true) {
+
+      this.halfPushBack(player,halfPushBackType,pushBackDirection);
+
+    }
+
+    this.players[player.number-1] = player;
+    return  canPushBack;
+
+  }
+  halfPushBack = (player,type,direction) => {
+
+    chance to 1.2pb
+    set player 1/2pb state true,
+    type is
+
+    count/step @ plyr update
 
   }
   pointChecker = (player) => {
@@ -12315,6 +12341,7 @@ class App extends Component {
                 else {
                   console.log('attacking invurnerable barrier, deflect player?');
                    let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+
                    if (shouldDeflect === 1) {
                      this.attackedCancel(this.players[player.number-1]);
 
@@ -12764,7 +12791,11 @@ class App extends Component {
               else {
                 console.log('attacking invurnerable obstacle, deflect player?');
 
-                 let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+                 // let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+                 let shouldDeflect = 2;
+
+                 this.pushBack(player,this.getOppositeDirection(player.direction));
+
                  if (shouldDeflect === 1) {
                    this.attackedCancel(this.players[player.number-1]);
 
@@ -12783,7 +12814,7 @@ class App extends Component {
 
 
                  }
-                 this.canPushObstacle(player,targetCell,'hitPush');
+                 // this.canPushObstacle(player,targetCell,'hitPush');
                  if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                    this.cellPopups.push(
                      {
@@ -12800,9 +12831,9 @@ class App extends Component {
                    )
                  }
 
-                 if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                   this.pushBack(player,this.getOppositeDirection(player.direction))
-                 }
+                 // if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                 //   this.pushBack(player,this.getOppositeDirection(player.direction))
+                 // }
               }
 
 
@@ -26454,36 +26485,9 @@ class App extends Component {
             // console.log('plyrs pushed back?',player.pushBack.state,plyr4.pushBack.state);
             // console.log('plyrs moving?',player.moving.state,plyr4.moving.state);
             if (nopushpull === true) {
-              let playerAPushDir2;
-              let playerBPushDir2;
-              switch(plyr4.direction) {
-                case 'north' :
-                  playerAPushDir2 = 'south';
-                break;
-                case 'south' :
-                  playerAPushDir2 = 'north';
-                break;
-                case 'east' :
-                  playerAPushDir2 = 'west';
-                break;
-                case 'west' :
-                  playerAPushDir2 = 'east';
-                break;
-              }
-              switch(player.direction) {
-                case 'north' :
-                  playerBPushDir2 = 'south';
-                break;
-                case 'south' :
-                  playerBPushDir2 = 'north';
-                break;
-                case 'east' :
-                  playerBPushDir2 = 'west';
-                break;
-                case 'west' :
-                  playerBPushDir2 = 'east';
-                break;
-              }
+              let playerAPushDir2 = this.getOppositeDirection(plyr4.direction);
+              let playerBPushDir2 = this.getOppositeDirection(player.direction);
+
 
               if (player.flanking.state === true || player.action === "flanking") {
                 player.flanking = {
@@ -26811,14 +26815,6 @@ class App extends Component {
           player.strafing.state = false;
           player.strafeReleaseHook = false;
           this.getTarget(player);
-        }
-
-
-        // RESET MOVE SPEED POST PUSHBACK
-        if (player.pushBack.state !== true && player.pushBack.prePushBackMoveSpeed !== 0) {
-
-          player.speed.move = player.player.pushBack.prePushBackMoveSpeed;
-          player.player.pushBack.prePushBackMoveSpeed = 0;
         }
 
 
@@ -27660,6 +27656,14 @@ class App extends Component {
         }
 
 
+        // RESET MOVE SPEED POST PUSHBACK
+        if (player.pushBack.state !== true && player.pushBack.prePushBackMoveSpeed !== 0) {
+
+          player.speed.move = player.player.pushBack.prePushBackMoveSpeed;
+          player.player.pushBack.prePushBackMoveSpeed = 0;
+        }
+
+
         // COMPLETE PUSHBACK DEFLECT FLOW!
         if (player.pushBack.state === false && player.success.deflected.predeflect === true && player.moving.state === false) {
           // console.log('predefelct --> pushback ---> deflect');
@@ -28407,7 +28411,7 @@ class App extends Component {
 
                 }
 
-                if (target.cell1.free !== true) {
+                if (target.cell1.free !== true && target.myCellBlock !== true) {
                   if (target.cell1.occupant.type === "obstacle" && player.pushing.state !== true) {
                     this.preObstaclePushCheck(player,target)
                   }
