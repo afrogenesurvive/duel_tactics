@@ -334,7 +334,7 @@ class App extends Component {
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','ce_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','cs_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_*_2.2_a_0a*','**_*_2.3_a_0a*','cs_*_2.4_a_0a*','cn_*_2.5_a_0a*','**_h_2.6_a_0a*','cs_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_*_3.2_a_0a*','**_*_3.3_a_0a*','**_h_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
-      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_h_4.3_f_0a*','**_*_4.4_a_0a*','cn_*_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
+      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_c_4.3_f_0a*','**_*_4.4_a_0a*','cn_*_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','cn_*_5.2_f_0a*','**_*_5.3_f_0a*','**_*_5.4_k_0a*','**_*_5.5_a_0a*','**_*_5.6_g_0a*','**_*_5.7_a_0a*','ce_*_5.8_a_0a*','**_*_5.9_a_0a*'],
       row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_b_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_b_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
       row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','cw_*_7.5_a_0a*','**_c_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
@@ -12918,10 +12918,9 @@ class App extends Component {
               else {
                 console.log('attacking invurnerable obstacle, deflect player?');
 
-                 // let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
-                 let shouldDeflect = 2;
-
-                 this.pushBack(player,this.getOppositeDirection(player.direction));
+                 let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+                 // let shouldDeflect = 2;
+                 // this.pushBack(player,this.getOppositeDirection(player.direction));
 
                  if (shouldDeflect === 1) {
                    this.attackedCancel(this.players[player.number-1]);
@@ -27894,13 +27893,13 @@ class App extends Component {
         }
 
 
+
         // RESET MOVE SPEED POST PUSHBACK
         if (player.pushBack.state !== true && player.pushBack.prePushBackMoveSpeed !== 0) {
 
           player.speed.move = player.player.pushBack.prePushBackMoveSpeed;
           player.player.pushBack.prePushBackMoveSpeed = 0;
         }
-
 
         // COMPLETE PUSHBACK DEFLECT FLOW!
         if (player.pushBack.state === false && player.success.deflected.predeflect === true && player.moving.state === false) {
@@ -27909,7 +27908,6 @@ class App extends Component {
           this.setDeflection(player,player.success.deflected.type,false);
 
         }
-
 
         // CONTINUE, COMPLETE HALF PUSHBACK
         if (player.halfPushBack.state === true) {
@@ -33679,14 +33677,15 @@ class App extends Component {
 
         // DROP ITEMS & DAMAGE/DESTROY OBSTACLES & BARRIERS
         for(const cell of this.obstacleBarrierToDestroy) {
-          if (gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y && cell.cell.obstacle.type) {
-          // if (gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y && cell.cell.obstacle.state === true) {
+          if (gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y ) {
+          // if (gridInfoCell.number.x === cell.cell.number.x && gridInfoCell.number.y === cell.cell.number.y && (cell.cell.obstacle.type || cell.cell.barrier.type)) {
             if(cell.count % 3 === 0) {
-              if (cell.type === "obstacle") {
+              if (cell.type === "obstacle" && cell.cell.obstacle.type) {
+
                 let obstacleImg = this.obstacleImgs[cell.cell.obstacle.type];
                 context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
               }
-              if (cell.type === "barrier") {
+              if (cell.type === "barrier" && cell.cell.barrier.type) {
                 let barrierImg = this.barrierImgs[cell.cell.barrier.type][cell.cell.barrier.position];
                 context.drawImage(barrierImg, iso.x - offset.x, iso.y - barrierImg.height, barrierImg.width, barrierImg.height);
               }
