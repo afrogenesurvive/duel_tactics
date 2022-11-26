@@ -1521,6 +1521,21 @@ class App extends Component {
           state: false,
           prePushBackMoveSpeed: 0,
         },
+        halfPushBack: {
+          state: false,
+          direction: "",
+          type: "",
+          countUp: {
+            state: true,
+            count: 0,
+            limit: 0,
+          },
+          countDown: {
+            state: false,
+            count: 0,
+            limit: 0,
+          },
+        },
         defending: {
           state: false,
           count: 0,
@@ -1974,6 +1989,21 @@ class App extends Component {
         pushBack: {
           state: false,
           prePushBackMoveSpeed: 0,
+        },
+        halfPushBack: {
+          state: false,
+          direction: "",
+          type: "",
+          countUp: {
+            state: true,
+            count: 0,
+            limit: 0,
+          },
+          countDown: {
+            state: false,
+            count: 0,
+            limit: 0,
+          },
         },
         defending: {
           state: false,
@@ -11578,7 +11608,7 @@ class App extends Component {
 
     if (halfPushBack === true) {
 
-      this.halfPushBack(player,halfPushBackType,pushBackDirection);
+      this.startHalfPushBack(player,halfPushBackType,pushBackDirection);
 
     }
 
@@ -11586,13 +11616,26 @@ class App extends Component {
     return  canPushBack;
 
   }
-  halfPushBack = (player,type,direction) => {
+  startHalfPushBack = (player,type,direction) => {
 
-    chance to 1.2pb
-    set player 1/2pb state true,
-    type is
+    player.halfPushBack = {
+      state: true,
+      direction: direction,
+      type: type,
+      countUp: {
+        state: true,
+        count: 0,
+        limit: 0,
+      },
+      countDown: {
+        state: false,
+        count: 0,
+        limit: 0,
+      },
+    }
 
-    count/step @ plyr update
+
+    this.players[player.number-1] = player;
 
   }
   pointChecker = (player) => {
@@ -19092,6 +19135,21 @@ class App extends Component {
           pushBack: {
             state: false,
             prePushBackMoveSpeed: 0,
+          },
+          halfPushBack: {
+            state: false,
+            direction: "",
+            type: "",
+            countUp: {
+              state: true,
+              count: 0,
+              limit: 0,
+            },
+            countDown: {
+              state: false,
+              count: 0,
+              limit: 0,
+            },
           },
           defending: {
             state: false,
@@ -27672,6 +27730,90 @@ class App extends Component {
 
         }
 
+
+        // CONTINUE, COMPLETE HALF PUSHBACK
+        if (player.halfPushBack.state === true) {
+
+          let actionTime = false;
+
+          if (player.halfPushBack.countUp.state === true) {
+
+            if (player.halfPushBack.countUp.count < player.halfPushBack.countUp.limit) {
+
+              if (player.halfPushBack.countUp.count <= 2) {
+                // Start
+              }
+
+              player.halfPushBack.countUp.count++;
+            }
+
+            if (player.halfPushBack.countUp.count >= player.halfPushBack.countUp.limit) {
+              player.halfPushBack.countUp = {
+                state: false,
+                count: 0,
+                limit: player.halfPushBack.countUp.limit,
+              }
+
+              // peak
+              player.halfPushBack.countDown.state = true;
+            }
+
+          }
+
+          if (player.halfPushBack.countDown.state === true) {
+
+            if (player.halfPushBack.countDown.count < player.halfPushBack.countDown.limit) {
+              player.halfPushBack.countDown.count++;
+            }
+
+            if (player.halfPushBack.countDown.count >= player.halfPushBack.countDown.limit) {
+              player.halfPushBack.countDown = {
+                state: false,
+                count: 0,
+                limit: player.halfPushBack.countDown.limit,
+              }
+
+              // end
+              player.halfPushBack.state = false;
+            }
+
+          }
+
+          // set action time above
+          if (actionTime === true) {
+
+            // let type = player.halfPushBack.type;
+            // player
+            //   handleMiscPlayerDamage('halfPushback_type')
+            //     guranteed deflect, chance to dmg
+            // obstacle
+            //   move, dmg, destroy
+            // barrier
+            //   dmg, destroy,
+            // other plyr
+            //   move, dmg destroy
+            //
+            //  switch (type) {
+            //    case "obstacle":
+            //
+            //      break;
+            //    case "player":
+            //
+            //      break;
+            //    case "barrier":
+            //
+            //      break;
+            //    case "higherElevation":
+            //
+            //      break;
+            //    default:
+            //
+            //  }
+
+          }
+
+
+        }
 
         // DISCARD GEAR!!
         if (
