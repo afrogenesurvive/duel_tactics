@@ -332,7 +332,7 @@ class App extends Component {
     this.levelData9 = {
       row0: ['**_a_0.0_a_0a*','**_i_0.1_a_0a*','**_*_0.2_a_0a*','cw_*_0.3_a_0a*','cw_h_0.4_a_0a*','cw_*_0.5_a_0a*','**_*_0.6_a_0a*','**_i_0.7_a_0a*','**_*_0.8_h_0a*','**_*_0.9_h_0a*'],
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','ce_*_1.4_a_0a*','cw_*_1.5_a_0a*','**_*_1.6_a_0a*','cs_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
-      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_*_2.2_a_0a*','**_*_2.3_a_0a*','cs_*_2.4_a_0a*','cn_*_2.5_a_0a*','**_h_2.6_a_0a*','cs_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
+      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_*_2.2_a_0a*','**_*_2.3_a_0a*','cs_a_2.4_a_0a*','cn_*_2.5_a_0a*','**_h_2.6_a_0a*','cs_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_*_3.2_a_0a*','**_*_3.3_a_0a*','**_h_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
       row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_c_4.3_f_0a*','**_*_4.4_a_0a*','cn_*_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','cn_*_5.2_f_0a*','**_*_5.3_f_0a*','**_*_5.4_k_0a*','**_*_5.5_a_0a*','**_*_5.6_g_0a*','**_*_5.7_a_0a*','ce_*_5.8_a_0a*','**_*_5.9_a_0a*'],
@@ -7703,21 +7703,38 @@ class App extends Component {
     }
 
     if (targetCell1Ref) {
+
       if (targetCell1Ref.obstacle.state === true) {
         target.cell1.occupant.type = "obstacle";
         target.cell1.free = false;
       }
 
       if (targetCell1Ref.barrier.state === true) {
+
         if (targetCell1Ref.barrier.position === this.getOppositeDirection(direction)) {
+
           target.cell1.occupant.type = "barrier";
           target.cell1.free = false;
         }
+
+
         if (targetCell2Ref) {
+
           if (targetCell1Ref.barrier.position === direction || targetCell2Ref.barrier.position === this.getOppositeDirection(direction)) {
+
             target.cell2.occupant.type = "barrier";
             target.cell2.free = false;
           }
+        }
+
+        if (!targetCell2Ref && targetCell1Ref.barrier.position === direction) {
+
+          target.cell1.occupant.type = "barrier";
+          target.cell1.free = false;
+
+          // target.cell2.occupant.type = "barrier";
+          // target.cell2.free = false;
+
         }
 
 
@@ -7740,6 +7757,12 @@ class App extends Component {
     if (targetCell2Ref) {
       if (targetCell2Ref.obstacle.state === true) {
         target.cell2.occupant.type = "obstacle";
+        target.cell2.free = false;
+      }
+
+      if (targetCell2Ref.barrier.position === this.getOppositeDirection(direction)) {
+
+        target.cell2.occupant.type = "barrier";
         target.cell2.free = false;
       }
 
@@ -13318,16 +13341,18 @@ class App extends Component {
 
 
 
-            if (fwdBarrier === true) {
+            if (myCellBarrier !== true && fwdBarrier === true) {
+
               if (targetCell.barrier.destructible.state === true) {
                 // WEAPON CHECK
                 if (targetCell.barrier.destructible.weapons.find(x => x === player.currentWeapon.name)) {
+
                   if (targetCell.barrier.hp - damage > 0) {
                     // this.gridInfo.find(elem => elem.number.x === player.target.cell1.number.x && elem.number.y === player.target.cell1.number.y ).barrier.hp -= damage;
 
                     let hp = targetCell.barrier.hp - damage;
 
-                    targetCell2.barrier = {
+                    targetCell.barrier = {
                       state: targetCell.barrier.state,
                       name: targetCell.barrier.name,
                       type: targetCell.barrier.type,
@@ -13350,7 +13375,9 @@ class App extends Component {
 
                   // DESTROY FWD BARRIER W/ OR W/O RUBBLE
                   else if (targetCell.barrier.hp - damage <= 0) {
+
                     if (targetCell.barrier.destructible.leaveRubble === true) {
+
                       // console.log('leave rubble on ',targetCell2.number,'removing barrier');
                       targetCell.rubble = true;
                       // targetCell2.terrain.type = 'hazard';
@@ -13435,6 +13462,7 @@ class App extends Component {
                     })
 
                   }
+
                 }
 
                 // WEAPON NO GOOD. DEFLECT
@@ -13501,10 +13529,11 @@ class App extends Component {
                    )
                  }
               }
+
             }
 
             // NO FWD BARRIER. OBSTACLE, REAR  BARRIER (SPEAR)?
-            else if (myCellBarrier !== true && fwdBarrier !== true){
+            else if (myCellBarrier !== true && fwdBarrier !== true) {
 
               if (targetCell.obstacle.state === true) {
 
@@ -13720,7 +13749,8 @@ class App extends Component {
 
 
 
-              } else {
+              }
+              else {
 
                 // NO OBSTACLE. ITEM ON GROUND? DESTROY
                 if (targetCell && targetCell.item.name !== "" && damage > 0 && player.currentWeapon.name !== '') {
@@ -13772,6 +13802,7 @@ class App extends Component {
                     }
                   }
                   if (rearBarrier === true) {
+
                     if (targetCell.barrier.destructible.state === true) {
                       // WEAPON CHECK
                       if (targetCell.barrier.destructible.weapons.find(x => x === player.currentWeapon.name)) {
@@ -13943,6 +13974,7 @@ class App extends Component {
 
           // CHECK 2ND CELL TARGET 2
           if (player.currentWeapon.type === 'spear' && checkSpearTarget === true) {
+
             let targetCell2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y)
 
             let myCellBarrier = false;
@@ -14161,7 +14193,9 @@ class App extends Component {
             }
 
             if (fwdBarrier === true) {
+
               if (targetCell2.barrier.destructible.state === true) {
+
                 // WEAPON CHECK
                 if (targetCell2.barrier.destructible.weapons.find(x => x === player.currentWeapon.name)) {
                   if (targetCell2.barrier.hp - damage > 0) {
