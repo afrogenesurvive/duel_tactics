@@ -9261,6 +9261,8 @@ class App extends Component {
         }
       }
     }
+
+    // DAMAGE/DESTROY OBSTACLE?
     if (targetCell.obstacle.destructible.state === true && damage > 0) {
       // WEAPON CHECK
       if (targetCell.obstacle.hp - damage > 0) {
@@ -9401,6 +9403,17 @@ class App extends Component {
 
       }
 
+    }
+
+    // DESTROY ITEM?
+    if (targetCell.item.name !== "") {
+      targetCell.item = {
+        name: '',
+        type: '',
+        subType: '',
+        effect: '',
+        initDrawn: false
+      }
     }
 
   }
