@@ -331,7 +331,7 @@ class App extends Component {
     };
     this.levelData9 = {
       row0: ['**_a_0.0_a_0a*','**_i_0.1_a_0a*','**_*_0.2_a_0a*','cw_*_0.3_a_0a*','cw_h_0.4_a_0a*','cw_*_0.5_a_0a*','**_*_0.6_a_0a*','**_i_0.7_a_0a*','**_*_0.8_h_0a*','**_*_0.9_h_0a*'],
-      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','ce_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','cs_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
+      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','ce_*_1.4_a_0a*','cw_*_1.5_a_0a*','**_*_1.6_a_0a*','cs_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_*_2.2_a_0a*','**_*_2.3_a_0a*','cs_*_2.4_a_0a*','cn_*_2.5_a_0a*','**_h_2.6_a_0a*','cs_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_*_3.2_a_0a*','**_*_3.3_a_0a*','**_h_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
       row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_c_4.3_f_0a*','**_*_4.4_a_0a*','cn_*_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
@@ -27344,10 +27344,11 @@ class App extends Component {
                 player.stamina.current -= this.staminaCostRef.attack[stamAtkType][blunt].peak;
                 player.attackPeak = true;
 
+              let melee = true;
               // CREATE NEW PROJECTILE
               if (player.currentWeapon.type === 'crossbow' && player.bluntAttack !== true && player.items.ammo > 0) {
                 // console.log('firing crossbow');
-
+                melee = false;
                 let plyrX = player;
                 let origin = plyrX.currentPosition.cell;
                 let currentPosition = plyrX.currentPosition.cell;
@@ -27453,8 +27454,12 @@ class App extends Component {
               }
 
 
-              this.getTarget(player);
-              this.meleeAttackPeak(player);
+              if (melee === true ) {
+
+                this.getTarget(player);
+                this.meleeAttackPeak(player);
+
+              }
 
 
             }
@@ -31304,7 +31309,7 @@ class App extends Component {
       if (bolt.kill === true) {
         let index = this.projectiles.findIndex(blt => blt.id === bolt.id);
         this.projectiles.splice(index, 1);
-        console.log('kill bolt',bolt.currentPosition.number, this.players[bolt.owner-1].currentPosition.cell.number,this.projectiles);
+        // console.log('kill bolt',bolt.currentPosition.number, this.players[bolt.owner-1].currentPosition.cell.number,this.projectiles);
       }
 
       if (bolt.type === 'bolt' && bolt.moving.state === true && bolt.kill !== true) {
@@ -31341,6 +31346,12 @@ class App extends Component {
               if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
                 fwdBarrier = this.checkForwardBarrier(bolt.direction,infoCell)
               }
+
+              // if (bolt.target.path.length === 1) {
+              //   if (infoCell.barrier.state === true && infoCell.barrier.position === bolt.direction) {
+              //     this.attackCellContents('bolt',this.players[bolt.owner-1],infoCell,undefined,undefined,bolt)
+              //   }
+              // }
 
               let dodged = false;
 
