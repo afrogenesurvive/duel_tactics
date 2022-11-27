@@ -7715,6 +7715,10 @@ class App extends Component {
         target.cell1.occupant.type = "item";
       }
 
+      if (targetCell1Ref.rubble === true) {
+        target.cell1.occupant.type = "rubble";
+      }
+
       if (targetCell1Ref.elevation.number > myCell.elevation.number) {
         target.cell1.occupant.type = "higherElevation";
         target.cell1.free = false;
@@ -7726,8 +7730,13 @@ class App extends Component {
         target.cell2.occupant.type = "obstacle";
         target.cell2.free = false;
       }
+
       if (targetCell2Ref.item.name !== "") {
         target.cell2.occupant.type = "item";
+      }
+
+      if (targetCell2Ref.rubble === true) {
+        target.cell2.occupant.type = "rubble";
       }
 
       if (targetCell2Ref.elevation.number > myCell.elevation.number) {
@@ -9556,21 +9565,41 @@ class App extends Component {
           },
         )
 
-        // TARGET CELL 1 IS NOT FREE OR ITEM, BOLT, ATTACK CELL1
-        if (player.target.cell1.free !== true || player.target.cell1.occupant.type === "item" || boltTarget1 === true) {
+        // TARGET CELL 1 IS NOT FREE, ITEM, BOLT, RUBBLE, ATTACK CELL1
+        if (
+          player.target.cell1.free !== true ||
+          player.target.cell1.occupant.type === "item" ||
+          player.target.cell1.occupant.type === "rubble" ||
+          boltTarget1 === true
+        ) {
           this.meleeAttackParse(player,1)
         }
 
-        // TARGET CELL 1 IS FREE NOT ITEM OR BOLT
-        if (player.target.cell1.free === true && player.target.cell1.occupant.type !== "item" && boltTarget1 !== true) {
+        // TARGET CELL 1 IS FREE NOT ITEM, BOLT, RUBBLE
+        if (
+          player.target.cell1.free === true &&
+          player.target.cell1.occupant.type !== "item" &&
+          player.target.cell1.occupant.type !== "rubble" &&
+          boltTarget1 !== true
+        ) {
 
-          // TARGET CELL 2 IS NOT FREE HAS ITEM OR BOLT, ATTACK
-          if (player.target.cell2.free !== true || player.target.cell2.occupant.type === "item" || boltTarget2 === true) {
+          // TARGET CELL 2 IS NOT FREE HAS ITEM, BOLT, RUBBLE ATTACK
+          if (
+            player.target.cell2.free !== true ||
+            player.target.cell2.occupant.type === "item" ||
+            player.target.cell2.occupant.type === "rubble" ||
+            boltTarget2 === true
+          ) {
             this.meleeAttackParse(player,2)
           }
 
-          // TARGET CELL2 IS FREE AND NOT ITEM OR BOLT, MISS
-          if (player.target.cell2.free === true && player.target.cell2.occupant.type !== "item" && boltTarget2 !== true) {
+          // TARGET CELL2 IS FREE AND NOT ITEM, BOLT, RUBBLE, MISS
+          if (
+            player.target.cell2.free === true &&
+            player.target.cell2.occupant.type !== "item" &&
+            player.target.cell2.occupant.type !== "rubble" &&
+            boltTarget2 !== true
+          ) {
 
             if (!player.popups.find(x => x.msg === "missedAttack2")) {
               player.popups.push(
@@ -9608,7 +9637,11 @@ class App extends Component {
         )
 
         // TAGET CELL 1 IS FREE NO ITEM OR BOLT, MISS
-        if (player.target.cell1.free === true && player.target.cell1.occupant.type !== "item" && boltTarget1 !== true) {
+        if (
+          player.target.cell1.free === true &&
+          player.target.cell1.occupant.type !== "item" &&
+          player.target.cell1.occupant.type !== "rubble" &&
+          boltTarget1 !== true) {
 
           if (!player.popups.find(x => x.msg === "missedAttack2")) {
             player.popups.push(
@@ -9630,7 +9663,12 @@ class App extends Component {
         }
 
         // TARGET CELL 1 IS NOT FREE OR HAS BOLT OR ITEM, ATTACK
-        if (player.target.cell1.free !== true || player.target.cell1.occupant.type === "item" || boltTarget1 === true) {
+        if (
+          player.target.cell1.free !== true ||
+          player.target.cell1.occupant.type === "item" ||
+          player.target.cell1.occupant.type === "rubble" ||
+          boltTarget1 === true
+        ) {
           this.meleeAttackParse(player,1)
         }
 
@@ -9642,7 +9680,11 @@ class App extends Component {
         if (player.bluntAttack === true) {
 
           // TARGET CELL 1 FREE NO ITEM OR BOLT
-          if (player.target.cell1.free === true && player.target.cell1.occupant.type !== "item" && boltTarget1 !== true) {
+          if (
+            player.target.cell1.free === true &&
+            player.target.cell1.occupant.type !== "item" &&
+            boltTarget1 !== true
+          ) {
 
             if (!player.popups.find(x => x.msg === "missedAttack2")) {
               player.popups.push(
@@ -9789,11 +9831,13 @@ class App extends Component {
     }
 
 
-    // TARGET IS BARRIER/OBSTACLE/ITEM
+
+    // TARGET IS BARRIER/OBSTACLE/ITEM/RUBBLE
     if (
       player.target['cell'+cellNo].occupant.type === 'item' ||
       player.target['cell'+cellNo].occupant.type === 'obstacle' ||
-      player.target['cell'+cellNo].occupant.type === 'barrier'
+      player.target['cell'+cellNo].occupant.type === 'barrier' ||
+      player.target['cell'+cellNo].occupant.type === 'rubble'
     ) {
 
       let targetCell = this.gridInfo.find(elem => elem.number.x === player.target.cell1.number.x && elem.number.y === player.target.cell1.number.y );
@@ -13870,6 +13914,7 @@ class App extends Component {
                 if (myCell.barrier.destructible.state === true) {
                   // WEAPON CHECK
                   if (myCell.barrier.destructible.weapons.find(x => x === player.currentWeapon.name)) {
+
                     if (myCell.barrier.hp - damage > 0) {
 
                       let hp = myCell.barrier.hp - damage;
