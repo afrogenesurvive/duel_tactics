@@ -6845,19 +6845,30 @@ class App extends Component {
 
     // let index = this.projectiles.findIndex(blt => blt.id === bolt.id);
     let distanceFactor = bolt.target.path.length;
+    // if (distanceFactor == 1) {
+    //   distanceFactor = 2;
+    // }
 
     let moveSpeed = bolt.speed;
     // moveSpeed = bolt.speed/distanceFactor;
     moveSpeed = bolt.speed/(distanceFactor/5);
     // moveSpeed = bolt.speed/(distanceFactor/10);
 
-    bolt.moving.step = bolt.moving.step + moveSpeed;
+
+    bolt.moving.step += moveSpeed;
+    // console.log('boltCrementer',bolt.moving.step,bolt.speed,moveSpeed,distanceFactor);
     let newPosition;
 
     // line: percent is 0-1
     let startPt = bolt.moving.origin.center;
     let endPt = bolt.target.path[bolt.target.path.length-1].center;
     let percent = bolt.moving.step;
+    // if (distanceFactor == 1) {
+    //   endPt.x+=2
+    //   endPt.y+=2
+    // }
+
+    // console.log('bolt crement',startPt,endPt,percent);
     // console.log('percent',percent,'time',this.time);
     //
     function getLineXYatPercent(startPt,endPt,percent) {
@@ -6879,6 +6890,7 @@ class App extends Component {
     // bolt.nextPosition = newPosition;
 
     // this.projectiles[index] = bolt;
+    // console.log('bolt crementer new position',newPosition);
     return newPosition;
 
   }
@@ -8207,6 +8219,13 @@ class App extends Component {
         cell2.vertices = cell.vertices;
       }
 
+    }
+    if (bolt.target.path.length === 1) {
+      bolt.target.path.push({
+        number: this.getCellFromDirection(1,bolt.target.path[0].number,bolt.direction),
+        center: this.getVoidCenter(1,bolt.direction,bolt.target.path[0].center),
+        vertices: [],
+      })
     }
 
     bolt.moving.state = true;
@@ -14595,8 +14614,14 @@ class App extends Component {
         }
 
       }
-      else {
+      if (targetCell.elevation.number > myCell.elevation.number) {
         console.log('target is above your elevation');
+      }
+      if (!targetCell) {
+
+
+        // check for my cell barrier, position === player.direction
+        // damage or destroy barrier
       }
 
 
@@ -31275,11 +31300,13 @@ class App extends Component {
 
     // // CHECK PROJECTILES!!
     for (const bolt of this.projectiles) {
+
       if (bolt.kill === true) {
         let index = this.projectiles.findIndex(blt => blt.id === bolt.id);
         this.projectiles.splice(index, 1);
-        // console.log('kill bolt',bolt.currentPosition.number, this.players[bolt.owner-1].currentPosition.cell.number,this.projectiles);
+        console.log('kill bolt',bolt.currentPosition.number, this.players[bolt.owner-1].currentPosition.cell.number,this.projectiles);
       }
+
       if (bolt.type === 'bolt' && bolt.moving.state === true && bolt.kill !== true) {
         // console.log('traking projectile');
 
@@ -31289,6 +31316,7 @@ class App extends Component {
 
         let boltNextPosition = this.boltCrementer(bolt);
         bolt.nextPosition = boltNextPosition;
+        // console.log('moving bolt nxt pos',bolt.nextPosition);
 
         // CHECK WHICH CELL BOLT IS AT
         for (const cell of bolt.target.path) {
