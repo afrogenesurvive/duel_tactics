@@ -11740,12 +11740,12 @@ class App extends Component {
         countUp: {
           state: true,
           count: 0,
-          limit: 0,
+          limit: 10,
         },
         countDown: {
           state: false,
           count: 0,
-          limit: 0,
+          limit: 10,
         },
       }
 
@@ -11765,12 +11765,12 @@ class App extends Component {
         countUp: {
           state: true,
           count: 0,
-          limit: 0,
+          limit: 10,
         },
         countDown: {
           state: false,
           count: 0,
-          limit: 0,
+          limit: 10,
         },
       })
 
@@ -11779,47 +11779,142 @@ class App extends Component {
 
   }
   handleHalfPushBackResult = (type,data) => {
+    console.log('handleHalfPushBackResult',type,data);
+
+    let impactor = type;
+    let impactee = "";
+    let shouldDamageImpactor = false;
+    let shouldDamageImpactee = false;
+    let shouldDeflectImpactor = false;
+    let shouldDeflectImpactee = false;
+    let impactorDamage = 0;
+    let impacteeDamage = 0;
+    let shouldMoveImpactee = false;
+
+    let targetCellNumber = undefined;
+    let targetCellRef = undefined;
+    let myCellRef = undefined;
+
 
     if (type === 'player') {
 
+      targetCellNumber = this.getCellFromDirection(1,data.currentPosition.cell.number,data.halfPushBack.direction)
+      targetCellRef = this.gridInfo.find(x=> x.number.x === targetCellNumber.x && x.number.y === targetCellNumber.y)
+      myCellRef = this.gridInfo.find(x=> x.number.x === data.currentPosition.cell.number.x && x.number.y === data.currentPosition.cell.number.y)
+      impactee = data.halfPushBack.type;
+
+        switch (impactee) {
+          case "obstacle":
+
+          // shouldDamageImpactor
+          // impactorDamage (this.handleMiscPlayerDamage(data,'halfPushback_type'))
+          // shouldDeflectImpactor (this.setDeflection(targetPlayerRef,'bluntAttacked',false))
+          //
+          //
+          // shouldDamageImpactee
+          // impacteeDamage (follow atck cell contents)
+          //
+          // shouldMoveImpactee(move obstacle like canPushObstacle)
+
+
+          break;
+          case "player":
+
+          // shouldDamageImpactor
+          // impactorDamage (this.handleMiscPlayerDamage(data,'halfPushback_type'))
+          // shouldDeflectImpactor (this.setDeflection(targetPlayerRef,'bluntAttacked',false))
+          //
+          // shouldDamageImpactee
+          // impacteeDamage
+          // shouldDeflectImpactee
+          // OR
+          // shouldMoveImpactee (pushback -> deflect)
+
+
+          break;
+          case "barrier":
+
+          // shouldDamageImpactor
+          // impactorDamage (this.handleMiscPlayerDamage(data,'halfPushback_type'))
+          // shouldDeflectImpactor (this.setDeflection(targetPlayerRef,'bluntAttacked',false))
+          //
+          // shouldDamageImpactee
+          // impacteeDamage
+
+          break;
+          case "higherElevation":
+
+          // shouldDamageImpactor
+          // impactorDamage (this.handleMiscPlayerDamage(data,'halfPushback_type'))
+          // shouldDeflectImpactor (this.setDeflection(targetPlayerRef,'bluntAttacked',false))
+
+
+
+          break;
+          default:
+
+        }
+
     }
+
 
     if (type === 'obstacle') {
 
+      targetCellRef = this.gridInfo.find(x=> x.number.x === data.blockCellNo.x && x.number.y === data.blockCellNo.y);
+      myCellRef = this.gridInfo.find(x=> x.number.x === data.myCellNo.x && x.number.y === data.myCellNo.y);
+      impactee = data.blockType;
+
+      switch (impactee) {
+        case "obstacle":
+
+        // shouldDamageImpactor
+        // impactorDamage (dmg lik attack cell contents)
+        // //use data.obstacle
+        //
+        //
+        // shouldDamageImpactee
+        // impacteeDamage
+        // if impactee survive
+        // shouldMoveImpactee(move obstacle like canPushObstacle)
+
+        break;
+        case "player":
+
+        // shouldDamageImpactor
+        // impactorDamage
+        //
+        // shouldDamageImpactee (this.handleMiscPlayerDamage(data,'halfPushback_type'))
+        // impacteeDamage
+
+        // shouldDeflectImpactee (this.setDeflection(targetPlayerRef,'bluntAttacked',false))
+        // OR
+        // shouldMoveImpactee (pushback player)
+
+        break;
+        case "barrier":
+
+        // shouldDamageImpactor
+        // impactorDamage
+        //
+        // shouldDamageImpactee
+        // impacteeDamage
+
+        break;
+        case "higherElevation":
+
+        // shouldDamageImpactor
+        // impactorDamage
+
+        break;
+        default:
+
+      }
+
     }
 
-    // let targetCellNumber = this.getCellFromDirection(1,player.currentPosition.cell.number,player.halfPushBack.direction)
-    // let targetCellRef = this.gridInfo.find(x=> x.number.x === targetCellNumber.x && x.number.y === targetCellNumber.y)
-    //
-    //
-    //   switch (player.halfPushBack.type) {
-    //     case "obstacle":
-    //
-    //       break;
-    //     case "player":
-    //
-    //       break;
-    //     case "barrier":
-    //
-    //       break;
-    //     case "higherElevation":
-    //
-    //       break;
-    //     default:
-    //
-    //   }
 
 
-      // player
-      //   handleMiscPlayerDamage('halfPushback_type')
-      //     guranteed deflect, chance to dmg
-      // obstacle
-      //   move, dmg, destroy
-      // barrier
-      //   dmg, destroy,
-      // other plyr
-      //   move, dmg destroy
-      //
+
 
 
 
@@ -13023,6 +13118,7 @@ class App extends Component {
                   console.log('attacking invurnerable obstacle, deflect player?');
 
                    let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+
                    // let shouldDeflect = 2;
                    // this.pushBack(player,this.getOppositeDirection(player.direction));
 
@@ -17393,7 +17489,6 @@ class App extends Component {
 
       }
 
-      // if target isn't free, 1/2 pushback
 
     }
     else {
@@ -28209,7 +28304,7 @@ class App extends Component {
 
         }
 
-        // CONTINUE, COMPLETE HALF PUSHBACK
+        // CONTINUE, COMPLETE PLAYER HALF PUSHBACK
         if (player.halfPushBack.state === true) {
 
 
@@ -28218,10 +28313,11 @@ class App extends Component {
             if (player.halfPushBack.countUp.count < player.halfPushBack.countUp.limit) {
 
               if (player.halfPushBack.countUp.count <= 2) {
-                // Start
+                console.log('player 1/2 pushback start');
               }
 
               player.halfPushBack.countUp.count++;
+              console.log('player 1/2 pushback count up',player.halfPushBack.countUp.count);
             }
 
             if (player.halfPushBack.countUp.count >= player.halfPushBack.countUp.limit) {
@@ -28230,7 +28326,7 @@ class App extends Component {
                 count: 0,
                 limit: player.halfPushBack.countUp.limit,
               }
-
+              console.log('player 1/2 pushback peak');
               this.handleHalfPushBackResult('player',player);
               player.halfPushBack.countDown.state = true;
             }
@@ -28241,6 +28337,7 @@ class App extends Component {
 
             if (player.halfPushBack.countDown.count < player.halfPushBack.countDown.limit) {
               player.halfPushBack.countDown.count++;
+              console.log('player 1/2 pushback count down',player.halfPushBack.countDown.count);
             }
 
             if (player.halfPushBack.countDown.count >= player.halfPushBack.countDown.limit) {
@@ -28251,6 +28348,7 @@ class App extends Component {
               }
 
               // end
+              console.log('player 1/2 pushback end');
               player.halfPushBack.state = false;
             }
 
@@ -30180,50 +30278,53 @@ class App extends Component {
       }
     }
     // HALF PUSHED BACK
-    for (const halfPushBackkObstacle of this.halfPushBackObstacles) {
+    for (const halfPushBackObstacle of this.halfPushBackObstacles) {
 
-      if (halfPushBackkObstacle.state === true) {
+      if (halfPushBackObstacle.state === true) {
 
 
-        if (halfPushBackkObstacle.countUp.state === true) {
+        if (halfPushBackObstacle.countUp.state === true) {
 
-          if (halfPushBackkObstacle.countUp.count < halfPushBackkObstacle.countUp.limit) {
+          if (halfPushBackObstacle.countUp.count < halfPushBackObstacle.countUp.limit) {
 
-            if (halfPushBackkObstacle.countUp.count <= 2) {
-              // Start
+            if (halfPushBackObstacle.countUp.count <= 2) {
+              console.log('obstacle 1/2 pushback start');
             }
 
-            halfPushBackkObstacle.countUp.count++;
+            halfPushBackObstacle.countUp.count++;
+            console.log('obstacle 1/2 pushback count up',halfPushBackObstacle.countUp.count);
           }
 
-          if (halfPushBackkObstacle.countUp.count >= halfPushBackkObstacle.countUp.limit) {
-            halfPushBackkObstacle.countUp = {
+          if (halfPushBackObstacle.countUp.count >= halfPushBackObstacle.countUp.limit) {
+            halfPushBackObstacle.countUp = {
               state: false,
               count: 0,
-              limit: halfPushBackkObstacle.countUp.limit,
+              limit: halfPushBackObstacle.countUp.limit,
             }
 
-            this.handleHalfPushBackResult('obstacle',halfPushBackkObstacle);
-            halfPushBackkObstacle.countDown.state = true;
+            console.log('obstacle 1/2 pushback peak');
+            this.handleHalfPushBackResult('obstacle',halfPushBackObstacle);
+            halfPushBackObstacle.countDown.state = true;
           }
 
         }
 
-        if (halfPushBackkObstacle.countDown.state === true) {
+        if (halfPushBackObstacle.countDown.state === true) {
 
-          if (halfPushBackkObstacle.countDown.count < halfPushBackkObstacle.countDown.limit) {
-            halfPushBackkObstacle.countDown.count++;
+          if (halfPushBackObstacle.countDown.count < halfPushBackObstacle.countDown.limit) {
+            halfPushBackObstacle.countDown.count++;
+            console.log('obstacle 1/2 pushback count down',halfPushBackObstacle.countDown.count);
           }
 
-          if (halfPushBackkObstacle.countDown.count >= halfPushBackkObstacle.countDown.limit) {
-            halfPushBackkObstacle.countDown = {
+          if (halfPushBackObstacle.countDown.count >= halfPushBackObstacle.countDown.limit) {
+            halfPushBackObstacle.countDown = {
               state: false,
               count: 0,
-              limit: halfPushBackkObstacle.countDown.limit,
+              limit: halfPushBackObstacle.countDown.limit,
             }
 
-            // end
-            halfPushBackkObstacle.state = false;
+            console.log('obstacle 1/2 pushback end');
+            halfPushBackObstacle.state = false;
           }
 
         }
@@ -30231,12 +30332,13 @@ class App extends Component {
 
       }
 
-      if (halfPushBackkObstacle.state !== true) {
-        let index = this.halfPushBackObstacles.indexOf(halfPushBackkObstacle)
+      if (halfPushBackObstacle.state !== true) {
+        let index = this.halfPushBackObstacles.indexOf(halfPushBackObstacle)
         this.halfPushBackObstacles.splice(index,1)
       }
 
     }
+
 
     // ITEMS TO DROP
     // -call itemdrop crementer and set position like w/ movement
