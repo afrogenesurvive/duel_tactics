@@ -9910,7 +9910,6 @@ class App extends Component {
 
     // TARGET IS A PLAYER
     if (player.target['cell'+cellNo].occupant.type === 'player') {
-      console.log('beeep');
 
       targetPlayerRef = this.players[player.target['cell'+cellNo].occupant.player-1];
 
@@ -10392,7 +10391,7 @@ class App extends Component {
               count: 1,
               limit: player.success.attackSuccess.limit
             }
-            
+
           }
 
         }
