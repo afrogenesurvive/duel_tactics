@@ -7740,7 +7740,7 @@ class App extends Component {
 
       }
 
-      if (targetCell1Ref.item.name !== "") {
+      if (targetCell1Ref.item.name !== "" && target.cell1.occupant.type !== "player") {
         target.cell1.occupant.type = "item";
       }
 
@@ -7766,7 +7766,7 @@ class App extends Component {
         target.cell2.free = false;
       }
 
-      if (targetCell2Ref.item.name !== "") {
+      if (targetCell2Ref.item.name !== "" && target.cell2.occupant.type !== "player") {
         target.cell2.occupant.type = "item";
       }
 
@@ -11885,7 +11885,8 @@ class App extends Component {
 
   }
   handleHalfPushBackResult = (type,data) => {
-    console.log('handleHalfPushBackResult',type,data);
+    // console.log('handleHalfPushBackResult',type,data);
+
 
     let direction = "";
     let impactor = type;
@@ -11906,209 +11907,7 @@ class App extends Component {
     let myCellRef = undefined;
 
 
-    // PLAYER HALF PUSHED BACK
-    if (type === 'player') {
-
-      direction = data.halfPushBack.direction;
-      targetCellNumber = this.getCellFromDirection(1,data.currentPosition.cell.number,data.halfPushBack.direction)
-      targetCellRef = this.gridInfo.find(x=> x.number.x === targetCellNumber.x && x.number.y === targetCellNumber.y)
-      myCellRef = this.gridInfo.find(x=> x.number.x === data.currentPosition.cell.number.x && x.number.y === data.currentPosition.cell.number.y)
-      impactee = data.halfPushBack.type;
-      shouldDamageImpactor = (this.rnJesus(1,data.crits.guardBreak) === 1);
-      shouldDeflectImpactor = (this.rnJesus(1,data.crits.guardBreak) === 1);
-
-
-        switch (impactee) {
-          case "obstacle":
-
-          // IMPACTOR DAMAGE, DEFLECT?
-            if (shouldDamageImpactor === true) {
-              this.handleMiscPlayerDamage(data,'halfPushBackImpactor_'+impactee+'');
-            }
-
-            if (shouldDeflectImpactor === true) {
-              this.setDeflection(data,'attacked',false);
-            }
-
-
-            // IMPACTEE DAMAGE?
-            shouldDamageImpactee = (this.rnJesus(1,(targetCellRef.obstacle.height+targetCellRef.obstacle.weight+targetCellRef.obstacle.hp)) === 1);
-            if (shouldDamageImpactee === true) {
-              damageObstacle('impactee');
-            }
-
-
-          break;
-          case "player":
-
-            // IMPACTOR DAMAGE, DEFLECT?
-            if (shouldDamageImpactor === true) {
-              this.handleMiscPlayerDamage(data,'halfPushBackImpactor_'+impactee+'');
-            }
-
-            if (shouldDeflectImpactor === true) {
-              this.setDeflection(data,'attacked',false);
-            }
-
-
-            // IMPACTEE DAMAGE, DEFLECT/ PUSHBACK + DEFLECT?
-            let impacteePlayerRef = this.players.find(x => x.currentPosition.cell.number.x === targetCellRef.number.x && x.currentPosition.cell.number.y === targetCellRef.number.y);
-            shouldDamageImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
-
-            if (shouldDamageImpactee === true) {
-              this.handleMiscPlayerDamage(data,'halfPushBackImpactee_'+impactor+'');
-            }
-
-            shouldDeflectImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
-            if (shouldDeflectImpactee === true) {
-              if (this.rnJesus(1,impacteePlayerRef.crits.pushBack) === 1) {
-                  this.setDeflection(impacteePlayerRef,'attacked',false);
-              }
-              else {
-                this.setDeflection(impacteePlayerRef,'attacked',true);
-              }
-
-            }
-
-
-          break;
-          case "barrier":
-
-            // IMPACTOR DAMAGE, DEFLECT?
-            if (shouldDamageImpactor === true) {
-              this.handleMiscPlayerDamage(data,'halfPushBackImpactor_'+impactee+'');
-            }
-
-            if (shouldDeflectImpactor === true) {
-              this.setDeflection(data,'attacked',false);
-            }
-
-
-            // IMPACTEE DAMAGE?
-            let myCell = false;
-            if (myCellRef.barrier.state === true && myCellRef.barrier.position === data.halfPushBack.direction) {
-              myCell = true;
-              shouldDamageImpactee = (this.rnJesus(1,(myCellRef.barrier.height+myCellRef.barrier.hp)) === 1);
-            }
-            else {
-              shouldDamageImpactee = (this.rnJesus(1,(targetCellRef.barrier.height+targetCellRef.barrier.hp)) === 1);
-            }
-
-            if (shouldDamageImpactee === true) {
-              damageBarrier('impactee',myCell);
-            }
-
-          break;
-          case "higherElevation":
-
-            // DAMAGE, DEFLECT IMPACTOR?
-            if (shouldDamageImpactor === true) {
-              this.handleMiscPlayerDamage(data,'halfPushBackImpactor_'+impactee+'');
-            }
-
-            if (shouldDeflectImpactor === true) {
-              this.setDeflection(data,'attacked',false);
-            }
-
-          break;
-          default:
-
-        }
-
-    }
-
-    // OBSTACLE HALF PUSHED BACK
-    if (type === 'obstacle') {
-
-      direction = data.direction;
-      targetCellRef = this.gridInfo.find(x=> x.number.x === data.blockCellNo.x && x.number.y === data.blockCellNo.y);
-      myCellRef = this.gridInfo.find(x=> x.number.x === data.myCellNo.x && x.number.y === data.myCellNo.y);
-      impactee = data.blockType;
-      shouldDamageImpactor = (this.rnJesus(1,(data.obstacle.height+data.obstacle.weight+data.obstacle.hp)) === 1);
-
-      switch (impactee) {
-        case "obstacle":
-
-          // IMPACTOR
-          if (shouldDamageImpactor === true) {
-            damageObstacle('impactor');
-          }
-
-
-          // IMPACTEE
-          shouldDamageImpactee = (this.rnJesus(1,(targetCellRef.obstacle.height+targetCellRef.obstacle.weight)) === 1);
-          if (shouldDamageImpactee === true) {
-            damageObstacle('impactee');
-          }
-
-        break;
-        case "player":
-
-          // IMPACTOR
-          if (shouldDamageImpactor === true) {
-            damageObstacle('impactor');
-          }
-
-          // IMPACTEE
-          let impacteePlayerRef = this.players.find(x => x.currentPosition.cell.number.x === targetCellRef.number.x && x.currentPosition.cell.number.y === targetCellRef.number.y);
-          shouldDamageImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
-
-          if (shouldDamageImpactee === true) {
-            this.handleMiscPlayerDamage(impacteePlayerRef,'halfPushBackImpactee_'+impactor+'');
-          }
-
-          shouldDeflectImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
-          if (shouldDeflectImpactee === true) {
-            if (this.rnJesus(1,impacteePlayerRef.crits.pushBack) === 1) {
-                this.setDeflection(impacteePlayerRef,'attacked',false);
-            }
-            else {
-              this.setDeflection(impacteePlayerRef,'attacked',true);
-            }
-
-          }
-
-
-        break;
-        case "barrier":
-
-          // IMPACTOR
-          if (shouldDamageImpactor === true) {
-            damageObstacle('impactor');
-          }
-
-
-          // IMPACTEE
-          let myCell = false;
-          if (myCellRef.barrier.state === true && myCellRef.barrier.position === data.halfPushBack.direction) {
-            myCell = true;
-            shouldDamageImpactee = (this.rnJesus(1,(myCellRef.barrier.height+myCellRef.barrier.hp)) === 1);
-          }
-          else {
-            shouldDamageImpactee = (this.rnJesus(1,(targetCellRef.barrier.height+targetCellRef.barrier.hp)) === 1);
-          }
-
-          if (shouldDamageImpactee === true) {
-            damageBarrier('impactee',myCell);
-          }
-
-
-        break;
-        case "higherElevation":
-
-          if (shouldDamageImpactor === true) {
-            damageObstacle('impactor');
-          }
-
-        break;
-        default:
-
-      }
-
-    }
-
-
-    function damageObstacle(args) {
+    let damageObstacle = (args) => {
 
       let damage = 1;
       if (this.rnJesus(1,2) === 1) {
@@ -12385,7 +12184,7 @@ class App extends Component {
 
     }
 
-    function damageBarrier(args,myCell) {
+    let damageBarrier = (args,myCell) => {
 
       let damage = 1;
       if (this.rnJesus(1,2) === 1) {
@@ -12623,8 +12422,211 @@ class App extends Component {
     }
 
 
-    if (moveObstacle === true && impactee === "obstacle") {
+    // PLAYER HALF PUSHED BACK
+    if (type === 'player') {
 
+      direction = data.halfPushBack.direction;
+      targetCellNumber = this.getCellFromDirection(1,data.currentPosition.cell.number,data.halfPushBack.direction)
+      targetCellRef = this.gridInfo.find(x=> x.number.x === targetCellNumber.x && x.number.y === targetCellNumber.y)
+      myCellRef = this.gridInfo.find(x=> x.number.x === data.currentPosition.cell.number.x && x.number.y === data.currentPosition.cell.number.y)
+      impactee = data.halfPushBack.type;
+      shouldDamageImpactor = (this.rnJesus(1,data.crits.guardBreak) === 1);
+      shouldDeflectImpactor = (this.rnJesus(1,data.crits.guardBreak) === 1);
+
+
+        switch (impactee) {
+          case "obstacle":
+
+          // IMPACTOR DAMAGE, DEFLECT?
+            if (shouldDamageImpactor === true) {
+              this.handleMiscPlayerDamage(data,'halfPushBackImpactor_'+impactee+'');
+            }
+
+            if (shouldDeflectImpactor === true) {
+              this.setDeflection(data,'attacked',false);
+            }
+
+
+            // IMPACTEE DAMAGE?
+            shouldDamageImpactee = (this.rnJesus(1,(targetCellRef.obstacle.height+targetCellRef.obstacle.weight+targetCellRef.obstacle.hp)) === 1);
+            if (shouldDamageImpactee === true) {
+              damageObstacle('impactee');
+            }
+
+
+          break;
+          case "player":
+
+            // IMPACTOR DAMAGE, DEFLECT?
+            if (shouldDamageImpactor === true) {
+              this.handleMiscPlayerDamage(data,'halfPushBackImpactor_'+impactee+'');
+            }
+
+            if (shouldDeflectImpactor === true) {
+              this.setDeflection(data,'attacked',false);
+            }
+
+
+            // IMPACTEE DAMAGE, DEFLECT/ PUSHBACK + DEFLECT?
+            let impacteePlayerRef = this.players.find(x => x.currentPosition.cell.number.x === targetCellRef.number.x && x.currentPosition.cell.number.y === targetCellRef.number.y);
+            shouldDamageImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
+
+            if (shouldDamageImpactee === true) {
+              this.handleMiscPlayerDamage(data,'halfPushBackImpactee_'+impactor+'');
+            }
+
+            shouldDeflectImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
+            if (shouldDeflectImpactee === true) {
+              if (this.rnJesus(1,impacteePlayerRef.crits.pushBack) === 1) {
+                  this.setDeflection(impacteePlayerRef,'attacked',false);
+              }
+              else {
+                this.setDeflection(impacteePlayerRef,'attacked',true);
+              }
+
+            }
+
+
+          break;
+          case "barrier":
+
+            // IMPACTOR DAMAGE, DEFLECT?
+            if (shouldDamageImpactor === true) {
+              this.handleMiscPlayerDamage(data,'halfPushBackImpactor_'+impactee+'');
+            }
+
+            if (shouldDeflectImpactor === true) {
+              this.setDeflection(data,'attacked',false);
+            }
+
+
+            // IMPACTEE DAMAGE?
+            let myCell = false;
+            if (myCellRef.barrier.state === true && myCellRef.barrier.position === data.halfPushBack.direction) {
+              myCell = true;
+              shouldDamageImpactee = (this.rnJesus(1,(myCellRef.barrier.height+myCellRef.barrier.hp)) === 1);
+            }
+            else {
+              shouldDamageImpactee = (this.rnJesus(1,(targetCellRef.barrier.height+targetCellRef.barrier.hp)) === 1);
+            }
+
+            if (shouldDamageImpactee === true) {
+              damageBarrier('impactee',myCell);
+            }
+
+          break;
+          case "higherElevation":
+
+            // DAMAGE, DEFLECT IMPACTOR?
+            if (shouldDamageImpactor === true) {
+              this.handleMiscPlayerDamage(data,'halfPushBackImpactor_'+impactee+'');
+            }
+
+            if (shouldDeflectImpactor === true) {
+              this.setDeflection(data,'attacked',false);
+            }
+
+          break;
+          default:
+
+        }
+
+    }
+
+    // OBSTACLE HALF PUSHED BACK
+    if (type === 'obstacle') {
+
+      direction = data.direction;
+      targetCellRef = this.gridInfo.find(x=> x.number.x === data.blockCellNo.x && x.number.y === data.blockCellNo.y);
+      myCellRef = this.gridInfo.find(x=> x.number.x === data.myCellNo.x && x.number.y === data.myCellNo.y);
+      impactee = data.blockType;
+      shouldDamageImpactor = (this.rnJesus(1,(data.obstacle.height+data.obstacle.weight+data.obstacle.hp)) === 1);
+
+      switch (impactee) {
+        case "obstacle":
+
+          // IMPACTOR
+          if (shouldDamageImpactor === true) {
+            damageObstacle('impactor');
+          }
+
+
+          // IMPACTEE
+          shouldDamageImpactee = (this.rnJesus(1,(targetCellRef.obstacle.height+targetCellRef.obstacle.weight)) === 1);
+          if (shouldDamageImpactee === true) {
+            damageObstacle('impactee');
+          }
+
+        break;
+        case "player":
+
+          // IMPACTOR
+          if (shouldDamageImpactor === true) {
+            damageObstacle('impactor');
+          }
+
+          // IMPACTEE
+          let impacteePlayerRef = this.players.find(x => x.currentPosition.cell.number.x === targetCellRef.number.x && x.currentPosition.cell.number.y === targetCellRef.number.y);
+          shouldDamageImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
+
+          if (shouldDamageImpactee === true) {
+            this.handleMiscPlayerDamage(impacteePlayerRef,'halfPushBackImpactee_'+impactor+'');
+          }
+
+          shouldDeflectImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
+          if (shouldDeflectImpactee === true) {
+            if (this.rnJesus(1,impacteePlayerRef.crits.pushBack) === 1) {
+                this.setDeflection(impacteePlayerRef,'attacked',false);
+            }
+            else {
+              this.setDeflection(impacteePlayerRef,'attacked',true);
+            }
+
+          }
+
+
+        break;
+        case "barrier":
+
+          // IMPACTOR
+          if (shouldDamageImpactor === true) {
+            damageObstacle('impactor');
+          }
+
+
+          // IMPACTEE
+          let myCell = false;
+          if (myCellRef.barrier.state === true && myCellRef.barrier.position === data.direction) {
+            myCell = true;
+            shouldDamageImpactee = (this.rnJesus(1,(myCellRef.barrier.height+myCellRef.barrier.hp)) === 1);
+          }
+          else {
+            shouldDamageImpactee = (this.rnJesus(1,(targetCellRef.barrier.height+targetCellRef.barrier.hp)) === 1);
+          }
+
+          if (shouldDamageImpactee === true) {
+            damageBarrier('impactee',myCell);
+          }
+
+
+        break;
+        case "higherElevation":
+
+          if (shouldDamageImpactor === true) {
+            damageObstacle('impactor');
+          }
+
+        break;
+        default:
+
+      }
+
+    }
+
+    moveObstacle = true;
+    impactee = "obstacle";
+
+    if (moveObstacle === true && impactee === "obstacle") {
 
       let destCell = this.getCellFromDirection(1,targetCellRef.number,direction);
       let destCellRef = this.gridInfo.find(x => x.number.x === destCell.x && x.number.y === destCell.y);
@@ -29888,6 +29890,7 @@ class App extends Component {
                     }
 
                   }
+
                   else if (player.turning.delayCount === 0) {
 
                     if (player.stamina.current - this.staminaCostRef.move >= 0) {
@@ -29940,6 +29943,7 @@ class App extends Component {
                 }
 
                 if (target.cell1.free !== true && target.myCellBlock !== true) {
+
                   if (target.cell1.occupant.type === "obstacle" && player.pushing.state !== true) {
                     this.preObstaclePushCheck(player,target)
                   }
@@ -32503,11 +32507,11 @@ class App extends Component {
                 fwdBarrier = this.checkForwardBarrier(bolt.direction,infoCell)
               }
 
-              // if (bolt.target.path.length === 1) {
-              //   if (infoCell.barrier.state === true && infoCell.barrier.position === bolt.direction) {
-              //     this.attackCellContents('bolt',this.players[bolt.owner-1],infoCell,undefined,undefined,bolt)
-              //   }
-              // }
+              if (bolt.target.path.length === 1) {
+                if (infoCell.barrier.state === true && infoCell.barrier.position === bolt.direction) {
+                  this.attackCellContents('bolt',this.players[bolt.owner-1],infoCell,undefined,undefined,bolt)
+                }
+              }
 
               let dodged = false;
 
@@ -34234,7 +34238,7 @@ class App extends Component {
 
           }
 
-          if (player.halfPushBack.state === true) {
+          if (plyr.halfPushBack.state === true) {
 
 
             // let unit = no of pixels per increment
@@ -34258,10 +34262,16 @@ class App extends Component {
             // east: x += unit*2, y+= unit
             // west: x -= unit*2, y-= unit
 
+            // draw at cell of direction pushback to
+            // targetCell = this.getCellFromDirection(1,plyr.currentPosition.cell.number,plyr.halfPushBack.direction)
+            // if direction is east or soouth,
+            //   draw @ target cell,
+            //   else draw @ current position
 
             // context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
 
           }
+
           // DEPTH SORTING!!
 
 
