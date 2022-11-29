@@ -11303,6 +11303,51 @@ class App extends Component {
 
     }
 
+    if (type.split("_")[1]) {
+
+      if (type.split("_")[0] === "halfPushBackImpactee") {
+
+        switch (type.split("_")[1]) {
+          case "obstacle":
+
+            break;
+          case "player":
+
+            break;
+          case "barrier":
+
+            break;
+          case "higherElevation":
+
+            break;
+          default:
+
+        }
+      }
+
+      if (type.split("_")[0] === "halfPushBackImpactor") {
+
+        switch (type.split("_")[1]) {
+          case "obstacle":
+
+            break;
+          case "player":
+
+            break;
+          case "barrier":
+
+            break;
+          case "higherElevation":
+
+            break;
+          default:
+
+        }
+      }
+
+
+    }
+
 
   }
   checkCombatAdvantage = (player1,player2) => {
@@ -11798,6 +11843,7 @@ class App extends Component {
   handleHalfPushBackResult = (type,data) => {
     console.log('handleHalfPushBackResult',type,data);
 
+    let direction = "";
     let impactor = type;
     let impactee = "";
     let shouldDamageImpactor = false;
@@ -11808,64 +11854,114 @@ class App extends Component {
     let impacteeDamage = 0;
     let shouldMoveImpactee = false;
 
+    let moveObstacle = false;
+    let movePlayer = false;
+
     let targetCellNumber = undefined;
     let targetCellRef = undefined;
     let myCellRef = undefined;
 
 
+
     if (type === 'player') {
 
+      direction = data.halfPushBack.direction;
       targetCellNumber = this.getCellFromDirection(1,data.currentPosition.cell.number,data.halfPushBack.direction)
       targetCellRef = this.gridInfo.find(x=> x.number.x === targetCellNumber.x && x.number.y === targetCellNumber.y)
       myCellRef = this.gridInfo.find(x=> x.number.x === data.currentPosition.cell.number.x && x.number.y === data.currentPosition.cell.number.y)
       impactee = data.halfPushBack.type;
+      shouldDamageImpactor = (this.rnJesus(1,data.crits.guardBreak) === 1);
+      shouldDeflectImpactor = (this.rnJesus(1,data.crits.guardBreak) === 1);
 
         switch (impactee) {
           case "obstacle":
 
-          // shouldDamageImpactor
-          // impactorDamage (this.handleMiscPlayerDamage(data,'halfPushback_type'))
-          // shouldDeflectImpactor (this.setDeflection(targetPlayerRef,'bluntAttacked',false))
-          //
-          //
-          // shouldDamageImpactee
-          // impacteeDamage (follow atck cell contents)
-          //
-          // shouldMoveImpactee(move obstacle like canPushObstacle)
+          // IMPACTOR
+            if (shouldDamageImpactor === true) {
+              this.handleMiscPlayerDamage(data,'halfPushBackImpactor_'+impactee+'');
+            }
+
+            if (shouldDeflectImpactor === true) {
+              this.setDeflection(data,'attacked',false);
+            }
+
+
+            // IMPACTEE
+            shouldDamageImpactee = (this.rnJesus(1,(targetCellRef.obstacle.height+targetCellRef.obstacle.weight+targetCellRef.obstacle.hp)) === 1);
+            if (shouldDamageImpactee === true) {
+              damageObstacle('impactee');
+            }
 
 
           break;
           case "player":
 
-          // shouldDamageImpactor
-          // impactorDamage (this.handleMiscPlayerDamage(data,'halfPushback_type'))
-          // shouldDeflectImpactor (this.setDeflection(targetPlayerRef,'bluntAttacked',false))
-          //
-          // shouldDamageImpactee
-          // impacteeDamage
-          // shouldDeflectImpactee
-          // OR
-          // shouldMoveImpactee (pushback -> deflect)
+            // IMPACTOR
+            if (shouldDamageImpactor === true) {
+              this.handleMiscPlayerDamage(data,'halfPushBackImpactor_'+impactee+'');
+            }
+
+            if (shouldDeflectImpactor === true) {
+              this.setDeflection(data,'attacked',false);
+            }
+
+
+            // IMPACTEE
+            let impacteePlayerRef = this.players.find(x => x.currentPosition.cell.number.x === targetCellRef.number.x && x.currentPosition.cell.number.y === targetCellRef.number.y);
+            shouldDamageImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
+
+            if (shouldDamageImpactee === true) {
+              this.handleMiscPlayerDamage(data,'halfPushBackImpactee_'+impactor+'');
+            }
+
+            shouldDeflectImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
+            if (shouldDeflectImpactee === true) {
+              if (this.rnJesus(1,impacteePlayerRef.crits.pushBack) === 1) {
+                  this.setDeflection(impacteePlayerRef,'attacked',false);
+              }
+              else {
+                this.setDeflection(impacteePlayerRef,'attacked',true);
+              }
+
+            }
 
 
           break;
           case "barrier":
 
-          // shouldDamageImpactor
-          // impactorDamage (this.handleMiscPlayerDamage(data,'halfPushback_type'))
-          // shouldDeflectImpactor (this.setDeflection(targetPlayerRef,'bluntAttacked',false))
-          //
-          // shouldDamageImpactee
-          // impacteeDamage
+            if (shouldDamageImpactor === true) {
+              this.handleMiscPlayerDamage(data,'halfPushBackImpactor_'+impactee+'');
+            }
+
+            if (shouldDeflectImpactor === true) {
+              this.setDeflection(data,'attacked',false);
+            }
+
+
+            // IMPACTEE
+            let myCell = false;
+            if (myCellRef.barrier.state === true && myCellRef.barrier.position === data.halfPushBack.direction) {
+              myCell = true;
+              shouldDamageImpactee = (this.rnJesus(1,(myCellRef.barrier.height+myCellRef.barrier.hp)) === 1);
+            }
+            else {
+              shouldDamageImpactee = (this.rnJesus(1,(targetCellRef.barrier.height+targetCellRef.barrier.hp)) === 1);
+            }
+
+            if (shouldDamageImpactee === true) {
+              damageBarrier('impactee',myCell);
+            }
 
           break;
           case "higherElevation":
 
-          // shouldDamageImpactor
-          // impactorDamage (this.handleMiscPlayerDamage(data,'halfPushback_type'))
-          // shouldDeflectImpactor (this.setDeflection(targetPlayerRef,'bluntAttacked',false))
+            if (shouldDamageImpactor === true) {
+              this.handleMiscPlayerDamage(data,'halfPushBackImpactor_'+impactee+'');
+            }
 
-
+            if (shouldDeflectImpactor === true) {
+              this.setDeflection(data,'attacked',false);
+            }
 
           break;
           default:
@@ -11874,53 +11970,87 @@ class App extends Component {
 
     }
 
-
     if (type === 'obstacle') {
 
+      direction = data.direction;
       targetCellRef = this.gridInfo.find(x=> x.number.x === data.blockCellNo.x && x.number.y === data.blockCellNo.y);
       myCellRef = this.gridInfo.find(x=> x.number.x === data.myCellNo.x && x.number.y === data.myCellNo.y);
       impactee = data.blockType;
+      shouldDamageImpactor = (this.rnJesus(1,(data.obstacle.height+data.obstacle.weight+data.obstacle.hp)) === 1);
 
       switch (impactee) {
         case "obstacle":
 
-        // shouldDamageImpactor
-        // impactorDamage (dmg lik attack cell contents)
-        // //use data.obstacle
-        //
-        //
-        // shouldDamageImpactee
-        // impacteeDamage
-        // if impactee survive
-        // shouldMoveImpactee(move obstacle like canPushObstacle)
+          // IMPACTOR
+          if (shouldDamageImpactor === true) {
+            damageObstacle('impactor');
+          }
+
+
+          // IMPACTEE
+          shouldDamageImpactee = (this.rnJesus(1,(targetCellRef.obstacle.height+targetCellRef.obstacle.weight)) === 1);
+          if (shouldDamageImpactee === true) {
+            damageObstacle('impactee');
+          }
 
         break;
         case "player":
 
-        // shouldDamageImpactor
-        // impactorDamage
-        //
-        // shouldDamageImpactee (this.handleMiscPlayerDamage(data,'halfPushback_type'))
-        // impacteeDamage
+          // IMPACTOR
+          if (shouldDamageImpactor === true) {
+            damageObstacle('impactor');
+          }
 
-        // shouldDeflectImpactee (this.setDeflection(targetPlayerRef,'bluntAttacked',false))
-        // OR
-        // shouldMoveImpactee (pushback player)
+          // IMPACTEE
+          let impacteePlayerRef = this.players.find(x => x.currentPosition.cell.number.x === targetCellRef.number.x && x.currentPosition.cell.number.y === targetCellRef.number.y);
+          shouldDamageImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
+
+          if (shouldDamageImpactee === true) {
+            this.handleMiscPlayerDamage(impacteePlayerRef,'halfPushBackImpactee_'+impactor+'');
+          }
+
+          shouldDeflectImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
+          if (shouldDeflectImpactee === true) {
+            if (this.rnJesus(1,impacteePlayerRef.crits.pushBack) === 1) {
+                this.setDeflection(impacteePlayerRef,'attacked',false);
+            }
+            else {
+              this.setDeflection(impacteePlayerRef,'attacked',true);
+            }
+
+          }
+
 
         break;
         case "barrier":
 
-        // shouldDamageImpactor
-        // impactorDamage
-        //
-        // shouldDamageImpactee
-        // impacteeDamage
+          // IMPACTOR
+          if (shouldDamageImpactor === true) {
+            damageObstacle('impactor');
+          }
+
+
+          // IMPACTEE
+          let myCell = false;
+          if (myCellRef.barrier.state === true && myCellRef.barrier.position === data.halfPushBack.direction) {
+            myCell = true;
+            shouldDamageImpactee = (this.rnJesus(1,(myCellRef.barrier.height+myCellRef.barrier.hp)) === 1);
+          }
+          else {
+            shouldDamageImpactee = (this.rnJesus(1,(targetCellRef.barrier.height+targetCellRef.barrier.hp)) === 1);
+          }
+
+          if (shouldDamageImpactee === true) {
+            damageBarrier('impactee',myCell);
+          }
+
 
         break;
         case "higherElevation":
 
-        // shouldDamageImpactor
-        // impactorDamage
+          if (shouldDamageImpactor === true) {
+            damageObstacle('impactor');
+          }
 
         break;
         default:
@@ -11930,10 +12060,656 @@ class App extends Component {
     }
 
 
+    function damageObstacle(args) {
+
+      let damage = 1;
+      if (this.rnJesus(1,2) === 1) {
+        damage = this.rnJesus(1,2);
+      }
+
+      if (args === 'impactor') {
+
+        if (myCellRef.obstacle.destructible.state === true) {
+
+          if (myCellRef.obstacle.hp - damage > 0) {
+
+            let hp = myCellRef.obstacle.hp - damage;
+
+            myCellRef.obstacle = {
+              state: myCellRef.obstacle.state,
+              name: myCellRef.obstacle.name,
+              type: myCellRef.obstacle.type,
+              hp: hp,
+              destructible: myCellRef.obstacle.destructible,
+              locked: myCellRef.obstacle.locked,
+              weight: myCellRef.obstacle.weight,
+              height: myCellRef.obstacle.height,
+              items: myCellRef.obstacle.items,
+              effects: myCellRef.obstacle.effects,
+              moving: myCellRef.obstacle.moving
+            };
+
+            this.obstacleBarrierToDestroy.push({
+              type: 'obstacle',
+              action: 'damage',
+              count: 0,
+              limit: 30,
+              complete: false,
+              cell: myCellRef,
+            })
 
 
+          }
+
+          // DESTROY OBSTACLE W/ OR W/O RUBBLE
+          else if (myCellRef.obstacle.hp - damage <= 0) {
+
+            let itemsToDrop = [];
+
+            if (myCellRef.obstacle.destructible.leaveRubble === true) {
+              // console.log('leave rubble on ',targetCell.number,'removing obstacle');
+
+              if (myCellRef.obstacle.items[0]) {
+                itemsToDrop = myCellRef.obstacle.items;
+              }
+              myCellRef.rubble = true;
+              // targetCell.terrain.type = 'hazard';
+
+              myCellRef.obstacle = {
+                state: false,
+                name: myCellRef.obstacle.name,
+                type: myCellRef.obstacle.type,
+                hp: 0,
+                destructible: myCellRef.obstacle.destructible,
+                locked: myCellRef.obstacle.locked,
+                weight: myCellRef.obstacle.weight,
+                height: myCellRef.obstacle.height,
+                items: myCellRef.obstacle.items,
+                effects: myCellRef.obstacle.effects,
+                moving: myCellRef.obstacle.moving
+              };
 
 
+            }
+
+            else {
+              // console.log('no rubble. Just remove obstacle');
+              if (myCellRef.obstacle.items[0]) {
+                itemsToDrop = myCellRef.obstacle.items;
+              }
+
+              myCellRef.obstacle = {
+                state: false,
+                name: myCellRef.obstacle.name,
+                type: myCellRef.obstacle.type,
+                hp: 0,
+                destructible: myCellRef.obstacle.destructible,
+                locked: myCellRef.obstacle.locked,
+                weight: myCellRef.obstacle.weight,
+                height: myCellRef.obstacle.height,
+                items: myCellRef.obstacle.items,
+                effects: myCellRef.obstacle.effects,
+                moving: myCellRef.obstacle.moving
+              };
+
+            }
+
+
+            // DROP OBSTACLE ITEMS?
+            if (itemsToDrop[0]) {
+              // console.log('dropping obstacle items melee',itemsToDrop);
+              this.obstacleItemDrop(myCellRef,undefined);
+
+            }
+
+            this.obstacleBarrierToDestroy.push({
+              type: 'obstacle',
+              action: 'destroy',
+              count: 0,
+              limit: 30,
+              complete: false,
+              cell: myCellRef,
+            })
+
+            if (!this.cellPopups.find(x => x.msg === 'destroyedItem')) {
+              this.cellPopups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 35,
+                  type: '',
+                  position: '',
+                  msg: 'destroyedItem',
+                  img: '',
+                  cell: myCellRef,
+                }
+              )
+            }
+
+          }
+
+        }
+        else {
+          // moveObstacle = true;
+        }
+
+      }
+
+      if (args === 'impactee') {
+
+        if (targetCellRef.obstacle.destructible.state === true) {
+
+          if (targetCellRef.obstacle.hp - damage > 0) {
+
+            let hp = targetCellRef.obstacle.hp - damage;
+
+            targetCellRef.obstacle = {
+              state: targetCellRef.obstacle.state,
+              name: targetCellRef.obstacle.name,
+              type: targetCellRef.obstacle.type,
+              hp: hp,
+              destructible: targetCellRef.obstacle.destructible,
+              locked: targetCellRef.obstacle.locked,
+              weight: targetCellRef.obstacle.weight,
+              height: targetCellRef.obstacle.height,
+              items: targetCellRef.obstacle.items,
+              effects: targetCellRef.obstacle.effects,
+              moving: targetCellRef.obstacle.moving
+            };
+
+            this.obstacleBarrierToDestroy.push({
+              type: 'obstacle',
+              action: 'damage',
+              count: 0,
+              limit: 30,
+              complete: false,
+              cell: targetCellRef,
+            })
+
+            if (this.rnJesus(1,4) === 1) {
+              moveObstacle = true;
+            }
+
+          }
+
+          // DESTROY OBSTACLE W/ OR W/O RUBBLE
+          else if (targetCellRef.obstacle.hp - damage <= 0) {
+            let itemsToDrop = [];
+
+            if (targetCellRef.obstacle.destructible.leaveRubble === true) {
+              // console.log('leave rubble on ',targetCell.number,'removing obstacle');
+
+              if (targetCellRef.obstacle.items[0]) {
+                itemsToDrop = targetCellRef.obstacle.items;
+              }
+              targetCellRef.rubble = true;
+              // targetCell.terrain.type = 'hazard';
+
+              targetCellRef.obstacle = {
+                state: false,
+                name: targetCellRef.obstacle.name,
+                type: targetCellRef.obstacle.type,
+                hp: 0,
+                destructible: targetCellRef.obstacle.destructible,
+                locked: targetCellRef.obstacle.locked,
+                weight: targetCellRef.obstacle.weight,
+                height: targetCellRef.obstacle.height,
+                items: targetCellRef.obstacle.items,
+                effects: targetCellRef.obstacle.effects,
+                moving: targetCellRef.obstacle.moving
+              };
+
+
+            }
+
+            else {
+              // console.log('no rubble. Just remove obstacle');
+              if (targetCellRef.obstacle.items[0]) {
+                itemsToDrop = targetCellRef.obstacle.items;
+              }
+
+              targetCellRef.obstacle = {
+                state: false,
+                name: targetCellRef.obstacle.name,
+                type: targetCellRef.obstacle.type,
+                hp: 0,
+                destructible: targetCellRef.obstacle.destructible,
+                locked: targetCellRef.obstacle.locked,
+                weight: targetCellRef.obstacle.weight,
+                height: targetCellRef.obstacle.height,
+                items: targetCellRef.obstacle.items,
+                effects: targetCellRef.obstacle.effects,
+                moving: targetCellRef.obstacle.moving
+              };
+
+            }
+
+
+            // DROP OBSTACLE ITEMS?
+            if (itemsToDrop[0]) {
+
+              this.obstacleItemDrop(targetCellRef,undefined);
+
+            }
+
+            this.obstacleBarrierToDestroy.push({
+              type: 'obstacle',
+              action: 'destroy',
+              count: 0,
+              limit: 30,
+              complete: false,
+              cell: targetCellRef,
+            })
+
+            if (!this.cellPopups.find(x => x.msg === 'destroyedItem')) {
+              this.cellPopups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit: 35,
+                  type: '',
+                  position: '',
+                  msg: 'destroyedItem',
+                  img: '',
+                  cell: targetCellRef,
+                }
+              )
+            }
+
+          }
+
+        }
+        else {
+          moveObstacle = true;
+        }
+
+      }
+
+      if (moveObstacle === true) {
+
+        if (args === 'impactee') {
+          shouldMoveImpactee = true;
+        }
+
+      }
+
+    }
+
+    function damageBarrier(args,myCell) {
+
+      let damage = 1;
+      if (this.rnJesus(1,2) === 1) {
+        damage = this.rnJesus(1,2);
+      }
+
+      if (myCell === true) {
+
+        if (myCellRef.barrier.destructible.state === true) {
+
+          if (myCellRef.barrier.hp - damage > 0) {
+
+            let hp = myCellRef.barrier.hp - damage;
+
+            myCellRef.barrier =
+            {
+              state: myCellRef.barrier.state,
+              name: myCellRef.barrier.name,
+              type: myCellRef.barrier.type,
+              hp: hp,
+              destructible: myCellRef.barrier.destructible,
+              locked: myCellRef.barrier.locked,
+              position: myCellRef.barrier.position,
+              height: myCellRef.barrier.height,
+            };
+
+            this.obstacleBarrierToDestroy.push({
+              type: 'barrier',
+              action: 'damage',
+              count: 0,
+              limit: 30,
+              complete: false,
+              cell: myCellRef,
+            })
+
+          }
+
+          // DESTROY FWD BARRIER W/ OR W/O RUBBLE
+          else if (myCellRef.barrier.hp - damage <= 0) {
+            if (myCellRef.barrier.destructible.leaveRubble === true) {
+
+              myCellRef.rubble = true;
+
+              myCellRef.barrier =
+              {
+                state: false,
+                name: myCellRef.barrier.name,
+                type: myCellRef.barrier.type,
+                hp: 0,
+                destructible: myCellRef.barrier.destructible,
+                locked: myCellRef.barrier.locked,
+                position: myCellRef.barrier.position,
+                height: myCellRef.barrier.height,
+              };
+
+              if (!this.cellPopups.find(x => x.msg === 'destroyedItem' && x.cell.number.x === myCellRef.number.x && x.cell.number.y === myCellRef.number.y)) {
+                this.cellPopups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 35,
+                    type: '',
+                    position: '',
+                    msg: 'destroyedItem',
+                    img: '',
+                    cell: myCellRef,
+                  }
+                )
+              }
+
+
+            } else {
+              // console.log('no rubble. Just remove barrier');
+
+              myCellRef.barrier =
+              {
+                state: false,
+                name: myCellRef.barrier.name,
+                type: myCellRef.barrier.type,
+                hp: 0,
+                destructible: myCellRef.barrier.destructible,
+                locked: myCellRef.barrier.locked,
+                position: myCellRef.barrier.position,
+                height: myCellRef.barrier.height,
+              };
+
+              if (!this.cellPopups.find(x => x.msg === 'destroyedItem' && x.cell.number.x === myCellRef.number.x && x.cell.number.y === myCellRef.number.y)) {
+                this.cellPopups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 35,
+                    type: '',
+                    position: '',
+                    msg: 'destroyedItem',
+                    img: '',
+                    cell: myCellRef,
+                  }
+                )
+              }
+
+
+            }
+
+            this.obstacleBarrierToDestroy.push({
+              type: 'barrier',
+              action: 'destroy',
+              count: 0,
+              limit: 30,
+              complete: false,
+              cell: myCellRef,
+            })
+
+          }
+
+
+        }
+
+      }
+      else {
+
+        if (targetCellRef.barrier.position === this.getOppositeDirection(direction)) {
+
+          if (targetCellRef.barrier.destructible.state === true) {
+
+            if (targetCellRef.barrier.hp - damage > 0) {
+
+              let hp = targetCellRef.barrier.hp - damage;
+
+              targetCellRef.barrier =
+              {
+                state: targetCellRef.barrier.state,
+                name: targetCellRef.barrier.name,
+                type: targetCellRef.barrier.type,
+                hp: hp,
+                destructible: targetCellRef.barrier.destructible,
+                locked: targetCellRef.barrier.locked,
+                position: targetCellRef.barrier.position,
+                height: targetCellRef.barrier.height,
+              };
+
+              this.obstacleBarrierToDestroy.push({
+                type: 'barrier',
+                action: 'damage',
+                count: 0,
+                limit: 30,
+                complete: false,
+                cell: targetCellRef,
+              })
+            }
+
+            // DESTROY FWD BARRIER W/ OR W/O RUBBLE
+            else if (targetCellRef.barrier.hp - damage <= 0) {
+              if (targetCellRef.barrier.destructible.leaveRubble === true) {
+
+                myCellRef.rubble = true;
+
+                targetCellRef.barrier =
+                {
+                  state: false,
+                  name: targetCellRef.barrier.name,
+                  type: targetCellRef.barrier.type,
+                  hp: 0,
+                  destructible: targetCellRef.barrier.destructible,
+                  locked: targetCellRef.barrier.locked,
+                  position: targetCellRef.barrier.position,
+                  height: targetCellRef.barrier.height,
+                };
+
+                if (!this.cellPopups.find(x => x.msg === 'destroyedItem' && x.cell.number.x === targetCellRef.number.x && x.cell.number.y === targetCellRef.number.y)) {
+                  this.cellPopups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 35,
+                      type: '',
+                      position: '',
+                      msg: 'destroyedItem',
+                      img: '',
+                      cell: targetCellRef,
+                    }
+                  )
+                }
+
+
+              } else {
+                // console.log('no rubble. Just remove barrier');
+
+                targetCellRef.barrier =
+                {
+                  state: false,
+                  name: targetCellRef.barrier.name,
+                  type: targetCellRef.barrier.type,
+                  hp: 0,
+                  destructible: targetCellRef.barrier.destructible,
+                  locked: targetCellRef.barrier.locked,
+                  position: targetCellRef.barrier.position,
+                  height: targetCellRef.barrier.height,
+                };
+
+                if (!this.cellPopups.find(x => x.msg === 'destroyedItem' && x.cell.number.x === targetCellRef.number.x && x.cell.number.y === targetCellRef.number.y)) {
+                  this.cellPopups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 35,
+                      type: '',
+                      position: '',
+                      msg: 'destroyedItem',
+                      img: '',
+                      cell: targetCellRef,
+                    }
+                  )
+                }
+
+              }
+
+              this.obstacleBarrierToDestroy.push({
+                type: 'barrier',
+                action: 'destroy',
+                count: 0,
+                limit: 30,
+                complete: false,
+                cell: targetCellRef,
+              })
+
+            }
+
+
+          }
+
+        }
+
+      }
+
+    }
+
+
+    if (moveObstacle === true && impactee === "obstacle") {
+
+
+      let destCell = this.getCellFromDirection(1,targetCellRef.number,direction);
+      let destCellRef = this.gridInfo.find(x => x.number.x === destCell.x && x.number.y === destCell.y);
+      let destCellOccupant = "";
+      let preMoveSpeed = this.rnJesus(0,5);
+      let moveSpeed = 0;
+      if (preMoveSpeed <= 1) {
+        moveSpeed = .05;
+      }
+      if (preMoveSpeed === 2) {
+        moveSpeed = .1;
+      }
+      if (preMoveSpeed > 2 && preMoveSpeed < 4) {
+        moveSpeed = .125;
+      }
+      if (preMoveSpeed > 4) {
+        moveSpeed = .2;
+      }
+      if (this.terrainMoveSpeedRef[targetCellRef.terrain.type]) {
+        moveSpeed = this.terrainMoveSpeedRef[targetCellRef.terrain.type];
+      }
+
+
+      let targetFree = true;
+      if (targetCellRef.barrier.state === true && targetCellRef.barrier.position === direction) {
+        targetFree = false;
+      }
+      if (destCellRef) {
+
+        if (destCellRef.barrier.state === true && destCellRef.barrier.position === this.getOppositeDirection(direction)) {
+          targetFree = false;
+        }
+
+        if (destCellRef.obstacle.state === true) {
+          targetFree = false;
+        }
+
+        if (this.players.find(x => x.currentPosition.cell.number.x === destCellRef.number.x && x.currentPosition.cell.number.y === destCellRef.number.y)) {
+          targetFree = false;
+        }
+
+      }
+
+
+      if (targetFree === true) {
+
+        if (destCellRef) {
+
+          let obstacleCrementObj = this.obstacleMoveCrementer(targetCellRef,destCellRef);
+
+          targetCellRef.obstacle =
+          {
+            state: targetCellRef.obstacle.state,
+            name: targetCellRef.obstacle.name,
+            type: targetCellRef.obstacle.type,
+            hp: targetCellRef.obstacle.hp,
+            destructible: targetCellRef.obstacle.destructible,
+            locked: targetCellRef.obstacle.locked,
+            weight: targetCellRef.obstacle.weight,
+            height: targetCellRef.obstacle.height,
+            items: targetCellRef.obstacle.items,
+            effects: targetCellRef.obstacle.effects,
+            moving: {
+              state: true,
+              step: obstacleCrementObj.step,
+              origin: {
+                number: targetCellRef.number,
+                center: targetCellRef.center,
+              },
+              destination: {
+                number: destCellRef.number,
+                center: destCellRef.center,
+              },
+              currentPosition: targetCellRef.center,
+              nextPosition: obstacleCrementObj.pos,
+              moveSpeed: moveSpeed,
+              pushable: true,
+              pushed: true,
+              pusher: -1,
+              falling: targetCellRef.obstacle.moving.falling,
+            }
+          };
+
+
+        }
+
+        if (!destCellRef) {
+
+          let voidCenter = this.getVoidCenter(1,direction,targetCellRef.center);
+
+          let obstacleCrementObj = this.obstacleMoveCrementer(targetCellRef,{center:voidCenter});
+
+          targetCellRef.obstacle =
+          {
+            state: targetCellRef.obstacle.state,
+            name: targetCellRef.obstacle.name,
+            type: targetCellRef.obstacle.type,
+            hp: targetCellRef.obstacle.hp,
+            destructible: targetCellRef.obstacle.destructible,
+            locked: targetCellRef.obstacle.locked,
+            weight: targetCellRef.obstacle.weight,
+            height: targetCellRef.obstacle.height,
+            items: targetCellRef.obstacle.items,
+            effects: targetCellRef.obstacle.effects,
+            moving: {
+              state: true,
+              step: obstacleCrementObj.step,
+              origin: {
+                number: targetCellRef.number,
+                center: targetCellRef.center,
+              },
+              destination: {
+                number: {
+                  x: undefined,
+                  y: undefined
+                },
+                center: voidCenter,
+              },
+              currentPosition: targetCellRef.center,
+              nextPosition: obstacleCrementObj.pos,
+              moveSpeed: moveSpeed,
+              pushable: true,
+              pushed: true,
+              pusher: -1,
+              falling: targetCellRef.obstacle.moving.falling,
+            }
+          };
+
+        }
+
+      }
+
+
+    }
 
   }
   pointChecker = (player) => {
@@ -16526,6 +17302,7 @@ class App extends Component {
         }
 
         if (destCellRef.barrier.state === true) {
+
           let barrier = false;
           if (destCellRef.barrier.position === this.getOppositeDirection(impactDirection)) {
             barrier = true;
@@ -16536,7 +17313,6 @@ class App extends Component {
               destCellOccupant = "barrier";
               resetPush = true;
           }
-
 
         }
 
@@ -16576,10 +17352,10 @@ class App extends Component {
         for(const plyr of this.players) {
           if(plyr.currentPosition.cell.number.x === destCell.x && plyr.currentPosition.cell.number.y === destCell.y) {
 
-            // change when implementing push player
             canPushTargetFree = false;
             resetPush = true;
             destCellOccupant = `player_${plyr.number}`;
+
           }
         }
 
@@ -16797,8 +17573,6 @@ class App extends Component {
         if (this.players[player.number-1].popups.find(x=>x.msg === 'noPush')) {
           this.players[player.number-1].popups.splice(this.players[player.number-1].popups.findIndex(x=>x.msg === 'noPush'),1)
         }
-
-
 
 
         let obstacleCrementObj = this.obstacleMoveCrementer(obstacleCell,destCellRef);
@@ -28344,7 +29118,7 @@ class App extends Component {
                 limit: player.halfPushBack.countUp.limit,
               }
               console.log('player 1/2 pushback peak');
-              this.handleHalfPushBackResult('player',player);
+              // this.handleHalfPushBackResult('player',player);
               player.halfPushBack.countDown.state = true;
             }
 
@@ -28366,6 +29140,7 @@ class App extends Component {
 
               // end
               console.log('player 1/2 pushback end');
+              this.handleHalfPushBackResult('player',player);
               player.halfPushBack.state = false;
             }
 
@@ -30320,7 +31095,7 @@ class App extends Component {
             }
 
             console.log('obstacle 1/2 pushback peak');
-            this.handleHalfPushBackResult('obstacle',halfPushBackObstacle);
+            // this.handleHalfPushBackResult('obstacle',halfPushBackObstacle);
             halfPushBackObstacle.countDown.state = true;
           }
 
@@ -30341,6 +31116,7 @@ class App extends Component {
             }
 
             console.log('obstacle 1/2 pushback end');
+            this.handleHalfPushBackResult('obstacle',halfPushBackObstacle);
             halfPushBackObstacle.state = false;
           }
 
@@ -33600,9 +34376,6 @@ class App extends Component {
           }
 
 
-          this.players[plyr.number-1] = plyr;
-
-
           // PLAYER POPUPS & TRACKING OUTLINES
           if (x === this.gridWidth && y === this.gridWidth ) {
 
@@ -33994,6 +34767,8 @@ class App extends Component {
             }
 
           }
+
+          this.players[plyr.number-1] = plyr;
 
 
         }
