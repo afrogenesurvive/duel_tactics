@@ -34233,6 +34233,35 @@ class App extends Component {
             // context.drawImage(indicatorImgs.dodge, point.x-45, point.y-35, 35,35);
 
           }
+
+          if (player.halfPushBack.state === true) {
+
+
+            // let unit = no of pixels per increment
+            // set base coords
+              // point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)
+
+              // set mod = {
+              //   x: undefined,
+              //   y: undefined
+              // }
+
+
+            // if count up state is true, mod coords in pb direction,
+            // if count down state is true mod coords in opposite pb direction
+
+            // direction based mod, {x: +(0/(unit*2)/-(unit*2)), y: +(0/unit/-unit) }
+            // final coords = base coods + mod
+
+            // north: x += unit*2, y-= unit
+            // south: x -= unit*2, y+= unit
+            // east: x += unit*2, y+= unit
+            // west: x -= unit*2, y-= unit
+
+
+            // context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+
+          }
           // DEPTH SORTING!!
 
 
