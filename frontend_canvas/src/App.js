@@ -11304,6 +11304,7 @@ class App extends Component {
     }
 
     if (type.split("_")[1]) {
+      let damage = 1;
 
       if (type.split("_")[0] === "halfPushBackImpactee") {
 
@@ -11343,6 +11344,49 @@ class App extends Component {
           default:
 
         }
+      }
+
+
+      if (player.hp - damage <= 0) {
+        this.killPlayer(this.players[player.number-1]);
+
+        let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+        this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+        this.players[player.number-1].points--;
+
+        this.pointChecker(player)
+      }
+      else {
+
+        this.players[player.number-1].hp -= damage;
+
+        if (!this.players[player.number-1].popups.find(x=>x.msg.split("_")[0] === "hpDown")) {
+          this.players[player.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 30,
+              type: '',
+              position: '',
+              msg: 'hpDown_'+'-'+damage+'',
+              img: '',
+
+            }
+          )
+        }
+
+
+        if (this.players[player.number-1].hp === 1) {
+
+          // ADJUST TARGET MOVE SPEED
+          let currentMoveSpeedIndx = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
+          if (currentMoveSpeedIndx > 0) {
+            this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentMoveSpeedIndx-1]
+          }
+
+        }
+
       }
 
 
@@ -11862,7 +11906,7 @@ class App extends Component {
     let myCellRef = undefined;
 
 
-
+    // PLAYER HALF PUSHED BACK
     if (type === 'player') {
 
       direction = data.halfPushBack.direction;
@@ -11873,10 +11917,11 @@ class App extends Component {
       shouldDamageImpactor = (this.rnJesus(1,data.crits.guardBreak) === 1);
       shouldDeflectImpactor = (this.rnJesus(1,data.crits.guardBreak) === 1);
 
+
         switch (impactee) {
           case "obstacle":
 
-          // IMPACTOR
+          // IMPACTOR DAMAGE, DEFLECT?
             if (shouldDamageImpactor === true) {
               this.handleMiscPlayerDamage(data,'halfPushBackImpactor_'+impactee+'');
             }
@@ -11886,7 +11931,7 @@ class App extends Component {
             }
 
 
-            // IMPACTEE
+            // IMPACTEE DAMAGE?
             shouldDamageImpactee = (this.rnJesus(1,(targetCellRef.obstacle.height+targetCellRef.obstacle.weight+targetCellRef.obstacle.hp)) === 1);
             if (shouldDamageImpactee === true) {
               damageObstacle('impactee');
@@ -11896,7 +11941,7 @@ class App extends Component {
           break;
           case "player":
 
-            // IMPACTOR
+            // IMPACTOR DAMAGE, DEFLECT?
             if (shouldDamageImpactor === true) {
               this.handleMiscPlayerDamage(data,'halfPushBackImpactor_'+impactee+'');
             }
@@ -11906,7 +11951,7 @@ class App extends Component {
             }
 
 
-            // IMPACTEE
+            // IMPACTEE DAMAGE, DEFLECT/ PUSHBACK + DEFLECT?
             let impacteePlayerRef = this.players.find(x => x.currentPosition.cell.number.x === targetCellRef.number.x && x.currentPosition.cell.number.y === targetCellRef.number.y);
             shouldDamageImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
 
@@ -11929,6 +11974,7 @@ class App extends Component {
           break;
           case "barrier":
 
+            // IMPACTOR DAMAGE, DEFLECT?
             if (shouldDamageImpactor === true) {
               this.handleMiscPlayerDamage(data,'halfPushBackImpactor_'+impactee+'');
             }
@@ -11938,7 +11984,7 @@ class App extends Component {
             }
 
 
-            // IMPACTEE
+            // IMPACTEE DAMAGE?
             let myCell = false;
             if (myCellRef.barrier.state === true && myCellRef.barrier.position === data.halfPushBack.direction) {
               myCell = true;
@@ -11955,6 +12001,7 @@ class App extends Component {
           break;
           case "higherElevation":
 
+            // DAMAGE, DEFLECT IMPACTOR?
             if (shouldDamageImpactor === true) {
               this.handleMiscPlayerDamage(data,'halfPushBackImpactor_'+impactee+'');
             }
@@ -11970,6 +12017,7 @@ class App extends Component {
 
     }
 
+    // OBSTACLE HALF PUSHED BACK
     if (type === 'obstacle') {
 
       direction = data.direction;
@@ -12067,6 +12115,7 @@ class App extends Component {
         damage = this.rnJesus(1,2);
       }
 
+      // IMPACTOR DAMAGE OR DESTROY, DON'T MOVE
       if (args === 'impactor') {
 
         if (myCellRef.obstacle.destructible.state === true) {
@@ -12195,6 +12244,7 @@ class App extends Component {
 
       }
 
+      // IMPACTEE, DAMAGE, DESTROY AND MOVE?
       if (args === 'impactee') {
 
         if (targetCellRef.obstacle.destructible.state === true) {
@@ -12436,7 +12486,6 @@ class App extends Component {
                   }
                 )
               }
-
 
             }
 
