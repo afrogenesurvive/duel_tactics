@@ -7625,7 +7625,8 @@ class App extends Component {
       }
 
       if (subType === "obstacle") {
-        unit = 1.5;
+
+        unit = 2;
 
         baseCoords = {
           x: data.coords.x,
@@ -12404,7 +12405,7 @@ class App extends Component {
 
           // DESTROY FWD BARRIER W/ OR W/O RUBBLE
           else if (myCellRef.barrier.hp - damage <= 0) {
-            if (myCellRef.barrier.destructible.leaveRubble === true) {
+            if (myCellRef.barrier.destructible.leaveRubble === true && myCellRef.obstacle.state !== true && myCellRef.item.name === "") {
 
               myCellRef.rubble = true;
 
@@ -12517,9 +12518,9 @@ class App extends Component {
 
             // DESTROY FWD BARRIER W/ OR W/O RUBBLE
             else if (targetCellRef.barrier.hp - damage <= 0) {
-              if (targetCellRef.barrier.destructible.leaveRubble === true) {
+              if (targetCellRef.barrier.destructible.leaveRubble === true && targetCellRef.obstacle.state !== true && targetCellRef.item.name === "") {
 
-                myCellRef.rubble = true;
+                targetCellRef.rubble = true;
 
                 targetCellRef.barrier =
                 {
@@ -13556,7 +13557,7 @@ class App extends Component {
 
                       // DESTROY FWD BARRIER W/ OR W/O RUBBLE
                       else if (myCell.barrier.hp - damage <= 0) {
-                        if (myCell.barrier.destructible.leaveRubble === true) {
+                        if (myCell.barrier.destructible.leaveRubble === true && myCell.obstacle.state !== true && myCell.item.name === "") {
                           // console.log('leave rubble on ',myCell.number,'removing barrier');
                           myCell.rubble = true;
                           // myCell.terrain.type = 'hazard';
@@ -13766,7 +13767,7 @@ class App extends Component {
 
                   // DESTROY FWD BARRIER W/ OR W/O RUBBLE
                   else if (targetCell.barrier.hp - damage <= 0) {
-                    if (targetCell.barrier.destructible.leaveRubble === true) {
+                    if (targetCell.barrier.destructible.leaveRubble === true && targetCell.obstacle.state !== true && targetCell.item.name === "") {
                       // console.log('leave rubble on ',targetCell.number,'removing barrier');
                       targetCell.rubble = true;
                       // targetCell.terrain.type = 'hazard';
@@ -14279,7 +14280,7 @@ class App extends Component {
 
                       // DESTROY FWD BARRIER W/ OR W/O RUBBLE
                       else if (myCell.barrier.hp - damage <= 0) {
-                        if (myCell.barrier.destructible.leaveRubble === true) {
+                        if (myCell.barrier.destructible.leaveRubble === true && myCell.obstacle.state !== true && myCell.item.name === "") {
                           // console.log('leave rubble on ',myCell.number,'removing barrier');
                           myCell.rubble = true;
                           // myCell.terrain.type = 'hazard';
@@ -14495,7 +14496,7 @@ class App extends Component {
                   // DESTROY FWD BARRIER W/ OR W/O RUBBLE
                   else if (targetCell.barrier.hp - damage <= 0) {
 
-                    if (targetCell.barrier.destructible.leaveRubble === true) {
+                    if (targetCell.barrier.destructible.leaveRubble === true && targetCell.obstacle.state !== true && targetCell.item.name === "") {
 
                       // console.log('leave rubble on ',targetCell2.number,'removing barrier');
                       targetCell.rubble = true;
@@ -14951,7 +14952,7 @@ class App extends Component {
 
                         // DESTROY FWD BARRIER W/ OR W/O RUBBLE
                         else if (targetCell.barrier.hp - damage <= 0) {
-                          if (targetCell.barrier.destructible.leaveRubble === true) {
+                          if (targetCell.barrier.destructible.leaveRubble === true && targetCell.obstacle.state !== true && targetCell.item.name === "") {
                             // console.log('leave rubble on ',targetCell2.number,'removing barrier');
                             targetCell.rubble = true;
                             // targetCell2.terrain.type = 'hazard';
@@ -15132,7 +15133,7 @@ class App extends Component {
 
                       // DESTROY FWD BARRIER W/ OR W/O RUBBLE
                       else if (myCell.barrier.hp - damage <= 0) {
-                        if (myCell.barrier.destructible.leaveRubble === true) {
+                        if (myCell.barrier.destructible.leaveRubble === true && myCell.obstacle.state !== true && myCell.item.name === "") {
                           // console.log('leave rubble on ',myCell.number,'removing barrier');
                           myCell.rubble = true;
                           // myCell.terrain.type = 'hazard';
@@ -15344,7 +15345,7 @@ class App extends Component {
 
                     // DESTROY FWD BARRIER W/ OR W/O RUBBLE
                     else if (targetCell2.barrier.hp - damage <= 0) {
-                      if (targetCell2.barrier.destructible.leaveRubble === true) {
+                      if (targetCell2.barrier.destructible.leaveRubble === true && targetCell2.obstacle.state !== true && targetCell2.item.name === "") {
                         // console.log('leave rubble on ',targetCell2.number,'removing barrier');
                         targetCell2.rubble = true;
                         // targetCell2.terrain.type = 'hazard';
@@ -15816,7 +15817,7 @@ class App extends Component {
 
               // DESTROY FWD BARRIER W/ OR W/O RUBBLE
               else if (myCell.barrier.hp - damage <= 0) {
-                if (myCell.barrier.destructible.leaveRubble === true) {
+                if (myCell.barrier.destructible.leaveRubble === true && myCell.obstacle.state !== true && myCell.item.name === "") {
                   // console.log('leave rubble on ',targetCell.number,'removing barrier');
                   myCell.rubble = true;
                   // targetCell.terrain.type = 'hazard';
@@ -16058,7 +16059,7 @@ class App extends Component {
             // DESTROY FWD BARRIER W/ OR W/O RUBBLE
             else if (targetCell.barrier.hp - damage <= 0) {
 
-              if (targetCell.barrier.destructible.leaveRubble === true) {
+              if (targetCell.barrier.destructible.leaveRubble === true && targetCell.obstacle.state !== true && targetCell.item.name === "") {
                 // console.log('leave rubble on ',targetCell.number,'removing barrier');
                 targetCell.rubble = true;
                 // targetCell.terrain.type = 'hazard';
@@ -16450,7 +16451,7 @@ class App extends Component {
 
                 // DESTROY FWD BARRIER W/ OR W/O RUBBLE
                 else if (targetCell.barrier.hp - damage <= 0) {
-                  if (targetCell.barrier.destructible.leaveRubble === true) {
+                  if (targetCell.barrier.destructible.leaveRubble === true && targetCell.obstacle.state !== true && targetCell.item.name === "") {
                     // console.log('leave rubble on ',targetCell.number,'removing barrier');
                     targetCell.rubble = true;
                     // targetCell.terrain.type = 'hazard';
@@ -16660,7 +16661,7 @@ class App extends Component {
             // DESTROY FWD BARRIER W/ OR W/O RUBBLE
             else if (targetCell.barrier.hp - damage <= 0) {
 
-              if (targetCell.barrier.destructible.leaveRubble === true) {
+              if (targetCell.barrier.destructible.leaveRubble === true && targetCell.obstacle.state !== true && targetCell.item.name === "") {
                 // console.log('leave rubble on ',targetCell.number,'removing barrier');
                 targetCell.rubble = true;
                 // targetCell.terrain.type = 'hazard';
@@ -17020,7 +17021,7 @@ class App extends Component {
 
                 // DESTROY FWD BARRIER W/ OR W/O RUBBLE
                 else if (targetCell.barrier.hp - damage <= 0) {
-                  if (targetCell.barrier.destructible.leaveRubble === true) {
+                  if (targetCell.barrier.destructible.leaveRubble === true && targetCell.obstacle.state !== true && targetCell.item.name === "") {
                     // console.log('leave rubble on ',targetCell.number,'removing barrier');
                     targetCell.rubble = true;
                     // targetCell.terrain.type = 'hazard';
@@ -34006,13 +34007,10 @@ class App extends Component {
             }
 
           }
+          // IDLE & HALFPUSH BACK
           else if (plyr.moving.state === false && plyr.ghost.state !== true && plyr.dodging.state !== true) {
 
             if (plyr.halfPushBack.state === true) {
-
-
-
-
 
 
               let finalCoords = this.calcElasticCountCoords('halfPushBack','player',plyr).coords;
@@ -35266,32 +35264,53 @@ class App extends Component {
             // console.log('falling obstacle',gridInfoCell.obstacle.moving.nextPosition,'x/y',x,y);
           }
         }
-
+        // HALFPUSHBACK
         if (this.halfPushBackObstacles.length > 0) {
           let obstacleImg = this.obstacleImgs[gridInfoCell.obstacle.type]
           let drawCell;
           for (const obs of this.halfPushBackObstacles) {
+            // if (obs.state === true) {
+            //   if (obs.countUp.state === true) {
+            //     if (obs.countUp.count === 1 && !obs.coords.x && !obs.coords.y) {
+            //       obs.coords = {
+            //         x: (iso.x - offset.x),
+            //         y: (iso.y - (obstacleImg.height)),
+            //       }
+            //       drawCell = this.calcElasticCountCoords('halfPushBack','obstacle',obs).drawCell;
+            //       console.log('drawCell1',drawCell);
+            //       if (x === drawCell.x && y === drawCell.y) {
+            //           context.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
+            //       }
+            //
+            //     }
+            //     else {
+            //
+            //       obs.coords = this.calcElasticCountCoords('halfPushBack','obstacle',obs).coords;
+            //       drawCell = this.calcElasticCountCoords('halfPushBack','obstacle',obs).drawCell;
+            //       console.log('drawCell2',drawCell);
+            //       if (x === drawCell.x && y === drawCell.y) {
+            //           context.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
+            //       }
+            //     }
+            //   }
+            // }
             if (obs.myCellNo.x === gridInfoCell.number.x && obs.myCellNo.y === gridInfoCell.number.y) {
               if (obs.state === true) {
                 if (obs.countUp.state === true) {
                   if (obs.countUp.count === 1 && !obs.coords.x && !obs.coords.y) {
+
                     obs.coords = {
                       x: (iso.x - offset.x),
                       y: (iso.y - (obstacleImg.height)),
                     }
-                    drawCell = this.calcElasticCountCoords('halfPushBack','obstacle',obs).drawCell;
-                    if (x === drawCell.x && y === drawCell.y) {
-                        context.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
-                    }
+                    context.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
 
                   }
                   else {
 
                     obs.coords = this.calcElasticCountCoords('halfPushBack','obstacle',obs).coords;
-                    drawCell = this.calcElasticCountCoords('halfPushBack','obstacle',obs).drawCell;
-                    if (x === drawCell.x && y === drawCell.y) {
-                        context.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
-                    }
+                    context.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
+
                   }
                 }
               }
@@ -35308,10 +35327,13 @@ class App extends Component {
 
                 let obstacleImg = this.obstacleImgs[cell.cell.obstacle.type];
                 context.drawImage(obstacleImg, iso.x - offset.x, iso.y - (obstacleImg.height));
+
               }
               if (cell.type === "barrier" && cell.cell.barrier.type) {
+
                 let barrierImg = this.barrierImgs[cell.cell.barrier.type][cell.cell.barrier.position];
                 context.drawImage(barrierImg, iso.x - offset.x, iso.y - barrierImg.height, barrierImg.width, barrierImg.height);
+
               }
 
             }
