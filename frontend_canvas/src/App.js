@@ -12797,8 +12797,8 @@ class App extends Component {
 
     }
 
-    moveObstacle = true;
-    impactee = "obstacle";
+    // moveObstacle = true;
+    // impactee = "obstacle";
 
     if (moveObstacle === true && impactee === "obstacle") {
 
