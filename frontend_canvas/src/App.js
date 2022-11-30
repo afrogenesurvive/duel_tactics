@@ -331,7 +331,7 @@ class App extends Component {
     };
     this.levelData9 = {
       row0: ['**_a_0.0_a_0a*','**_i_0.1_a_0a*','**_*_0.2_a_0a*','cw_*_0.3_a_0a*','cw_h_0.4_a_0a*','cw_*_0.5_a_0a*','**_*_0.6_a_0a*','**_i_0.7_a_0a*','**_*_0.8_h_0a*','**_*_0.9_h_0a*'],
-      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','ce_*_1.4_a_0a*','cw_*_1.5_a_0a*','**_*_1.6_a_0a*','cs_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
+      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','ce_*_1.4_a_0a*','cw_*_1.5_a_0a*','**_*_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_*_2.2_a_0a*','**_*_2.3_a_0a*','cs_a_2.4_a_0a*','cn_*_2.5_a_0a*','**_h_2.6_a_0a*','cs_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_*_3.2_a_0a*','**_*_3.3_a_0a*','**_h_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
       row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_c_4.3_f_0a*','**_*_4.4_a_0a*','cn_*_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
@@ -1252,11 +1252,11 @@ class App extends Component {
       //   type: 'item',
       //   effect: '',
       // },
-      {
-        name: 'hpUp',
-        type: 'item',
-        effect: 'hpUp',
-      },
+      // {
+      //   name: 'hpUp',
+      //   type: 'item',
+      //   effect: 'hpUp',
+      // },
       // {
       //   name: 'hpDown',
       //   type: 'item',
@@ -1310,21 +1310,21 @@ class App extends Component {
       //   subType: 'helmet',
       //   effect: '',
       // },
-      // {
-      //   name: 'strengthUp',
-      //   type: 'item',
-      //   effect: 'strengthUp',
-      // },
-      // {
-      //   name: 'strengthUp',
-      //   type: 'item',
-      //   effect: 'strengthUp',
-      // },
       {
-        name: 'hpUp',
+        name: 'strengthUp',
         type: 'item',
-        effect: 'hpUp',
+        effect: 'strengthUp',
       },
+      {
+        name: 'strengthUp',
+        type: 'item',
+        effect: 'strengthUp',
+      },
+      // {
+      //   name: 'hpUp',
+      //   type: 'item',
+      //   effect: 'hpUp',
+      // },
       {
         name: 'strengthUp',
         type: 'item',
@@ -1534,6 +1534,10 @@ class App extends Component {
             state: false,
             count: 0,
             limit: 0,
+          },
+          coords: {
+            x: undefined,
+            y: undefined,
           },
         },
         defending: {
@@ -2003,6 +2007,10 @@ class App extends Component {
             state: false,
             count: 0,
             limit: 0,
+          },
+          coords: {
+            x: undefined,
+            y: undefined,
           },
         },
         defending: {
@@ -7579,6 +7587,165 @@ class App extends Component {
     return (tempPt);
 
   }
+  calcElasticCountCoords = (type,subType,data) => {
+
+    let drawCell;
+    let mod = {
+      x: undefined,
+      y: undefined,
+    }
+    let finalCoords = {
+      x: undefined,
+      y: undefined,
+    }
+
+    if (type === 'halfPushBack') {
+
+      let unit = .012;
+      let baseCoords = {
+        x: undefined,
+        y: undefined,
+      }
+      let dir = "";
+
+      if (subType === "player") {
+
+        baseCoords = {
+          x: data.halfPushBack.coords.x,
+          y: data.halfPushBack.coords.y,
+        }
+
+        if (data.halfPushBack.countUp.state === true) {
+          dir = data.halfPushBack.direction;
+        }
+        if (data.halfPushBack.countDown.state === true) {
+          dir = this.getOppositeDirection(data.halfPushBack.direction);
+        }
+
+      }
+
+      if (subType === "obstacle") {
+        unit = 1.5;
+
+        baseCoords = {
+          x: data.coords.x,
+          y: data.coords.y,
+        }
+
+        if (data.countUp.state === true) {
+          dir = data.direction;
+        }
+        if (data.countDown.state === true) {
+          dir = this.getOppositeDirection(data.direction);
+        }
+
+      }
+
+
+      switch (dir) {
+        case "north":
+            mod = {
+              x: unit*2,
+              y: -unit,
+            }
+          break;
+        case "south":
+            mod = {
+              x: -(unit*2),
+              y: unit,
+            }
+          break;
+        case "east":
+            mod = {
+              x: (unit*2),
+              y: unit,
+            }
+          break;
+        case "west":
+            mod = {
+              x: -(unit*2),
+              y: -unit,
+            }
+          break;
+        default:
+
+      }
+
+
+      finalCoords = {
+        x: (baseCoords.x + mod.x),
+        y: (baseCoords.y + mod.y),
+      }
+      let targetCell;
+
+      if (subType === "player") {
+
+        data.halfPushBack.coords = finalCoords;
+
+        targetCell = this.getCellFromDirection(1,data.currentPosition.cell.number,data.halfPushBack.direction)
+
+      }
+      if (subType === "obstacle") {
+
+        data.coords = finalCoords;
+
+        targetCell = this.getCellFromDirection(1,data.myCellNo,data.direction)
+
+      }
+
+
+      let targetCellRef = this.gridInfo.find(x => x.number.x === targetCell.x && x.number.y === targetCell.y)
+      drawCell = {x: undefined, y: undefined};
+
+      if (subType === "player") {
+
+        if (data.halfPushBack.countUp.state === true) {
+
+          if (targetCellRef) {
+            drawCell = targetCellRef.number;
+          }
+          else {
+            drawCell = data.currentPosition.cell.number;
+          }
+
+        }
+        if (data.halfPushBack.countDown.state === true) {
+          drawCell = data.currentPosition.cell.number;
+        }
+
+        this.players[data.number-1] = data;
+
+      }
+      if (subType === "obstacle") {
+
+        if (data.countUp.state === true) {
+
+          if (targetCellRef) {
+            drawCell = targetCellRef.number;
+          }
+          else {
+            drawCell = data.myCellNo;
+          }
+
+        }
+        if (data.countDown.state === true) {
+          drawCell = data.myCellNo;
+        }
+
+      }
+
+    }
+
+
+
+
+    return {
+      coords: finalCoords,
+      drawCell: drawCell,
+    };
+
+
+  }
 
 
   rnJesus = (min,max) => {
@@ -11839,6 +12006,11 @@ class App extends Component {
 
     if (object === 'player') {
 
+      let point = {
+        x: data.currentPosition.cell.center.x,
+        y: data.currentPosition.cell.center.y,
+      };
+
       data.halfPushBack = {
         state: true,
         direction: direction,
@@ -11846,12 +12018,16 @@ class App extends Component {
         countUp: {
           state: true,
           count: 0,
-          limit: 10,
+          limit: 6,
         },
         countDown: {
           state: false,
           count: 0,
-          limit: 10,
+          limit: 6,
+        },
+        coords: {
+          x: point.x-(this.playerDrawWidth/2),
+          y: point.y-(this.playerDrawHeight/2),
         },
       }
 
@@ -11877,6 +12053,10 @@ class App extends Component {
           state: false,
           count: 0,
           limit: 10,
+        },
+        coords: {
+          x: undefined,
+          y: undefined,
         },
       })
 
@@ -12623,8 +12803,8 @@ class App extends Component {
 
     }
 
-    moveObstacle = true;
-    impactee = "obstacle";
+    // moveObstacle = true;
+    // impactee = "obstacle";
 
     if (moveObstacle === true && impactee === "obstacle") {
 
@@ -20598,6 +20778,10 @@ class App extends Component {
               state: false,
               count: 0,
               limit: 0,
+            },
+            coords: {
+              x: undefined,
+              y: undefined,
             },
           },
           defending: {
@@ -29151,15 +29335,16 @@ class App extends Component {
 
 
           if (player.halfPushBack.countUp.state === true) {
+            player.action = "deflected";
 
             if (player.halfPushBack.countUp.count < player.halfPushBack.countUp.limit) {
 
-              if (player.halfPushBack.countUp.count <= 2) {
-                console.log('player 1/2 pushback start');
+              if (player.halfPushBack.countUp.count === 1) {
+                // console.log('player 1/2 pushback start');
               }
 
               player.halfPushBack.countUp.count++;
-              console.log('player 1/2 pushback count up',player.halfPushBack.countUp.count);
+              // console.log('player 1/2 pushback count up',player.halfPushBack.countUp.count);
             }
 
             if (player.halfPushBack.countUp.count >= player.halfPushBack.countUp.limit) {
@@ -29168,7 +29353,7 @@ class App extends Component {
                 count: 0,
                 limit: player.halfPushBack.countUp.limit,
               }
-              console.log('player 1/2 pushback peak');
+              // console.log('player 1/2 pushback peak');
               // this.handleHalfPushBackResult('player',player);
               player.halfPushBack.countDown.state = true;
             }
@@ -29179,7 +29364,7 @@ class App extends Component {
 
             if (player.halfPushBack.countDown.count < player.halfPushBack.countDown.limit) {
               player.halfPushBack.countDown.count++;
-              console.log('player 1/2 pushback count down',player.halfPushBack.countDown.count);
+              // console.log('player 1/2 pushback count down',player.halfPushBack.countDown.count);
             }
 
             if (player.halfPushBack.countDown.count >= player.halfPushBack.countDown.limit) {
@@ -29189,10 +29374,10 @@ class App extends Component {
                 limit: player.halfPushBack.countDown.limit,
               }
 
-              // end
-              console.log('player 1/2 pushback end');
+              // console.log('player 1/2 pushback end');
               this.handleHalfPushBackResult('player',player);
               player.halfPushBack.state = false;
+              player.action = "idle";
             }
 
           }
@@ -31132,12 +31317,12 @@ class App extends Component {
 
           if (halfPushBackObstacle.countUp.count < halfPushBackObstacle.countUp.limit) {
 
-            if (halfPushBackObstacle.countUp.count <= 2) {
-              console.log('obstacle 1/2 pushback start');
+            if (halfPushBackObstacle.countUp.count === 1) {
+              // console.log('obstacle 1/2 pushback start');
             }
 
             halfPushBackObstacle.countUp.count++;
-            console.log('obstacle 1/2 pushback count up',halfPushBackObstacle.countUp.count);
+            // console.log('obstacle 1/2 pushback count up',halfPushBackObstacle.countUp.count);
           }
 
           if (halfPushBackObstacle.countUp.count >= halfPushBackObstacle.countUp.limit) {
@@ -31147,7 +31332,7 @@ class App extends Component {
               limit: halfPushBackObstacle.countUp.limit,
             }
 
-            console.log('obstacle 1/2 pushback peak');
+            // console.log('obstacle 1/2 pushback peak');
             // this.handleHalfPushBackResult('obstacle',halfPushBackObstacle);
             halfPushBackObstacle.countDown.state = true;
           }
@@ -31158,7 +31343,7 @@ class App extends Component {
 
           if (halfPushBackObstacle.countDown.count < halfPushBackObstacle.countDown.limit) {
             halfPushBackObstacle.countDown.count++;
-            console.log('obstacle 1/2 pushback count down',halfPushBackObstacle.countDown.count);
+            // console.log('obstacle 1/2 pushback count down',halfPushBackObstacle.countDown.count);
           }
 
           if (halfPushBackObstacle.countDown.count >= halfPushBackObstacle.countDown.limit) {
@@ -31168,7 +31353,7 @@ class App extends Component {
               limit: halfPushBackObstacle.countDown.limit,
             }
 
-            console.log('obstacle 1/2 pushback end');
+            // console.log('obstacle 1/2 pushback end');
             this.handleHalfPushBackResult('obstacle',halfPushBackObstacle);
             halfPushBackObstacle.state = false;
           }
@@ -33311,6 +33496,7 @@ class App extends Component {
           //   plyr.currentPosition.cell.number.x === x &&
           //   plyr.currentPosition.cell.number.y === y
           // ) {
+          //
           //   switch(plyr.action) {
           //     case 'moving':
           //       let moveSpeed = plyr.speed.move;
@@ -33333,7 +33519,7 @@ class App extends Component {
           //       let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
           //       finalAnimIndex = moveAnimIndex;
           //       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-          //       if (plyr.target.void == true) {
+          //       if (plyr.target.cell1.void == true) {
           //         // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
           //       }
           //     break;
@@ -33388,9 +33574,9 @@ class App extends Component {
           //         // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
           //       }
           //       if (plyr.defending.count === 0) {
-          //         let animIndex2a = 4;
+          //         let animIndex2a = 5;
           //         finalAnimIndex = animIndex2a;
-          //         console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
+          //         // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
           //       }
           //     break;
           //     case 'idle':
@@ -33400,13 +33586,13 @@ class App extends Component {
           //       if (plyr.number === 2) {
           //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
           //       }
-          //       let animIndex3 = plyr.idleAnim.count+1;
+          //       let animIndex3 = plyr.idleAnim.count +1;
           //       finalAnimIndex = animIndex3;
           //     break;
           //     case 'falling':
           //       let animIndex4 = plyr.falling.count -1;
           //       finalAnimIndex = animIndex4;
-          //       // console.log('anim testing fall',plyr.falling.count,'final anim indx',finalAnimIndex,'plyr',plyr.number);
+          //       // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
           //     break;
           //     case 'deflected':
           //       let animIndex5 = plyr.success.deflected.count -1;
@@ -33423,6 +33609,14 @@ class App extends Component {
           //       if (plyr.success.deflected.count > 40 && plyr.success.deflected.count < 51) {
           //         animIndex5 = (plyr.success.deflected.count-40);
           //       }
+          //       if (plyr.halfPushBack.state === true) {
+          //         if (plyr.halfPushBack.countUp.state === true) {
+          //           animIndex5 = plyr.halfPushBack.countUp.count-1;
+          //         }
+          //         if (plyr.halfPushBack.countDown.state === true) {
+          //           animIndex5 = plyr.halfPushBack.countDown.count-1;
+          //         }
+          //       }
           //       finalAnimIndex = animIndex5;
           //       // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
           //     break;
@@ -33432,6 +33626,7 @@ class App extends Component {
           //       // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
           //     break;
           //   }
+          //
           // }
           // FOR TESTING BY CALLING ONLY @ 1 CELL
 
@@ -33547,6 +33742,14 @@ class App extends Component {
               }
               if (plyr.success.deflected.count > 40 && plyr.success.deflected.count < 51) {
                 animIndex5 = (plyr.success.deflected.count-40);
+              }
+              if (plyr.halfPushBack.state === true) {
+                if (plyr.halfPushBack.countUp.state === true) {
+                  animIndex5 = plyr.halfPushBack.countUp.count-1;
+                }
+                if (plyr.halfPushBack.countDown.state === true) {
+                  animIndex5 = plyr.halfPushBack.countDown.count-1;
+                }
               }
               finalAnimIndex = animIndex5;
               // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
@@ -33805,7 +34008,28 @@ class App extends Component {
           }
           else if (plyr.moving.state === false && plyr.ghost.state !== true && plyr.dodging.state !== true) {
 
-            if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y && plyr.success.deflected.state === false) {
+            if (plyr.halfPushBack.state === true) {
+
+
+
+
+
+
+              let finalCoords = this.calcElasticCountCoords('halfPushBack','player',plyr).coords;
+              let drawCell = this.calcElasticCountCoords('halfPushBack','player',plyr).drawCell;
+
+              if (x === drawCell.x && y === drawCell.y) {
+
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+
+              }
+
+
+
+            }
+            else {
+
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y && plyr.success.deflected.state === false) {
               // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
 
               // console.log('updatedPlayerImg',finalAnimIndex,sx, sy, sWidth, sHeight,point);
@@ -33887,6 +34111,10 @@ class App extends Component {
 
               // playerDrawLog(x,y,plyr)
             }
+
+            }
+
+
           }
           else if (plyr.target.cell1.void === true && plyr.moving.state === true && plyr.falling.state !== true && plyr.jumping.state !== true) {
 
@@ -34238,39 +34466,98 @@ class App extends Component {
 
           }
 
-          if (plyr.halfPushBack.state === true) {
-
-
-            // let unit = no of pixels per increment
-            // set base coords
-              // point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2)
-
-              // set mod = {
-              //   x: undefined,
-              //   y: undefined
-              // }
-
-
-            // if count up state is true, mod coords in pb direction,
-            // if count down state is true mod coords in opposite pb direction
-
-            // direction based mod, {x: +(0/(unit*2)/-(unit*2)), y: +(0/unit/-unit) }
-            // final coords = base coods + mod
-
-            // north: x += unit*2, y-= unit
-            // south: x -= unit*2, y+= unit
-            // east: x += unit*2, y+= unit
-            // west: x -= unit*2, y-= unit
-
-            // draw at cell of direction pushback to
-            // targetCell = this.getCellFromDirection(1,plyr.currentPosition.cell.number,plyr.halfPushBack.direction)
-            // if direction is east or soouth,
-            //   draw @ target cell,
-            //   else draw @ current position
-
-            // context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
-
-          }
+          // if (plyr.halfPushBack.state === true) {
+          //
+          //
+          //   let unit = 3;
+          //   let baseCoords = {
+          //     x: point.x-(this.playerDrawWidth/2),
+          //     y: point.y-(this.playerDrawHeight/2),
+          //   }
+          //   let mod = {
+          //     x: undefined,
+          //     y: undefined,
+          //   }
+          //   let finalCoords = {
+          //     x: undefined,
+          //     y: undefined,
+          //   }
+          //   let dir = "";
+          //
+          //   if (plyr.halfPushBack.countUp.state === true) {
+          //     dir = plyr.halfPushBack.direction;
+          //     if (plyr.halfPushBack.countUp > 1) {
+          //       baseCoords = plyr.halfPushBack.coords;
+          //     }
+          //
+          //   }
+          //   if (plyr.halfPushBack.countDown.state === true) {
+          //     dir = this.getOppositeDirection(plyr.halfPushBack.direction);
+          //     baseCoords = plyr.halfPushBack.coords;
+          //   }
+          //
+          //   switch (dir) {
+          //     case "north":
+          //         mod = {
+          //           x: unit*2,
+          //           y: -unit,
+          //         }
+          //       break;
+          //     case "south":
+          //         mod = {
+          //           x: -(unit*2),
+          //           y: unit,
+          //         }
+          //       break;
+          //     case "east":
+          //         mod = {
+          //           x: (unit*2),
+          //           y: unit,
+          //         }
+          //       break;
+          //     case "west":
+          //         mod = {
+          //           x: -(unit*2),
+          //           y: -unit,
+          //         }
+          //       break;
+          //     default:
+          //
+          //   }
+          //
+          //   finalCoords = {
+          //     x: (baseCoords.x + mod.x),
+          //     y: (baseCoords.y + mod.y),
+          //   }
+          //   plyr.halfPushBack.coords = finalCoords;
+          //
+          //   let targetCell = this.getCellFromDirection(1,plyr.currentPosition.cell.number,plyr.halfPushBack.direction)
+          //   let targetCellRef = this.gridInfo.find(x => x.number.x === targetCell.x && x.number.y === targetCell.y)
+          //   let drawCell = {x: undefined, y: undefined};
+          //   if (plyr.halfPushBack.countUp.state === true) {
+          //
+          //     if (targetCellRef) {
+          //       drawCell = targetCellRef.number;
+          //     }
+          //     else {
+          //       drawCell = plyr.currentPosition.cell.number;
+          //     }
+          //
+          //   }
+          //   if (plyr.halfPushBack.countDown.state === true) {
+          //     drawCell = plyr.currentPosition.cell.number;
+          //   }
+          //
+          //   if (x === drawCell.x && y === drawCell.y) {
+          //
+          //     console.log('finalCoords',finalCoords);
+          //       context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+          //
+          //   }
+          //
+          //
+          //
+          // }
 
           // DEPTH SORTING!!
 
@@ -34904,6 +35191,20 @@ class App extends Component {
             }
           }
 
+          if (this.halfPushBackObstacles.length > 0) {
+            let obstacleImg = this.obstacleImgs[gridInfoCell.obstacle.type]
+
+            for (const obs of this.halfPushBackObstacles) {
+              if (obs.myCellNo.x === gridInfoCell.number.x && obs.myCellNo.y === gridInfoCell.number.y) {
+                if (obs.state === true) {
+                  if (obs.countUp.state === true) {
+                    hide = true;
+                  }
+                }
+              }
+            }
+          }
+
           if (hide !== true) {
             let obstacleImg = this.obstacleImgs[gridInfoCell.obstacle.type]
 
@@ -34963,6 +35264,38 @@ class App extends Component {
             }
 
             // console.log('falling obstacle',gridInfoCell.obstacle.moving.nextPosition,'x/y',x,y);
+          }
+        }
+
+        if (this.halfPushBackObstacles.length > 0) {
+          let obstacleImg = this.obstacleImgs[gridInfoCell.obstacle.type]
+          let drawCell;
+          for (const obs of this.halfPushBackObstacles) {
+            if (obs.myCellNo.x === gridInfoCell.number.x && obs.myCellNo.y === gridInfoCell.number.y) {
+              if (obs.state === true) {
+                if (obs.countUp.state === true) {
+                  if (obs.countUp.count === 1 && !obs.coords.x && !obs.coords.y) {
+                    obs.coords = {
+                      x: (iso.x - offset.x),
+                      y: (iso.y - (obstacleImg.height)),
+                    }
+                    drawCell = this.calcElasticCountCoords('halfPushBack','obstacle',obs).drawCell;
+                    if (x === drawCell.x && y === drawCell.y) {
+                        context.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
+                    }
+
+                  }
+                  else {
+
+                    obs.coords = this.calcElasticCountCoords('halfPushBack','obstacle',obs).coords;
+                    drawCell = this.calcElasticCountCoords('halfPushBack','obstacle',obs).drawCell;
+                    if (x === drawCell.x && y === drawCell.y) {
+                        context.drawImage(obstacleImg, obs.coords.x, obs.coords.y);
+                    }
+                  }
+                }
+              }
+            }
           }
         }
 
