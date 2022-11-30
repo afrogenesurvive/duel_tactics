@@ -333,7 +333,7 @@ class App extends Component {
       row0: ['**_a_0.0_a_0a*','**_i_0.1_a_0a*','**_*_0.2_a_0a*','cw_*_0.3_a_0a*','cw_h_0.4_a_0a*','cw_*_0.5_a_0a*','**_*_0.6_a_0a*','**_i_0.7_a_0a*','**_*_0.8_h_0a*','**_*_0.9_h_0a*'],
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','ce_*_1.4_a_0a*','cw_*_1.5_a_0a*','**_*_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_*_2.2_a_0a*','**_*_2.3_a_0a*','cs_a_2.4_a_0a*','cn_*_2.5_a_0a*','**_h_2.6_a_0a*','cs_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
-      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_*_3.2_a_0a*','**_*_3.3_a_0a*','**_h_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
+      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_h_3.2_a_0a*','**_h_3.3_a_0a*','**_h_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
       row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_c_4.3_f_0a*','**_*_4.4_a_0a*','cn_*_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','cn_*_5.2_f_0a*','**_*_5.3_f_0a*','**_*_5.4_k_0a*','**_*_5.5_a_0a*','**_*_5.6_g_0a*','**_*_5.7_a_0a*','ce_*_5.8_a_0a*','**_*_5.9_a_0a*'],
       row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_b_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_b_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
@@ -2822,6 +2822,7 @@ class App extends Component {
     this.popupImgSize = 25;
     this.movingObstacles = [];
     this.halfPushBackObstacles = [];
+    this.halfPushBackChaining = true;
     this.obstacleBarrierToDestroy = [];
     this.obstacleItemsToDrop = [];
     this.obstaclesOutOfBoundsFall = [];
@@ -11029,6 +11030,7 @@ class App extends Component {
 
       this.pushBack(player,this.getOppositeDirection(player.direction));
 
+
     }
     else {
 
@@ -12738,22 +12740,23 @@ class App extends Component {
 
           // IMPACTEE
           let impacteePlayerRef = this.players.find(x => x.currentPosition.cell.number.x === targetCellRef.number.x && x.currentPosition.cell.number.y === targetCellRef.number.y);
-          shouldDamageImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
-
-          if (shouldDamageImpactee === true) {
-            this.handleMiscPlayerDamage(impacteePlayerRef,'halfPushBackImpactee_'+impactor+'');
-          }
-
-          shouldDeflectImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
-          if (shouldDeflectImpactee === true) {
-            if (this.rnJesus(1,impacteePlayerRef.crits.pushBack) === 1) {
-                this.setDeflection(impacteePlayerRef,'attacked',false);
-            }
-            else {
-              this.setDeflection(impacteePlayerRef,'attacked',true);
-            }
-
-          }
+          // shouldDamageImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
+          //
+          // if (shouldDamageImpactee === true) {
+          //   this.handleMiscPlayerDamage(impacteePlayerRef,'halfPushBackImpactee_'+impactor+'');
+          // }
+          //
+          // shouldDeflectImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
+          // if (shouldDeflectImpactee === true) {
+          //   if (this.rnJesus(1,impacteePlayerRef.crits.pushBack) === 1) {
+          //       this.setDeflection(impacteePlayerRef,'attacked',false);
+          //   }
+          //   else {
+          //     this.setDeflection(impacteePlayerRef,'attacked',true);
+          //   }
+          //
+          // }
+          this.setDeflection(impacteePlayerRef,'attacked',true);
 
 
         break;
@@ -12794,8 +12797,8 @@ class App extends Component {
 
     }
 
-    // moveObstacle = true;
-    // impactee = "obstacle";
+    moveObstacle = true;
+    impactee = "obstacle";
 
     if (moveObstacle === true && impactee === "obstacle") {
 
@@ -12833,10 +12836,19 @@ class App extends Component {
 
         if (destCellRef.obstacle.state === true) {
           targetFree = false;
+          if (this.halfPushBackChaining === true) {
+            this.startHalfPushBack('obstacle','obstacle',direction,targetCellRef);
+          }
+
         }
 
         if (this.players.find(x => x.currentPosition.cell.number.x === destCellRef.number.x && x.currentPosition.cell.number.y === destCellRef.number.y)) {
           targetFree = false;
+
+          if (this.halfPushBackChaining === true) {
+            this.startHalfPushBack('obstacle','player',direction,targetCellRef);
+          }
+
         }
 
       }
@@ -16005,14 +16017,14 @@ class App extends Component {
       // MY CELL BARRIER?
 
 
-
-
       // FWD BARRIER?
       let fwdBarrier = false;
       if (targetCell.barrier.state === true) {
         fwdBarrier = this.checkForwardBarrier(bolt.direction,targetCell);
 
       }
+
+      // IF TARGET CELL IS ORIGIN CELL
       if (targetCell.number.x === bolt.origin.number.x && targetCell.number.y === bolt.origin.number.y) {
         fwdBarrier = false;
       }
@@ -35268,7 +35280,7 @@ class App extends Component {
         }
         // HALFPUSHBACK
         if (this.halfPushBackObstacles.length > 0) {
-          let obstacleImg = this.obstacleImgs[gridInfoCell.obstacle.type]
+
           let drawCell;
           for (const obs of this.halfPushBackObstacles) {
             // if (obs.state === true) {
@@ -35296,9 +35308,10 @@ class App extends Component {
             //     }
             //   }
             // }
-            if (obs.myCellNo.x === gridInfoCell.number.x && obs.myCellNo.y === gridInfoCell.number.y) {
+            if (obs.myCellNo.x === gridInfoCell.number.x && obs.myCellNo.y === gridInfoCell.number.y && gridInfoCell.obstacle.type) {
               if (obs.state === true) {
                 if (obs.countUp.state === true) {
+                  let obstacleImg = this.obstacleImgs[gridInfoCell.obstacle.type]
                   if (obs.countUp.count === 1 && !obs.coords.x && !obs.coords.y) {
 
                     obs.coords = {
