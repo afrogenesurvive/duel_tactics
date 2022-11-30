@@ -8194,17 +8194,7 @@ class App extends Component {
     let fwdBarrier = false;
     if (cell.barrier.state === true) {
 
-
-      if (direction === 'north' && cell.barrier.position === 'south') {
-        fwdBarrier = true;
-      }
-      if (direction === 'south' && cell.barrier.position === 'north') {
-        fwdBarrier = true;
-      }
-      if (direction === 'east' && cell.barrier.position === 'west') {
-        fwdBarrier = true;
-      }
-      if (direction === 'west' && cell.barrier.position === 'east') {
+      if (direction === this.getOppositeDirection(cell.barrier.position)) {
         fwdBarrier = true;
       }
 
@@ -10577,7 +10567,7 @@ class App extends Component {
 
   }
   projectileAttackParse = (bolt,player) => {
-
+    // console.log('projectileAttackParse');
 
     let weapon = player.currentWeapon.type;
 
@@ -16016,10 +16006,15 @@ class App extends Component {
 
 
 
+
       // FWD BARRIER?
       let fwdBarrier = false;
       if (targetCell.barrier.state === true) {
         fwdBarrier = this.checkForwardBarrier(bolt.direction,targetCell);
+
+      }
+      if (targetCell.number.x === bolt.origin.number.x && targetCell.number.y === bolt.origin.number.y) {
+        fwdBarrier = false;
       }
 
       if (fwdBarrier === true && targetCell.barrier.height >= 1) {
@@ -20596,6 +20591,8 @@ class App extends Component {
         cell.x = this.aiInitSettings.startPosition.number.x;
         cell.y = this.aiInitSettings.startPosition.number.y;
       }
+
+
 
 
       if (checkCell === true) {
@@ -32687,10 +32684,14 @@ class App extends Component {
 
             if (infoCell.elevation.number === bolt.elevation) {
 
+
               let fwdBarrier = false;
 
               if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
-                fwdBarrier = this.checkForwardBarrier(bolt.direction,infoCell)
+                // if (infoCell.barrier.position === bolt.direction) {
+                //   fwdBarrier = true;
+                // }
+                fwdBarrier = this.checkForwardBarrier(bolt.direction,infoCell);
               }
 
               if (bolt.target.path.length === 1) {
@@ -32715,6 +32716,7 @@ class App extends Component {
                   }
 
                 }
+
 
 
                 // CHECK FOR OBSTACLE &  REAR BARRIER COLLISION
