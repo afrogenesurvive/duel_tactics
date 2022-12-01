@@ -1540,10 +1540,6 @@ class App extends Component {
             y: undefined,
           },
         },
-        halfPushBackChaining: {
-          state: true,
-          direction: "",
-        },
         defending: {
           state: false,
           count: 0,
@@ -1832,6 +1828,34 @@ class App extends Component {
           puller: 0,
           moveSpeed: 0,
         },
+        elasticCounter: {
+          preState: false,
+          state: false,
+          direction: "",
+          type: "",
+          subType: "",
+          countUp: {
+            state: false,
+            count: 0,
+            limit: 6,
+          },
+          countDown: {
+            state: false,
+            count: 0,
+            limit: 6,
+          },
+          coords: {
+            x: undefined,
+            y: undefined,
+          },
+          pause: {
+            preState: false,
+            state: false,
+            type: "",
+            count: 0,
+            limit: 6,
+          },
+        },
       },
       {
         number: 2,
@@ -2016,10 +2040,6 @@ class App extends Component {
             x: undefined,
             y: undefined,
           },
-        },
-        halfPushBackChaining: {
-          state: true,
-          direction: "",
         },
         defending: {
           state: false,
@@ -2307,6 +2327,34 @@ class App extends Component {
           state: false,
           puller: 0,
           moveSpeed: 0,
+        },
+        elasticCounter: {
+          preState: false,
+          state: false,
+          direction: "",
+          type: "",
+          subType: "",
+          countUp: {
+            state: false,
+            count: 0,
+            limit: 6,
+          },
+          countDown: {
+            state: false,
+            count: 0,
+            limit: 6,
+          },
+          coords: {
+            x: undefined,
+            y: undefined,
+          },
+          pause: {
+            preState: false,
+            state: false,
+            type: "",
+            count: 0,
+            limit: 6,
+          },
         },
       }
     ];
@@ -2848,7 +2896,7 @@ class App extends Component {
     this.popupProgressImgGradColor1 = "rgb(255,0,0)";
     this.popupProgressImgGradColor2 = "rgb(255,255,0)";
 
-    this.halfPushBackChaining = false;
+    this.halfPushBackChaining = true;
     this.halfPushBackChainingMoveAll = true;
 
 
@@ -7749,7 +7797,99 @@ class App extends Component {
 
     }
 
+    if (type === 'deflected') {
 
+      let unit = .005;
+      let baseCoords = {
+        x: undefined,
+        y: undefined,
+      }
+      let dir = "";
+      baseCoords = {
+        x: data.elasticCounter.coords.x,
+        y: data.elasticCounter.coords.y,
+      }
+
+      if (data.elasticCounter.countUp.state === true) {
+        dir = data.elasticCounter.direction;
+      }
+      if (data.elasticCounter.countDown.state === true) {
+        dir = this.getOppositeDirection(data.elasticCounter.direction);
+      }
+      switch (dir) {
+      case "north":
+          mod = {
+            x: unit*2,
+            y: -unit,
+          }
+        break;
+      case "south":
+          mod = {
+            x: -(unit*2),
+            y: unit,
+          }
+        break;
+      case "east":
+          mod = {
+            x: (unit*2),
+            y: unit,
+          }
+        break;
+      case "west":
+          mod = {
+            x: -(unit*2),
+            y: -unit,
+          }
+        break;
+      default:
+
+    }
+
+      if (data.elasticCounter.pause.state !== true) {
+        finalCoords = {
+          x: (baseCoords.x + mod.x),
+          y: (baseCoords.y + mod.y),
+        }
+      }
+      else {
+        finalCoords = {
+          x: (baseCoords.x),
+          y: (baseCoords.y),
+        }
+      }
+
+      let targetCell;
+      data.elasticCounter.coords = finalCoords;
+
+      targetCell = this.getCellFromDirection(1,data.currentPosition.cell.number,data.elasticCounter.direction)
+      let targetCellRef = this.gridInfo.find(x => x.number.x === targetCell.x && x.number.y === targetCell.y)
+      drawCell = {x: undefined, y: undefined};
+
+      if (
+        data.elasticCounter.countUp.state === true ||
+        (data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "peak")
+      ) {
+
+        if (targetCellRef) {
+          drawCell = targetCellRef.number;
+        }
+        else {
+          drawCell = data.currentPosition.cell.number;
+        }
+
+      }
+      if (
+        data.elasticCounter.countDown.state === true ||
+        (data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "start") ||
+        (data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "end")
+      ) {
+        drawCell = data.currentPosition.cell.number;
+      }
+
+      this.players[data.number-1] = data;
+
+
+    }
 
 
     return {
@@ -7759,7 +7899,52 @@ class App extends Component {
 
 
   }
+  setElasticCounter = (type,subType,pause,player) => {
 
+    if (type === "deflected") {
+
+      let point = {
+        x: player.currentPosition.cell.center.x,
+        y: player.currentPosition.cell.center.y,
+      };
+
+      player.elasticCounter = {
+        state: true,
+        direction: this.getOppositeDirection(player.direction),
+        type: "deflected",
+        subType: "",
+        countUp: {
+          state: false,
+          count: 0,
+          limit: 6,
+        },
+        countDown: {
+          state: false,
+          count: 0,
+          limit: 6,
+        },
+        coords: {
+          x: point.x-(this.playerDrawWidth/2),
+          y: point.y-(this.playerDrawHeight/2),
+        },
+        pause: {
+          preState: true,
+          state: false,
+          type: "peak",
+          count: 0,
+          limit: 10,
+        },
+      }
+
+    }
+
+    if (type === "dodging") {
+
+
+
+    }
+
+  }
 
   rnJesus = (min,max) => {
     min = Math.ceil(min);
@@ -9757,7 +9942,7 @@ class App extends Component {
 
     if (player.target.myCellBlock !== true) {
 
-      let playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].normal;
+      let playerAttackStamType;
       if (player.bluntAttack === true) {
         playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].blunt;
       }
@@ -9767,6 +9952,10 @@ class App extends Component {
           playerAttackStamType = this.staminaCostRef.attack.unarmed.blunt;
         }
       }
+      if (player.currentWeapon.name !== "") {
+        playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].normal;
+      }
+
 
 
       let boltTarget1 = this.isBoltInCell(player.target.cell1.number)
@@ -11057,8 +11246,10 @@ class App extends Component {
 
     }
 
+
     this.players[player.number-1] = player;
 
+    this.setElasticCounter('deflected',"",true,player)
 
   }
   unsetDeflection = (player) => {
@@ -12000,12 +12191,8 @@ class App extends Component {
     if (halfPushBack === true) {
 
       let dir = pushBackDirection;
-      // if (this.halfPushBackChaining === true && player.halfPushBackChaining.state === true) {
-      //
-      //   dir = player.halfPushBackChaining.direction;
-      //   player.halfPushBackChaining.state = false;
-      //
-      // }
+
+      this.unsetDeflection(player);
 
       player.success.deflected.predeflect = false;
       this.startHalfPushBack('player',halfPushBackType,dir,player);
@@ -12019,7 +12206,7 @@ class App extends Component {
 
   }
   startHalfPushBack = (object,blockType,direction,data) => {
-    console.log('startHalfPushback',object,blockType,direction);
+    // console.log('startHalfPushback',object,blockType,direction);
 
 
     if (object === 'player') {
@@ -14361,51 +14548,54 @@ class App extends Component {
 
                 // INDESTRUCTIBLE OBSTACLE
                 else {
+
                   console.log('attacking invurnerable obstacle, deflect player?');
 
                    let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
 
-                   // let shouldDeflect = 2;
-                   // this.pushBack(player,this.getOppositeDirection(player.direction));
-
-                   if (shouldDeflect === 1) {
-                     this.attackedCancel(this.players[player.number-1]);
-
-                     this.setDeflection(player,'defended',false);
-
-                     if (player.currentWeapon.name === '') {
-                       console.log('this obstacle is stronger than your fist. Take damage?');
-                       let takeDamage = this.rnJesus(1,player.crits.guardBreak);
-                       if (takeDamage === 1) {
-
-                         this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
-
-                       }
-                     }
 
 
-
-                   }
+                   // if (shouldDeflect === 1) {
+                   //   this.attackedCancel(this.players[player.number-1]);
+                   //
+                   //   this.setDeflection(player,'defended',false);
+                   //
+                   //   if (player.currentWeapon.name === '') {
+                   //     console.log('this obstacle is stronger than your fist. Take damage?');
+                   //     let takeDamage = this.rnJesus(1,player.crits.guardBreak);
+                   //     if (takeDamage === 1) {
+                   //
+                   //       this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
+                   //
+                   //     }
+                   //   }
+                   //
+                   // }
                    // this.canPushObstacle(player,targetCell,'hitPush');
-                   if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
-                     this.cellPopups.push(
-                       {
-                         state: false,
-                         count: 0,
-                         limit: 35,
-                         type: '',
-                         position: '',
-                         msg: 'unbreakable',
-                         color: '',
-                         img: '',
-                         cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
-                       }
-                     )
-                   }
-
+                   // if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
+                   //   this.cellPopups.push(
+                   //     {
+                   //       state: false,
+                   //       count: 0,
+                   //       limit: 35,
+                   //       type: '',
+                   //       position: '',
+                   //       msg: 'unbreakable',
+                   //       color: '',
+                   //       img: '',
+                   //       cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
+                   //     }
+                   //   )
+                   // }
+                   //
                    // if (this.rnJesus(1,player.crits.pushBack) === 1) {
                    //   this.pushBack(player,this.getOppositeDirection(player.direction))
                    // }
+
+                   // this.pushBack(player,this.getOppositeDirection(player.direction));
+
+                   this.setDeflection(player,'defended',false);
+
                 }
 
 
@@ -14414,6 +14604,7 @@ class App extends Component {
 
                 // NO OBSTACLE. ITEM ON GROUND? DESTROY
                 if (targetCell && targetCell.item.name !== "" && damage > 0 && player.currentWeapon.name !== '') {
+
                   this.players[player.number-1].statusDisplay = {
                     state: true,
                     status: 'Destroyed '+targetCell.item.name+'!',
@@ -21013,10 +21204,6 @@ class App extends Component {
               y: undefined,
             },
           },
-          halfPushBackChaining: {
-            state: true,
-            direction: "",
-          },
           defending: {
             state: false,
             count: 0,
@@ -21308,6 +21495,34 @@ class App extends Component {
             state: false,
             puller: 0,
             moveSpeed: 0,
+          },
+          elasticCounter: {
+            preState: false,
+            state: false,
+            direction: "",
+            type: "",
+            subType: "",
+            countUp: {
+              state: false,
+              count: 0,
+              limit: 6,
+            },
+            countDown: {
+              state: false,
+              count: 0,
+              limit: 6,
+            },
+            coords: {
+              x: undefined,
+              y: undefined,
+            },
+            pause: {
+              preState: false,
+              state: false,
+              type: "",
+              count: 0,
+              limit: 6,
+            },
           },
         }
 
@@ -27603,7 +27818,7 @@ class App extends Component {
         player.stamina.current = player.stamina.max;
       }
       if (player.stamina.current < 0) {
-        console.log('stamina lower limit reset for player ',player.number);
+        // console.log('stamina lower limit reset for player ',player.number);
         player.stamina.current = 0;
       }
       if (player.stamina.current === 1) {
@@ -28133,7 +28348,7 @@ class App extends Component {
 
               // PUSHBACK MOVEMENT
               if (player.pushBack.state === true && player.target.cell1.void !== true) {
-                console.log('player',player.number,'finished moving pushed back',player.flanking.state);
+                // console.log('player',player.number,'finished moving pushed back',player.flanking.state);
 
                 // CANCEL AI ATTACK, DEFEND!!
                 if (player.ai.state === true) {
@@ -28618,6 +28833,7 @@ class App extends Component {
             let blunt = 'normal';
             if (player.currentWeapon.name === "") {
               atkPeak = this.attackAnimRef.peak.unarmed;
+              atkType = "unarmed";
             }
             else {
               atkPeak = this.attackAnimRef.peak[player.currentWeapon.type];
@@ -29615,6 +29831,159 @@ class App extends Component {
 
           }
 
+
+        }
+
+
+        // ELASTIC COUNTER
+        if (player.elasticCounter.state === true) {
+          player.action = player.elasticCounter.type;
+
+          // IF PAUSE IS START, COUNT PAUSE 1ST
+          if (player.elasticCounter.pause.preState === true && player.elasticCounter.pause.type === "start") {
+            player.elasticCounter.pause.preState = false;
+            player.elasticCounter.pause.state = true;
+            console.log('start pause, turn on pause');
+          }
+
+          // IF PAUSE IS NOT START, COUNT UP
+          if (
+            player.elasticCounter.pause.type !== "start" &&
+            player.elasticCounter.countUp.state !== true &&
+            player.elasticCounter.countDown.state !== true &&
+            player.elasticCounter.pause.state !== true
+          ) {
+            player.elasticCounter.countUp.state = true
+            console.log('pause is not start. count up');
+          }
+
+
+          // COUNT UP
+          if (player.elasticCounter.countUp.state === true) {
+
+            if (player.elasticCounter.countUp.count < player.elasticCounter.countUp.limit) {
+
+              if (player.elasticCounter.countUp.count === 0) {
+                console.log('elastic count up start');
+              }
+
+              player.elasticCounter.countUp.count++;
+              console.log('elastic counting up: ',player.elasticCounter.countUp.count);
+
+            }
+
+            // FINISH COUNT UP
+            if (player.elasticCounter.countUp.count >= player.elasticCounter.countUp.limit) {
+
+              // RESET COUNT UP
+              player.elasticCounter.countUp = {
+                state: false,
+                count: 0,
+                limit: player.elasticCounter.countUp.limit,
+              }
+              console.log('finished count up. elastic counter peak');
+
+              // IF PAUSE IS PEAK, COUNT PAUSE AT PEAK
+              if (player.elasticCounter.pause.preState === true && player.elasticCounter.pause.type === "peak") {
+                player.elasticCounter.pause.preState = false;
+                player.elasticCounter.pause.state = true;
+                console.log('peak pause. turn on pause');
+              }
+
+              // IF PAUSE IS NOT PEAK, COUNT DOWM
+              if (player.elasticCounter.pause.type !== "peak") {
+                player.elasticCounter.countDown.state = true;
+                console.log('pause is not peak. count down');
+              }
+
+            }
+
+          }
+
+          // COUNT PAUSE
+          if (player.elasticCounter.pause.state === true) {
+            // console.log('pause count. type: ',player.elasticCounter.pause.type);
+
+            // COUNT PAUSE
+            if (player.elasticCounter.pause.count < player.elasticCounter.pause.limit) {
+
+              if (player.elasticCounter.pause.count === 0) {
+                console.log('pause count start');
+              }
+
+              player.elasticCounter.pause.count++;
+              console.log('pause counting: ',player.elasticCounter.pause.count);
+            }
+
+            // FINISH PAUSE
+            if (player.elasticCounter.pause.count >= player.elasticCounter.pause.limit) {
+              console.log('pause count finished');
+
+              // IF PAUSE IS START, COUNT UP
+              if (player.elasticCounter.pause.type === "start") {
+                player.elasticCounter.countUp.state = true;
+                console.log('start pause count finished. count up');
+              }
+
+              // IF PAUSE IS PEAK, COUNT DOWN
+              if (player.elasticCounter.pause.type === "peak") {
+                player.elasticCounter.countDown.state = true;
+                console.log('peak pause count finished. count down');
+              }
+
+              // IF PAUSE IS END, TURN OFF ELASTIC COUNT
+              if (player.elasticCounter.pause.type === "end") {
+                player.elasticCounter.state = false;
+                console.log('end pause count finished. turn off elastic count');
+              }
+
+              // RESET PAUSE COUNT
+              player.elasticCounter.pause.state = false;
+              player.elasticCounter.pause.count = 0;
+
+            }
+          }
+
+          // COUNT DOWN
+          if (player.elasticCounter.countDown.state === true) {
+
+            // COUNT DOWN
+            if (player.elasticCounter.countDown.count < player.elasticCounter.countDown.limit) {
+
+              if (player.elasticCounter.countDown.count === 1) {
+                console.log('elastic count down start');
+              }
+
+              player.elasticCounter.countDown.count++;
+              console.log('elastic counting down: ',player.elasticCounter.countDown.count);
+            }
+
+            // FINISH COUNT DOWN
+            if (player.elasticCounter.countDown.count >= player.elasticCounter.countDown.limit) {
+              player.elasticCounter.countDown = {
+                state: false,
+                count: 0,
+                limit: player.elasticCounter.countDown.limit,
+              }
+              console.log('finished count down. elastic counter end');
+
+              // IF PAUSE IS END, COUNT PAUSE
+              if (player.elasticCounter.pause.preState === true && player.elasticCounter.pause.type === "end") {
+                player.elasticCounter.pause.preState = false;
+                player.elasticCounter.pause.state = true;
+                console.log('end pause. turn on pause');
+              }
+
+              // IF PAUSE IS NOT END, TURN OFF ELASTIC COUNTER
+              if (player.elasticCounter.pause.type !== "end") {
+                player.elasticCounter.state = false;
+                console.log('pause is not end. turn off elastic count');
+              }
+
+              player.action = "idle";
+            }
+
+          }
 
         }
 
@@ -34575,82 +34944,96 @@ class App extends Component {
           if (plyr.success.deflected.state === true) {
             // console.log('updatedPlayerImg, sx, sy', sx, sy,'points',point.x-35, point.y-20,'dodge',plyr.dodging.state);
 
-            if (plyr.direction === 'north') {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y+1
-              ) {
+            // if (plyr.direction === 'north') {
+            //   if (
+            //     x === plyr.moving.origin.number.x &&
+            //     y === plyr.moving.origin.number.y+1
+            //   ) {
+            //
+            //     context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  point.x-35, point.y-20, this.playerDrawWidth, this.playerDrawHeight)
+            //
+            //     if (plyr.success.deflected.type === 'attack') {
+            //       // context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
+            //     }
+            //     else if (plyr.success.deflected.type === 'attacked') {
+            //       // context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
+            //     }
+            //     else if (plyr.success.deflected.type === 'blunt_attacked') {
+            //       // context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
+            //     }
+            //   }
+            // }
+            // if (plyr.direction === 'east') {
+            //   if (
+            //     x === plyr.currentPosition.cell.number.x &&
+            //     y === plyr.currentPosition.cell.number.y
+            //   ) {
+            //
+            //     context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-35, point.y-30, this.playerDrawWidth,this.playerDrawHeight);
+            //
+            //     if (plyr.success.deflected.type === 'attack') {
+            //       // context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
+            //     }
+            //     else if (plyr.success.deflected.type === 'attacked') {
+            //       // context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
+            //     }
+            //     else if (plyr.success.deflected.type === 'blunt_attacked') {
+            //       // context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
+            //     }
+            //   }
+            // }
+            // if (plyr.direction === 'west') {
+            //   if (
+            //     x === plyr.currentPosition.cell.number.x+1 &&
+            //     y === plyr.currentPosition.cell.number.y
+            //   ) {
+            //
+            //     context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-15, point.y-20, this.playerDrawWidth,this.playerDrawHeight);
+            //
+            //     if (plyr.success.deflected.type === 'attack') {
+            //       // context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
+            //     }
+            //     else if (plyr.success.deflected.type === 'attacked') {
+            //       // context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
+            //     }
+            //     else if (plyr.success.deflected.type === 'blunt_attacked') {
+            //       // context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
+            //     }
+            //   }
+            // }
+            // if (plyr.direction === 'south') {
+            //   if (
+            //     x === plyr.currentPosition.cell.number.x+1 &&
+            //     y === plyr.currentPosition.cell.number.y
+            //   ) {
+            //
+            //     context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-15, point.y-30, this.playerDrawWidth,this.playerDrawHeight);
+            //
+            //     if (plyr.success.deflected.type === 'attack') {
+            //       // context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
+            //     }
+            //     else if (plyr.success.deflected.type === 'attacked') {
+            //       // context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
+            //     }
+            //     else if (plyr.success.deflected.type === 'blunt_attacked') {
+            //       // context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
+            //     }
+            //   }
+            // }
 
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  point.x-35, point.y-20, this.playerDrawWidth, this.playerDrawHeight)
+            if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === 'deflected') {
 
-                if (plyr.success.deflected.type === 'attack') {
-                  // context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
-                }
-                else if (plyr.success.deflected.type === 'attacked') {
-                  // context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
-                }
-                else if (plyr.success.deflected.type === 'blunt_attacked') {
-                  // context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
-                }
+              let finalCoords = this.calcElasticCountCoords('deflected','player',plyr).coords;
+              let drawCell = this.calcElasticCountCoords('deflected','player',plyr).drawCell;
+
+              if (x === drawCell.x && y === drawCell.y) {
+
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+
               }
+
             }
-            if (plyr.direction === 'east') {
-              if (
-                x === plyr.currentPosition.cell.number.x &&
-                y === plyr.currentPosition.cell.number.y
-              ) {
 
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-35, point.y-30, this.playerDrawWidth,this.playerDrawHeight);
-
-                if (plyr.success.deflected.type === 'attack') {
-                  // context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
-                }
-                else if (plyr.success.deflected.type === 'attacked') {
-                  // context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
-                }
-                else if (plyr.success.deflected.type === 'blunt_attacked') {
-                  // context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
-                }
-              }
-            }
-            if (plyr.direction === 'west') {
-              if (
-                x === plyr.currentPosition.cell.number.x+1 &&
-                y === plyr.currentPosition.cell.number.y
-              ) {
-
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-15, point.y-20, this.playerDrawWidth,this.playerDrawHeight);
-
-                if (plyr.success.deflected.type === 'attack') {
-                  // context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
-                }
-                else if (plyr.success.deflected.type === 'attacked') {
-                  // context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
-                }
-                else if (plyr.success.deflected.type === 'blunt_attacked') {
-                  // context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
-                }
-              }
-            }
-            if (plyr.direction === 'south') {
-              if (
-                x === plyr.currentPosition.cell.number.x+1 &&
-                y === plyr.currentPosition.cell.number.y
-              ) {
-
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-15, point.y-30, this.playerDrawWidth,this.playerDrawHeight);
-
-                if (plyr.success.deflected.type === 'attack') {
-                  // context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
-                }
-                else if (plyr.success.deflected.type === 'attacked') {
-                  // context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
-                }
-                else if (plyr.success.deflected.type === 'blunt_attacked') {
-                  // context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
-                }
-              }
-            }
 
 
           }

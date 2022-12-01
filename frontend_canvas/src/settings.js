@@ -117,11 +117,18 @@ const Settings = (props) => {
 
   const [startItems, setStartItems] = useState(preStartItems);
   const handleStartItemsChange = (args) => {
-    // console.log('args',args);
-    setStartItems(args);
+
+    let val;
+    if (args === 'true') {
+      val = true;
+    }
+    else {
+      val = false;
+    }
+    setStartItems(val);
 
     props.updateSettingsFormAiData({
-      startItems: args,
+      startItems: val,
       count: aiCount,
       random: aiRandom,
       mode: aiMode,
@@ -711,7 +718,11 @@ const Settings = (props) => {
 
           <Form.Group as={Col} className="formGroup" controlId="startItems">
             <Form.Label className="formLabel">Start Items</Form.Label>
-            <Form.Check type="checkbox" checked={startItems} onChange={e=>handleStartItemsChange(e.target.checked)}/>
+
+            <Form.Control as="select" value={startItems} onChange={e=>handleStartItemsChange(e.target.value)}>
+              <option value={true}>Yes</option>
+              <option value={false}>No</option>
+            </Form.Control>
           </Form.Group>
 
         </Form.Row>
