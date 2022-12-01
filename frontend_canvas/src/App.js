@@ -2848,7 +2848,7 @@ class App extends Component {
     this.popupProgressImgGradColor1 = "rgb(255,0,0)";
     this.popupProgressImgGradColor2 = "rgb(255,255,0)";
 
-    this.halfPushBackChaining = true;
+    this.halfPushBackChaining = false;
     this.halfPushBackChainingMoveAll = true;
 
 
@@ -12675,65 +12675,47 @@ class App extends Component {
             impacteePlayerRef = this.players.find(x => x.currentPosition.cell.number.x === targetCellRef.number.x && x.currentPosition.cell.number.y === targetCellRef.number.y);
             shouldDamageImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
 
-
-
-            if (this.halfPushBackChaining === true) {
-              // impacteePlayerRef.halfPushBackChaining.state = true;
-              // impacteePlayerRef.halfPushBackChaining.direction = direction;
+            if (shouldDamageImpactee === true) {
+              this.handleMiscPlayerDamage(impacteePlayerRef,'halfPushBackImpactee_'+impactor+'');
             }
 
+            shouldDeflectImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
 
-
-            if (impacteePlayerRef.direction === direction) {
-              movePlayer = true;
-              // impacteePlayerRef.halfPushBackChaining.state = false;
-              // impacteePlayerRef.halfPushBackChaining.direction = "";
-              // impacteePlayerRef.halfPushBackChaining.state = true;
-              // impacteePlayerRef.halfPushBackChaining.direction = direction;
+            if (this.halfPushBackChainingMoveAll === true) {
+              if (impacteePlayerRef.direction === direction) {
+                movePlayer = true;
+              }
+              else {
+                this.setDeflection(impacteePlayerRef,'attacked',true);
+              }
             }
-
             else {
-              this.setDeflection(impacteePlayerRef,'attacked',true);
+
+              if (shouldDeflectImpactee === true) {
+
+                if (this.rnJesus(1,impacteePlayerRef.crits.pushBack) === 1) {
+                    this.setDeflection(impacteePlayerRef,'attacked',false);
+                }
+                else {
+                  if (impacteePlayerRef.direction === direction) {
+                    movePlayer = true;
+                  }
+                  else {
+                    this.setDeflection(impacteePlayerRef,'attacked',true);
+                  }
+                }
+
+              }
+
             }
 
-
-            // if (this.halfPushBackChainingMoveAll !== true) {
-            //
-            //
-            //   if (shouldDamageImpactee === true) {
-            //     this.handleMiscPlayerDamage(impacteePlayerRef,'halfPushBackImpactee_'+impactor+'');
-            //   }
-            //
-            //   shouldDeflectImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
-            //   if (shouldDeflectImpactee === true) {
-            //     if (this.rnJesus(1,impacteePlayerRef.crits.pushBack) === 1) {
-            //         this.setDeflection(impacteePlayerRef,'attacked',false);
-            //     }
-            //     else {
-            //       this.setDeflection(impacteePlayerRef,'attacked',true);
-            //     }
-            //
-            //   }
-            //
+            // if (impacteePlayerRef.direction === direction) {
+            //   movePlayer = true;
             // }
+            //
             // else {
-            //
-            //
-            //   if (shouldDamageImpactee === true) {
-            //     this.handleMiscPlayerDamage(impacteePlayerRef,'halfPushBackImpactee_'+impactor+'');
-            //   }
-            //
-            //   // shouldDeflectImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
-            //   // if (shouldDeflectImpactee === true) {
-            //   //
-            //   //   this.setDeflection(impacteePlayerRef,'attacked',true);
-            //   //
-            //   // }
             //   this.setDeflection(impacteePlayerRef,'attacked',true);
-            //
             // }
-
-
 
 
 
@@ -12824,65 +12806,39 @@ class App extends Component {
           shouldDamageImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
 
 
-
-          if (this.halfPushBackChaining === true) {
-            // impacteePlayerRef.halfPushBackChaining.state = true;
-            // impacteePlayerRef.halfPushBackChaining.direction = direction;
+          if (shouldDamageImpactee === true) {
+            this.handleMiscPlayerDamage(impacteePlayerRef,'halfPushBackImpactee_'+impactor+'');
           }
 
+          shouldDeflectImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
 
-
-          if (impacteePlayerRef.direction === direction) {
-            movePlayer = true;
-            // impacteePlayerRef.halfPushBackChaining.state = false;
-            // impacteePlayerRef.halfPushBackChaining.direction = "";
-            // impacteePlayerRef.halfPushBackChaining.state = true;
-            // impacteePlayerRef.halfPushBackChaining.direction = direction;
+          if (this.halfPushBackChainingMoveAll === true) {
+            if (impacteePlayerRef.direction === direction) {
+              movePlayer = true;
+            }
+            else {
+              this.setDeflection(impacteePlayerRef,'attacked',true);
+            }
           }
           else {
-            this.setDeflection(impacteePlayerRef,'attacked',true);
+
+            if (shouldDeflectImpactee === true) {
+
+              if (this.rnJesus(1,impacteePlayerRef.crits.pushBack) === 1) {
+                  this.setDeflection(impacteePlayerRef,'attacked',false);
+              }
+              else {
+                if (impacteePlayerRef.direction === direction) {
+                  movePlayer = true;
+                }
+                else {
+                  this.setDeflection(impacteePlayerRef,'attacked',true);
+                }
+              }
+
+            }
+
           }
-
-
-
-          // if (this.halfPushBackChainingMoveAll !== true) {
-          //
-          //
-          //   if (shouldDamageImpactee === true) {
-          //     this.handleMiscPlayerDamage(impacteePlayerRef,'halfPushBackImpactee_'+impactor+'');
-          //   }
-          //
-          //   shouldDeflectImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
-          //   if (shouldDeflectImpactee === true) {
-          //     if (this.rnJesus(1,impacteePlayerRef.crits.pushBack) === 1) {
-          //         this.setDeflection(impacteePlayerRef,'attacked',false);
-          //     }
-          //     else {
-          //       this.setDeflection(impacteePlayerRef,'attacked',true);
-          //     }
-          //
-          //   }
-          //
-          // }
-          // else {
-          //
-          //
-          //   if (shouldDamageImpactee === true) {
-          //     this.handleMiscPlayerDamage(impacteePlayerRef,'halfPushBackImpactee_'+impactor+'');
-          //   }
-          //
-          //   // shouldDeflectImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
-          //   // if (shouldDeflectImpactee === true) {
-          //   //
-          //   //   this.setDeflection(impacteePlayerRef,'attacked',true);
-          //   //
-          //   // }
-          //   this.setDeflection(impacteePlayerRef,'attacked',true);
-          //
-          // }
-
-
-
 
         break;
         case "barrier":
@@ -13136,7 +13092,7 @@ class App extends Component {
         // this.players[targetPlayer.number-1].strafing.direction = impactDirection;
         // this.players[targetPlayer.number-1].strafing.state = true;
         // this.players[targetPlayer.number-1].action = 'strafe moving';
-        this.players[impacteePlayerRef.number-1].action = 'strafe moving';
+        this.players[impacteePlayerRef.number-1].action = 'moving';
 
         this.unsetDeflection(impacteePlayerRef);
 
