@@ -1540,6 +1540,10 @@ class App extends Component {
             y: undefined,
           },
         },
+        halfPushBackChaining: {
+          state: true,
+          direction: "",
+        },
         defending: {
           state: false,
           count: 0,
@@ -2012,6 +2016,10 @@ class App extends Component {
             x: undefined,
             y: undefined,
           },
+        },
+        halfPushBackChaining: {
+          state: true,
+          direction: "",
         },
         defending: {
           state: false,
@@ -2822,7 +2830,7 @@ class App extends Component {
     this.popupImgSize = 25;
     this.movingObstacles = [];
     this.halfPushBackObstacles = [];
-    this.halfPushBackChaining = true;
+
     this.obstacleBarrierToDestroy = [];
     this.obstacleItemsToDrop = [];
     this.obstaclesOutOfBoundsFall = [];
@@ -2839,6 +2847,9 @@ class App extends Component {
     this.popupProgressBorderSvgPath = "";
     this.popupProgressImgGradColor1 = "rgb(255,0,0)";
     this.popupProgressImgGradColor2 = "rgb(255,255,0)";
+
+    this.halfPushBackChaining = true;
+    this.halfPushBackChainingMoveAll = true;
 
 
 
@@ -11028,7 +11039,12 @@ class App extends Component {
       player.success.deflected.state = false;
       player.success.deflected.predeflect = true;
 
+      // if (target is obstacle,player or barrier) {
+      //   startHalfPushBack
+      // }
+
       this.pushBack(player,this.getOppositeDirection(player.direction));
+
 
 
     }
@@ -11983,7 +11999,16 @@ class App extends Component {
 
     if (halfPushBack === true) {
 
-      this.startHalfPushBack('player',halfPushBackType,pushBackDirection,player);
+      let dir = pushBackDirection;
+      // if (this.halfPushBackChaining === true && player.halfPushBackChaining.state === true) {
+      //
+      //   dir = player.halfPushBackChaining.direction;
+      //   player.halfPushBackChaining.state = false;
+      //
+      // }
+
+      player.success.deflected.predeflect = false;
+      this.startHalfPushBack('player',halfPushBackType,dir,player);
 
     }
 
@@ -11994,7 +12019,7 @@ class App extends Component {
 
   }
   startHalfPushBack = (object,blockType,direction,data) => {
-    // console.log('startHalfPushback',object,blockType,direction,data);
+    console.log('startHalfPushback',object,blockType,direction);
 
 
     if (object === 'player') {
@@ -12003,6 +12028,7 @@ class App extends Component {
         x: data.currentPosition.cell.center.x,
         y: data.currentPosition.cell.center.y,
       };
+
 
       data.halfPushBack = {
         state: true,
@@ -12064,6 +12090,7 @@ class App extends Component {
     let direction = "";
     let impactor = type;
     let impactee = "";
+    let impacteePlayerRef;
     let shouldDamageImpactor = false;
     let shouldDamageImpactee = false;
     let shouldDeflectImpactor = false;
@@ -12626,6 +12653,10 @@ class App extends Component {
               damageObstacle('impactee');
             }
 
+            if (this.halfPushBackChainingMoveAll === true) {
+              moveObstacle = true;
+            }
+
 
           break;
           case "player":
@@ -12641,23 +12672,69 @@ class App extends Component {
 
 
             // IMPACTEE DAMAGE, DEFLECT/ PUSHBACK + DEFLECT?
-            let impacteePlayerRef = this.players.find(x => x.currentPosition.cell.number.x === targetCellRef.number.x && x.currentPosition.cell.number.y === targetCellRef.number.y);
+            impacteePlayerRef = this.players.find(x => x.currentPosition.cell.number.x === targetCellRef.number.x && x.currentPosition.cell.number.y === targetCellRef.number.y);
             shouldDamageImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
 
-            if (shouldDamageImpactee === true) {
-              this.handleMiscPlayerDamage(data,'halfPushBackImpactee_'+impactor+'');
+
+
+            if (this.halfPushBackChaining === true) {
+              // impacteePlayerRef.halfPushBackChaining.state = true;
+              // impacteePlayerRef.halfPushBackChaining.direction = direction;
             }
 
-            shouldDeflectImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
-            if (shouldDeflectImpactee === true) {
-              if (this.rnJesus(1,impacteePlayerRef.crits.pushBack) === 1) {
-                  this.setDeflection(impacteePlayerRef,'attacked',false);
-              }
-              else {
-                this.setDeflection(impacteePlayerRef,'attacked',true);
-              }
 
+
+            if (impacteePlayerRef.direction === direction) {
+              movePlayer = true;
+              // impacteePlayerRef.halfPushBackChaining.state = false;
+              // impacteePlayerRef.halfPushBackChaining.direction = "";
+              // impacteePlayerRef.halfPushBackChaining.state = true;
+              // impacteePlayerRef.halfPushBackChaining.direction = direction;
             }
+
+            else {
+              this.setDeflection(impacteePlayerRef,'attacked',true);
+            }
+
+
+            // if (this.halfPushBackChainingMoveAll !== true) {
+            //
+            //
+            //   if (shouldDamageImpactee === true) {
+            //     this.handleMiscPlayerDamage(impacteePlayerRef,'halfPushBackImpactee_'+impactor+'');
+            //   }
+            //
+            //   shouldDeflectImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
+            //   if (shouldDeflectImpactee === true) {
+            //     if (this.rnJesus(1,impacteePlayerRef.crits.pushBack) === 1) {
+            //         this.setDeflection(impacteePlayerRef,'attacked',false);
+            //     }
+            //     else {
+            //       this.setDeflection(impacteePlayerRef,'attacked',true);
+            //     }
+            //
+            //   }
+            //
+            // }
+            // else {
+            //
+            //
+            //   if (shouldDamageImpactee === true) {
+            //     this.handleMiscPlayerDamage(impacteePlayerRef,'halfPushBackImpactee_'+impactor+'');
+            //   }
+            //
+            //   // shouldDeflectImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
+            //   // if (shouldDeflectImpactee === true) {
+            //   //
+            //   //   this.setDeflection(impacteePlayerRef,'attacked',true);
+            //   //
+            //   // }
+            //   this.setDeflection(impacteePlayerRef,'attacked',true);
+            //
+            // }
+
+
+
 
 
           break;
@@ -12730,6 +12807,10 @@ class App extends Component {
             damageObstacle('impactee');
           }
 
+          if (this.halfPushBackChainingMoveAll === true) {
+            moveObstacle = true;
+          }
+
         break;
         case "player":
 
@@ -12739,24 +12820,68 @@ class App extends Component {
           }
 
           // IMPACTEE
-          let impacteePlayerRef = this.players.find(x => x.currentPosition.cell.number.x === targetCellRef.number.x && x.currentPosition.cell.number.y === targetCellRef.number.y);
-          // shouldDamageImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
+          impacteePlayerRef = this.players.find(x => x.currentPosition.cell.number.x === targetCellRef.number.x && x.currentPosition.cell.number.y === targetCellRef.number.y);
+          shouldDamageImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
+
+
+
+          if (this.halfPushBackChaining === true) {
+            // impacteePlayerRef.halfPushBackChaining.state = true;
+            // impacteePlayerRef.halfPushBackChaining.direction = direction;
+          }
+
+
+
+          if (impacteePlayerRef.direction === direction) {
+            movePlayer = true;
+            // impacteePlayerRef.halfPushBackChaining.state = false;
+            // impacteePlayerRef.halfPushBackChaining.direction = "";
+            // impacteePlayerRef.halfPushBackChaining.state = true;
+            // impacteePlayerRef.halfPushBackChaining.direction = direction;
+          }
+          else {
+            this.setDeflection(impacteePlayerRef,'attacked',true);
+          }
+
+
+
+          // if (this.halfPushBackChainingMoveAll !== true) {
           //
-          // if (shouldDamageImpactee === true) {
-          //   this.handleMiscPlayerDamage(impacteePlayerRef,'halfPushBackImpactee_'+impactor+'');
-          // }
           //
-          // shouldDeflectImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
-          // if (shouldDeflectImpactee === true) {
-          //   if (this.rnJesus(1,impacteePlayerRef.crits.pushBack) === 1) {
-          //       this.setDeflection(impacteePlayerRef,'attacked',false);
+          //   if (shouldDamageImpactee === true) {
+          //     this.handleMiscPlayerDamage(impacteePlayerRef,'halfPushBackImpactee_'+impactor+'');
           //   }
-          //   else {
-          //     this.setDeflection(impacteePlayerRef,'attacked',true);
+          //
+          //   shouldDeflectImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
+          //   if (shouldDeflectImpactee === true) {
+          //     if (this.rnJesus(1,impacteePlayerRef.crits.pushBack) === 1) {
+          //         this.setDeflection(impacteePlayerRef,'attacked',false);
+          //     }
+          //     else {
+          //       this.setDeflection(impacteePlayerRef,'attacked',true);
+          //     }
+          //
           //   }
           //
           // }
-          this.setDeflection(impacteePlayerRef,'attacked',true);
+          // else {
+          //
+          //
+          //   if (shouldDamageImpactee === true) {
+          //     this.handleMiscPlayerDamage(impacteePlayerRef,'halfPushBackImpactee_'+impactor+'');
+          //   }
+          //
+          //   // shouldDeflectImpactee = (this.rnJesus(1,impacteePlayerRef.crits.guardBreak) === 1);
+          //   // if (shouldDeflectImpactee === true) {
+          //   //
+          //   //   this.setDeflection(impacteePlayerRef,'attacked',true);
+          //   //
+          //   // }
+          //   this.setDeflection(impacteePlayerRef,'attacked',true);
+          //
+          // }
+
+
 
 
         break;
@@ -12836,8 +12961,12 @@ class App extends Component {
 
         if (destCellRef.obstacle.state === true) {
           targetFree = false;
+
+
           if (this.halfPushBackChaining === true) {
+
             this.startHalfPushBack('obstacle','obstacle',direction,targetCellRef);
+
           }
 
         }
@@ -12845,8 +12974,11 @@ class App extends Component {
         if (this.players.find(x => x.currentPosition.cell.number.x === destCellRef.number.x && x.currentPosition.cell.number.y === destCellRef.number.y)) {
           targetFree = false;
 
+
           if (this.halfPushBackChaining === true) {
+
             this.startHalfPushBack('obstacle','player',direction,targetCellRef);
+
           }
 
         }
@@ -12941,6 +13073,137 @@ class App extends Component {
         }
 
       }
+
+
+    }
+
+    if (movePlayer === true && impactee === "player") {
+
+      let destCell = this.getCellFromDirection(1,targetCellRef.number,direction);
+      let destCellRef = this.gridInfo.find(x => x.number.x === destCell.x && x.number.y === destCell.y);
+      let destCellOccupant = "";
+      let preMoveSpeed = this.rnJesus(0,5);
+      let moveSpeed = 0;
+      if (preMoveSpeed <= 1) {
+        moveSpeed = .05;
+      }
+      if (preMoveSpeed === 2) {
+        moveSpeed = .1;
+      }
+      if (preMoveSpeed > 2 && preMoveSpeed < 4) {
+        moveSpeed = .125;
+      }
+      if (preMoveSpeed > 4) {
+        moveSpeed = .2;
+      }
+      if (this.terrainMoveSpeedRef[targetCellRef.terrain.type]) {
+        moveSpeed = this.terrainMoveSpeedRef[targetCellRef.terrain.type];
+      }
+
+
+      let targetFree = true;
+      if (targetCellRef.barrier.state === true && targetCellRef.barrier.position === direction) {
+        targetFree = false;
+      }
+      if (destCellRef) {
+
+        if (destCellRef.barrier.state === true && destCellRef.barrier.position === this.getOppositeDirection(direction)) {
+          targetFree = false;
+        }
+
+        if (destCellRef.obstacle.state === true) {
+          targetFree = false;
+          if (this.halfPushBackChaining === true) {
+            this.startHalfPushBack('player','obstacle',direction,impacteePlayerRef);
+          }
+
+        }
+
+        if (this.players.find(x => x.currentPosition.cell.number.x === destCellRef.number.x && x.currentPosition.cell.number.y === destCellRef.number.y)) {
+          targetFree = false;
+
+          if (this.halfPushBackChaining === true) {
+            this.startHalfPushBack('player','player',direction,impacteePlayerRef);
+          }
+
+        }
+
+      }
+
+
+      if (targetFree === true) {
+
+        // this.players[targetPlayer.number-1].strafing.direction = impactDirection;
+        // this.players[targetPlayer.number-1].strafing.state = true;
+        // this.players[targetPlayer.number-1].action = 'strafe moving';
+        this.players[impacteePlayerRef.number-1].action = 'strafe moving';
+
+        this.unsetDeflection(impacteePlayerRef);
+
+
+        this.players[impacteePlayerRef.number-1].pushed = {
+          state: true,
+          pusher: -1,
+          moveSpeed: moveSpeed,
+        }
+        this.getTarget(impacteePlayerRef);
+
+        if (destCellRef) {
+
+          this.players[impacteePlayerRef.number-1].moving = {
+            state: true,
+            step: 0,
+            course: '',
+            origin: {
+              number: {
+                x: impacteePlayerRef.currentPosition.cell.number.x,
+                y: impacteePlayerRef.currentPosition.cell.number.y
+              },
+              center: {
+                x: impacteePlayerRef.currentPosition.cell.center,
+                y: impacteePlayerRef.currentPosition.cell.center
+              },
+            },
+            destination: destCellRef.center
+          }
+          let targetPlyrNextPosition = this.lineCrementer(impacteePlayerRef);
+          this.players[impacteePlayerRef.number-1].nextPosition = targetPlyrNextPosition;
+
+
+        }
+
+        if (!destCellRef) {
+
+          let voidCenter = this.getVoidCenter(1,direction,targetCellRef.center);
+
+          this.players[impacteePlayerRef.number-1].moving = {
+            state: true,
+            step: 0,
+            course: '',
+            origin: {
+              number: {
+                x: impacteePlayerRef.currentPosition.cell.number.x,
+                y: impacteePlayerRef.currentPosition.cell.number.y
+              },
+              center: {
+                x: impacteePlayerRef.currentPosition.cell.center,
+                y: impacteePlayerRef.currentPosition.cell.center
+              },
+            },
+            destination: voidCenter
+          }
+          let targetPlyrNextPosition = this.lineCrementer(impacteePlayerRef);
+          this.players[impacteePlayerRef.number-1].nextPosition = targetPlyrNextPosition;
+
+        }
+
+      }
+
+
+
+
+
+
 
 
     }
@@ -20793,6 +21056,10 @@ class App extends Component {
               x: undefined,
               y: undefined,
             },
+          },
+          halfPushBackChaining: {
+            state: true,
+            direction: "",
           },
           defending: {
             state: false,
