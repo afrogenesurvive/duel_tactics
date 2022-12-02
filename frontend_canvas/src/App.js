@@ -2844,7 +2844,7 @@ class App extends Component {
       outOfStamina: 50,
       attacked: 20,
       bluntAttacked: 25,
-      defended: 10,
+      defended: 85,
       parried: 25,
       knockedOut: 65,
     };
@@ -7799,7 +7799,13 @@ class App extends Component {
 
     if (type === 'deflected') {
 
-      let unit = .005;
+      let unit = .002;
+
+      // console.log('xxx',data.elasticCounter.countUp.limit);
+      // count 3, unit .009
+      // count 4, 5, unit .007
+      // count > 6, unit .004, .003
+
       let baseCoords = {
         x: undefined,
         y: undefined,
@@ -7816,6 +7822,7 @@ class App extends Component {
       if (data.elasticCounter.countDown.state === true) {
         dir = this.getOppositeDirection(data.elasticCounter.direction);
       }
+
       switch (dir) {
       case "north":
           mod = {
@@ -7917,18 +7924,17 @@ class App extends Component {
         y: player.currentPosition.cell.center.y,
       };
 
-      // set counts based on deflected type
-      let specialCount = player.success.deflected.limit/3;
-      if (specialCount.toString().split(".")[1]) {
-        if (specialCount.toString().split(".")[1].parseFloat() < ) {
 
-        }
+
+      let countCalcPause = player.success.deflected.limit/2;
+      let countCalc = countCalcPause/2;
+
+      if (countCalc > 6) {
+        countCalc = 6;
+        countCalcPause = (player.success.deflected.limit-12);
       }
-      // change all deflected lengths to multiples of 3,
-      // or use math floor.
-      // or spilt into 2 bigger(pause) 1 smaller (count up/down)
-      // or spilt into 1 bigger(pause) 2 smaller (count up/down)
-      // apply elastic deflection depth sorting to 1/2 pushback drawing
+      console.log('countCalcPause',countCalcPause,countCalcPause+(countCalc*2));
+
 
       player.elasticCounter = {
         state: true,
@@ -7938,12 +7944,12 @@ class App extends Component {
         countUp: {
           state: false,
           count: 0,
-          limit: 6,
+          limit: Math.ceil(countCalc),
         },
         countDown: {
           state: false,
           count: 0,
-          limit: 6,
+          limit: Math.ceil(countCalc),
         },
         coords: {
           x: point.x-(this.playerDrawWidth/2),
@@ -7954,7 +7960,7 @@ class App extends Component {
           state: false,
           type: "peak",
           count: 0,
-          limit: 10,
+          limit: Math.ceil(countCalcPause),
         },
       }
 
@@ -11231,6 +11237,7 @@ class App extends Component {
       // parried: 25
       // knockedOut: 65,
     // };
+    this.attackedCancel(player)
 
     player.action = 'deflected';
     player.success.deflected = {
@@ -11243,7 +11250,7 @@ class App extends Component {
     player.stamina.current -= this.staminaCostRef.deflected[type];
 
 
-    this.attackedCancel(player)
+
 
     if (pushBack === true) {
 
@@ -11272,6 +11279,8 @@ class App extends Component {
     this.players[player.number-1] = player;
 
     if (pushBack !== true) {
+      console.log('set deflection',player.attacking.state);
+      // player.attacking.state = false
       this.setElasticCounter('deflected',"",true,player)
     }
 
@@ -31469,6 +31478,7 @@ class App extends Component {
     if (player.elasticCounter.state === true && player.elasticCounter.type === "deflected") {
       player.action = player.elasticCounter.type;
 
+
       // IF PAUSE IS START, COUNT PAUSE 1ST
       if (player.elasticCounter.pause.preState === true && player.elasticCounter.pause.type === "start") {
         player.elasticCounter.pause.preState = false;
@@ -31483,15 +31493,14 @@ class App extends Component {
         player.elasticCounter.countDown.state !== true &&
         player.elasticCounter.pause.state !== true
       ) {
-        player.elasticCounter.countUp.state = true
-        // console.log('pause is not start. count up');
+        player.elasticCounter.countUp.state = true;
       }
 
 
       // COUNT UP
       if (player.elasticCounter.countUp.state === true) {
 
-        if (player.elasticCounter.countUp.count < player.elasticCounter.countUp.limit) {
+        if (player.elasticCounter.countUp.count < player.elasticCounter.countUp.limit+1) {
 
           if (player.elasticCounter.countUp.count === 0) {
             // console.log('elastic count up start');
@@ -31503,7 +31512,7 @@ class App extends Component {
         }
 
         // FINISH COUNT UP
-        if (player.elasticCounter.countUp.count >= player.elasticCounter.countUp.limit) {
+        if (player.elasticCounter.countUp.count >= player.elasticCounter.countUp.limit+1) {
 
           // RESET COUNT UP
           player.elasticCounter.countUp = {
@@ -31535,7 +31544,7 @@ class App extends Component {
         // console.log('pause count. type: ',player.elasticCounter.pause.type);
 
         // COUNT PAUSE
-        if (player.elasticCounter.pause.count < player.elasticCounter.pause.limit) {
+        if (player.elasticCounter.pause.count < player.elasticCounter.pause.limit+1) {
 
           if (player.elasticCounter.pause.count === 0) {
             // console.log('pause count start');
@@ -31546,7 +31555,7 @@ class App extends Component {
         }
 
         // FINISH PAUSE
-        if (player.elasticCounter.pause.count >= player.elasticCounter.pause.limit) {
+        if (player.elasticCounter.pause.count >= player.elasticCounter.pause.limit+1) {
           // console.log('pause count finished');
 
           // IF PAUSE IS START, COUNT UP
@@ -31564,7 +31573,7 @@ class App extends Component {
           // IF PAUSE IS END, TURN OFF ELASTIC COUNT
           if (player.elasticCounter.pause.type === "end") {
             player.elasticCounter.state = false;
-            player.action = "idle";
+            // player.action = "idle";
             // console.log('end pause count finished. turn off elastic count');
           }
 
@@ -31579,7 +31588,7 @@ class App extends Component {
       if (player.elasticCounter.countDown.state === true) {
 
         // COUNT DOWN
-        if (player.elasticCounter.countDown.count < player.elasticCounter.countDown.limit) {
+        if (player.elasticCounter.countDown.count < player.elasticCounter.countDown.limit+1) {
 
           if (player.elasticCounter.countDown.count === 1) {
             // console.log('elastic count down start');
@@ -31590,7 +31599,7 @@ class App extends Component {
         }
 
         // FINISH COUNT DOWN
-        if (player.elasticCounter.countDown.count >= player.elasticCounter.countDown.limit) {
+        if (player.elasticCounter.countDown.count >= player.elasticCounter.countDown.limit+1) {
           player.elasticCounter.countDown = {
             state: false,
             count: 0,
@@ -31610,7 +31619,9 @@ class App extends Component {
           if (player.elasticCounter.pause.type !== "end") {
             player.elasticCounter.state = false;
             player.action = "idle";
-            console.log('pause is not end. turn off elastic count',player.success.deflected.state);
+
+            // reset deflected here?
+            console.log('pause is not end. turn off elastic count',player.success.deflected.state,player.success.deflected.count,'/',player.success.deflected.limit);
           }
 
 
@@ -34803,10 +34814,43 @@ class App extends Component {
               let finalCoords = this.calcElasticCountCoords('halfPushBack','player',plyr).coords;
               let drawCell = this.calcElasticCountCoords('halfPushBack','player',plyr).drawCell;
 
-              if (x === drawCell.x && y === drawCell.y) {
+              // if (x === drawCell.x && y === drawCell.y) {
+              //
+              //   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+              //
+              // }
 
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
-
+              if (plyr.direction === 'north') {
+                if (
+                  x === plyr.moving.origin.number.x &&
+                  y === plyr.moving.origin.number.y+1
+                ) {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+                }
+              }
+              if (plyr.direction === 'east') {
+                if (
+                  x === plyr.currentPosition.cell.number.x &&
+                  y === plyr.currentPosition.cell.number.y
+                ) {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+                }
+              }
+              if (plyr.direction === 'west') {
+                if (
+                  x === plyr.currentPosition.cell.number.x+1 &&
+                  y === plyr.currentPosition.cell.number.y
+                ) {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+                }
+              }
+              if (plyr.direction === 'south') {
+                if (
+                  x === plyr.currentPosition.cell.number.x+1 &&
+                  y === plyr.currentPosition.cell.number.y
+                ) {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+                }
               }
 
 
@@ -35125,83 +35169,6 @@ class App extends Component {
           if (plyr.success.deflected.state === true) {
             // console.log('updatedPlayerImg, sx, sy', sx, sy,'points',point.x-35, point.y-20,'dodge',plyr.dodging.state);
 
-            // if (plyr.direction === 'north') {
-            //   if (
-            //     x === plyr.moving.origin.number.x &&
-            //     y === plyr.moving.origin.number.y+1
-            //   ) {
-            //
-            //     context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  point.x-35, point.y-20, this.playerDrawWidth, this.playerDrawHeight)
-            //
-            //     if (plyr.success.deflected.type === 'attack') {
-            //       // context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
-            //     }
-            //     else if (plyr.success.deflected.type === 'attacked') {
-            //       // context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
-            //     }
-            //     else if (plyr.success.deflected.type === 'blunt_attacked') {
-            //       // context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
-            //     }
-            //   }
-            // }
-            // if (plyr.direction === 'east') {
-            //   if (
-            //     x === plyr.currentPosition.cell.number.x &&
-            //     y === plyr.currentPosition.cell.number.y
-            //   ) {
-            //
-            //     context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-35, point.y-30, this.playerDrawWidth,this.playerDrawHeight);
-            //
-            //     if (plyr.success.deflected.type === 'attack') {
-            //       // context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
-            //     }
-            //     else if (plyr.success.deflected.type === 'attacked') {
-            //       // context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
-            //     }
-            //     else if (plyr.success.deflected.type === 'blunt_attacked') {
-            //       // context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
-            //     }
-            //   }
-            // }
-            // if (plyr.direction === 'west') {
-            //   if (
-            //     x === plyr.currentPosition.cell.number.x+1 &&
-            //     y === plyr.currentPosition.cell.number.y
-            //   ) {
-            //
-            //     context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-15, point.y-20, this.playerDrawWidth,this.playerDrawHeight);
-            //
-            //     if (plyr.success.deflected.type === 'attack') {
-            //       // context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
-            //     }
-            //     else if (plyr.success.deflected.type === 'attacked') {
-            //       // context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
-            //     }
-            //     else if (plyr.success.deflected.type === 'blunt_attacked') {
-            //       // context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
-            //     }
-            //   }
-            // }
-            // if (plyr.direction === 'south') {
-            //   if (
-            //     x === plyr.currentPosition.cell.number.x+1 &&
-            //     y === plyr.currentPosition.cell.number.y
-            //   ) {
-            //
-            //     context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-15, point.y-30, this.playerDrawWidth,this.playerDrawHeight);
-            //
-            //     if (plyr.success.deflected.type === 'attack') {
-            //       // context.drawImage(indicatorImgs.deflect, point.x-35, point.y-35, 35,35);
-            //     }
-            //     else if (plyr.success.deflected.type === 'attacked') {
-            //       // context.drawImage(indicatorImgs.deflectInjured, point.x-35, point.y-35, 35,35);
-            //     }
-            //     else if (plyr.success.deflected.type === 'blunt_attacked') {
-            //       // context.drawImage(indicatorImgs.deflectBlunt, point.x-35, point.y-35, 35,35);
-            //     }
-            //   }
-            // }
-
             if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === 'deflected') {
 
               let finalCoords = this.calcElasticCountCoords('deflected','player',plyr).coords;
@@ -35212,58 +35179,76 @@ class App extends Component {
               //   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
               //
               // }
+              if (x === 9 && y === 9) {
+                // if (plyr.elasticCounter.countUp.state === true) {
+                //   console.log('count up',plyr.elasticCounter.coords,plyr.elasticCounter.countUp.count,plyr.action);
+                // }
+                // if (plyr.elasticCounter.countDown.state === true) {
+                //   console.log('count down',plyr.elasticCounter.coords,plyr.elasticCounter.countDown.count,plyr.action);
+                // }
+                if (plyr.elasticCounter.pause.state === true) {
+                  console.log('pause',plyr.elasticCounter.coords,plyr.elasticCounter.pause.count,plyr.action,plyr.attacking.state);
+                }
 
-              if (plyr.direction === 'north') {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y+1
-                ) {
-                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
-                }
+
+
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
               }
-              if (plyr.direction === 'east') {
-                if (
-                  x === plyr.currentPosition.cell.number.x &&
-                  y === plyr.currentPosition.cell.number.y
-                ) {
-                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
-                }
-              }
-              if (plyr.direction === 'west') {
-                if (
-                  x === plyr.currentPosition.cell.number.x+1 &&
-                  y === plyr.currentPosition.cell.number.y
-                ) {
-                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
-                }
-              }
-              if (plyr.direction === 'south') {
-                if (
-                  x === plyr.currentPosition.cell.number.x+1 &&
-                  y === plyr.currentPosition.cell.number.y
-                ) {
-                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
-                }
-              }
+
+
+              // if (plyr.elasticCounter.direction === 'south') {
+              //   if (
+              //     x === plyr.moving.origin.number.x &&
+              //     y === plyr.moving.origin.number.y+1
+              //   ) {
+              //     context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+              //   }
+              // }
+              // if (plyr.elasticCounter.direction === 'west') {
+              //   if (
+              //     x === plyr.currentPosition.cell.number.x &&
+              //     y === plyr.currentPosition.cell.number.y
+              //   ) {
+              //     context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+              //   }
+              // }
+              // if (plyr.elasticCounter.direction === 'east') {
+              //   if (
+              //     x === plyr.currentPosition.cell.number.x+1 &&
+              //     y === plyr.currentPosition.cell.number.y
+              //   ) {
+              //
+              //
+              //
+              //     if (plyr.elasticCounter.countUp.state === true) {
+              //       console.log('count up',plyr.elasticCounter.coords,plyr.elasticCounter.countUp.count,plyr.action);
+              //     }
+              //     if (plyr.elasticCounter.countDown.state === true) {
+              //       console.log('count down',plyr.elasticCounter.coords,plyr.elasticCounter.countDown.count,plyr.action);
+              //     }
+              //     if (plyr.elasticCounter.pause.state === true) {
+              //       console.log('pause',plyr.elasticCounter.coords,plyr.elasticCounter.pause.count,plyr.action);
+              //     }
+              //
+              //     context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+              //   }
+              // }
+              // if (plyr.elasticCounter.direction === 'north') {
+              //   if (
+              //     x === plyr.currentPosition.cell.number.x+1 &&
+              //     y === plyr.currentPosition.cell.number.y
+              //   ) {
+              //     context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+              //   }
+              // }
 
 
             }
+            if (plyr.elasticCounter.state !== true && plyr.elasticCounter.type === 'deflected' && x === this.gridWidth && y === this.gridWidth) {
+              console.log('deflected elastic counter overflow?',plyr.success.deflected.count);
+            }
 
           }
-          // if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === 'deflected') {
-          //
-          //   let finalCoords = this.calcElasticCountCoords('deflected','player',plyr).coords;
-          //   let drawCell = this.calcElasticCountCoords('deflected','player',plyr).drawCell;
-          //
-          //   if (x === drawCell.x && y === drawCell.y) {
-          //
-          //     context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
-          //
-          //   }
-          //
-          //
-          //
-          // }
 
           if (plyr.dodging.state === true && plyr.success.deflected.state !== true) {
 
