@@ -7865,10 +7865,7 @@ class App extends Component {
       let targetCellRef = this.gridInfo.find(x => x.number.x === targetCell.x && x.number.y === targetCell.y)
       drawCell = {x: undefined, y: undefined};
 
-      if (
-        data.elasticCounter.countUp.state === true ||
-        (data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "peak")
-      ) {
+      if (data.elasticCounter.countUp.state === true) {
 
         if (targetCellRef) {
           drawCell = targetCellRef.number;
@@ -7878,10 +7875,21 @@ class App extends Component {
         }
 
       }
-      if (
-        data.elasticCounter.countDown.state === true ||
-        (data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "start") ||
-        (data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "end")
+      if (data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "peak") {
+
+        if (targetCellRef) {
+          drawCell = targetCellRef.number;
+        }
+        else {
+          drawCell = data.currentPosition.cell.number;
+        }
+
+      }
+      if (data.elasticCounter.countDown.state === true) {
+        drawCell = data.currentPosition.cell.number;
+      }
+      if (data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "start" ||
+        data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "end"
       ) {
         drawCell = data.currentPosition.cell.number;
       }
@@ -7900,6 +7908,7 @@ class App extends Component {
 
   }
   setElasticCounter = (type,subType,pause,player) => {
+    // console.log('setElasticCounter',player.success.deflected.state);
 
     if (type === "deflected") {
 
@@ -7907,6 +7916,19 @@ class App extends Component {
         x: player.currentPosition.cell.center.x,
         y: player.currentPosition.cell.center.y,
       };
+
+      // set counts based on deflected type
+      let specialCount = player.success.deflected.limit/3;
+      if (specialCount.toString().split(".")[1]) {
+        if (specialCount.toString().split(".")[1].parseFloat() < ) {
+
+        }
+      }
+      // change all deflected lengths to multiples of 3,
+      // or use math floor.
+      // or spilt into 2 bigger(pause) 1 smaller (count up/down)
+      // or spilt into 1 bigger(pause) 2 smaller (count up/down)
+      // apply elastic deflection depth sorting to 1/2 pushback drawing
 
       player.elasticCounter = {
         state: true,
@@ -11213,7 +11235,7 @@ class App extends Component {
     player.action = 'deflected';
     player.success.deflected = {
       state: true,
-      count: 1,
+      count: 0,
       limit: this.deflectedLengthRef[type],
       predeflect: player.success.deflected.predeflect,
       type: type
@@ -11249,7 +11271,10 @@ class App extends Component {
 
     this.players[player.number-1] = player;
 
-    this.setElasticCounter('deflected',"",true,player)
+    if (pushBack !== true) {
+      this.setElasticCounter('deflected',"",true,player)
+    }
+
 
   }
   unsetDeflection = (player) => {
@@ -27897,6 +27922,7 @@ class App extends Component {
 
     // CHECK AND SET DEFLECTION!!
     if (player.success.deflected.state === true && player.success.deflected.count < player.success.deflected.limit) {
+
       player.action = 'deflected';
       player.success.deflected.count++
 
@@ -29836,14 +29862,14 @@ class App extends Component {
 
 
         // ELASTIC COUNTER
-        if (player.elasticCounter.state === true) {
+        if (player.elasticCounter.state === true && player.elasticCounter.type !== "deflected") {
           player.action = player.elasticCounter.type;
 
           // IF PAUSE IS START, COUNT PAUSE 1ST
           if (player.elasticCounter.pause.preState === true && player.elasticCounter.pause.type === "start") {
             player.elasticCounter.pause.preState = false;
             player.elasticCounter.pause.state = true;
-            console.log('start pause, turn on pause');
+            // console.log('start pause, turn on pause');
           }
 
           // IF PAUSE IS NOT START, COUNT UP
@@ -29854,7 +29880,7 @@ class App extends Component {
             player.elasticCounter.pause.state !== true
           ) {
             player.elasticCounter.countUp.state = true
-            console.log('pause is not start. count up');
+            // console.log('pause is not start. count up');
           }
 
 
@@ -29864,11 +29890,11 @@ class App extends Component {
             if (player.elasticCounter.countUp.count < player.elasticCounter.countUp.limit) {
 
               if (player.elasticCounter.countUp.count === 0) {
-                console.log('elastic count up start');
+                // console.log('elastic count up start');
               }
 
               player.elasticCounter.countUp.count++;
-              console.log('elastic counting up: ',player.elasticCounter.countUp.count);
+              // console.log('elastic counting up: ',player.elasticCounter.countUp.count);
 
             }
 
@@ -29881,19 +29907,19 @@ class App extends Component {
                 count: 0,
                 limit: player.elasticCounter.countUp.limit,
               }
-              console.log('finished count up. elastic counter peak');
+              // console.log('finished count up. elastic counter peak');
 
               // IF PAUSE IS PEAK, COUNT PAUSE AT PEAK
               if (player.elasticCounter.pause.preState === true && player.elasticCounter.pause.type === "peak") {
                 player.elasticCounter.pause.preState = false;
                 player.elasticCounter.pause.state = true;
-                console.log('peak pause. turn on pause');
+                // console.log('peak pause. turn on pause');
               }
 
               // IF PAUSE IS NOT PEAK, COUNT DOWM
               if (player.elasticCounter.pause.type !== "peak") {
                 player.elasticCounter.countDown.state = true;
-                console.log('pause is not peak. count down');
+                // console.log('pause is not peak. count down');
               }
 
             }
@@ -29908,33 +29934,33 @@ class App extends Component {
             if (player.elasticCounter.pause.count < player.elasticCounter.pause.limit) {
 
               if (player.elasticCounter.pause.count === 0) {
-                console.log('pause count start');
+                // console.log('pause count start');
               }
 
               player.elasticCounter.pause.count++;
-              console.log('pause counting: ',player.elasticCounter.pause.count);
+              // console.log('pause counting: ',player.elasticCounter.pause.count);
             }
 
             // FINISH PAUSE
             if (player.elasticCounter.pause.count >= player.elasticCounter.pause.limit) {
-              console.log('pause count finished');
+              // console.log('pause count finished');
 
               // IF PAUSE IS START, COUNT UP
               if (player.elasticCounter.pause.type === "start") {
                 player.elasticCounter.countUp.state = true;
-                console.log('start pause count finished. count up');
+                // console.log('start pause count finished. count up');
               }
 
               // IF PAUSE IS PEAK, COUNT DOWN
               if (player.elasticCounter.pause.type === "peak") {
                 player.elasticCounter.countDown.state = true;
-                console.log('peak pause count finished. count down');
+                // console.log('peak pause count finished. count down');
               }
 
               // IF PAUSE IS END, TURN OFF ELASTIC COUNT
               if (player.elasticCounter.pause.type === "end") {
                 player.elasticCounter.state = false;
-                console.log('end pause count finished. turn off elastic count');
+                // console.log('end pause count finished. turn off elastic count');
               }
 
               // RESET PAUSE COUNT
@@ -29951,11 +29977,11 @@ class App extends Component {
             if (player.elasticCounter.countDown.count < player.elasticCounter.countDown.limit) {
 
               if (player.elasticCounter.countDown.count === 1) {
-                console.log('elastic count down start');
+                // console.log('elastic count down start');
               }
 
               player.elasticCounter.countDown.count++;
-              console.log('elastic counting down: ',player.elasticCounter.countDown.count);
+              // console.log('elastic counting down: ',player.elasticCounter.countDown.count);
             }
 
             // FINISH COUNT DOWN
@@ -29965,19 +29991,19 @@ class App extends Component {
                 count: 0,
                 limit: player.elasticCounter.countDown.limit,
               }
-              console.log('finished count down. elastic counter end');
+              // console.log('finished count down. elastic counter end');
 
               // IF PAUSE IS END, COUNT PAUSE
               if (player.elasticCounter.pause.preState === true && player.elasticCounter.pause.type === "end") {
                 player.elasticCounter.pause.preState = false;
                 player.elasticCounter.pause.state = true;
-                console.log('end pause. turn on pause');
+                // console.log('end pause. turn on pause');
               }
 
               // IF PAUSE IS NOT END, TURN OFF ELASTIC COUNTER
               if (player.elasticCounter.pause.type !== "end") {
                 player.elasticCounter.state = false;
-                console.log('pause is not end. turn off elastic count');
+                // console.log('pause is not end. turn off elastic count');
               }
 
               player.action = "idle";
@@ -31438,6 +31464,161 @@ class App extends Component {
       // console.log('sorry no key presses right now. you are deflected');
     }
 
+
+    // DEFLECTION ELASTIC COUNTER
+    if (player.elasticCounter.state === true && player.elasticCounter.type === "deflected") {
+      player.action = player.elasticCounter.type;
+
+      // IF PAUSE IS START, COUNT PAUSE 1ST
+      if (player.elasticCounter.pause.preState === true && player.elasticCounter.pause.type === "start") {
+        player.elasticCounter.pause.preState = false;
+        player.elasticCounter.pause.state = true;
+        // console.log('start pause, turn on pause');
+      }
+
+      // IF PAUSE IS NOT START, COUNT UP
+      if (
+        player.elasticCounter.pause.type !== "start" &&
+        player.elasticCounter.countUp.state !== true &&
+        player.elasticCounter.countDown.state !== true &&
+        player.elasticCounter.pause.state !== true
+      ) {
+        player.elasticCounter.countUp.state = true
+        // console.log('pause is not start. count up');
+      }
+
+
+      // COUNT UP
+      if (player.elasticCounter.countUp.state === true) {
+
+        if (player.elasticCounter.countUp.count < player.elasticCounter.countUp.limit) {
+
+          if (player.elasticCounter.countUp.count === 0) {
+            // console.log('elastic count up start');
+          }
+
+          player.elasticCounter.countUp.count++;
+          // console.log('elastic counting up: ',player.elasticCounter.countUp.count);
+
+        }
+
+        // FINISH COUNT UP
+        if (player.elasticCounter.countUp.count >= player.elasticCounter.countUp.limit) {
+
+          // RESET COUNT UP
+          player.elasticCounter.countUp = {
+            state: false,
+            count: 0,
+            limit: player.elasticCounter.countUp.limit,
+          }
+          // console.log('finished count up. elastic counter peak');
+
+          // IF PAUSE IS PEAK, COUNT PAUSE AT PEAK
+          if (player.elasticCounter.pause.preState === true && player.elasticCounter.pause.type === "peak") {
+            player.elasticCounter.pause.preState = false;
+            player.elasticCounter.pause.state = true;
+            // console.log('peak pause. turn on pause');
+          }
+
+          // IF PAUSE IS NOT PEAK, COUNT DOWM
+          if (player.elasticCounter.pause.type !== "peak") {
+            player.elasticCounter.countDown.state = true;
+            // console.log('pause is not peak. count down');
+          }
+
+        }
+
+      }
+
+      // COUNT PAUSE
+      if (player.elasticCounter.pause.state === true) {
+        // console.log('pause count. type: ',player.elasticCounter.pause.type);
+
+        // COUNT PAUSE
+        if (player.elasticCounter.pause.count < player.elasticCounter.pause.limit) {
+
+          if (player.elasticCounter.pause.count === 0) {
+            // console.log('pause count start');
+          }
+
+          player.elasticCounter.pause.count++;
+          // console.log('pause counting: ',player.elasticCounter.pause.count);
+        }
+
+        // FINISH PAUSE
+        if (player.elasticCounter.pause.count >= player.elasticCounter.pause.limit) {
+          // console.log('pause count finished');
+
+          // IF PAUSE IS START, COUNT UP
+          if (player.elasticCounter.pause.type === "start") {
+            player.elasticCounter.countUp.state = true;
+            // console.log('start pause count finished. count up');
+          }
+
+          // IF PAUSE IS PEAK, COUNT DOWN
+          if (player.elasticCounter.pause.type === "peak") {
+            player.elasticCounter.countDown.state = true;
+            // console.log('peak pause count finished. count down');
+          }
+
+          // IF PAUSE IS END, TURN OFF ELASTIC COUNT
+          if (player.elasticCounter.pause.type === "end") {
+            player.elasticCounter.state = false;
+            player.action = "idle";
+            // console.log('end pause count finished. turn off elastic count');
+          }
+
+          // RESET PAUSE COUNT
+          player.elasticCounter.pause.state = false;
+          player.elasticCounter.pause.count = 0;
+
+        }
+      }
+
+      // COUNT DOWN
+      if (player.elasticCounter.countDown.state === true) {
+
+        // COUNT DOWN
+        if (player.elasticCounter.countDown.count < player.elasticCounter.countDown.limit) {
+
+          if (player.elasticCounter.countDown.count === 1) {
+            // console.log('elastic count down start');
+          }
+
+          player.elasticCounter.countDown.count++;
+          // console.log('elastic counting down: ',player.elasticCounter.countDown.count);
+        }
+
+        // FINISH COUNT DOWN
+        if (player.elasticCounter.countDown.count >= player.elasticCounter.countDown.limit) {
+          player.elasticCounter.countDown = {
+            state: false,
+            count: 0,
+            limit: player.elasticCounter.countDown.limit,
+          }
+          // console.log('finished count down. elastic counter end');
+
+          // IF PAUSE IS END, COUNT PAUSE
+          if (player.elasticCounter.pause.preState === true && player.elasticCounter.pause.type === "end") {
+            player.elasticCounter.pause.preState = false;
+            player.elasticCounter.pause.state = true;
+
+            // console.log('end pause. turn on pause');
+          }
+
+          // IF PAUSE IS NOT END, TURN OFF ELASTIC COUNTER
+          if (player.elasticCounter.pause.type !== "end") {
+            player.elasticCounter.state = false;
+            player.action = "idle";
+            console.log('pause is not end. turn off elastic count',player.success.deflected.state);
+          }
+
+
+        }
+
+      }
+
+    }
 
 
     // OBSTACLE
@@ -35026,17 +35207,64 @@ class App extends Component {
               let finalCoords = this.calcElasticCountCoords('deflected','player',plyr).coords;
               let drawCell = this.calcElasticCountCoords('deflected','player',plyr).drawCell;
 
-              if (x === drawCell.x && y === drawCell.y) {
+              // if (x === drawCell.x && y === drawCell.y) {
+              //
+              //   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+              //
+              // }
 
-                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
-
+              if (plyr.direction === 'north') {
+                if (
+                  x === plyr.moving.origin.number.x &&
+                  y === plyr.moving.origin.number.y+1
+                ) {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+                }
               }
+              if (plyr.direction === 'east') {
+                if (
+                  x === plyr.currentPosition.cell.number.x &&
+                  y === plyr.currentPosition.cell.number.y
+                ) {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+                }
+              }
+              if (plyr.direction === 'west') {
+                if (
+                  x === plyr.currentPosition.cell.number.x+1 &&
+                  y === plyr.currentPosition.cell.number.y
+                ) {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+                }
+              }
+              if (plyr.direction === 'south') {
+                if (
+                  x === plyr.currentPosition.cell.number.x+1 &&
+                  y === plyr.currentPosition.cell.number.y
+                ) {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+                }
+              }
+
 
             }
 
-
-
           }
+          // if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === 'deflected') {
+          //
+          //   let finalCoords = this.calcElasticCountCoords('deflected','player',plyr).coords;
+          //   let drawCell = this.calcElasticCountCoords('deflected','player',plyr).drawCell;
+          //
+          //   if (x === drawCell.x && y === drawCell.y) {
+          //
+          //     context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+          //
+          //   }
+          //
+          //
+          //
+          // }
+
           if (plyr.dodging.state === true && plyr.success.deflected.state !== true) {
 
             if (plyr.direction === 'north' || plyr.direction === 'south') {
