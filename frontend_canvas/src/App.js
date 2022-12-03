@@ -14095,11 +14095,15 @@ class App extends Component {
                     else {
                       console.log('your current weapon cannot destroy this, you need ',myCell.barrier.destructible.weapons,'. Deflect player?');
                        let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+
                        if (shouldDeflect === 1) {
 
-                         this.attackedCancel(this.players[player.number-1]);
-
-                         this.setDeflection(player,'defended',false);
+                         if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                           this.setDeflection(player,'defended',true);
+                         }
+                         else {
+                           this.setDeflection(player,'defended',false);
+                         }
 
                          if (player.currentWeapon.name === '') {
                            console.log('this barrier is stronger than your fist. Take damage?');
@@ -14112,6 +14116,11 @@ class App extends Component {
                          }
 
                        }
+                       else {
+
+                            this.pushBack(player,this.getOppositeDirection(player.direction))
+                       }
+
                        if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
                          this.cellPopups.push(
                            {
@@ -14137,9 +14146,13 @@ class App extends Component {
                      let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
 
                      if (shouldDeflect === 1) {
-                       this.attackedCancel(this.players[player.number-1]);
 
-                       this.setDeflection(player,'defended',false);
+                       if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                         this.setDeflection(player,'defended',true);
+                       }
+                       else {
+                         this.setDeflection(player,'defended',false);
+                       }
 
                        if (player.currentWeapon.name === '') {
                          console.log('this barrier is stronger than your fist. Take damage?');
@@ -14152,6 +14165,11 @@ class App extends Component {
                        }
 
                      }
+                     else {
+
+                          this.pushBack(player,this.getOppositeDirection(player.direction))
+                     }
+
                      if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
                        this.cellPopups.push(
                          {
@@ -14348,9 +14366,13 @@ class App extends Component {
                 console.log('attacking invurnerable barrier, deflect player?');
                  let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
                  if (shouldDeflect === 1) {
-                   this.attackedCancel(this.players[player.number-1]);
 
-                   this.setDeflection(player,'defended',false);
+                   if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                     this.setDeflection(player,'defended',true);
+                   }
+                   else {
+                     this.setDeflection(player,'defended',false);
+                   }
 
                    if (player.currentWeapon.name === '') {
                      console.log('this barrier is stronger than your fist. Take damage?');
@@ -14363,9 +14385,11 @@ class App extends Component {
                    }
 
                  }
-                 if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                   this.pushBack(player,this.getOppositeDirection(player.direction))
+                 else {
+
+                      this.pushBack(player,this.getOppositeDirection(player.direction))
                  }
+
                  if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                    this.cellPopups.push(
                      {
@@ -14827,9 +14851,12 @@ class App extends Component {
                        let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
                        if (shouldDeflect === 1) {
 
-                         this.attackedCancel(this.players[player.number-1]);
-
-                         this.setDeflection(player,'defended',false);
+                         if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                           this.setDeflection(player,'defended',true);
+                         }
+                         else {
+                           this.setDeflection(player,'defended',false);
+                         }
 
                          if (player.currentWeapon.name === '') {
                            console.log('this barrier is stronger than your fist. Take damage?');
@@ -14842,9 +14869,11 @@ class App extends Component {
                          }
 
                        }
-                       if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                         this.pushBack(player,this.getOppositeDirection(player.direction))
+                       else {
+
+                            this.pushBack(player,this.getOppositeDirection(player.direction))
                        }
+
                        if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
                          this.cellPopups.push(
                            {
@@ -14869,9 +14898,13 @@ class App extends Component {
                     console.log('attacking invurnerable barrier, deflect player?');
                      let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
                      if (shouldDeflect === 1) {
-                       this.attackedCancel(this.players[player.number-1]);
 
-                       this.setDeflection(player,'defended',false);
+                       if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                         this.setDeflection(player,'defended',true);
+                       }
+                       else {
+                         this.setDeflection(player,'defended',false);
+                       }
 
                        if (player.currentWeapon.name === '') {
                          console.log('this barrier is stronger than your fist. Take damage?');
@@ -14884,9 +14917,11 @@ class App extends Component {
                        }
 
                      }
-                     if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                       this.pushBack(player,this.getOppositeDirection(player.direction))
+                     else {
+
+                          this.pushBack(player,this.getOppositeDirection(player.direction))
                      }
+
                      if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
                        this.cellPopups.push(
                          {
@@ -15042,17 +15077,32 @@ class App extends Component {
                 else {
                   console.log('your current weapon cannot destroy this, you need ',targetCell2.barrier.destructible.weapons,'. Deflect player?');
                    let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+
                    if (shouldDeflect === 1) {
 
-                     this.attackedCancel(this.players[player.number-1]);
+                     if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                       this.setDeflection(player,'defended',true);
+                     }
+                     else {
+                       this.setDeflection(player,'defended',false);
+                     }
 
-                     this.setDeflection(player,'defended',false);
+                     if (player.currentWeapon.name === '') {
+                       console.log('this barrier is stronger than your fist. Take damage?');
+                       let takeDamage = this.rnJesus(1,player.crits.guardBreak);
+                       if (takeDamage === 1) {
 
+                         this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
+
+                       }
+                     }
 
                    }
-                   if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                     this.pushBack(player,this.getOppositeDirection(player.direction))
+                   else {
+
+                        this.pushBack(player,this.getOppositeDirection(player.direction))
                    }
+
                    if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
                      this.cellPopups.push(
                        {
@@ -15074,18 +15124,35 @@ class App extends Component {
 
               // INDESTRUCTIBLE FWD BARRIER
               else {
+
                 console.log('attacking invurnerable barrier, deflect player?');
                  let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
                  if (shouldDeflect === 1) {
-                   this.attackedCancel(this.players[player.number-1]);
 
-                   this.setDeflection(player,'defended',false);
+                   if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                     this.setDeflection(player,'defended',true);
+                   }
+                   else {
+                     this.setDeflection(player,'defended',false);
+                   }
 
+                   if (player.currentWeapon.name === '') {
+                     console.log('this barrier is stronger than your fist. Take damage?');
+                     let takeDamage = this.rnJesus(1,player.crits.guardBreak);
+                     if (takeDamage === 1) {
+
+                       this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
+
+                     }
+                   }
 
                  }
-                 if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                   this.pushBack(player,this.getOppositeDirection(player.direction))
+                 else {
+
+                      this.pushBack(player,this.getOppositeDirection(player.direction))
                  }
+
+
                  if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
                    this.cellPopups.push(
                      {
@@ -15714,12 +15781,16 @@ class App extends Component {
                     else {
                       console.log('your current weapon cannot destroy this, you need ',myCell.barrier.destructible.weapons,'. Deflect player?');
                        let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+
+
                        if (shouldDeflect === 1) {
 
-                         this.attackedCancel(this.players[player.number-1]);
-
-                         this.setDeflection(player,'defended',false);
-
+                         if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                           this.setDeflection(player,'defended',true);
+                         }
+                         else {
+                           this.setDeflection(player,'defended',false);
+                         }
 
                          if (player.currentWeapon.name === '') {
                            console.log('this barrier is stronger than your fist. Take damage?');
@@ -15732,9 +15803,12 @@ class App extends Component {
                          }
 
                        }
-                       if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                         this.pushBack(player,this.getOppositeDirection(player.direction))
+                       else {
+
+                            this.pushBack(player,this.getOppositeDirection(player.direction))
                        }
+
+
                        if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
                          this.cellPopups.push(
                            {
@@ -15758,10 +15832,15 @@ class App extends Component {
                   else {
                     console.log('attacking invurnerable barrier, deflect player?');
                      let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
-                     if (shouldDeflect === 1) {
-                       this.attackedCancel(this.players[player.number-1]);
 
-                       this.setDeflection(player,'defended',false);
+                     if (shouldDeflect === 1) {
+
+                       if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                         this.setDeflection(player,'defended',true);
+                       }
+                       else {
+                         this.setDeflection(player,'defended',false);
+                       }
 
                        if (player.currentWeapon.name === '') {
                          console.log('this barrier is stronger than your fist. Take damage?');
@@ -15774,9 +15853,11 @@ class App extends Component {
                        }
 
                      }
-                     if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                       this.pushBack(player,this.getOppositeDirection(player.direction))
+                     else {
+
+                          this.pushBack(player,this.getOppositeDirection(player.direction))
                      }
+
                      if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
                        this.cellPopups.push(
                          {
@@ -15922,18 +16003,33 @@ class App extends Component {
                   // WEAPON NO GOOD. DEFLECT
                   else {
                     console.log('your current weapon cannot destroy this, you need ',targetCell2.barrier.destructible.weapons,'. Deflect player?');
-                     let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+                     let shouldDeflect = this.rnJesus(1,player.crits.guardBreak);
+
                      if (shouldDeflect === 1) {
 
-                       this.attackedCancel(this.players[player.number-1]);
+                       if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                         this.setDeflection(player,'defended',true);
+                       }
+                       else {
+                         this.setDeflection(player,'defended',false);
+                       }
 
-                       this.setDeflection(player,'defended',false);
+                       if (player.currentWeapon.name === '') {
+                         console.log('this barrier is stronger than your fist. Take damage?');
+                         let takeDamage = this.rnJesus(1,player.crits.guardBreak);
+                         if (takeDamage === 1) {
 
+                           this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
+
+                         }
+                       }
 
                      }
-                     if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                       this.pushBack(player,this.getOppositeDirection(player.direction))
+                     else {
+
+                          this.pushBack(player,this.getOppositeDirection(player.direction))
                      }
+
                      if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
                        this.cellPopups.push(
                          {
@@ -15957,15 +16053,32 @@ class App extends Component {
                 else {
                   console.log('attacking invurnerable barrier, deflect player?');
                    let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+
                    if (shouldDeflect === 1) {
-                     this.attackedCancel(this.players[player.number-1]);
 
-                     this.setDeflection(player,'defended',false);
+                     if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                       this.setDeflection(player,'defended',true);
+                     }
+                     else {
+                       this.setDeflection(player,'defended',false);
+                     }
+
+                     if (player.currentWeapon.name === '') {
+                       console.log('this barrier is stronger than your fist. Take damage?');
+                       let takeDamage = this.rnJesus(1,player.crits.guardBreak);
+                       if (takeDamage === 1) {
+
+                         this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
+
+                       }
+                     }
 
                    }
-                   if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                     this.pushBack(player,this.getOppositeDirection(player.direction))
+                   else {
+
+                        this.pushBack(player,this.getOppositeDirection(player.direction))
                    }
+
                    if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
                      this.cellPopups.push(
                        {
@@ -16186,31 +16299,31 @@ class App extends Component {
 
                      let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
 
-                     if (shouldDeflect === 1) {
-
-                       if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                         this.setDeflection(player,'defended',true);
-                       }
-                       else {
-                         this.setDeflection(player,'defended',false);
-                       }
-
-                       if (player.currentWeapon.name === '') {
-                         console.log('this obstacle is stronger than your fist. Take damage?');
-                         let takeDamage = this.rnJesus(1,player.crits.guardBreak);
-                         if (takeDamage === 1) {
-
-                           this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
-
-                         }
-                       }
-
-                     }
-                     else {
-
-                          this.pushBack(player,this.getOppositeDirection(player.direction))
-                     }
-                     this.canPushObstacle(player,targetCell,'hitPush');
+                     // if (shouldDeflect === 1) {
+                     //
+                     //   if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                     //     this.setDeflection(player,'defended',true);
+                     //   }
+                     //   else {
+                     //     this.setDeflection(player,'defended',false);
+                     //   }
+                     //
+                     //   if (player.currentWeapon.name === '') {
+                     //     console.log('this obstacle is stronger than your fist. Take damage?');
+                     //     let takeDamage = this.rnJesus(1,player.crits.guardBreak);
+                     //     if (takeDamage === 1) {
+                     //
+                     //       this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
+                     //
+                     //     }
+                     //   }
+                     //
+                     // }
+                     // else {
+                     //
+                     //      this.pushBack(player,this.getOppositeDirection(player.direction))
+                     // }
+                     // this.canPushObstacle(player,targetCell,'hitPush');
 
                      if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
                        this.cellPopups.push(
@@ -16229,7 +16342,7 @@ class App extends Component {
                      }
 
 
-                     // this.setDeflection(player,'defended',false);
+                     this.setDeflection(player,'defended',true);
                   }
 
                 } else {
@@ -16479,10 +16592,15 @@ class App extends Component {
           else {
             console.log('attacking invurnerable barrier, deflect player?');
              let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
-             if (shouldDeflect === 1) {
-               this.attackedCancel(this.players[player.number-1]);
 
-               this.setDeflection(player,'defended',false);
+             if (shouldDeflect === 1) {
+
+               if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                 this.setDeflection(player,'defended',true);
+               }
+               else {
+                 this.setDeflection(player,'defended',false);
+               }
 
                if (player.currentWeapon.name === '') {
                  console.log('this barrier is stronger than your fist. Take damage?');
@@ -16495,9 +16613,11 @@ class App extends Component {
                }
 
              }
-             if (this.rnJesus(1,player.crits.pushBack) === 1) {
-               this.pushBack(player,this.getOppositeDirection(player.direction))
+             else {
+
+                  this.pushBack(player,this.getOppositeDirection(player.direction))
              }
+
              if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === myCell.number.x && x.cell.number.y === myCell.number.y)) {
                this.cellPopups.push(
                  {
@@ -35270,24 +35390,24 @@ class App extends Component {
               let drawCell = this.calcElasticCountCoords('deflected','player',plyr).drawCell;
 
 
-              if (x === 9 && y === 9) {
-
-
-                if (plyr.elasticCounter.countUp.state === true) {
-                  console.log('count up',plyr.elasticCounter.coords.x.toFixed(2),plyr.elasticCounter.coords.y.toFixed(2),plyr.elasticCounter.countUp.count,'/',plyr.success.deflected.limit,finalAnimIndex);
-                }
-
-                if (plyr.elasticCounter.countDown.state === true) {
-                  console.log('count down',plyr.elasticCounter.coords.x.toFixed(2),plyr.elasticCounter.coords.y.toFixed(2),(plyr.elasticCounter.countDown.count+plyr.elasticCounter.countUp.limit+plyr.elasticCounter.pause.limit),'/',plyr.success.deflected.limit,finalAnimIndex);
-                }
-
-                if (plyr.elasticCounter.pause.state === true) {
-                  console.log('pause',plyr.elasticCounter.coords.x.toFixed(2),plyr.elasticCounter.coords.y.toFixed(2),(plyr.elasticCounter.pause.count+plyr.elasticCounter.countUp.limit),'/',plyr.success.deflected.limit,finalAnimIndex);
-                }
-
-                // context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight);
-
-              }
+              // if (x === 9 && y === 9) {
+              //
+              //
+              //   if (plyr.elasticCounter.countUp.state === true) {
+              //     console.log('count up',plyr.elasticCounter.coords.x.toFixed(2),plyr.elasticCounter.coords.y.toFixed(2),plyr.elasticCounter.countUp.count,'/',plyr.success.deflected.limit,finalAnimIndex);
+              //   }
+              //
+              //   if (plyr.elasticCounter.countDown.state === true) {
+              //     console.log('count down',plyr.elasticCounter.coords.x.toFixed(2),plyr.elasticCounter.coords.y.toFixed(2),(plyr.elasticCounter.countDown.count+plyr.elasticCounter.countUp.limit+plyr.elasticCounter.pause.limit),'/',plyr.success.deflected.limit,finalAnimIndex);
+              //   }
+              //
+              //   if (plyr.elasticCounter.pause.state === true) {
+              //     console.log('pause',plyr.elasticCounter.coords.x.toFixed(2),plyr.elasticCounter.coords.y.toFixed(2),(plyr.elasticCounter.pause.count+plyr.elasticCounter.countUp.limit),'/',plyr.success.deflected.limit,finalAnimIndex);
+              //   }
+              //
+              //   // context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight);
+              //
+              // }
 
 
               if (plyr.elasticCounter.direction === 'south') {
