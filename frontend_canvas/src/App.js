@@ -14588,7 +14588,9 @@ class App extends Component {
 
                           this.pushBack(player,this.getOppositeDirection(player.direction))
                      }
-                     this.canPushObstacle(player,targetCell,'hitPush');
+                     if (this.rnJesus(1,1,player.crits.pushBack === 1)) {
+                        this.canPushObstacle(player,targetCell,'hitPush');
+                     }
 
                      if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                        this.cellPopups.push(
@@ -14640,7 +14642,9 @@ class App extends Component {
 
                         this.pushBack(player,this.getOppositeDirection(player.direction))
                    }
-                   this.canPushObstacle(player,targetCell,'hitPush');
+                   if (this.rnJesus(1,1,player.crits.pushBack === 1)) {
+                      this.canPushObstacle(player,targetCell,'hitPush');
+                   }
 
                    if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                      this.cellPopups.push(
@@ -15351,7 +15355,6 @@ class App extends Component {
 
                           this.pushBack(player,this.getOppositeDirection(player.direction))
                      }
-                     this.canPushObstacle(player,targetCell,'hitPush');
 
                      if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                        this.cellPopups.push(
@@ -15403,7 +15406,9 @@ class App extends Component {
 
                         this.pushBack(player,this.getOppositeDirection(player.direction))
                    }
-                   this.canPushObstacle(player,targetCell,'hitPush');
+                   if (this.rnJesus(1,1,player.crits.pushBack === 1)) {
+                      this.canPushObstacle(player,targetCell,'hitPush');
+                   }
 
                    if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                      this.cellPopups.push(
@@ -16271,7 +16276,6 @@ class App extends Component {
 
                             this.pushBack(player,this.getOppositeDirection(player.direction))
                        }
-                       this.canPushObstacle(player,targetCell,'hitPush');
 
                        if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
                          this.cellPopups.push(
@@ -16295,35 +16299,38 @@ class App extends Component {
 
                   // INDESTRUCTIBLE OBSTACLE
                   else {
-                    console.log('attacking invurnerable obstacle, deflect player?');
+                    console.log('attacking invurnerable obstacle, deflect player? xx');
 
                      let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
 
-                     // if (shouldDeflect === 1) {
-                     //
-                     //   if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                     //     this.setDeflection(player,'defended',true);
-                     //   }
-                     //   else {
-                     //     this.setDeflection(player,'defended',false);
-                     //   }
-                     //
-                     //   if (player.currentWeapon.name === '') {
-                     //     console.log('this obstacle is stronger than your fist. Take damage?');
-                     //     let takeDamage = this.rnJesus(1,player.crits.guardBreak);
-                     //     if (takeDamage === 1) {
-                     //
-                     //       this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
-                     //
-                     //     }
-                     //   }
-                     //
-                     // }
-                     // else {
-                     //
-                     //      this.pushBack(player,this.getOppositeDirection(player.direction))
-                     // }
-                     // this.canPushObstacle(player,targetCell,'hitPush');
+                     if (shouldDeflect === 1) {
+
+                       if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                         this.setDeflection(player,'defended',true);
+                       }
+                       else {
+                         this.setDeflection(player,'defended',false);
+                       }
+
+                       if (player.currentWeapon.name === '') {
+                         console.log('this obstacle is stronger than your fist. Take damage?');
+                         let takeDamage = this.rnJesus(1,player.crits.guardBreak);
+                         if (takeDamage === 1) {
+
+                           this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
+
+                         }
+                       }
+
+                     }
+                     else {
+
+                          this.pushBack(player,this.getOppositeDirection(player.direction))
+                     }
+                     if (this.rnJesus(1,1,player.crits.pushBack === 1)) {
+                        this.canPushObstacle(player,targetCell2,'hitPush');
+                     }
+
 
                      if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
                        this.cellPopups.push(
@@ -16342,7 +16349,7 @@ class App extends Component {
                      }
 
 
-                     this.setDeflection(player,'defended',true);
+                     // this.setDeflection(player,'defended',false);
                   }
 
                 } else {
