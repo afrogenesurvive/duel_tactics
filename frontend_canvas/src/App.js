@@ -14539,11 +14539,15 @@ class App extends Component {
                   else {
                     console.log('your current weapon cannot destroy this, you need ',targetCell.obstacle.destructible.weapons,'. Deflect player?');
                      let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+
                      if (shouldDeflect === 1) {
 
-                       this.attackedCancel(this.players[player.number-1]);
-
-                       this.setDeflection(player,'defended',false);
+                       if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                         this.setDeflection(player,'defended',true);
+                       }
+                       else {
+                         this.setDeflection(player,'defended',false);
+                       }
 
                        if (player.currentWeapon.name === '') {
                          console.log('this obstacle is stronger than your fist. Take damage?');
@@ -14555,13 +14559,13 @@ class App extends Component {
                          }
                        }
 
+                     }
+                     else {
 
-
+                          this.pushBack(player,this.getOppositeDirection(player.direction))
                      }
                      this.canPushObstacle(player,targetCell,'hitPush');
-                     if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                       this.pushBack(player,this.getOppositeDirection(player.direction))
-                     }
+
                      if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                        this.cellPopups.push(
                          {
@@ -14588,12 +14592,14 @@ class App extends Component {
 
                    let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
 
-
-
                    if (shouldDeflect === 1) {
-                     this.attackedCancel(this.players[player.number-1]);
 
-                     this.setDeflection(player,'defended',false);
+                     if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                       this.setDeflection(player,'defended',true);
+                     }
+                     else {
+                       this.setDeflection(player,'defended',false);
+                     }
 
                      if (player.currentWeapon.name === '') {
                        console.log('this obstacle is stronger than your fist. Take damage?');
@@ -14606,7 +14612,12 @@ class App extends Component {
                      }
 
                    }
+                   else {
+
+                        this.pushBack(player,this.getOppositeDirection(player.direction))
+                   }
                    this.canPushObstacle(player,targetCell,'hitPush');
+
                    if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                      this.cellPopups.push(
                        {
@@ -14623,11 +14634,6 @@ class App extends Component {
                      )
                    }
 
-                   if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                     this.pushBack(player,this.getOppositeDirection(player.direction))
-                   }
-
-                   this.pushBack(player,this.getOppositeDirection(player.direction));
 
                    // this.setDeflection(player,'defended',false);
 
@@ -15253,16 +15259,33 @@ class App extends Component {
                   else {
                     console.log('your current weapon cannot destroy this, you need ',targetCell.obstacle.destructible.weapons,'. Deflect player?');
                      let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+
                      if (shouldDeflect === 1) {
 
-                       this.attackedCancel(this.players[player.number-1]);
+                       if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                         this.setDeflection(player,'defended',true);
+                       }
+                       else {
+                         this.setDeflection(player,'defended',false);
+                       }
 
-                       this.setDeflection(player,'defended',false);
+                       if (player.currentWeapon.name === '') {
+                         console.log('this obstacle is stronger than your fist. Take damage?');
+                         let takeDamage = this.rnJesus(1,player.crits.guardBreak);
+                         if (takeDamage === 1) {
+
+                           this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
+
+                         }
+                       }
 
                      }
-                     if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                       this.pushBack(player,this.getOppositeDirection(player.direction))
+                     else {
+
+                          this.pushBack(player,this.getOppositeDirection(player.direction))
                      }
+                     this.canPushObstacle(player,targetCell,'hitPush');
+
                      if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                        this.cellPopups.push(
                          {
@@ -15278,24 +15301,43 @@ class App extends Component {
                          }
                        )
                      }
-                     this.canPushObstacle(player,targetCell2,'hitPush');
+
                   }
 
                 }
 
                 // INDESTRUCTIBLE OBSTACLE
                 else {
+
                   console.log('attacking invurnerable obstacle, deflect player?');
                    let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+
                    if (shouldDeflect === 1) {
-                     this.attackedCancel(this.players[player.number-1]);
 
-                     this.setDeflection(player,'defended',false);
+                     if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                       this.setDeflection(player,'defended',true);
+                     }
+                     else {
+                       this.setDeflection(player,'defended',false);
+                     }
+
+                     if (player.currentWeapon.name === '') {
+                       console.log('this obstacle is stronger than your fist. Take damage?');
+                       let takeDamage = this.rnJesus(1,player.crits.guardBreak);
+                       if (takeDamage === 1) {
+
+                         this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
+
+                       }
+                     }
 
                    }
-                   if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                     this.pushBack(player,this.getOppositeDirection(player.direction))
+                   else {
+
+                        this.pushBack(player,this.getOppositeDirection(player.direction))
                    }
+                   this.canPushObstacle(player,targetCell,'hitPush');
+
                    if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                      this.cellPopups.push(
                        {
@@ -15311,7 +15353,8 @@ class App extends Component {
                        }
                      )
                    }
-                   this.canPushObstacle(player,targetCell,'hitPush');
+
+                   // this.setDeflection(player,'defended',false);
                 }
 
 
@@ -16090,16 +16133,33 @@ class App extends Component {
                     else {
                       console.log('your current weapon cannot destroy this, you need ',targetCell2.obstacle.destructible.weapons,'. Deflect player?');
                        let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+
                        if (shouldDeflect === 1) {
 
-                         this.attackedCancel(this.players[player.number-1]);
+                         if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                           this.setDeflection(player,'defended',true);
+                         }
+                         else {
+                           this.setDeflection(player,'defended',false);
+                         }
 
-                         this.setDeflection(player,'defended',false);
+                         if (player.currentWeapon.name === '') {
+                           console.log('this obstacle is stronger than your fist. Take damage?');
+                           let takeDamage = this.rnJesus(1,player.crits.guardBreak);
+                           if (takeDamage === 1) {
+
+                             this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
+
+                           }
+                         }
 
                        }
-                       if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                         this.pushBack(player,this.getOppositeDirection(player.direction))
+                       else {
+
+                            this.pushBack(player,this.getOppositeDirection(player.direction))
                        }
+                       this.canPushObstacle(player,targetCell,'hitPush');
+
                        if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
                          this.cellPopups.push(
                            {
@@ -16115,7 +16175,7 @@ class App extends Component {
                            }
                          )
                        }
-                       this.canPushObstacle(player,targetCell2,'hitPush');
+
                     }
 
                   }
@@ -16125,17 +16185,33 @@ class App extends Component {
                     console.log('attacking invurnerable obstacle, deflect player?');
 
                      let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
-                     // let shouldDeflect = this.rnJesus(1,1)
+
                      if (shouldDeflect === 1) {
-                       this.attackedCancel(this.players[player.number-1]);
 
-                       this.setDeflection(player,'defended',false);
+                       if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                         this.setDeflection(player,'defended',true);
+                       }
+                       else {
+                         this.setDeflection(player,'defended',false);
+                       }
 
+                       if (player.currentWeapon.name === '') {
+                         console.log('this obstacle is stronger than your fist. Take damage?');
+                         let takeDamage = this.rnJesus(1,player.crits.guardBreak);
+                         if (takeDamage === 1) {
+
+                           this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
+
+                         }
+                       }
 
                      }
-                     if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                       this.pushBack(player,this.getOppositeDirection(player.direction))
+                     else {
+
+                          this.pushBack(player,this.getOppositeDirection(player.direction))
                      }
+                     this.canPushObstacle(player,targetCell,'hitPush');
+
                      if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell2.number.x && x.cell.number.y === targetCell2.number.y)) {
                        this.cellPopups.push(
                          {
@@ -16151,7 +16227,9 @@ class App extends Component {
                          }
                        )
                      }
-                     this.canPushObstacle(player,targetCell2,'hitPush');
+
+
+                     // this.setDeflection(player,'defended',false);
                   }
 
                 } else {
@@ -35301,7 +35379,7 @@ class App extends Component {
 
           }
 
-          
+
 
           // DEPTH SORTING!!
 
