@@ -7659,6 +7659,45 @@ class App extends Component {
       y: undefined,
     }
 
+
+
+
+    let getMod = (direction,unit2) => {
+
+      let mod2 = mod;
+      switch (direction) {
+        case "north":
+            mod2 = {
+              x: unit2*2,
+              y: -unit2,
+            }
+          break;
+        case "south":
+            mod2 = {
+              x: -(unit2*2),
+              y: unit2,
+            }
+          break;
+        case "east":
+            mod2 = {
+              x: (unit2*2),
+              y: unit2,
+            }
+          break;
+        case "west":
+            mod2 = {
+              x: -(unit2*2),
+              y: -unit2,
+            }
+          break;
+        default:
+
+      }
+
+      return mod2;
+
+    }
+
     if (type === 'halfPushBack') {
 
       let unit = .012;
@@ -7703,34 +7742,7 @@ class App extends Component {
       }
 
 
-      switch (dir) {
-        case "north":
-            mod = {
-              x: unit*2,
-              y: -unit,
-            }
-          break;
-        case "south":
-            mod = {
-              x: -(unit*2),
-              y: unit,
-            }
-          break;
-        case "east":
-            mod = {
-              x: (unit*2),
-              y: unit,
-            }
-          break;
-        case "west":
-            mod = {
-              x: -(unit*2),
-              y: -unit,
-            }
-          break;
-        default:
-
-      }
+      mod = getMod(dir,unit);
 
 
       finalCoords = {
@@ -7811,12 +7823,9 @@ class App extends Component {
         unit = .002
       }
 
+
+      let dir = data.elasticCounter.direction;
       let baseCoords = {
-        x: undefined,
-        y: undefined,
-      }
-      let dir = "";
-      baseCoords = {
         x: data.elasticCounter.coords.x,
         y: data.elasticCounter.coords.y,
       }
@@ -7828,34 +7837,8 @@ class App extends Component {
         dir = this.getOppositeDirection(data.elasticCounter.direction);
       }
 
-      switch (dir) {
-      case "north":
-          mod = {
-            x: unit*2,
-            y: -unit,
-          }
-        break;
-      case "south":
-          mod = {
-            x: -(unit*2),
-            y: unit,
-          }
-        break;
-      case "east":
-          mod = {
-            x: (unit*2),
-            y: unit,
-          }
-        break;
-      case "west":
-          mod = {
-            x: -(unit*2),
-            y: -unit,
-          }
-        break;
-      default:
 
-    }
+      mod = getMod(dir,unit);
 
       if (data.elasticCounter.pause.state !== true) {
         finalCoords = {
@@ -7869,6 +7852,7 @@ class App extends Component {
           y: (baseCoords.y),
         }
       }
+
 
       let targetCell;
       data.elasticCounter.coords = finalCoords;
@@ -7911,6 +7895,93 @@ class App extends Component {
 
     }
 
+    if (type === "dodging") {
+
+      let unit = .002;
+
+      if (data.elasticCounter.countUp.count <= 3) {
+        unit = .007
+      }
+      if (data.elasticCounter.countUp.count > 3 && data.elasticCounter.countUp.count < 6) {
+        unit = .005
+      }
+      if (data.elasticCounter.countUp.count > 6) {
+        unit = .002
+      }
+
+
+      let dir = data.elasticCounter.direction;
+      let baseCoords = {
+        x: data.elasticCounter.coords.x,
+        y: data.elasticCounter.coords.y,
+      }
+
+      if (data.elasticCounter.countUp.state === true) {
+        dir = data.elasticCounter.direction;
+      }
+      if (data.elasticCounter.countDown.state === true) {
+        dir = this.getOppositeDirection(data.elasticCounter.direction);
+      }
+
+
+      mod = getMod(dir,unit);
+
+      if (data.elasticCounter.pause.state !== true) {
+        finalCoords = {
+          x: (baseCoords.x + mod.x),
+          y: (baseCoords.y + mod.y),
+        }
+      }
+      else {
+        finalCoords = {
+          x: (baseCoords.x),
+          y: (baseCoords.y),
+        }
+      }
+
+      // console.log('calcElasticCountCoords',baseCoords,'plyr coords',data.elasticCounter.coords,'mod',mod,'dir',dir,data.elasticCounter.direction);
+
+
+      let targetCell;
+      data.elasticCounter.coords = finalCoords;
+
+      targetCell = this.getCellFromDirection(1,data.currentPosition.cell.number,data.elasticCounter.direction)
+      let targetCellRef = this.gridInfo.find(x => x.number.x === targetCell.x && x.number.y === targetCell.y)
+      drawCell = {x: undefined, y: undefined};
+
+      if (data.elasticCounter.countUp.state === true) {
+
+        if (targetCellRef) {
+          drawCell = targetCellRef.number;
+        }
+        else {
+          drawCell = data.currentPosition.cell.number;
+        }
+
+      }
+      if (data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "peak") {
+
+        if (targetCellRef) {
+          drawCell = targetCellRef.number;
+        }
+        else {
+          drawCell = data.currentPosition.cell.number;
+        }
+
+      }
+      if (data.elasticCounter.countDown.state === true) {
+        drawCell = data.currentPosition.cell.number;
+      }
+      if (data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "start" ||
+        data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "end"
+      ) {
+        drawCell = data.currentPosition.cell.number;
+      }
+
+      this.players[data.number-1] = data;
+
+    }
+
 
     return {
       coords: finalCoords,
@@ -7920,7 +7991,7 @@ class App extends Component {
 
   }
   setElasticCounter = (type,subType,pause,player) => {
-    // console.log('setElasticCounter',player.success.deflected.state);
+    // console.log('setElasticCounter',player.success.deflected.type,player.success.deflected.limit);
 
     if (type === "deflected") {
 
@@ -7938,6 +8009,7 @@ class App extends Component {
         countCalc = 6;
         countCalcPause = (player.success.deflected.limit-12);
       }
+
 
       player.elasticCounter = {
         state: true,
@@ -7959,7 +8031,7 @@ class App extends Component {
           y: point.y-(this.playerDrawHeight/2),
         },
         pause: {
-          preState: true,
+          preState: pause,
           state: false,
           type: "peak",
           count: 0,
@@ -7967,10 +8039,76 @@ class App extends Component {
         },
       }
 
+
     }
+
 
     if (type === "dodging") {
 
+
+      let point = {
+        x: player.currentPosition.cell.center.x,
+        y: player.currentPosition.cell.center.y,
+      };
+
+
+      let startMod = player.crits.dodge;
+      let endMod = player.crits.dodge;
+      if (player.crits.dodge > 5) {
+        player.crits.dodge = 5;
+      }
+      if (player.dodging.peak.start - startMod < 2) {
+        startMod = player.dodging.peak.start-2;
+      }
+      if ((player.dodging.peak.end + endMod) > player.dodging.limit-2) {
+        endMod = player.dodging.limit-(2+player.dodging.peak.end);
+      }
+
+
+      // console.log('count up: ',player.dodging.peak.start - startMod);
+      // console.log('pause: ',(player.dodging.peak.end + endMod)-(player.dodging.peak.start - startMod));
+      // console.log('count down',player.dodging.limit-(player.dodging.peak.end + endMod));
+      // console.log('limit',player.dodging.limit);
+
+      let countCalcPause = (player.dodging.peak.end + endMod)-(player.dodging.peak.start - startMod);
+      let countCalcUp = player.dodging.peak.start - startMod;
+      let countCalcDown = player.dodging.limit-(player.dodging.peak.end + endMod);
+
+
+      // if (countCalc > 6) {
+      //   countCalc = 6;
+      //   countCalcPause = (player.success.deflected.limit-12);
+      // }
+
+
+      player.elasticCounter = {
+        state: true,
+        direction: player.dodgeDirection,
+        type: "dodging",
+        subType: "",
+        countUp: {
+          state: false,
+          count: 0,
+          limit: countCalcUp,
+        },
+        countDown: {
+          state: false,
+          count: 0,
+          limit: countCalcUp,
+          // limit: countCalcDown,
+        },
+        coords: {
+          x: point.x-(this.playerDrawWidth/2),
+          y: point.y-(this.playerDrawHeight/2),
+        },
+        pause: {
+          preState: pause,
+          state: false,
+          type: "peak",
+          count: 0,
+          limit: countCalcPause,
+        },
+      }
 
 
     }
@@ -10122,6 +10260,57 @@ class App extends Component {
 
       }
 
+      if (player.currentWeapon.name === "") {
+
+        this.cellsUnderAttack.push(
+          {
+            number: {
+              x: player.target.cell1.number.x,
+              y: player.target.cell1.number.y,
+            },
+            count: 1,
+            limit: 8,
+          },
+        )
+
+        // TAGET CELL 1 IS FREE NO ITEM OR BOLT, MISS
+        if (
+          player.target.cell1.free === true &&
+          player.target.cell1.occupant.type !== "item" &&
+          player.target.cell1.occupant.type !== "rubble" &&
+          boltTarget1 !== true) {
+
+          if (!player.popups.find(x => x.msg === "missedAttack2")) {
+            player.popups.push(
+              {
+                state: false,
+                count: 0,
+                limit: 30,
+                type: '',
+                position: '',
+                msg: 'missedAttack2',
+                img: '',
+
+              }
+            )
+          }
+
+          player.stamina.current -= playerAttackStamType.pre;
+
+        }
+
+        // TARGET CELL 1 IS NOT FREE OR HAS BOLT OR ITEM, ATTACK
+        if (
+          player.target.cell1.free !== true ||
+          player.target.cell1.occupant.type === "item" ||
+          player.target.cell1.occupant.type === "rubble" ||
+          boltTarget1 === true
+        ) {
+          this.meleeAttackParse(player,1)
+        }
+
+      }
+
       if (player.currentWeapon.type === "crossbow" || player.currentWeapon.type === "longbow") {
 
         // CROSSBOW BLUNT ATTACK
@@ -10185,7 +10374,11 @@ class App extends Component {
     let weapon = player.currentWeapon.type;
 
     // ATTACK STAM UNARMED CHECK & AND POPUPS SET
-    let playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].normal;
+    let playerAttackStamType;
+    if (player.currentWeapon.name !== "") {
+      playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].normal;
+    }
+
     if (player.bluntAttack === true) {
       playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].blunt;
     }
@@ -10540,7 +10733,6 @@ class App extends Component {
 
             // PLAYER ATK SUCCESS, TARGET DEFLECTED + DAMAGE
             else {
-
               this.handleMeleeDamage(player,targetPlayerRef);
               this.setDeflection(targetPlayerRef,'attacked',false);
               player.success.attackSuccess = {
@@ -11260,13 +11452,8 @@ class App extends Component {
       player.success.deflected.state = false;
       player.success.deflected.predeflect = true;
 
-      // if (target is obstacle,player or barrier) {
-      //   startHalfPushBack
-      // }
 
       this.pushBack(player,this.getOppositeDirection(player.direction));
-
-
 
     }
     else {
@@ -14410,6 +14597,7 @@ class App extends Component {
 
             // NO FWD BARRIER. OBSTACLE, REAR  BARRIER (SPEAR)?
             else if (fwdBarrier !== true && myCellBarrier !== true) {
+
               if (targetCell.obstacle.state === true) {
                 // damage = 1;
                 if (targetCell.obstacle.destructible.state === true) {
@@ -14591,6 +14779,8 @@ class App extends Component {
                      if (this.rnJesus(1,1,player.crits.pushBack === 1)) {
                         this.canPushObstacle(player,targetCell,'hitPush');
                      }
+
+
 
                      if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                        this.cellPopups.push(
@@ -16299,7 +16489,7 @@ class App extends Component {
 
                   // INDESTRUCTIBLE OBSTACLE
                   else {
-                    console.log('attacking invurnerable obstacle, deflect player? xx');
+                    console.log('attacking invurnerable obstacle, deflect player?');
 
                      let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
 
@@ -16426,6 +16616,7 @@ class App extends Component {
           console.log('target is above your elevation');
         }
       }
+
       if (!targetCell) {
 
         if (myCell.barrier.state === true && myCell.barrier.position === player.direction) {
@@ -29858,7 +30049,62 @@ class App extends Component {
               player.stamina.current = player.stamina.current - this.staminaCostRef.dodge.peak;
               player.dodging.count++;
               player.action = 'dodging';
+
+              // CHOOSE DODGE DIRECTION
+              let whichDirection = this.rnJesus(1,2);
+              let dodgeDirection;
+              switch(player.direction) {
+                  case 'north':
+                  if (whichDirection === 1) {
+                    dodgeDirection = 'east';
+                  } else {
+                    dodgeDirection = 'west';
+                  }
+                  break;
+                  case 'south':
+                  if (whichDirection === 1) {
+                    dodgeDirection = 'east';
+                  } else {
+                    dodgeDirection = 'west';
+                  }
+                  break;
+                  case 'east':
+                  if (whichDirection === 1) {
+                    dodgeDirection = 'north';
+                  } else {
+                    dodgeDirection = 'south';
+                  }
+                  break;
+                  case 'west':
+                  if (whichDirection === 1) {
+                    dodgeDirection = 'north';
+                  } else {
+                    dodgeDirection = 'south';
+                  }
+                  break;
+              }
+              player.dodgeDirection = dodgeDirection;
+
+
+              if (!player.popups.find(x => x.msg === "dodgeStart")) {
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 5,
+                    type: '',
+                    position: '',
+                    msg: 'dodgeStart',
+                    img: '',
+
+                  }
+                )
+              }
+
+              this.setElasticCounter('dodging',"",true,player);
+
             }
+
 
             else {
 
@@ -29880,21 +30126,6 @@ class App extends Component {
                 count: 1,
                 limit: player.statusDisplay.limit,
               }
-            }
-
-            if (!player.popups.find(x => x.msg === "dodgeStart")) {
-              player.popups.push(
-                {
-                  state: false,
-                  count: 0,
-                  limit: 5,
-                  type: '',
-                  position: '',
-                  msg: 'dodgeStart',
-                  img: '',
-
-                }
-              )
             }
 
 
@@ -29919,6 +30150,7 @@ class App extends Component {
                 }
               )
             }
+
           }
           // PEAK START
           if (player.dodging.count === (player.dodging.peak.start - startMod)) {
@@ -29935,49 +30167,17 @@ class App extends Component {
             //
             //   }
             // )
+
           }
+
+          // PEAK DURATION
           if (player.dodging.count > (player.dodging.peak.start - startMod) && player.dodging.count < (player.dodging.peak.end + endMod)) {
             player.dodging.state = true;
 
-            // console.log('dodge peak',player.dodging.count,'crit',player.crits.dodge);
+            // console.log('dodge peak',player.dodging.count);
           }
 
-          // CHOOSE DODGE DIRECTION
-          if (player.dodging.count === (player.dodging.peak.start - startMod)) {
-            let whichDirection = this.rnJesus(1,2);
-            let dodgeDirection;
-            switch(player.direction) {
-                case 'north':
-                if (whichDirection === 1) {
-                  dodgeDirection = 'east';
-                } else {
-                  dodgeDirection = 'west';
-                }
-                break;
-                case 'south':
-                if (whichDirection === 1) {
-                  dodgeDirection = 'east';
-                } else {
-                  dodgeDirection = 'west';
-                }
-                break;
-                case 'east':
-                if (whichDirection === 1) {
-                  dodgeDirection = 'north';
-                } else {
-                  dodgeDirection = 'south';
-                }
-                break;
-                case 'west':
-                if (whichDirection === 1) {
-                  dodgeDirection = 'north';
-                } else {
-                  dodgeDirection = 'south';
-                }
-                break;
-            }
-            player.dodgeDirection = dodgeDirection;
-          }
+
 
           // IF DODGE IS BEFORE OR AFTER PEAK, STATE OFF
           if (player.dodging.count < (player.dodging.peak.start - startMod) || player.dodging.count > (player.dodging.peak.end + endMod)) {
@@ -30221,7 +30421,10 @@ class App extends Component {
                 // console.log('pause is not end. turn off elastic count');
               }
 
-              player.action = "idle";
+              if (player.elasticCounter !== "dodging") {
+                player.action = "idle";
+              }
+
             }
 
           }
@@ -34777,6 +34980,71 @@ class App extends Component {
             break;
             case 'dodging':
               let animIndex7 = plyr.dodging.count -1;
+
+              if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === "dodging") {
+                if (plyr.elasticCounter.countUp.state === true) {
+                  // animIndex7 = plyr.elasticCounter.countUp.count-1;
+
+                  if (plyr.elasticCounter.countUp.count < 11) {
+                    animIndex7 = plyr.elasticCounter.countUp.count-1;
+                  }
+                  else {
+
+                    if (plyr.elasticCounter.countUp.count%10 === 0) {
+                      animIndex7 = 9;
+                      // animIndex5 = 10;
+                      // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+                    }
+                    else {
+                      let mod = (Math.floor(plyr.elasticCounter.countUp.count/10)*10)
+                      animIndex7 = (plyr.elasticCounter.countUp.count-mod)-1;
+                    }
+
+                  }
+
+                }
+                if (plyr.elasticCounter.pause.state === true) {
+
+                  if (plyr.elasticCounter.pause.count < 11) {
+                    animIndex7 = plyr.elasticCounter.pause.count-1;
+                  }
+                  else {
+
+                    if (plyr.elasticCounter.pause.count%10 === 0) {
+                      animIndex7 = 9;
+                      // animIndex5 = 10;
+                      // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+                    }
+                    else {
+                      let mod = (Math.floor(plyr.elasticCounter.pause.count/10)*10)
+                      animIndex7 = (plyr.elasticCounter.pause.count-mod)-1;
+                    }
+
+                  }
+
+                }
+                if (plyr.elasticCounter.countDown.state === true) {
+                  // animIndex7 = plyr.elasticCounter.countDown.count-1;
+
+                  if (plyr.elasticCounter.countDown.count < 11) {
+                    animIndex7 = plyr.elasticCounter.countDown.count-1;
+                  }
+                  else {
+
+                    if (plyr.elasticCounter.countDown.count%10 === 0) {
+                      animIndex7 = 9;
+                      // animIndex5 = 10;
+                      // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+                    }
+                    else {
+                      let mod = (Math.floor(plyr.elasticCounter.countDown.count/10)*10)
+                      animIndex7 = (plyr.elasticCounter.countDown.count-mod)-1;
+                    }
+
+                  }
+                }
+              }
+
               finalAnimIndex = animIndex7;
               // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
             break;
@@ -34929,6 +35197,7 @@ class App extends Component {
 
 
           //PLAYER DEPTH SORTING!!
+          // MOVING
           if (plyr.target.cell1.void === false && plyr.moving.state === true && plyr.falling.state !== true && plyr.jumping.state !== true) {
             let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
             // console.log('move',finalAnimIndex);
@@ -34947,6 +35216,9 @@ class App extends Component {
             //   }
             // }
             if (plyr.direction === 'north') {
+              if (x === 9 && y === 9) {
+
+              }
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
 
@@ -35028,7 +35300,7 @@ class App extends Component {
 
           }
           // IDLE & HALFPUSH BACK
-          else if (plyr.moving.state === false && plyr.ghost.state !== true && plyr.dodging.state !== true) {
+          else if (plyr.moving.state === false && plyr.ghost.state !== true && plyr.dodging.state !== true && plyr.elasticCounter.state !== true) {
 
             if (plyr.halfPushBack.state === true && plyr.success.deflected.state !== true) {
 
@@ -35167,6 +35439,7 @@ class App extends Component {
 
 
           }
+          // VOID MOVE
           else if (plyr.target.cell1.void === true && plyr.moving.state === true && plyr.falling.state !== true && plyr.jumping.state !== true) {
 
             // console.log('heading for thevoid @ draw step');
@@ -35389,32 +35662,13 @@ class App extends Component {
           }
 
           if (plyr.success.deflected.state === true) {
-            // console.log('updatedPlayerImg, sx, sy', sx, sy,'points',point.x-35, point.y-20,'dodge',plyr.dodging.state);
+
 
             if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === 'deflected') {
 
               let finalCoords = this.calcElasticCountCoords('deflected','player',plyr).coords;
               let drawCell = this.calcElasticCountCoords('deflected','player',plyr).drawCell;
 
-
-              // if (x === 9 && y === 9) {
-              //
-              //
-              //   if (plyr.elasticCounter.countUp.state === true) {
-              //     console.log('count up',plyr.elasticCounter.coords.x.toFixed(2),plyr.elasticCounter.coords.y.toFixed(2),plyr.elasticCounter.countUp.count,'/',plyr.success.deflected.limit,finalAnimIndex);
-              //   }
-              //
-              //   if (plyr.elasticCounter.countDown.state === true) {
-              //     console.log('count down',plyr.elasticCounter.coords.x.toFixed(2),plyr.elasticCounter.coords.y.toFixed(2),(plyr.elasticCounter.countDown.count+plyr.elasticCounter.countUp.limit+plyr.elasticCounter.pause.limit),'/',plyr.success.deflected.limit,finalAnimIndex);
-              //   }
-              //
-              //   if (plyr.elasticCounter.pause.state === true) {
-              //     console.log('pause',plyr.elasticCounter.coords.x.toFixed(2),plyr.elasticCounter.coords.y.toFixed(2),(plyr.elasticCounter.pause.count+plyr.elasticCounter.countUp.limit),'/',plyr.success.deflected.limit,finalAnimIndex);
-              //   }
-              //
-              //   // context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight);
-              //
-              // }
 
 
               if (plyr.elasticCounter.direction === 'south') {
@@ -35459,50 +35713,52 @@ class App extends Component {
 
           }
 
-          if (plyr.dodging.state === true && plyr.success.deflected.state !== true) {
+          // if (plyr.dodging.state === true && plyr.success.deflected.state !== true) {
+          if (plyr.action === "dodging" && plyr.success.deflected.state !== true) {
 
-            if (plyr.direction === 'north' || plyr.direction === 'south') {
-              if (
-                // x === plyr.moving.origin.number.x &&
-                // y === plyr.moving.origin.number.y+1
-                x === plyr.currentPosition.cell.number.x &&
-                y === plyr.currentPosition.cell.number.y
-              ) {
-                if (plyr.dodgeDirection === 'east') {
-                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  point.x-45, point.y-35, this.playerDrawWidth, this.playerDrawHeight)
-                } else {
-                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  point.x-10, point.y-20, this.playerDrawWidth, this.playerDrawHeight)
+
+            if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === 'dodging') {
+
+              let finalCoords = this.calcElasticCountCoords('dodging','player',plyr).coords;
+              let drawCell = this.calcElasticCountCoords('dodging','player',plyr).drawCell;
+
+              
+
+              if (plyr.elasticCounter.direction === 'north') {
+                if (
+                  x === plyr.moving.origin.number.x &&
+                  y === plyr.moving.origin.number.y
+                ) {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
                 }
               }
-            }
-            if (plyr.direction === 'east' || plyr.direction === 'west') {
-              let cll = this.gridInfo.find(elem => elem.number.x === plyr.currentPosition.cell.number.x && elem.number.y === plyr.currentPosition.cell.number.y)
-              if (cll.edge.state === true && cll.edge.side === "south") {
+              if (plyr.elasticCounter.direction === 'east') {
+                if (
+                  x === plyr.currentPosition.cell.number.x+1 &&
+                  y === plyr.currentPosition.cell.number.y
+                ) {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+                }
+              }
+              if (plyr.elasticCounter.direction === 'west') {
                 if (
                   x === plyr.currentPosition.cell.number.x &&
                   y === plyr.currentPosition.cell.number.y
                 ) {
-                  if (plyr.dodgeDirection === 'north') {
-                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-10, point.y-35, this.playerDrawWidth,this.playerDrawHeight);
-                  } else {
-                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-40, point.y-15, this.playerDrawWidth,this.playerDrawHeight);
-                  }
+
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
                 }
-              } else {
+              }
+              if (plyr.elasticCounter.direction === 'south') {
                 if (
                   x === plyr.currentPosition.cell.number.x &&
                   y === plyr.currentPosition.cell.number.y+1
                 ) {
-                  if (plyr.dodgeDirection === 'north') {
-                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-10, point.y-35, this.playerDrawWidth,this.playerDrawHeight);
-                  } else {
-                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-40, point.y-15, this.playerDrawWidth,this.playerDrawHeight);
-                  }
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
                 }
               }
 
             }
-            // context.drawImage(indicatorImgs.dodge, point.x-45, point.y-35, 35,35);
 
           }
 
