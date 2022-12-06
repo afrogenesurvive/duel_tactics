@@ -873,6 +873,7 @@ const Settings = (props) => {
           <Form.Group as={Col} controlId="aiCount" className="formGroup">
             <Form.Label className="formLabel">Ai</Form.Label>
             <Form.Control as="select" value={aiCount.count} onChange={e=>handleAiCountStateChange(e.target.value)}>
+              <option></option>
               {aiCountOptions.map((option) => (
                 <option>{option}</option>
               ))}
