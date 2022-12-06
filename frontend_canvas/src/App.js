@@ -8133,6 +8133,7 @@ class App extends Component {
 
   }
 
+
   rnJesus = (min,max) => {
     min = Math.ceil(min);
     max = Math.floor(max);
@@ -8379,7 +8380,7 @@ class App extends Component {
     };
   }
   checkCell = (cell) => {
-    // console.log('check cell');
+    // console.log('check cell',cell);
 
     let cellFree = true;
     let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y);
@@ -8393,9 +8394,13 @@ class App extends Component {
     if (cell2.item.name !== '') {
       cellFree = false;
     }
+    if (cell2.void.state === true) {
+      cellFree = false;
+    }
     if (
       cell2.terrain.type === 'deep' ||
-      cell2.terrain.type === 'hazard'
+      cell2.terrain.type === 'hazard'||
+      cell2.terrain.type === 'void'
     ) {
       cellFree = false;
     }
@@ -8428,6 +8433,24 @@ class App extends Component {
     }
 
     return cellFree;
+  }
+  getRandomFreeCellNumber = () => {
+
+
+    let cell = {x: undefined, y: undefined};
+    let randomFreeCellChosen = false;
+
+    while (randomFreeCellChosen !== true) {
+      cell.x = this.rnJesus(0,this.gridWidth)
+        cell.y = this.rnJesus(0,this.gridWidth)
+        randomFreeCellChosen = this.checkCell(cell);
+    }
+
+    if (randomFreeCellChosen === true) {
+      return cell;
+    }
+
+
   }
   getDirectionFromCells = (cell1Number,cell2Number) => {
 
@@ -35793,165 +35816,273 @@ class App extends Component {
             ) {
               // console.log('respawning... confirm dead player',plyr.dead.state,x,y);
 
-                let respawnPoint = {
-                  number: {
-                    x: 0,
-                    y: 0,
-                  },
-                  center: {
-                    x: 0,
-                    y: 0,
-                  }
-                }
-                let altRespawnPoint = {
-                  number: {
-                    x: 0,
-                    y: 0,
-                  },
-                  center: {
-                    x: 0,
-                    y: 0,
-                  }
-                }
-                let altRespawnPoint2 = {
-                  number: {
-                    x: 0,
-                    y: 0,
-                  },
-                  center: {
-                    x: 0,
-                    y: 0,
-                  }
-                }
-                let respawnCellOccupied = false;
+              let canRespawn = false;
+              let positionOccupied = false;
+              let respawnPosCellRef = this.gridInfo.find(x => x.number.x === plyr.startPosition.cell.number.x && x.number.y === plyr.startPosition.cell.number.y)
+              let respawnCellNo;
+              let respawnCellCenter;
 
-                // console.log('matching grid info with start position');
-                let elem1 = this.gridInfo.find(gridCell => gridCell.number.x === this.gridWidth && gridCell.number.y === this.gridWidth);
-                altRespawnPoint.number.x = elem1.number.x;
-                altRespawnPoint.number.y = elem1.number.y;
-                altRespawnPoint.center.x = elem1.center.x;
-                altRespawnPoint.center.y = elem1.center.y;
-
-                let elem2 = this.gridInfo.find(gridCell => gridCell.number.x === this.gridWidth && gridCell.number.y === 0);
-                altRespawnPoint2.number.x = elem2.number.x;
-                altRespawnPoint2.number.y = elem2.number.y;
-                altRespawnPoint2.center.x = elem2.center.x;
-                altRespawnPoint2.center.y = elem2.center.y;
-
-
-                // '**_*_0.0_a_0**'
-                // barrierbarrierPosition_obstacle_x.y_terrain_elevationNumberelevationTypeelevationPosition
-
-
-                let elem3 = this.gridInfo.find(gridCell => gridCell.number.x === plyr.startPosition.cell.number.x && gridCell.number.y === plyr.startPosition.cell.number.y);
-                for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
-                  for (const cell of row) {
-                    if (
-                      cell.split('_')[0] !== "**" ||
-                      cell.split('_')[1] !== "*"
-                      // cell.charAt(0) === 'y' ||
-                      // cell.charAt(0) ===  'z'
-                    ) {
-                      let obstaclePosition = {
-                        // x: Number(cell.charAt(1)),
-                        x: Number(cell.split("_")[2].charAt(0)),
-                        y: row.indexOf(cell),
-                      }
-                      // console.log('found obstacle during map scan @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
-                      if (
-                        elem3.number.x === obstaclePosition.x &&
-                        elem3.number.y === obstaclePosition.y
-                      ) {
-                        // console.log('an obstacle is in your way');
-                        respawnCellOccupied = true;
-                      }
-                    }
-                  }
-                }
-                if (elem3.void.state === true ) {
-                  respawnCellOccupied = true;
-                }
-                for (const plyr2 of this.players) {
-                  if (plyr2.number !== plyr.number) {
-                    if (
-                      elem3.number.x === plyr2.currentPosition.cell.number.x &&
-                      elem3.number.y === plyr2.currentPosition.cell.number.y
-                    ) {
-                      respawnCellOccupied = true;
-                    }
-                  }
-                }
-
+              for (const plyrx of this.players) {
                 if (
-                  respawnCellOccupied === false
-                ) {
+                  plyrx.currentPosition.cell.number.x === plyr.startPosition.cell.number.x &&
+                  plyrx.currentPosition.cell.number.y === plyr.startPosition.cell.number.y
+                 ) {
+                   positionOccupied = true;
+                }
+              }
+              if (respawnPosCellRef.obstacle.state === true || respawnPosCellRef.terrain.type === "deep" || respawnPosCellRef.void === true) {
+                positionOccupied = true;
+              }
 
-                  respawnPoint.number.x = elem3.number.x;
-                  respawnPoint.number.y = elem3.number.y;
-                  respawnPoint.center.x = elem3.center.x;
-                  respawnPoint.center.y = elem3.center.y;
+
+              if (positionOccupied === true) {
+
+                respawnCellNo = this.getRandomFreeCellNumber();
+                respawnPosCellRef = this.gridInfo.find(x => x.number.x === respawnCellNo.x && x.number.y === respawnCellNo.y)
 
 
+                if (respawnCellNo) {
+                  canRespawn = true;
+                }
+                else {
+                  console.log('no cells for resawn. Unlikely but true. Reassign obstacle cell');
+                  if (this.gridInfo.filter(x => x.obstacle.state === true)[0]) {
 
-                  plyr.dead.state = false;
-                  plyr.currentPosition.cell = respawnPoint;
-                  plyr.nextPosition = respawnPoint.center;
-                  this.getTarget(plyr)
-                  plyr.moving = {
-                    state: false,
-                    step: 0,
-                    course: '',
-                    origin: {
-                      number: {
-                        x: respawnPoint.number.x,
-                        y: respawnPoint.number.y
-                      },
-                      center: {
-                        x: respawnPoint.center.x,
-                        y: respawnPoint.center.y
-                      },
-                    },
-                    destination: {
-                      x: this.players[plyr.number-1].target.cell1.center.x,
-                      y: this.players[plyr.number-1].target.cell1.center.y
-                    }
-                  }
-
-                  plyr.direction = 'north';
-                  plyr.respawn = false;
-                  this.players[plyr.number-1] = plyr;
-
-                  // context.drawImage(updatedPlayerImg, respawnPoint.center.x-25, respawnPoint.center.y-50, 55,55);
-
-                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  respawnPoint.center.x-25, respawnPoint.center.y-50,this.playerDrawWidth, this.playerDrawHeight)
-
-                  if (
-                      this.settingAutoCamera === false &&
-                      player.ai.state !== true &&
-                      this.camera.preInstructions.length === 0 &&
-                      this.camera.instructions.length === 0
-                    ) {
-                    this.setAutoCamera('playerSpawnFocus',plyr)
+                    this.gridInfo.filter(x => x.obstacle.state === true)[0].obstacle.state = false;
+                    respawnPosCellRef = this.gridInfo.find(x => x.number.x === respawnCellNo.x && x.number.y === respawnCellNo.y)
+                    let oldLvlData = this.gridInfo.filter(x => x.obstacle.state === true)[0].levelData.split("_");
+                    oldLvlData[1] = "*";
+                    this.gridInfo.filter(x => x.obstacle.state === true)[0].levelData = oldLvlData.join("_");
+                    canRespawn = true;
                   }
                   else {
-                    console.log('no setting auto cam: playerSpawnFocus');
+                    console.log('no free cells for respawn and no obstacle cell to comandeer. Highly unlikley');
+
+                    if (this.gridInfo.filter(x => x.void.state === true)[0]) {
+
+                      this.gridInfo.filter(x => x.void.state === true)[0].void.state = false;
+                      respawnPosCellRef = this.gridInfo.find(x => x.number.x === respawnCellNo.x && x.number.y === respawnCellNo.y)
+                      let oldLvlData = this.gridInfo.filter(x => x.void.state === true)[0].levelData.split("_");
+                      oldLvlData[3] = "a";
+                      this.gridInfo.filter(x => x.void.state === true)[0].levelData = oldLvlData.join("_");
+                      canRespawn = true;
+                    }
                   }
 
 
                 }
-                else if (respawnCellOccupied === true) {
+              }
 
-                  console.log("no free cells for respawn");
-                  alert("no free cells for respawn");
+              if (canRespawn === true) {
 
-                  // if (plyr.number === 1) {
-                  //   respawnPoint = altRespawnPoint;
-                  // }
-                  // if (plyr.number === 2) {
-                  //   respawnPoint = altRespawnPoint2;
-                  // }
-
+                let respawnPoint = respawnPosCellRef;
+                plyr.dead.state = false;
+                plyr.currentPosition.cell = respawnPoint;
+                plyr.nextPosition = respawnPoint.center;
+                this.getTarget(plyr)
+                plyr.moving = {
+                  state: false,
+                  step: 0,
+                  course: '',
+                  origin: {
+                    number: {
+                      x: respawnPoint.number.x,
+                      y: respawnPoint.number.y
+                    },
+                    center: {
+                      x: respawnPoint.center.x,
+                      y: respawnPoint.center.y
+                    },
+                  },
+                  destination: {
+                    x: this.players[plyr.number-1].target.cell1.center.x,
+                    y: this.players[plyr.number-1].target.cell1.center.y
+                  }
                 }
+
+                plyr.direction = 'north';
+                plyr.respawn = false;
+                this.players[plyr.number-1] = plyr;
+
+
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  respawnPoint.center.x-25, respawnPoint.center.y-50,this.playerDrawWidth, this.playerDrawHeight)
+
+                if (
+                    this.settingAutoCamera === false &&
+                    player.ai.state !== true &&
+                    this.camera.preInstructions.length === 0 &&
+                    this.camera.instructions.length === 0
+                  ) {
+                  this.setAutoCamera('playerSpawnFocus',plyr)
+                }
+                else {
+                  console.log('no setting auto cam: playerSpawnFocus');
+                }
+
+
+              }
+
+
+
+                // let respawnPoint = {
+                //   number: {
+                //     x: 0,
+                //     y: 0,
+                //   },
+                //   center: {
+                //     x: 0,
+                //     y: 0,
+                //   }
+                // }
+                // let altRespawnPoint = {
+                //   number: {
+                //     x: 0,
+                //     y: 0,
+                //   },
+                //   center: {
+                //     x: 0,
+                //     y: 0,
+                //   }
+                // }
+                // let altRespawnPoint2 = {
+                //   number: {
+                //     x: 0,
+                //     y: 0,
+                //   },
+                //   center: {
+                //     x: 0,
+                //     y: 0,
+                //   }
+                // }
+                // let respawnCellOccupied = false;
+                //
+                // // console.log('matching grid info with start position');
+                // let elem1 = this.gridInfo.find(gridCell => gridCell.number.x === this.gridWidth && gridCell.number.y === this.gridWidth);
+                // altRespawnPoint.number.x = elem1.number.x;
+                // altRespawnPoint.number.y = elem1.number.y;
+                // altRespawnPoint.center.x = elem1.center.x;
+                // altRespawnPoint.center.y = elem1.center.y;
+                //
+                // let elem2 = this.gridInfo.find(gridCell => gridCell.number.x === this.gridWidth && gridCell.number.y === 0);
+                // altRespawnPoint2.number.x = elem2.number.x;
+                // altRespawnPoint2.number.y = elem2.number.y;
+                // altRespawnPoint2.center.x = elem2.center.x;
+                // altRespawnPoint2.center.y = elem2.center.y;
+                //
+                //
+                // // '**_*_0.0_a_0**'
+                // // barrierbarrierPosition_obstacle_x.y_terrain_elevationNumberelevationTypeelevationPosition
+                //
+                //
+                // let elem3 = this.gridInfo.find(gridCell => gridCell.number.x === plyr.startPosition.cell.number.x && gridCell.number.y === plyr.startPosition.cell.number.y);
+                // for (const [key, row] of Object.entries(this.['levelData'+this.gridWidth])) {
+                //   for (const cell of row) {
+                //     if (
+                //       cell.split('_')[0] !== "**" ||
+                //       cell.split('_')[1] !== "*"
+                //       // cell.charAt(0) === 'y' ||
+                //       // cell.charAt(0) ===  'z'
+                //     ) {
+                //       let obstaclePosition = {
+                //         // x: Number(cell.charAt(1)),
+                //         x: Number(cell.split("_")[2].charAt(0)),
+                //         y: row.indexOf(cell),
+                //       }
+                //       // console.log('found obstacle during map scan @',obstaclePosition.x,obstaclePosition.y,'targetNumber',targetCellNumber.x,targetCellNumber.y);
+                //       if (
+                //         elem3.number.x === obstaclePosition.x &&
+                //         elem3.number.y === obstaclePosition.y
+                //       ) {
+                //         // console.log('an obstacle is in your way');
+                //         respawnCellOccupied = true;
+                //       }
+                //     }
+                //   }
+                // }
+                // if (elem3.void.state === true ) {
+                //   respawnCellOccupied = true;
+                // }
+                // for (const plyr2 of this.players) {
+                //   if (plyr2.number !== plyr.number) {
+                //     if (
+                //       elem3.number.x === plyr2.currentPosition.cell.number.x &&
+                //       elem3.number.y === plyr2.currentPosition.cell.number.y
+                //     ) {
+                //       respawnCellOccupied = true;
+                //     }
+                //   }
+                // }
+                //
+                // if (
+                //   respawnCellOccupied === false
+                // ) {
+                //
+                //   respawnPoint.number.x = elem3.number.x;
+                //   respawnPoint.number.y = elem3.number.y;
+                //   respawnPoint.center.x = elem3.center.x;
+                //   respawnPoint.center.y = elem3.center.y;
+                //
+                //
+                //
+                //   plyr.dead.state = false;
+                //   plyr.currentPosition.cell = respawnPoint;
+                //   plyr.nextPosition = respawnPoint.center;
+                //   this.getTarget(plyr)
+                //   plyr.moving = {
+                //     state: false,
+                //     step: 0,
+                //     course: '',
+                //     origin: {
+                //       number: {
+                //         x: respawnPoint.number.x,
+                //         y: respawnPoint.number.y
+                //       },
+                //       center: {
+                //         x: respawnPoint.center.x,
+                //         y: respawnPoint.center.y
+                //       },
+                //     },
+                //     destination: {
+                //       x: this.players[plyr.number-1].target.cell1.center.x,
+                //       y: this.players[plyr.number-1].target.cell1.center.y
+                //     }
+                //   }
+                //
+                //   plyr.direction = 'north';
+                //   plyr.respawn = false;
+                //   this.players[plyr.number-1] = plyr;
+                //
+                //   // context.drawImage(updatedPlayerImg, respawnPoint.center.x-25, respawnPoint.center.y-50, 55,55);
+                //
+                //   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  respawnPoint.center.x-25, respawnPoint.center.y-50,this.playerDrawWidth, this.playerDrawHeight)
+                //
+                //   if (
+                //       this.settingAutoCamera === false &&
+                //       player.ai.state !== true &&
+                //       this.camera.preInstructions.length === 0 &&
+                //       this.camera.instructions.length === 0
+                //     ) {
+                //     this.setAutoCamera('playerSpawnFocus',plyr)
+                //   }
+                //   else {
+                //     console.log('no setting auto cam: playerSpawnFocus');
+                //   }
+                //
+                //
+                // }
+                // else if (respawnCellOccupied === true) {
+                //
+                //   console.log("no free cells for respawn");
+                //   alert("no free cells for respawn");
+                //
+                //   // if (plyr.number === 1) {
+                //   //   respawnPoint = altRespawnPoint;
+                //   // }
+                //   // if (plyr.number === 2) {
+                //   //   respawnPoint = altRespawnPoint2;
+                //   // }
+                //
+                // }
 
               }
 
@@ -37940,16 +38071,6 @@ class App extends Component {
 
 
 
-    // check if exists in gurrent grid info, else choose random free cell
-    // while (checkPatrolCell1 === false) {
-    //   cell1.x = this.rnJesus(0,this.gridWidth)
-    //   cell1.y = this.rnJesus(0,this.gridWidth)
-    //   checkPatrolCell1 = this.checkCell(cell1);
-    // }
-    // if cellcheck ==== true, set and push as below
-    // set plyr start position
-
-
     this.startProcessLevelData(canvas);
     // gridInfo = this.gridInfo;
 
@@ -37977,6 +38098,7 @@ class App extends Component {
       }
     }
     // console.log('post process barrier check init',this.gridInfo.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
+
 
     if (this.camera.fixed !== true) {
       // this.setCameraFocus('init', canvas, context, canvas2, context2);
