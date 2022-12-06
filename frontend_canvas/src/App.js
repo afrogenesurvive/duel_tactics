@@ -4900,26 +4900,26 @@ class App extends Component {
       showSettings: true,
     })
 
-    if (this.showSettingsCanvasData.state === true) {
-      this.settingsFormGridWidthUpdate(this.settingsGridWidth)
-    }
-
-    this.settingsFormAiGridInfo = this.gridInfo;
-
-    this.getCustomPlyrStartPosList(
-      [
-        {
-          plyrNo: 1,
-          selected: undefined,
-          posArray: []
-        },
-        {
-          plyrNo: 2,
-          selected: undefined,
-          posArray: []
-        }
-      ]
-    )
+    // if (this.showSettingsCanvasData.state === true) {
+    //   this.settingsFormGridWidthUpdate(this.settingsGridWidth)
+    // }
+    //
+    // this.settingsFormAiGridInfo = this.gridInfo;
+    //
+    // this.getCustomPlyrStartPosList(
+    //   [
+    //     {
+    //       plyrNo: 1,
+    //       selected: undefined,
+    //       posArray: []
+    //     },
+    //     {
+    //       plyrNo: 2,
+    //       selected: undefined,
+    //       posArray: []
+    //     }
+    //   ]
+    // )
 
   }
   expandDebugBox = (plyrNo) => {
@@ -8434,19 +8434,26 @@ class App extends Component {
 
     return cellFree;
   }
-  getRandomFreeCellNumber = () => {
+  getRandomFreeCell = () => {
 
 
-    let cell = {x: undefined, y: undefined};
+    let cell = {
+      number: {x: undefined, y: undefined},
+      center: {x: undefined, y: undefined}
+    };
     let randomFreeCellChosen = false;
 
     while (randomFreeCellChosen !== true) {
-      cell.x = this.rnJesus(0,this.gridWidth)
-        cell.y = this.rnJesus(0,this.gridWidth)
-        randomFreeCellChosen = this.checkCell(cell);
+      cell.number.x = this.rnJesus(0,this.gridWidth)
+        cell.number.y = this.rnJesus(0,this.gridWidth)
+        randomFreeCellChosen = this.checkCell(cell.number);
     }
 
     if (randomFreeCellChosen === true) {
+      let refCell = this.gridInfo.find(x => x.number.x === cell.number.x && x.number.y === cell.number.y);
+      cell.number = refCell.number;
+      cell.center = refCell.center;
+
       return cell;
     }
 
@@ -13642,6 +13649,15 @@ class App extends Component {
             let index = this.initItemList.indexOf(item2)
             let cell3 = this.customItemPlacement.cells[index];
             let cell4 = this.gridInfo.find(elem => elem.number.x === cell3.x && elem.number.y === cell3.y);
+
+            // if (cell doesn't exist) {
+            //   // choose new random free cell, not in item placement list
+            //
+            // }
+            // if (cell exists and obstacle is true) {
+            //   // choose an new cell,
+            //   // change
+            // }
             cell4.item.name = item2.name;
             cell4.item.type = item2.type;
             cell4.item.subType = item2.subType;
@@ -35837,7 +35853,7 @@ class App extends Component {
 
               if (positionOccupied === true) {
 
-                respawnCellNo = this.getRandomFreeCellNumber();
+                respawnCellNo = this.getRandomFreeCell();
                 respawnPosCellRef = this.gridInfo.find(x => x.number.x === respawnCellNo.x && x.number.y === respawnCellNo.y)
 
 
@@ -35849,7 +35865,7 @@ class App extends Component {
                   if (this.gridInfo.filter(x => x.obstacle.state === true)[0]) {
 
                     this.gridInfo.filter(x => x.obstacle.state === true)[0].obstacle.state = false;
-                    respawnPosCellRef = this.gridInfo.find(x => x.number.x === respawnCellNo.x && x.number.y === respawnCellNo.y)
+                    respawnPosCellRef = this.gridInfo.find(x => x.number.x === respawnCellNo.number.x && x.number.y === respawnCellNo.number.y)
                     let oldLvlData = this.gridInfo.filter(x => x.obstacle.state === true)[0].levelData.split("_");
                     oldLvlData[1] = "*";
                     this.gridInfo.filter(x => x.obstacle.state === true)[0].levelData = oldLvlData.join("_");
@@ -35861,7 +35877,7 @@ class App extends Component {
                     if (this.gridInfo.filter(x => x.void.state === true)[0]) {
 
                       this.gridInfo.filter(x => x.void.state === true)[0].void.state = false;
-                      respawnPosCellRef = this.gridInfo.find(x => x.number.x === respawnCellNo.x && x.number.y === respawnCellNo.y)
+                      respawnPosCellRef = this.gridInfo.find(x => x.number.x === respawnCellNo.number.x && x.number.y === respawnCellNo.number.y)
                       let oldLvlData = this.gridInfo.filter(x => x.void.state === true)[0].levelData.split("_");
                       oldLvlData[3] = "a";
                       this.gridInfo.filter(x => x.void.state === true)[0].levelData = oldLvlData.join("_");
