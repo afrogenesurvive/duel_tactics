@@ -345,6 +345,8 @@ const Settings = (props) => {
       mission: aiMission,
     })
 
+    props.settingsFormGridWidthUpdate(width);
+
   }
 
 

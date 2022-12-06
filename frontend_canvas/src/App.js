@@ -4963,8 +4963,25 @@ class App extends Component {
       // NO POSITION SELECTED, GAME STARTING. USE DEFAULT START POSITIONS
       if (!plyr.selected) {
 
+        if (!this.gridInfo.find(x => x.number.x === this.players[plyr.plyrNo-1].startPosition.cell.number.x && x.number.y === this.players[plyr.plyrNo-1].startPosition.cell.number.y)) {
 
-        let playerStartPos = this.players[plyr.plyrNo-1].currentPosition.cell.number;
+          let cll = {x: undefined, y: undefined};
+          let randomFreeCellChosen = false;
+
+          while (randomFreeCellChosen !== true) {
+            cll.x = this.rnJesus(0,this.gridWidth)
+              cll.y = this.rnJesus(0,this.gridWidth)
+              randomFreeCellChosen = this.checkCell(cll);
+          }
+
+          if (randomFreeCellChosen === true) {
+            this.players[plyr.plyrNo-1].startPosition.cell.number = cll;
+          }
+
+        }
+
+        let playerStartPos = this.players[plyr.plyrNo-1].startPosition.cell.number;
+
 
         avoidCells.push({x:playerStartPos.x,y:playerStartPos.y})
 
@@ -4997,7 +5014,7 @@ class App extends Component {
 
       // NO POSITION SELECTED, GAME STARTING. MARK PLAYR POSITION SELECTED
       if (!plyr.selected) {
-        let playerStartPos = this.players[plyr.plyrNo-1].currentPosition.cell.number;
+        let playerStartPos = this.players[plyr.plyrNo-1].startPosition.cell.number;
 
         plyr.selected = {x:playerStartPos.x,y:playerStartPos.y}
 
@@ -5218,6 +5235,10 @@ class App extends Component {
     //   type: 'start',
     // }
 
+
+
+
+
     let prevGridWidth = this.gridWidth;
     let canvas = this.state.canvas;
 
@@ -5267,6 +5288,7 @@ class App extends Component {
     }
 
 
+
     if (this.state.showSettings === true && this.showSettingsCanvasData.state === true) {
 
       let canvas3 = this.canvasRef3.current;
@@ -5297,7 +5319,7 @@ class App extends Component {
 
     // this.redrawSettingsGrid(this.state.canvas3,this.state.context3);
 
-    this.gridWidth = prevGridWidth;
+    // this.gridWidth = prevGridWidth;
 
 
     // ----------------
@@ -5332,7 +5354,7 @@ class App extends Component {
 
   }
   redrawSettingsGrid = (canvas3,context3,canvas4,context4) => {
-    // console.log('redrawSettingsGrid');
+    console.log('redrawSettingsGrid',this.settingsFormPlyrStartPosList);
 
 
     let takenSpaces = [];
@@ -8445,17 +8467,18 @@ class App extends Component {
 
     while (randomFreeCellChosen !== true) {
       cell.number.x = this.rnJesus(0,this.gridWidth)
-        cell.number.y = this.rnJesus(0,this.gridWidth)
-        randomFreeCellChosen = this.checkCell(cell.number);
+      cell.number.y = this.rnJesus(0,this.gridWidth)
+      randomFreeCellChosen = this.checkCell(cell.number);
     }
 
     if (randomFreeCellChosen === true) {
       let refCell = this.gridInfo.find(x => x.number.x === cell.number.x && x.number.y === cell.number.y);
       cell.number = refCell.number;
       cell.center = refCell.center;
-
+      console.log('beeep',cell.number);
       return cell;
     }
+
 
 
   }
@@ -13644,24 +13667,59 @@ class App extends Component {
       if (this.customItemPlacement.state === true) {
         if (this.initItemList.length > this.customItemPlacement.cells.length) {
           console.log('not enough cells assigned for custom placement please add more');
-        } else  {
+        }
+        else  {
           for ( const item2 of this.initItemList) {
             let index = this.initItemList.indexOf(item2)
             let cell3 = this.customItemPlacement.cells[index];
-            let cell4 = this.gridInfo.find(elem => elem.number.x === cell3.x && elem.number.y === cell3.y);
+            let cell3Ref = this.gridInfo.find(elem => elem.number.x === cell3.x && elem.number.y === cell3.y);
 
-            // if (cell doesn't exist) {
-            //   // choose new random free cell, not in item placement list
-            //
-            // }
-            // if (cell exists and obstacle is true) {
-            //   // choose an new cell,
-            //   // change
-            // }
-            cell4.item.name = item2.name;
-            cell4.item.type = item2.type;
-            cell4.item.subType = item2.subType;
-            cell4.item.effect = item2.effect;
+            let cellFree = false;
+            if (!cell3Ref) {
+              // cell3 = this.getRandomFreeCell().number;
+              //
+              // if (this.customItemPlacement.cells.find(x => x.x === cell3.x && x.y === cell3.y)) {
+              //   cell3 = this.getRandomFreeCell().number;
+              // }
+              //
+              // cell3Ref = this.gridInfo.find(elem => elem.number.x === cell3.x && elem.number.y === cell3.y);
+
+            }
+            else {
+              if (cell3Ref.obstacle.state === true) {
+                cell3 = this.getRandomFreeCell().number;
+                cell3Ref = this.gridInfo.find(elem => elem.number.x === cell3.x && elem.number.y === cell3.y);
+              }
+
+            }
+
+
+            if (cell3Ref) {
+
+              cell3Ref.item.name = item2.name;
+              cell3Ref.item.type = item2.type;
+              cell3Ref.item.subType = item2.subType;
+              cell3Ref.item.effect = item2.effect;
+
+            }
+            if (!cell3Ref) {
+
+              cell3Ref = this.gridInfo.filter(x => x.obstacle.state === true)[0];
+              if (cell3Ref) {
+
+                let oldLvlData = cell3Ref.levelData.split("_");
+                oldLvlData[1] = "*";
+                this.gridInfo.filter(x => x.obstacle.state === true)[0].levelData = oldLvlData.join("_");
+
+              }
+              else {
+                console.log('init item placement no free cells for this item. skipping');
+                continue;
+              }
+
+            }
+
+
           }
           // this.customItemPlacement.state = false;
         }
@@ -13686,11 +13744,11 @@ class App extends Component {
             }
             if (checkCell === true) {
               // console.log('cell free');
-              let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y);
-              cell2.item.name = item.name;
-              cell2.item.type = item.type;
-              cell2.item.subType = item.subType;
-              cell2.item.effect = item.effect;
+              let cellRef = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y);
+              cellRef.item.name = item.name;
+              cellRef.item.type = item.type;
+              cellRef.item.subType = item.subType;
+              cellRef.item.effect = item.effect;
 
 
               // item.amount--
@@ -13704,7 +13762,8 @@ class App extends Component {
         }
       }
 
-    } else if (args.init !== true) {
+    }
+    else if (args.init !== true) {
       // console.log('placing items mid-game: ',args.item);
 
 
