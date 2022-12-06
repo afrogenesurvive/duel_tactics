@@ -75,12 +75,14 @@ const Settings = (props) => {
       break;
     }
   }
+
   let preAiRandom;
   if (!props.updateSettingsFormAiDataData.random) {
     preAiRandom = []
   } else {
     preAiRandom = props.updateSettingsFormAiDataData.random;
   }
+
   let preAiMode = [];
   if (!props.updateSettingsFormAiDataData.mode) {
     preAiMode = []
@@ -89,6 +91,7 @@ const Settings = (props) => {
     preAiMode = props.updateSettingsFormAiDataData.mode;
     // setAiMode(props.updateSettingsFormAiDataData.mode);
   }
+
   let preAiWeapon = [];
   if (!props.updateSettingsFormAiDataData.weapon) {
     preAiWeapon = []
@@ -97,6 +100,7 @@ const Settings = (props) => {
     preAiWeapon = props.updateSettingsFormAiDataData.weapon;
     // setAiWeapon(props.updateSettingsFormAiDataData.weapon);
   }
+
   let preAiMission = [];
   if (!props.updateSettingsFormAiDataData.mission) {
     preAiMission = []
@@ -105,6 +109,7 @@ const Settings = (props) => {
     preAiMission = props.updateSettingsFormAiDataData.mission;
     // setAiMission(props.updateSettingsFormAiDataData.mission);
   }
+
   let preStartItems = false;
   if (props.disableInitItems !== true ) {
     preStartItems = true;
@@ -260,10 +265,62 @@ const Settings = (props) => {
   const [gridWidth, setGridWidth] = useState(preGridWidth);
   const handleGridWidthChange = (args) => {
 
-    // let width = parseInt(args.split('x')[0])-1;
+
+
     let width = parseInt(args);
     setGridWidth(width);
     props.settingsFormGridWidthUpdate(width);
+
+
+
+    if (parseInt(args) < props.gridWidth) {
+
+      if (parseInt(args) < 7 && parseInt(args) > 3) {
+        handleAiCountOptionsStateChange(2);
+
+      }
+
+      if (parseInt(args) < 7 && parseInt(args) <= 3) {
+        handleAiCountOptionsStateChange(1);
+
+      }
+
+      let array = [];
+      switch(parseInt(plyrCount)) {
+        case 1:
+          array = [
+            {
+              plyrNo: 1,
+              selected: undefined,
+              posArray: []
+            }
+          ]
+        break;
+        case 2:
+          array = [
+            {
+              plyrNo: 1,
+              selected: undefined,
+              posArray: []
+            },
+            {
+              plyrNo: 2,
+              selected: undefined,
+              posArray: []
+            }
+          ]
+        break;
+      }
+
+      props.getCustomPlyrStartPosList(array)
+
+
+    }
+    else {
+      handleAiCountOptionsStateChange(4);
+    }
+
+
 
     setAiCount({
       count: 0,
@@ -274,6 +331,42 @@ const Settings = (props) => {
     setAiWeapon([])
     setAiMission([])
     props.getCustomAiStartPosList([])
+
+    setMultiAiFormAiColWidth(0);
+
+    let initArray = [];
+
+    props.updateSettingsFormAiData({
+      startItems: startItems,
+      count: aiCount,
+      random: initArray,
+      mode: aiMode,
+      weapon: aiWeapon,
+      mission: aiMission,
+    })
+
+  }
+
+
+  const [aiCountOptions, setAiCountOptions] = useState([1,2,3,4]);
+  const handleAiCountOptionsStateChange = (args) => {
+
+    switch (args) {
+      case 1:
+          setAiCountOptions([1])
+        break;
+      case 2:
+          setAiCountOptions([1,2])
+        break;
+      case 3:
+          setAiCountOptions([1,2,3])
+        break;
+      case 4:
+          setAiCountOptions([1,2,3,4])
+        break;
+      default:
+
+    }
 
   }
 
@@ -780,11 +873,9 @@ const Settings = (props) => {
           <Form.Group as={Col} controlId="aiCount" className="formGroup">
             <Form.Label className="formLabel">Ai</Form.Label>
             <Form.Control as="select" value={aiCount.count} onChange={e=>handleAiCountStateChange(e.target.value)}>
-              <option>0</option>
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-              <option>4</option>
+              {aiCountOptions.map((option) => (
+                <option>{option}</option>
+              ))}
             </Form.Control>
           </Form.Group>
         </Form.Row>

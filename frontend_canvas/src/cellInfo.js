@@ -15,7 +15,7 @@ import './debugBox.css';
 const CellInfo = props => {
 // .bind(this,
   return (
-    <div className="cellInfoBox" onMouseEnter={props.setCellInfoMouseOver.bind(this, true)} onMouseLeave={props.setCellInfoMouseOver.bind(this, false)}>
+    <div className="cellInfoBox" onMouseEnter={props.setCellInfoMouseOver.bind(this, true,'cellInfo')} onMouseLeave={props.setCellInfoMouseOver.bind(this, false,'cellInfo')}>
       <p className="cellInfoText">
         <strong>
           Cell Info:
@@ -80,7 +80,7 @@ const CellInfo = props => {
           <OverlayTrigger
             placement={'left'}
             overlay={
-              <Popover id={`popover-positioned-${'left'}`}>
+              <Popover id={`popover-positioned-${'left'}`} >
                 <Popover.Content>
                   <strong className="popoverHead">{props.clicked.cell.item.name} :</strong>
                   <ul className="popoverList">
@@ -141,7 +141,7 @@ const CellInfo = props => {
             <OverlayTrigger
               placement={'left'}
               overlay={
-                <Popover id={`popover-positioned-${'left'}`}>
+                <Popover id={`popover-positioned-${'left'}`} onMouseEnter={props.setCellInfoMouseOver.bind(this, true,'popover')} onMouseLeave={props.setCellInfoMouseOver.bind(this, false,'popover')}>
                   <Popover.Content>
                     <strong className="popoverHead">{props.clicked.cell.obstacle.name} :</strong>
                     <ul className="popoverList">

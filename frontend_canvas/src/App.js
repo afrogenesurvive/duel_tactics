@@ -3119,13 +3119,13 @@ class App extends Component {
           {
             plyrNo: 1,
             selected: undefined,
-            posArray: []
+            posArray: [],
           },
           {
             plyrNo: 2,
             selected: undefined,
-            posArray: []
-          }
+            posArray: [],
+          },
         ]
       );
 
@@ -4061,6 +4061,7 @@ class App extends Component {
           this.mouseOverCell.state = false;
           if (this.mouseOverCellSwitchOff.state === true) {
             this.mouseOverCellSwitchOff.state = false;
+            this.mouseOverCellSwitchOff.count = 0;
           }
         }
 
@@ -4609,7 +4610,9 @@ class App extends Component {
   }
 
 
-  setCellInfoMouseOver = (state) => {
+
+  setCellInfoMouseOver = (state,origin) => {
+    // console.log('setCellInfoMouseOver',state,origin);
 
     this.cellInfoMouseOver = state;
     if (state === true) {
@@ -4654,6 +4657,9 @@ class App extends Component {
     event.preventDefault();
 
     let gridSize = event.target.gridSize.value;
+
+
+
     let playerNumber = event.target.humanPlayers.value;
     let aiPlayerNumber = event.target.aiCount.value;
 
@@ -4935,6 +4941,7 @@ class App extends Component {
 
 
   getCustomPlyrStartPosList = (args) => {
+    // console.log('getCustomPlyrStartPosList',this.gridInfo.length,args);
     this.settingsFormPlyrGridInfo = this.gridInfo;
 
     this.playerNumber = args.length;
@@ -4946,11 +4953,16 @@ class App extends Component {
     for (const plyr of args) {
 
       let array1 = [];
+
+      // AVOID ALREADY SELECTRED POSITIONS
       if (plyr.selected) {
         avoidCells.push(plyr.selected)
       }
 
+
+      // NO POSITION SELECTED, GAME STARTING. USE DEFAULT START POSITIONS
       if (!plyr.selected) {
+
 
         let playerStartPos = this.players[plyr.plyrNo-1].currentPosition.cell.number;
 
@@ -4959,6 +4971,7 @@ class App extends Component {
       }
 
 
+      // CHECK FOR AI POSITIONS TO ADD TO CELLS TO AVOID
       if (this.updateSettingsFormAiDataData.count) {
         if (parseInt(this.updateSettingsFormAiDataData.count.count) > 0) {
           for (const plyr2 of this.settingsFormAiStartPosList) {
@@ -4970,18 +4983,19 @@ class App extends Component {
       }
 
 
-      for (const elem of this.settingsFormPlyrGridInfo) {
+      // BUILD AVALIBLE POSITION ARRAY EXCLUDING CELLS TO AVOID
 
+      for (const elem of this.settingsFormPlyrGridInfo) {
         if (
-          this.plyrStartPosCheckCell({x:elem.number.x,y:elem.number.y}) === true
-          && !avoidCells.find(elem2 => elem2.x === elem.number.x && elem2.y === elem.number.y)
+          this.plyrStartPosCheckCell({x:elem.number.x,y:elem.number.y}) === true &&
+          !avoidCells.find(elem2 => elem2.x === elem.number.x && elem2.y === elem.number.y)
         ) {
           array1.push({x:elem.number.x,y:elem.number.y});
         }
 
       }
 
-
+      // NO POSITION SELECTED, GAME STARTING. MARK PLAYR POSITION SELECTED
       if (!plyr.selected) {
         let playerStartPos = this.players[plyr.plyrNo-1].currentPosition.cell.number;
 
@@ -4990,26 +5004,30 @@ class App extends Component {
       }
 
 
+      // PUSH TO SETTINGS PLAYER POSITION DATA
       this.settingsFormPlyrStartPosList.push({
         plyrNo:plyr.plyrNo,
         posArray:array1,
         selected: plyr.selected,
       })
 
+
+      // FORCE STATE UPDATE FOR SETTINGS COMPONENT
       this.setState({
         stateUpdater: '..'
       })
 
+
     }
+    // console.log('this.settingsFormPlyrStartPosList',this.settingsFormPlyrStartPosList);
 
-
+    // ADD 'RANDOM' CHOICE TO NEW POSITION AVAILIBLE ARRAY
     let lastAvailiblePosArray = this.settingsFormPlyrStartPosList[this.settingsFormPlyrStartPosList.length-1].posArray;
     let hasRandomCell = lastAvailiblePosArray.find(x=>x === 'random')
     if (!hasRandomCell) {
       lastAvailiblePosArray.push('random')
     }
     // console.log('lastAvailiblePosArray',lastAvailiblePosArray);
-
     for (const elem of this.settingsFormPlyrStartPosList) {
       // console.log('elem',elem);
       elem.posArray = lastAvailiblePosArray;
@@ -14780,8 +14798,6 @@ class App extends Component {
                         this.canPushObstacle(player,targetCell,'hitPush');
                      }
 
-
-
                      if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
                        this.cellPopups.push(
                          {
@@ -14797,6 +14813,8 @@ class App extends Component {
                          }
                        )
                      }
+
+                     // this.setDeflection(player,'defended',true);
                   }
 
                 }
@@ -14853,7 +14871,7 @@ class App extends Component {
                    }
 
 
-                   // this.setDeflection(player,'defended',false);
+                   // this.setDeflection(player,'defended',true);
 
                 }
 
@@ -28327,10 +28345,11 @@ class App extends Component {
 
 
     // CHECK AND SET DEFLECTION!!
-    if (player.success.deflected.state === true && player.success.deflected.count < player.success.deflected.limit) {
+    // if (player.success.deflected.state === true && player.success.deflected.count < player.success.deflected.limit && player.success.deflected.predeflect !== true) {
+    if (player.success.deflected.state === true && player.success.deflected.count < player.success.deflected.limit ) {
 
       player.action = 'deflected';
-      player.success.deflected.count++
+      player.success.deflected.count++;
 
       if (player.success.deflected.count === 2) {
         // console.log('count',player.success.deflected.count,'limit',player.success.deflected.limit,'type',player.success.deflected.type);
@@ -30274,6 +30293,7 @@ class App extends Component {
 
 
         }
+
 
 
         // ELASTIC COUNTER
@@ -35713,7 +35733,6 @@ class App extends Component {
 
           }
 
-          // if (plyr.dodging.state === true && plyr.success.deflected.state !== true) {
           if (plyr.action === "dodging" && plyr.success.deflected.state !== true) {
 
 
@@ -35722,7 +35741,7 @@ class App extends Component {
               let finalCoords = this.calcElasticCountCoords('dodging','player',plyr).coords;
               let drawCell = this.calcElasticCountCoords('dodging','player',plyr).drawCell;
 
-              
+
 
               if (plyr.elasticCounter.direction === 'north') {
                 if (
@@ -35761,7 +35780,6 @@ class App extends Component {
             }
 
           }
-
 
 
           // DEPTH SORTING!!
@@ -37920,10 +37938,44 @@ class App extends Component {
     let sceneY = this.sceneY;
     let tileWidth = this.tileWidth;
 
+
+
+    // check if exists in gurrent grid info, else choose random free cell
+    // while (checkPatrolCell1 === false) {
+    //   cell1.x = this.rnJesus(0,this.gridWidth)
+    //   cell1.y = this.rnJesus(0,this.gridWidth)
+    //   checkPatrolCell1 = this.checkCell(cell1);
+    // }
+    // if cellcheck ==== true, set and push as below
+    // set plyr start position
+
+
     this.startProcessLevelData(canvas);
     // gridInfo = this.gridInfo;
 
     this.processLevelData(this.gridInfo);
+
+
+    // RESET START POSITION IF DOESN'T EXIST IN CURRENT GRID
+    for (const plyr of this.players) {
+
+      if (!this.gridInfo.find(x => x.number.x === plyr.startPosition.cell.number.x && x.number.y === plyr.startPosition.cell.number.y)) {
+
+        let cll = {x: undefined, y: undefined};
+        let randomFreeCellChosen = false;
+
+        while (randomFreeCellChosen !== true) {
+          cll.x = this.rnJesus(0,this.gridWidth)
+            cll.y = this.rnJesus(0,this.gridWidth)
+            randomFreeCellChosen = this.checkCell(cll);
+        }
+
+        if (randomFreeCellChosen === true) {
+          plyr.startPosition.cell.number = cll;
+        }
+
+      }
+    }
     // console.log('post process barrier check init',this.gridInfo.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
 
     if (this.camera.fixed !== true) {
