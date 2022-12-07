@@ -13720,7 +13720,7 @@ class App extends Component {
           console.log('not enough cells assigned for custom placement please add more');
         }
         else  {
-          console.log('start:',this.initItemList.length,this.customItemPlacement.cells.length);
+          // console.log('start:',this.initItemList.length,this.customItemPlacement.cells.length);
 
           for ( const item2 of this.initItemList) {
 
@@ -13733,15 +13733,15 @@ class App extends Component {
 
 
             if (!cell3Ref) {
-              console.log('!!original item placement not found!!!',index,'/',this.initItemList.length,this.customItemPlacement.cells[index]);
+              // console.log('!!original item placement not found!!!',index,'/',this.initItemList.length,this.customItemPlacement.cells[index]);
               cell3 = this.getRandomFreeCell();
               // cell3Ref = this.gridInfo.find(elem => elem.number.x === cell3.number.x && elem.number.y === cell3.number.y);
-              console.log('cell doesnt exist @',this.customItemPlacement.cells[index],'pick new cell',cell3,'item',item2.name);
+              // console.log('cell doesnt exist @',this.customItemPlacement.cells[index],'pick new cell',cell3,'item',item2.name);
               if (!cell3) {
 
 
                 cell3Ref = this.gridInfo.filter(x => x.obstacle.state === true)[0];
-                console.log('no free cells for placement, replace obatcle? @ ',cell3Ref.number);
+                // console.log('no free cells for placement, replace obatcle? @ ',cell3Ref.number);
                 if (cell3Ref) {
 
                   let oldLvlData = cell3Ref.levelData.split("_");
@@ -13750,7 +13750,7 @@ class App extends Component {
                   cell3Ref.obstacle.state = false;
 
 
-                  console.log('clearing obstacle cell for placement',cell3Ref.number,'item',cell3Ref.item.name,index);
+                  // console.log('clearing obstacle cell for placement',cell3Ref.number,'item',cell3Ref.item.name,index);
 
                   cell3Ref.item.name = item2.name;
                   cell3Ref.item.type = item2.type;
@@ -13759,7 +13759,7 @@ class App extends Component {
 
                 }
                 else {
-                  console.log('init item placement no free cells for this item. skipping');
+                  // console.log('init item placement no free cells for this item. skipping');
                   continue;
                 }
 
@@ -13768,35 +13768,35 @@ class App extends Component {
 
 
                 cell3Ref = this.gridInfo.find(elem => elem.number.x === cell3.number.x && elem.number.y === cell3.number.y);
-                console.log('cell for placement exists',cell3Ref.number,this.customItemPlacement.cells[index],'item',item2.name);
+                // console.log('cell for placement exists',cell3Ref.number,this.customItemPlacement.cells[index],'item',item2.name);
                 if (this.customItemPlacement.cells.find(x => x.x === cell3.number.x && x.y === cell3.number.y)) {
-                  console.log('b');
+                  // console.log('b');
                   cell3 = this.getRandomFreeCell();
                   cell3Ref = this.gridInfo.find(elem => elem.number.x === cell3.number.x && elem.number.y === cell3.number.y);
 
                   if (!cell3) {
-                    console.log('here is where 1');
+                    // console.log('here is where 1');
                     continue;
                   }
                 }
 
                 if (cell3Ref.obstacle.state === true) {
-                  console.log('obstacle in original placement cell',cell3Ref.number);
+                  // console.log('obstacle in original placement cell',cell3Ref.number);
                   cell3 = this.getRandomFreeCell();
 
                   if (!cell3) {
-                    console.log('here is where 2');
+                    // console.log('here is where 2');
                     continue;
                   }
                   else {
 
                     cell3Ref = this.gridInfo.find(elem => elem.number.x === cell3.number.x && elem.number.y === cell3.number.y);
-                    console.log('chose another cell',cell3Ref.number);
+                    // console.log('chose another cell',cell3Ref.number);
                   }
                 }
 
                 if (cell3Ref) {
-                  console.log('cell is clear for placement2',cell3Ref.number,'item',cell3Ref.item.name,index);
+                  // console.log('cell is clear for placement2',cell3Ref.number,'item',cell3Ref.item.name,index);
 
                   cell3Ref.item.name = item2.name;
                   cell3Ref.item.type = item2.type;
@@ -13813,20 +13813,20 @@ class App extends Component {
             else {
 
               cell3Ref = this.gridInfo.find(elem => elem.number.x === cell3.number.x && elem.number.y === cell3.number.y);
-              console.log('cell @',this.customItemPlacement.cells[index],cell3Ref.number);
+              // console.log('cell @',this.customItemPlacement.cells[index],cell3Ref.number);
               if (cell3Ref.obstacle.state === true) {
 
                 cell3 = this.getRandomFreeCell();
-                console.log('obstacle found. choose new cell',cell3);
+                // console.log('obstacle found. choose new cell',cell3);
 
                 if (!cell3) {
-                  console.log('here is where');
+                  // console.log('here is where');
                   continue;
                 }
                 else {
 
                   cell3Ref = this.gridInfo.find(elem => elem.number.x === cell3.number.x && elem.number.y === cell3.number.y);
-                  console.log('cell is clear for placement3',cell3Ref.number,'item',cell3Ref.item.name,index);
+                  // console.log('cell is clear for placement3',cell3Ref.number,'item',cell3Ref.item.name,index);
                   cell3Ref.item.name = item2.name;
                   cell3Ref.item.type = item2.type;
                   cell3Ref.item.subType = item2.subType;
@@ -13836,7 +13836,7 @@ class App extends Component {
               else {
 
                 cell3Ref = this.gridInfo.find(elem => elem.number.x === cell3.number.x && elem.number.y === cell3.number.y);
-                console.log('cell is clear for placement4',cell3Ref.number,'item',cell3Ref.item.name,index);
+                // console.log('cell is clear for placement4',cell3Ref.number,'item',cell3Ref.item.name,index);
 
                 cell3Ref.item.name = item2.name;
                 cell3Ref.item.type = item2.type;
@@ -30267,7 +30267,7 @@ class App extends Component {
         if (player.crits.dodge > 4) {
           player.crits.dodge = 4;
         }
-        if (player.dodging.countState === true && player.dodging.count <= (player.dodging.peak.start - player.crits.dodge) && this.keyPressed[player.number-1].dodge === true) {
+        if (player.dodging.countState === true && player.dodging.count <= (player.dodging.peak.start - player.crits.dodge) && this.keyPressed[player.number-1].dodge === true &) {
           dodgeCondition = true;
         }
         if (player.dodging.countState === true && player.dodging.count > (player.dodging.peak.start - player.crits.dodge)) {
@@ -30676,7 +30676,6 @@ class App extends Component {
           }
 
         }
-
 
 
 
@@ -31298,6 +31297,7 @@ class App extends Component {
         }
 
 
+
         // BREAK FROM PULLED/PUSHED CHECK
         let plyrPullPushed = false;
         let plyrPullPushedPlyr = 0;
@@ -31332,7 +31332,8 @@ class App extends Component {
           player.defendDecay.state !== true &&
           player.flanking.state !== true &&
           player.jumping.state !== true &&
-          player.turning.state !== true
+          player.turning.state !== true &&
+          player.halfPushBack.state !== true
         ) {
           // CONFIRM MOVE KEYPRESS!!
           if (
@@ -31867,10 +31868,12 @@ class App extends Component {
 
 
         // CAN READ NON-MOVE INPUTS!!
-        if (player.strafing.state === false && player.turning.state !== true && player.postPull.state !== true) {
+        if (player.strafing.state === false && player.turning.state !== true && player.postPull.state !== true && player.halfPushBack.state !== true) {
 
+          // if (this.keyPressed[player.number-1].attack === true || this.keyPressed[player.number-1].defend === true && player.action !== 'dodging' && this.keyPressed[player.number-1].dodge !== true && player.dodging.count === 0) {
           if (this.keyPressed[player.number-1].attack === true || this.keyPressed[player.number-1].defend === true) {
 
+            // console.log('here',player.dodging.state,player.action,player.dodging);
             // ALREADY ATTACKING/DEFENDING!!
             if (player.attacking.state === true || player.defending.state === true) {
 
@@ -31915,6 +31918,17 @@ class App extends Component {
                       }
                     };
                   }
+                  this.keyPressed[player.number-1].dodge = false;
+
+                  let popup = player.popups.find(x=>x.msg === 'dodging')
+                  if (popup) {
+                    player.popups.splice(player.popups.findIndex(x=>x.msg === 'dodging'),1)
+                  }
+                  let popup2 = player.popups.find(x=>x.msg === 'dodgeStart')
+                  if (popup2) {
+                    player.popups.splice(player.popups.findIndex(x=>x.msg === 'dodgeStart'),1)
+                  }
+
                   player.bluntAttack = true;
                   atkType = 'blunt';
                 }
@@ -31969,11 +31983,13 @@ class App extends Component {
 
 
               }
+
             }
           }
 
           // DODGE START
-          else if (this.keyPressed[player.number-1].dodge === true) {
+          // else if (this.keyPressed[player.number-1].dodge === true && this.keyPressed[player.number-1].attack !== true && player.attacking.count === 0) {
+          else if (this.keyPressed[player.number-1].dodge === true && this.keyPressed[player.number-1].attack !== true && this.keyPressed[player.number-1].defend !== true) {
             if (player.dodging.state !== true && player.dodging.countState !== true) {
               // console.log('start dodge wind up');
               player.dodging.countState = true;
@@ -32276,7 +32292,7 @@ class App extends Component {
             player.action = "idle";
 
             // reset deflected here?
-            console.log('pause is not end. turn off elastic count',player.success.deflected.state,player.success.deflected.count,'/',player.success.deflected.limit);
+            // console.log('pause is not end. turn off elastic count',player.success.deflected.state,player.success.deflected.count,'/',player.success.deflected.limit);
           }
 
 
