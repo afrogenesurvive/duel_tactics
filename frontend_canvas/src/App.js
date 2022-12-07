@@ -1252,11 +1252,11 @@ class App extends Component {
       //   type: 'item',
       //   effect: '',
       // },
-      // {
-      //   name: 'hpUp',
-      //   type: 'item',
-      //   effect: 'hpUp',
-      // },
+      {
+        name: 'hpUp',
+        type: 'item',
+        effect: 'hpUp',
+      },
       // {
       //   name: 'hpDown',
       //   type: 'item',
@@ -1348,6 +1348,12 @@ class App extends Component {
         {x:1 ,y:7 },
         {x:1 ,y:6 },
         {x:2 ,y:9 },
+        {x:2 ,y:8 },
+        {x:2 ,y:7 },
+        {x:2 ,y:6 },
+        {x:5 ,y:6 },
+        {x:6 ,y:6 },
+        {x:6 ,y:6 },
       ]
     };
 
@@ -8474,43 +8480,46 @@ class App extends Component {
     let noMoreCells = false;
     let trashCells = [];
 
-    while (randomFreeCellChosen !== true && noMoreCells !== true) {
+    while (randomFreeCellChosen !== true) {
       cell.number.x = this.rnJesus(0,this.gridWidth)
       cell.number.y = this.rnJesus(0,this.gridWidth)
       randomFreeCellChosen = this.checkCell(cell.number);
 
       if (randomFreeCellChosen !== true) {
-        console.log('getRandomFreeCell: not free',cell.number);
+        // console.log('getRandomFreeCell: not free',cell.number);
         trashCells.push(cell);
         if (
           (trashCells.length+this.gridInfo.filter(x => x.obstacle.state === true ||
             x.terrain.type === "deep" ||
-            x.terrain.type === "void" ||
+            // x.terrain.type === "void" ||
             x.void.state === true).length+this.playerNumber) >= this.gridInfo.length
         ) {
-          console.log('getRandomFreeCell. no more cells!');
+          // console.log('getRandomFreeCell. no more cells!');
           noMoreCells = true
-          randomFreeCellChosen = true
+          // randomFreeCellChosen = true
           cell = {
             number: {x: undefined, y: undefined},
             center: {x: undefined, y: undefined}
           };
+          break;
+
         }
       }
       if (randomFreeCellChosen === true) {
-        console.log('getRandomFreeCell: free cell',cell.number);
-        noMoreCells = true;
+        // console.log('getRandomFreeCell: free cell',cell.number);
+
+        break;
       }
 
     }
 
-    if (noMoreCells === true && !cell.number.x) {
-      console.log('no more cells 2');
+    if (noMoreCells === true) {
+      // console.log('no more cells 2');
       return null;
     }
 
-    if (randomFreeCellChosen === true && cell.number.x) {
-      noMoreCells = true;
+    if (randomFreeCellChosen === true) {
+      // console.log('getRandomFreeCell: set free cell',cell.number);
       let refCell = this.gridInfo.find(x => x.number.x === cell.number.x && x.number.y === cell.number.y);
       cell.number = refCell.number;
       cell.center = refCell.center;
@@ -13711,6 +13720,7 @@ class App extends Component {
           console.log('not enough cells assigned for custom placement please add more');
         }
         else  {
+          console.log('start:',this.initItemList.length,this.customItemPlacement.cells.length);
 
           for ( const item2 of this.initItemList) {
 
@@ -13723,20 +13733,29 @@ class App extends Component {
 
 
             if (!cell3Ref) {
-              console.log('!!original item placement not found!!!');
+              console.log('!!original item placement not found!!!',index,'/',this.initItemList.length,this.customItemPlacement.cells[index]);
               cell3 = this.getRandomFreeCell();
               // cell3Ref = this.gridInfo.find(elem => elem.number.x === cell3.number.x && elem.number.y === cell3.number.y);
               console.log('cell doesnt exist @',this.customItemPlacement.cells[index],'pick new cell',cell3,'item',item2.name);
               if (!cell3) {
 
-                console.log('no free cells for placement, replace obatcle?');
+
                 cell3Ref = this.gridInfo.filter(x => x.obstacle.state === true)[0];
+                console.log('no free cells for placement, replace obatcle? @ ',cell3Ref.number);
                 if (cell3Ref) {
 
                   let oldLvlData = cell3Ref.levelData.split("_");
                   oldLvlData[1] = "*";
-                  this.gridInfo.filter(x => x.obstacle.state === true)[0].levelData = oldLvlData.join("_");
-                  // cell3Ref
+                  cell3Ref.levelData = oldLvlData.join("_");
+                  cell3Ref.obstacle.state = false;
+
+
+                  console.log('clearing obstacle cell for placement',cell3Ref.number,'item',cell3Ref.item.name,index);
+
+                  cell3Ref.item.name = item2.name;
+                  cell3Ref.item.type = item2.type;
+                  cell3Ref.item.subType = item2.subType;
+                  cell3Ref.item.effect = item2.effect;
 
                 }
                 else {
@@ -13777,7 +13796,7 @@ class App extends Component {
                 }
 
                 if (cell3Ref) {
-                  console.log('cell is clear for placement',cell3Ref.number,'item',cell3Ref.item.name,index);
+                  console.log('cell is clear for placement2',cell3Ref.number,'item',cell3Ref.item.name,index);
 
                   cell3Ref.item.name = item2.name;
                   cell3Ref.item.type = item2.type;
@@ -13796,8 +13815,9 @@ class App extends Component {
               cell3Ref = this.gridInfo.find(elem => elem.number.x === cell3.number.x && elem.number.y === cell3.number.y);
               console.log('cell @',this.customItemPlacement.cells[index],cell3Ref.number);
               if (cell3Ref.obstacle.state === true) {
-                console.log('obstacle found. choose new cell');
+
                 cell3 = this.getRandomFreeCell();
+                console.log('obstacle found. choose new cell',cell3);
 
                 if (!cell3) {
                   console.log('here is where');
@@ -13806,7 +13826,7 @@ class App extends Component {
                 else {
 
                   cell3Ref = this.gridInfo.find(elem => elem.number.x === cell3.number.x && elem.number.y === cell3.number.y);
-                  console.log('cell is clear for placement',cell3Ref.number,'item',cell3Ref.item.name,index);
+                  console.log('cell is clear for placement3',cell3Ref.number,'item',cell3Ref.item.name,index);
                   cell3Ref.item.name = item2.name;
                   cell3Ref.item.type = item2.type;
                   cell3Ref.item.subType = item2.subType;
@@ -13816,7 +13836,7 @@ class App extends Component {
               else {
 
                 cell3Ref = this.gridInfo.find(elem => elem.number.x === cell3.number.x && elem.number.y === cell3.number.y);
-                console.log('cell is clear for placement',cell3Ref.number,'item',cell3Ref.item.name,index);
+                console.log('cell is clear for placement4',cell3Ref.number,'item',cell3Ref.item.name,index);
 
                 cell3Ref.item.name = item2.name;
                 cell3Ref.item.type = item2.type;
@@ -36021,7 +36041,7 @@ class App extends Component {
               if (positionOccupied === true) {
 
                 respawnCellNo = this.getRandomFreeCell();
-                respawnPosCellRef = this.gridInfo.find(x => x.number.x === respawnCellNo.x && x.number.y === respawnCellNo.y)
+                respawnPosCellRef = this.gridInfo.find(x => x.number.x === respawnCellNo.number.x && x.number.y === respawnCellNo.number.y)
 
 
                 if (respawnCellNo) {
