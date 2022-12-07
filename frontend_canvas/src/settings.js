@@ -273,7 +273,7 @@ const Settings = (props) => {
 
 
 
-    if (parseInt(args) < props.gridWidth) {
+    if (width < props.gridWidth) {
 
       if (parseInt(args) < 7 && parseInt(args) > 3) {
         handleAiCountOptionsStateChange(2);
@@ -314,7 +314,6 @@ const Settings = (props) => {
 
       props.getCustomPlyrStartPosList(array)
 
-
     }
     else {
       handleAiCountOptionsStateChange(4);
@@ -345,7 +344,6 @@ const Settings = (props) => {
       mission: aiMission,
     })
 
-    props.settingsFormGridWidthUpdate(width);
 
   }
 
