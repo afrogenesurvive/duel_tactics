@@ -28933,6 +28933,13 @@ class App extends Component {
             player.popups.splice(player.popups.findIndex(x=>x.msg === 'dodging'),1)
           }
 
+          // if (player.strafing.state === true) {
+          //   console.log('midmove strafe hold',player.strafing.direction);
+          // }
+          // if (player.strafing.state !== true) {
+          //   console.log('midmove strafe release',player.strafing.direction);
+          // }
+
 
           for (const el of atDestRanges) {
             if (el === true) {
@@ -28981,6 +28988,7 @@ class App extends Component {
                   if (this.keyPressed[player.number-1].strafe !== true) {
                     // console.log('continuous strafe check');
                     player.strafing.state = false;
+                    player.strafing.direction = '';
                   }
                   else {
                     // console.log('continuous strafe check 2');
@@ -29621,6 +29629,7 @@ class App extends Component {
           player.strafing.state = false;
           player.strafeReleaseHook = false;
           this.getTarget(player);
+          // console.log('strafe release hook');
         }
 
 
@@ -30494,13 +30503,6 @@ class App extends Component {
 
 
         }
-
-        // no key pressed
-        // press dodge
-        // start dodge
-        // press attack
-        // cancel dodge
-        // set blunt attack
 
 
         // RESET MOVE SPEED POST PUSHBACK
@@ -35533,8 +35535,12 @@ class App extends Component {
             //     // console.log('moving @ drawstep ...finalAnimIndex',finalAnimIndex,plyr.action,'terrainMoveSpeed state',plyr.terrainMoveSpeed.state,'animation mv spd terrain',plyr.terrainMoveSpeed.speed,'animation mv spd',plyr.speed.move,'step',plyr.moving.step);
             //
             //   }
-            // }
-            if (plyr.direction === 'north') {
+
+            let direction = plyr.direction;
+            if (plyr.strafing.direction !== "") {
+              direction = plyr.strafing.direction;
+            }
+            if (direction === 'north') {
               if (x === 9 && y === 9) {
 
               }
@@ -35551,7 +35557,7 @@ class App extends Component {
 
               }
             }
-            if (plyr.direction === 'west') {
+            if (direction === 'west') {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
 
@@ -35584,7 +35590,7 @@ class App extends Component {
             //     // playerDrawLog(x,y,plyr)
             //   }
             // }
-            if (plyr.direction === 'east') {
+            if (direction === 'east') {
               if (x === plyr.moving.origin.number.x+1 && y === plyr.moving.origin.number.y) {
                 // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
                 // console.log('here',x,y);
@@ -35599,7 +35605,7 @@ class App extends Component {
                 // playerDrawLog(x,y,plyr)
               }
             }
-            if (plyr.direction === 'south') {
+            if (direction === 'south') {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y+1) {
                 // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
                 if (plyr.jumping.state === true) {
@@ -35778,7 +35784,7 @@ class App extends Component {
                 // context.fillRect(point.x, point.y,5,5);
               }
             }
-            if (plyr.moving.origin.number.x === this.gridWidthd && plyr.moving.origin.number.y === 0) {
+            if (plyr.moving.origin.number.x === this.gridWidth && plyr.moving.origin.number.y === 0) {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
 
                 context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
@@ -35786,7 +35792,7 @@ class App extends Component {
                 // context.fillRect(point.x, point.y,5,5);
               }
             }
-            if (plyr.moving.origin.number.x === this.gridWidthd && plyr.moving.origin.number.y === this.gridWidthd) {
+            if (plyr.moving.origin.number.x === this.gridWidth && plyr.moving.origin.number.y === this.gridWidthd) {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
 
                 context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
