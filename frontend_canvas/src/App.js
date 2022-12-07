@@ -29682,6 +29682,26 @@ class App extends Component {
             player.action = 'attacking';
             player.attacking.count++;
 
+            if (player.dodging.countState === true || player.dodging.state === true || this.keyPressed[player.number-1].dodge === true) {
+              console.log('was attacking then pressed dodging. blunt attack');
+              player.dodging = {
+                countState: false,
+                state: false,
+                count: 0,
+                limit: 20,
+                peak: {
+                  start: 5,
+                  end: 10,
+                }
+              };
+              if (player.elasticCounter.state === true && player.elasticCounter.type === "dodging") {
+                player.elasticCounter.state = false;
+              }
+            }
+            
+            this.keyPressed[player.number-1].dodge = false;
+            player.bluntAttack = true;
+
             if (player.attacking.count <= 2) {
               if (!player.popups.find(x => x.msg === 'attackStart')) {
                 player.popups.push(
@@ -30267,7 +30287,7 @@ class App extends Component {
         if (player.crits.dodge > 4) {
           player.crits.dodge = 4;
         }
-        if (player.dodging.countState === true && player.dodging.count <= (player.dodging.peak.start - player.crits.dodge) && this.keyPressed[player.number-1].dodge === true &) {
+        if (player.dodging.countState === true && player.dodging.count <= (player.dodging.peak.start - player.crits.dodge) && this.keyPressed[player.number-1].dodge === true) {
           dodgeCondition = true;
         }
         if (player.dodging.countState === true && player.dodging.count > (player.dodging.peak.start - player.crits.dodge)) {
@@ -30448,6 +30468,12 @@ class App extends Component {
 
         }
 
+        // no key pressed
+        // press dodge
+        // start dodge
+        // press attack
+        // cancel dodge
+        // set blunt attack
 
 
         // RESET MOVE SPEED POST PUSHBACK
@@ -31883,6 +31909,7 @@ class App extends Component {
               if (this.keyPressed[player.number-1].defend === true) {
                 // console.log('already defending',player.number);
               }
+
             }
 
 
@@ -31904,7 +31931,7 @@ class App extends Component {
                 // BLUNT ATTACK!!
                 if (this.keyPressed[player.number-1].dodge === true) {
                   // console.log('start blunt attack');
-                  if (player.dodging.countState === true || player.dodging.state === true) {
+                  if (player.dodging.countState === true || player.dodging.state === true || this.keyPressed[player.number-1].dodge === true) {
                     console.log('was dodging, now blunt attacking. cancel dodge. return dodge stamina');
                     player.stamina.current += this.staminaCostRef.dodge.peak;
                     player.dodging = {
@@ -31917,6 +31944,9 @@ class App extends Component {
                         end: 10,
                       }
                     };
+                    if (player.elasticCounter.state === true && player.elasticCounter.type === "dodging") {
+                      player.elasticCounter.state = false;
+                    }
                   }
                   this.keyPressed[player.number-1].dodge = false;
 
