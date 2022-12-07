@@ -10232,14 +10232,15 @@ class App extends Component {
     if (player.target.myCellBlock !== true) {
 
       let playerAttackStamType;
-      if (player.bluntAttack === true) {
-        playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].blunt;
-      }
+
       if (player.currentWeapon.name === "") {
         playerAttackStamType = this.staminaCostRef.attack.unarmed.normal;
         if (player.bluntAttack === true) {
           playerAttackStamType = this.staminaCostRef.attack.unarmed.blunt;
         }
+      }
+      if (player.bluntAttack === true && player.currentWeapon.name !== "") {
+        playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].blunt;
       }
       if (player.currentWeapon.name !== "") {
         playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].normal;
@@ -10347,7 +10348,8 @@ class App extends Component {
           player.target.cell1.free === true &&
           player.target.cell1.occupant.type !== "item" &&
           player.target.cell1.occupant.type !== "rubble" &&
-          boltTarget1 !== true) {
+          boltTarget1 !== true
+        ) {
 
           if (!player.popups.find(x => x.msg === "missedAttack2")) {
             player.popups.push(
@@ -10398,7 +10400,8 @@ class App extends Component {
           player.target.cell1.free === true &&
           player.target.cell1.occupant.type !== "item" &&
           player.target.cell1.occupant.type !== "rubble" &&
-          boltTarget1 !== true) {
+          boltTarget1 !== true
+        ) {
 
           if (!player.popups.find(x => x.msg === "missedAttack2")) {
             player.popups.push(
@@ -10499,7 +10502,7 @@ class App extends Component {
       playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].normal;
     }
 
-    if (player.bluntAttack === true) {
+    if (player.bluntAttack === true && player.currentWeapon.name !== "") {
       playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].blunt;
     }
     if (player.currentWeapon.name === "") {
@@ -10509,20 +10512,43 @@ class App extends Component {
       }
       weapon = 'unarmed';
 
-      if (!player.popups.find(x=>x.msg === "attackingUnarmed")) {
-        player.popups.push(
-          {
-            state: false,
-            count: 0,
-            limit: (this.attackAnimRef.limit.unarmed-this.attackAnimRef.peak.unarmed),
-            type: '',
-            position: '',
-            msg: 'attackingUnarmed',
-            img: '',
+      if (player.bluntAttack === true) {
 
-          }
-        )
+        if (!player.popups.find(x=>x.msg === "attackingBlunt")) {
+          player.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: (this.attackAnimRef.limit[weapon]-this.attackAnimRef.peak[weapon]),
+              type: '',
+              position: '',
+              msg: 'attackingBlunt',
+              img: '',
+
+            }
+          )
+        }
+
       }
+      else {
+
+        if (!player.popups.find(x=>x.msg === "attackingUnarmed")) {
+          player.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: (this.attackAnimRef.limit.unarmed-this.attackAnimRef.peak.unarmed),
+              type: '',
+              position: '',
+              msg: 'attackingUnarmed',
+              img: '',
+
+            }
+          )
+        }
+
+      }
+
 
     }
     else {
