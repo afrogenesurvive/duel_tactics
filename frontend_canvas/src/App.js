@@ -29694,13 +29694,14 @@ class App extends Component {
                   end: 10,
                 }
               };
+              this.keyPressed[player.number-1].dodge = false;
+              player.bluntAttack = true;
               if (player.elasticCounter.state === true && player.elasticCounter.type === "dodging") {
                 player.elasticCounter.state = false;
               }
             }
-            
-            this.keyPressed[player.number-1].dodge = false;
-            player.bluntAttack = true;
+
+
 
             if (player.attacking.count <= 2) {
               if (!player.popups.find(x => x.msg === 'attackStart')) {
