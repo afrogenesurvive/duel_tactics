@@ -35518,7 +35518,8 @@ class App extends Component {
 
 
           //PLAYER DEPTH SORTING!!
-          // MOVING
+          
+          // MOVING & MID STRAFE KEY RELEASE
           if (plyr.target.cell1.void === false && plyr.moving.state === true && plyr.falling.state !== true && plyr.jumping.state !== true) {
             let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
             // console.log('move',finalAnimIndex);
@@ -35825,6 +35826,7 @@ class App extends Component {
               }
             }
           }
+
           if (plyr.jumping.state === true ) {
             let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
 
@@ -35849,7 +35851,6 @@ class App extends Component {
               }
             }
           }
-
           if (plyr.strafing.state === true && plyr.falling.state !== true && plyr.jumping.state !== true) {
             if (plyr.strafing.direction === 'north' || plyr.strafing.direction === 'northWest' || plyr.strafing.direction === 'west') {
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
@@ -35985,7 +35986,6 @@ class App extends Component {
             }
 
           }
-
           if (plyr.success.deflected.state === true) {
 
 
@@ -36037,7 +36037,6 @@ class App extends Component {
             }
 
           }
-
           if (plyr.action === "dodging" && plyr.success.deflected.state !== true) {
 
 
@@ -36085,7 +36084,6 @@ class App extends Component {
             }
 
           }
-
 
           // DEPTH SORTING!!
 
