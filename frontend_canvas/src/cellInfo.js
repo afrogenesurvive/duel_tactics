@@ -30,7 +30,7 @@ const CellInfo = props => {
       <ul className="cellInfoList">
         <li className="cellInfoListItem">
           <p className="cellInfoText">
-            Coords: {props.clicked.cell.center.x.toFixed(2)}, {props.clicked.cell.center.y.toFixed(2)}
+            X,Y: {props.clicked.cell.center.x.toFixed(2)}, {props.clicked.cell.center.y.toFixed(2)}
           </p>
         </li>
         <li className="cellInfoListItem">

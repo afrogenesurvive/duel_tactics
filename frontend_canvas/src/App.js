@@ -344,9 +344,9 @@ class App extends Component {
     this.levelData6 = {
       row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*'],
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*'],
-      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_a_0a*'],
-      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_c_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*'],
-      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_a_0a*','**_*_4.3_a_0a*','**_*_4.4_a_0a*','**_*_4.5_a_0a*','**_*_4.6_a_0a*'],
+      row2: ['**_i_2.0_a_0a*','**_*_2.1_j_0a*','**_*_2.2_j_0a*','**_*_2.3_j_0a*','**_*_2.4_j_0a*','**_*_2.5_j_0a*','**_*_2.6_a_0a*'],
+      row3: ['**_i_3.0_a_0a*','**_*_3.1_j_0a*','**_*_3.2_b_0a*','**_*_3.3_j_0a*','**_*_3.4_b_0a*','**_*_3.5_j_0a*','**_*_3.6_a_0a*'],
+      row4: ['**_*_4.0_a_0a*','**_*_4.1_j_0a*','**_*_4.2_j_0a*','**_*_4.3_j_0a*','**_*_4.4_j_0a*','**_*_4.5_j_0a*','**_*_4.6_a_0a*'],
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','**_*_5.2_a_0a*','**_*_5.3_a_0a*','**_*_5.4_a_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*'],
       row6: ['**_*_6.0_a_0a*','**_*_6.1_a_0a*','**_*_6.2_a_0a*','**_*_6.3_a_0a*','**_*_6.4_a_0a*','**_*_6.5_a_0a*','**_*_6.6_a_0a*'],
     };
@@ -4993,6 +4993,8 @@ class App extends Component {
         avoidCells.push({x:playerStartPos.x,y:playerStartPos.y})
 
       }
+
+
 
 
       // CHECK FOR AI POSITIONS TO ADD TO CELLS TO AVOID
@@ -38358,6 +38360,7 @@ class App extends Component {
     // RESET START POSITION IF DOESN'T EXIST IN CURRENT GRID
     for (const plyr of this.players) {
 
+      // if (!this.gridInfo.find(x => x.number.x === plyr.startPosition.cell.number.x && x.number.y === plyr.startPosition.cell.number.y)) {
       if (!this.gridInfo.find(x => x.number.x === plyr.startPosition.cell.number.x && x.number.y === plyr.startPosition.cell.number.y)) {
 
         let cll = {x: undefined, y: undefined};
@@ -38374,6 +38377,29 @@ class App extends Component {
         }
 
       }
+
+      if (
+        this.gridInfo.find(x => x.number.x === plyr.startPosition.cell.number.x && x.number.y === plyr.startPosition.cell.number.y).terrain.type === "deep" ||
+        this.gridInfo.find(x => x.number.x === plyr.startPosition.cell.number.x && x.number.y === plyr.startPosition.cell.number.y).terrain.type === "void" ||
+        this.gridInfo.find(x => x.number.x === plyr.startPosition.cell.number.x && x.number.y === plyr.startPosition.cell.number.y).void.state === true ||
+        this.gridInfo.find(x => x.number.x === plyr.startPosition.cell.number.x && x.number.y === plyr.startPosition.cell.number.y).obstacle.state === true
+      ) {
+
+        let cll = {x: undefined, y: undefined};
+        let randomFreeCellChosen = false;
+
+        while (randomFreeCellChosen !== true) {
+          cll.x = this.rnJesus(0,this.gridWidth)
+            cll.y = this.rnJesus(0,this.gridWidth)
+            randomFreeCellChosen = this.checkCell(cll);
+        }
+
+        if (randomFreeCellChosen === true) {
+          plyr.startPosition.cell.number = cll;
+        }
+
+      }
+
     }
     // console.log('post process barrier check init',this.gridInfo.filter(x => x.barrier.state === true).map(y => y = y.barrier.position));
 
