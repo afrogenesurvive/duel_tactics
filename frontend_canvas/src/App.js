@@ -3553,7 +3553,7 @@ class App extends Component {
               this.currentPlayer = 1;
             }
             if (gp.axes[1] > -0.5 && gp.axes[0] < -0.5) {
-              // console.log('left',gp.axes[0],gp.axes[1]);
+              console.log('left',gp.axes[0],gp.axes[1]);
               keyPressed[0].west = true;
               this.players[0].turnCheckerDirection = 'west';
               this.currentPlayer = 1;
@@ -28860,12 +28860,10 @@ class App extends Component {
 
         // console.log('player',player.number,player.action);
         nextPosition = this.lineCrementer(player);
-
         player.nextPosition = nextPosition;
 
 
         let atDestRanges = [false,false,false,false];
-
 
         if (player.target.cell1.void === true) {
           if (player.falling.state === true) {
@@ -35518,7 +35516,7 @@ class App extends Component {
 
 
           //PLAYER DEPTH SORTING!!
-          
+
           // MOVING & MID STRAFE KEY RELEASE
           if (plyr.target.cell1.void === false && plyr.moving.state === true && plyr.falling.state !== true && plyr.jumping.state !== true) {
             let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
