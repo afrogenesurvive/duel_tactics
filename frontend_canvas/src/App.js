@@ -12163,7 +12163,7 @@ class App extends Component {
   }
   handleMiscPlayerDamage = (player,type) => {
 
-
+    this.attackedCancel(this.players[player.number-1])
     if (type === "obstacleBarrierInvulnurable") {
 
       if (player.hp - 1 <= 0) {
@@ -12177,6 +12177,10 @@ class App extends Component {
         this.pointChecker(player)
       } else {
         this.players[player.number-1].hp -= 1;
+
+        if (player.hp > 0) {
+          this.attackedCancel(player)
+        }
 
         if (!this.players[player.number-1].popups.find(x=>x.msg.split("_")[0] === "hpDown")) {
           this.players[player.number-1].popups.push(
@@ -12326,6 +12330,10 @@ class App extends Component {
 
         this.players[player.number-1].hp -= damage;
 
+        if (player.hp > 0) {
+          this.attackedCancel(player)
+        }
+
         if (!this.players[player.number-1].popups.find(x=>x.msg.split("_")[0] === "hpDown")) {
           this.players[player.number-1].popups.push(
             {
@@ -12382,6 +12390,11 @@ class App extends Component {
   }
   attackedCancel = (player) => {
     // console.log('player', player.number,' attacked. Cancel action!',player.action);
+
+    if (player.elasticCounter.state === true && player.elasticCounter.type === player.action) {
+      console.log('here',player.action);
+      player.elasticCounter.state = false;
+    }
 
     switch(player.action) {
       case 'attacking':
@@ -12664,6 +12677,8 @@ class App extends Component {
   }
   pushBack = (player,hitByPlayerDirection) => {
     // console.log('pushing back?');
+
+    this.attackedCancel(player)
 
     let canPushBack = false;
     let halfPushBack = false;
@@ -35467,7 +35482,8 @@ class App extends Component {
               // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
             break;
             case 'attacking':
-              let animIndex = plyr.attacking.count -1;
+              // let animIndex = plyr.attacking.count -1;
+              let animIndex;
 
 
               if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === "attacking") {
@@ -36124,6 +36140,12 @@ class App extends Component {
               }
 
             }
+
+            // if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y && plyr.success.deflected.state === false) {
+            //
+            //   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
+            //
+            // }
 
           }
 
