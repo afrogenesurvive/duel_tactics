@@ -7699,6 +7699,183 @@ class App extends Component {
     return (tempPt);
 
   }
+  setElasticCounter = (type,subType,pause,player) => {
+    // console.log('setElasticCounter');
+
+    if (type === "deflected") {
+
+      let point = {
+        x: player.currentPosition.cell.center.x,
+        y: player.currentPosition.cell.center.y,
+      };
+
+
+
+      let countCalcPause = player.success.deflected.limit/2;
+      let countCalc = countCalcPause/2;
+
+      if (countCalc > 6) {
+        countCalc = 6;
+        countCalcPause = (player.success.deflected.limit-12);
+      }
+
+
+      player.elasticCounter = {
+        state: true,
+        direction: this.getOppositeDirection(player.direction),
+        type: "deflected",
+        subType: "",
+        countUp: {
+          state: false,
+          count: 0,
+          limit: countCalc,
+        },
+        countDown: {
+          state: false,
+          count: 0,
+          limit: countCalc,
+        },
+        coords: {
+          x: point.x-(this.playerDrawWidth/2),
+          y: point.y-(this.playerDrawHeight/2),
+        },
+        pause: {
+          preState: pause,
+          state: false,
+          type: "peak",
+          count: 0,
+          limit: countCalcPause,
+        },
+      }
+
+
+    }
+
+    if (type === "dodging") {
+
+
+      let point = {
+        x: player.currentPosition.cell.center.x,
+        y: player.currentPosition.cell.center.y,
+      };
+
+
+      let startMod = player.crits.dodge;
+      let endMod = player.crits.dodge;
+      if (player.crits.dodge > 5) {
+        player.crits.dodge = 5;
+      }
+      if (player.dodging.peak.start - startMod < 2) {
+        startMod = player.dodging.peak.start-2;
+      }
+      if ((player.dodging.peak.end + endMod) > player.dodging.limit-2) {
+        endMod = player.dodging.limit-(2+player.dodging.peak.end);
+      }
+
+
+      // console.log('count up: ',player.dodging.peak.start - startMod);
+      // console.log('pause: ',(player.dodging.peak.end + endMod)-(player.dodging.peak.start - startMod));
+      // console.log('count down',player.dodging.limit-(player.dodging.peak.end + endMod));
+      // console.log('limit',player.dodging.limit);
+
+      let countCalcPause = (player.dodging.peak.end + endMod)-(player.dodging.peak.start - startMod);
+      let countCalcUp = player.dodging.peak.start - startMod;
+      let countCalcDown = player.dodging.limit-(player.dodging.peak.end + endMod);
+
+
+      // if (countCalc > 6) {
+      //   countCalc = 6;
+      //   countCalcPause = (player.success.deflected.limit-12);
+      // }
+
+
+      player.elasticCounter = {
+        state: true,
+        direction: player.dodgeDirection,
+        type: "dodging",
+        subType: "",
+        countUp: {
+          state: false,
+          count: 0,
+          limit: countCalcUp,
+        },
+        countDown: {
+          state: false,
+          count: 0,
+          limit: countCalcUp,
+          // limit: countCalcDown,
+        },
+        coords: {
+          x: point.x-(this.playerDrawWidth/2),
+          y: point.y-(this.playerDrawHeight/2),
+        },
+        pause: {
+          preState: pause,
+          state: false,
+          type: "peak",
+          count: 0,
+          limit: countCalcPause,
+        },
+      }
+
+
+    }
+
+    if (type === "attacking") {
+
+
+      let point = {
+        x: player.currentPosition.cell.center.x,
+        y: player.currentPosition.cell.center.y,
+      };
+
+      let attackPeak = this.attackAnimRef.peak[player.currentWeapon.type];
+      let stamAtkType = player.currentWeapon.type;
+
+      if (player.currentWeapon.type === '') {
+        // this.players[player.number-1].attacking.limit = this.attackAnimRef.limit.unarmed;
+        attackPeak = this.attackAnimRef.peak.unarmed;
+        stamAtkType = 'unarmed';
+      }
+      let limit = player.attacking.limit = this.attackAnimRef.limit[stamAtkType];
+
+
+
+      let countCalcUp = limit-attackPeak;
+
+
+      player.elasticCounter = {
+        state: true,
+        direction: player.direction,
+        type: "attacking",
+        subType: "",
+        countUp: {
+          state: false,
+          count: 0,
+          limit: countCalcUp,
+        },
+        countDown: {
+          state: false,
+          count: 0,
+          limit: countCalcUp,
+        },
+        coords: {
+          x: point.x-(this.playerDrawWidth/2),
+          y: point.y-(this.playerDrawHeight/2),
+        },
+        pause: {
+          preState: pause,
+          state: false,
+          type: "",
+          count: 0,
+          limit: 0,
+        },
+      }
+
+
+    }
+
+  }
   calcElasticCountCoords = (type,subType,data) => {
 
     let drawCell;
@@ -7710,8 +7887,6 @@ class App extends Component {
       x: undefined,
       y: undefined,
     }
-
-
 
 
     let getMod = (direction,unit2) => {
@@ -7752,12 +7927,9 @@ class App extends Component {
 
     if (type === 'halfPushBack') {
 
-      // 12x12 - .005
-      // 9x9 - .015
-      // 7x7 - .018
-      // 3x3 - .045
 
-      let unit = .012;
+      let base = .015;
+      let unit;
       let baseCoords = {
         x: undefined,
         y: undefined,
@@ -7765,6 +7937,24 @@ class App extends Component {
       let dir = "";
 
       if (subType === "player") {
+
+
+        switch (this.gridWidth) {
+          case 12:
+              unit = base/3;
+            break;
+          case 9:
+              unit = base;
+            break;
+          case 6:
+              unit = base*1.2;
+            break;
+          case 3:
+              unit = base*3;
+            break;
+          default:
+
+        }
 
         baseCoords = {
           x: data.halfPushBack.coords.x,
@@ -7868,21 +8058,36 @@ class App extends Component {
 
     if (type === 'deflected') {
 
-      // 12x12 - .005
-      // 9x9 - .008
-      // 6x6 - .015
-      // 3x3 - .055
 
-      let unit = .002;
+      let base = .002;
+      let unit;
 
       if (data.elasticCounter.countUp.count <= 3) {
-        unit = .007
+        base = .007
       }
       if (data.elasticCounter.countUp.count > 3 && data.elasticCounter.countUp.count < 6) {
-        unit = .005
+        base = .005
       }
       if (data.elasticCounter.countUp.count > 6) {
-        unit = .002
+        base = .002
+      }
+
+
+      switch (this.gridWidth) {
+        case 12:
+            unit = base/1.5;
+          break;
+        case 9:
+            unit = base;
+          break;
+        case 6:
+            unit = base*2;
+          break;
+        case 3:
+            unit = base*6;
+          break;
+        default:
+
       }
 
 
@@ -7958,30 +8163,38 @@ class App extends Component {
 
     }
 
-
-    // log, grid width, zoom xy, unit, prev coords, new coords, new-prev coords(dist)
     if (type === "dodging") {
 
-      let unit = .002;
+      let base = .002;
+      let unit;
 
       if (data.elasticCounter.countUp.count <= 3) {
-        unit = .007
+        base = .007;
       }
       if (data.elasticCounter.countUp.count > 3 && data.elasticCounter.countUp.count < 6) {
-        unit = .005
+        base = .005
       }
       if (data.elasticCounter.countUp.count > 6) {
-        unit = .002
+        base = .002
       }
 
-      unit = .0045;
+      switch (this.gridWidth) {
+        case 12:
+            unit = base/1.5;
+          break;
+        case 9:
+            unit = base;
+          break;
+        case 6:
+            unit = base*2;
+          break;
+        case 3:
+            unit = base*6;
+          break;
+        default:
 
-      // 12x12 -
-      // 9x9 - .007
-      // 6x6 - .014
-      // 3x3 - .045
+      }
 
-      // mod unit based on grid size
 
       // console.log('unit',unit);
       let dir = data.elasticCounter.direction;
@@ -8056,6 +8269,110 @@ class App extends Component {
 
     }
 
+    if (type === 'attacking') {
+
+      let base = .002;
+      let unit;
+
+      if (data.elasticCounter.countUp.count <= 3) {
+        base = .003
+      }
+      if (data.elasticCounter.countUp.count > 3 && data.elasticCounter.countUp.count < 6) {
+        base = .001
+      }
+      if (data.elasticCounter.countUp.count > 6) {
+        base = .0008
+      }
+
+
+      switch (this.gridWidth) {
+        case 12:
+            unit = base/1.5;
+          break;
+        case 9:
+            unit = base;
+          break;
+        case 6:
+            unit = base*2;
+          break;
+        case 3:
+            unit = base*6;
+          break;
+        default:
+
+      }
+
+
+
+      let dir = data.elasticCounter.direction;
+      let baseCoords = {
+        x: data.elasticCounter.coords.x,
+        y: data.elasticCounter.coords.y,
+      }
+
+      if (data.elasticCounter.countUp.state === true) {
+        dir = data.elasticCounter.direction;
+      }
+      if (data.elasticCounter.countDown.state === true) {
+        dir = this.getOppositeDirection(data.elasticCounter.direction);
+      }
+
+
+      mod = getMod(dir,unit);
+
+      if (data.elasticCounter.pause.state !== true) {
+        finalCoords = {
+          x: (baseCoords.x + mod.x),
+          y: (baseCoords.y + mod.y),
+        }
+      }
+      else {
+        finalCoords = {
+          x: (baseCoords.x),
+          y: (baseCoords.y),
+        }
+      }
+
+
+      let targetCell;
+      data.elasticCounter.coords = finalCoords;
+
+      targetCell = this.getCellFromDirection(1,data.currentPosition.cell.number,data.elasticCounter.direction)
+      let targetCellRef = this.gridInfo.find(x => x.number.x === targetCell.x && x.number.y === targetCell.y)
+      drawCell = {x: undefined, y: undefined};
+
+      if (data.elasticCounter.countUp.state === true) {
+
+        if (targetCellRef) {
+          drawCell = targetCellRef.number;
+        }
+        else {
+          drawCell = data.currentPosition.cell.number;
+        }
+
+      }
+      if (data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "peak") {
+
+        if (targetCellRef) {
+          drawCell = targetCellRef.number;
+        }
+        else {
+          drawCell = data.currentPosition.cell.number;
+        }
+
+      }
+      if (data.elasticCounter.countDown.state === true) {
+        drawCell = data.currentPosition.cell.number;
+      }
+      if (data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "start" ||
+        data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "end"
+      ) {
+        drawCell = data.currentPosition.cell.number;
+      }
+
+      this.players[data.number-1] = data;
+
+    }
 
     return {
       coords: finalCoords,
@@ -8064,130 +8381,7 @@ class App extends Component {
 
 
   }
-  setElasticCounter = (type,subType,pause,player) => {
-    // console.log('setElasticCounter',player.success.deflected.type,player.success.deflected.limit);
 
-    if (type === "deflected") {
-
-      let point = {
-        x: player.currentPosition.cell.center.x,
-        y: player.currentPosition.cell.center.y,
-      };
-
-
-
-      let countCalcPause = player.success.deflected.limit/2;
-      let countCalc = countCalcPause/2;
-
-      if (countCalc > 6) {
-        countCalc = 6;
-        countCalcPause = (player.success.deflected.limit-12);
-      }
-
-
-      player.elasticCounter = {
-        state: true,
-        direction: this.getOppositeDirection(player.direction),
-        type: "deflected",
-        subType: "",
-        countUp: {
-          state: false,
-          count: 0,
-          limit: countCalc,
-        },
-        countDown: {
-          state: false,
-          count: 0,
-          limit: countCalc,
-        },
-        coords: {
-          x: point.x-(this.playerDrawWidth/2),
-          y: point.y-(this.playerDrawHeight/2),
-        },
-        pause: {
-          preState: pause,
-          state: false,
-          type: "peak",
-          count: 0,
-          limit: countCalcPause,
-        },
-      }
-
-
-    }
-
-
-    if (type === "dodging") {
-
-
-      let point = {
-        x: player.currentPosition.cell.center.x,
-        y: player.currentPosition.cell.center.y,
-      };
-
-
-      let startMod = player.crits.dodge;
-      let endMod = player.crits.dodge;
-      if (player.crits.dodge > 5) {
-        player.crits.dodge = 5;
-      }
-      if (player.dodging.peak.start - startMod < 2) {
-        startMod = player.dodging.peak.start-2;
-      }
-      if ((player.dodging.peak.end + endMod) > player.dodging.limit-2) {
-        endMod = player.dodging.limit-(2+player.dodging.peak.end);
-      }
-
-
-      // console.log('count up: ',player.dodging.peak.start - startMod);
-      // console.log('pause: ',(player.dodging.peak.end + endMod)-(player.dodging.peak.start - startMod));
-      // console.log('count down',player.dodging.limit-(player.dodging.peak.end + endMod));
-      // console.log('limit',player.dodging.limit);
-
-      let countCalcPause = (player.dodging.peak.end + endMod)-(player.dodging.peak.start - startMod);
-      let countCalcUp = player.dodging.peak.start - startMod;
-      let countCalcDown = player.dodging.limit-(player.dodging.peak.end + endMod);
-
-
-      // if (countCalc > 6) {
-      //   countCalc = 6;
-      //   countCalcPause = (player.success.deflected.limit-12);
-      // }
-
-
-      player.elasticCounter = {
-        state: true,
-        direction: player.dodgeDirection,
-        type: "dodging",
-        subType: "",
-        countUp: {
-          state: false,
-          count: 0,
-          limit: countCalcUp,
-        },
-        countDown: {
-          state: false,
-          count: 0,
-          limit: countCalcUp,
-          // limit: countCalcDown,
-        },
-        coords: {
-          x: point.x-(this.playerDrawWidth/2),
-          y: point.y-(this.playerDrawHeight/2),
-        },
-        pause: {
-          preState: pause,
-          state: false,
-          type: "peak",
-          count: 0,
-          limit: countCalcPause,
-        },
-      }
-
-
-    }
-
-  }
 
 
   rnJesus = (min,max) => {
@@ -15112,54 +15306,54 @@ class App extends Component {
 
                   console.log('attacking invurnerable obstacle, deflect player?');
 
-                   // let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
-                   //
-                   // if (shouldDeflect === 1) {
-                   //
-                   //   if (this.rnJesus(1,player.crits.pushBack) === 1) {
-                   //     this.setDeflection(player,'defended',true);
-                   //   }
-                   //   else {
-                   //     this.setDeflection(player,'defended',false);
-                   //   }
-                   //
-                   //   if (player.currentWeapon.name === '') {
-                   //     console.log('this obstacle is stronger than your fist. Take damage?');
-                   //     let takeDamage = this.rnJesus(1,player.crits.guardBreak);
-                   //     if (takeDamage === 1) {
-                   //
-                   //       this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
-                   //
-                   //     }
-                   //   }
-                   //
-                   // }
-                   // else {
-                   //
-                   //      this.pushBack(player,this.getOppositeDirection(player.direction))
-                   // }
-                   // if (this.rnJesus(1,1,player.crits.pushBack === 1)) {
-                   //    this.canPushObstacle(player,targetCell,'hitPush');
-                   // }
-                   //
-                   // if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
-                   //   this.cellPopups.push(
-                   //     {
-                   //       state: false,
-                   //       count: 0,
-                   //       limit: 35,
-                   //       type: '',
-                   //       position: '',
-                   //       msg: 'unbreakable',
-                   //       color: '',
-                   //       img: '',
-                   //       cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
-                   //     }
-                   //   )
-                   // }
+                   let shouldDeflect = this.rnJesus(1,player.crits.guardBreak)
+
+                   if (shouldDeflect === 1) {
+
+                     if (this.rnJesus(1,player.crits.pushBack) === 1) {
+                       this.setDeflection(player,'defended',true);
+                     }
+                     else {
+                       this.setDeflection(player,'defended',false);
+                     }
+
+                     if (player.currentWeapon.name === '') {
+                       console.log('this obstacle is stronger than your fist. Take damage?');
+                       let takeDamage = this.rnJesus(1,player.crits.guardBreak);
+                       if (takeDamage === 1) {
+
+                         this.handleMiscPlayerDamage(player,"obstacleBarrierInvulnurable");
+
+                       }
+                     }
+
+                   }
+                   else {
+
+                        this.pushBack(player,this.getOppositeDirection(player.direction))
+                   }
+                   if (this.rnJesus(1,1,player.crits.pushBack === 1)) {
+                      this.canPushObstacle(player,targetCell,'hitPush');
+                   }
+
+                   if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === targetCell.number.x && x.cell.number.y === targetCell.number.y)) {
+                     this.cellPopups.push(
+                       {
+                         state: false,
+                         count: 0,
+                         limit: 35,
+                         type: '',
+                         position: '',
+                         msg: 'unbreakable',
+                         color: '',
+                         img: '',
+                         cell: this.gridInfo.find(x => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y)
+                       }
+                     )
+                   }
 
 
-                   this.setDeflection(player,'defended',false);
+                   // this.setDeflection(player,'defended',false);
 
                 }
 
@@ -29751,6 +29945,7 @@ class App extends Component {
             player.action = 'attacking';
             player.attacking.count++;
 
+            // APPLY BLUNT ATTACK
             if (player.dodging.countState === true || player.dodging.state === true || this.keyPressed[player.number-1].dodge === true) {
               console.log('was attacking then pressed dodging. blunt attack');
               player.dodging = {
@@ -29773,6 +29968,11 @@ class App extends Component {
 
 
             if (player.attacking.count <= 2) {
+
+              // if (player.attacking.count === 1) {
+              //   this.setElasticCounter('attacking',"",false,player);
+              // }
+
               if (!player.popups.find(x => x.msg === 'attackStart')) {
                 player.popups.push(
                   {
@@ -29885,6 +30085,8 @@ class App extends Component {
 
           // TIME TO ATTACK IS NOW!
           if (player.attacking.count === attackPeak) {
+
+            this.setElasticCounter('attacking',"",false,player);
 
             // console.log('attack peak',player.attacking.count,'plyr',player.number);
 
@@ -30660,14 +30862,18 @@ class App extends Component {
               // console.log('finished count up. elastic counter peak');
 
               // IF PAUSE IS PEAK, COUNT PAUSE AT PEAK
-              if (player.elasticCounter.pause.preState === true && player.elasticCounter.pause.type === "peak") {
+              if (
+                player.elasticCounter.pause.preState === true &&
+                player.elasticCounter.pause.type === "peak") {
                 player.elasticCounter.pause.preState = false;
                 player.elasticCounter.pause.state = true;
                 // console.log('peak pause. turn on pause');
               }
 
               // IF PAUSE IS NOT PEAK, COUNT DOWM
-              if (player.elasticCounter.pause.type !== "peak") {
+              if (
+                player.elasticCounter.pause.type !== "peak"
+              ) {
                 player.elasticCounter.countDown.state = true;
                 // console.log('pause is not peak. count down');
               }
@@ -30727,7 +30933,7 @@ class App extends Component {
             if (player.elasticCounter.countDown.count < player.elasticCounter.countDown.limit) {
 
               if (player.elasticCounter.countDown.count === 1) {
-                // console.log('elastic count down start');
+                // console.log('elastic count down start',player.elasticCounter.countDown.limit);
               }
 
               player.elasticCounter.countDown.count++;
@@ -30741,7 +30947,7 @@ class App extends Component {
                 count: 0,
                 limit: player.elasticCounter.countDown.limit,
               }
-              // console.log('finished count down. elastic counter end');
+              // console.log('finished count down.');
 
               // IF PAUSE IS END, COUNT PAUSE
               if (player.elasticCounter.pause.preState === true && player.elasticCounter.pause.type === "end") {
@@ -30750,8 +30956,11 @@ class App extends Component {
                 // console.log('end pause. turn on pause');
               }
 
+
               // IF PAUSE IS NOT END, TURN OFF ELASTIC COUNTER
-              if (player.elasticCounter.pause.type !== "end") {
+              if (
+                player.elasticCounter.pause.type !== "end"
+              ) {
                 player.elasticCounter.state = false;
                 // console.log('pause is not end. turn off elastic count');
               }
@@ -33145,7 +33354,6 @@ class App extends Component {
           if (this.setInitZoom.windowWidth < 1100) {
 
             if ((this.camera.zoom.x-1) >= -.05) {
-              console.log('here');
 
               this.camera.zoom.x -= .04 ;
               this.camera.zoom.y -= .04 ;
@@ -35054,142 +35262,142 @@ class App extends Component {
 
 
           // FOR TESTING BY CALLING ONLY @ 1 CELL
-          if (
-            plyr.currentPosition.cell.number.x === x &&
-            plyr.currentPosition.cell.number.y === y
-          ) {
-
-            switch(plyr.action) {
-              case 'moving':
-                let moveSpeed = plyr.speed.move;
-                if (plyr.terrainMoveSpeed.state === true) {
-                  moveSpeed = plyr.terrainMoveSpeed.speed;
-                }
-                if (plyr.pushing.state === true) {
-                  moveSpeed = plyr.pushing.moveSpeed;
-                }
-                if (plyr.pulling.state === true) {
-                  moveSpeed = plyr.pulling.moveSpeed;
-                }
-                if (plyr.pushed.state === true) {
-                  moveSpeed = plyr.pushed.moveSpeed;
-                }
-                if (plyr.pulled.state === true) {
-                  moveSpeed = plyr.pulled.moveSpeed;
-                }
-                let rangeIndex = plyr.speed.range.indexOf(moveSpeed)
-                let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
-                finalAnimIndex = moveAnimIndex;
-                // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-                if (plyr.target.cell1.void == true) {
-                  // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-                }
-              break;
-              case 'jumping':
-                let rangeIndex4 = plyr.speed.range.indexOf(.1)
-                let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(plyr.moving.step)
-                finalAnimIndex = moveAnimIndex4;
-                // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-              break;
-              case 'strafe moving':
-                if (plyr.pushBack.state === true ) {
-                  let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
-                  let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
-                  finalAnimIndex = moveAnimIndex3;
-                  // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-                } else {
-                  let moveSpeed = plyr.speed.move;
-                  // if (plyr.pushing.state === true) {
-                  //   moveSpeed = plyr.pushing.moveSpeed;
-                  // }
-                  if (plyr.pulling.state === true) {
-                    moveSpeed = plyr.pulling.moveSpeed;
-                  }
-                  if (plyr.pushed.state === true) {
-                    moveSpeed = plyr.pushed.moveSpeed;
-                  }
-                  if (plyr.pulled.state === true) {
-                    moveSpeed = plyr.pulled.moveSpeed;
-                  }
-                  let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed)
-                  let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
-                  finalAnimIndex = moveAnimIndex2;
-                  // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-                }
-              break;
-              case 'flanking':
-                let rangeIndex6 = plyr.speed.range.indexOf(.2)
-                let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(plyr.moving.step)
-                finalAnimIndex = moveAnimIndex6;
-                // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
-                // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-              break;
-              case 'attacking':
-                let animIndex = plyr.attacking.count -1;
-                finalAnimIndex = animIndex;
-                // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
-              break;
-              case 'defending':
-                if (plyr.defending.count > 0) {
-                  let animIndex2 = plyr.defending.count -1;
-                  finalAnimIndex = animIndex2;
-                  // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
-                }
-                if (plyr.defending.count === 0) {
-                  let animIndex2a = 5;
-                  finalAnimIndex = animIndex2a;
-                  // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
-                }
-              break;
-              case 'idle':
-                if (plyr.number === 1) {
-                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-                }
-                if (plyr.number === 2) {
-                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-                }
-                let animIndex3 = plyr.idleAnim.count +1;
-                finalAnimIndex = animIndex3;
-              break;
-              case 'falling':
-                let animIndex4 = plyr.falling.count -1;
-                finalAnimIndex = animIndex4;
-                // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
-              break;
-              case 'deflected':
-                let animIndex5 = plyr.success.deflected.count -1;
-                // let animIndex5;
-                if (plyr.success.deflected.count > 10 && plyr.success.deflected.count < 21) {
-                  animIndex5 = (plyr.success.deflected.count-10);
-                }
-                if (plyr.success.deflected.count > 20 && plyr.success.deflected.count < 31) {
-                  animIndex5 = (plyr.success.deflected.count-20);
-                }
-                if (plyr.success.deflected.count > 30 && plyr.success.deflected.count < 41) {
-                  animIndex5 = (plyr.success.deflected.count-30);
-                }
-                if (plyr.success.deflected.count > 40 && plyr.success.deflected.count < 51) {
-                  animIndex5 = (plyr.success.deflected.count-40);
-                }
-                if (plyr.halfPushBack.state === true) {
-                  if (plyr.halfPushBack.countUp.state === true) {
-                    animIndex5 = plyr.halfPushBack.countUp.count-1;
-                  }
-                  if (plyr.halfPushBack.countDown.state === true) {
-                    animIndex5 = plyr.halfPushBack.countDown.count-1;
-                  }
-                }
-                finalAnimIndex = animIndex5;
-                // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
-              break;
-              case 'dodging':
-                let animIndex7 = plyr.dodging.count -1;
-                finalAnimIndex = animIndex7;
-                // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
-              break;
-            }
-
-          }
+          // if (
+          //   plyr.currentPosition.cell.number.x === x &&
+          //   plyr.currentPosition.cell.number.y === y
+          // ) {
+          //
+          //   switch(plyr.action) {
+          //     case 'moving':
+          //       let moveSpeed = plyr.speed.move;
+          //       if (plyr.terrainMoveSpeed.state === true) {
+          //         moveSpeed = plyr.terrainMoveSpeed.speed;
+          //       }
+          //       if (plyr.pushing.state === true) {
+          //         moveSpeed = plyr.pushing.moveSpeed;
+          //       }
+          //       if (plyr.pulling.state === true) {
+          //         moveSpeed = plyr.pulling.moveSpeed;
+          //       }
+          //       if (plyr.pushed.state === true) {
+          //         moveSpeed = plyr.pushed.moveSpeed;
+          //       }
+          //       if (plyr.pulled.state === true) {
+          //         moveSpeed = plyr.pulled.moveSpeed;
+          //       }
+          //       let rangeIndex = plyr.speed.range.indexOf(moveSpeed)
+          //       let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
+          //       finalAnimIndex = moveAnimIndex;
+          //       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+          //       if (plyr.target.cell1.void == true) {
+          //         // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+          //       }
+          //     break;
+          //     case 'jumping':
+          //       let rangeIndex4 = plyr.speed.range.indexOf(.1)
+          //       let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(plyr.moving.step)
+          //       finalAnimIndex = moveAnimIndex4;
+          //       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+          //     break;
+          //     case 'strafe moving':
+          //       if (plyr.pushBack.state === true ) {
+          //         let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
+          //         let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
+          //         finalAnimIndex = moveAnimIndex3;
+          //         // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+          //       } else {
+          //         let moveSpeed = plyr.speed.move;
+          //         // if (plyr.pushing.state === true) {
+          //         //   moveSpeed = plyr.pushing.moveSpeed;
+          //         // }
+          //         if (plyr.pulling.state === true) {
+          //           moveSpeed = plyr.pulling.moveSpeed;
+          //         }
+          //         if (plyr.pushed.state === true) {
+          //           moveSpeed = plyr.pushed.moveSpeed;
+          //         }
+          //         if (plyr.pulled.state === true) {
+          //           moveSpeed = plyr.pulled.moveSpeed;
+          //         }
+          //         let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed)
+          //         let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
+          //         finalAnimIndex = moveAnimIndex2;
+          //         // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+          //       }
+          //     break;
+          //     case 'flanking':
+          //       let rangeIndex6 = plyr.speed.range.indexOf(.2)
+          //       let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(plyr.moving.step)
+          //       finalAnimIndex = moveAnimIndex6;
+          //       // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
+          //       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+          //     break;
+          //     case 'attacking':
+          //       let animIndex = plyr.attacking.count -1;
+          //       finalAnimIndex = animIndex;
+          //       // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
+          //     break;
+          //     case 'defending':
+          //       if (plyr.defending.count > 0) {
+          //         let animIndex2 = plyr.defending.count -1;
+          //         finalAnimIndex = animIndex2;
+          //         // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
+          //       }
+          //       if (plyr.defending.count === 0) {
+          //         let animIndex2a = 5;
+          //         finalAnimIndex = animIndex2a;
+          //         // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
+          //       }
+          //     break;
+          //     case 'idle':
+          //       if (plyr.number === 1) {
+          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+          //       }
+          //       if (plyr.number === 2) {
+          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+          //       }
+          //       let animIndex3 = plyr.idleAnim.count +1;
+          //       finalAnimIndex = animIndex3;
+          //     break;
+          //     case 'falling':
+          //       let animIndex4 = plyr.falling.count -1;
+          //       finalAnimIndex = animIndex4;
+          //       // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
+          //     break;
+          //     case 'deflected':
+          //       let animIndex5 = plyr.success.deflected.count -1;
+          //       // let animIndex5;
+          //       if (plyr.success.deflected.count > 10 && plyr.success.deflected.count < 21) {
+          //         animIndex5 = (plyr.success.deflected.count-10);
+          //       }
+          //       if (plyr.success.deflected.count > 20 && plyr.success.deflected.count < 31) {
+          //         animIndex5 = (plyr.success.deflected.count-20);
+          //       }
+          //       if (plyr.success.deflected.count > 30 && plyr.success.deflected.count < 41) {
+          //         animIndex5 = (plyr.success.deflected.count-30);
+          //       }
+          //       if (plyr.success.deflected.count > 40 && plyr.success.deflected.count < 51) {
+          //         animIndex5 = (plyr.success.deflected.count-40);
+          //       }
+          //       if (plyr.halfPushBack.state === true) {
+          //         if (plyr.halfPushBack.countUp.state === true) {
+          //           animIndex5 = plyr.halfPushBack.countUp.count-1;
+          //         }
+          //         if (plyr.halfPushBack.countDown.state === true) {
+          //           animIndex5 = plyr.halfPushBack.countDown.count-1;
+          //         }
+          //       }
+          //       finalAnimIndex = animIndex5;
+          //       // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
+          //     break;
+          //     case 'dodging':
+          //       let animIndex7 = plyr.dodging.count -1;
+          //       finalAnimIndex = animIndex7;
+          //       // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
+          //     break;
+          //   }
+          //
+          // }
           // FOR TESTING BY CALLING ONLY @ 1 CELL
 
 
@@ -35260,6 +35468,40 @@ class App extends Component {
             break;
             case 'attacking':
               let animIndex = plyr.attacking.count -1;
+
+
+              if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === "attacking") {
+                if (plyr.elasticCounter.countUp.state === true) {
+                  animIndex = plyr.elasticCounter.countUp.count-1;
+                }
+                if (plyr.elasticCounter.pause.state === true) {
+
+                  if (plyr.elasticCounter.pause.count < 11) {
+                    animIndex = plyr.elasticCounter.pause.count-1;
+                  }
+                  else {
+
+                    if (plyr.elasticCounter.pause.count%10 === 0) {
+                      animIndex = 9;
+                      // animIndex5 = 10;
+                      // animIndex5 = (plyr.elasticCounter.pause.count-mod)
+                    }
+                    else {
+                      let mod = (Math.floor(plyr.elasticCounter.pause.count/10)*10)
+                      animIndex = (plyr.elasticCounter.pause.count-mod)-1;
+                    }
+
+                  }
+
+                }
+                if (plyr.elasticCounter.countDown.state === true) {
+                  animIndex = plyr.elasticCounter.countDown.count-1;
+                }
+              }
+              else {
+                animIndex = plyr.attacking.count -1;
+              }
+
               finalAnimIndex = animIndex;
               // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
             break;
@@ -35656,8 +35898,8 @@ class App extends Component {
             }
 
           }
-          // IDLE & HALFPUSH BACK
-          else if (plyr.moving.state === false && plyr.ghost.state !== true && plyr.dodging.state !== true && plyr.elasticCounter.state !== true) {
+          // STATIONARY & HALFPUSH BACK
+          else if (plyr.moving.state === false && plyr.ghost.state !== true && plyr.dodging.state !== true && plyr.elasticCounter.state !== true && plyr.action !== 'attacking') {
 
             if (plyr.halfPushBack.state === true && plyr.success.deflected.state !== true) {
 
@@ -35672,7 +35914,7 @@ class App extends Component {
               // }
 
               if (
-                !this.gridInfo.find(x => x.number.x === this.getCellFromDirection(1,plyr.currentPosition.cell.number,plyr.elasticCounter.direction).x && x.y === this.getCellFromDirection(1,plyr.currentPosition.cell.number,plyr.elasticCounter.direction).y)
+                !this.gridInfo.find(x => x.number.x === this.getCellFromDirection(1,plyr.currentPosition.cell.number,plyr.elasticCounter.direction).x && x.number.y === this.getCellFromDirection(1,plyr.currentPosition.cell.number,plyr.elasticCounter.direction).y )
               ) {
                 if (
                   x === plyr.currentPosition.cell.number.x &&
@@ -35724,87 +35966,10 @@ class App extends Component {
             else {
 
               if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y && plyr.success.deflected.state === false) {
-              // context.drawImage(updatedPlayerImg, point.x-25, point.y-35, 55,55);
 
-              // console.log('updatedPlayerImg',finalAnimIndex,sx, sy, sWidth, sHeight,point);
-              context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight)
-
-              if (plyr.attacking.state === true) {
-                // console.log('ff atk',plyr.action ,finalAnimIndex,'plyr #', player.number);
-
-                // if (plyr.attacking.count > 0 && plyr.attacking.count < 3) {
-                //   // console.log('ff atk pre',plyr.action ,finalAnimIndex,'plyr #', player.number,'time',this.time);
-                //   context.drawImage(indicatorImgs.preAttack, point.x-35, point.y-35, 35,35);
-                // }
-
-                let attackPeak = this.attackAnimRef.peak.sword;
-                if (player.currentWeapon.type === 'spear') {
-                  attackPeak = this.attackAnimRef.peak.spear;
-                }
-                if (player.currentWeapon.type === 'crossbow') {
-                  attackPeak = this.attackAnimRef.peak.crossbow;
-                }
-                if (player.currentWeapon.type === '') {
-                  attackPeak = this.attackAnimRef.peak.unarmed;
-                }
-
-                if (plyr.attacking.count === attackPeak) {
-                  // console.log('ff atk peak',plyr.action ,finalAnimIndex,'plyr #', player.number,'time',this.time);
-                }
-                if (plyr.attacking.count > attackPeak && plyr.attacking.count < plyr.attacking.limit+1) {
-                  if (plyr.attackStrength === 1) {
-
-                    // context.fillStyle = fillClr2;
-                    // context.beginPath();
-                    // context.arc(pos.x-10, pos.y, 10, 0, 2 * Math.PI);
-                    // context.fill();
-
-                    // context.beginPath();
-                    // context.rect(20, 20, 150, 100);
-                    // context.stroke();
-
-                    // context.drawImage(indicatorImgs.attack1, point.x-35, point.y-35, 35,35);
-                  }
-                  if (plyr.attackStrength === 2) {
-                    // context.drawImage(indicatorImgs.attack2, point.x-35, point.y-35, 35,35);
-                  }
-                  if (plyr.bluntAttack === true) {
-                    // context.drawImage(indicatorImgs.attackBlunt, point.x-35, point.y-35, 35,35);
-                  }
-                  if (plyr.currentWeapon.type === '') {
-                    // context.drawImage(indicatorImgs.attackUnarmed, point.x-35, point.y-35, 35,35);
-                  }
-
-                  else if (plyr.currentWeapon.type !== '') {
-                    // context.drawImage(indicatorImgs.attack3, point.x-35, point.y-35, 35,35);
-                  }
-                }
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
 
               }
-
-              if (plyr.defending.state === true) {
-                // context.drawImage(this.indicatorImgs.defend, point.x-35, point.y-35, 35,35);
-              }
-              if (plyr.success.attackSuccess === true) {
-                context.drawImage(this.indicatorImgs.attackSuccess, point.x-35, point.y-35, 35,35);
-              }
-              if (plyr.dodging.countState === true && plyr.dodging.count < 3) {
-                // context.drawImage(indicatorImgs.preAttack2, point.x-45, point.y-35, 35,35);
-              }
-
-              if (plyr.defending.count > 0 && plyr.defending.count < plyr.defending.limit ) {
-                // context2.drawImage(indicatorImgs.preAttack, point.x-35, point.y-35, 35,35);
-              }
-              // context.fillStyle = 'white';
-              // context.beginPath();
-              // context.rect(point.x-25, point.y-25, 50, 50);
-              // context.stroke();
-              // if (plyr.dodging.state === true) {
-              //   context.drawImage(indicatorImgs.dodge, point.x-45, point.y-35, 35,35);
-              // }
-
-              // playerDrawLog(x,y,plyr)
-            }
 
             }
 
@@ -35871,6 +36036,98 @@ class App extends Component {
               }
             }
           }
+
+          // if (plyr.attacking.state === true) {
+          if ((plyr.attacking.state === true || plyr.action === 'attacking') && plyr.moving.state === false && plyr.ghost.state !== true && plyr.dodging.state !== true) {
+
+            if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === "attacking") {
+
+              let finalCoords = this.calcElasticCountCoords('attacking','player',plyr).coords;
+              let drawCell = this.calcElasticCountCoords('attacking','player',plyr).drawCell;
+
+
+              // test logging
+              if (x ===this.gridWidth && y === this.gridWidth) {
+
+                if (plyr.elasticCounter.countUp.state === true) {
+                  // this.testDraw.push({color: 'red',x:finalCoords.x,y:finalCoords.y })
+                  // console.log('dodging elastic count coords: countUp: ',plyr.elasticCounter.countUp.count,finalCoords,plyr.elasticCounter.direction);
+                }
+                if (plyr.elasticCounter.countDown.state === true) {
+                  // this.testDraw.push({color: 'blue',x:finalCoords.x,y:finalCoords.y })
+                  // console.log('dodging elastic count coords: countDown: ',plyr.elasticCounter.countDown.count,finalCoords,plyr.elasticCounter.direction);
+                }
+                if (plyr.elasticCounter.pause.state === true) {
+                  // this.testDraw.push({color: 'blue',x:finalCoords.x,y:finalCoords.y })
+                  // console.log('dodging elastic count coords: pause: ',plyr.elasticCounter.pause.count,finalCoords,plyr.elasticCounter.direction);
+                }
+
+              }
+
+
+
+              if (!this.gridInfo.find(x => x.number.x === this.getCellFromDirection(1,plyr.currentPosition.cell.number,plyr.elasticCounter.direction).x && x.number.y === this.getCellFromDirection(1,plyr.currentPosition.cell.number,plyr.elasticCounter.direction).y )) {
+
+                if (
+                  x === plyr.currentPosition.cell.number.x &&
+                  y === plyr.currentPosition.cell.number.y
+                ) {
+                  context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+                }
+
+              }
+              else {
+
+                if (plyr.elasticCounter.direction === 'north') {
+                  if (
+                    x === plyr.currentPosition.cell.number.x &&
+                    y === plyr.currentPosition.cell.number.y
+                  ) {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+                  }
+                }
+                if (plyr.elasticCounter.direction === 'east') {
+                  if (
+                    x === plyr.currentPosition.cell.number.x+1 &&
+                    y === plyr.currentPosition.cell.number.y
+                  ) {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+                  }
+                }
+                if (plyr.elasticCounter.direction === 'west') {
+                  if (
+                    x === plyr.currentPosition.cell.number.x &&
+                    y === plyr.currentPosition.cell.number.y
+                  ) {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+                  }
+                }
+                if (plyr.elasticCounter.direction === 'south') {
+                  if (
+                    x === plyr.currentPosition.cell.number.x &&
+                    y === plyr.currentPosition.cell.number.y+1
+                  ) {
+                    context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
+                  }
+                }
+
+              }
+
+            }
+
+            else {
+
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y && plyr.success.deflected.state === false) {
+
+                context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, point.x-(this.playerDrawWidth/2), point.y-(this.playerDrawHeight/2), this.playerDrawWidth, this.playerDrawHeight);
+
+              }
+
+            }
+
+          }
+
+
 
           if (plyr.jumping.state === true ) {
             let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
@@ -36040,7 +36297,7 @@ class App extends Component {
               let drawCell = this.calcElasticCountCoords('deflected','player',plyr).drawCell;
 
               if (
-                !this.gridInfo.find(x => x.number.x === this.getCellFromDirection(1,plyr.currentPosition.cell.number,plyr.elasticCounter.direction).x && x.y === this.getCellFromDirection(1,plyr.currentPosition.cell.number,plyr.elasticCounter.direction).y)
+                !this.gridInfo.find(x => x.number.x === this.getCellFromDirection(1,plyr.currentPosition.cell.number,plyr.elasticCounter.direction).x && x.number.y === this.getCellFromDirection(1,plyr.currentPosition.cell.number,plyr.elasticCounter.direction).y )
               ) {
                 if (
                   x === plyr.currentPosition.cell.number.x &&
@@ -36104,32 +36361,36 @@ class App extends Component {
               let finalCoords = this.calcElasticCountCoords('dodging','player',plyr).coords;
               let drawCell = this.calcElasticCountCoords('dodging','player',plyr).drawCell;
 
+
+              // test logging
               if (x ===this.gridWidth && y === this.gridWidth) {
 
                 if (plyr.elasticCounter.countUp.state === true) {
                   // this.testDraw.push({color: 'red',x:finalCoords.x,y:finalCoords.y })
-                  console.log('dodging elastic coount coords: countUp: ',plyr.elasticCounter.countUp.count,finalCoords,plyr.elasticCounter.direction);
+                  // console.log('dodging elastic coount coords: countUp: ',plyr.elasticCounter.countUp.count,finalCoords,plyr.elasticCounter.direction);
                 }
                 if (plyr.elasticCounter.countDown.state === true) {
                   // this.testDraw.push({color: 'blue',x:finalCoords.x,y:finalCoords.y })
-                  console.log('dodging elastic coount coords: countDown: ',plyr.elasticCounter.countDown.count,finalCoords,plyr.elasticCounter.direction);
+                  // console.log('dodging elastic coount coords: countDown: ',plyr.elasticCounter.countDown.count,finalCoords,plyr.elasticCounter.direction);
                 }
                 if (plyr.elasticCounter.pause.state === true) {
                   // this.testDraw.push({color: 'blue',x:finalCoords.x,y:finalCoords.y })
-                  console.log('dodging elastic coount coords: pause: ',plyr.elasticCounter.pause.count,finalCoords,plyr.elasticCounter.direction);
+                  // console.log('dodging elastic coount coords: pause: ',plyr.elasticCounter.pause.count,finalCoords,plyr.elasticCounter.direction);
                 }
+
               }
 
 
-              if (
-                !this.gridInfo.find(x => x.number.x === this.getCellFromDirection(1,plyr.currentPosition.cell.number,plyr.elasticCounter.direction).x && x.y === this.getCellFromDirection(1,plyr.currentPosition.cell.number,plyr.elasticCounter.direction).y)
-              ) {
+
+              if (!this.gridInfo.find(x => x.number.x === this.getCellFromDirection(1,plyr.currentPosition.cell.number,plyr.elasticCounter.direction).x && x.number.y === this.getCellFromDirection(1,plyr.currentPosition.cell.number,plyr.elasticCounter.direction).y )) {
+
                 if (
                   x === plyr.currentPosition.cell.number.x &&
                   y === plyr.currentPosition.cell.number.y
                 ) {
                   context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
                 }
+
               }
               else {
 
@@ -36154,7 +36415,6 @@ class App extends Component {
                     x === plyr.currentPosition.cell.number.x &&
                     y === plyr.currentPosition.cell.number.y
                   ) {
-
                     context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight, finalCoords.x, finalCoords.y, this.playerDrawWidth, this.playerDrawHeight)
                   }
                 }
