@@ -29,6 +29,9 @@ let playerSettings = {
 
 const Settings = (props) => {
 
+
+  console.log('props',props.plyrStartPosList);
+
   let preInput;
   if (props.gamepad !== true) {
     preInput = "Keyboard";
@@ -809,6 +812,27 @@ const Settings = (props) => {
 
         <Form.Row>
 
+        // map ply pos list
+        // add set inputs use state and handler,
+        // add set settings form inputs, to app.js and attach to this Components
+        // update settiings form inputs @app.js should update this.appropriate object w/ all input info
+        // if any plyr input is gamepad, parse settings and set this.globalgamepadconfig object,
+        // if plyr input is gamepad, ask to connect & test,
+        //
+        // what to do if 2 plyrs select gamepads but only 1 is connect on game start
+
+        </Form.Row>
+
+        <Form.Group as={Col} controlId="input" className="formGroup">
+          <Form.Label className="formLabel">Input Source</Form.Label>
+          <Form.Control value={input} onChange={e=>handleInputChange(e.target.value)} as="select">
+            <option>Keyboard</option>
+            <option>Gamepad</option>
+          </Form.Control>
+        </Form.Group>
+
+        <Form.Row>
+
           <Form.Group as={Col} className="formGroup" controlId="startItems">
             <Form.Label className="formLabel">Start Items</Form.Label>
 
@@ -821,23 +845,23 @@ const Settings = (props) => {
         </Form.Row>
 
 
-        {
-          props.showCanvasData.state === true &&  (
-          <div className="settingsCanvasContainer">
+        {props.showCanvasData.state === true &&
+          (
+            <div className="settingsCanvasContainer">
 
-            <h3 className="settingsHeading">
-              Choose Plyr {props.showCanvasData.plyrNo} {props.showCanvasData.type} Position:
-            </h3>
+              <h3 className="settingsHeading">
+                Choose Plyr {props.showCanvasData.plyrNo} {props.showCanvasData.type} Position:
+              </h3>
 
-            <canvas
-              width={props.canvasWidth}
-              height={props.canvasHeight}
-              ref={props.canvasRef}
-              className="settingsCanvas"
-            />
-          </div>
-        )
-      }
+              <canvas
+                width={props.canvasWidth}
+                height={props.canvasHeight}
+                ref={props.canvasRef}
+                className="settingsCanvas"
+              />
+            </div>
+          )
+        }
 
 
 
