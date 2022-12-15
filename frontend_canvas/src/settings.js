@@ -184,6 +184,39 @@ const Settings = (props) => {
       break;
     }
 
+
+    if (parseInt(args) === 1) {
+      props.updateSettingsFormPlayerData(
+        {
+          input: [
+            {plyrNo: 1,input: 'keyboard'},
+          ],
+          weapon: [
+            {plyrNo: 1,weapons: ['sword','spear','crossbow']},
+          ],
+          team: [
+            {plyrNo: 1,team: 'red'},
+          ]
+        }
+      )
+    }
+    if (parseInt(args) === 2) {
+      {
+        input: [
+          {plyrNo: 1,input: 'keyboard'},
+          {plyrNo: 2,input: 'keyboard'},
+        ],
+        weapon: [
+          {plyrNo: 1,weapons: ['sword','spear','crossbow']},
+          {plyrNo: 2,weapons: ['sword','spear','crossbow']},
+        ],
+        team: [
+          {plyrNo: 1,team: 'red'},
+          {plyrNo: 2,team: 'blue'}
+        ]
+      }
+    }
+
     props.getCustomPlyrStartPosList(array)
 
     setPlyrCount(parseInt(args));
@@ -263,6 +296,27 @@ const Settings = (props) => {
   // const handlePlyrStartPosWidthChange = (args) => {
   //   setPlyrStartPosWidth(args);
   // }
+
+  const [playerWeapons, setPlayerWeapons] = useState(props.settingsFormPlayerData.weapon);
+  const handlePlayerWeaponsStateChange = (plyrNo,values) => {
+
+
+    let array = playerWeapons;
+    let plyr2 = array.find(elem => elem.plyrNo === plyrNo)
+
+    if (plyr2) {
+      plyr2.weapons = values;
+    }
+    setPlayerWeapons(array);
+
+
+    props.updateSettingsFormPlayerData({
+        input: playerInput,
+        weapon: playerWeapons,
+        team: playerTeam,
+      })
+
+  }
 
   let preGridWidth = props.gridWidth;
   const [gridWidth, setGridWidth] = useState(preGridWidth);
@@ -817,7 +871,7 @@ const Settings = (props) => {
         // add set settings form inputs, to app.js and attach to this Components
         // update settiings form inputs @app.js should update this.appropriate object w/ all input info
         // if any plyr input is gamepad, parse settings and set this.globalgamepadconfig object,
-        // if plyr input is gamepad, ask to connect & test,
+
         //
         // what to do if 2 plyrs select gamepads but only 1 is connect on game start
 

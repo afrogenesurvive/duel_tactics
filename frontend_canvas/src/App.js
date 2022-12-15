@@ -2695,6 +2695,7 @@ class App extends Component {
     this.updateSettingsFormAiDataData = {};
     this.settingsFormPlyrGridInfo = [];
     this.settingsFormPlyrStartPosList = [];
+    this.settingsFormPlayerData = {};
     this.showSettingsKeyPress = {
       state: false,
       count: 0,
@@ -2706,6 +2707,9 @@ class App extends Component {
       plyrNo: 1,
       type: 'start',
     }
+
+
+    // CELL INFO
     this.showCellInfoBox = false;
     this.mouseOverCell = {
       state: false,
@@ -3136,6 +3140,22 @@ class App extends Component {
           },
         ]
       );
+      this.updateSettingsFormPlayerData(
+        {
+          input: [
+            {plyrNo: 1,input: 'keyboard'},
+            {plyrNo: 2,input: 'keyboard'},
+          ],
+          weapon: [
+            {plyrNo: 1,weapons: ['sword','spear','crossbow']},
+            {plyrNo: 2,weapons: ['sword','spear','crossbow']},
+          ],
+          team: [
+            {plyrNo: 1,team: 'red'},
+            {plyrNo: 2,team: 'blue'}
+          ]
+        }
+      )
 
       window.requestAnimationFrame(this.gameLoop);
 
@@ -5618,6 +5638,28 @@ class App extends Component {
     // })
 
   }
+  updateSettingsFormPlayerData = (args) => {
+
+    this.settingsFormPlayerData = args;
+
+  }
+
+
+  finish settings player data: input, weapon, team,
+
+    add usestate functions and handlers for each in settings js,
+    add inputs and change handle calls,
+
+
+    on playr count change,
+      call updateSettingsFormPlayerData and
+      reset like in component mount according to playr count,
+
+    show form inputs based on plyr count
+
+
+  update settingsForm player data on player count change in settings
+
 
 
   findFocusCell = (inputType,focus,canvas,context,speed) => {
@@ -31648,7 +31690,8 @@ class App extends Component {
           player.flanking.state !== true &&
           player.jumping.state !== true &&
           player.turning.state !== true &&
-          player.halfPushBack.state !== true
+          player.halfPushBack.state !== true &&
+          player.elasticCounter.state !== true
         ) {
           // CONFIRM MOVE KEYPRESS!!
           if (
@@ -32183,7 +32226,13 @@ class App extends Component {
 
 
         // CAN READ NON-MOVE INPUTS!!
-        if (player.strafing.state === false && player.turning.state !== true && player.postPull.state !== true && player.halfPushBack.state !== true) {
+        if (
+          player.strafing.state === false &&
+          player.turning.state !== true &&
+          player.postPull.state !== true &&
+          player.halfPushBack.state !== true &&
+          player.elasticCounter.state !== true
+        ) {
 
 
           if (this.keyPressed[player.number-1].attack === true || this.keyPressed[player.number-1].defend === true) {
@@ -39136,6 +39185,7 @@ class App extends Component {
 
         <div className="containerTop">
 
+        // TIMER
           <div className="timer">
             <p className="timerText">
             {this.time}
@@ -39291,6 +39341,7 @@ class App extends Component {
             )}
 
 
+            // AI STATUS BOX
             {this.state.showAiStatus === true && (
               <AiStatus
                 players={this.players}
@@ -39301,6 +39352,10 @@ class App extends Component {
 
 
           </div>
+
+
+
+
 
           {this.state.showSettings === true && (
             <Settings
@@ -39326,6 +39381,8 @@ class App extends Component {
               showCanvasData={this.showSettingsCanvasData}
               updateSettingsCanvasData={this.updateSettingsCanvasData}
               disableInitItems={this.disableInitItems}
+              settingsFormPlayerData={this.settingsFormPlayerData}
+              updateSettingsFormPlayerData={this.updateSettingsFormPlayerData}
             />
           )}
 
