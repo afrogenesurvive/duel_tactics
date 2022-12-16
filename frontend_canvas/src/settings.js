@@ -30,7 +30,6 @@ let playerSettings = {
 const Settings = (props) => {
 
 
-  console.log('props',props.plyrStartPosList);
 
   let preInput;
   if (props.gamepad !== true) {
@@ -194,6 +193,9 @@ const Settings = (props) => {
           weapon: [
             {plyrNo: 1,weapons: ['sword','spear','crossbow']},
           ],
+          armor: [
+            {plyrNo: 1,armor: []},
+          ],
           team: [
             {plyrNo: 1,team: 'red'},
           ]
@@ -201,20 +203,27 @@ const Settings = (props) => {
       )
     }
     if (parseInt(args) === 2) {
-      {
-        input: [
-          {plyrNo: 1,input: 'keyboard'},
-          {plyrNo: 2,input: 'keyboard'},
-        ],
-        weapon: [
-          {plyrNo: 1,weapons: ['sword','spear','crossbow']},
-          {plyrNo: 2,weapons: ['sword','spear','crossbow']},
-        ],
-        team: [
-          {plyrNo: 1,team: 'red'},
-          {plyrNo: 2,team: 'blue'}
-        ]
-      }
+      props.updateSettingsFormPlayerData(
+        {
+          input: [
+            {plyrNo: 1,input: 'keyboard'},
+            {plyrNo: 2,input: 'keyboard'},
+          ],
+          weapon: [
+            {plyrNo: 1,weapons: ['sword','spear','crossbow']},
+            {plyrNo: 2,weapons: ['sword','spear','crossbow']},
+          ],
+          armor: [
+            {plyrNo: 1,armor: []},
+            {plyrNo: 2,armor: []},
+          ],
+          team: [
+            {plyrNo: 1,team: 'red'},
+            {plyrNo: 2,team: 'blue'}
+          ]
+        }
+      )
+
     }
 
     props.getCustomPlyrStartPosList(array)
@@ -297,15 +306,61 @@ const Settings = (props) => {
   //   setPlyrStartPosWidth(args);
   // }
 
+  const [playerInput, setPlayerInput] = useState(props.settingsFormPlayerData.input);
+  const handlePlayerInputStateChange = (plyrNo,value) => {
+
+
+    let array = playerInput;
+    let plyr2 = array.find(elem => elem.plyrNo === plyrNo)
+
+    if (plyr2) {
+      plyr2.input = value;
+    }
+    setPlayerInput(array);
+
+
+    props.updateSettingsFormPlayerData({
+        input: playerInput,
+        weapon: playerWeapons,
+        armor: playerArmor,
+        team: playerTeam,
+      })
+
+  }
+
+
+  const [playerTeam, setPlayerTeam] = useState(props.settingsFormPlayerData.team);
+  const handlePlayerTeamStateChange = (plyrNo,value) => {
+
+
+    let array = playerTeam;
+    let plyr2 = array.find(elem => elem.plyrNo === plyrNo)
+
+    if (plyr2) {
+      plyr2.team = value;
+    }
+    setPlayerTeam(array);
+
+
+    props.updateSettingsFormPlayerData({
+        input: playerInput,
+        weapon: playerWeapons,
+        armor: playerArmor,
+        team: playerTeam,
+      })
+
+  }
+
+
   const [playerWeapons, setPlayerWeapons] = useState(props.settingsFormPlayerData.weapon);
-  const handlePlayerWeaponsStateChange = (plyrNo,values) => {
+  const handlePlayerWeaponsStateChange = (plyrNo,action,value) => {
 
 
     let array = playerWeapons;
     let plyr2 = array.find(elem => elem.plyrNo === plyrNo)
 
     if (plyr2) {
-      plyr2.weapons = values;
+      // if action is add then push value to plyr2.weapons, else splice
     }
     setPlayerWeapons(array);
 
@@ -313,10 +368,47 @@ const Settings = (props) => {
     props.updateSettingsFormPlayerData({
         input: playerInput,
         weapon: playerWeapons,
+        armor: playerArmor,
         team: playerTeam,
       })
 
   }
+
+
+  const [playerArmor, setPlayerArmor] = useState(props.settingsFormPlayerData.armor);
+  const handlePlayerArmorStateChange = (plyrNo,action,value) => {
+
+
+    let array = playerArmor;
+    let plyr2 = array.find(elem => elem.plyrNo === plyrNo)
+
+    if (plyr2) {
+      // if action is add then push value to plyr2.armor, else splice
+    }
+    setPlayerArmor(array);
+
+
+    props.updateSettingsFormPlayerData({
+        input: playerInput,
+        weapon: playerWeapons,
+        armor: playerArmor,
+        team: playerTeam,
+      })
+
+  }
+
+
+  // model new form inputs (input & team) off aimode,
+     // for weapons and armor, show array of check boxes, and call handle for change on each w/
+     // appropriate value
+     // determine action in handler by checked true/false
+     // add weaponchoice and armor choice vars  [sword,spear,crossbow], // mail, helmet, greaves
+     // check box arrays weapon/armor choice
+     // on each change check the total number of selected weapons and armor
+     // and show error without chaging anything if that count is === 4 or base inventory size,
+     //
+
+     // add player team prop just a string
 
   let preGridWidth = props.gridWidth;
   const [gridWidth, setGridWidth] = useState(preGridWidth);

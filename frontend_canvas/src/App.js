@@ -1684,18 +1684,6 @@ class App extends Component {
           count: 0,
           limit: 5,
         },
-        breakAnim: {
-          attack: {
-            state: false,
-            count: 0,
-            limit: 10
-          },
-          defend: {
-            state: false,
-            count: 0,
-            limit: 10
-          }
-        },
         ai: {
           state: false,
           imgType: '',
@@ -2693,6 +2681,7 @@ class App extends Component {
     this.settingsFormAiGridInfo = [] ;
     this.settingsFormAiStartPosList = [];
     this.updateSettingsFormAiDataData = {};
+    this.settingsAiCount = 0;
     this.settingsFormPlyrGridInfo = [];
     this.settingsFormPlyrStartPosList = [];
     this.settingsFormPlayerData = {};
@@ -2772,10 +2761,10 @@ class App extends Component {
     };
     this.defendAnimRef = {
       limit: {
-        unarmed: 15,
-        sword: 25,
-        spear: 30,
-        crossbow: 25,
+        unarmed: 25,
+        sword: 35,
+        spear: 50,
+        crossbow: 35,
       },
       peak: {
         unarmed: 5,
@@ -2911,6 +2900,7 @@ class App extends Component {
     this.halfPushBackChaining = true;
     this.halfPushBackChainingMoveAll = true;
 
+    this.showPlayerOutlines = true;
 
 
 
@@ -3149,6 +3139,10 @@ class App extends Component {
           weapon: [
             {plyrNo: 1,weapons: ['sword','spear','crossbow']},
             {plyrNo: 2,weapons: ['sword','spear','crossbow']},
+          ],
+          armor: [
+            {plyrNo: 1,armor: []},
+            {plyrNo: 2,armor: []},
           ],
           team: [
             {plyrNo: 1,team: 'red'},
@@ -4454,7 +4448,7 @@ class App extends Component {
         }
       break;
       case 'r' :
-        this.restartGame();
+        this.gameSoftReset();
         if (Object.keys(this.updateSettingsFormAiDataData).length !== 0) {
           this.loadAiSettings();
         }
@@ -4738,13 +4732,14 @@ class App extends Component {
       this.disableInitItems = true;
     }
 
-    this.restartGame();
+    this.gameHardReset();
 
     // this.placeItems({init: true, items: ''});
 
     if (aiPlayerNumber > 0) {
 
       this.loadAiSettings()
+      this.settingsAiCount = aiPlayerNumber;
 
     } else {
 
@@ -5644,21 +5639,40 @@ class App extends Component {
 
   }
 
-
-  finish settings player data: input, weapon, team,
-
-    add usestate functions and handlers for each in settings js,
-    add inputs and change handle calls,
+  //
+  // finish settings player data: input, weapon, team,
 
 
-    on playr count change,
-      call updateSettingsFormPlayerData and
-      reset like in component mount according to playr count,
+    // on load settings, set global gamepadConfig based on form player input values,
+    // set player tea,
+    // change playr waepons and ammo as well (check draw grid init)
+    //   plyr.items.ammo = plyr.items.ammo + ammo;
+    // give players the basic item for each type they choose
+    // {
+    //   weaponIndex: 0,
+    //   armorIndex: 0,
+    //   weapons: [
+    //     {
+    //       name: 'sword1',
+    //       type: 'sword',
+    //       effect: '',
+    //     },
+    //     {
+    //       name: 'crossbow1',
+    //       type: 'crossbow',
+    //       effect: '',
+    //     },
+    //     {
+    //       name: 'spear1',
+    //       type: 'spear',
+    //       effect: '',
+    //     }
+    //   ],
+    //   armor: [],
+    //   ammo: 20,
+    // };
+    // do same for armor
 
-    show form inputs based on plyr count
-
-
-  update settingsForm player data on player count change in settings
 
 
 
@@ -21656,7 +21670,646 @@ class App extends Component {
     }
 
   }
-  restartGame = () => {
+
+
+  // pass type hard/soft to reset
+  // settings submit calls load settings, resetgame and loadai settings
+  // soft reset/reset btn just calls reset game and load ia settings if settings form ai data.random has length/this.settingsAiCount > 0
+
+  gameSoftReset = () => {
+    // console.log('resetting');
+
+    this.setState({
+      loading: true
+    })
+
+
+    this.time = 0;
+    this.projectiles = [];
+    // mouse over cell
+    this.cellsUnderAttack = [];
+    this.cellsUnderPreAttack = [];
+    this.cellsToHighlight = [];
+    this.cellsToHighlight2 = [];
+    this.gamepadPollCounter = {
+          count1: 0,
+          count2: 0,
+          store1: [],
+          store2: [],
+        };
+    this.movingObstacles = [];
+    this.halfPushBackObstacles = [];
+    this.obstacleBarrierToDestroy = [];
+    this.obstacleItemsToDrop = [];
+    this.obstaclesOutOfBoundsFall = [];
+    this.cellPopups = [];
+
+    for (const player of this.players) {
+
+//       if ai not true
+//       currentPositio.cell = start psotion.cell
+//
+//
+//       turning: {
+//         state: false,
+//         toDirection: '',
+//         delayCount: 0,
+//         limit: 5.1,
+//       },
+// turnCheckerDirection: '',
+// moving: {
+//         state: false,
+//         step: 0,
+//         course: '',
+//         origin: {
+//           number: {
+//             x: 0,
+//             y: 0,
+//           },
+//           center: {
+//             x: 0,
+//             y: 0,
+//           },
+//         },
+//         destination: {
+//           x: 0,
+//           y: 0,
+//         }
+//       },
+// newMoveDelay: {
+//         state: false,
+//         count: 0,
+//         limit: 7,
+//       },
+// strafing: {
+//         state: false,
+//         direction: '',
+//       },
+// strafeReleaseHook: false,
+// flanking: {
+//         checking: false,
+//         preFlankDirection: '',
+//         direction: '',
+//         state: false,
+//         step: 0,
+//         target1: {x:0 ,y:0},
+//         target2: {x:0 ,y:0},
+//       },
+// drowning: false,
+// attacking: {
+//         state: false,
+//         count: 0,
+//         limit: 20,
+//       },
+// attackStrength: 0,
+// attackPeak: false,
+// defendPeak: false,
+// bluntAttack: false,
+// clashing: {
+//         state: false,
+//         count: 0,
+//         limit: 10,
+//       },
+// dodging: {
+//         countState: false,
+//         state: false,
+//         count: 0,
+//         limit: 20,
+//         peak: {
+//           start: 7,
+//           end: 12,
+//         }
+//       },
+// dodgeDirection: '',
+// jumping: {
+//         checking: false,
+//         state: false,
+//       },
+// success: {
+//         attackSuccess: {
+//           state: false,
+//           count: 0,
+//           limit: 10,
+//         },
+//         defendSuccess: {
+//           state: false,
+//           count: 0,
+//           limit: 10,
+//         },
+//         deflected: {
+//           state: false,
+//           count: 0,
+//           limit: 20,
+//           predeflect: false,
+//           type: '',
+//         }
+//       },
+// pushBack: {
+//         state: false,
+//         prePushBackMoveSpeed: 0,
+//       },
+// halfPushBack: {
+//         state: false,
+//         direction: "",
+//         type: "",
+//         countUp: {
+//           state: true,
+//           count: 0,
+//           limit: 0,
+//         },
+//         countDown: {
+//           state: false,
+//           count: 0,
+//           limit: 0,
+//         },
+//         coords: {
+//           x: undefined,
+//           y: undefined,
+//         },
+//       },
+// defending: {
+//         state: false,
+//         count: 0,
+//         limit: 4,
+//       },
+// defendDecay: {
+//         state: false,
+//         count: 0,
+//         limit: 25,
+//       },
+// falling: {
+//         state: false,
+//         count: 0,
+//         limit: 10,
+//       },
+// dead: {
+//         state: false,
+//         count: 0,
+//         limit: 10
+//       },
+// ghost: {
+//         state: false,
+//         position: {
+//           cell: {
+//             number: {
+//               x: 0,
+//               y: 0,
+//             },
+//             center: {
+//               x: 0,
+//               y: 0,
+//             }
+//           }
+//         }
+//       },
+// respawn: false,
+// points: 0,
+// speed: {
+//         move: .1,
+//         range: [.05,.1,.125,.2]
+//       },
+// terrainMoveSpeed: {
+//         state: false,
+//         speed: 0,
+//       },
+// hp: 2,
+//
+//   current armor and weapon as well as items set from settings form playr data
+//
+//
+//   inventorySize: 4,
+// cycleWeapon: {
+//     state: false,
+//     count: 0,
+//     limit: 3,
+//   },
+// cycleArmor: {
+//     state: false,
+//     count: 0,
+//     limit: 3,
+//   },
+// crits: {
+//     singleHit: 1,
+//     doubleHit: 6,
+//     pushBack: 4,
+//     guardBreak: 3,
+//     dodge: 0,
+//   },
+// statusDisplay: {
+//     state: false,
+//     status: '',
+//     count: 0,
+//     limit: 15,
+//   },
+// popups: [{
+//     state: true,
+//     count: 0,
+//     limit: 0,
+//     type: '',
+//     position: 'northWest',
+//     msg: '',
+//     img: '',
+//   }],
+// itemDrop: {
+//     state: false,
+//     count: 0,
+//     limit: 10,
+//     item: {
+//       name: '',
+//     },
+//     gear: {
+//       type: '',
+//     }
+//   },
+// itemPickup: {
+//     state: false,
+//     count: 0,
+//     limit: 10,
+//     item: {
+//       name: '',
+//     },
+//     gear: {
+//       type: '',
+//     }
+//   },
+// discardGear:{
+//     state: false,
+//     count: 0,
+//     limit: 8,
+//   },
+// idleAnim: {
+//     state: false,
+//     count: 0,
+//     limit: 5,
+//   },
+// ai: {
+//     state: false,
+//     imgType: '',
+//     primaryMission: '',
+//     mission: '',
+//     prevMission: '',
+//     currentObjective: '',
+//     targetSet: false,
+//     targetAcquired: false,
+//     safeRange: true,
+//     pathArray: [],
+//     targetPlayer: {
+//       number: 1,
+//       currentPosition: {
+//         x: undefined,
+//         y: undefined,
+//       },
+//       target: {
+//         number1: {
+//           x: undefined,
+//           y: undefined,
+//         },
+//         number2: {
+//           x: undefined,
+//           y: undefined,
+//         },
+//       },
+//       action: '',
+//     },
+//     instructions: [],
+//     currentInstruction: 0,
+//     resetInstructions: false,
+//     patrolling: {
+//       checkin: undefined,
+//       state: false,
+//       area: [],
+//       loopControl: false,
+//     },
+//     defending: {
+//       checkin: undefined,
+//       state: false,
+//       area: [],
+//     },
+//     persuing: {
+//       state: false,
+//     },
+//     engaging: {
+//       state: true,
+//       targetAction: '',
+//     },
+//     retrieving: {
+//       checkin: undefined,
+//       state: false,
+//       point: {x: undefined, y: undefined},
+//       targetItem: {
+//         name: '',
+//         type: '',
+//         subType: '',
+//         effect: ''
+//       },
+//       safe: true,
+//     },
+//     retreating: {
+//       checkin: undefined,
+//       state: false,
+//       point: {x: undefined, y: undefined},
+//       level: 0,
+//       safe: true,
+//     },
+//     organizing: {
+//       weaponPriorityIndex: 0,
+//       armorPriorityIndex: 0,
+//       dropped: {
+//         state: false,
+//         gear: {
+//           name: '',
+//           type: '',
+//           subType: '',
+//           effect: ''
+//         },
+//       },
+//     },
+//     mode: '',
+//     upgradeWeapon: false,
+//     upgradeArmor: false,
+//     pathfindingRanges: {
+//       spear: 3,
+//       crossbow: 5,
+//     }
+//   },
+// stamina: {
+//     current: 20,
+//     max: 20,
+//   },
+// newPushPullDelay: {
+//     state: false,
+//     count: 0,
+//     limit: 10,
+//   },
+// prePush: {
+//     state: false,
+//     count: 0,
+//     limit: 15,
+//     targetCell: undefined,
+//     direction: "",
+//     pusher: undefined,
+//   },
+// pushing: {
+//     state: false,
+//     targetCell: undefined,
+//     moveSpeed: 0,
+//   },
+// prePull: {
+//     state: false,
+//     count: 0,
+//     limit: 15,
+//     targetCell: undefined,
+//     direction: "",
+//     puller: undefined,
+//   },
+// pulling: {
+//     state: false,
+//     targetCell: undefined,
+//     moveSpeed: 0,
+//   },
+// postPull: {
+//     state: false,
+//     count: 0,
+//     limit: 10,
+//   },
+// pushed: {
+//     state: false,
+//     pusher: 0,
+//     moveSpeed: 0,
+//   },
+// pulled: {
+//     state: false,
+//     puller: 0,
+//     moveSpeed: 0,
+//   },
+// elasticCounter: {
+//     preState: false,
+//     state: false,
+//     direction: "",
+//     type: "",
+//     subType: "",
+//     countUp: {
+//       state: false,
+//       count: 0,
+//       limit: 6,
+//     },
+//     countDown: {
+//       state: false,
+//       count: 0,
+//       limit: 6,
+//     },
+//     coords: {
+//       x: undefined,
+//       y: undefined,
+//     },
+//     pause: {
+//       preState: false,
+//       state: false,
+//       type: "",
+//       count: 0,
+//       limit: 6,
+//     },
+//   },
+
+// this.resetTarget player
+
+
+      player.ghost.state = false;
+      player.speed.move = .1;
+      player.hp = 2;
+      player.points = 0;
+      player.drowning = false;
+      player.action = 'idle';
+      player.dodging = {
+        countState: false,
+        state: false,
+        count: 0,
+        limit: 20,
+        peak: {
+          start: 5,
+          end: 10,
+        }
+      };
+      player.crits = {
+        singleHit: 1,
+        doubleHit: 6,
+        pushBack: 4,
+        guardBreak: 3,
+        dodge: 0,
+      };
+      player.items = {
+        weaponIndex: 0,
+        armorIndex: 0,
+        weapons: [
+          {
+            name: 'sword1',
+            type: 'sword',
+            effect: '',
+          },
+          {
+            name: 'crossbow1',
+            type: 'crossbow',
+            effect: '',
+          },
+          {
+            name: 'spear1',
+            type: 'spear',
+            effect: '',
+          }
+        ],
+        armor: [],
+        ammo: 20,
+      };
+      player.currentWeapon = {
+        name: 'sword1',
+        type: 'sword',
+        effect: '',
+      };
+      player.currentArmor = {};
+      player.strafing = {
+        state: false,
+        direction: '',
+      };
+      player.pushBack = {
+        state: false,
+        prePushBackMoveSpeed: 0,
+      };
+      player.itemDrop = {
+        state: false,
+        count: 0,
+        limit: 10,
+        item: {
+          name: '',
+        },
+        gear: {
+          type: '',
+        }
+      };
+      player.itemPickup = {
+        state: false,
+        count: 0,
+        limit: 10,
+        item: {
+          name: '',
+        },
+        gear: {
+          type: '',
+        }
+      };
+      player.jumping = {
+        checking: false,
+        state: false,
+      };
+      player.stamina = {
+        current: 20,
+        max: 20,
+      };
+      player.defendDecay = {
+        state: false,
+        count: 0,
+        limit: 25,
+      };
+      player.dodging = {
+        countState: false,
+        state: false,
+        count: 0,
+        limit: 20,
+        peak: {
+          start: 5,
+          end: 10,
+        }
+      };
+      player.defending = {
+        state: false,
+        count: 0,
+        limit: 4,
+      };
+      player.flanking = {
+        checking: false,
+        preFlankDirection: '',
+        direction: '',
+        state: false,
+        step: 0,
+        target1: {x:0 ,y:0},
+        target2: {x:0 ,y:0},
+      };
+      player.prePush = {
+        state: false,
+        count: 0,
+        limit: 15,
+        targetCell: undefined,
+        direction: "",
+        pusher: undefined,
+      };
+      player.pushing = {
+        state: false,
+        targetCell: undefined,
+        moveSpeed: 0,
+      };
+      player.prePull = {
+        state: false,
+        count: 0,
+        limit: 15,
+        targetCell: undefined,
+        direction: "",
+        puller: undefined,
+      };
+      player.pulling = {
+        state: false,
+        targetCell: undefined,
+        moveSpeed: 0,
+      };
+      player.postPull = {
+        state: false,
+        count: 0,
+        limit: player.postPull.limit
+      }
+      player.pushed = {
+        state: false,
+        pusher: 0,
+        moveSpeed: 0,
+      };
+      player.pulled = {
+        state: false,
+        puller: 0,
+        moveSpeed: 0,
+      };
+      player.popups = [{
+        state: true,
+        count: 0,
+        limit: 0,
+        type: '',
+        position: 'northWest',
+        msg: '',
+        img: '',
+      }];
+
+
+
+
+    }
+    this.aiTarget = 1;
+
+
+
+    // this.resetCameraSwitch = true;
+
+
+
+    let plyrz = this.players
+    for (const plyr of plyrz) {
+      if (plyr.ai.state === true ) {
+        let indx = plyrz.indexOf(plyr)
+        let toRemove1 = this.players[indx];
+        this.players = this.players.filter(x=> x !== toRemove1);
+      }
+    }
+
+    this.drawGridInit(this.state.canvas, this.state.context, this.state.canvas2, this.state.context2, this.state.canvas3, this.state.context3);
+
+
+  }
+  gameHardReset = () => {
     // console.log('resetting');
 
     this.setState({
@@ -29708,30 +30361,30 @@ class App extends Component {
 
 
         // BREAK ANIM STEPPERS!
-        if (player.breakAnim.attack.state === true) {
-          if (player.breakAnim.attack.count > 0 && player.breakAnim.attack.count < player.breakAnim.attack.limit) {
-            player.breakAnim.attack.count++
-          }
-          else if (player.breakAnim.attack.count >= player.breakAnim.attack.limit) {
-            player.breakAnim.attack = {
-              state: false,
-              count: 0,
-              limit: player.breakAnim.attack.limit
-            }
-          }
-        }
-        if (player.breakAnim.defend.state === true) {
-          if (player.breakAnim.defend.count > 0 && player.breakAnim.defend.count < player.breakAnim.defend.limit) {
-            player.breakAnim.defend.count++
-          }
-          else if (player.breakAnim.defend.count >= player.breakAnim.defend.limit) {
-            player.breakAnim.defend = {
-              state: false,
-              count: 0,
-              limit: player.breakAnim.defend.limit
-            }
-          }
-        }
+        // if (player.breakAnim.attack.state === true) {
+        //   if (player.breakAnim.attack.count > 0 && player.breakAnim.attack.count < player.breakAnim.attack.limit) {
+        //     player.breakAnim.attack.count++
+        //   }
+        //   else if (player.breakAnim.attack.count >= player.breakAnim.attack.limit) {
+        //     player.breakAnim.attack = {
+        //       state: false,
+        //       count: 0,
+        //       limit: player.breakAnim.attack.limit
+        //     }
+        //   }
+        // }
+        // if (player.breakAnim.defend.state === true) {
+        //   if (player.breakAnim.defend.count > 0 && player.breakAnim.defend.count < player.breakAnim.defend.limit) {
+        //     player.breakAnim.defend.count++
+        //   }
+        //   else if (player.breakAnim.defend.count >= player.breakAnim.defend.limit) {
+        //     player.breakAnim.defend = {
+        //       state: false,
+        //       count: 0,
+        //       limit: player.breakAnim.defend.limit
+        //     }
+        //   }
+        // }
 
 
         // TURNER!!
@@ -35859,6 +36512,41 @@ class App extends Component {
           let sx = (finalAnimIndex - 1)* sWidth;
 
 
+
+          // PLAYER OUTLINES
+          if (this.showPlayerOutlines === true) {
+
+            // PLAYER OUTLINES
+            let popupCoordObject = {
+              north: this.popupDrawCalc("north",{x:plyr.nextPosition.x-25,y:plyr.nextPosition.y-25},plyr.number),
+              west: this.popupDrawCalc("west",{x:plyr.nextPosition.x-25,y:plyr.nextPosition.y-25},plyr.number),
+              south: this.popupDrawCalc("south",{x:plyr.nextPosition.x-25,y:plyr.nextPosition.y-25},plyr.number),
+            };
+            let origin = popupCoordObject.west;
+            let width = popupCoordObject.north.pt4.x - origin.pt3.x;
+            let height = popupCoordObject.south.pt2.y - origin.pt3.y;
+            context.strokeStyle = 'white';
+            context.lineWidth = 2;
+            context.beginPath();
+            context.roundRect(origin.pt3.x,origin.pt3.y, width, height, 2);
+            context.stroke();
+
+            let origin2 = {x:plyr.nextPosition.x-(this.floorImageHeight/2),y:plyr.nextPosition.y-(this.floorImageHeight)};
+            let height2 = (plyr.nextPosition.y+(this.floorImageHeight/2))+2-(plyr.nextPosition.y-(this.floorImageHeight));
+            let width2 = this.playerDrawWidth+2;
+            context.strokeStyle = 'white';
+            context.lineWidth = 2;
+            context.beginPath();
+            context.roundRect(origin2.x,origin2.y, width2+2, this.playerDrawHeight*1.5, 2);
+            // context.roundRect(origin2.x,origin2.y, width2, height2, 2);
+            // context.roundRect(origin2.x,origin2.y, this.playerDrawWidth, this.playerDrawHeight*1.5, 2);
+            // context.roundRect(origin2.x,origin2.y, this.playerDrawWidth+2, this.floorImageHeight*1.5, 2);
+            context.stroke();
+
+          }
+
+
+
           //PLAYER DEPTH SORTING!!
 
           // MOVING & MID STRAFE KEY RELEASE
@@ -36812,36 +37500,6 @@ class App extends Component {
 
           // PLAYER POPUPS & TRACKING OUTLINES
           if (x === this.gridWidth && y === this.gridWidth ) {
-
-
-            // PLAYER OUTLINES
-            let popupCoordObject = {
-              north: this.popupDrawCalc("north",{x:plyr.nextPosition.x-25,y:plyr.nextPosition.y-25},plyr.number),
-              west: this.popupDrawCalc("west",{x:plyr.nextPosition.x-25,y:plyr.nextPosition.y-25},plyr.number),
-              south: this.popupDrawCalc("south",{x:plyr.nextPosition.x-25,y:plyr.nextPosition.y-25},plyr.number),
-            };
-            let origin = popupCoordObject.west;
-            let width = popupCoordObject.north.pt4.x - origin.pt3.x;
-            let height = popupCoordObject.south.pt2.y - origin.pt3.y;
-            context.strokeStyle = 'white';
-            context.lineWidth = 2;
-            context.beginPath();
-            context.roundRect(origin.pt3.x,origin.pt3.y, width, height, 2);
-            context.stroke();
-
-            let origin2 = {x:plyr.nextPosition.x-(this.floorImageHeight/2),y:plyr.nextPosition.y-(this.floorImageHeight)};
-            let height2 = (plyr.nextPosition.y+(this.floorImageHeight/2))+2-(plyr.nextPosition.y-(this.floorImageHeight));
-            let width2 = this.playerDrawWidth+2;
-            context.strokeStyle = 'white';
-            context.lineWidth = 2;
-            context.beginPath();
-            context.roundRect(origin2.x,origin2.y, width2+2, this.playerDrawHeight*1.5, 2);
-            // context.roundRect(origin2.x,origin2.y, width2, height2, 2);
-            // context.roundRect(origin2.x,origin2.y, this.playerDrawWidth, this.playerDrawHeight*1.5, 2);
-            // context.roundRect(origin2.x,origin2.y, this.playerDrawWidth+2, this.floorImageHeight*1.5, 2);
-            context.stroke();
-
-
 
             let popupBorderColor = this.playerColourRef['player'+plyr.number+''];
 
@@ -39185,7 +39843,7 @@ class App extends Component {
 
         <div className="containerTop">
 
-        // TIMER
+
           <div className="timer">
             <p className="timerText">
             {this.time}
