@@ -1153,6 +1153,14 @@ class App extends Component {
         effect: '',
       },
       {
+        name: 'sword1',
+        amount: 2,
+        total: 2,
+        type: 'weapon',
+        subType: 'sword',
+        effect: '',
+      },
+      {
         name: 'sword2',
         amount: 2,
         total: 2,
@@ -1185,6 +1193,14 @@ class App extends Component {
         effect: '+10',
       },
       {
+        name: 'ironPlate',
+        amount: 2,
+        total: 2,
+        type: 'armor',
+        subType: 'mail',
+        effect: 'hpUp',
+      },
+      {
         name: 'ninjaGi',
         amount: 2,
         total: 2,
@@ -1207,14 +1223,6 @@ class App extends Component {
         type: 'armor',
         subType: 'greaves',
         effect: 'speedUp',
-      },
-      {
-        name: 'ironPlate',
-        amount: 2,
-        total: 2,
-        type: 'armor',
-        subType: 'mail',
-        effect: 'hpUp',
       },
       {
         name: 'ammo5',
@@ -21658,8 +21666,16 @@ class App extends Component {
         this.resetTarget(player);
 
 
-        let currentWeapon;
-        let currentArmor;
+        let currentWeapon = {
+          name: 'sword1',
+          type: 'sword',
+          effect: '',
+        };
+        let currentArmor = {
+          name: '',
+          type: '',
+          effect: '',
+        };
         let items = {
           weaponIndex: 0,
           armorIndex: 0,
@@ -21667,11 +21683,7 @@ class App extends Component {
           armor: [],
           ammo: 0,
         }
-        //
-        //
-        //
-        // this.settingsFormPlayerData.armor
-        //
+
         for (const weapon of this.settingsFormPlayerData.weapon) {
 
           if (weapon.plyrNo === player.number) {
@@ -21691,7 +21703,6 @@ class App extends Component {
                 if (itemRef.effect.split("+")[0] === 'ammo') {
                   items.ammo = parseInt(itemRef.effect.split('+')[1])
                 }
-
 
               }
               else {
@@ -21727,8 +21738,7 @@ class App extends Component {
                   type: itemRef.subType,
                   effect: itemRef.effect,
                 };
-                items.weapons.push(currentArmor)
-
+                items.armor.push(currentArmor)
 
               }
               else {
@@ -21746,28 +21756,203 @@ class App extends Component {
 
         }
 
+        for (const team of this.settingsFormPlayerData.team) {
+
+          if (team.plyrNo === player.number) {
+
+            player.team = team.team;
+
+          }
+
+        }
         player.currentWeapon = currentWeapon;
         player.currentArmor = currentArmor;
         player.items = items;
+        if (player.number === 1) {
+          console.log('game reset settings item loading: result items',items,'result current weapon',);
+          console.log('result current weapon',player.currentWeapon);
+          console.log('result current armor',player.currentArmor);
+          console.log('player data weapon',this.settingsFormPlayerData.weapon);
+          console.log('player data armor',this.settingsFormPlayerData.armor);
+        }
+
 
         player.currentPosition.cell = player.startPosition.cell;
 
 
-        player.ghost.state = false;
-        player.speed.move = .1;
-        player.hp = 2;
-        player.points = 0;
-        player.drowning = false;
+        player.turning = {
+          state: false,
+          toDirection: '',
+          delayCount: 0,
+          limit: 5.1,
+        };
+        player.turnCheckerDirection = '';
         player.action = 'idle';
+        player.moving = {
+          state: false,
+          step: 0,
+          course: '',
+          origin: {
+            number: {
+              x: 0,
+              y: 0,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            },
+          },
+          destination: {
+            x: 0,
+            y: 0,
+          }
+        };
+        player.newMoveDelay = {
+          state: false,
+          count: 0,
+          limit: 7,
+        };
+        player.strafing = {
+          state: false,
+          direction: '',
+        };
+        player.strafeReleaseHook = false;
+        player.flanking = {
+          checking: false,
+          preFlankDirection: '',
+          direction: '',
+          state: false,
+          step: 0,
+          target1: {x:0 ,y:0},
+          target2: {x:0 ,y:0},
+        };
+        player.drowning = false;
+        player.attacking = {
+          state: false,
+          count: 0,
+          limit: 20,
+        };
+        player.attackPeak = false;
+        player.defendPeak = false;
+        player.bluntAttack = false;
+        player.clashing = {
+          state: false,
+          count: 0,
+          limit: 10,
+        };
         player.dodging = {
           countState: false,
           state: false,
           count: 0,
           limit: 20,
           peak: {
-            start: 5,
-            end: 10,
+            start: 7,
+            end: 12,
           }
+        };
+        player.dodgeDirection = '';
+        player.jumping = {
+          checking: false,
+          state: false,
+        };
+        player.success = {
+          attackSuccess: {
+            state: false,
+            count: 0,
+            limit: 10,
+          },
+          defendSuccess: {
+            state: false,
+            count: 0,
+            limit: 10,
+          },
+          deflected: {
+            state: false,
+            count: 0,
+            limit: 20,
+            predeflect: false,
+            type: '',
+          }
+        };
+        player.pushBack = {
+          state: false,
+          prePushBackMoveSpeed: 0,
+        };
+        player.halfPushBack = {
+          state: false,
+          direction: "",
+          type: "",
+          countUp: {
+            state: true,
+            count: 0,
+            limit: 0,
+          },
+          countDown: {
+            state: false,
+            count: 0,
+            limit: 0,
+          },
+          coords: {
+            x: undefined,
+            y: undefined,
+          },
+        };
+        player.defending = {
+          state: false,
+          count: 0,
+          limit: 4,
+        };
+        player.defendDecay = {
+          state: false,
+          count: 0,
+          limit: 25,
+        };
+        player.falling = {
+          state: false,
+          count: 0,
+          limit: 10,
+        };
+        player.dead = {
+          state: false,
+          count: 0,
+          limit: 10
+        };
+        player.ghost = {
+          state: false,
+          position: {
+            cell: {
+              number: {
+                x: 0,
+                y: 0,
+              },
+              center: {
+                x: 0,
+                y: 0,
+              }
+            }
+          }
+        };
+        player.respawn = false;
+        player.points = 0;
+        player.speed = {
+          move: .1,
+          range: [.05,.1,.125,.2]
+        };
+        player.terrainMoveSpeed = {
+          state: false,
+          speed: 0,
+        };
+        player.hp = 2;
+        player.inventorySize = 4;
+        player.cycleWeapon = {
+          state: false,
+          count: 0,
+          limit: 3,
+        };
+        player.cycleArmor = {
+          state: false,
+          count: 0,
+          limit: 3,
         };
         player.crits = {
           singleHit: 1,
@@ -21776,43 +21961,21 @@ class App extends Component {
           guardBreak: 3,
           dodge: 0,
         };
-        player.items = {
-          weaponIndex: 0,
-          armorIndex: 0,
-          weapons: [
-            {
-              name: 'sword1',
-              type: 'sword',
-              effect: '',
-            },
-            {
-              name: 'crossbow1',
-              type: 'crossbow',
-              effect: '',
-            },
-            {
-              name: 'spear1',
-              type: 'spear',
-              effect: '',
-            }
-          ],
-          armor: [],
-          ammo: 20,
-        };
-        player.currentWeapon = {
-          name: 'sword1',
-          type: 'sword',
-          effect: '',
-        };
-        player.currentArmor = {};
-        player.strafing = {
+        player.statusDisplay = {
           state: false,
-          direction: '',
+          status: '',
+          count: 0,
+          limit: 15,
         };
-        player.pushBack = {
-          state: false,
-          prePushBackMoveSpeed: 0,
-        };
+        player.popups = [{
+          state: true,
+          count: 0,
+          limit: 0,
+          type: '',
+          position: 'northWest',
+          msg: '',
+          img: '',
+        }];
         player.itemDrop = {
           state: false,
           count: 0,
@@ -21835,42 +21998,109 @@ class App extends Component {
             type: '',
           }
         };
-        player.jumping = {
-          checking: false,
+        player.discardGear = {
           state: false,
+          count: 0,
+          limit: 8,
+        };
+        player.ai = {
+          state: false,
+          imgType: '',
+          primaryMission: '',
+          mission: '',
+          prevMission: '',
+          currentObjective: '',
+          targetSet: false,
+          targetAcquired: false,
+          safeRange: true,
+          pathArray: [],
+          targetPlayer: {
+            number: 1,
+            currentPosition: {
+              x: undefined,
+              y: undefined,
+            },
+            target: {
+              number1: {
+                x: undefined,
+                y: undefined,
+              },
+              number2: {
+                x: undefined,
+                y: undefined,
+              },
+            },
+            action: '',
+          },
+          instructions: [],
+          currentInstruction: 0,
+          resetInstructions: false,
+          patrolling: {
+            checkin: undefined,
+            state: false,
+            area: [],
+            loopControl: false,
+          },
+          defending: {
+            checkin: undefined,
+            state: false,
+            area: [],
+          },
+          persuing: {
+            state: false,
+          },
+          engaging: {
+            state: true,
+            targetAction: '',
+          },
+          retrieving: {
+            checkin: undefined,
+            state: false,
+            point: {x: undefined, y: undefined},
+            targetItem: {
+              name: '',
+              type: '',
+              subType: '',
+              effect: ''
+            },
+            safe: true,
+          },
+          retreating: {
+            checkin: undefined,
+            state: false,
+            point: {x: undefined, y: undefined},
+            level: 0,
+            safe: true,
+          },
+          organizing: {
+            weaponPriorityIndex: 0,
+            armorPriorityIndex: 0,
+            dropped: {
+              state: false,
+              gear: {
+                name: '',
+                type: '',
+                subType: '',
+                effect: ''
+              },
+            },
+          },
+          mode: '',
+          upgradeWeapon: false,
+          upgradeArmor: false,
+          pathfindingRanges: {
+            spear: 3,
+            crossbow: 5,
+          }
         };
         player.stamina = {
           current: 20,
           max: 20,
         };
-        player.defendDecay = {
+        player.newPushPullDelay = {
           state: false,
           count: 0,
-          limit: 25,
-        };
-        player.dodging = {
-          countState: false,
-          state: false,
-          count: 0,
-          limit: 20,
-          peak: {
-            start: 5,
-            end: 10,
-          }
-        };
-        player.defending = {
-          state: false,
-          count: 0,
-          limit: 4,
-        };
-        player.flanking = {
-          checking: false,
-          preFlankDirection: '',
-          direction: '',
-          state: false,
-          step: 0,
-          target1: {x:0 ,y:0},
-          target2: {x:0 ,y:0},
+          limit: 10,
         };
         player.prePush = {
           state: false,
@@ -21901,8 +22131,8 @@ class App extends Component {
         player.postPull = {
           state: false,
           count: 0,
-          limit: player.postPull.limit
-        }
+          limit: 10,
+        };
         player.pushed = {
           state: false,
           pusher: 0,
@@ -21913,15 +22143,204 @@ class App extends Component {
           puller: 0,
           moveSpeed: 0,
         };
-        player.popups = [{
-          state: true,
-          count: 0,
-          limit: 0,
-          type: '',
-          position: 'northWest',
-          msg: '',
-          img: '',
-        }];
+        player.elasticCounter = {
+          preState: false,
+          state: false,
+          direction: "",
+          type: "",
+          subType: "",
+          countUp: {
+            state: false,
+            count: 0,
+            limit: 6,
+          },
+          countDown: {
+            state: false,
+            count: 0,
+            limit: 6,
+          },
+          coords: {
+            x: undefined,
+            y: undefined,
+          },
+          pause: {
+            preState: false,
+            state: false,
+            type: "",
+            count: 0,
+            limit: 6,
+          },
+        };
+
+        // player.ghost.state = false;
+        // player.speed.move = .1;
+        // player.hp = 2;
+        // player.points = 0;
+        // player.drowning = false;
+        // player.action = 'idle';
+        // player.dodging = {
+        //   countState: false,
+        //   state: false,
+        //   count: 0,
+        //   limit: 20,
+        //   peak: {
+        //     start: 5,
+        //     end: 10,
+        //   }
+        // };
+        // player.crits = {
+        //   singleHit: 1,
+        //   doubleHit: 6,
+        //   pushBack: 4,
+        //   guardBreak: 3,
+        //   dodge: 0,
+        // };
+        // player.items = {
+        //   weaponIndex: 0,
+        //   armorIndex: 0,
+        //   weapons: [
+        //     {
+        //       name: 'sword1',
+        //       type: 'sword',
+        //       effect: '',
+        //     },
+        //     {
+        //       name: 'crossbow1',
+        //       type: 'crossbow',
+        //       effect: '',
+        //     },
+        //     {
+        //       name: 'spear1',
+        //       type: 'spear',
+        //       effect: '',
+        //     }
+        //   ],
+        //   armor: [],
+        //   ammo: 20,
+        // };
+        // player.currentWeapon = {
+        //   name: 'sword1',
+        //   type: 'sword',
+        //   effect: '',
+        // };
+        // player.currentArmor = {};
+        // player.strafing = {
+        //   state: false,
+        //   direction: '',
+        // };
+        // player.pushBack = {
+        //   state: false,
+        //   prePushBackMoveSpeed: 0,
+        // };
+        // player.itemDrop = {
+        //   state: false,
+        //   count: 0,
+        //   limit: 10,
+        //   item: {
+        //     name: '',
+        //   },
+        //   gear: {
+        //     type: '',
+        //   }
+        // };
+        // player.itemPickup = {
+        //   state: false,
+        //   count: 0,
+        //   limit: 10,
+        //   item: {
+        //     name: '',
+        //   },
+        //   gear: {
+        //     type: '',
+        //   }
+        // };
+        // player.jumping = {
+        //   checking: false,
+        //   state: false,
+        // };
+        // player.stamina = {
+        //   current: 20,
+        //   max: 20,
+        // };
+        // player.defendDecay = {
+        //   state: false,
+        //   count: 0,
+        //   limit: 25,
+        // };
+        // player.dodging = {
+        //   countState: false,
+        //   state: false,
+        //   count: 0,
+        //   limit: 20,
+        //   peak: {
+        //     start: 5,
+        //     end: 10,
+        //   }
+        // };
+        // player.defending = {
+        //   state: false,
+        //   count: 0,
+        //   limit: 4,
+        // };
+        // player.flanking = {
+        //   checking: false,
+        //   preFlankDirection: '',
+        //   direction: '',
+        //   state: false,
+        //   step: 0,
+        //   target1: {x:0 ,y:0},
+        //   target2: {x:0 ,y:0},
+        // };
+        // player.prePush = {
+        //   state: false,
+        //   count: 0,
+        //   limit: 15,
+        //   targetCell: undefined,
+        //   direction: "",
+        //   pusher: undefined,
+        // };
+        // player.pushing = {
+        //   state: false,
+        //   targetCell: undefined,
+        //   moveSpeed: 0,
+        // };
+        // player.prePull = {
+        //   state: false,
+        //   count: 0,
+        //   limit: 15,
+        //   targetCell: undefined,
+        //   direction: "",
+        //   puller: undefined,
+        // };
+        // player.pulling = {
+        //   state: false,
+        //   targetCell: undefined,
+        //   moveSpeed: 0,
+        // };
+        // player.postPull = {
+        //   state: false,
+        //   count: 0,
+        //   limit: player.postPull.limit
+        // }
+        // player.pushed = {
+        //   state: false,
+        //   pusher: 0,
+        //   moveSpeed: 0,
+        // };
+        // player.pulled = {
+        //   state: false,
+        //   puller: 0,
+        //   moveSpeed: 0,
+        // };
+        // player.popups = [{
+        //   state: true,
+        //   count: 0,
+        //   limit: 0,
+        //   type: '',
+        //   position: 'northWest',
+        //   msg: '',
+        //   img: '',
+        // }];
 
       }
 
@@ -22109,8 +22528,16 @@ class App extends Component {
 
 
 
-        let currentWeapon;
-        let currentArmor;
+        let currentWeapon = {
+          name: 'sword1',
+          type: 'sword',
+          effect: '',
+        };
+        let currentArmor = {
+          name: '',
+          type: '',
+          effect: '',
+        };
         let items = {
           weaponIndex: 0,
           armorIndex: 0,
@@ -22178,7 +22605,7 @@ class App extends Component {
 
         }
 
-
+        // console.log('add ai player settings item loading',currentWeapon,currentArmor,items);
 
 
         let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y)
@@ -22716,10 +23143,6 @@ class App extends Component {
             ]
           }
         }
-        if (this.aiInitSettings.weapon.type === 'crossbow') {
-          this.players[newPlayerNumber-1].currentWeapon.effect = 'ammo+5';
-          this.players[newPlayerNumber-1].items.ammo = 5;
-        }
 
 
         if (
@@ -22800,16 +23223,12 @@ class App extends Component {
         {x: undefined, y: undefined},
         {x: undefined, y: undefined},
       ],
-      weapon: {
+      weapons: [{
         name: weapon.name,
         type: weapon.type,
         effect: '',
-      },
-      armor: {
-        name: '',
-        type: '',
-        effect: '',
-      },
+      }],
+      armor: [],
     }
     this.addAiPlayer();
 

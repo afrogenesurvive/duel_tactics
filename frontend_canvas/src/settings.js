@@ -264,6 +264,14 @@ const Settings = (props) => {
           ]
         }
       )
+      setPlayerWeapons([
+        playerWeapons[0]
+      ])
+      setPlayerArmor([
+        playerArmor[0]
+      ])
+      setPlayerTeam([playerTeam[0]])
+      setPlayerInput([playerInput[0]])
     }
     if (parseInt(args) === 2) {
       props.updateSettingsFormPlayerData(
@@ -287,6 +295,10 @@ const Settings = (props) => {
         }
       )
 
+      setPlayerWeapons([playerWeapons[0],{plyrNo: 2,weapons: ['sword','spear','crossbow']}])
+      setPlayerArmor([playerArmor[0],{plyrNo: 2,armor: []}])
+      setPlayerTeam([playerTeam[0],{plyrNo: 2,team: 'Blue'}])
+      setPlayerInput([playerInput[0],{plyrNo: 2,input: 'keyboard'}])
 
     }
 
