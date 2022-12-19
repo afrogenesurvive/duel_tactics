@@ -1187,19 +1187,6 @@ const Settings = (props) => {
           </Form.Group>
 
 
-          {
-            // <Form.Group as={Col} controlId="input" className="formGroup">
-            //   <Form.Label className="formLabel">Input Source</Form.Label>
-            //   <Form.Control value={input} onChange={e=>handleInputChange(e.target.value)} as="select">
-            //     <option>Keyboard</option>
-            //     <option>Gamepad</option>
-            //   </Form.Control>
-            // </Form.Group>
-          }
-
-
-
-
           <Form.Group as={Col} className="formGroup" controlId="startItems">
             <Form.Label className="formLabel">Start Items</Form.Label>
 
