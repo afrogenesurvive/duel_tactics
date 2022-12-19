@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Easystar from 'easystarjs';
 import Pathfinding from 'pathfinding';
-import { AStarFinder } from "astar-typescript";
+// import { AStarFinder } from "astar-typescript";
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Popover from 'react-bootstrap/Popover';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -1852,6 +1852,7 @@ class App extends Component {
             limit: 6,
           },
         },
+        team: '',
       },
       {
         number: 2,
@@ -2172,18 +2173,6 @@ class App extends Component {
           count: 0,
           limit: 5,
         },
-        breakAnim: {
-          attack: {
-            state: false,
-            count: 0,
-            limit: 10
-          },
-          defend: {
-            state: false,
-            count: 0,
-            limit: 10
-          }
-        },
         ai: {
           state: false,
           imgType: '',
@@ -2352,6 +2341,7 @@ class App extends Component {
             limit: 6,
           },
         },
+        team: '',
       }
     ];
 
@@ -2681,7 +2671,6 @@ class App extends Component {
     this.settingsFormAiGridInfo = [] ;
     this.settingsFormAiStartPosList = [];
     this.updateSettingsFormAiDataData = {};
-    this.settingsAiCount = 0;
     this.settingsFormPlyrGridInfo = [];
     this.settingsFormPlyrStartPosList = [];
     this.settingsFormPlayerData = {};
@@ -2696,6 +2685,7 @@ class App extends Component {
       plyrNo: 1,
       type: 'start',
     }
+    this.gamepadConfig = [];
 
 
     // CELL INFO
@@ -2762,9 +2752,9 @@ class App extends Component {
     this.defendAnimRef = {
       limit: {
         unarmed: 25,
-        sword: 35,
-        spear: 50,
-        crossbow: 35,
+        sword: 30,
+        spear: 35,
+        crossbow: 30,
       },
       peak: {
         unarmed: 5,
@@ -3145,8 +3135,8 @@ class App extends Component {
             {plyrNo: 2,armor: []},
           ],
           team: [
-            {plyrNo: 1,team: 'red'},
-            {plyrNo: 2,team: 'blue'}
+            {plyrNo: 1,team: 'Red'},
+            {plyrNo: 2,team: 'Blue'}
           ]
         }
       )
@@ -4448,10 +4438,7 @@ class App extends Component {
         }
       break;
       case 'r' :
-        this.gameSoftReset();
-        if (Object.keys(this.updateSettingsFormAiDataData).length !== 0) {
-          this.loadAiSettings();
-        }
+        this.gameReset('soft');
       break;
       case '2' :
        this.keyPressed[0].cycleWeapon = state;
@@ -4707,6 +4694,19 @@ class App extends Component {
       break;
     }
 
+
+    // props.updateSettingsFormPlayerData({
+    //     input: playerInput,
+    //     weapon: playerWeapons,
+    //     armor: playerArmor,
+    //     team: playerTeam,
+    //   })
+    //   this.gamepadConfig.push
+    //
+    // for (const plyr2 of this.settingsFormPlayerData) {
+    //
+    // }
+
     let gamepad = false;
     if (event.target.input.value === 'Gamepad') {
       gamepad = true;
@@ -4732,14 +4732,13 @@ class App extends Component {
       this.disableInitItems = true;
     }
 
-    this.gameHardReset();
+    this.gameReset('hard');
 
     // this.placeItems({init: true, items: ''});
 
     if (aiPlayerNumber > 0) {
 
       this.loadAiSettings()
-      this.settingsAiCount = aiPlayerNumber;
 
     } else {
 
@@ -5373,6 +5372,8 @@ class App extends Component {
       random: args.random,
       mode: args.mode,
       weapon: args.weapon,
+      armor: args.armor,
+      team: args.team,
       mission: args.mission,
     }
     this.setState({
@@ -5637,6 +5638,10 @@ class App extends Component {
 
     this.settingsFormPlayerData = args;
 
+    this.setState({
+      stateUpdater: '..'
+    })
+
   }
 
   //
@@ -5644,7 +5649,6 @@ class App extends Component {
 
 
     // on load settings, set global gamepadConfig based on form player input values,
-    // set player tea,
     // change playr waepons and ammo as well (check draw grid init)
     //   plyr.items.ammo = plyr.items.ammo + ammo;
     // give players the basic item for each type they choose
@@ -5672,7 +5676,6 @@ class App extends Component {
     //   ammo: 20,
     // };
     // do same for armor
-
 
 
 
@@ -10870,8 +10873,8 @@ class App extends Component {
 
 
     //TARGET IS PROJECTILE!!
-    if (this.isBoltInCell(player.target.['cell'+cellNo].number) === true) {
-      this.projectiles.find(x=> x.currentPosition.number.x === player.target.['cell'+cellNo].number.x && x.currentPosition.number.y === player.target.['cell'+cellNo].number.y).kill = true;
+    if (this.isBoltInCell(player.target['cell'+cellNo].number) === true) {
+      this.projectiles.find(x=> x.currentPosition.number.x === player.target['cell'+cellNo].number.x && x.currentPosition.number.y === player.target['cell'+cellNo].number.y).kill = true;
 
       if (!player.popups.find(x=>x.msg === "boltKilled")) {
         player.popups.push(
@@ -12470,11 +12473,6 @@ class App extends Component {
           count: 0,
           limit: 4,
         };
-        player.breakAnim.attack = {
-          state: true,
-          count: 1,
-          limit: player.breakAnim.attack.limit,
-        };
         this.players[player.number-1].statusDisplay = {
           state: true,
           status: 'attack break!',
@@ -12511,11 +12509,6 @@ class App extends Component {
           state: false,
           count: 0,
           limit: 4,
-        };
-        player.breakAnim.defend = {
-          state: true,
-          count: 1,
-          limit: player.breakAnim.defend.limit,
         };
         this.players[player.number-1].statusDisplay = {
           state: true,
@@ -21670,23 +21663,39 @@ class App extends Component {
     }
 
   }
-
-
-  // pass type hard/soft to reset
-  // settings submit calls load settings, resetgame and loadai settings
-  // soft reset/reset btn just calls reset game and load ia settings if settings form ai data.random has length/this.settingsAiCount > 0
-
-  gameSoftReset = () => {
-    // console.log('resetting');
+  gameReset = (type) => {
+    console.log('resetting');
 
     this.setState({
       loading: true
     })
 
 
+    if (type === 'soft') {
+      if (Object.keys(this.updateSettingsFormAiDataData).length !== 0) {
+        if (this.addAiCount.state !== true) {
+          this.loadAiSettings();
+        }
+
+      }
+    }
+
+
+
     this.time = 0;
     this.projectiles = [];
-    // mouse over cell
+    this.mouseOverCell = {
+      state: false,
+      cell: undefined,
+      count: 0,
+      threshold: 40,
+    };
+    this.mouseOverCellSwitchOff = {
+      state: false,
+      count: 0,
+      limit: 100,
+    };
+    this.cellInfoMouseOver = false;
     this.cellsUnderAttack = [];
     this.cellsUnderPreAttack = [];
     this.cellsToHighlight = [];
@@ -21706,414 +21715,18 @@ class App extends Component {
 
     for (const player of this.players) {
 
-//       if ai not true
-//       currentPositio.cell = start psotion.cell
-//
-//
-//       turning: {
-//         state: false,
-//         toDirection: '',
-//         delayCount: 0,
-//         limit: 5.1,
-//       },
-// turnCheckerDirection: '',
-// moving: {
-//         state: false,
-//         step: 0,
-//         course: '',
-//         origin: {
-//           number: {
-//             x: 0,
-//             y: 0,
-//           },
-//           center: {
-//             x: 0,
-//             y: 0,
-//           },
-//         },
-//         destination: {
-//           x: 0,
-//           y: 0,
-//         }
-//       },
-// newMoveDelay: {
-//         state: false,
-//         count: 0,
-//         limit: 7,
-//       },
-// strafing: {
-//         state: false,
-//         direction: '',
-//       },
-// strafeReleaseHook: false,
-// flanking: {
-//         checking: false,
-//         preFlankDirection: '',
-//         direction: '',
-//         state: false,
-//         step: 0,
-//         target1: {x:0 ,y:0},
-//         target2: {x:0 ,y:0},
-//       },
-// drowning: false,
-// attacking: {
-//         state: false,
-//         count: 0,
-//         limit: 20,
-//       },
-// attackStrength: 0,
-// attackPeak: false,
-// defendPeak: false,
-// bluntAttack: false,
-// clashing: {
-//         state: false,
-//         count: 0,
-//         limit: 10,
-//       },
-// dodging: {
-//         countState: false,
-//         state: false,
-//         count: 0,
-//         limit: 20,
-//         peak: {
-//           start: 7,
-//           end: 12,
-//         }
-//       },
-// dodgeDirection: '',
-// jumping: {
-//         checking: false,
-//         state: false,
-//       },
-// success: {
-//         attackSuccess: {
-//           state: false,
-//           count: 0,
-//           limit: 10,
-//         },
-//         defendSuccess: {
-//           state: false,
-//           count: 0,
-//           limit: 10,
-//         },
-//         deflected: {
-//           state: false,
-//           count: 0,
-//           limit: 20,
-//           predeflect: false,
-//           type: '',
-//         }
-//       },
-// pushBack: {
-//         state: false,
-//         prePushBackMoveSpeed: 0,
-//       },
-// halfPushBack: {
-//         state: false,
-//         direction: "",
-//         type: "",
-//         countUp: {
-//           state: true,
-//           count: 0,
-//           limit: 0,
-//         },
-//         countDown: {
-//           state: false,
-//           count: 0,
-//           limit: 0,
-//         },
-//         coords: {
-//           x: undefined,
-//           y: undefined,
-//         },
-//       },
-// defending: {
-//         state: false,
-//         count: 0,
-//         limit: 4,
-//       },
-// defendDecay: {
-//         state: false,
-//         count: 0,
-//         limit: 25,
-//       },
-// falling: {
-//         state: false,
-//         count: 0,
-//         limit: 10,
-//       },
-// dead: {
-//         state: false,
-//         count: 0,
-//         limit: 10
-//       },
-// ghost: {
-//         state: false,
-//         position: {
-//           cell: {
-//             number: {
-//               x: 0,
-//               y: 0,
-//             },
-//             center: {
-//               x: 0,
-//               y: 0,
-//             }
-//           }
-//         }
-//       },
-// respawn: false,
-// points: 0,
-// speed: {
-//         move: .1,
-//         range: [.05,.1,.125,.2]
-//       },
-// terrainMoveSpeed: {
-//         state: false,
-//         speed: 0,
-//       },
-// hp: 2,
-//
-//   current armor and weapon as well as items set from settings form playr data
-//
-//
-//   inventorySize: 4,
-// cycleWeapon: {
-//     state: false,
-//     count: 0,
-//     limit: 3,
-//   },
-// cycleArmor: {
-//     state: false,
-//     count: 0,
-//     limit: 3,
-//   },
-// crits: {
-//     singleHit: 1,
-//     doubleHit: 6,
-//     pushBack: 4,
-//     guardBreak: 3,
-//     dodge: 0,
-//   },
-// statusDisplay: {
-//     state: false,
-//     status: '',
-//     count: 0,
-//     limit: 15,
-//   },
-// popups: [{
-//     state: true,
-//     count: 0,
-//     limit: 0,
-//     type: '',
-//     position: 'northWest',
-//     msg: '',
-//     img: '',
-//   }],
-// itemDrop: {
-//     state: false,
-//     count: 0,
-//     limit: 10,
-//     item: {
-//       name: '',
-//     },
-//     gear: {
-//       type: '',
-//     }
-//   },
-// itemPickup: {
-//     state: false,
-//     count: 0,
-//     limit: 10,
-//     item: {
-//       name: '',
-//     },
-//     gear: {
-//       type: '',
-//     }
-//   },
-// discardGear:{
-//     state: false,
-//     count: 0,
-//     limit: 8,
-//   },
-// idleAnim: {
-//     state: false,
-//     count: 0,
-//     limit: 5,
-//   },
-// ai: {
-//     state: false,
-//     imgType: '',
-//     primaryMission: '',
-//     mission: '',
-//     prevMission: '',
-//     currentObjective: '',
-//     targetSet: false,
-//     targetAcquired: false,
-//     safeRange: true,
-//     pathArray: [],
-//     targetPlayer: {
-//       number: 1,
-//       currentPosition: {
-//         x: undefined,
-//         y: undefined,
-//       },
-//       target: {
-//         number1: {
-//           x: undefined,
-//           y: undefined,
-//         },
-//         number2: {
-//           x: undefined,
-//           y: undefined,
-//         },
-//       },
-//       action: '',
-//     },
-//     instructions: [],
-//     currentInstruction: 0,
-//     resetInstructions: false,
-//     patrolling: {
-//       checkin: undefined,
-//       state: false,
-//       area: [],
-//       loopControl: false,
-//     },
-//     defending: {
-//       checkin: undefined,
-//       state: false,
-//       area: [],
-//     },
-//     persuing: {
-//       state: false,
-//     },
-//     engaging: {
-//       state: true,
-//       targetAction: '',
-//     },
-//     retrieving: {
-//       checkin: undefined,
-//       state: false,
-//       point: {x: undefined, y: undefined},
-//       targetItem: {
-//         name: '',
-//         type: '',
-//         subType: '',
-//         effect: ''
-//       },
-//       safe: true,
-//     },
-//     retreating: {
-//       checkin: undefined,
-//       state: false,
-//       point: {x: undefined, y: undefined},
-//       level: 0,
-//       safe: true,
-//     },
-//     organizing: {
-//       weaponPriorityIndex: 0,
-//       armorPriorityIndex: 0,
-//       dropped: {
-//         state: false,
-//         gear: {
-//           name: '',
-//           type: '',
-//           subType: '',
-//           effect: ''
-//         },
-//       },
-//     },
-//     mode: '',
-//     upgradeWeapon: false,
-//     upgradeArmor: false,
-//     pathfindingRanges: {
-//       spear: 3,
-//       crossbow: 5,
-//     }
-//   },
-// stamina: {
-//     current: 20,
-//     max: 20,
-//   },
-// newPushPullDelay: {
-//     state: false,
-//     count: 0,
-//     limit: 10,
-//   },
-// prePush: {
-//     state: false,
-//     count: 0,
-//     limit: 15,
-//     targetCell: undefined,
-//     direction: "",
-//     pusher: undefined,
-//   },
-// pushing: {
-//     state: false,
-//     targetCell: undefined,
-//     moveSpeed: 0,
-//   },
-// prePull: {
-//     state: false,
-//     count: 0,
-//     limit: 15,
-//     targetCell: undefined,
-//     direction: "",
-//     puller: undefined,
-//   },
-// pulling: {
-//     state: false,
-//     targetCell: undefined,
-//     moveSpeed: 0,
-//   },
-// postPull: {
-//     state: false,
-//     count: 0,
-//     limit: 10,
-//   },
-// pushed: {
-//     state: false,
-//     pusher: 0,
-//     moveSpeed: 0,
-//   },
-// pulled: {
-//     state: false,
-//     puller: 0,
-//     moveSpeed: 0,
-//   },
-// elasticCounter: {
-//     preState: false,
-//     state: false,
-//     direction: "",
-//     type: "",
-//     subType: "",
-//     countUp: {
-//       state: false,
-//       count: 0,
-//       limit: 6,
-//     },
-//     countDown: {
-//       state: false,
-//       count: 0,
-//       limit: 6,
-//     },
-//     coords: {
-//       x: undefined,
-//       y: undefined,
-//     },
-//     pause: {
-//       preState: false,
-//       state: false,
-//       type: "",
-//       count: 0,
-//       limit: 6,
-//     },
-//   },
+      if (player.ai.state !== true) {
 
-// this.resetTarget player
+        this.resetTarget(player);
 
 
+
+      }
+
+
+      // use this.settingsFormPlayerData for weapon, armor
+
+      // currentPosition = start psotion
       player.ghost.state = false;
       player.speed.move = .1;
       player.hp = 2;
@@ -22285,214 +21898,10 @@ class App extends Component {
       }];
 
 
-
-
     }
     this.aiTarget = 1;
 
 
-
-    // this.resetCameraSwitch = true;
-
-
-
-    let plyrz = this.players
-    for (const plyr of plyrz) {
-      if (plyr.ai.state === true ) {
-        let indx = plyrz.indexOf(plyr)
-        let toRemove1 = this.players[indx];
-        this.players = this.players.filter(x=> x !== toRemove1);
-      }
-    }
-
-    this.drawGridInit(this.state.canvas, this.state.context, this.state.canvas2, this.state.context2, this.state.canvas3, this.state.context3);
-
-
-  }
-  gameHardReset = () => {
-    // console.log('resetting');
-
-    this.setState({
-      loading: true
-    })
-
-    this.time = 0;
-    this.projectiles = [];
-    for (const player of this.players) {
-      player.ghost.state = false;
-      player.speed.move = .1;
-      player.hp = 2;
-      player.points = 0;
-      player.drowning = false;
-      player.action = 'idle';
-      player.dodging = {
-        countState: false,
-        state: false,
-        count: 0,
-        limit: 20,
-        peak: {
-          start: 5,
-          end: 10,
-        }
-      };
-      player.crits = {
-        singleHit: 1,
-        doubleHit: 6,
-        pushBack: 4,
-        guardBreak: 3,
-        dodge: 0,
-      };
-      player.items = {
-        weaponIndex: 0,
-        armorIndex: 0,
-        weapons: [
-          {
-            name: 'sword1',
-            type: 'sword',
-            effect: '',
-          },
-          {
-            name: 'crossbow1',
-            type: 'crossbow',
-            effect: '',
-          },
-          {
-            name: 'spear1',
-            type: 'spear',
-            effect: '',
-          }
-        ],
-        armor: [],
-        ammo: 20,
-      };
-      player.currentWeapon = {
-        name: 'sword1',
-        type: 'sword',
-        effect: '',
-      };
-      player.currentArmor = {};
-      player.strafing = {
-        state: false,
-        direction: '',
-      };
-      player.pushBack = {
-        state: false,
-        prePushBackMoveSpeed: 0,
-      };
-      player.itemDrop = {
-        state: false,
-        count: 0,
-        limit: 10,
-        item: {
-          name: '',
-        },
-        gear: {
-          type: '',
-        }
-      };
-      player.itemPickup = {
-        state: false,
-        count: 0,
-        limit: 10,
-        item: {
-          name: '',
-        },
-        gear: {
-          type: '',
-        }
-      };
-      player.jumping = {
-        checking: false,
-        state: false,
-      };
-      player.stamina = {
-        current: 20,
-        max: 20,
-      };
-      player.defendDecay = {
-        state: false,
-        count: 0,
-        limit: 25,
-      };
-      player.dodging = {
-        countState: false,
-        state: false,
-        count: 0,
-        limit: 20,
-        peak: {
-          start: 5,
-          end: 10,
-        }
-      };
-      player.defending = {
-        state: false,
-        count: 0,
-        limit: 4,
-      };
-      player.flanking = {
-        checking: false,
-        preFlankDirection: '',
-        direction: '',
-        state: false,
-        step: 0,
-        target1: {x:0 ,y:0},
-        target2: {x:0 ,y:0},
-      };
-      player.prePush = {
-        state: false,
-        count: 0,
-        limit: 15,
-        targetCell: undefined,
-        direction: "",
-        pusher: undefined,
-      };
-      player.pushing = {
-        state: false,
-        targetCell: undefined,
-        moveSpeed: 0,
-      };
-      player.prePull = {
-        state: false,
-        count: 0,
-        limit: 15,
-        targetCell: undefined,
-        direction: "",
-        puller: undefined,
-      };
-      player.pulling = {
-        state: false,
-        targetCell: undefined,
-        moveSpeed: 0,
-      };
-      player.postPull = {
-        state: false,
-        count: 0,
-        limit: player.postPull.limit
-      }
-      player.pushed = {
-        state: false,
-        pusher: 0,
-        moveSpeed: 0,
-      };
-      player.pulled = {
-        state: false,
-        puller: 0,
-        moveSpeed: 0,
-      };
-      player.popups = [{
-        state: true,
-        count: 0,
-        limit: 0,
-        type: '',
-        position: 'northWest',
-        msg: '',
-        img: '',
-      }];
-
-      // player.currentArmor = {};
-
-    }
-    this.aiTarget = 1;
 
     // this.resetCameraSwitch = true;
 
@@ -22986,18 +22395,6 @@ class App extends Component {
             count: 0,
             limit: 5,
           },
-          breakAnim: {
-            attack: {
-              state: false,
-              count: 0,
-              limit: 10
-            },
-            defend: {
-              state: false,
-              count: 0,
-              limit: 10
-            }
-          },
           ai: {
             state: true,
             imgType: imgType,
@@ -23167,6 +22564,7 @@ class App extends Component {
               limit: 6,
             },
           },
+          team: '',
         }
 
 
@@ -29159,7 +28557,7 @@ class App extends Component {
 
     let pathArray = []
 
-    for (const [key, value] of Object.entries(this.['levelData'+this.gridWidth])) {
+    for (const [key, value] of Object.entries(this['levelData'+this.gridWidth])) {
       let row = [];
       for (const elem3 of value) {
         // let terrainInfo2 = elem3.length-1;
@@ -30359,32 +29757,6 @@ class App extends Component {
           player.idleAnim.count = 0;
         }
 
-
-        // BREAK ANIM STEPPERS!
-        // if (player.breakAnim.attack.state === true) {
-        //   if (player.breakAnim.attack.count > 0 && player.breakAnim.attack.count < player.breakAnim.attack.limit) {
-        //     player.breakAnim.attack.count++
-        //   }
-        //   else if (player.breakAnim.attack.count >= player.breakAnim.attack.limit) {
-        //     player.breakAnim.attack = {
-        //       state: false,
-        //       count: 0,
-        //       limit: player.breakAnim.attack.limit
-        //     }
-        //   }
-        // }
-        // if (player.breakAnim.defend.state === true) {
-        //   if (player.breakAnim.defend.count > 0 && player.breakAnim.defend.count < player.breakAnim.defend.limit) {
-        //     player.breakAnim.defend.count++
-        //   }
-        //   else if (player.breakAnim.defend.count >= player.breakAnim.defend.limit) {
-        //     player.breakAnim.defend = {
-        //       state: false,
-        //       count: 0,
-        //       limit: player.breakAnim.defend.limit
-        //     }
-        //   }
-        // }
 
 
         // TURNER!!
@@ -38483,7 +37855,7 @@ class App extends Component {
 
       // APPLY LEVEL DATA TO GRID INFO CELLS!
       let levelData2Row = 'row'+elem.number.x;
-      let elemLevelData = this.['levelData'+this.gridWidth][levelData2Row][elem.number.y];
+      let elemLevelData = this['levelData'+this.gridWidth][levelData2Row][elem.number.y];
 
       if (
         (elemLevelData.split('_')[1] !== "*" &&
@@ -38646,7 +38018,7 @@ class App extends Component {
 
       // SET LEVEL DATA!
       let levelData2Row = 'row'+elem2.number.x;
-      let elemLevelData = this.['levelData'+this.settingsGridWidth][levelData2Row][elem2.number.y];
+      let elemLevelData = this['levelData'+this.settingsGridWidth][levelData2Row][elem2.number.y];
       if (
         (elemLevelData.split('_')[1] !== "*" &&
         this.terrainLevelDataRef[elemLevelData.split('_')[3]].type === 'deep') ||
@@ -39953,6 +39325,21 @@ class App extends Component {
 
                 </a>
               )}
+              <a href="javascript:" className="setSwitchLink" onClick={this.gameReset.bind(this,'soft')}>
+                <OverlayTrigger
+                  placement={'top'}
+                  overlay={
+                    <Popover id={`popover-positioned-${'top'}`}>
+                      <Popover.Content>
+                        <strong>Reset Game (w/ last settings)</strong>
+                      </Popover.Content>
+                    </Popover>
+                  }
+                >
+                  <FontAwesomeIcon icon={faUndo} size="sm" className="setSwitchIcon"/>
+                </OverlayTrigger>
+
+              </a>
               )}
 
             </div>

@@ -30,7 +30,8 @@ let playerSettings = {
 const Settings = (props) => {
 
 
-
+  const weaponSet = ['sword','spear','crossbow'];
+  const armorSet = ['helmet','mail','greaves'];
   let preInput;
   if (props.gamepad !== true) {
     preInput = "Keyboard";
@@ -94,13 +95,31 @@ const Settings = (props) => {
     // setAiMode(props.updateSettingsFormAiDataData.mode);
   }
 
-  let preAiWeapon = [];
+  let preAiWeapons = [];
   if (!props.updateSettingsFormAiDataData.weapon) {
-    preAiWeapon = []
+    preAiWeapons = []
     // setAiWeapon([])
   } else {
-    preAiWeapon = props.updateSettingsFormAiDataData.weapon;
+    preAiWeapons = props.updateSettingsFormAiDataData.weapon;
     // setAiWeapon(props.updateSettingsFormAiDataData.weapon);
+  }
+
+  let preAiArmor = [];
+  if (!props.updateSettingsFormAiDataData.armor) {
+    preAiArmor = []
+    // setAiArmor([])
+  } else {
+    preAiArmor = props.updateSettingsFormAiDataData.armor;
+    // setAiArmor(props.updateSettingsFormAiDataData.armor);
+  }
+
+  let preAiTeam = [];
+  if (!props.updateSettingsFormAiDataData.team) {
+    preAiTeam = []
+    // setAiTeam([])
+  } else {
+    preAiTeam = props.updateSettingsFormAiDataData.team;
+    // setAiTeam(props.updateSettingsFormAiDataData.team);
   }
 
   let preAiMission = [];
@@ -116,6 +135,48 @@ const Settings = (props) => {
   if (props.disableInitItems !== true ) {
     preStartItems = true;
   }
+
+  let prePlayerInput;
+  if (!props.settingsFormPlayerData.input) {
+    prePlayerInput = [
+      {plyrNo: 1,input: 'keyboard'},
+      {plyrNo: 2,input: 'keyboard'},
+    ];
+  }
+  else {
+    prePlayerInput = props.settingsFormPlayerData.input;
+  }
+  let prePlayerTeam;
+  if (!props.settingsFormPlayerData.team) {
+    prePlayerTeam = [
+      {plyrNo: 1,team: 'Red'},
+      {plyrNo: 2,team: 'Blue'}
+    ];
+  }
+  else {
+    prePlayerTeam = props.settingsFormPlayerData.team;
+  }
+  let prePlayerWeapons;
+  if (!props.settingsFormPlayerData.weapon) {
+    prePlayerWeapons = [
+      {plyrNo: 1,weapons: ['sword','spear','crossbow']},
+      {plyrNo: 2,weapons: ['sword','spear','crossbow']},
+    ];
+  }
+  else {
+    prePlayerWeapons = props.settingsFormPlayerData.weapon;
+  }
+  let prePlayerArmor;
+  if (!props.settingsFormPlayerData.armor) {
+    prePlayerArmor = [
+      {plyrNo: 1,armor: []},
+      {plyrNo: 2,armor: []},
+    ];
+  }
+  else {
+    prePlayerArmor = props.settingsFormPlayerData.armor;
+  }
+
 
 
   // console.log('1',props.plyrStartPosList);
@@ -139,7 +200,9 @@ const Settings = (props) => {
       count: aiCount,
       random: aiRandom,
       mode: aiMode,
-      weapon: aiWeapon,
+      weapon: aiWeapons,
+      armor: aiArmor,
+      team: aiTeam,
       mission: aiMission,
     })
   }
@@ -197,7 +260,7 @@ const Settings = (props) => {
             {plyrNo: 1,armor: []},
           ],
           team: [
-            {plyrNo: 1,team: 'red'},
+            {plyrNo: 1,team: 'Red'},
           ]
         }
       )
@@ -218,11 +281,12 @@ const Settings = (props) => {
             {plyrNo: 2,armor: []},
           ],
           team: [
-            {plyrNo: 1,team: 'red'},
-            {plyrNo: 2,team: 'blue'}
+            {plyrNo: 1,team: 'Red'},
+            {plyrNo: 2,team: 'Blue'}
           ]
         }
       )
+
 
     }
 
@@ -231,6 +295,7 @@ const Settings = (props) => {
     setPlyrCount(parseInt(args));
 
     setPlyrStartPosWidth(plyrStartPosWidth);
+
 
 
     if (aiCount.count > 0) {
@@ -306,7 +371,7 @@ const Settings = (props) => {
   //   setPlyrStartPosWidth(args);
   // }
 
-  const [playerInput, setPlayerInput] = useState(props.settingsFormPlayerData.input);
+  const [playerInput, setPlayerInput] = useState(prePlayerInput);
   const handlePlayerInputStateChange = (plyrNo,value) => {
 
 
@@ -329,7 +394,7 @@ const Settings = (props) => {
   }
 
 
-  const [playerTeam, setPlayerTeam] = useState(props.settingsFormPlayerData.team);
+  const [playerTeam, setPlayerTeam] = useState(prePlayerTeam);
   const handlePlayerTeamStateChange = (plyrNo,value) => {
 
 
@@ -351,64 +416,94 @@ const Settings = (props) => {
 
   }
 
-
-  const [playerWeapons, setPlayerWeapons] = useState(props.settingsFormPlayerData.weapon);
+  const [playerWeapons, setPlayerWeapons] = useState(prePlayerWeapons);
   const handlePlayerWeaponsStateChange = (plyrNo,action,value) => {
 
 
     let array = playerWeapons;
     let plyr2 = array.find(elem => elem.plyrNo === plyrNo)
+    let plyr3 = playerArmor.find(elem => elem.plyrNo === plyrNo)
 
-    if (plyr2) {
-      // if action is add then push value to plyr2.weapons, else splice
+    if (value !== 'random' && action === true && plyr3.armor.length+plyr2.weapons.length === 4) {
+      console.log('inventory full ');
     }
-    setPlayerWeapons(array);
+    else {
+
+      if (value === 'random') {
+
+        plyr2.weapons = [weaponSet[props.rnJesus(0,armorSet.length-1)]]
+
+      }
+      else {
+        if (action === true) {
+          plyr2.weapons.push(value)
+        }
+        else (
+          plyr2.weapons.splice(plyr2.weapons.indexOf(value),1)
+        )
+      }
+      setPlayerWeapons(array);
+      // console.log('setPlayerArmor',playerArmor,value,array);
 
 
-    props.updateSettingsFormPlayerData({
-        input: playerInput,
-        weapon: playerWeapons,
-        armor: playerArmor,
-        team: playerTeam,
-      })
+      props.updateSettingsFormPlayerData({
+          input: playerInput,
+          weapon: playerWeapons,
+          armor: playerArmor,
+          team: playerTeam,
+        })
+
+    }
+
+
+
 
   }
 
-
-  const [playerArmor, setPlayerArmor] = useState(props.settingsFormPlayerData.armor);
+  const [playerArmor, setPlayerArmor] = useState(prePlayerArmor);
   const handlePlayerArmorStateChange = (plyrNo,action,value) => {
 
 
     let array = playerArmor;
     let plyr2 = array.find(elem => elem.plyrNo === plyrNo)
+    let plyr3 = playerWeapons.find(elem => elem.plyrNo === plyrNo)
 
-    if (plyr2) {
-      // if action is add then push value to plyr2.armor, else splice
+    if (value !== 'random' && action === true && plyr2.armor.length+plyr3.weapons.length === 4) {
+      console.log('inventory full ');
     }
-    setPlayerArmor(array);
+    else {
+
+      if (value === 'random') {
+
+        plyr2.armor = [armorSet[props.rnJesus(0,armorSet.length-1)]]
+
+      }
+      else {
+        if (action === true) {
+          plyr2.armor.push(value)
+        }
+        else (
+          plyr2.armor.splice(plyr2.armor.indexOf(value),1)
+        )
+      }
+      setPlayerArmor(array);
 
 
-    props.updateSettingsFormPlayerData({
-        input: playerInput,
-        weapon: playerWeapons,
-        armor: playerArmor,
-        team: playerTeam,
-      })
+      props.updateSettingsFormPlayerData({
+          input: playerInput,
+          weapon: playerWeapons,
+          armor: playerArmor,
+          team: playerTeam,
+        })
+
+    }
+
+
+
 
   }
 
 
-  // model new form inputs (input & team) off aimode,
-     // for weapons and armor, show array of check boxes, and call handle for change on each w/
-     // appropriate value
-     // determine action in handler by checked true/false
-     // add weaponchoice and armor choice vars  [sword,spear,crossbow], // mail, helmet, greaves
-     // check box arrays weapon/armor choice
-     // on each change check the total number of selected weapons and armor
-     // and show error without chaging anything if that count is === 4 or base inventory size,
-     //
-
-     // add player team prop just a string
 
   let preGridWidth = props.gridWidth;
   const [gridWidth, setGridWidth] = useState(preGridWidth);
@@ -476,7 +571,9 @@ const Settings = (props) => {
     })
     setAiRandom([])
     setAiMode([])
-    setAiWeapon([])
+    setAiWeapons([])
+    setAiArmor([])
+    setAiTeam([])
     setAiMission([])
     props.getCustomAiStartPosList([])
 
@@ -489,7 +586,9 @@ const Settings = (props) => {
       count: aiCount,
       random: initArray,
       mode: aiMode,
-      weapon: aiWeapon,
+      weapon: aiWeapons,
+      armor: aiArmor,
+      team: aiTeam,
       mission: aiMission,
     })
 
@@ -530,6 +629,7 @@ const Settings = (props) => {
         plyrNumbers = []
         multiAiFormAiColWidth = 0;
         setAiRandom([]);
+
       break;
       case '1':
         plyrNumbers = [1];
@@ -597,8 +697,11 @@ const Settings = (props) => {
       break;
     }
     setAiMode([])
-    setAiWeapon([])
+    setAiWeapons([])
+    setAiArmor([])
+    setAiTeam([])
     setAiMission([])
+
     props.getCustomAiStartPosList([])
 
     setAiCount({
@@ -621,7 +724,9 @@ const Settings = (props) => {
       count: aiCount,
       random: initArray,
       mode: aiMode,
-      weapon: aiWeapon,
+      weapon: aiWeapons,
+      armor: aiArmor,
+      team: aiTeam,
       mission: aiMission,
     })
 
@@ -669,25 +774,45 @@ const Settings = (props) => {
     for (const plyr of x ) {
       array3.push({
         plyrNo: plyr.plyrNo,
-        weapon: 'sword'
+        weapons: ['sword']
       })
       // handleAiWeaponStateChange(plyr.plyrNo,'sword')
     }
-    setAiWeapon(array3);
-
+    setAiWeapons(array3);
 
     let array4 = [];
     for (const plyr of x ) {
       array4.push({
         plyrNo: plyr.plyrNo,
+        armor: []
+      })
+      // handleAiWeaponStateChange(plyr.plyrNo,'sword')
+    }
+    setAiArmor(array4);
+
+    let array5 = [];
+    for (const plyr of x ) {
+      array5.push({
+        plyrNo: plyr.plyrNo,
+        team: '',
+      })
+      // handleAiWeaponStateChange(plyr.plyrNo,'sword')
+    }
+    setAiTeam(array5);
+
+
+    let array6 = [];
+    for (const plyr of x ) {
+      array6.push({
+        plyrNo: plyr.plyrNo,
         mission: 'pursue'
       })
       // handleAiMissionStateChange(plyr.plyrNo,'pursue')
     }
-    setAiMission(array4);
+    setAiMission(array6);
 
 
-    let newArray = array4.map(y => y = {
+    let newArray = array6.map(y => y = {
       plyrNo: y.plyrNo,
       mission: y.mission,
       selected: []
@@ -722,7 +847,9 @@ const Settings = (props) => {
         random: aiRandom,
         mode: array2,
         weapon: array3,
-        mission: array4,
+        armor: array4,
+        team: array5,
+        mission: array6,
       })
 
 
@@ -759,25 +886,128 @@ const Settings = (props) => {
         count: aiCount,
         random: aiRandom,
         mode: aiMode,
-        weapon: aiWeapon,
+        weapon: aiWeapons,
+        armor: aiArmor,
+        team: aiTeam,
         mission: aiMission,
       })
 
   }
 
 
-  const [aiWeapon, setAiWeapon] = useState(preAiWeapon);
-  const handleAiWeaponStateChange = (plyrNo,value) => {
+  const [aiWeapons, setAiWeapons] = useState(preAiWeapons);
+  const handleAiWeaponsStateChange = (plyrNo,action,value) => {
+    // console.log('handleAiWeaponsStateChange',action);
 
+    let array = aiWeapons;
 
-    let array = aiWeapon;
     let plyr2 = array.find(elem => elem.plyrNo === plyrNo)
+    let plyr3 = aiArmor.find(elem => elem.plyrNo === plyrNo)
 
-    if (plyr2) {
-      plyr2.weapon = value;
+    if (value !== 'random' && action === true && plyr3.armor.length+plyr2.weapons.length === 4) {
+      console.log('inventory full ');
     }
-    setAiWeapon(array);
-    // console.log('setAiWeapon',aiWeapon,value,array);
+    else {
+
+      if (plyr2) {
+
+        if (value === 'random') {
+
+          plyr2.weapons = [weaponSet[props.rnJesus(0,weaponSet.length-1)]];
+
+        }
+        else {
+          if (action === true) {
+            plyr2.weapons.push(value)
+          }
+          else (
+            plyr2.weapons.splice(plyr2.weapons.indexOf(value),1)
+          )
+        }
+
+
+      }
+      setAiWeapons(array);
+      // console.log('setAiWeapons',aiWeapons,value,array);
+
+
+      props.updateSettingsFormAiData({
+          startItems: startItems,
+          count: aiCount,
+          random: aiRandom,
+          mode: aiMode,
+          weapon: aiWeapons,
+          armor: aiArmor,
+          team: aiTeam,
+          mission: aiMission,
+        })
+
+
+    }
+
+
+
+  }
+
+  const [aiArmor, setAiArmor] = useState(preAiArmor);
+  const handleAiArmorStateChange = (plyrNo,action,value) => {
+    // console.log('handleAiArmorStateChange',action);
+
+    let array = aiArmor;
+    let plyr2 = array.find(elem => elem.plyrNo === plyrNo)
+    let plyr3 = aiWeapons.find(elem => elem.plyrNo === plyrNo)
+
+    if (value !== 'random' && action === true && plyr2.armor.length+plyr3.weapons.length === 4) {
+      console.log('inventory full ');
+    }
+    else {
+
+      if (value === 'random') {
+
+        plyr2.armor = [armorSet[props.rnJesus(0,armorSet.length-1)]]
+
+      }
+      else {
+        if (action === true) {
+          plyr2.armor.push(value)
+        }
+        else (
+          plyr2.armor.splice(plyr2.armor.indexOf(value),1)
+        )
+      }
+      setAiArmor(array);
+      console.log('setAiArmor',aiArmor,value,array);
+
+
+      props.updateSettingsFormAiData({
+          startItems: startItems,
+          count: aiCount,
+          random: aiRandom,
+          mode: aiMode,
+          weapon: aiWeapons,
+          armor: aiArmor,
+          team: aiTeam,
+          mission: aiMission,
+        })
+
+    }
+
+
+
+  }
+
+
+  const [aiTeam, setAiTeam] = useState(preAiTeam);
+  const handleAiTeamStateChange = (plyrNo,value) => {
+
+
+    let array = aiTeam;
+    let plyr2 = array.find(elem => elem.plyrNo === plyrNo)
+    if (plyr2) {
+      plyr2.team = value;
+    }
+    setAiTeam(array);
+    // console.log('setAiMode',aiMode);
 
 
     props.updateSettingsFormAiData({
@@ -785,7 +1015,9 @@ const Settings = (props) => {
         count: aiCount,
         random: aiRandom,
         mode: aiMode,
-        weapon: aiWeapon,
+        weapon: aiWeapons,
+        armor: aiArmor,
+        team: aiTeam,
         mission: aiMission,
       })
 
@@ -831,7 +1063,9 @@ const Settings = (props) => {
         count: aiCount,
         random: aiRandom,
         mode: aiMode,
-        weapon: aiWeapon,
+        weapon: aiWeapons,
+        armor: aiArmor,
+        team: aiTeam,
         mission: aiMission,
       })
 
@@ -887,7 +1121,9 @@ const Settings = (props) => {
       count: aiCount,
       random: aiRandom,
       mode: aiMode,
-      weapon: aiWeapon,
+      weapon: aiWeapons,
+      armor: aiArmor,
+      team: aiTeam,
       mission: aiMission,
     })
 
@@ -938,46 +1174,19 @@ const Settings = (props) => {
             </Form.Control>
           </Form.Group>
 
-          <Form.Group as={Col} controlId="input" className="formGroup">
-            <Form.Label className="formLabel">Input Source</Form.Label>
-            <Form.Control value={input} onChange={e=>handleInputChange(e.target.value)} as="select">
-              <option>Keyboard</option>
-              <option>Gamepad</option>
-            </Form.Control>
-          </Form.Group>
 
-          <Form.Group as={Col} controlId="humanPlayers" className="formGroup">
-            <Form.Label className="formLabel">Players</Form.Label>
-            <Form.Control as="select" value={props.plyrStartPosList.length.toString()} onChange={e=>handlePlyrCountStateChange(e.target.value)}>
-              <option>2</option>
-              <option>1</option>
-            </Form.Control>
-          </Form.Group>
+          {
+            // <Form.Group as={Col} controlId="input" className="formGroup">
+            //   <Form.Label className="formLabel">Input Source</Form.Label>
+            //   <Form.Control value={input} onChange={e=>handleInputChange(e.target.value)} as="select">
+            //     <option>Keyboard</option>
+            //     <option>Gamepad</option>
+            //   </Form.Control>
+            // </Form.Group>
+          }
 
-        </Form.Row>
 
-        <Form.Row>
 
-        // map ply pos list
-        // add set inputs use state and handler,
-        // add set settings form inputs, to app.js and attach to this Components
-        // update settiings form inputs @app.js should update this.appropriate object w/ all input info
-        // if any plyr input is gamepad, parse settings and set this.globalgamepadconfig object,
-
-        //
-        // what to do if 2 plyrs select gamepads but only 1 is connect on game start
-
-        </Form.Row>
-
-        <Form.Group as={Col} controlId="input" className="formGroup">
-          <Form.Label className="formLabel">Input Source</Form.Label>
-          <Form.Control value={input} onChange={e=>handleInputChange(e.target.value)} as="select">
-            <option>Keyboard</option>
-            <option>Gamepad</option>
-          </Form.Control>
-        </Form.Group>
-
-        <Form.Row>
 
           <Form.Group as={Col} className="formGroup" controlId="startItems">
             <Form.Label className="formLabel">Start Items</Form.Label>
@@ -989,6 +1198,97 @@ const Settings = (props) => {
           </Form.Group>
 
         </Form.Row>
+
+
+        <Form.Row>
+
+          <Form.Group as={Col} controlId="humanPlayers" className="formGroup">
+            <Form.Label className="formLabel">Players</Form.Label>
+            <Form.Control as="select" value={props.plyrStartPosList.length.toString()} onChange={e=>handlePlyrCountStateChange(e.target.value)}>
+              <option>2</option>
+              <option>1</option>
+            </Form.Control>
+          </Form.Group>
+
+        </Form.Row>
+
+
+        {props.settingsFormPlayerData.input && (
+          <Row className="multiAiFormBox">
+
+          {props.settingsFormPlayerData.input.map((plyr) => (
+            <Col className="multiAiFormAi" sm={plyrStartPosWidth}>
+            <Form.Row>
+              <Form.Group as={Col} controlId="playerInput" className="formGroup">
+                <Form.Label className="formLabel">Player {plyr.plyrNo} Input</Form.Label>
+                <Form.Control as="select" value={plyr.input} onChange={e=>handlePlayerInputStateChange(plyr.plyrNo,e.target.value)}>
+                  <option>Keyboard</option>
+                  <option>Gamepad</option>
+                </Form.Control>
+              </Form.Group>
+            </Form.Row>
+            </Col>
+
+          ))}
+
+          {props.settingsFormPlayerData.team.map((plyr) => (
+            <Col className="multiAiFormAi" sm={plyrStartPosWidth}>
+            <Form.Row>
+              <Form.Group as={Col} controlId="playerTeam" className="formGroup">
+                <Form.Label className="formLabel">Player {plyr.plyrNo} Team</Form.Label>
+                <Form.Control as="select" value={plyr.team} onChange={e=>handlePlayerTeamStateChange(plyr.plyrNo,e.target.value)}>
+                  <option>Red</option>
+                  <option>Blue</option>
+                </Form.Control>
+              </Form.Group>
+            </Form.Row>
+            </Col>
+          ))}
+
+          </Row>
+
+
+        )}
+
+
+        {playerWeapons.length > 0 && (
+          <Row className="multiAiFormBox">
+            {playerWeapons.map((plyr) => (
+              <Col className="multiAiFormAi" sm={plyrStartPosWidth}>
+                <Form.Row>
+                  <Form.Group as={Col} controlId="playerWeapons" className="formGroup">
+                    <Form.Label className="formLabel">Player {plyr.plyrNo} Weapons (Inventory size: 4!)</Form.Label>
+                    {weaponSet.map((weapon) => (
+                      <Form.Check type="checkbox" checked={plyr.weapons.includes(weapon)} onChange={e=>handlePlayerWeaponsStateChange(plyr.plyrNo,e.target.checked,weapon)} label={weapon}/>
+                    ))}
+                    <FontAwesomeIcon onClick={e=>handlePlayerWeaponsStateChange(plyr.plyrNo,null,'random')} icon={faDice} size="sm" className="icon"/>
+                  </Form.Group>
+                </Form.Row>
+              </Col>
+
+            ))}
+          </Row>
+        )}
+
+
+        {playerArmor.length > 0 && (
+          <Row className="multiAiFormBox">
+            {playerArmor.map((plyr) => (
+              <Col className="multiAiFormAi" sm={plyrStartPosWidth}>
+                <Form.Row>
+                  <Form.Group as={Col} controlId="playerArmor" className="formGroup">
+                    <Form.Label className="formLabel">Player {plyr.plyrNo} Armor (Inventory size: 4!)</Form.Label>
+                    {armorSet.map((armor) => (
+                      <Form.Check type="checkbox" checked={plyr.armor.includes(armor)} onChange={e=>handlePlayerArmorStateChange(plyr.plyrNo,e.target.checked,armor)} label={armor}/>
+                    ))}
+                    <FontAwesomeIcon onClick={e=>handlePlayerArmorStateChange(plyr.plyrNo,null,'random')} icon={faDice} size="sm" className="icon"/>
+                  </Form.Group>
+                </Form.Row>
+              </Col>
+
+            ))}
+          </Row>
+        )}
 
 
         {props.showCanvasData.state === true &&
@@ -1092,19 +1392,38 @@ const Settings = (props) => {
         )}
 
 
-        {aiWeapon.length > 0 && (
+        {aiWeapons.length > 0 && (
           <Row className="multiAiFormBox">
-            {aiWeapon.map((plyr) => (
+            {aiWeapons.map((plyr) => (
               <Col className="multiAiFormAi" sm={multiAiFormAiMissionColWidth}>
                 <Form.Row>
                   <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
-                    <Form.Label className="formLabel">Ai {plyr.plyrNo} Weapon</Form.Label>
-                    <Form.Control as="select" value={plyr.weapon} onChange={e=>handleAiWeaponStateChange(plyr.plyrNo,e.target.value)}>
-                      <option>sword</option>
-                      <option>spear</option>
-                      <option>crossbow</option>
-                      <option>random</option>
-                    </Form.Control>
+                    <Form.Label className="formLabel">Ai {plyr.plyrNo} Weapons (Inventory size: 4!)</Form.Label>
+                    {weaponSet.map((weapon) => (
+                      <Form.Check type="checkbox" checked={plyr.weapons.includes(weapon)} onChange={e=>handleAiWeaponsStateChange(plyr.plyrNo,e.target.checked,weapon)} label={weapon}/>
+                    ))}
+                    <FontAwesomeIcon onClick={e=>handleAiWeaponsStateChange(plyr.plyrNo,null,'random')} icon={faDice} size="sm" className="icon"/>
+
+                  </Form.Group>
+                </Form.Row>
+              </Col>
+
+            ))}
+          </Row>
+        )}
+
+        {aiArmor.length > 0 && (
+          <Row className="multiAiFormBox">
+            {aiArmor.map((plyr) => (
+              <Col className="multiAiFormAi" sm={multiAiFormAiMissionColWidth}>
+                <Form.Row>
+                  <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
+                    <Form.Label className="formLabel">Ai {plyr.plyrNo} Armor (Inventory size: 4!)</Form.Label>
+                    {armorSet.map((armor) => (
+                      <Form.Check type="checkbox" checked={plyr.armor.includes(armor)} onChange={e=>handleAiArmorStateChange(plyr.plyrNo,e.target.checked,armor)} label={armor}/>
+                    ))}
+                    <FontAwesomeIcon onClick={e=>handleAiArmorStateChange(plyr.plyrNo,null,'random')} icon={faDice} size="sm" className="icon"/>
+
                   </Form.Group>
                 </Form.Row>
               </Col>
@@ -1126,6 +1445,25 @@ const Settings = (props) => {
                       <option>patrol</option>
                       <option>defend</option>
                       <option>random</option>
+                    </Form.Control>
+                  </Form.Group>
+                </Form.Row>
+              </Col>
+
+            ))}
+          </Row>
+        )}
+
+        {aiTeam.length > 0 && (
+          <Row className="multiAiFormBox">
+            {aiTeam.map((plyr) => (
+              <Col className="multiAiFormAi" sm={multiAiFormAiMissionColWidth}>
+                <Form.Row>
+                  <Form.Group as={Col} controlId="aiStartPos" className="formGroup">
+                    <Form.Label className="formLabel">Ai {plyr.plyrNo} Team</Form.Label>
+                    <Form.Control as="select" value={plyr.team} onChange={e=>handleAiTeamStateChange(plyr.plyrNo,e.target.value)}>
+                      <option>Red</option>
+                      <option>Blue</option>
                     </Form.Control>
                   </Form.Group>
                 </Form.Row>
@@ -1209,10 +1547,10 @@ const Settings = (props) => {
                           </Form.Label>
                         }
                         else {
-                          <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position
-                          <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
-                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start','random')} icon={faDice} size="sm" className="icon"/>
-                          </Form.Label>
+                          // <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position
+                          // <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                          // <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start','random')} icon={faDice} size="sm" className="icon"/>
+                          // </Form.Label>
                         }
                       })}
                       <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='start')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start',e.target.value)}>
@@ -1241,10 +1579,10 @@ const Settings = (props) => {
                           </Form.Label>
                         }
                         else {
-                          <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position
-                          <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_defend',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
-                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'defend','random')} icon={faDice} size="sm" className="icon"/>
-                          </Form.Label>
+                          // <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position
+                          // <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_defend',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                          // <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'defend','random')} icon={faDice} size="sm" className="icon"/>
+                          // </Form.Label>
                         }
                       })}
                       <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='defend')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'defend',e.target.value)}>
@@ -1278,10 +1616,10 @@ const Settings = (props) => {
                           </Form.Label>
                         }
                         else {
-                          <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position
-                          <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
-                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start','random')} icon={faDice} size="sm" className="icon"/>
-                          </Form.Label>
+                          // <Form.Label className="formLabel">Ai {posArray.plyrNo} Start Position
+                          // <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                          // <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start','random')} icon={faDice} size="sm" className="icon"/>
+                          // </Form.Label>
                         }
                       })}
                       <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='start')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start',e.target.value)}>
@@ -1308,10 +1646,10 @@ const Settings = (props) => {
                           </Form.Label>
                         }
                         else {
-                          <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 1
-                            <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_patrol1',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
-                            <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol1','random')} icon={faDice} size="sm" className="icon"/>
-                          </Form.Label>
+                          // <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 1
+                          //   <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_patrol1',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                          //   <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol1','random')} icon={faDice} size="sm" className="icon"/>
+                          // </Form.Label>
                         }
                       })}
                       <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='patrol1')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol1',e.target.value)}>
@@ -1338,10 +1676,10 @@ const Settings = (props) => {
                           </Form.Label>
                         }
                         else {
-                          <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 2
-                          <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_patrol2',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
-                          <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol2','random')} icon={faDice} size="sm" className="icon"/>
-                          </Form.Label>
+                          // <Form.Label className="formLabel">Ai {posArray.plyrNo} {posArray.mission} Position 2
+                          // <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'ai_patrol2',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
+                          // <FontAwesomeIcon onClick={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol2','random')} icon={faDice} size="sm" className="icon"/>
+                          // </Form.Label>
                         }
                       })}
                       <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='patrol2')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol2',e.target.value)}>
