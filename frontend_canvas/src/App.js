@@ -1852,7 +1852,7 @@ class App extends Component {
             limit: 6,
           },
         },
-        team: '',
+        team: 'Red',
       },
       {
         number: 2,
@@ -2341,7 +2341,7 @@ class App extends Component {
             limit: 6,
           },
         },
-        team: '',
+        team: 'Blue',
       }
     ];
 
@@ -3105,21 +3105,6 @@ class App extends Component {
     this.refs.comBImgAttackSheet.onload = () => {
       this.addListeners(canvas, canvas2);
 
-      this.drawGridInit(this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
-      this.getCustomPlyrStartPosList(
-        [
-          {
-            plyrNo: 1,
-            selected: undefined,
-            posArray: [],
-          },
-          {
-            plyrNo: 2,
-            selected: undefined,
-            posArray: [],
-          },
-        ]
-      );
       this.updateSettingsFormPlayerData(
         {
           input: [
@@ -3140,6 +3125,22 @@ class App extends Component {
           ]
         }
       )
+      this.drawGridInit(this.state.canvas, this.state.context, this.state.canvas2, this.state.context2);
+      this.getCustomPlyrStartPosList(
+        [
+          {
+            plyrNo: 1,
+            selected: undefined,
+            posArray: [],
+          },
+          {
+            plyrNo: 2,
+            selected: undefined,
+            posArray: [],
+          },
+        ]
+      );
+
 
       window.requestAnimationFrame(this.gameLoop);
 
@@ -4695,23 +4696,21 @@ class App extends Component {
     }
 
 
-    // props.updateSettingsFormPlayerData({
-    //     input: playerInput,
-    //     weapon: playerWeapons,
-    //     armor: playerArmor,
-    //     team: playerTeam,
-    //   })
-    //   this.gamepadConfig.push
-    //
-    // for (const plyr2 of this.settingsFormPlayerData) {
-    //
-    // }
 
-    let gamepad = false;
-    if (event.target.input.value === 'Gamepad') {
-      gamepad = true;
+    for (const plyr2 of this.settingsFormPlayerData.input) {
+        this.gamepadConfig.push({plyrNo:plyr2.plyrNo,input:plyr2.input})
+        if (plyr2.input === "Gamepad") {
+          this.gamepad = true;
+        }
     }
-    this.gamepad = gamepad;
+    if (!this.settingsFormPlayerData.input.find(x => x.input === "Gamepad")) {
+      this.gamepad = false;
+    }
+    for (const plyr3 of this.settingsFormPlayerData.team) {
+     this.players[plyr3.plyrNo-1].team = plyr3.team
+    }
+
+
 
 
     if (playerNumber < 2) {
@@ -5643,39 +5642,6 @@ class App extends Component {
     })
 
   }
-
-  //
-  // finish settings player data: input, weapon, team,
-
-
-    // on load settings, set global gamepadConfig based on form player input values,
-    // change playr waepons and ammo as well (check draw grid init)
-    //   plyr.items.ammo = plyr.items.ammo + ammo;
-    // give players the basic item for each type they choose
-    // {
-    //   weaponIndex: 0,
-    //   armorIndex: 0,
-    //   weapons: [
-    //     {
-    //       name: 'sword1',
-    //       type: 'sword',
-    //       effect: '',
-    //     },
-    //     {
-    //       name: 'crossbow1',
-    //       type: 'crossbow',
-    //       effect: '',
-    //     },
-    //     {
-    //       name: 'spear1',
-    //       type: 'spear',
-    //       effect: '',
-    //     }
-    //   ],
-    //   armor: [],
-    //   ammo: 20,
-    // };
-    // do same for armor
 
 
 
@@ -21724,7 +21690,8 @@ class App extends Component {
       }
 
 
-      // use this.settingsFormPlayerData for weapon, armor
+      // use this.settingsFormPlayerData.weapon
+      // use this.settingsFormPlayerData.armor
 
       // currentPosition = start psotion
       player.ghost.state = false;
