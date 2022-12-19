@@ -21620,18 +21620,6 @@ class App extends Component {
       loading: true
     })
 
-
-    if (type === 'soft') {
-      if (Object.keys(this.updateSettingsFormAiDataData).length !== 0) {
-        if (this.addAiCount.state !== true) {
-          this.loadAiSettings();
-        }
-
-      }
-    }
-
-
-
     this.time = 0;
     this.projectiles = [];
     this.mouseOverCell = {
@@ -21670,185 +21658,272 @@ class App extends Component {
         this.resetTarget(player);
 
 
-
-      }
-
-
-      // use this.settingsFormPlayerData.weapon
-      // use this.settingsFormPlayerData.armor
-
-      plyaer.currentPosition.cell = startPosition.cell;
-
-      
-      player.ghost.state = false;
-      player.speed.move = .1;
-      player.hp = 2;
-      player.points = 0;
-      player.drowning = false;
-      player.action = 'idle';
-      player.dodging = {
-        countState: false,
-        state: false,
-        count: 0,
-        limit: 20,
-        peak: {
-          start: 5,
-          end: 10,
+        let currentWeapon;
+        let currentArmor;
+        let items = {
+          weaponIndex: 0,
+          armorIndex: 0,
+          weapons: [],
+          armor: [],
+          ammo: 0,
         }
-      };
-      player.crits = {
-        singleHit: 1,
-        doubleHit: 6,
-        pushBack: 4,
-        guardBreak: 3,
-        dodge: 0,
-      };
-      player.items = {
-        weaponIndex: 0,
-        armorIndex: 0,
-        weapons: [
-          {
-            name: 'sword1',
-            type: 'sword',
-            effect: '',
-          },
-          {
-            name: 'crossbow1',
-            type: 'crossbow',
-            effect: '',
-          },
-          {
-            name: 'spear1',
-            type: 'spear',
-            effect: '',
+        //
+        //
+        //
+        // this.settingsFormPlayerData.armor
+        //
+        for (const weapon of this.settingsFormPlayerData.weapon) {
+
+          if (weapon.plyrNo === player.number) {
+
+            for (const weapon2 of weapon.weapons) {
+
+              let indx = weapon.weapons.indexOf(weapon2)
+              let itemRef = this.itemList.find(x => x.subType === weapon2)
+              if (indx === 0) {
+
+                currentWeapon = {
+                  name: itemRef.name,
+                  type: itemRef.subType,
+                  effect: itemRef.effect,
+                };
+                items.weapons.push(currentWeapon)
+                if (itemRef.effect.split("+")[0] === 'ammo') {
+                  items.ammo = parseInt(itemRef.effect.split('+')[1])
+                }
+
+
+              }
+              else {
+                let weapon3 = {
+                  name: itemRef.name,
+                  type: itemRef.subType,
+                  effect: itemRef.effect,
+                };
+                items.weapons.push(weapon3)
+                if (itemRef.effect.split("+")[0] === 'ammo') {
+                  items.ammo = parseInt(itemRef.effect.split('+')[1])
+                }
+              }
+
+            }
+
           }
-        ],
-        armor: [],
-        ammo: 20,
-      };
-      player.currentWeapon = {
-        name: 'sword1',
-        type: 'sword',
-        effect: '',
-      };
-      player.currentArmor = {};
-      player.strafing = {
-        state: false,
-        direction: '',
-      };
-      player.pushBack = {
-        state: false,
-        prePushBackMoveSpeed: 0,
-      };
-      player.itemDrop = {
-        state: false,
-        count: 0,
-        limit: 10,
-        item: {
-          name: '',
-        },
-        gear: {
+
+        }
+
+        for (const armor of this.settingsFormPlayerData.armor) {
+
+          if (armor.plyrNo === player.number) {
+
+            for (const armor2 of armor.armor) {
+
+              let indx = armor.armor.indexOf(armor2)
+              let itemRef = this.itemList.find(x => x.subType === armor2)
+              if (indx === 0) {
+
+                currentArmor = {
+                  name: itemRef.name,
+                  type: itemRef.subType,
+                  effect: itemRef.effect,
+                };
+                items.weapons.push(currentArmor)
+
+
+              }
+              else {
+                let armor3 = {
+                  name: itemRef.name,
+                  type: itemRef.subType,
+                  effect: itemRef.effect,
+                };
+                items.armor.push(armor3)
+              }
+
+            }
+
+          }
+
+        }
+
+        player.currentWeapon = currentWeapon;
+        player.currentArmor = currentArmor;
+        player.items = items;
+
+        player.currentPosition.cell = player.startPosition.cell;
+
+
+        player.ghost.state = false;
+        player.speed.move = .1;
+        player.hp = 2;
+        player.points = 0;
+        player.drowning = false;
+        player.action = 'idle';
+        player.dodging = {
+          countState: false,
+          state: false,
+          count: 0,
+          limit: 20,
+          peak: {
+            start: 5,
+            end: 10,
+          }
+        };
+        player.crits = {
+          singleHit: 1,
+          doubleHit: 6,
+          pushBack: 4,
+          guardBreak: 3,
+          dodge: 0,
+        };
+        player.items = {
+          weaponIndex: 0,
+          armorIndex: 0,
+          weapons: [
+            {
+              name: 'sword1',
+              type: 'sword',
+              effect: '',
+            },
+            {
+              name: 'crossbow1',
+              type: 'crossbow',
+              effect: '',
+            },
+            {
+              name: 'spear1',
+              type: 'spear',
+              effect: '',
+            }
+          ],
+          armor: [],
+          ammo: 20,
+        };
+        player.currentWeapon = {
+          name: 'sword1',
+          type: 'sword',
+          effect: '',
+        };
+        player.currentArmor = {};
+        player.strafing = {
+          state: false,
+          direction: '',
+        };
+        player.pushBack = {
+          state: false,
+          prePushBackMoveSpeed: 0,
+        };
+        player.itemDrop = {
+          state: false,
+          count: 0,
+          limit: 10,
+          item: {
+            name: '',
+          },
+          gear: {
+            type: '',
+          }
+        };
+        player.itemPickup = {
+          state: false,
+          count: 0,
+          limit: 10,
+          item: {
+            name: '',
+          },
+          gear: {
+            type: '',
+          }
+        };
+        player.jumping = {
+          checking: false,
+          state: false,
+        };
+        player.stamina = {
+          current: 20,
+          max: 20,
+        };
+        player.defendDecay = {
+          state: false,
+          count: 0,
+          limit: 25,
+        };
+        player.dodging = {
+          countState: false,
+          state: false,
+          count: 0,
+          limit: 20,
+          peak: {
+            start: 5,
+            end: 10,
+          }
+        };
+        player.defending = {
+          state: false,
+          count: 0,
+          limit: 4,
+        };
+        player.flanking = {
+          checking: false,
+          preFlankDirection: '',
+          direction: '',
+          state: false,
+          step: 0,
+          target1: {x:0 ,y:0},
+          target2: {x:0 ,y:0},
+        };
+        player.prePush = {
+          state: false,
+          count: 0,
+          limit: 15,
+          targetCell: undefined,
+          direction: "",
+          pusher: undefined,
+        };
+        player.pushing = {
+          state: false,
+          targetCell: undefined,
+          moveSpeed: 0,
+        };
+        player.prePull = {
+          state: false,
+          count: 0,
+          limit: 15,
+          targetCell: undefined,
+          direction: "",
+          puller: undefined,
+        };
+        player.pulling = {
+          state: false,
+          targetCell: undefined,
+          moveSpeed: 0,
+        };
+        player.postPull = {
+          state: false,
+          count: 0,
+          limit: player.postPull.limit
+        }
+        player.pushed = {
+          state: false,
+          pusher: 0,
+          moveSpeed: 0,
+        };
+        player.pulled = {
+          state: false,
+          puller: 0,
+          moveSpeed: 0,
+        };
+        player.popups = [{
+          state: true,
+          count: 0,
+          limit: 0,
           type: '',
-        }
-      };
-      player.itemPickup = {
-        state: false,
-        count: 0,
-        limit: 10,
-        item: {
-          name: '',
-        },
-        gear: {
-          type: '',
-        }
-      };
-      player.jumping = {
-        checking: false,
-        state: false,
-      };
-      player.stamina = {
-        current: 20,
-        max: 20,
-      };
-      player.defendDecay = {
-        state: false,
-        count: 0,
-        limit: 25,
-      };
-      player.dodging = {
-        countState: false,
-        state: false,
-        count: 0,
-        limit: 20,
-        peak: {
-          start: 5,
-          end: 10,
-        }
-      };
-      player.defending = {
-        state: false,
-        count: 0,
-        limit: 4,
-      };
-      player.flanking = {
-        checking: false,
-        preFlankDirection: '',
-        direction: '',
-        state: false,
-        step: 0,
-        target1: {x:0 ,y:0},
-        target2: {x:0 ,y:0},
-      };
-      player.prePush = {
-        state: false,
-        count: 0,
-        limit: 15,
-        targetCell: undefined,
-        direction: "",
-        pusher: undefined,
-      };
-      player.pushing = {
-        state: false,
-        targetCell: undefined,
-        moveSpeed: 0,
-      };
-      player.prePull = {
-        state: false,
-        count: 0,
-        limit: 15,
-        targetCell: undefined,
-        direction: "",
-        puller: undefined,
-      };
-      player.pulling = {
-        state: false,
-        targetCell: undefined,
-        moveSpeed: 0,
-      };
-      player.postPull = {
-        state: false,
-        count: 0,
-        limit: player.postPull.limit
+          position: 'northWest',
+          msg: '',
+          img: '',
+        }];
+
       }
-      player.pushed = {
-        state: false,
-        pusher: 0,
-        moveSpeed: 0,
-      };
-      player.pulled = {
-        state: false,
-        puller: 0,
-        moveSpeed: 0,
-      };
-      player.popups = [{
-        state: true,
-        count: 0,
-        limit: 0,
-        type: '',
-        position: 'northWest',
-        msg: '',
-        img: '',
-      }];
 
 
     }
@@ -21871,6 +21946,14 @@ class App extends Component {
 
     this.drawGridInit(this.state.canvas, this.state.context, this.state.canvas2, this.state.context2, this.state.canvas3, this.state.context3);
 
+    if (type === 'soft') {
+      if (Object.keys(this.updateSettingsFormAiDataData).length !== 0) {
+        if (this.addAiCount.state !== true) {
+          this.loadAiSettings();
+        }
+
+      }
+    }
 
   }
 
@@ -22024,55 +22107,78 @@ class App extends Component {
 
       if (checkCell === true) {
 
-        currentWeapon: {
-          name: this.aiInitSettings.weapon.name,
-          type: this.aiInitSettings.weapon.type,
-          effect: this.aiInitSettings.weapon.effect,
-        },
-        currentArmor: {
-          name: this.aiInitSettings.armor.name,
-          type: this.aiInitSettings.armor.type,
-          effect: this.aiInitSettings.armor.effect,
-        },
-        items: {
+
+
+        let currentWeapon;
+        let currentArmor;
+        let items = {
           weaponIndex: 0,
           armorIndex: 0,
-          weapons: [{
-            name: this.aiInitSettings.weapon.name,
-            type: this.aiInitSettings.weapon.type,
-            effect: this.aiInitSettings.weapon.effect,
-          }],
-          armor: [{
-            name: this.aiInitSettings.armor.name,
-            type: this.aiInitSettings.armor.type,
-            effect: this.aiInitSettings.armor.effect,
-          }],
+          weapons: [],
+          armor: [],
           ammo: 0,
-        },
-        currentWeapon
-        currentArmor
-        items
-        this.aiInitSettings.weapons
-        this.aiInitSettings.armor
+        }
 
 
 
-        {
-          name: 'crossbow2',
-          amount: 2,
-          total: 2,
-          type: 'weapon',
-          subType: 'crossbow',
-          effect: 'ammo+0',
-        },
-        {
-          name: 'helmet1',
-          amount: 3,
-          total: 3,
-          type: 'armor',
-          subType: 'helmet',
-          effect: '+10',
-        },
+        for (const weapon of this.aiInitSettings.weapons) {
+
+          let indx = this.aiInitSettings.weapons.indexOf(weapon)
+          let itemRef = this.itemList.find(x => x.subType === weapon)
+          if (indx === 0) {
+
+            currentWeapon = {
+              name: itemRef.name,
+              type: itemRef.subType,
+              effect: itemRef.effect,
+            };
+            items.weapons.push(currentWeapon)
+            if (itemRef.effect.split("+")[0] === 'ammo') {
+              items.ammo = parseInt(itemRef.effect.split('+')[1])
+            }
+
+
+          }
+          else {
+            let weapon = {
+              name: itemRef.name,
+              type: itemRef.subType,
+              effect: itemRef.effect,
+            };
+            items.weapons.push(weapon)
+            if (itemRef.effect.split("+")[0] === 'ammo') {
+              items.ammo = parseInt(itemRef.effect.split('+')[1])
+            }
+          }
+
+        }
+        for (const armor of this.aiInitSettings.armor) {
+
+          let indx = this.aiInitSettings.armor.indexOf(armor)
+          let itemRef = this.itemList.find(x => x.subType === armor)
+          if (indx === 0) {
+
+            currentArmor = {
+              name: itemRef.name,
+              type: itemRef.subType,
+              effect: itemRef.effect,
+            };
+            items.armor.push(currentArmor)
+
+
+          }
+          else {
+            let armor = {
+              name: itemRef.name,
+              type: itemRef.subType,
+              effect: itemRef.effect,
+            };
+            items.armor.push(armor)
+          }
+
+        }
+
+
 
 
         let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y)
