@@ -3002,16 +3002,9 @@ class App extends Component {
         {x: 8, y: 6},
         // {x: 7, y: 4}
       ],
-      weapon: {
-        name: 'spear1',
-        type: 'spear',
-        effect: '',
-      },
-      armor: {
-        name: '',
-        type: '',
-        effect: '',
-      },
+      weapons: [],
+      armor: [],
+      team: ''
     }
     this.addAiPlayerKeyPress = false;
     this.addAiCount = {
@@ -4770,6 +4763,8 @@ class App extends Component {
         random: x.random,
         mode: null,
         weapon: null,
+        armor: null,
+        team: null,
         mission: null,
         startPos: null,
         otherPositions: [],
@@ -4802,30 +4797,26 @@ class App extends Component {
         for (const elem2 of this.updateSettingsFormAiDataData.weapon) {
           if (elem2.plyrNo === plyr.plyrNo) {
 
-            if (elem2.weapon === 'random') {
-              let whatWeapon = this.rnJesus(1,3);
+            plyr.weapon = elem2.weapons;
+          }
+        }
 
-              switch(whatWeapon) {
-                case 1:
-                  elem2.weapon = 'sword'
-                break;
-                case 2:
-                  elem2.weapon = 'spear'
-                break;
-                case 3:
-                  elem2.weapon = 'crossbow'
-                break;
-              }
+        for (const elem5 of this.updateSettingsFormAiDataData.armor) {
+          if (elem5.plyrNo === plyr.plyrNo) {
 
-            }
-
-            plyr.weapon = elem2.weapon;
+            plyr.armor = elem5.armor;
           }
         }
 
         for (const elem3 of this.updateSettingsFormAiDataData.mission) {
           if (elem3.plyrNo === plyr.plyrNo) {
             plyr.mission = elem3.mission;
+          }
+        }
+
+        for (const elem6 of this.updateSettingsFormAiDataData.team) {
+          if (elem6.plyrNo === plyr.plyrNo) {
+            plyr.team = elem6.team;
           }
         }
 
@@ -4878,16 +4869,9 @@ class App extends Component {
               mission: undefined,
               mode: elem5.mode,
               partolArea: elem5.otherPositions,
-              weapon: {
-                name: elem5.weapon+'1',
-                type: elem5.weapon,
-                effect: '',
-              },
-              armor: {
-                name: '',
-                type: '',
-                effect: '',
-              },
+              weapons: elem5.weapon,
+              armor: elem5.armor,
+              team: elem5.team,
             }
 
             this.addAiPlayer();
@@ -21693,7 +21677,9 @@ class App extends Component {
       // use this.settingsFormPlayerData.weapon
       // use this.settingsFormPlayerData.armor
 
-      // currentPosition = start psotion
+      plyaer.currentPosition.cell = startPosition.cell;
+
+      
       player.ghost.state = false;
       player.speed.move = .1;
       player.hp = 2;
@@ -22038,6 +22024,57 @@ class App extends Component {
 
       if (checkCell === true) {
 
+        currentWeapon: {
+          name: this.aiInitSettings.weapon.name,
+          type: this.aiInitSettings.weapon.type,
+          effect: this.aiInitSettings.weapon.effect,
+        },
+        currentArmor: {
+          name: this.aiInitSettings.armor.name,
+          type: this.aiInitSettings.armor.type,
+          effect: this.aiInitSettings.armor.effect,
+        },
+        items: {
+          weaponIndex: 0,
+          armorIndex: 0,
+          weapons: [{
+            name: this.aiInitSettings.weapon.name,
+            type: this.aiInitSettings.weapon.type,
+            effect: this.aiInitSettings.weapon.effect,
+          }],
+          armor: [{
+            name: this.aiInitSettings.armor.name,
+            type: this.aiInitSettings.armor.type,
+            effect: this.aiInitSettings.armor.effect,
+          }],
+          ammo: 0,
+        },
+        currentWeapon
+        currentArmor
+        items
+        this.aiInitSettings.weapons
+        this.aiInitSettings.armor
+
+
+
+        {
+          name: 'crossbow2',
+          amount: 2,
+          total: 2,
+          type: 'weapon',
+          subType: 'crossbow',
+          effect: 'ammo+0',
+        },
+        {
+          name: 'helmet1',
+          amount: 3,
+          total: 3,
+          type: 'armor',
+          subType: 'helmet',
+          effect: '+10',
+        },
+
+
         let cell2 = this.gridInfo.find(elem => elem.number.x === cell.x && elem.number.y === cell.y)
         let newPlayer = {
           number: newPlayerNumber,
@@ -22272,31 +22309,9 @@ class App extends Component {
             speed: 0,
           },
           hp: 2,
-          currentWeapon: {
-            name: this.aiInitSettings.weapon.name,
-            type: this.aiInitSettings.weapon.type,
-            effect: this.aiInitSettings.weapon.effect,
-          },
-          currentArmor: {
-            name: this.aiInitSettings.armor.name,
-            type: this.aiInitSettings.armor.type,
-            effect: this.aiInitSettings.armor.effect,
-          },
-          items: {
-            weaponIndex: 0,
-            armorIndex: 0,
-            weapons: [{
-              name: this.aiInitSettings.weapon.name,
-              type: this.aiInitSettings.weapon.type,
-              effect: this.aiInitSettings.weapon.effect,
-            }],
-            armor: [{
-              name: this.aiInitSettings.armor.name,
-              type: this.aiInitSettings.armor.type,
-              effect: this.aiInitSettings.armor.effect,
-            }],
-            ammo: 0,
-          },
+          currentWeapon: currentWeapon,
+          currentArmor: currentArmor,
+          items: items,
           inventorySize: 4,
           cycleWeapon: {
             state: false,
@@ -22531,7 +22546,7 @@ class App extends Component {
               limit: 6,
             },
           },
-          team: '',
+          team: this.aiInitSettings.team,
         }
 
 
