@@ -35811,56 +35811,56 @@ class App extends Component {
           //         }
           //         finalAnimIndex = animIndex2;
           //       }
-              break;
-              case 'idle':
-                if (plyr.number === 1) {
-                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-                }
-                if (plyr.number === 2) {
-                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-                }
-                let animIndex3 = plyr.idleAnim.count +1;
-                finalAnimIndex = animIndex3;
-              break;
-              case 'falling':
-                let animIndex4 = plyr.falling.count -1;
-                finalAnimIndex = animIndex4;
-                // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
-              break;
-              case 'deflected':
-                let animIndex5 = plyr.success.deflected.count -1;
-                // let animIndex5;
-                if (plyr.success.deflected.count > 10 && plyr.success.deflected.count < 21) {
-                  animIndex5 = (plyr.success.deflected.count-10);
-                }
-                if (plyr.success.deflected.count > 20 && plyr.success.deflected.count < 31) {
-                  animIndex5 = (plyr.success.deflected.count-20);
-                }
-                if (plyr.success.deflected.count > 30 && plyr.success.deflected.count < 41) {
-                  animIndex5 = (plyr.success.deflected.count-30);
-                }
-                if (plyr.success.deflected.count > 40 && plyr.success.deflected.count < 51) {
-                  animIndex5 = (plyr.success.deflected.count-40);
-                }
-                if (plyr.halfPushBack.state === true) {
-                  if (plyr.halfPushBack.countUp.state === true) {
-                    animIndex5 = plyr.halfPushBack.countUp.count-1;
-                  }
-                  if (plyr.halfPushBack.countDown.state === true) {
-                    animIndex5 = plyr.halfPushBack.countDown.count-1;
-                  }
-                }
-                finalAnimIndex = animIndex5;
-                // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
-              break;
-              case 'dodging':
-                let animIndex7 = plyr.dodging.count -1;
-                finalAnimIndex = animIndex7;
-                // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
-              break;
-            }
-
-          }
+          //     break;
+          //     case 'idle':
+          //       if (plyr.number === 1) {
+          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+          //       }
+          //       if (plyr.number === 2) {
+          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+          //       }
+          //       let animIndex3 = plyr.idleAnim.count +1;
+          //       finalAnimIndex = animIndex3;
+          //     break;
+          //     case 'falling':
+          //       let animIndex4 = plyr.falling.count -1;
+          //       finalAnimIndex = animIndex4;
+          //       // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
+          //     break;
+          //     case 'deflected':
+          //       let animIndex5 = plyr.success.deflected.count -1;
+          //       // let animIndex5;
+          //       if (plyr.success.deflected.count > 10 && plyr.success.deflected.count < 21) {
+          //         animIndex5 = (plyr.success.deflected.count-10);
+          //       }
+          //       if (plyr.success.deflected.count > 20 && plyr.success.deflected.count < 31) {
+          //         animIndex5 = (plyr.success.deflected.count-20);
+          //       }
+          //       if (plyr.success.deflected.count > 30 && plyr.success.deflected.count < 41) {
+          //         animIndex5 = (plyr.success.deflected.count-30);
+          //       }
+          //       if (plyr.success.deflected.count > 40 && plyr.success.deflected.count < 51) {
+          //         animIndex5 = (plyr.success.deflected.count-40);
+          //       }
+          //       if (plyr.halfPushBack.state === true) {
+          //         if (plyr.halfPushBack.countUp.state === true) {
+          //           animIndex5 = plyr.halfPushBack.countUp.count-1;
+          //         }
+          //         if (plyr.halfPushBack.countDown.state === true) {
+          //           animIndex5 = plyr.halfPushBack.countDown.count-1;
+          //         }
+          //       }
+          //       finalAnimIndex = animIndex5;
+          //       // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
+          //     break;
+          //     case 'dodging':
+          //       let animIndex7 = plyr.dodging.count -1;
+          //       finalAnimIndex = animIndex7;
+          //       // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
+          //     break;
+          //   }
+          //
+          // }
           // FOR TESTING BY CALLING ONLY @ 1 CELL
 
 
@@ -37264,7 +37264,7 @@ class App extends Component {
           }
 
 
-          // PLAYER POPUPS & TRACKING OUTLINES
+          // PLAYER POPUPS
           if (x === this.gridWidth && y === this.gridWidth ) {
 
             let popupBorderColor = this.playerColourRef['player'+plyr.number+''];
@@ -37281,6 +37281,21 @@ class App extends Component {
                     let currentPopups = plyr.popups.filter(x=>x.state === true);
                     // let positions = ['north','east','south','west','northEast','southEast','southWest']
                     let positions = ['north','east','south','west','northEast','northWest','southEast','southWest']
+
+
+                    if (plyr.strafing.state === true) {
+                      if (positions[0] === plyr.strafing.direction) {
+                        const first = positions.shift();
+                        positions.push(first);
+                      }
+                    }
+                    else {
+                      if (positions[0] === plyr.direction) {
+                        const first = positions.shift();
+                        positions.push(first);
+                      }
+                    }
+
 
                     // REMOVE POSITIONS ALREADY TAKEN BY PLAYERS' OTHER POPUPS
                     for (const popup2 of currentPopups) {
@@ -37622,6 +37637,7 @@ class App extends Component {
                   }
                 }
               }
+
             }
 
           }
