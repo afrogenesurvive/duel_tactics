@@ -4699,7 +4699,7 @@ class App extends Component {
 
 
     for (const plyr2 of this.settingsFormPlayerData.input) {
-        this.gamepadConfig.push({plyrNo:plyr2.plyrNo,input:plyr2.input,type:''})
+        this.gamepadConfig.push({plyrNo:plyr2.plyrNo,input:plyr2.input,type:'',id:'',mapping: ''})
         if (plyr2.input === "Gamepad") {
           this.gamepad = true;
         }
@@ -11249,6 +11249,7 @@ class App extends Component {
               // TARGET ADVANTAGE/ EVENLY MATCHED
               if (advantage === 0 || advantage === 2) {
                 console.log('evenly matched. peak',targetPlayerRef.defendPeak,'defending',targetPlayerRef.defending,'decay',targetPlayerRef.defendDecay);
+
                 // PEAK DEFEND
                 if (targetPlayerRef.defendPeak === true) {
                   console.log('yyy');
@@ -11437,7 +11438,7 @@ class App extends Component {
 
       // BOLT NOT DODGED MUST HIT PLAYER
       bolt.kill = true;
-
+      console.log('kill bolt 1');
       // BOLT TARGET NOT DODGING
       // BACK ATTACK
       if (player.direction === bolt.direction) {
@@ -34920,7 +34921,7 @@ class App extends Component {
                     plyr.number !== bolt.owner
                   ) {
 
-                    this.projectileAttackParse(bolt,player);
+                    this.projectileAttackParse(bolt,plyr);
 
                   }
 
