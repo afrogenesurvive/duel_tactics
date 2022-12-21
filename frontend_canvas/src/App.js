@@ -11034,7 +11034,8 @@ class App extends Component {
                 }
 
                 // OFF PEAK DEFEND. DEFENSE NOT GUARANTEED
-                if (targetPlayerRef.defendDecay.state === true && targetPlayerRef.defendPeak !== true) {
+                // if (targetPlayerRef.defendDecay.state === true && targetPlayerRef.defendPeak !== true) {
+                if (targetPlayerRef.defendPeak !== true) {
 
 
                   // DEFEND SUCCESS
@@ -11241,14 +11242,16 @@ class App extends Component {
               }
 
             }
+
             // ATTACKER NON-BLUNT ATTACK
             else {
 
               // TARGET ADVANTAGE/ EVENLY MATCHED
               if (advantage === 0 || advantage === 2) {
-
+                console.log('evenly matched. peak',targetPlayerRef.defendPeak,'defending',targetPlayerRef.defending,'decay',targetPlayerRef.defendDecay);
                 // PEAK DEFEND
                 if (targetPlayerRef.defendPeak === true) {
+                  console.log('yyy');
 
                   this.setDeflection(player,'parried',true);
 
@@ -11283,7 +11286,8 @@ class App extends Component {
                 }
 
                 // OFF PEAK DEFEND
-                if (targetPlayerRef.defendDecay.state === true && targetPlayerRef.defendPeak !== true) {
+                if (targetPlayerRef.defendPeak !== true) {
+                // if (targetPlayerRef.defendDecay.state === true && targetPlayerRef.defendPeak !== true) {
 
                   // PUSHBACK AND/OR DEFLECT ATTACKER/PLAYER?
                   if (this.rnJesus(1,player.crits.pushBack) === 1) {
@@ -11327,7 +11331,7 @@ class App extends Component {
 
               // PLAYER/ATTACKER ADVANTAGE
               if (advantage === 1) {
-
+                console.log('aaa');
                 this.handleMeleeDamage(player,targetPlayerRef);
                 this.setDeflection(targetPlayerRef,'attacked',false);
                 player.success.attackSuccess = {
@@ -11533,7 +11537,8 @@ class App extends Component {
 
             }
 
-            if (player.defendDecay.state === true && player.defendPeak !== true) {
+            // if (player.defendDecay.state === true && player.defendPeak !== true) {
+            if (player.defendPeak !== true) {
 
               // CHANCE FOR DEFEND SUCCESS
               if (this.rnJesus(0,player.crits.guardBreak) === 0) {
@@ -11676,7 +11681,8 @@ class App extends Component {
             }
 
             // UNARMED OFF PEAK DEFEND, CHANCE TO DEFEND OR DAMAGE/DEFLECTED
-            if (player.defendDecay.state === true && player.defendPeak !== true) {
+            // if (player.defendDecay.state === true && player.defendPeak !== true) {
+            if (player.defendPeak !== true) {
 
               if (this.rnJesus(0,1) === 0) {
 
@@ -11753,7 +11759,8 @@ class App extends Component {
 
             }
 
-            if (player.defendDecay.state === true && player.defendPeak !== true) {
+            // if (player.defendDecay.state === true && player.defendPeak !== true) {
+            if (player.defendPeak !== true) {
 
               player.success.defendSuccess = {
                 state: true,
@@ -12411,7 +12418,7 @@ class App extends Component {
     // console.log('player', player.number,' attacked. Cancel action!',player.action);
 
     if (player.elasticCounter.state === true && player.elasticCounter.type === player.action) {
-      console.log('here',player.action);
+
       player.elasticCounter.state = false;
     }
 
@@ -21658,6 +21665,21 @@ class App extends Component {
     this.obstacleItemsToDrop = [];
     this.obstaclesOutOfBoundsFall = [];
     this.cellPopups = [];
+    this.aiDeflectedCheck = [];
+    this.bloodSacrificeEvent = {
+      state: false,
+      count: 0,
+      limit: 100,
+      restore: false,
+    };
+    this.openVoid = false;
+    this.cellToVoid = {
+      state: false,
+      x: 0,
+      y: 0,
+      count: 0,
+      limit: 35,
+    };
 
     for (const player of this.players) {
 
@@ -30732,7 +30754,7 @@ class App extends Component {
 
           // PEAK, START DECAY
           else if (player.defending.count >= defendPeak && player.defendDecay.state !== true) {
-           // console.log('peak defend player',player.number);
+           console.log('peak defend player',player.number);
 
            if (player.stamina.current - this.staminaCostRef.defend.peak >= 0) {
 
@@ -30983,6 +31005,7 @@ class App extends Component {
           if (player.crits.dodge > 5) {
             player.crits.dodge = 5;
           }
+          // START & ENDMODS CAN'T MAKE DODGE WIND UP & COOLDOWN < 2
           if (player.dodging.peak.start - startMod < 2) {
             startMod = player.dodging.peak.start-2;
           }
