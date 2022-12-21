@@ -30754,10 +30754,10 @@ class App extends Component {
 
           // PEAK, START DECAY
           else if (player.defending.count >= defendPeak && player.defendDecay.state !== true) {
-           console.log('peak defend player',player.number);
+           // console.log('peak defend player',player.number);
 
            if (player.stamina.current - this.staminaCostRef.defend.peak >= 0) {
-
+             player.action = 'defending';
              player.defending = {
                state: true,
                count: 0,
@@ -30829,6 +30829,7 @@ class App extends Component {
           // DECAY!!
           if (player.defendDecay.state === true) {
             if (player.defendDecay.count < player.defendDecay.limit) {
+              player.action = 'defending';
               player.defendDecay.count++;
               if (player.defendDecay.count === 5 ) {
                 player.defendPeak = false;
@@ -35779,66 +35780,87 @@ class App extends Component {
           //       // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
           //     break;
           //     case 'defending':
-          //       if (plyr.defending.count > 0) {
-          //         let animIndex2 = plyr.defending.count -1;
-          //         finalAnimIndex = animIndex2;
-          //         // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
-          //       }
-          //       if (plyr.defending.count === 0) {
-          //         let animIndex2a = 5;
-          //         finalAnimIndex = animIndex2a;
-          //         // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
-          //       }
-          //     break;
-          //     case 'idle':
-          //       if (plyr.number === 1) {
-          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-          //       }
-          //       if (plyr.number === 2) {
-          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-          //       }
-          //       let animIndex3 = plyr.idleAnim.count +1;
-          //       finalAnimIndex = animIndex3;
-          //     break;
-          //     case 'falling':
-          //       let animIndex4 = plyr.falling.count -1;
-          //       finalAnimIndex = animIndex4;
-          //       // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
-          //     break;
-          //     case 'deflected':
-          //       let animIndex5 = plyr.success.deflected.count -1;
-          //       // let animIndex5;
-          //       if (plyr.success.deflected.count > 10 && plyr.success.deflected.count < 21) {
-          //         animIndex5 = (plyr.success.deflected.count-10);
-          //       }
-          //       if (plyr.success.deflected.count > 20 && plyr.success.deflected.count < 31) {
-          //         animIndex5 = (plyr.success.deflected.count-20);
-          //       }
-          //       if (plyr.success.deflected.count > 30 && plyr.success.deflected.count < 41) {
-          //         animIndex5 = (plyr.success.deflected.count-30);
-          //       }
-          //       if (plyr.success.deflected.count > 40 && plyr.success.deflected.count < 51) {
-          //         animIndex5 = (plyr.success.deflected.count-40);
-          //       }
-          //       if (plyr.halfPushBack.state === true) {
-          //         if (plyr.halfPushBack.countUp.state === true) {
-          //           animIndex5 = plyr.halfPushBack.countUp.count-1;
-          //         }
-          //         if (plyr.halfPushBack.countDown.state === true) {
-          //           animIndex5 = plyr.halfPushBack.countDown.count-1;
-          //         }
-          //       }
-          //       finalAnimIndex = animIndex5;
-          //       // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
-          //     break;
-          //     case 'dodging':
-          //       let animIndex7 = plyr.dodging.count -1;
-          //       finalAnimIndex = animIndex7;
-          //       // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
-          //     break;
-          //   }
+          //       let animIndex2 = plyr.defending.count -1;
           //
-          // }
+          //       if (plyr.defendDecay.state !== true) {
+          //         if (plyr.defending.count > 0) {
+          //
+          //           finalAnimIndex = animIndex2;
+          //           // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
+          //         }
+          //         if (plyr.defending.count === 0) {
+          //           let animIndex2a = 5;
+          //           finalAnimIndex = animIndex2a;
+          //           // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
+          //         }
+          //       }
+          //       if (plyr.defendDecay.state === true) {
+          //         if (plyr.defendDecay.count < 11) {
+          //           animIndex2 = plyr.defendDecay.count-1;
+          //         }
+          //         else {
+          //
+          //           if (plyr.defendDecay.count%10 === 0) {
+          //             animIndex2 = 9;
+          //           }
+          //           else {
+          //             let mod = (Math.floor(plyr.defendDecay.count/10)*10)
+          //             animIndex2 = (plyr.defendDecay.count-mod)-1;
+          //           }
+          //
+          //         }
+          //         finalAnimIndex = animIndex2;
+          //       }
+              break;
+              case 'idle':
+                if (plyr.number === 1) {
+                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+                }
+                if (plyr.number === 2) {
+                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+                }
+                let animIndex3 = plyr.idleAnim.count +1;
+                finalAnimIndex = animIndex3;
+              break;
+              case 'falling':
+                let animIndex4 = plyr.falling.count -1;
+                finalAnimIndex = animIndex4;
+                // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
+              break;
+              case 'deflected':
+                let animIndex5 = plyr.success.deflected.count -1;
+                // let animIndex5;
+                if (plyr.success.deflected.count > 10 && plyr.success.deflected.count < 21) {
+                  animIndex5 = (plyr.success.deflected.count-10);
+                }
+                if (plyr.success.deflected.count > 20 && plyr.success.deflected.count < 31) {
+                  animIndex5 = (plyr.success.deflected.count-20);
+                }
+                if (plyr.success.deflected.count > 30 && plyr.success.deflected.count < 41) {
+                  animIndex5 = (plyr.success.deflected.count-30);
+                }
+                if (plyr.success.deflected.count > 40 && plyr.success.deflected.count < 51) {
+                  animIndex5 = (plyr.success.deflected.count-40);
+                }
+                if (plyr.halfPushBack.state === true) {
+                  if (plyr.halfPushBack.countUp.state === true) {
+                    animIndex5 = plyr.halfPushBack.countUp.count-1;
+                  }
+                  if (plyr.halfPushBack.countDown.state === true) {
+                    animIndex5 = plyr.halfPushBack.countDown.count-1;
+                  }
+                }
+                finalAnimIndex = animIndex5;
+                // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
+              break;
+              case 'dodging':
+                let animIndex7 = plyr.dodging.count -1;
+                finalAnimIndex = animIndex7;
+                // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
+              break;
+            }
+
+          }
           // FOR TESTING BY CALLING ONLY @ 1 CELL
 
 
@@ -35948,16 +35970,38 @@ class App extends Component {
               // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
             break;
             case 'defending':
-              if (plyr.defending.count > 0) {
-                let animIndex2 = plyr.defending.count -1;
+              let animIndex2 = plyr.defending.count -1;
+
+              if (plyr.defendDecay.state !== true) {
+                if (plyr.defending.count > 0) {
+
+                  finalAnimIndex = animIndex2;
+                  // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
+                }
+                if (plyr.defending.count === 0) {
+                  let animIndex2a = 5;
+                  finalAnimIndex = animIndex2a;
+                  // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
+                }
+              }
+              if (plyr.defendDecay.state === true) {
+                if (plyr.defendDecay.count < 11) {
+                  animIndex2 = plyr.defendDecay.count-1;
+                }
+                else {
+
+                  if (plyr.defendDecay.count%10 === 0) {
+                    animIndex2 = 9;
+                  }
+                  else {
+                    let mod = (Math.floor(plyr.defendDecay.count/10)*10)
+                    animIndex2 = (plyr.defendDecay.count-mod)-1;
+                  }
+
+                }
                 finalAnimIndex = animIndex2;
-                // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
               }
-              if (plyr.defending.count === 0) {
-                let animIndex2a = 5;
-                finalAnimIndex = animIndex2a;
-                // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
-              }
+
             break;
             case 'idle':
               if (plyr.number === 1) {
@@ -38725,10 +38769,10 @@ class App extends Component {
           crossbow: this.refs.player1ImgAttackSheet,
         },
         defending: {
-          unarmed: this.refs.player1ImgDefendSheet,
-          sword: this.refs.player1ImgDefendSheet,
-          spear: this.refs.player1ImgDefendSheet,
-          crossbow: this.refs.player1ImgDefendSheet,
+          unarmed: this.refs.playerImgMoveheet,
+          sword: this.refs.playerImgMoveSheet,
+          spear: this.refs.playerImgMoveSheet,
+          crossbow: this.refs.playerImgMoveSheet,
         },
         deflected: {
           unarmed: this.refs.playerImgMoveSheet,
