@@ -14471,14 +14471,24 @@ class App extends Component {
     // console.log('dropping gear');
 
     let cellToDrop = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y);
+    
 
-
-    let cellFree = false;
-    if (cellToDrop.item.name === '') {
-      cellFree = true;
+    this.players[player.number-1].defending = {
+      state: false,
+      count: 0,
+      limit: player.defending.limit
     }
+    this.players[player.number-1].action = 'idle';
 
-    if (cellFree === true) {
+    this.players[player.number-1].defendDecay = {
+      state: false,
+      count: 0,
+      limit: player.defendDecay.limit,
+    }
+    this.players[player.number-1].stamina.current += this.staminaCostRef.defend.pre;
+
+
+    if (cellToDrop.item.name === '') {
 
       if (type === 'weapon' && player.items.weapons.length > 0) {
 
@@ -21281,15 +21291,13 @@ class App extends Component {
 
   respawn = (player) => {
     // console.log('respawning',player.number);
-
-    this.resetTarget(player);
-    player.respawn = true;
-    player.action = 'idle';
-    player.hp = 2;
-    player.speed.move = .1;
-    player.ghost.state = false;
-    player.drowning = false;
-    player.dodging = {
+    this.players[player.number-1].respawn = true;
+    this.players[player.number-1].action = 'idle';
+    this.players[player.number-1].hp = 2;
+    this.players[player.number-1].speed.move = .1;
+    this.players[player.number-1].ghost.state = false;
+    this.players[player.number-1].drowning = false;
+    this.players[player.number-1].dodging = {
       countState: false,
       state: false,
       count: 0,
@@ -21299,14 +21307,14 @@ class App extends Component {
         end: 10,
       }
     };
-    player.crits = {
+    this.players[player.number-1].crits = {
       singleHit: 1,
       doubleHit: 6,
       pushBack: 3,
       guardBreak: 3,
       dodge: 0,
     };
-    player.items = {
+    this.players[player.number-1].items = {
       weaponIndex: 0,
       armorIndex: 0,
       weapons: [{
@@ -21317,20 +21325,126 @@ class App extends Component {
       armor: [],
       ammo: 0,
     };
-    player.currentWeapon = {
+    this.players[player.number-1].currentWeapon = {
       name: 'sword1',
       type: 'sword',
       effect: '',
     };
-    player.currentArmor = {};
-    player.strafing = {
+    this.players[player.number-1].currentArmor = {};
+    this.players[player.number-1].strafing = {
       state: false,
       direction: '',
     };
-    player.pushBack = {
+    this.players[player.number-1].pushBack = {
       state: false,
       prePushBackMoveSpeed: 0,
     };
+    this.players[player.number-1].flanking = {
+      checking: false,
+      direction: '',
+      preFlankDirection: '',
+      state: false,
+      step: 0,
+      target1: {x:0 ,y:0},
+      target2: {x:0 ,y:0},
+    }
+    this.players[player.number-1].itemDrop = {
+      state: false,
+      count: 0,
+      limit: 10,
+      item: {
+        name: '',
+      },
+      gear: {
+        type: '',
+      }
+    };
+    this.players[player.number-1].itemPickup = {
+      state: false,
+      count: 0,
+      limit: 10,
+      item: {
+        name: '',
+      },
+      gear: {
+        type: '',
+      }
+    };
+    this.players[player.number-1].jumping = {
+      checking: false,
+      state: false,
+    };
+    this.players[player.number-1].stamina = {
+      current: 20,
+      max: 20,
+    };
+    this.players[player.number-1].popups = [];
+    this.players[player.number-1].prePush = {
+      state: false,
+      count: 0,
+      limit: 15,
+      targetCell: undefined,
+      direction: "",
+      pusher: undefined,
+    };
+    this.players[player.number-1].pushing = {
+      state: false,
+      targetCell: undefined,
+      moveSpeed: 0,
+    };
+    this.players[player.number-1].prePull = {
+      state: false,
+      count: 0,
+      limit: 15,
+      targetCell: undefined,
+      direction: "",
+      puller: undefined,
+    };
+    this.players[player.number-1].pulling = {
+      state: false,
+      targetCell: undefined,
+      moveSpeed: 0,
+    };
+    this.players[player.number-1].postPull = {
+      state: false,
+      count: 0,
+      limit: player.postPull.limit
+    }
+    this.players[player.number-1].pushed = {
+      state: false,
+      pusher: 0,
+      moveSpeed: 0,
+    };
+    this.players[player.number-1].pulled = {
+      state: false,
+      puller: 0,
+      moveSpeed: 0,
+    };
+    this.players[player.number-1].popups = [{
+      state: true,
+      count: 0,
+      limit: 0,
+      type: '',
+      position: 'northWest',
+      msg: '',
+      img: '',
+    }]
+
+
+  }
+  killPlayer = (player) => {
+    // console.log('killing player',player.number);
+
+    player.ghost.state = true;
+    player.ghost.position.cell = player.currentPosition.cell;
+
+    player.action = 'idle';
+    player.direction = 'north';
+    player.falling = {
+      state: false,
+      count: 0,
+      limit: 7,
+    }
     player.flanking = {
       checking: false,
       direction: '',
@@ -21340,6 +21454,51 @@ class App extends Component {
       target1: {x:0 ,y:0},
       target2: {x:0 ,y:0},
     }
+    player.target = this.resetTarget();
+    player.moving = {
+      state: false,
+      step: 0,
+      course: '',
+      origin: {
+        number: {
+          x: 0,
+          y: 0,
+        },
+        center: {
+          x: 0,
+          y: 0,
+        },
+      },
+      destination: {
+        x: 0,
+        y: 0,
+      }
+    };
+    player.currentPosition = {
+      cell: {
+        number: {
+          x: -30,
+          y: -30,
+        },
+        center: {
+          x: 0,
+          y: 0,
+        }
+      }
+    };
+    player.dead = {
+      state: true,
+      count: 1,
+      limit: player.dead.limit
+    }
+    player.strafing = {
+      state: false,
+      direction: '',
+    };
+    player.pushBack = {
+      state: false,
+      prePushBackMoveSpeed: 0,
+    };
     player.itemDrop = {
       state: false,
       count: 0,
@@ -21370,7 +21529,33 @@ class App extends Component {
       current: 20,
       max: 20,
     };
-    player.popups = [];
+    player.defendDecay = {
+      state: false,
+      count: 0,
+      limit: 25,
+    };
+    player.dodging = {
+      countState: false,
+      state: false,
+      count: 0,
+      limit: 20,
+      peak: {
+        start: 5,
+        end: 10,
+      }
+    };
+    player.defending = {
+      state: false,
+      count: 0,
+      limit: 4,
+    };
+    player.deflected = {
+      state: false,
+      count: 0,
+      limit: 20,
+      predeflect: false,
+      type: '',
+    };
     player.prePush = {
       state: false,
       count: 0,
@@ -21421,408 +21606,7 @@ class App extends Component {
       msg: '',
       img: '',
     }]
-
-    this.players[player.number-1] = player;
-
-  }
-  killPlayer = (player) => {
-    // console.log('killing player',player.number);
-
-    player.ghost.state = true;
-    player.ghost.position.cell = player.currentPosition.cell;
-
-    player.action = 'idle';
-    player.direction = 'north';
-    this.resetTarget(player);
-    player.turning = {
-      state: false,
-      toDirection: '',
-      delayCount: 0,
-      limit: 5.1,
-    };
-    player.turnCheckerDirection = '';
-    player.moving = {
-      state: false,
-      step: 0,
-      course: '',
-      origin: {
-        number: {
-          x: 0,
-          y: 0,
-        },
-        center: {
-          x: 0,
-          y: 0,
-        },
-      },
-      destination: {
-        x: 0,
-        y: 0,
-      }
-    };
-    player.newMoveDelay = {
-      state: false,
-      count: 0,
-      limit: 7,
-    };
-    player.strafing = {
-      state: false,
-      direction: '',
-    };
-    player.strafeReleaseHook = false;
-    player.flanking = {
-      checking: false,
-      preFlankDirection: '',
-      direction: '',
-      state: false,
-      step: 0,
-      target1: {x:0 ,y:0},
-      target2: {x:0 ,y:0},
-    };
-    player.drowning = false;
-    player.attacking = {
-      state: false,
-      count: 0,
-      limit: 20,
-    };
-    player.attackPeak = false;
-    player.defendPeak = false;
-    player.bluntAttack = false;
-    player.clashing = {
-      state: false,
-      count: 0,
-      limit: 10,
-    };
-    player.dodging = {
-      countState: false,
-      state: false,
-      count: 0,
-      limit: 20,
-      peak: {
-        start: 7,
-        end: 12,
-      }
-    };
-    player.dodgeDirection = '';
-    player.jumping = {
-      checking: false,
-      state: false,
-    };
-    player.success = {
-      attackSuccess: {
-        state: false,
-        count: 0,
-        limit: 10,
-      },
-      defendSuccess: {
-        state: false,
-        count: 0,
-        limit: 10,
-      },
-      deflected: {
-        state: false,
-        count: 0,
-        limit: 20,
-        predeflect: false,
-        type: '',
-      }
-    };
-    player.pushBack = {
-      state: false,
-      prePushBackMoveSpeed: 0,
-    };
-    player.halfPushBack = {
-      state: false,
-      direction: "",
-      type: "",
-      countUp: {
-        state: true,
-        count: 0,
-        limit: 0,
-      },
-      countDown: {
-        state: false,
-        count: 0,
-        limit: 0,
-      },
-      coords: {
-        x: undefined,
-        y: undefined,
-      },
-    };
-    player.defending = {
-      state: false,
-      count: 0,
-      limit: 4,
-    };
-    player.defendDecay = {
-      state: false,
-      count: 0,
-      limit: 25,
-    };
-    player.falling = {
-      state: false,
-      count: 0,
-      limit: 10,
-    };
-    player.dead = {
-      state: false,
-      count: 0,
-      limit: 10
-    };
-    player.ghost = {
-      state: false,
-      position: {
-        cell: {
-          number: {
-            x: 0,
-            y: 0,
-          },
-          center: {
-            x: 0,
-            y: 0,
-          }
-        }
-      }
-    };
-    player.respawn = false;
-    player.speed = {
-      move: .1,
-      range: [.05,.1,.125,.2]
-    };
-    player.terrainMoveSpeed = {
-      state: false,
-      speed: 0,
-    };
-    player.hp = 2;
-    player.inventorySize = 4;
-    player.cycleWeapon = {
-      state: false,
-      count: 0,
-      limit: 3,
-    };
-    player.cycleArmor = {
-      state: false,
-      count: 0,
-      limit: 3,
-    };
-    player.crits = {
-      singleHit: 1,
-      doubleHit: 6,
-      pushBack: 4,
-      guardBreak: 3,
-      dodge: 0,
-    };
-    player.statusDisplay = {
-      state: false,
-      status: '',
-      count: 0,
-      limit: 15,
-    };
-    player.popups = [{
-      state: true,
-      count: 0,
-      limit: 0,
-      type: '',
-      position: 'northWest',
-      msg: '',
-      img: '',
-    }];
-    player.itemDrop = {
-      state: false,
-      count: 0,
-      limit: 10,
-      item: {
-        name: '',
-      },
-      gear: {
-        type: '',
-      }
-    };
-    player.itemPickup = {
-      state: false,
-      count: 0,
-      limit: 10,
-      item: {
-        name: '',
-      },
-      gear: {
-        type: '',
-      }
-    };
-    player.discardGear = {
-      state: false,
-      count: 0,
-      limit: 8,
-    };
-    player.ai = {
-      state: false,
-      imgType: '',
-      primaryMission: '',
-      mission: '',
-      prevMission: '',
-      currentObjective: '',
-      targetSet: false,
-      targetAcquired: false,
-      safeRange: true,
-      pathArray: [],
-      targetPlayer: {
-        number: 1,
-        currentPosition: {
-          x: undefined,
-          y: undefined,
-        },
-        target: {
-          number1: {
-            x: undefined,
-            y: undefined,
-          },
-          number2: {
-            x: undefined,
-            y: undefined,
-          },
-        },
-        action: '',
-      },
-      instructions: [],
-      currentInstruction: 0,
-      resetInstructions: false,
-      patrolling: {
-        checkin: undefined,
-        state: false,
-        area: [],
-        loopControl: false,
-      },
-      defending: {
-        checkin: undefined,
-        state: false,
-        area: [],
-      },
-      persuing: {
-        state: false,
-      },
-      engaging: {
-        state: true,
-        targetAction: '',
-      },
-      retrieving: {
-        checkin: undefined,
-        state: false,
-        point: {x: undefined, y: undefined},
-        targetItem: {
-          name: '',
-          type: '',
-          subType: '',
-          effect: ''
-        },
-        safe: true,
-      },
-      retreating: {
-        checkin: undefined,
-        state: false,
-        point: {x: undefined, y: undefined},
-        level: 0,
-        safe: true,
-      },
-      organizing: {
-        weaponPriorityIndex: 0,
-        armorPriorityIndex: 0,
-        dropped: {
-          state: false,
-          gear: {
-            name: '',
-            type: '',
-            subType: '',
-            effect: ''
-          },
-        },
-      },
-      mode: '',
-      upgradeWeapon: false,
-      upgradeArmor: false,
-      pathfindingRanges: {
-        spear: 3,
-        crossbow: 5,
-      }
-    };
-    player.stamina = {
-      current: 20,
-      max: 20,
-    };
-    player.newPushPullDelay = {
-      state: false,
-      count: 0,
-      limit: 10,
-    };
-    player.prePush = {
-      state: false,
-      count: 0,
-      limit: 15,
-      targetCell: undefined,
-      direction: "",
-      pusher: undefined,
-    };
-    player.pushing = {
-      state: false,
-      targetCell: undefined,
-      moveSpeed: 0,
-    };
-    player.prePull = {
-      state: false,
-      count: 0,
-      limit: 15,
-      targetCell: undefined,
-      direction: "",
-      puller: undefined,
-    };
-    player.pulling = {
-      state: false,
-      targetCell: undefined,
-      moveSpeed: 0,
-    };
-    player.postPull = {
-      state: false,
-      count: 0,
-      limit: 10,
-    };
-    player.pushed = {
-      state: false,
-      pusher: 0,
-      moveSpeed: 0,
-    };
-    player.pulled = {
-      state: false,
-      puller: 0,
-      moveSpeed: 0,
-    };
-    player.elasticCounter = {
-      preState: false,
-      state: false,
-      direction: "",
-      type: "",
-      subType: "",
-      countUp: {
-        state: false,
-        count: 0,
-        limit: 6,
-      },
-      countDown: {
-        state: false,
-        count: 0,
-        limit: 6,
-      },
-      coords: {
-        x: undefined,
-        y: undefined,
-      },
-      pause: {
-        preState: false,
-        state: false,
-        type: "",
-        count: 0,
-        limit: 6,
-      },
-    };
+    // player.hp = 2;
     player.points--;
     player.drowning = false;
     this.pointChecker(player)
@@ -21842,12 +21626,8 @@ class App extends Component {
 
     if (player.ai.state === true) {
       // console.log('ai player eliminated');
-      this.removeAiPlayer(player.number);
-
-      let newArr = this.aiDeflectedCheck.filter(x=>x !== player.number)
-      this.aiDeflectedCheck = newArr;
+      this.removeAiPlayer(player.number)
     }
-
 
 
     for (const player2 of this.players) {
@@ -21857,8 +21637,591 @@ class App extends Component {
       }
     }
 
-
   }
+
+
+  // respawn = (player) => {
+  //   // console.log('respawning',player.number);
+  //
+  //   this.resetTarget(player);
+  //   player.respawn = true;
+  //   player.action = 'idle';
+  //   player.hp = 2;
+  //   player.speed.move = .1;
+  //   player.ghost.state = false;
+  //   player.drowning = false;
+  //   player.dodging = {
+  //     countState: false,
+  //     state: false,
+  //     count: 0,
+  //     limit: 20,
+  //     peak: {
+  //       start: 5,
+  //       end: 10,
+  //     }
+  //   };
+  //   player.crits = {
+  //     singleHit: 1,
+  //     doubleHit: 6,
+  //     pushBack: 3,
+  //     guardBreak: 3,
+  //     dodge: 0,
+  //   };
+  //   player.items = {
+  //     weaponIndex: 0,
+  //     armorIndex: 0,
+  //     weapons: [{
+  //       name: 'sword1',
+  //       type: 'sword',
+  //       effect: '',
+  //     }],
+  //     armor: [],
+  //     ammo: 0,
+  //   };
+  //   player.currentWeapon = {
+  //     name: 'sword1',
+  //     type: 'sword',
+  //     effect: '',
+  //   };
+  //   player.currentArmor = {};
+  //   player.strafing = {
+  //     state: false,
+  //     direction: '',
+  //   };
+  //   player.pushBack = {
+  //     state: false,
+  //     prePushBackMoveSpeed: 0,
+  //   };
+  //   player.flanking = {
+  //     checking: false,
+  //     direction: '',
+  //     preFlankDirection: '',
+  //     state: false,
+  //     step: 0,
+  //     target1: {x:0 ,y:0},
+  //     target2: {x:0 ,y:0},
+  //   }
+  //   player.itemDrop = {
+  //     state: false,
+  //     count: 0,
+  //     limit: 10,
+  //     item: {
+  //       name: '',
+  //     },
+  //     gear: {
+  //       type: '',
+  //     }
+  //   };
+  //   player.itemPickup = {
+  //     state: false,
+  //     count: 0,
+  //     limit: 10,
+  //     item: {
+  //       name: '',
+  //     },
+  //     gear: {
+  //       type: '',
+  //     }
+  //   };
+  //   player.jumping = {
+  //     checking: false,
+  //     state: false,
+  //   };
+  //   player.stamina = {
+  //     current: 20,
+  //     max: 20,
+  //   };
+  //   player.popups = [];
+  //   player.prePush = {
+  //     state: false,
+  //     count: 0,
+  //     limit: 15,
+  //     targetCell: undefined,
+  //     direction: "",
+  //     pusher: undefined,
+  //   };
+  //   player.pushing = {
+  //     state: false,
+  //     targetCell: undefined,
+  //     moveSpeed: 0,
+  //   };
+  //   player.prePull = {
+  //     state: false,
+  //     count: 0,
+  //     limit: 15,
+  //     targetCell: undefined,
+  //     direction: "",
+  //     puller: undefined,
+  //   };
+  //   player.pulling = {
+  //     state: false,
+  //     targetCell: undefined,
+  //     moveSpeed: 0,
+  //   };
+  //   player.postPull = {
+  //     state: false,
+  //     count: 0,
+  //     limit: player.postPull.limit
+  //   }
+  //   player.pushed = {
+  //     state: false,
+  //     pusher: 0,
+  //     moveSpeed: 0,
+  //   };
+  //   player.pulled = {
+  //     state: false,
+  //     puller: 0,
+  //     moveSpeed: 0,
+  //   };
+  //   player.popups = [{
+  //     state: true,
+  //     count: 0,
+  //     limit: 0,
+  //     type: '',
+  //     position: 'northWest',
+  //     msg: '',
+  //     img: '',
+  //   }]
+  //
+  //   this.players[player.number-1] = player;
+  //
+  // }
+  // killPlayer = (player) => {
+  //   // console.log('killing player',player.number);
+  //
+  //   player.ghost.state = true;
+  //   player.ghost.position.cell = player.currentPosition.cell;
+  //
+  //   player.action = 'idle';
+  //   player.direction = 'north';
+  //   this.resetTarget(player);
+  //   player.turning = {
+  //     state: false,
+  //     toDirection: '',
+  //     delayCount: 0,
+  //     limit: 5.1,
+  //   };
+  //   player.turnCheckerDirection = '';
+  //   player.moving = {
+  //     state: false,
+  //     step: 0,
+  //     course: '',
+  //     origin: {
+  //       number: {
+  //         x: 0,
+  //         y: 0,
+  //       },
+  //       center: {
+  //         x: 0,
+  //         y: 0,
+  //       },
+  //     },
+  //     destination: {
+  //       x: 0,
+  //       y: 0,
+  //     }
+  //   };
+  //   player.newMoveDelay = {
+  //     state: false,
+  //     count: 0,
+  //     limit: 7,
+  //   };
+  //   player.strafing = {
+  //     state: false,
+  //     direction: '',
+  //   };
+  //   player.strafeReleaseHook = false;
+  //   player.flanking = {
+  //     checking: false,
+  //     preFlankDirection: '',
+  //     direction: '',
+  //     state: false,
+  //     step: 0,
+  //     target1: {x:0 ,y:0},
+  //     target2: {x:0 ,y:0},
+  //   };
+  //   player.drowning = false;
+  //   player.attacking = {
+  //     state: false,
+  //     count: 0,
+  //     limit: 20,
+  //   };
+  //   player.attackPeak = false;
+  //   player.defendPeak = false;
+  //   player.bluntAttack = false;
+  //   player.clashing = {
+  //     state: false,
+  //     count: 0,
+  //     limit: 10,
+  //   };
+  //   player.dodging = {
+  //     countState: false,
+  //     state: false,
+  //     count: 0,
+  //     limit: 20,
+  //     peak: {
+  //       start: 7,
+  //       end: 12,
+  //     }
+  //   };
+  //   player.dodgeDirection = '';
+  //   player.jumping = {
+  //     checking: false,
+  //     state: false,
+  //   };
+  //   player.success = {
+  //     attackSuccess: {
+  //       state: false,
+  //       count: 0,
+  //       limit: 10,
+  //     },
+  //     defendSuccess: {
+  //       state: false,
+  //       count: 0,
+  //       limit: 10,
+  //     },
+  //     deflected: {
+  //       state: false,
+  //       count: 0,
+  //       limit: 20,
+  //       predeflect: false,
+  //       type: '',
+  //     }
+  //   };
+  //   player.pushBack = {
+  //     state: false,
+  //     prePushBackMoveSpeed: 0,
+  //   };
+  //   player.halfPushBack = {
+  //     state: false,
+  //     direction: "",
+  //     type: "",
+  //     countUp: {
+  //       state: true,
+  //       count: 0,
+  //       limit: 0,
+  //     },
+  //     countDown: {
+  //       state: false,
+  //       count: 0,
+  //       limit: 0,
+  //     },
+  //     coords: {
+  //       x: undefined,
+  //       y: undefined,
+  //     },
+  //   };
+  //   player.defending = {
+  //     state: false,
+  //     count: 0,
+  //     limit: 4,
+  //   };
+  //   player.defendDecay = {
+  //     state: false,
+  //     count: 0,
+  //     limit: 25,
+  //   };
+  //   player.falling = {
+  //     state: false,
+  //     count: 0,
+  //     limit: 10,
+  //   };
+  //   player.dead = {
+  //     state: false,
+  //     count: 0,
+  //     limit: 10
+  //   };
+  //   player.ghost = {
+  //     state: false,
+  //     position: {
+  //       cell: {
+  //         number: {
+  //           x: 0,
+  //           y: 0,
+  //         },
+  //         center: {
+  //           x: 0,
+  //           y: 0,
+  //         }
+  //       }
+  //     }
+  //   };
+  //   player.respawn = false;
+  //   player.speed = {
+  //     move: .1,
+  //     range: [.05,.1,.125,.2]
+  //   };
+  //   player.terrainMoveSpeed = {
+  //     state: false,
+  //     speed: 0,
+  //   };
+  //   player.hp = 2;
+  //   player.inventorySize = 4;
+  //   player.cycleWeapon = {
+  //     state: false,
+  //     count: 0,
+  //     limit: 3,
+  //   };
+  //   player.cycleArmor = {
+  //     state: false,
+  //     count: 0,
+  //     limit: 3,
+  //   };
+  //   player.crits = {
+  //     singleHit: 1,
+  //     doubleHit: 6,
+  //     pushBack: 4,
+  //     guardBreak: 3,
+  //     dodge: 0,
+  //   };
+  //   player.statusDisplay = {
+  //     state: false,
+  //     status: '',
+  //     count: 0,
+  //     limit: 15,
+  //   };
+  //   player.popups = [{
+  //     state: true,
+  //     count: 0,
+  //     limit: 0,
+  //     type: '',
+  //     position: 'northWest',
+  //     msg: '',
+  //     img: '',
+  //   }];
+  //   player.itemDrop = {
+  //     state: false,
+  //     count: 0,
+  //     limit: 10,
+  //     item: {
+  //       name: '',
+  //     },
+  //     gear: {
+  //       type: '',
+  //     }
+  //   };
+  //   player.itemPickup = {
+  //     state: false,
+  //     count: 0,
+  //     limit: 10,
+  //     item: {
+  //       name: '',
+  //     },
+  //     gear: {
+  //       type: '',
+  //     }
+  //   };
+  //   player.discardGear = {
+  //     state: false,
+  //     count: 0,
+  //     limit: 8,
+  //   };
+  //   player.ai = {
+  //     state: false,
+  //     imgType: '',
+  //     primaryMission: '',
+  //     mission: '',
+  //     prevMission: '',
+  //     currentObjective: '',
+  //     targetSet: false,
+  //     targetAcquired: false,
+  //     safeRange: true,
+  //     pathArray: [],
+  //     targetPlayer: {
+  //       number: 1,
+  //       currentPosition: {
+  //         x: undefined,
+  //         y: undefined,
+  //       },
+  //       target: {
+  //         number1: {
+  //           x: undefined,
+  //           y: undefined,
+  //         },
+  //         number2: {
+  //           x: undefined,
+  //           y: undefined,
+  //         },
+  //       },
+  //       action: '',
+  //     },
+  //     instructions: [],
+  //     currentInstruction: 0,
+  //     resetInstructions: false,
+  //     patrolling: {
+  //       checkin: undefined,
+  //       state: false,
+  //       area: [],
+  //       loopControl: false,
+  //     },
+  //     defending: {
+  //       checkin: undefined,
+  //       state: false,
+  //       area: [],
+  //     },
+  //     persuing: {
+  //       state: false,
+  //     },
+  //     engaging: {
+  //       state: true,
+  //       targetAction: '',
+  //     },
+  //     retrieving: {
+  //       checkin: undefined,
+  //       state: false,
+  //       point: {x: undefined, y: undefined},
+  //       targetItem: {
+  //         name: '',
+  //         type: '',
+  //         subType: '',
+  //         effect: ''
+  //       },
+  //       safe: true,
+  //     },
+  //     retreating: {
+  //       checkin: undefined,
+  //       state: false,
+  //       point: {x: undefined, y: undefined},
+  //       level: 0,
+  //       safe: true,
+  //     },
+  //     organizing: {
+  //       weaponPriorityIndex: 0,
+  //       armorPriorityIndex: 0,
+  //       dropped: {
+  //         state: false,
+  //         gear: {
+  //           name: '',
+  //           type: '',
+  //           subType: '',
+  //           effect: ''
+  //         },
+  //       },
+  //     },
+  //     mode: '',
+  //     upgradeWeapon: false,
+  //     upgradeArmor: false,
+  //     pathfindingRanges: {
+  //       spear: 3,
+  //       crossbow: 5,
+  //     }
+  //   };
+  //   player.stamina = {
+  //     current: 20,
+  //     max: 20,
+  //   };
+  //   player.newPushPullDelay = {
+  //     state: false,
+  //     count: 0,
+  //     limit: 10,
+  //   };
+  //   player.prePush = {
+  //     state: false,
+  //     count: 0,
+  //     limit: 15,
+  //     targetCell: undefined,
+  //     direction: "",
+  //     pusher: undefined,
+  //   };
+  //   player.pushing = {
+  //     state: false,
+  //     targetCell: undefined,
+  //     moveSpeed: 0,
+  //   };
+  //   player.prePull = {
+  //     state: false,
+  //     count: 0,
+  //     limit: 15,
+  //     targetCell: undefined,
+  //     direction: "",
+  //     puller: undefined,
+  //   };
+  //   player.pulling = {
+  //     state: false,
+  //     targetCell: undefined,
+  //     moveSpeed: 0,
+  //   };
+  //   player.postPull = {
+  //     state: false,
+  //     count: 0,
+  //     limit: 10,
+  //   };
+  //   player.pushed = {
+  //     state: false,
+  //     pusher: 0,
+  //     moveSpeed: 0,
+  //   };
+  //   player.pulled = {
+  //     state: false,
+  //     puller: 0,
+  //     moveSpeed: 0,
+  //   };
+  //   player.elasticCounter = {
+  //     preState: false,
+  //     state: false,
+  //     direction: "",
+  //     type: "",
+  //     subType: "",
+  //     countUp: {
+  //       state: false,
+  //       count: 0,
+  //       limit: 6,
+  //     },
+  //     countDown: {
+  //       state: false,
+  //       count: 0,
+  //       limit: 6,
+  //     },
+  //     coords: {
+  //       x: undefined,
+  //       y: undefined,
+  //     },
+  //     pause: {
+  //       preState: false,
+  //       state: false,
+  //       type: "",
+  //       count: 0,
+  //       limit: 6,
+  //     },
+  //   };
+  //   player.points--;
+  //   player.drowning = false;
+  //   this.pointChecker(player)
+  //
+  //
+  //   // RESET TARGETTING FOR AI TARGETTING ME!!
+  //
+  //   if (player.ai.state !== true) {
+  //
+  //     this.resetAiTarget.state = true;
+  //     this.resetAiTarget.player = player.number;
+  //
+  //   }
+  //
+  //
+  //   this.players[player.number-1] = player;
+  //
+  //   if (player.ai.state === true) {
+  //     // console.log('ai player eliminated');
+  //     this.removeAiPlayer(player.number);
+  //
+  //     let newArr = this.aiDeflectedCheck.filter(x=>x !== player.number)
+  //     this.aiDeflectedCheck = newArr;
+  //
+  //   }
+  //
+  //
+  //
+  //   for (const player2 of this.players) {
+  //     if (player2.ai.state === true) {
+  //       console.log('player death/item drop. Search for weapon upgrades');
+  //       player2.ai.upgradeWeapon = true;
+  //     }
+  //   }
+  //
+  //
+  // }
+
   gameReset = (type) => {
     // console.log('resetting');
 
@@ -29698,6 +30061,7 @@ class App extends Component {
 
       }
 
+
     }
 
 
@@ -31678,6 +32042,8 @@ class App extends Component {
 
         // WEAPON/ARMOR CYCLE CHECK!!
         if (this.keyPressed[player.number-1].cycleWeapon === true && player.cycleWeapon.state === false && player.defending.state !== true && this.keyPressed[player.number-1].defend === false) {
+
+
           if (player.cycleWeapon.count < player.cycleWeapon.limit) {
             player.cycleWeapon.count++
             // console.log('player.cycleWeapon.count',player.cycleWeapon.count);
@@ -36010,37 +36376,38 @@ class App extends Component {
           //       // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
           //     break;
           //     case 'defending':
-          //       let animIndex2 = plyr.defending.count -1;
+          //     let animIndex2 = plyr.defending.count -1;
           //
-          //       if (plyr.defendDecay.state !== true) {
-          //         if (plyr.defending.count > 0) {
+          //     if (plyr.defendDecay.state !== true) {
+          //       if (plyr.defending.count > 0) {
           //
-          //           finalAnimIndex = animIndex2;
-          //           // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
-          //         }
-          //         if (plyr.defending.count === 0) {
-          //           let animIndex2a = 5;
-          //           finalAnimIndex = animIndex2a;
-          //           // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
-          //         }
+          //         finalAnimIndex = animIndex2;
+          //         // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
           //       }
-          //       if (plyr.defendDecay.state === true) {
-          //         if (plyr.defendDecay.count < 11) {
-          //           animIndex2 = plyr.defendDecay.count-1;
+          //       if (plyr.defending.count === 0) {
+          //         let animIndex2a = 5;
+          //         finalAnimIndex = animIndex2a;
+          //         // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
+          //       }
+          //     }
+          //     if (plyr.defendDecay.state === true) {
+          //       if (plyr.defendDecay.count < 11) {
+          //         animIndex2 = plyr.defendDecay.count-1;
+          //       }
+          //       else {
+          //
+          //         if (plyr.defendDecay.count%10 === 0) {
+          //           animIndex2 = 9;
           //         }
           //         else {
-          //
-          //           if (plyr.defendDecay.count%10 === 0) {
-          //             animIndex2 = 9;
-          //           }
-          //           else {
-          //             let mod = (Math.floor(plyr.defendDecay.count/10)*10)
-          //             animIndex2 = (plyr.defendDecay.count-mod)-1;
-          //           }
-          //
+          //           let mod = (Math.floor(plyr.defendDecay.count/10)*10)
+          //           animIndex2 = (plyr.defendDecay.count-mod)-1;
           //         }
-          //         finalAnimIndex = animIndex2;
+          //
           //       }
+          //       finalAnimIndex = animIndex2;
+          //     }
+          //     console.log('defend anim index',finalAnimIndex);
           //     break;
           //     case 'idle':
           //       if (plyr.number === 1) {
@@ -39015,7 +39382,7 @@ class App extends Component {
           crossbow: this.refs.player1ImgAttackSheet,
         },
         defending: {
-          unarmed: this.refs.playerImgMoveheet,
+          unarmed: this.refs.playerImgMoveSheet,
           sword: this.refs.playerImgMoveSheet,
           spear: this.refs.playerImgMoveSheet,
           crossbow: this.refs.playerImgMoveSheet,
