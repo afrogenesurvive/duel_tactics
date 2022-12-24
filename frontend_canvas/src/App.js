@@ -3161,13 +3161,13 @@ class App extends Component {
 
 
   // let joyPadCount = gamepads.length;
-  let connectedGamepads = 0;
-  if (gamepads[0] !== null) {
-    connectedGamepads = 1;
-    if (gamepads[1] !== null) {
-      connectedGamepads = 2
-    }
-  }
+  let connectedGamepads = gamepads.filter(x => x !== null).length;
+  // if (gamepads[0] !== null) {
+  //   connectedGamepads = 1;
+  //   if (gamepads[1] !== null) {
+  //     connectedGamepads = 2
+  //   }
+  // }
   let currentGamepadPlayer;
 
   if (this.gamepadPollCounter.count1 === 0) {
@@ -3221,6 +3221,7 @@ class App extends Component {
       // CHECK BUTTONS!!
       for (const btn of gp.buttons) {
         if (btn.pressed === true ) {
+          console.log('btn',gp.buttons.indexOf(btn),connectedGamepads);
 
           if (connectedGamepads === 1) {
 
@@ -3812,17 +3813,24 @@ class App extends Component {
     }
   }
 
-  for (const elem of keyPressed) {
-    this.keyPressed[currentGamepadPlayer-1] = elem;
-  }
 
-  // this.keyPressed = keyPressed;
-  if (showSettingsKeyPressState === true) {
-    this.showSettingsKeyPress.state = showSettingsKeyPressState;
-  }
 
   let player = this.players[currentGamepadPlayer-1];
   if (player) {
+    // console.log('here2',currentGamepadPlayer);
+    for (const elem of keyPressed) {
+      console.log('elem',elem,'plyr',currentGamepadPlayer);
+      this.keyPressed[currentGamepadPlayer-1] = elem;
+    }
+
+
+    // this.keyPressed = keyPressed;
+    if (showSettingsKeyPressState !== true) {
+      this.showSettingsKeyPress.state = showSettingsKeyPressState;
+    }
+
+
+
     if (player.defending.state === true && player.defending.count === 0) {
       if (this.keyPressed[currentGamepadPlayer-1].defend === false) {
         console.log('player',player.number,' stop defending1 @ gamepad');
@@ -29287,7 +29295,7 @@ class App extends Component {
 
   }
   playerUpdate = (player, canvas, context, canvas2, context2, canvas3, context3) => {
-    console.log('updating player',player.number,this.currentPlayer);
+    // console.log('updating player',player.number,this.currentPlayer);
 
     let keyPressedDirection;
     if (player.ai.state === true && player.dead.state === true) {
@@ -29311,6 +29319,15 @@ class App extends Component {
           // console.log('pressed1',key,'plyr',player.number);
 
           keyPressedDirection = key;
+        }
+        if (
+          key !== 'east' &&
+          key !== 'west' &&
+          key !== 'east' &&
+          key !== 'west' &&
+          value === true
+        ) {
+          // console.log('pressed2',key,'plyr',player.number);
         }
 
 
@@ -35967,164 +35984,164 @@ class App extends Component {
 
 
           // FOR TESTING BY CALLING ONLY @ 1 CELL
-          if (
-            plyr.currentPosition.cell.number.x === x &&
-            plyr.currentPosition.cell.number.y === y
-          ) {
-
-            switch(plyr.action) {
-              case 'moving':
-                let moveSpeed = plyr.speed.move;
-                if (plyr.terrainMoveSpeed.state === true) {
-                  moveSpeed = plyr.terrainMoveSpeed.speed;
-                }
-                if (plyr.pushing.state === true) {
-                  moveSpeed = plyr.pushing.moveSpeed;
-                }
-                if (plyr.pulling.state === true) {
-                  moveSpeed = plyr.pulling.moveSpeed;
-                }
-                if (plyr.pushed.state === true) {
-                  moveSpeed = plyr.pushed.moveSpeed;
-                }
-                if (plyr.pulled.state === true) {
-                  moveSpeed = plyr.pulled.moveSpeed;
-                }
-                let rangeIndex = plyr.speed.range.indexOf(moveSpeed)
-                let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
-                finalAnimIndex = moveAnimIndex;
-                // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-                if (plyr.target.cell1.void == true) {
-                  // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-                }
-              break;
-              case 'jumping':
-                let rangeIndex4 = plyr.speed.range.indexOf(.1)
-                let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(plyr.moving.step)
-                finalAnimIndex = moveAnimIndex4;
-                // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-              break;
-              case 'strafe moving':
-                if (plyr.pushBack.state === true ) {
-                  let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
-                  let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
-                  finalAnimIndex = moveAnimIndex3;
-                  // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-                } else {
-                  let moveSpeed = plyr.speed.move;
-                  // if (plyr.pushing.state === true) {
-                  //   moveSpeed = plyr.pushing.moveSpeed;
-                  // }
-                  if (plyr.pulling.state === true) {
-                    moveSpeed = plyr.pulling.moveSpeed;
-                  }
-                  if (plyr.pushed.state === true) {
-                    moveSpeed = plyr.pushed.moveSpeed;
-                  }
-                  if (plyr.pulled.state === true) {
-                    moveSpeed = plyr.pulled.moveSpeed;
-                  }
-                  let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed)
-                  let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
-                  finalAnimIndex = moveAnimIndex2;
-                  // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
-                }
-              break;
-              case 'flanking':
-                let rangeIndex6 = plyr.speed.range.indexOf(.2)
-                let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(plyr.moving.step)
-                finalAnimIndex = moveAnimIndex6;
-                console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
-                // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
-              break;
-              case 'attacking':
-                let animIndex = plyr.attacking.count -1;
-                finalAnimIndex = animIndex;
-                // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
-              break;
-              case 'defending':
-              let animIndex2 = plyr.defending.count -1;
-
-              if (plyr.defendDecay.state !== true) {
-                if (plyr.defending.count > 0) {
-
-                  finalAnimIndex = animIndex2;
-                  // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
-                }
-                if (plyr.defending.count === 0) {
-                  let animIndex2a = 5;
-                  finalAnimIndex = animIndex2a;
-                  // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
-                }
-              }
-              if (plyr.defendDecay.state === true) {
-                if (plyr.defendDecay.count < 11) {
-                  animIndex2 = plyr.defendDecay.count-1;
-                }
-                else {
-
-                  if (plyr.defendDecay.count%10 === 0) {
-                    animIndex2 = 9;
-                  }
-                  else {
-                    let mod = (Math.floor(plyr.defendDecay.count/10)*10)
-                    animIndex2 = (plyr.defendDecay.count-mod)-1;
-                  }
-
-                }
-                finalAnimIndex = animIndex2;
-              }
-              console.log('defend anim index',finalAnimIndex);
-              break;
-              case 'idle':
-                if (plyr.number === 1) {
-                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-                }
-                if (plyr.number === 2) {
-                  // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
-                }
-                let animIndex3 = plyr.idleAnim.count +1;
-                finalAnimIndex = animIndex3;
-              break;
-              case 'falling':
-                let animIndex4 = plyr.falling.count -1;
-                finalAnimIndex = animIndex4;
-                // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
-              break;
-              case 'deflected':
-                let animIndex5 = plyr.success.deflected.count -1;
-                // let animIndex5;
-                if (plyr.success.deflected.count > 10 && plyr.success.deflected.count < 21) {
-                  animIndex5 = (plyr.success.deflected.count-10);
-                }
-                if (plyr.success.deflected.count > 20 && plyr.success.deflected.count < 31) {
-                  animIndex5 = (plyr.success.deflected.count-20);
-                }
-                if (plyr.success.deflected.count > 30 && plyr.success.deflected.count < 41) {
-                  animIndex5 = (plyr.success.deflected.count-30);
-                }
-                if (plyr.success.deflected.count > 40 && plyr.success.deflected.count < 51) {
-                  animIndex5 = (plyr.success.deflected.count-40);
-                }
-                if (plyr.halfPushBack.state === true) {
-                  if (plyr.halfPushBack.countUp.state === true) {
-                    animIndex5 = plyr.halfPushBack.countUp.count-1;
-                  }
-                  if (plyr.halfPushBack.countDown.state === true) {
-                    animIndex5 = plyr.halfPushBack.countDown.count-1;
-                  }
-                }
-                finalAnimIndex = animIndex5;
-                // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
-              break;
-              case 'dodging':
-                let animIndex7 = plyr.dodging.count -1;
-                finalAnimIndex = animIndex7;
-                // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
-              break;
-            }
-
-          }
+          // if (
+          //   plyr.currentPosition.cell.number.x === x &&
+          //   plyr.currentPosition.cell.number.y === y
+          // ) {
+          //
+          //   switch(plyr.action) {
+          //     case 'moving':
+          //       let moveSpeed = plyr.speed.move;
+          //       if (plyr.terrainMoveSpeed.state === true) {
+          //         moveSpeed = plyr.terrainMoveSpeed.speed;
+          //       }
+          //       if (plyr.pushing.state === true) {
+          //         moveSpeed = plyr.pushing.moveSpeed;
+          //       }
+          //       if (plyr.pulling.state === true) {
+          //         moveSpeed = plyr.pulling.moveSpeed;
+          //       }
+          //       if (plyr.pushed.state === true) {
+          //         moveSpeed = plyr.pushed.moveSpeed;
+          //       }
+          //       if (plyr.pulled.state === true) {
+          //         moveSpeed = plyr.pulled.moveSpeed;
+          //       }
+          //       let rangeIndex = plyr.speed.range.indexOf(moveSpeed)
+          //       let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step)
+          //       finalAnimIndex = moveAnimIndex;
+          //       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+          //       if (plyr.target.cell1.void == true) {
+          //         // console.log('anim testing mv void spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+          //       }
+          //     break;
+          //     case 'jumping':
+          //       let rangeIndex4 = plyr.speed.range.indexOf(.1)
+          //       let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(plyr.moving.step)
+          //       finalAnimIndex = moveAnimIndex4;
+          //       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+          //     break;
+          //     case 'strafe moving':
+          //       if (plyr.pushBack.state === true ) {
+          //         let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move)
+          //         let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step)
+          //         finalAnimIndex = moveAnimIndex3;
+          //         // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+          //       } else {
+          //         let moveSpeed = plyr.speed.move;
+          //         // if (plyr.pushing.state === true) {
+          //         //   moveSpeed = plyr.pushing.moveSpeed;
+          //         // }
+          //         if (plyr.pulling.state === true) {
+          //           moveSpeed = plyr.pulling.moveSpeed;
+          //         }
+          //         if (plyr.pushed.state === true) {
+          //           moveSpeed = plyr.pushed.moveSpeed;
+          //         }
+          //         if (plyr.pulled.state === true) {
+          //           moveSpeed = plyr.pulled.moveSpeed;
+          //         }
+          //         let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed)
+          //         let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step)
+          //         finalAnimIndex = moveAnimIndex2;
+          //         // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
+          //       }
+          //     break;
+          //     case 'flanking':
+          //       let rangeIndex6 = plyr.speed.range.indexOf(.2)
+          //       let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(plyr.moving.step)
+          //       finalAnimIndex = moveAnimIndex6;
+          //       // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
+          //       // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
+          //     break;
+          //     case 'attacking':
+          //       let animIndex = plyr.attacking.count -1;
+          //       finalAnimIndex = animIndex;
+          //       // console.log('anim testing atk',plyr.attacking.count,'plyr',plyr.number);
+          //     break;
+          //     case 'defending':
+          //     let animIndex2 = plyr.defending.count -1;
+          //
+          //     if (plyr.defendDecay.state !== true) {
+          //       if (plyr.defending.count > 0) {
+          //
+          //         finalAnimIndex = animIndex2;
+          //         // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
+          //       }
+          //       if (plyr.defending.count === 0) {
+          //         let animIndex2a = 5;
+          //         finalAnimIndex = animIndex2a;
+          //         // console.log('anim testing def held',plyr.defending.count,'plyr',plyr.number, animIndex2a);
+          //       }
+          //     }
+          //     if (plyr.defendDecay.state === true) {
+          //       if (plyr.defendDecay.count < 11) {
+          //         animIndex2 = plyr.defendDecay.count-1;
+          //       }
+          //       else {
+          //
+          //         if (plyr.defendDecay.count%10 === 0) {
+          //           animIndex2 = 9;
+          //         }
+          //         else {
+          //           let mod = (Math.floor(plyr.defendDecay.count/10)*10)
+          //           animIndex2 = (plyr.defendDecay.count-mod)-1;
+          //         }
+          //
+          //       }
+          //       finalAnimIndex = animIndex2;
+          //     }
+          //     // console.log('defend anim index',finalAnimIndex);
+          //     break;
+          //     case 'idle':
+          //       if (plyr.number === 1) {
+          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+          //       }
+          //       if (plyr.number === 2) {
+          //         // console.log('anim testing idle',plyr.idleAnim.count,'plyr',plyr.number);
+          //       }
+          //       let animIndex3 = plyr.idleAnim.count +1;
+          //       finalAnimIndex = animIndex3;
+          //     break;
+          //     case 'falling':
+          //       let animIndex4 = plyr.falling.count -1;
+          //       finalAnimIndex = animIndex4;
+          //       // console.log('anim testing fall',plyr.falling.count,'plyr',plyr.number);
+          //     break;
+          //     case 'deflected':
+          //       let animIndex5 = plyr.success.deflected.count -1;
+          //       // let animIndex5;
+          //       if (plyr.success.deflected.count > 10 && plyr.success.deflected.count < 21) {
+          //         animIndex5 = (plyr.success.deflected.count-10);
+          //       }
+          //       if (plyr.success.deflected.count > 20 && plyr.success.deflected.count < 31) {
+          //         animIndex5 = (plyr.success.deflected.count-20);
+          //       }
+          //       if (plyr.success.deflected.count > 30 && plyr.success.deflected.count < 41) {
+          //         animIndex5 = (plyr.success.deflected.count-30);
+          //       }
+          //       if (plyr.success.deflected.count > 40 && plyr.success.deflected.count < 51) {
+          //         animIndex5 = (plyr.success.deflected.count-40);
+          //       }
+          //       if (plyr.halfPushBack.state === true) {
+          //         if (plyr.halfPushBack.countUp.state === true) {
+          //           animIndex5 = plyr.halfPushBack.countUp.count-1;
+          //         }
+          //         if (plyr.halfPushBack.countDown.state === true) {
+          //           animIndex5 = plyr.halfPushBack.countDown.count-1;
+          //         }
+          //       }
+          //       finalAnimIndex = animIndex5;
+          //       // console.log('anim testing dflct',plyr.success.deflected.count,'plyr',plyr.number);
+          //     break;
+          //     case 'dodging':
+          //       let animIndex7 = plyr.dodging.count -1;
+          //       finalAnimIndex = animIndex7;
+          //       // console.log('anim testing dodge',plyr.dodging.count,'plyr',plyr.number);
+          //     break;
+          //   }
+          //
+          // }
           // FOR TESTING BY CALLING ONLY @ 1 CELL
 
 
