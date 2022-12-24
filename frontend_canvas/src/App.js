@@ -6487,8 +6487,9 @@ class App extends Component {
             zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
             this.camera.preInstructions.push(
               'zoom_out_'+zoomAdjust+''
+              // 'zoom_outToInit'
             )
-            // console.log('zoomAdjust',zoomAdjust);
+            console.log('zoomAdjust',zoomAdjust);
 
           }
           else {
@@ -6526,19 +6527,20 @@ class App extends Component {
             // zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
             zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
             this.camera.preInstructions.push(
-              'zoom_out_'+zoomAdjust+''
+              'zoom_out_'+(zoomAdjust+0)+''
+              // 'zoom_outToInit'
             )
-            // console.log('zoomAdjust',zoomAdjust);
+            console.log('zoomAdjust2',zoomAdjust);
 
           }
 
         }
         else {
-
+          zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5)
           this.camera.preInstructions.push(
-            'zoom_out_'+Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5)+''
+            'zoom_out_'+zoomAdjust+''
+            // 'zoom_outToInit'
           )
-
         }
         // console.log('player spawn focus preInstructions',this.camera.preInstructions);
 
@@ -6590,6 +6592,7 @@ class App extends Component {
             zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
             this.camera.preInstructions.push(
               'zoom_out_'+zoomAdjust+''
+              // 'zoom_outToInit'
             )
           }
 
@@ -6719,6 +6722,7 @@ class App extends Component {
             zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
             this.camera.preInstructions.push(
               'zoom_out_'+zoomAdjust+''
+              // 'zoom_outToInit'
             )
             // console.log('zoomAdjust',zoomAdjust);
 
@@ -6763,6 +6767,7 @@ class App extends Component {
             zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
             this.camera.preInstructions.push(
               'zoom_out_'+zoomAdjust+''
+              // 'zoom_outToInit'
             )
             // console.log('zoomAdjust',zoomAdjust);
 
@@ -34092,6 +34097,8 @@ class App extends Component {
               this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
               this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
 
+
+
               // this.setCameraFocus('input',canvas, context, canvas2, context2);
               this.findFocusCell('panToCell',{},canvas,context)
             }
@@ -34598,17 +34605,33 @@ class App extends Component {
               }
             break;
             case 'zoom':
-              this.camera.instructions.push(
-                {
-                  action:'zoom_'+preInstruction.split("_")[1],
-                  action2:'',
-                  count: 0,
-                  count2: 0,
-                  limit: parseInt(preInstruction.split("_")[2]),
-                  limit2: 0,
-                  speed: "",
-                }
-              )
+              if (preInstruction.split("_")[1] === 'outToInit') {
+                this.camera.instructions.push(
+                  {
+                    action:'zoom_outToInit',
+                    action2:'',
+                    count: 0,
+                    count2: 0,
+                    limit: 1,
+                    limit2: 0,
+                    speed: "",
+                  }
+                )
+              }
+              else {
+                this.camera.instructions.push(
+                  {
+                    action:'zoom_'+preInstruction.split("_")[1],
+                    action2:'',
+                    count: 0,
+                    count2: 0,
+                    limit: parseInt(preInstruction.split("_")[2]),
+                    limit2: 0,
+                    speed: "",
+                  }
+                )
+              }
+
             break;
             case 'waitFor':
 
@@ -34733,6 +34756,9 @@ class App extends Component {
                           this.camera.zoom.x -= .02 ;
                           this.camera.zoom.y -= .02 ;
                           this.camera.zoomDirection = 'out';
+                        break;
+                        case 'outToInit':
+                          this.setInitZoom.state = true;
                         break;
                       }
 
@@ -34964,6 +34990,9 @@ class App extends Component {
                     this.camera.zoom.y -= .02 ;
                     this.camera.zoomDirection = 'out';
                   break;
+                  case 'outToInit':
+                    this.setInitZoom.state = true;
+                  break;
                 }
 
                 // ZOOMING IN & OUT ABOVE THRESHOLD
@@ -35049,6 +35078,7 @@ class App extends Component {
 
             }
 
+            // SECONDARY INSTRUCTIONS
             if (
               this.camera.instructions[this.camera.currentInstruction] &&
               this.camera.instructions[this.camera.currentInstruction].action2 !== "" &&
