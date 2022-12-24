@@ -21298,7 +21298,7 @@ class App extends Component {
 
 
   respawn = (player) => {
-    // console.log('respawning',player.number);
+    // console.log('respawning',player.number,player);
 
     this.resetTarget(player);
     this.unsetDeflection(player);
@@ -21306,6 +21306,11 @@ class App extends Component {
     player.action = 'idle';
     player.hp = 2;
     player.speed.move = .1;
+    // player.dead = {
+    //   state: false,
+    //   count: 0,
+    //   limit: player.dead.limit
+    // }
     player.ghost.state = false;
     player.drowning = false;
     player.dodging = {
@@ -21445,14 +21450,14 @@ class App extends Component {
 
   }
   killPlayer = (player) => {
-    // console.log('killing player',player.number);
+    // console.log('killing player',player);
 
     player.ghost.state = true;
     player.ghost.position.cell = player.currentPosition.cell;
     player.currentPosition.cell.number = {x: undefined, y: undefined};
     player.action = 'idle';
     player.direction = 'north';
-    // this.resetTarget(player);
+    this.resetTarget(player);
     this.unsetDeflection(player);
     player.turning = {
       state: false,
@@ -37267,14 +37272,17 @@ class App extends Component {
                   plyrx.currentPosition.cell.number.y === plyr.startPosition.cell.number.y
                  ) {
                    positionOccupied = true;
+
                 }
               }
               if (respawnPosCellRef.obstacle.state === true || respawnPosCellRef.terrain.type === "deep" || respawnPosCellRef.void === true) {
                 positionOccupied = true;
+
               }
 
 
               if (positionOccupied === true) {
+
 
                 respawnCellNo = this.getRandomFreeCell();
                 respawnPosCellRef = this.gridInfo.find(x => x.number.x === respawnCellNo.number.x && x.number.y === respawnCellNo.number.y)
@@ -37312,11 +37320,16 @@ class App extends Component {
                 }
               }
 
-              if (canRespawn === true) {
+              else if (canRespawn = true && respawnPosCellRef) {
+                canRespawn = true;
+              }
 
+              if (canRespawn === true) {
+                // console.log('can respawn');
                 let respawnPoint = respawnPosCellRef;
                 plyr.dead.state = false;
-                plyr.currentPosition.cell = respawnPoint;
+                plyr.currentPosition.cell.number = respawnPoint.number;
+                plyr.currentPosition.cell.center = respawnPoint.center;
                 plyr.nextPosition = respawnPoint.center;
                 this.getTarget(plyr)
                 plyr.moving = {
