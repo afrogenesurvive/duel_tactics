@@ -3521,20 +3521,20 @@ class App extends Component {
             y = gp.axes[1];
             preDirection = getAxesDirection(x,y).direction;
             switch (preDirection) {
-              case 'top':
-              case 'top-right':
+              case 'up':
+              case 'up-right':
                 direction = 'north'
               break;
               case 'left':
-              case 'top-left':
+              case 'up-left':
                 direction = 'west'
               break;
-              case 'bottom':
-              case 'bottom-left':
+              case 'down':
+              case 'down-left':
                 direction = 'south'
               break;
               case 'right':
-              case 'bottom-right':
+              case 'down-right':
                 direction = 'east'
               break;
               default:
@@ -3550,20 +3550,20 @@ class App extends Component {
             y = gp.axes[3];
             preDirection = getAxesDirection(x,y).direction;
             switch (preDirection) {
-              case 'top':
-              case 'top-right':
+              case 'up':
+              case 'up-right':
                 direction = 'north'
               break;
               case 'left':
-              case 'top-left':
+              case 'up-left':
                 direction = 'west'
               break;
-              case 'bottom':
-              case 'bottom-left':
+              case 'down':
+              case 'down-left':
                 direction = 'south'
               break;
               case 'right':
-              case 'bottom-right':
+              case 'down-right':
                 direction = 'east'
               break;
               default:
