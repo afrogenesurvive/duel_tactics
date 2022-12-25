@@ -333,13 +333,13 @@ class App extends Component {
     };
     this.levelData9 = {
       row0: ['**_a_0.0_a_0a*','**_i_0.1_a_0a*','**_*_0.2_a_0a*','cw_*_0.3_a_0a*','cw_h_0.4_a_0a*','cw_*_0.5_a_0a*','**_*_0.6_a_0a*','**_i_0.7_a_0a*','**_*_0.8_h_0a*','**_*_0.9_h_0a*'],
-      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','ce_*_1.4_a_0a*','cw_*_1.5_a_0a*','**_*_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
-      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_*_2.2_a_0a*','**_*_2.3_a_0a*','cs_a_2.4_a_0a*','cn_*_2.5_a_0a*','**_h_2.6_a_0a*','cs_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
-      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_h_3.2_a_0a*','**_h_3.3_a_0a*','**_h_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*'],
-      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_c_4.3_f_0a*','**_*_4.4_a_0a*','cn_*_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','cn_*_4.9_a_0a*'],
-      row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','cn_*_5.2_f_0a*','**_*_5.3_f_0a*','**_*_5.4_k_0a*','**_*_5.5_a_0a*','**_*_5.6_g_0a*','**_*_5.7_a_0a*','ce_*_5.8_a_0a*','**_*_5.9_a_0a*'],
+      row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
+      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_*_2.2_a_0a*','**_*_2.3_a_0a*','**_c_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_a_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
+      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_h_3.2_a_0a*','**_h_3.3_a_0a*','**_h_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_a_3.9_a_0a*'],
+      row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_c_4.3_f_0a*','**_*_4.4_a_0a*','**_*_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','**_*_4.9_a_0a*'],
+      row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','**_*_5.2_f_0a*','**_*_5.3_f_0a*','**_*_5.4_k_0a*','**_*_5.5_a_0a*','**_*_5.6_g_0a*','**_*_5.7_a_0a*','**_*_5.8_a_0a*','**_*_5.9_a_0a*'],
       row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_b_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_b_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
-      row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','cw_*_7.5_a_0a*','**_c_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
+      row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','**_*_7.5_a_0a*','**_c_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
       row8: ['**_*_8.0_a_0a*','**_*_8.1_a_0a*','**_*_8.2_a_0a*','**_*_8.3_a_0a*','**_*_8.4_a_0a*','**_*_8.5_a_0a*','**_c_8.6_a_0a*','**_*_8.7_a_0a*','**_*_8.8_a_0a*','**_*_8.9_d_0a*'],
       row9: ['**_*_9.0_a_0a*','**_a_9.1_a_0a*','**_*_9.2_a_0a*','**_*_9.3_a_0a*','**_*_9.4_a_0a*','**_*_9.5_a_0a*','**_*_9.6_a_0a*','**_*_9.7_a_0a*','**_*_9.8_a_0a*','**_*_9.9_a_0a*'],
     };
@@ -1861,6 +1861,7 @@ class App extends Component {
           },
         },
         team: 'Red',
+        input: 'Keyboard',
       },
       {
         number: 2,
@@ -2350,6 +2351,7 @@ class App extends Component {
           },
         },
         team: 'Blue',
+        input: 'Keyboard',
       }
     ];
 
@@ -2694,6 +2696,7 @@ class App extends Component {
       type: 'start',
     }
     this.gamepadConfig = [];
+    this.connectedGamepadsInit = false;
 
 
     // CELL INFO
@@ -2898,7 +2901,7 @@ class App extends Component {
     this.halfPushBackChaining = true;
     this.halfPushBackChainingMoveAll = true;
 
-    this.showPlayerOutlines = true;
+    this.showPlayerOutlines = false;
 
 
 
@@ -3159,17 +3162,22 @@ class App extends Component {
   const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
   // console.log('gamepads',gamepads,navigator.getGamepads ? navigator.getGamepads() : []);
 
-
-  // let joyPadCount = gamepads.length;
   let connectedGamepadsCount = gamepads.filter(x => x !== null).length;
   let connectedGamepads = gamepads.filter(x => x !== null);
-  // if (gamepads[0] !== null) {
-  //   connectedGamepads = 1;
-  //   if (gamepads[1] !== null) {
-  //     connectedGamepads = 2
-  //   }
-  // }
+  for (const pad of connectedGamepads) {
+    if (
+      pad.id.substr(0,11) === "Joy-Con (R)" ||
+      pad.id.substr(0,11) === "Joy-Con (L)"
+    ) {
+
+      connectedGamepads.splice(connectedGamepads.indexOf(x=>x.index===pad.index),1);
+    }
+  }
+
+  // console.log('connectedGamepads',connectedGamepads);
+
   let currentGamepadPlayer;
+  let settingsGamepadPlayerCount = this.gamepadConfig.filter(x => x.input === "Gamepad");
 
   if (this.gamepadPollCounter.count1 === 0) {
     this.gamepadPollCounter.count1 = 1;
@@ -3183,674 +3191,662 @@ class App extends Component {
   }
 
   let keyPressed = []
+  let connectedGamepadIndexB = 0;
+
   for (const elem of this.gamepadConfig) {
+    let indx = this.gamepadConfig.indexOf(x=>x.plyrNo === elem.plyrNo);
+
     if (elem.input === "Gamepad") {
       keyPressed.push(
         {
-          north: false,
-          south: false,
-          east: false,
-          west: false,
-          northEast: false,
-          northWest: false,
-          southEast: false,
-          southWest: false,
-          attack: false,
-          defend: false,
-          strafe: false,
-          cycleWeapon: false,
-          cycleArmor: false,
-          dodge: false,
-          menu: false,
-        },
+          state: true,
+          plyrNo: elem.plyrNo,
+          keyPressed: {
+            north: false,
+            south: false,
+            east: false,
+            west: false,
+            northEast: false,
+            northWest: false,
+            southEast: false,
+            southWest: false,
+            attack: false,
+            defend: false,
+            strafe: false,
+            cycleWeapon: false,
+            cycleArmor: false,
+            dodge: false,
+            menu: false,
+          },
+        }
+      )
+
+      this.players[elem.plyrNo-1].strafing.state = false;
+
+      if (this.connectedGamepadsInit !== true && connectedGamepads[0]) {
+
+        if (connectedGamepads[connectedGamepadIndexB]) {
+          elem.type = connectedGamepads[connectedGamepadIndexB].id.substr(0,11);
+          elem.id = connectedGamepads[connectedGamepadIndexB].id.substr(0,11)+'_'+connectedGamepads[connectedGamepadIndexB].index;
+          elem.mapping = connectedGamepads[connectedGamepadIndexB].mapping;
+          elem.gamepadIndex = connectedGamepads[connectedGamepadIndexB].index;
+
+          connectedGamepadIndexB++;
+        }
+
+        // console.log('this.gamepadConfig + connected gamepads',this.gamepadConfig);
+
+        if (indx === settingsGamepadPlayerCount) {
+          this.connectedGamepadsInit = true;
+        }
+
+
+      }
+
+
+
+
+    }
+    else {
+      keyPressed.push(
+        {
+          state: false,
+          plyrNo: elem.plyrNo,
+          keyPressed: undefined,
+        }
       )
     }
-    if (connectedGamepads[elem.plyrNo-1]) {
-      elem.type = connectedGamepads[elem.plyrNo-1].id+'_'+connectedGamepads[elem.plyrNo-1].index;
-      elem.id = connectedGamepads[elem.plyrNo-1].index;
-    }
+
+
   }
+  connectedGamepadIndexB = 0;
+
+
+
   let showSettingsKeyPressState = false;
 
-  for (const plyr of this.players) {
-    this.players[plyr.number-1].strafing.state = false;
-  }
 
-
-  for(let g = 0; g < gamepads.length; g++) {
-    const gp = gamepads[g];
+  // for(let g = 0; g < gamepads.length; g++) {
+  for(let g = 0; g < connectedGamepads.length; g++) {
+    const gp = connectedGamepads[g];
 
     if (!!gp) {
 
-      // test 2 joycons together as one
-      // set controls based on gp id (joycon/pro)
 
-      // CHECK BUTTONS!!
-      for (const btn of gp.buttons) {
-        if (btn.pressed === true ) {
-          console.log('btn',gp.buttons.indexOf(btn),connectedGamepadsCount,gp.index);
+      let gamepadConfigRef = this.gamepadConfig.find(x => x.gamepadIndex === gp.index);
 
-          // set keypressed and currentGamepadPlayer based on gp.index
-          // plot all buttons and axes and confirm 2joycon/1plyr layout,
-          // all btns for 1 plyr (use gp.indx), if keyPressed[gp.index]
-          // only check if gp.id.substr(0,11) === Joy-Con L+R
-          // if gp id is joycon l or r reset gp config, etc, prompt plyr to reconnect,
-          // reset keyPressed
-          // if !gamepadConfig[gp.index], reset gamepad config type & id for all,
-          // ask player to reconnect all contollers,
-          // reset keyPressed
+      currentGamepadPlayer = gamepadConfigRef.plyrNo;
+      let keyPressedIndex = currentGamepadPlayer-1;
 
-          if (
-            gp.buttons.indexOf(btn) === 0 ||
-            gp.buttons.indexOf(btn) === 1 ||
-            gp.buttons.indexOf(btn) === 2 ||
-            gp.buttons.indexOf(btn) === 3 ||
-            gp.buttons.indexOf(btn) === 4 ||
-            gp.buttons.indexOf(btn) === 5 ||
-            gp.buttons.indexOf(btn) === 6 ||
-            gp.buttons.indexOf(btn) === 7 ||
-            gp.buttons.indexOf(btn) === 8 ||
-            gp.buttons.indexOf(btn) === 9 ||
-            gp.buttons.indexOf(btn) === 10 ||
-            gp.buttons.indexOf(btn) === 11 ||
-            gp.buttons.indexOf(btn) === 12
-          ) {
-            console.log('player'+gp.indx+'btn',gp.buttons.indexOf(btn));
-            console.log('gamepads1', gp.id.substr(0,10));
-            console.log('gamepads2', gp.id);
-            console.log('gamepads3', gp);
+
+
+      if (
+        gp.id.substr(0,11) !== "Joy-Con (R)" &&
+        gp.id.substr(0,11) !== "Joy-Con (L)"
+      ) {
+
+
+
+        // CHECK BUTTONS!!
+        for (const btn of gp.buttons) {
+          if (btn.pressed === true ) {
+
+            // if (
+            //   gp.buttons.indexOf(btn) === 0 ||
+            //   gp.buttons.indexOf(btn) === 1 ||
+            //   gp.buttons.indexOf(btn) === 2 ||
+            //   gp.buttons.indexOf(btn) === 3 ||
+            //   gp.buttons.indexOf(btn) === 4 ||
+            //   gp.buttons.indexOf(btn) === 5 ||
+            //   gp.buttons.indexOf(btn) === 6 ||
+            //   gp.buttons.indexOf(btn) === 7 ||
+            //   gp.buttons.indexOf(btn) === 8 ||
+            //   gp.buttons.indexOf(btn) === 9 ||
+            //   gp.buttons.indexOf(btn) === 10 ||
+            //   gp.buttons.indexOf(btn) === 11 ||
+            //   gp.buttons.indexOf(btn) === 12 ||
+            //   gp.buttons.indexOf(btn) === 13 ||
+            //   gp.buttons.indexOf(btn) === 14 ||
+            //   gp.buttons.indexOf(btn) === 15
+            // ) {
+            //   console.log('player '+currentGamepadPlayer+' btn ',gp.buttons.indexOf(btn));
+            //   console.log('gp',gp);
+            // }
+
+            console.log('player '+currentGamepadPlayer+' btn ',gp.buttons.indexOf(btn));
+
+            // keyPressed[keyPressedIndex].key = true;
+
+            // if (connectedGamepadsCount === 1) {
+            //
+            //   if (
+            //     gp.buttons.indexOf(btn) === 0 ||
+            //     gp.buttons.indexOf(btn) === 1 ||
+            //     gp.buttons.indexOf(btn) === 2 ||
+            //     gp.buttons.indexOf(btn) === 3 ||
+            //     gp.buttons.indexOf(btn) === 4 ||
+            //     gp.buttons.indexOf(btn) === 5 ||
+            //     gp.buttons.indexOf(btn) === 6 ||
+            //     gp.buttons.indexOf(btn) === 7 ||
+            //     gp.buttons.indexOf(btn) === 8 ||
+            //     gp.buttons.indexOf(btn) === 9 ||
+            //     gp.buttons.indexOf(btn) === 10 ||
+            //     gp.buttons.indexOf(btn) === 11 ||
+            //     gp.buttons.indexOf(btn) === 12
+            //   ) {
+            //     console.log('1 player btn',gp.buttons.indexOf(btn));
+            //     console.log('gamepads1', gp.id.substr(0,7));
+            //     console.log('gamepads2', gp.id);
+            //     console.log('gamepads3', gp);
+            //   }
+            //
+            //   // DOWN BTN
+            //   if (gp.buttons.indexOf(btn) === 0) {
+            //     // console.log('1 player attack held',gp.buttons.indexOf(btn));
+            //     keyPressed[0].attack = true;
+            //     currentGamepadPlayer = 1;
+            //   }
+            //   // RIGHT BTN
+            //   if (gp.buttons.indexOf(btn) === 1) {
+            //     // console.log('1 player defend held',gp.buttons.indexOf(btn));
+            //     keyPressed[0].defend = true;
+            //     currentGamepadPlayer = 1;
+            //   }
+            //   // LEFT BTN
+            //   if (gp.buttons.indexOf(btn) === 2) {
+            //     // console.log('1 player dodge held',gp.buttons.indexOf(btn));
+            //     keyPressed[0].dodge = true;
+            //     currentGamepadPlayer = 1;
+            //   }
+            //   // UP BTN
+            //   if (gp.buttons.indexOf(btn) === 3) {
+            //     // console.log('1 player strafe held',gp.buttons.indexOf(btn));
+            //     console.log('gamepad strafe testing...');
+            //
+            //     keyPressed[0].strafe = true;
+            //     this.players[0].strafing.state = true;
+            //     currentGamepadPlayer = 1;
+            //
+            //
+            //   }
+            //
+            //   // L BTN
+            //   if (gp.buttons.indexOf(btn) === 4) {
+            //     // console.log('1 player defend held',gp.buttons.indexOf(btn));
+            //     keyPressed[0].cycleArmor = true;
+            //     currentGamepadPlayer = 1;
+            //   }
+            //   // R BTN
+            //   if (gp.buttons.indexOf(btn) === 5) {
+            //     // console.log('1 player defend held',gp.buttons.indexOf(btn));
+            //     keyPressed[0].cycleWeapon = true;
+            //     currentGamepadPlayer = 1;
+            //   }
+            //   // MINUS BTN
+            //   if (gp.buttons.indexOf(btn) === 9) {
+            //     // console.log('1 player defend held',gp.buttons.indexOf(btn));
+            //     if (this.players[0].dead.state === true) {
+            //       this.respawn(this.players[0])
+            //     }
+            //   }
+            //
+            //   // SHOULDER BTN
+            //   if (gp.buttons.indexOf(btn) === 8) {
+            //     // console.log('1 player defend held',gp.buttons.indexOf(btn));
+            //
+            //   }
+            //
+            //   // SHOULDER TRIGGER
+            //   if (gp.buttons.indexOf(btn) === 6) {
+            //     // console.log('1 player defend held',gp.buttons.indexOf(btn));
+            //     showSettingsKeyPressState = true;
+            //   }
+            //
+            //   // ANALOG STICK BTN (L)
+            //   if (gp.buttons.indexOf(btn) === 10) {
+            //     // console.log('1 player defend held',gp.buttons.indexOf(btn));
+            //   }
+            //
+            // }
+            // if (connectedGamepadsCount === 2) {
+            //
+            //   if (
+            //     gp.buttons.indexOf(btn) === 4 ||
+            //     gp.buttons.indexOf(btn) === 6 ||
+            //     gp.buttons.indexOf(btn) === 8 ||
+            //     gp.buttons.indexOf(btn) === 12 ||
+            //     gp.buttons.indexOf(btn) === 13 ||
+            //     gp.buttons.indexOf(btn) === 14 ||
+            //     gp.buttons.indexOf(btn) === 15 ||
+            //     gp.buttons.indexOf(btn) === 18 ||
+            //     gp.buttons.indexOf(btn) === 19 ||
+            //     gp.buttons.indexOf(btn) === 10
+            //   ) {
+            //     // console.log('2 players btn player 1',gp.buttons.indexOf(btn));
+            //     console.log('gamepads1', gp.id.substr(0,7));
+            //     console.log('gamepads2', gp.id);
+            //     console.log('gamepads3', gp);
+            //   }
+            //
+            //   // DOWN BTN
+            //   if (gp.buttons.indexOf(btn) === 14) {
+            //     // console.log('1 player attack held',gp.buttons.indexOf(btn));
+            //     keyPressed[0].defend = true;
+            //     currentGamepadPlayer = 1;
+            //   }
+            //   // RIGHT BTN
+            //   if (gp.buttons.indexOf(btn) === 13) {
+            //     // console.log('1 player attack held',gp.buttons.indexOf(btn));
+            //     keyPressed[0].attack = true;
+            //     currentGamepadPlayer = 1;
+            //   }
+            //   // LEFT BTN
+            //   if (gp.buttons.indexOf(btn) === 12) {
+            //     // console.log('1 player dodge held',gp.buttons.indexOf(btn));
+            //     keyPressed[0].dodge = true;
+            //     currentGamepadPlayer = 1;
+            //   }
+            //   // UP BTN
+            //   if (gp.buttons.indexOf(btn) === 15) {
+            //     console.log('gamepad strafe testing...');
+            //
+            //     keyPressed[0].strafe = true;
+            //     this.players[0].strafing.state = true;
+            //     currentGamepadPlayer = 1;
+            //   }
+            //   // R BTN
+            //   if (gp.buttons.indexOf(btn) === 19) {
+            //     keyPressed[0].cycleArmor = true;
+            //     currentGamepadPlayer = 1;
+            //   }
+            //   // L BTN
+            //   if (gp.buttons.indexOf(btn) === 18) {
+            //     keyPressed[0].cycleWeapon = true;
+            //     currentGamepadPlayer = 1;
+            //   }
+            //   // MINUS BTN
+            //   if (gp.buttons.indexOf(btn) === 8) {
+            //     if (this.players[0].dead.state === true) {
+            //       this.respawn(this.players[0])
+            //     }
+            //   }
+            //
+            //   // SHOULDER BTN
+            //   if (gp.buttons.indexOf(btn) === 4) {
+            //
+            //   }
+            //
+            //   // SHOULDER TRIGGER
+            //   if (gp.buttons.indexOf(btn) === 4) {
+            //     showSettingsKeyPressState = true;
+            //   }
+            //
+            //   // ANALOG STICK BTN (L)
+            //   if (gp.buttons.indexOf(btn) === 10) {
+            //
+            //   }
+            //
+            //
+            //
+            //   if (
+            //     gp.buttons.indexOf(btn) === 0 ||
+            //     gp.buttons.indexOf(btn) === 1 ||
+            //     gp.buttons.indexOf(btn) === 2 ||
+            //     gp.buttons.indexOf(btn) === 3 ||
+            //     gp.buttons.indexOf(btn) === 5 ||
+            //     gp.buttons.indexOf(btn) === 20 ||
+            //     gp.buttons.indexOf(btn) === 21 ||
+            //     gp.buttons.indexOf(btn) === 7 ||
+            //     gp.buttons.indexOf(btn) === 9 ||
+            //     gp.buttons.indexOf(btn) === 11
+            //   ) {
+            //     // console.log('2 players btn player 2',gp.buttons.indexOf(btn));
+            //   }
+            //
+            //   // RIGHT SHLDR BTN
+            //   if (gp.buttons.indexOf(btn) === 21) {
+            //     keyPressed[1].cycleArmor = true;
+            //     currentGamepadPlayer = 2;
+            //   }
+            //   // LEFT SHLDR BTN
+            //   if (gp.buttons.indexOf(btn) === 20) {
+            //     keyPressed[1].cycleWeapon = true;
+            //     currentGamepadPlayer = 2;
+            //   }
+            //
+            //
+            //   if (gp.buttons.indexOf(btn) === 0 || gp.buttons.indexOf(btn) === 1) {
+            //     if (this.gamepadPollCounter.store1.length < 2) {
+            //       this.gamepadPollCounter.store1.push(gp.buttons.indexOf(btn));
+            //     }
+            //     if (this.gamepadPollCounter.store1.length >= 2) {
+            //       // console.log('dbl capture',this.gamepadPollCounter.store1);
+            //       if (this.gamepadPollCounter.store1[0] === 1 && this.gamepadPollCounter.store1[1] === 0) {
+            //         // console.log('DOWN BTN!');
+            //
+            //         keyPressed[1].defend = true;
+            //         currentGamepadPlayer = 2;
+            //       }
+            //       if (this.gamepadPollCounter.store1[0] === 0 && this.gamepadPollCounter.store1[1] === 1) {
+            //         // console.log('LEFT BTN!');
+            //         keyPressed[1].dodge = true;
+            //         currentGamepadPlayer = 2;
+            //       }
+            //       this.gamepadPollCounter.store1 = []
+            //     }
+            //   }
+            //
+            //   if (gp.buttons.indexOf(btn) === 2 || gp.buttons.indexOf(btn) === 3) {
+            //     if (this.gamepadPollCounter.store2.length < 2) {
+            //       this.gamepadPollCounter.store2.push(gp.buttons.indexOf(btn));
+            //     }
+            //     if (this.gamepadPollCounter.store2.length >= 2) {
+            //       // console.log('dbl capture2',this.gamepadPollCounter.store2);
+            //       if (this.gamepadPollCounter.store2[0] === 2 && this.gamepadPollCounter.store2[1] === 3) {
+            //         // console.log('UP BTN!');
+            //         console.log('gamepad strafe testing...');
+            //
+            //         keyPressed[1].strafe = true;
+            //         this.players[1].strafing.state = true;
+            //         currentGamepadPlayer = 2;
+            //       }
+            //       if (this.gamepadPollCounter.store2[0] === 3 && this.gamepadPollCounter.store2[1] === 2) {
+            //         // console.log('RIGHT BTN!');
+            //
+            //         keyPressed[1].attack = true;
+            //         currentGamepadPlayer = 2;
+            //       }
+            //       this.gamepadPollCounter.store2 = []
+            //     }
+            //   }
+            //
+            //
+            //   // ANALOG STICK BTN (R)
+            //   if (gp.buttons.indexOf(btn) === 11) {
+            //
+            //   }
+            //
+            //
+            //   // if (gp.buttons.indexOf(btn) === 0 || gp.buttons.indexOf(btn) === 1) {
+            //   //   if (this.gamepadPollCounter.store1.length < 2) {
+            //   //     this.gamepadPollCounter.store1.push(gp.buttons.indexOf(btn));
+            //   //   }
+            //   //   if (this.gamepadPollCounter.store1.length >= 2) {
+            //   //     // console.log('dbl capture',this.gamepadPollCounter.store1);
+            //   //     if (this.gamepadPollCounter.store1[0] === 1 && this.gamepadPollCounter.store1[1] === 0) {
+            //   //       // console.log('LEFT BTN!');
+            //   //     }
+            //   //     if (this.gamepadPollCounter.store1[0] === 0 && this.gamepadPollCounter.store1[1] === 1) {
+            //   //       // console.log('DWN BTN!');
+            //   //       keyPressed[1].attack = true;
+            //   //       currentGamepadPlayer = 2;
+            //   //     }
+            //   //     this.gamepadPollCounter.store1 = []
+            //   //   }
+            //   // }
+            //   //
+            //   // if (gp.buttons.indexOf(btn) === 2 || gp.buttons.indexOf(btn) === 3) {
+            //   //   if (this.gamepadPollCounter.store2.length < 2) {
+            //   //     this.gamepadPollCounter.store2.push(gp.buttons.indexOf(btn));
+            //   //   }
+            //   //   if (this.gamepadPollCounter.store2.length >= 2) {
+            //   //     // console.log('dbl capture2',this.gamepadPollCounter.store2);
+            //   //     if (this.gamepadPollCounter.store2[0] === 2 && this.gamepadPollCounter.store2[1] === 3) {
+            //   //       // console.log('RIGHT BTN!');
+            //   //       keyPressed[1].defend = true;
+            //   //       currentGamepadPlayer = 2;
+            //   //     }
+            //   //     if (this.gamepadPollCounter.store2[0] === 3 && this.gamepadPollCounter.store2[1] === 2) {
+            //   //       // console.log('UP BTN!');
+            //   //       keyPressed[1].strafe = true;
+            //   //       this.players[1].strafing.state = true;
+            //   //       currentGamepadPlayer = 2;
+            //   //     }
+            //   //     this.gamepadPollCounter.store2 = []
+            //   //   }
+            //   // }
+            //
+            //   // PLUS BTN
+            //   if (gp.buttons.indexOf(btn) === 9) {
+            //     if (this.players[1].dead.state === true) {
+            //       this.respawn(this.players[1])
+            //     }
+            //   }
+            //
+            //   // SHOULDER BTN
+            //   if (gp.buttons.indexOf(btn) === 5) {
+            //
+            //   }
+            //
+            //   // SHOULDER BTN
+            //   if (gp.buttons.indexOf(btn) === 7) {
+            //     showSettingsKeyPressState = true;
+            //   }
+            //
+            //
+            // }
+
+
+          }
+        }
+
+
+        for (const axis of gp.axes) {
+
+          if (axis !== 0) {
+
+            console.log('player '+currentGamepadPlayer+' axis indx ',gp.axes.indexOf(axis),' axis value ',axis.toFixed(2));
+            // console.log('gp',gp);
+
+
           }
 
-          // if (connectedGamepadsCount === 1) {
-          //
-          //   if (
-          //     gp.buttons.indexOf(btn) === 0 ||
-          //     gp.buttons.indexOf(btn) === 1 ||
-          //     gp.buttons.indexOf(btn) === 2 ||
-          //     gp.buttons.indexOf(btn) === 3 ||
-          //     gp.buttons.indexOf(btn) === 4 ||
-          //     gp.buttons.indexOf(btn) === 5 ||
-          //     gp.buttons.indexOf(btn) === 6 ||
-          //     gp.buttons.indexOf(btn) === 7 ||
-          //     gp.buttons.indexOf(btn) === 8 ||
-          //     gp.buttons.indexOf(btn) === 9 ||
-          //     gp.buttons.indexOf(btn) === 10 ||
-          //     gp.buttons.indexOf(btn) === 11 ||
-          //     gp.buttons.indexOf(btn) === 12
-          //   ) {
-          //     console.log('1 player btn',gp.buttons.indexOf(btn));
-          //     console.log('gamepads1', gp.id.substr(0,7));
-          //     console.log('gamepads2', gp.id);
-          //     console.log('gamepads3', gp);
-          //   }
-          //
-          //   // DOWN BTN
-          //   if (gp.buttons.indexOf(btn) === 0) {
-          //     // console.log('1 player attack held',gp.buttons.indexOf(btn));
-          //     keyPressed[0].attack = true;
-          //     currentGamepadPlayer = 1;
-          //   }
-          //   // RIGHT BTN
-          //   if (gp.buttons.indexOf(btn) === 1) {
-          //     // console.log('1 player defend held',gp.buttons.indexOf(btn));
-          //     keyPressed[0].defend = true;
-          //     currentGamepadPlayer = 1;
-          //   }
-          //   // LEFT BTN
-          //   if (gp.buttons.indexOf(btn) === 2) {
-          //     // console.log('1 player dodge held',gp.buttons.indexOf(btn));
-          //     keyPressed[0].dodge = true;
-          //     currentGamepadPlayer = 1;
-          //   }
-          //   // UP BTN
-          //   if (gp.buttons.indexOf(btn) === 3) {
-          //     // console.log('1 player strafe held',gp.buttons.indexOf(btn));
-          //     console.log('gamepad strafe testing...');
-          //
-          //     keyPressed[0].strafe = true;
-          //     this.players[0].strafing.state = true;
-          //     currentGamepadPlayer = 1;
-          //
-          //
-          //   }
-          //
-          //   // L BTN
-          //   if (gp.buttons.indexOf(btn) === 4) {
-          //     // console.log('1 player defend held',gp.buttons.indexOf(btn));
-          //     keyPressed[0].cycleArmor = true;
-          //     currentGamepadPlayer = 1;
-          //   }
-          //   // R BTN
-          //   if (gp.buttons.indexOf(btn) === 5) {
-          //     // console.log('1 player defend held',gp.buttons.indexOf(btn));
-          //     keyPressed[0].cycleWeapon = true;
-          //     currentGamepadPlayer = 1;
-          //   }
-          //   // MINUS BTN
-          //   if (gp.buttons.indexOf(btn) === 9) {
-          //     // console.log('1 player defend held',gp.buttons.indexOf(btn));
-          //     if (this.players[0].dead.state === true) {
-          //       this.respawn(this.players[0])
-          //     }
-          //   }
-          //
-          //   // SHOULDER BTN
-          //   if (gp.buttons.indexOf(btn) === 8) {
-          //     // console.log('1 player defend held',gp.buttons.indexOf(btn));
-          //
-          //   }
-          //
-          //   // SHOULDER TRIGGER
-          //   if (gp.buttons.indexOf(btn) === 6) {
-          //     // console.log('1 player defend held',gp.buttons.indexOf(btn));
-          //     showSettingsKeyPressState = true;
-          //   }
-          //
-          //   // ANALOG STICK BTN (L)
-          //   if (gp.buttons.indexOf(btn) === 10) {
-          //     // console.log('1 player defend held',gp.buttons.indexOf(btn));
-          //   }
-          //
-          // }
-          // if (connectedGamepadsCount === 2) {
-          //
-          //   if (
-          //     gp.buttons.indexOf(btn) === 4 ||
-          //     gp.buttons.indexOf(btn) === 6 ||
-          //     gp.buttons.indexOf(btn) === 8 ||
-          //     gp.buttons.indexOf(btn) === 12 ||
-          //     gp.buttons.indexOf(btn) === 13 ||
-          //     gp.buttons.indexOf(btn) === 14 ||
-          //     gp.buttons.indexOf(btn) === 15 ||
-          //     gp.buttons.indexOf(btn) === 18 ||
-          //     gp.buttons.indexOf(btn) === 19 ||
-          //     gp.buttons.indexOf(btn) === 10
-          //   ) {
-          //     // console.log('2 players btn player 1',gp.buttons.indexOf(btn));
-          //     console.log('gamepads1', gp.id.substr(0,7));
-          //     console.log('gamepads2', gp.id);
-          //     console.log('gamepads3', gp);
-          //   }
-          //
-          //   // DOWN BTN
-          //   if (gp.buttons.indexOf(btn) === 14) {
-          //     // console.log('1 player attack held',gp.buttons.indexOf(btn));
-          //     keyPressed[0].defend = true;
-          //     currentGamepadPlayer = 1;
-          //   }
-          //   // RIGHT BTN
-          //   if (gp.buttons.indexOf(btn) === 13) {
-          //     // console.log('1 player attack held',gp.buttons.indexOf(btn));
-          //     keyPressed[0].attack = true;
-          //     currentGamepadPlayer = 1;
-          //   }
-          //   // LEFT BTN
-          //   if (gp.buttons.indexOf(btn) === 12) {
-          //     // console.log('1 player dodge held',gp.buttons.indexOf(btn));
-          //     keyPressed[0].dodge = true;
-          //     currentGamepadPlayer = 1;
-          //   }
-          //   // UP BTN
-          //   if (gp.buttons.indexOf(btn) === 15) {
-          //     console.log('gamepad strafe testing...');
-          //
-          //     keyPressed[0].strafe = true;
-          //     this.players[0].strafing.state = true;
-          //     currentGamepadPlayer = 1;
-          //   }
-          //   // R BTN
-          //   if (gp.buttons.indexOf(btn) === 19) {
-          //     keyPressed[0].cycleArmor = true;
-          //     currentGamepadPlayer = 1;
-          //   }
-          //   // L BTN
-          //   if (gp.buttons.indexOf(btn) === 18) {
-          //     keyPressed[0].cycleWeapon = true;
-          //     currentGamepadPlayer = 1;
-          //   }
-          //   // MINUS BTN
-          //   if (gp.buttons.indexOf(btn) === 8) {
-          //     if (this.players[0].dead.state === true) {
-          //       this.respawn(this.players[0])
-          //     }
-          //   }
-          //
-          //   // SHOULDER BTN
-          //   if (gp.buttons.indexOf(btn) === 4) {
-          //
-          //   }
-          //
-          //   // SHOULDER TRIGGER
-          //   if (gp.buttons.indexOf(btn) === 4) {
-          //     showSettingsKeyPressState = true;
-          //   }
-          //
-          //   // ANALOG STICK BTN (L)
-          //   if (gp.buttons.indexOf(btn) === 10) {
-          //
-          //   }
-          //
-          //
-          //
-          //   if (
-          //     gp.buttons.indexOf(btn) === 0 ||
-          //     gp.buttons.indexOf(btn) === 1 ||
-          //     gp.buttons.indexOf(btn) === 2 ||
-          //     gp.buttons.indexOf(btn) === 3 ||
-          //     gp.buttons.indexOf(btn) === 5 ||
-          //     gp.buttons.indexOf(btn) === 20 ||
-          //     gp.buttons.indexOf(btn) === 21 ||
-          //     gp.buttons.indexOf(btn) === 7 ||
-          //     gp.buttons.indexOf(btn) === 9 ||
-          //     gp.buttons.indexOf(btn) === 11
-          //   ) {
-          //     // console.log('2 players btn player 2',gp.buttons.indexOf(btn));
-          //   }
-          //
-          //   // RIGHT SHLDR BTN
-          //   if (gp.buttons.indexOf(btn) === 21) {
-          //     keyPressed[1].cycleArmor = true;
-          //     currentGamepadPlayer = 2;
-          //   }
-          //   // LEFT SHLDR BTN
-          //   if (gp.buttons.indexOf(btn) === 20) {
-          //     keyPressed[1].cycleWeapon = true;
-          //     currentGamepadPlayer = 2;
-          //   }
-          //
-          //
-          //   if (gp.buttons.indexOf(btn) === 0 || gp.buttons.indexOf(btn) === 1) {
-          //     if (this.gamepadPollCounter.store1.length < 2) {
-          //       this.gamepadPollCounter.store1.push(gp.buttons.indexOf(btn));
-          //     }
-          //     if (this.gamepadPollCounter.store1.length >= 2) {
-          //       // console.log('dbl capture',this.gamepadPollCounter.store1);
-          //       if (this.gamepadPollCounter.store1[0] === 1 && this.gamepadPollCounter.store1[1] === 0) {
-          //         // console.log('DOWN BTN!');
-          //
-          //         keyPressed[1].defend = true;
-          //         currentGamepadPlayer = 2;
-          //       }
-          //       if (this.gamepadPollCounter.store1[0] === 0 && this.gamepadPollCounter.store1[1] === 1) {
-          //         // console.log('LEFT BTN!');
-          //         keyPressed[1].dodge = true;
-          //         currentGamepadPlayer = 2;
-          //       }
-          //       this.gamepadPollCounter.store1 = []
-          //     }
-          //   }
-          //
-          //   if (gp.buttons.indexOf(btn) === 2 || gp.buttons.indexOf(btn) === 3) {
-          //     if (this.gamepadPollCounter.store2.length < 2) {
-          //       this.gamepadPollCounter.store2.push(gp.buttons.indexOf(btn));
-          //     }
-          //     if (this.gamepadPollCounter.store2.length >= 2) {
-          //       // console.log('dbl capture2',this.gamepadPollCounter.store2);
-          //       if (this.gamepadPollCounter.store2[0] === 2 && this.gamepadPollCounter.store2[1] === 3) {
-          //         // console.log('UP BTN!');
-          //         console.log('gamepad strafe testing...');
-          //
-          //         keyPressed[1].strafe = true;
-          //         this.players[1].strafing.state = true;
-          //         currentGamepadPlayer = 2;
-          //       }
-          //       if (this.gamepadPollCounter.store2[0] === 3 && this.gamepadPollCounter.store2[1] === 2) {
-          //         // console.log('RIGHT BTN!');
-          //
-          //         keyPressed[1].attack = true;
-          //         currentGamepadPlayer = 2;
-          //       }
-          //       this.gamepadPollCounter.store2 = []
-          //     }
-          //   }
-          //
-          //
-          //   // ANALOG STICK BTN (R)
-          //   if (gp.buttons.indexOf(btn) === 11) {
-          //
-          //   }
-          //
-          //
-          //   // if (gp.buttons.indexOf(btn) === 0 || gp.buttons.indexOf(btn) === 1) {
-          //   //   if (this.gamepadPollCounter.store1.length < 2) {
-          //   //     this.gamepadPollCounter.store1.push(gp.buttons.indexOf(btn));
-          //   //   }
-          //   //   if (this.gamepadPollCounter.store1.length >= 2) {
-          //   //     // console.log('dbl capture',this.gamepadPollCounter.store1);
-          //   //     if (this.gamepadPollCounter.store1[0] === 1 && this.gamepadPollCounter.store1[1] === 0) {
-          //   //       // console.log('LEFT BTN!');
-          //   //     }
-          //   //     if (this.gamepadPollCounter.store1[0] === 0 && this.gamepadPollCounter.store1[1] === 1) {
-          //   //       // console.log('DWN BTN!');
-          //   //       keyPressed[1].attack = true;
-          //   //       currentGamepadPlayer = 2;
-          //   //     }
-          //   //     this.gamepadPollCounter.store1 = []
-          //   //   }
-          //   // }
-          //   //
-          //   // if (gp.buttons.indexOf(btn) === 2 || gp.buttons.indexOf(btn) === 3) {
-          //   //   if (this.gamepadPollCounter.store2.length < 2) {
-          //   //     this.gamepadPollCounter.store2.push(gp.buttons.indexOf(btn));
-          //   //   }
-          //   //   if (this.gamepadPollCounter.store2.length >= 2) {
-          //   //     // console.log('dbl capture2',this.gamepadPollCounter.store2);
-          //   //     if (this.gamepadPollCounter.store2[0] === 2 && this.gamepadPollCounter.store2[1] === 3) {
-          //   //       // console.log('RIGHT BTN!');
-          //   //       keyPressed[1].defend = true;
-          //   //       currentGamepadPlayer = 2;
-          //   //     }
-          //   //     if (this.gamepadPollCounter.store2[0] === 3 && this.gamepadPollCounter.store2[1] === 2) {
-          //   //       // console.log('UP BTN!');
-          //   //       keyPressed[1].strafe = true;
-          //   //       this.players[1].strafing.state = true;
-          //   //       currentGamepadPlayer = 2;
-          //   //     }
-          //   //     this.gamepadPollCounter.store2 = []
-          //   //   }
-          //   // }
-          //
-          //   // PLUS BTN
-          //   if (gp.buttons.indexOf(btn) === 9) {
-          //     if (this.players[1].dead.state === true) {
-          //       this.respawn(this.players[1])
-          //     }
-          //   }
-          //
-          //   // SHOULDER BTN
-          //   if (gp.buttons.indexOf(btn) === 5) {
-          //
-          //   }
-          //
-          //   // SHOULDER BTN
-          //   if (gp.buttons.indexOf(btn) === 7) {
-          //     showSettingsKeyPressState = true;
-          //   }
-          //
-          //
-          // }
         }
+        // CHECK AXES!!
+
+        // if (gp.axes[0]!== 0 && gp.axes[1] !== 0) {
+        //   // console.log('player 1 stick')
+        //   if (gp.axes[0] < 0 && gp.axes[1] < 0) {
+        //     // console.log('player 1 stick: 1',gp.axes[0],gp.axes[1]);
+        //     // keyPressed[0].south = true;
+        //     // this.turnCheckerDirection = 'south';
+        //     // currentGamepadPlayer = 1;
+        //
+        //     if (gp.axes[0] < -0.5 && gp.axes[1] > -0.5) {
+        //       // console.log('down',gp.axes[0],gp.axes[1]);
+        //       keyPressed[0].south = true;
+        //       this.players[0].turnCheckerDirection = 'south';
+        //       currentGamepadPlayer = 1;
+        //     }
+        //     if (gp.axes[0] > -0.5 && gp.axes[1] < -0.5) {
+        //       // console.log('left',gp.axes[0],gp.axes[1]);
+        //       keyPressed[0].west = true;
+        //       this.players[0].turnCheckerDirection = 'west';
+        //       currentGamepadPlayer = 1;
+        //     }
+        //
+        //   }
+        //   if (gp.axes[0] > 0 && gp.axes[1] > 0) {
+        //     // console.log('player 1 stick: 2',gp.axes[0],gp.axes[1]);
+        //     // keyPressed[0].north = true;
+        //     // this.turnCheckerDirection = 'north';
+        //     // currentGamepadPlayer = 1;
+        //
+        //     if (gp.axes[0] > 0.5 && gp.axes[1] < 0.5) {
+        //       // console.log('up',gp.axes[0],gp.axes[1]);
+        //       keyPressed[0].north = true;
+        //       this.players[0].turnCheckerDirection = 'north';
+        //       currentGamepadPlayer = 1;
+        //     }
+        //     if (gp.axes[0] < 0.5 && gp.axes[1] > 0.5) {
+        //       // console.log('right',gp.axes[0],gp.axes[1]);
+        //       keyPressed[0].east = true;
+        //       this.players[0].turnCheckerDirection = 'east';
+        //       currentGamepadPlayer = 1;
+        //     }
+        //
+        //   }
+        //   if (gp.axes[0] < 0 && gp.axes[1] > 0) {
+        //     // console.log('player 1 stick: 3',gp.axes[0],gp.axes[1]);
+        //     // keyPressed[0].east = true;
+        //     // this.turnCheckerDirection = 'east';
+        //     // currentGamepadPlayer = 1;
+        //
+        //     if (gp.axes[0] > -0.5 && gp.axes[1] > 0.5) {
+        //       // console.log('right',gp.axes[0],gp.axes[1]);
+        //       keyPressed[0].east = true;
+        //       this.players[0].turnCheckerDirection = 'east';
+        //       currentGamepadPlayer = 1;
+        //     }
+        //     if (gp.axes[0] < -0.5 && gp.axes[1] < 0.5) {
+        //       // console.log('down',gp.axes[0],gp.axes[1]);
+        //       keyPressed[0].south = true;
+        //       this.players[0].turnCheckerDirection = 'south';
+        //       currentGamepadPlayer = 1;
+        //     }
+        //
+        //   }
+        //   if (gp.axes[0] > 0 && gp.axes[1] < 0) {
+        //     // console.log('player 1 stick: 4',gp.axes[0],gp.axes[1]);
+        //     // keyPressed[0].west = true;
+        //     // this.turnCheckerDirection = 'west';
+        //     // currentGamepadPlayer = 1;
+        //
+        //     if (gp.axes[0] > 0.5 && gp.axes[1] > -0.5) {
+        //       // console.log('up',gp.axes[0],gp.axes[1]);
+        //       keyPressed[0].north = true;
+        //       this.players[0].turnCheckerDirection = 'north';
+        //       currentGamepadPlayer = 1;
+        //     }
+        //     if (gp.axes[0] < 0.5 && gp.axes[1] < -0.5) {
+        //       // console.log('left',gp.axes[0],gp.axes[1]);
+        //       keyPressed[0].west = true;
+        //       this.players[0].turnCheckerDirection = 'west';
+        //       currentGamepadPlayer = 1;
+        //     }
+        //
+        //   }
+        // }
+        //
+        // if (gp.axes[2]!== 0 && gp.axes[3] !== 0) {
+        //   // console.log('right stick')
+        //   if (gp.axes[2] < 0 && gp.axes[3] < 0) {
+        //     // console.log('player 2 stick: 1',gp.axes[2],gp.axes[3]);
+        //     // keyPressed[1].north = true;
+        //     // this.turnCheckerDirection = 'north';
+        //     // currentGamepadPlayer = 2;
+        //
+        //     if (gp.axes[2] < -0.5 && gp.axes[3] > -0.5) {
+        //       // console.log('up',gp.axes[2],gp.axes[3]);
+        //       keyPressed[1].north = true;
+        //       this.players[1].turnCheckerDirection = 'north';
+        //       currentGamepadPlayer = 2;
+        //     }
+        //     if (gp.axes[2] > -0.5 && gp.axes[3] < -0.5) {
+        //       // console.log('right',gp.axes[2],gp.axes[3]);
+        //       keyPressed[1].east = true;
+        //       this.players[1].turnCheckerDirection = 'east';
+        //       currentGamepadPlayer = 2;
+        //     }
+        //
+        //   }
+        //   if (gp.axes[2] > 0 && gp.axes[3] > 0) {
+        //     // console.log('player 2 stick: 2',gp.axes[2],gp.axes[3]);
+        //     // keyPressed[1].south = true;
+        //     // this.turnCheckerDirection = 'south';
+        //     // currentGamepadPlayer = 2;
+        //
+        //     if (gp.axes[2] < 0.5 && gp.axes[3] > 0.5) {
+        //       // console.log('left',gp.axes[2],gp.axes[3]);
+        //       keyPressed[1].west = true;
+        //       this.players[1].turnCheckerDirection = 'west';
+        //       currentGamepadPlayer = 2;
+        //     }
+        //     if (gp.axes[2] > 0.5 && gp.axes[3] < 0.5) {
+        //       // console.log('down',gp.axes[2],gp.axes[3]);
+        //       keyPressed[1].south = true;
+        //       this.players[1].turnCheckerDirection = 'south';
+        //       currentGamepadPlayer = 2;
+        //     }
+        //
+        //   }
+        //   if (gp.axes[2] < 0 && gp.axes[3] > 0) {
+        //     // console.log('player 2 stick: 3',gp.axes[2],gp.axes[3]);
+        //     // keyPressed[1].west = true;
+        //     // this.turnCheckerDirection = 'west';
+        //     // currentGamepadPlayer = 2;
+        //
+        //     if (gp.axes[2] < -0.5 && gp.axes[3] < 0.5) {
+        //       // console.log('up',gp.axes[2],gp.axes[3]);
+        //       keyPressed[1].north = true;
+        //       this.players[1].turnCheckerDirection = 'north';
+        //       currentGamepadPlayer = 2;
+        //     }
+        //     if (gp.axes[2] > -0.5 && gp.axes[3] > 0.5) {
+        //       // console.log('left',gp.axes[2],gp.axes[3]);
+        //       keyPressed[1].west = true;
+        //       this.players[1].turnCheckerDirection = 'west';
+        //       currentGamepadPlayer = 2;
+        //     }
+        //
+        //   }
+        //   if (gp.axes[2] > 0 && gp.axes[3] < 0) {
+        //     // console.log('player 2 stick: 4',gp.axes[2],gp.axes[3]);
+        //     // keyPressed[1].east = true;
+        //     // this.turnCheckerDirection = 'east';
+        //     // currentGamepadPlayer = 2;
+        //
+        //     if (gp.axes[2] < 0.5 && gp.axes[3] < -0.5) {
+        //       // console.log('right',gp.axes[2],gp.axes[3]);
+        //       keyPressed[1].east = true;
+        //       this.players[1].turnCheckerDirection = 'east';
+        //       currentGamepadPlayer = 2;
+        //     }
+        //     if (gp.axes[2] > 0.5 && gp.axes[3] > -0.5) {
+        //       // console.log('down',gp.axes[2],gp.axes[3]);
+        //       keyPressed[1].south = true;
+        //       this.players[1].turnCheckerDirection = 'south';
+        //       currentGamepadPlayer = 2;
+        //     }
+        //
+        //   }
+        // }
+
+
+
+      }
+      else {
+
+        if (
+          gp.id.substr(0,11) === "Joy-Con (R)" ||
+          gp.id.substr(0,11) === "Joy-Con (L)"
+        ) {
+          console.log("can't use single joycon. please re-configure controller/gamepad settings");
+          keyPressed[keyPressedIndex].state = false;
+          keyPressed[keyPressedIndex].keyPressed = {
+            north: false,
+            south: false,
+            east: false,
+            west: false,
+            northEast: false,
+            northWest: false,
+            southEast: false,
+            southWest: false,
+            attack: false,
+            defend: false,
+            strafe: false,
+            cycleWeapon: false,
+            cycleArmor: false,
+            dodge: false,
+            menu: false,
+          };
+          showSettingsKeyPressState = true;
+          this.connectedGamepadsInit = false;
+        }
+
+
       }
 
-      // CHECK AXES!!
-      // if (connectedGamepadsCount === 1) {
-      //
-      //
-      //   if (gp.axes[0]!== 0 && gp.axes[1] !== 0) {
-      //
-      //     if (gp.axes[0] < 0 && gp.axes[1] < 0) {
-      //       // console.log('1',gp.axes[0],gp.axes[1]);
-      //       // keyPressed[0].west = true;
-      //       // this.turnCheckerDirection = 'west';
-      //       // currentGamepadPlayer = 1;
-      //
-      //       if (gp.axes[0] > -0.5 && gp.axes[1] < -0.5) {
-      //         // console.log('up',gp.axes[0],gp.axes[1]);
-      //         keyPressed[0].north = true;
-      //         this.players[0].turnCheckerDirection = 'north';
-      //         currentGamepadPlayer = 1;
-      //       }
-      //       if (gp.axes[1] > -0.5 && gp.axes[0] < -0.5) {
-      //         console.log('left',gp.axes[0],gp.axes[1]);
-      //         keyPressed[0].west = true;
-      //         this.players[0].turnCheckerDirection = 'west';
-      //         currentGamepadPlayer = 1;
-      //       }
-      //       // else {
-      //       //   // console.log('up left',gp.axes[0],gp.axes[1]);
-      //       //   keyPressed[0].northWest = true;
-      //       //   this.turnCheckerDirection = 'northWest';
-      //       //   currentGamepadPlayer = 1;
-      //       // }
-      //     }
-      //     if (gp.axes[0] > 0 && gp.axes[1] > 0) {
-      //       // console.log('2',gp.axes[0],gp.axes[1]);
-      //       // keyPressed[0].east = true;
-      //       // this.turnCheckerDirection = 'east';
-      //       // currentGamepadPlayer = 1;
-      //
-      //       if (gp.axes[1] < 0.5 && gp.axes[0] > 0.5) {
-      //         // console.log('right',gp.axes[0],gp.axes[1]);
-      //         keyPressed[0].east = true;
-      //         this.players[0].turnCheckerDirection = 'east';
-      //         currentGamepadPlayer = 1;
-      //       }
-      //       if (gp.axes[0] < 0.5 && gp.axes[1] > 0.5) {
-      //         // console.log('down',gp.axes[0],gp.axes[1]);
-      //         keyPressed[0].south = true;
-      //         this.players[0].turnCheckerDirection = 'south';
-      //         currentGamepadPlayer = 1;
-      //       }
-      //       // else {
-      //       //   // console.log('down right',gp.axes[0],gp.axes[1]);
-      //       //   keyPressed[0].southEast = true;
-      //       //   this.turnCheckerDirection = 'southEast';
-      //       //   currentGamepadPlayer = 1;
-      //       // }
-      //     }
-      //     if (gp.axes[0] < 0 && gp.axes[1] > 0) {
-      //       // console.log('3',gp.axes[0],gp.axes[1]);
-      //       // keyPressed[0].south = true;
-      //       // this.turnCheckerDirection = 'south';
-      //       // currentGamepadPlayer = 1;
-      //
-      //       if (gp.axes[0] > -0.5 && gp.axes[1] > 0.5) {
-      //         // console.log('down',gp.axes[0],gp.axes[1]);
-      //         keyPressed[0].south = true;
-      //         this.players[0].turnCheckerDirection = 'south';
-      //         currentGamepadPlayer = 1;
-      //       }
-      //       if (gp.axes[1] < 0.5 && gp.axes[0] < -0.5) {
-      //         // console.log('left',gp.axes[0],gp.axes[1]);
-      //         keyPressed[0].west = true;
-      //         this.players[0].turnCheckerDirection = 'west';
-      //         currentGamepadPlayer = 1;
-      //       }
-      //       // else {
-      //       //   // console.log('down left',gp.axes[0],gp.axes[1]);
-      //       //   keyPressed[0].southWest = true;
-      //       //   this.turnCheckerDirection = 'southWest';
-      //       //   currentGamepadPlayer = 1;
-      //       // }
-      //     }
-      //     if (gp.axes[0] > 0 && gp.axes[1] < 0) {
-      //       // console.log('4',gp.axes[0],gp.axes[1]);
-      //       // keyPressed[0].north = true;
-      //       // this.turnCheckerDirection = 'north';
-      //       // currentGamepadPlayer = 1;
-      //
-      //       if (gp.axes[0] < 0.5 && gp.axes[1] < -0.5) {
-      //         // console.log('up',gp.axes[0],gp.axes[1]);
-      //         keyPressed[0].north = true;
-      //         this.players[0].turnCheckerDirection = 'north';
-      //         currentGamepadPlayer = 1;
-      //       }
-      //       if (gp.axes[1] > -0.5 && gp.axes[0] > 0.5) {
-      //         // console.log('right',gp.axes[0],gp.axes[1]);
-      //         keyPressed[0].east = true;
-      //         this.players[0].turnCheckerDirection = 'east';
-      //         currentGamepadPlayer = 1;
-      //       }
-      //       // else {
-      //       //   // console.log('up right',gp.axes[0],gp.axes[1]);
-      //       //   keyPressed[0].northEast = true;
-      //       //   this.turnCheckerDirection = 'northEast';
-      //       //   currentGamepadPlayer = 1;
-      //       // }
-      //     }
-      //   }
-      // }
-      // if (connectedGamepadsCount === 2) {
-      //
-      //   if (gp.axes[0]!== 0 && gp.axes[1] !== 0) {
-      //     // console.log('player 1 stick')
-      //     if (gp.axes[0] < 0 && gp.axes[1] < 0) {
-      //       // console.log('player 1 stick: 1',gp.axes[0],gp.axes[1]);
-      //       // keyPressed[0].south = true;
-      //       // this.turnCheckerDirection = 'south';
-      //       // currentGamepadPlayer = 1;
-      //
-      //       if (gp.axes[0] < -0.5 && gp.axes[1] > -0.5) {
-      //         // console.log('down',gp.axes[0],gp.axes[1]);
-      //         keyPressed[0].south = true;
-      //         this.players[0].turnCheckerDirection = 'south';
-      //         currentGamepadPlayer = 1;
-      //       }
-      //       if (gp.axes[0] > -0.5 && gp.axes[1] < -0.5) {
-      //         // console.log('left',gp.axes[0],gp.axes[1]);
-      //         keyPressed[0].west = true;
-      //         this.players[0].turnCheckerDirection = 'west';
-      //         currentGamepadPlayer = 1;
-      //       }
-      //
-      //     }
-      //     if (gp.axes[0] > 0 && gp.axes[1] > 0) {
-      //       // console.log('player 1 stick: 2',gp.axes[0],gp.axes[1]);
-      //       // keyPressed[0].north = true;
-      //       // this.turnCheckerDirection = 'north';
-      //       // currentGamepadPlayer = 1;
-      //
-      //       if (gp.axes[0] > 0.5 && gp.axes[1] < 0.5) {
-      //         // console.log('up',gp.axes[0],gp.axes[1]);
-      //         keyPressed[0].north = true;
-      //         this.players[0].turnCheckerDirection = 'north';
-      //         currentGamepadPlayer = 1;
-      //       }
-      //       if (gp.axes[0] < 0.5 && gp.axes[1] > 0.5) {
-      //         // console.log('right',gp.axes[0],gp.axes[1]);
-      //         keyPressed[0].east = true;
-      //         this.players[0].turnCheckerDirection = 'east';
-      //         currentGamepadPlayer = 1;
-      //       }
-      //
-      //     }
-      //     if (gp.axes[0] < 0 && gp.axes[1] > 0) {
-      //       // console.log('player 1 stick: 3',gp.axes[0],gp.axes[1]);
-      //       // keyPressed[0].east = true;
-      //       // this.turnCheckerDirection = 'east';
-      //       // currentGamepadPlayer = 1;
-      //
-      //       if (gp.axes[0] > -0.5 && gp.axes[1] > 0.5) {
-      //         // console.log('right',gp.axes[0],gp.axes[1]);
-      //         keyPressed[0].east = true;
-      //         this.players[0].turnCheckerDirection = 'east';
-      //         currentGamepadPlayer = 1;
-      //       }
-      //       if (gp.axes[0] < -0.5 && gp.axes[1] < 0.5) {
-      //         // console.log('down',gp.axes[0],gp.axes[1]);
-      //         keyPressed[0].south = true;
-      //         this.players[0].turnCheckerDirection = 'south';
-      //         currentGamepadPlayer = 1;
-      //       }
-      //
-      //     }
-      //     if (gp.axes[0] > 0 && gp.axes[1] < 0) {
-      //       // console.log('player 1 stick: 4',gp.axes[0],gp.axes[1]);
-      //       // keyPressed[0].west = true;
-      //       // this.turnCheckerDirection = 'west';
-      //       // currentGamepadPlayer = 1;
-      //
-      //       if (gp.axes[0] > 0.5 && gp.axes[1] > -0.5) {
-      //         // console.log('up',gp.axes[0],gp.axes[1]);
-      //         keyPressed[0].north = true;
-      //         this.players[0].turnCheckerDirection = 'north';
-      //         currentGamepadPlayer = 1;
-      //       }
-      //       if (gp.axes[0] < 0.5 && gp.axes[1] < -0.5) {
-      //         // console.log('left',gp.axes[0],gp.axes[1]);
-      //         keyPressed[0].west = true;
-      //         this.players[0].turnCheckerDirection = 'west';
-      //         currentGamepadPlayer = 1;
-      //       }
-      //
-      //     }
-      //   }
-      //
-      //
-      //   if (gp.axes[2]!== 0 && gp.axes[3] !== 0) {
-      //     // console.log('right stick')
-      //     if (gp.axes[2] < 0 && gp.axes[3] < 0) {
-      //       // console.log('player 2 stick: 1',gp.axes[2],gp.axes[3]);
-      //       // keyPressed[1].north = true;
-      //       // this.turnCheckerDirection = 'north';
-      //       // currentGamepadPlayer = 2;
-      //
-      //       if (gp.axes[2] < -0.5 && gp.axes[3] > -0.5) {
-      //         // console.log('up',gp.axes[2],gp.axes[3]);
-      //         keyPressed[1].north = true;
-      //         this.players[1].turnCheckerDirection = 'north';
-      //         currentGamepadPlayer = 2;
-      //       }
-      //       if (gp.axes[2] > -0.5 && gp.axes[3] < -0.5) {
-      //         // console.log('right',gp.axes[2],gp.axes[3]);
-      //         keyPressed[1].east = true;
-      //         this.players[1].turnCheckerDirection = 'east';
-      //         currentGamepadPlayer = 2;
-      //       }
-      //
-      //     }
-      //     if (gp.axes[2] > 0 && gp.axes[3] > 0) {
-      //       // console.log('player 2 stick: 2',gp.axes[2],gp.axes[3]);
-      //       // keyPressed[1].south = true;
-      //       // this.turnCheckerDirection = 'south';
-      //       // currentGamepadPlayer = 2;
-      //
-      //       if (gp.axes[2] < 0.5 && gp.axes[3] > 0.5) {
-      //         // console.log('left',gp.axes[2],gp.axes[3]);
-      //         keyPressed[1].west = true;
-      //         this.players[1].turnCheckerDirection = 'west';
-      //         currentGamepadPlayer = 2;
-      //       }
-      //       if (gp.axes[2] > 0.5 && gp.axes[3] < 0.5) {
-      //         // console.log('down',gp.axes[2],gp.axes[3]);
-      //         keyPressed[1].south = true;
-      //         this.players[1].turnCheckerDirection = 'south';
-      //         currentGamepadPlayer = 2;
-      //       }
-      //
-      //     }
-      //     if (gp.axes[2] < 0 && gp.axes[3] > 0) {
-      //       // console.log('player 2 stick: 3',gp.axes[2],gp.axes[3]);
-      //       // keyPressed[1].west = true;
-      //       // this.turnCheckerDirection = 'west';
-      //       // currentGamepadPlayer = 2;
-      //
-      //       if (gp.axes[2] < -0.5 && gp.axes[3] < 0.5) {
-      //         // console.log('up',gp.axes[2],gp.axes[3]);
-      //         keyPressed[1].north = true;
-      //         this.players[1].turnCheckerDirection = 'north';
-      //         currentGamepadPlayer = 2;
-      //       }
-      //       if (gp.axes[2] > -0.5 && gp.axes[3] > 0.5) {
-      //         // console.log('left',gp.axes[2],gp.axes[3]);
-      //         keyPressed[1].west = true;
-      //         this.players[1].turnCheckerDirection = 'west';
-      //         currentGamepadPlayer = 2;
-      //       }
-      //
-      //     }
-      //     if (gp.axes[2] > 0 && gp.axes[3] < 0) {
-      //       // console.log('player 2 stick: 4',gp.axes[2],gp.axes[3]);
-      //       // keyPressed[1].east = true;
-      //       // this.turnCheckerDirection = 'east';
-      //       // currentGamepadPlayer = 2;
-      //
-      //       if (gp.axes[2] < 0.5 && gp.axes[3] < -0.5) {
-      //         // console.log('right',gp.axes[2],gp.axes[3]);
-      //         keyPressed[1].east = true;
-      //         this.players[1].turnCheckerDirection = 'east';
-      //         currentGamepadPlayer = 2;
-      //       }
-      //       if (gp.axes[2] > 0.5 && gp.axes[3] > -0.5) {
-      //         // console.log('down',gp.axes[2],gp.axes[3]);
-      //         keyPressed[1].south = true;
-      //         this.players[1].turnCheckerDirection = 'south';
-      //         currentGamepadPlayer = 2;
-      //       }
-      //
-      //     }
-      //   }
-      // }
 
     }
   }
@@ -3859,15 +3855,13 @@ class App extends Component {
 
   let player = this.players[currentGamepadPlayer-1];
   if (player) {
-    console.log('here2',currentGamepadPlayer,);
-    for (const elem of keyPressed) {
-      console.log('elem',elem,'plyr',currentGamepadPlayer);
-      this.keyPressed[currentGamepadPlayer-1] = elem;
+
+    if (keyPressed[currentGamepadPlayer-1].state === true) {
+      this.keyPressed[currentGamepadPlayer-1] = keyPressed[currentGamepadPlayer-1].keyPressed;
     }
 
 
-    // this.keyPressed = keyPressed;
-    if (showSettingsKeyPressState !== true) {
+    if (showSettingsKeyPressState === true) {
       this.showSettingsKeyPress.state = showSettingsKeyPressState;
     }
 
@@ -3894,14 +3888,14 @@ class App extends Component {
 
     // STRAFE CHECKS
     if (
-      keyPressed[currentGamepadPlayer-1].strafe === false &&
+      keyPressed[currentGamepadPlayer-1].keyPressed.strafe === false &&
       this.players[currentGamepadPlayer-1].moving.state === true &&
       this.players[currentGamepadPlayer-1].strafing.state === true
     ) {
       this.players[currentGamepadPlayer-1].strafeReleaseHook = true
     }
     if (
-      keyPressed[currentGamepadPlayer-1].strafe === false &&
+      keyPressed[currentGamepadPlayer-1].keyPressed.strafe === false &&
       this.players[currentGamepadPlayer-1].moving.state !== true &&
       this.keyPressed[currentGamepadPlayer-1].strafe === true
     ) {
@@ -3932,7 +3926,14 @@ class App extends Component {
 
     window.addEventListener("gamepadconnected", (e) => {
       console.log('new gamepad?',e);
+      this.handleGamepadEvent(e, 'connected');
     })
+
+    window.addEventListener('gamepaddisconnected', (e) => {
+      console.log('Lost connection with the gamepad.');
+      this.handleGamepadEvent(e, 'disconnected');
+
+    });
 
     // canvas3.addEventListener("click", e => {
     //   this.getSettingsCanvasClick(canvas3, e)
@@ -4670,7 +4671,19 @@ class App extends Component {
     // })
 
   }
+  handleGamepadEvent = (event,type) => {
 
+    if (type === 'disconnected') {
+
+      this.connectedGamepadsInit = false;
+      this.showSettingsKeyPress.state = true;
+      console.log("connected gamepads state change! please re-configure controller/gamepad settings");
+
+    }
+
+
+
+  }
 
 
   setCellInfoMouseOver = (state,origin) => {
@@ -4746,20 +4759,30 @@ class App extends Component {
     }
 
 
-
+    this.gamepadConfig = [];
     for (const plyr2 of this.settingsFormPlayerData.input) {
-        this.gamepadConfig.push({plyrNo:plyr2.plyrNo,input:plyr2.input,type:'',id:'',mapping: ''})
+        this.gamepadConfig.push({
+          plyrNo:plyr2.plyrNo,
+          input:plyr2.input,
+          type:'',
+          id:'',
+          mapping: '',
+          gamepadIndex: undefined,
+        })
         if (plyr2.input === "Gamepad") {
           this.gamepad = true;
         }
+        this.players[plyr2.plyrNo-1].input = plyr2.input;
     }
     if (!this.settingsFormPlayerData.input.find(x => x.input === "Gamepad")) {
       this.gamepad = false;
     }
+    this.connectedGamepadsInit = false;
     for (const plyr3 of this.settingsFormPlayerData.team) {
      this.players[plyr3.plyrNo-1].team = plyr3.team
     }
 
+    console.log('load settings this.gamepadConfig',this.gamepadConfig);
 
 
 
@@ -23226,6 +23249,7 @@ class App extends Component {
             },
           },
           team: this.aiInitSettings.team,
+          input: 'Keyboard',
         }
 
 
