@@ -3543,7 +3543,7 @@ class App extends Component {
               gamepadEngaged = true;
               keyPressed[keyPressedIndex].keyPressed[direction] = true;
             }
-            console.log('player ',currentGamepadPlayer,' gamepad left stick to ',preDirection,direction,' magnitude',getAxesDirection.magnitude);
+            console.log('player ',currentGamepadPlayer,' gamepad left stick to ',preDirection,direction,' magnitude',getAxesDirection(x,y).magnitude);
           }
           if (gp.axes[2]!== 0 || gp.axes[3] !== 0) {
             x = gp.axes[2];
@@ -3573,7 +3573,7 @@ class App extends Component {
               keyPressed[keyPressedIndex].keyPressed[direction] = true;
             }
 
-            console.log('player ',currentGamepadPlayer,' gamepad right stick to ',preDirection,direction,' magnitude',getAxesDirection.magnitude);
+            console.log('player ',currentGamepadPlayer,' gamepad right stick to ',preDirection,direction,' magnitude',getAxesDirection(x,y).magnitude);
           }
 
 
