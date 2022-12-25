@@ -3414,18 +3414,98 @@ class App extends Component {
           const getAxesDirection = (x,y) => {
 
             let dir;
+            let magnitude;
 
-            if (x < -0.5 && y < -0.5) dir = 'top-left';
+            if (x < -0.5 && y < -0.5) dir = 'up-left';
             else if (x < -0.5 && y >= -0.5 && y <= 0.5) dir = 'left';
-            else if (x < -0.5 && y > 0.5) dir = 'bottom-left';
-            else if (x >= -0.5 && x <= 0.5 && y < -0.5) dir = 'top';
+            else if (x < -0.5 && y > 0.5) dir = 'down-left';
+            else if (x >= -0.5 && x <= 0.5 && y < -0.5) dir = 'up';
             else if (x >= -0.5 && x <= 0.5 && y >= -0.5 && y <= 0.5) dir = 'neutral';
-            else if (x >= -0.5 && x <= 0.5 && y > 0.5) dir = 'bottom';
-            else if (x > 0.5 && y < -0.5) dir = 'top-right';
+            else if (x >= -0.5 && x <= 0.5 && y > 0.5) dir = 'down';
+            else if (x > 0.5 && y < -0.5) dir = 'up-right';
             else if (x > 0.5 && y >= -0.5 && y <= 0.5) dir = 'right';
-            else if (x > 0.5 && y > 0.5) dir = 'bottom-right';
+            else if (x > 0.5 && y > 0.5) dir = 'down-right';
 
-            return dir;
+
+            // if (Math.abs(x) > Math.abs(y)) {
+            //   if (x < -0.5 && y < -0.5) dir = 'up-left';
+            //   else if (x < -0.5 && y > 0.5) dir = 'down-left';
+            //   else if (x > 0.5 && y < -0.5) dir = 'up-right';
+            //   else if (x > 0.5 && y > 0.5) dir = 'down-right';
+            //   else if (x < -0.5) dir = 'left';
+            //   else dir = 'right';
+            // } else {
+            //   if (x < -0.5 && y < -0.5) dir = 'up-left';
+            //   else if (x < -0.5 && y > 0.5) dir = 'down-left';
+            //   else if (x > 0.5 && y < -0.5) dir = 'up-right';
+            //   else if (x > 0.5 && y > 0.5) dir = 'down-right';
+            //   else if (y < -0.5) dir = 'up';
+            //   else dir = 'down';
+            // }
+
+            // if (Math.abs(x) > Math.abs(y)) {
+            //    if (x < -0.5 && y < -0.5) {
+            //       dir = 'up-left';
+            //       magnitude = Math.sqrt(x*x + y*y);
+            //     }
+            //    else if (x < -0.5 && y > 0.5) {
+            //       dir = 'down-left';
+            //       magnitude = Math.sqrt(x*x + y*y);
+            //     }
+            //    else if (x > 0.5 && y < -0.5) {
+            //       dir = 'up-right';
+            //       magnitude = Math.sqrt(x*x + y*y);
+            //     }
+            //    else if (x > 0.5 && y > 0.5) {
+            //       dir = 'down-right';
+            //       magnitude = Math.sqrt(x*x + y*y);
+            //     }
+            //    else if (x < -0.5) {
+            //       dir = 'left';
+            //       magnitude = Math.abs(x);
+            //     }
+            //    else {
+            //       dir = 'right';
+            //       magnitude = Math.abs(x);
+            //     }
+            //  } else {
+            //    if (x < -0.5 && y < -0.5) {
+            //       dir = 'up-left';
+            //       magnitude = Math.sqrt(x*x + y*y);
+            //     }
+            //    else if (x < -0.5 && y > 0.5) {
+            //       dir = 'down-left';
+            //       magnitude = Math.sqrt(x*x + y*y);
+            //     }
+            //    else if (x > 0.5 && y < -0.5) {
+            //       dir = 'up-right';
+            //       magnitude = Math.sqrt(x*x + y*y);
+            //     }
+            //    else if (x > 0.5 && y > 0.5) {
+            //       dir = 'down-right';
+            //       magnitude = Math.sqrt(x*x + y*y);
+            //     }
+            //    else if (y < -0.5) {
+            //       dir = 'up';
+            //       magnitude = Math.abs(y);
+            //     }
+            //    else {
+            //       dir = 'down';
+            //       magnitude = Math.abs(y);
+            //     }
+            //  }
+
+
+            // only return direction if magnitude is more than a a certain amount
+             if (!dir) {
+               dir = 'neutral';
+             }
+             if (!magnitude) {
+               magnitude = 0;
+             }
+
+
+             return {direction:dir,magnitude:magnitude};
 
           }
 
@@ -3439,7 +3519,7 @@ class App extends Component {
           if (gp.axes[0]!== 0 || gp.axes[1] !== 0) {
             x = gp.axes[0];
             y = gp.axes[1];
-            preDirection = getAxesDirection(x,y);
+            preDirection = getAxesDirection(x,y).direction;
             switch (preDirection) {
               case 'top':
               case 'top-right':
@@ -3463,12 +3543,12 @@ class App extends Component {
               gamepadEngaged = true;
               keyPressed[keyPressedIndex].keyPressed[direction] = true;
             }
-            console.log('player ',currentGamepadPlayer,' gamepad left stick to ',preDirection,direction);
+            console.log('player ',currentGamepadPlayer,' gamepad left stick to ',preDirection,direction,' magnitude',getAxesDirection.magnitude);
           }
           if (gp.axes[2]!== 0 || gp.axes[3] !== 0) {
             x = gp.axes[2];
             y = gp.axes[3];
-            preDirection = getAxesDirection(x,y);
+            preDirection = getAxesDirection(x,y).direction;
             switch (preDirection) {
               case 'top':
               case 'top-right':
@@ -3493,7 +3573,7 @@ class App extends Component {
               keyPressed[keyPressedIndex].keyPressed[direction] = true;
             }
 
-            console.log('player ',currentGamepadPlayer,' gamepad right stick to ',preDirection,direction);
+            console.log('player ',currentGamepadPlayer,' gamepad right stick to ',preDirection,direction,' magnitude',getAxesDirection.magnitude);
           }
 
 
