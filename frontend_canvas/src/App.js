@@ -1468,7 +1468,7 @@ class App extends Component {
         newMoveDelay: {
           state: false,
           count: 0,
-          limit: 7,
+          limit: 10,
         },
         strafing: {
           state: false,
@@ -1959,7 +1959,7 @@ class App extends Component {
         newMoveDelay: {
           state: false,
           count: 0,
-          limit: 7,
+          limit: 10,
         },
         strafing: {
           state: false,
@@ -3442,7 +3442,7 @@ class App extends Component {
             //   else if (y < -0.5) dir = 'up';
             //   else dir = 'down';
             // }
-
+            //
             // if (Math.abs(x) > Math.abs(y)) {
             //    if (x < -0.5 && y < -0.5) {
             //       dir = 'up-left';
@@ -21188,10 +21188,6 @@ class App extends Component {
       effect: '',
     };
     player.currentArmor = {};
-    player.strafing = {
-      state: false,
-      direction: '',
-    };
     player.pushBack = {
       state: false,
       prePushBackMoveSpeed: 0,
@@ -21286,6 +21282,263 @@ class App extends Component {
       msg: '',
       img: '',
     }]
+    player.turning = {
+      state: false,
+      toDirection: '',
+      delayCount: 0,
+      limit: 5.1,
+    };
+    player.turnCheckerDirection = '';
+    player.moving = {
+          state: false,
+          step: 0,
+          course: '',
+          origin: {
+            number: {
+              x: 0,
+              y: 0,
+            },
+            center: {
+              x: 0,
+              y: 0,
+            },
+          },
+          destination: {
+            x: 0,
+            y: 0,
+          }
+        };
+    player.newMoveDelay = {
+          state: false,
+          count: 0,
+          limit: 10,
+        };
+    player.strafeReleaseHook = false;
+    player.attacking = {
+          state: false,
+          count: 0,
+          limit: 20,
+        };
+    player.attackPeak = false;
+    player.defendPeak = false;
+    player.bluntAttack = false;
+    player.clashing = {
+          state: false,
+          count: 0,
+          limit: 10,
+        };
+    player.dodgeDirection = '';
+    player.success = {
+          attackSuccess: {
+            state: false,
+            count: 0,
+            limit: 10,
+          },
+          defendSuccess: {
+            state: false,
+            count: 0,
+            limit: 10,
+          },
+          deflected: {
+            state: false,
+            count: 0,
+            limit: 20,
+            predeflect: false,
+            type: '',
+          }
+        };
+    player.halfPushBack = {
+          state: false,
+          direction: "",
+          type: "",
+          countUp: {
+            state: true,
+            count: 0,
+            limit: 0,
+          },
+          countDown: {
+            state: false,
+            count: 0,
+            limit: 0,
+          },
+          coords: {
+            x: undefined,
+            y: undefined,
+          },
+        };
+    player.defending = {
+          state: false,
+          count: 0,
+          limit: 4,
+        };
+    player.defendDecay = {
+          state: false,
+          count: 0,
+          limit: 25,
+        };
+    player.falling = {
+          state: false,
+          count: 0,
+          limit: 10,
+        };
+    player.dead = {
+          state: false,
+          count: 0,
+          limit: 10
+        };
+    player.speed = {
+          move: .1,
+          range: [.05,.1,.125,.2]
+        };
+    player.terrainMoveSpeed = {
+          state: false,
+          speed: 0,
+        };
+    player.inventorySize = 4;
+    player.cycleWeapon = {
+          state: false,
+          count: 0,
+          limit: 3,
+        };
+    player.cycleArmor = {
+          state: false,
+          count: 0,
+          limit: 3,
+        };
+    player.statusDisplay = {
+          state: false,
+          status: '',
+          count: 0,
+          limit: 15,
+        };
+    player.discardGear = {
+          state: false,
+          count: 0,
+          limit: 8,
+        };
+    player.ai = {
+          state: false,
+          imgType: '',
+          primaryMission: '',
+          mission: '',
+          prevMission: '',
+          currentObjective: '',
+          targetSet: false,
+          targetAcquired: false,
+          safeRange: true,
+          pathArray: [],
+          targetPlayer: {
+            number: 1,
+            currentPosition: {
+              x: undefined,
+              y: undefined,
+            },
+            target: {
+              number1: {
+                x: undefined,
+                y: undefined,
+              },
+              number2: {
+                x: undefined,
+                y: undefined,
+              },
+            },
+            action: '',
+          },
+          instructions: [],
+          currentInstruction: 0,
+          resetInstructions: false,
+          patrolling: {
+            checkin: undefined,
+            state: false,
+            area: [],
+            loopControl: false,
+          },
+          defending: {
+            checkin: undefined,
+            state: false,
+            area: [],
+          },
+          persuing: {
+            state: false,
+          },
+          engaging: {
+            state: true,
+            targetAction: '',
+          },
+          retrieving: {
+            checkin: undefined,
+            state: false,
+            point: {x: undefined, y: undefined},
+            targetItem: {
+              name: '',
+              type: '',
+              subType: '',
+              effect: ''
+            },
+            safe: true,
+          },
+          retreating: {
+            checkin: undefined,
+            state: false,
+            point: {x: undefined, y: undefined},
+            level: 0,
+            safe: true,
+          },
+          organizing: {
+            weaponPriorityIndex: 0,
+            armorPriorityIndex: 0,
+            dropped: {
+              state: false,
+              gear: {
+                name: '',
+                type: '',
+                subType: '',
+                effect: ''
+              },
+            },
+          },
+          mode: '',
+          upgradeWeapon: false,
+          upgradeArmor: false,
+          pathfindingRanges: {
+            spear: 3,
+            crossbow: 5,
+          }
+        };
+    player.newPushPullDelay = {
+          state: false,
+          count: 0,
+          limit: 10,
+        };
+    player.elasticCounter = {
+          preState: false,
+          state: false,
+          direction: "",
+          type: "",
+          subType: "",
+          countUp: {
+            state: false,
+            count: 0,
+            limit: 6,
+          },
+          countDown: {
+            state: false,
+            count: 0,
+            limit: 6,
+          },
+          coords: {
+            x: undefined,
+            y: undefined,
+          },
+          pause: {
+            preState: false,
+            state: false,
+            type: "",
+            count: 0,
+            limit: 6,
+          },
+        };
 
     this.players[player.number-1] = player;
 
@@ -21921,7 +22174,7 @@ class App extends Component {
         player.newMoveDelay = {
           state: false,
           count: 0,
-          limit: 7,
+          limit: 10,
         };
         player.strafing = {
           state: false,
