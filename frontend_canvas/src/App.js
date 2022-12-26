@@ -22898,7 +22898,7 @@ class App extends Component {
           newMoveDelay: {
             state: false,
             count: 0,
-            limit: 7,
+            limit: 10,
           },
           strafing: {
             state: false,
