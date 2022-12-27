@@ -1468,7 +1468,7 @@ class App extends Component {
         newMoveDelay: {
           state: false,
           count: 0,
-          limit: 10,
+          limit: 15,
         },
         strafing: {
           state: false,
@@ -1959,7 +1959,7 @@ class App extends Component {
         newMoveDelay: {
           state: false,
           count: 0,
-          limit: 10,
+          limit: 15,
         },
         strafing: {
           state: false,
@@ -3250,7 +3250,24 @@ class App extends Component {
         {
           state: false,
           plyrNo: elem.plyrNo,
-          keyPressed: undefined,
+          // keyPressed: undefined,
+          keyPressed: {
+            north: false,
+            south: false,
+            east: false,
+            west: false,
+            northEast: false,
+            northWest: false,
+            southEast: false,
+            southWest: false,
+            attack: false,
+            defend: false,
+            strafe: false,
+            cycleWeapon: false,
+            cycleArmor: false,
+            dodge: false,
+            menu: false,
+          }
         }
       )
     }
@@ -3333,35 +3350,52 @@ class App extends Component {
               switch (gp.buttons.indexOf(btn)) {
                 case 0:
                   // b btn
-                  // console.log('player '+currentGamepadPlayer+' attack btn pressed');
-                  // keyPressed[keyPressedIndex].keyPressed.attack = true;
+                  // console.log('player '+currentGamepadPlayer+' defend btn pressed');
+                  keyPressed[keyPressedIndex].keyPressed.defend = true;
                 break;
                 case 1:
                   // a btn
+                  // console.log('player '+currentGamepadPlayer+' attack btn pressed');
+                  keyPressed[keyPressedIndex].keyPressed.attack = true;
                 break;
                 case 2:
                   // y btn
+                  // console.log('player '+currentGamepadPlayer+' strafe btn pressed');
+                  keyPressed[keyPressedIndex].keyPressed.strafe = true;
                 break;
                 case 3:
                   // x btn
+                  // console.log('player '+currentGamepadPlayer+' dodge btn pressed');
+                  keyPressed[keyPressedIndex].keyPressed.dodge = true;
                 break;
                 case 4:
                   // l btn
+                  // console.log('player '+currentGamepadPlayer+' cycle weapon btn pressed');
+                  keyPressed[keyPressedIndex].keyPressed.cycleWeapon = true;
                 break;
                 case 5:
                   // r btn
+                  // console.log('player '+currentGamepadPlayer+' cycle armor btn pressed');
+                  keyPressed[keyPressedIndex].keyPressed.cycleArmor = true;
                 break;
                 case 6:
                   // l trigger
+
                 break;
                 case 7:
                   // r trigger
                 break;
                 case 8:
                   // - btn
+                  if (this.players[currentGamepadPlayer-1].dead.state === true) {
+                    this.respawn(this.playerscurrentGamepadPlayer-1)
+                  }
                 break;
                 case 9:
                   // + btn
+                  if (this.players[currentGamepadPlayer-1].dead.state === true) {
+                    this.respawn(this.playerscurrentGamepadPlayer-1)
+                  }
                 break;
                 case 10:
                   // l stick press
@@ -3543,7 +3577,7 @@ class App extends Component {
               gamepadEngaged = true;
               keyPressed[keyPressedIndex].keyPressed[direction] = true;
             }
-            console.log('player ',currentGamepadPlayer,' gamepad left stick to ',preDirection,direction,' magnitude',getAxesDirection(x,y).magnitude);
+            // console.log('player ',currentGamepadPlayer,' gamepad left stick to ',preDirection,direction,' magnitude',getAxesDirection(x,y).magnitude);
           }
           if (gp.axes[2]!== 0 || gp.axes[3] !== 0) {
             x = gp.axes[2];
@@ -3573,7 +3607,7 @@ class App extends Component {
               keyPressed[keyPressedIndex].keyPressed[direction] = true;
             }
 
-            console.log('player ',currentGamepadPlayer,' gamepad right stick to ',preDirection,direction,' magnitude',getAxesDirection(x,y).magnitude);
+            // console.log('player ',currentGamepadPlayer,' gamepad right stick to ',preDirection,direction,' magnitude',getAxesDirection(x,y).magnitude);
           }
 
 
@@ -3623,8 +3657,9 @@ class App extends Component {
 
 
   let player = this.players[currentGamepadPlayer-1];
-  // if (player) {
-  if (player && gamepadEngaged === true) {
+
+  // if (player && gamepadEngaged === true) {
+  if (player) {
 
     if (keyPressed[currentGamepadPlayer-1].state === true) {
       this.keyPressed[currentGamepadPlayer-1] = keyPressed[currentGamepadPlayer-1].keyPressed;
@@ -3672,6 +3707,31 @@ class App extends Component {
     ) {
       this.players[currentGamepadPlayer-1].strafeReleaseHook = true;
     }
+    else {
+      this.players[currentGamepadPlayer-1].strafing.state = keyPressed[currentGamepadPlayer-1].keyPressed.strafe;
+    }
+
+
+    // if (
+    //   state === false &&
+    //   this.players[0].moving.state === true &&
+    //   this.players[0].strafing.state === true
+    // ) {
+    //   this.players[0].strafeReleaseHook = true
+    // }
+    // if (
+    //   state === false &&
+    //   this.players[0].moving.state !== true &&
+    //   this.keyPressed[0].strafe === true
+    // ) {
+    //   this.players[0].strafeReleaseHook = true;
+    // }
+    // else {
+    //
+    //   this.keyPressed[0].strafe = state;
+    //   this.players[0].strafing.state = state;
+    //   this.currentPlayer = 1;
+    // }
 
 
     // if (player.turning.state === true && player.turning.toDirection === this.turnCheckerDirection) {
@@ -21311,7 +21371,7 @@ class App extends Component {
     player.newMoveDelay = {
           state: false,
           count: 0,
-          limit: 10,
+          limit: 15,
         };
     player.strafeReleaseHook = false;
     player.attacking = {
@@ -21582,7 +21642,7 @@ class App extends Component {
     player.newMoveDelay = {
       state: false,
       count: 0,
-      limit: 7,
+      limit: 15,
     };
     player.strafing = {
       state: false,
@@ -22174,7 +22234,7 @@ class App extends Component {
         player.newMoveDelay = {
           state: false,
           count: 0,
-          limit: 10,
+          limit: 15,
         };
         player.strafing = {
           state: false,
@@ -22898,7 +22958,7 @@ class App extends Component {
           newMoveDelay: {
             state: false,
             count: 0,
-            limit: 10,
+            limit: 15,
           },
           strafing: {
             state: false,
