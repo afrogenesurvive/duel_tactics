@@ -2364,34 +2364,40 @@ class App extends Component {
         south: false,
         east: false,
         west: false,
-        northEast: false,
-        northWest: false,
-        southEast: false,
-        southWest: false,
         attack: false,
         defend: false,
         strafe: false,
+        dodge: false,
+        pull: false,
+        kick: false,
         cycleWeapon: false,
         cycleArmor: false,
-        dodge: false,
-        menu: false,
+        discardWeapon: false,
+        discardArmor: false,
+        uiMenu: false,
+        playerMenu: false,
+        rotateRight: false,
+        rotateLeft: false,
       },
       {
         north: false,
         south: false,
         east: false,
         west: false,
-        northEast: false,
-        northWest: false,
-        southEast: false,
-        southWest: false,
         attack: false,
         defend: false,
         strafe: false,
+        dodge: false,
+        pull: false,
+        kick: false,
         cycleWeapon: false,
         cycleArmor: false,
-        dodge: false,
-        menu: false,
+        discardWeapon: false,
+        discardArmor: false,
+        uiMenu: false,
+        playerMenu: false,
+        rotateRight: false,
+        rotateLeft: false,
       },
     ]
     this.clicked = {
@@ -3159,469 +3165,50 @@ class App extends Component {
   pollGamepads = () => {
 
 
-  const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
-  // console.log('gamepads',gamepads,navigator.getGamepads ? navigator.getGamepads() : []);
+    const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+    // console.log('gamepads',gamepads,navigator.getGamepads ? navigator.getGamepads() : []);
 
-  let connectedGamepadsCount = gamepads.filter(x => x !== null).length;
-  let connectedGamepads = gamepads.filter(x => x !== null);
-  for (const pad of connectedGamepads) {
-    if (
-      pad.id.substr(0,11) === "Joy-Con (R)" ||
-      pad.id.substr(0,11) === "Joy-Con (L)"
-    ) {
+    let connectedGamepadsCount = gamepads.filter(x => x !== null).length;
+    let connectedGamepads = gamepads.filter(x => x !== null);
+    for (const pad of connectedGamepads) {
+      if (
+        pad.id.substr(0,11) === "Joy-Con (R)" ||
+        pad.id.substr(0,11) === "Joy-Con (L)"
+      ) {
 
-      connectedGamepads.splice(connectedGamepads.indexOf(x=>x.index===pad.index),1);
-    }
-  }
-
-  // console.log('connectedGamepads',connectedGamepads);
-
-  let currentGamepadPlayer;
-  let settingsGamepadPlayerCount = this.gamepadConfig.filter(x => x.input === "Gamepad").length;
-
-  if (this.gamepadPollCounter.count1 === 0) {
-    this.gamepadPollCounter.count1 = 1;
-  } else {
-    this.gamepadPollCounter.count1 = 0;
-  }
-  if (this.gamepadPollCounter.count2 === 0) {
-    this.gamepadPollCounter.count2 = 1;
-  } else {
-    this.gamepadPollCounter.count2 = 0;
-  }
-
-  let keyPressed = []
-  let connectedGamepadIndexB = 0;
-
-  for (const elem of this.gamepadConfig) {
-    let indx = this.gamepadConfig.indexOf(x=>x.plyrNo === elem.plyrNo);
-
-    if (elem.input === "Gamepad") {
-
-      keyPressed.push(
-        {
-          state: true,
-          plyrNo: elem.plyrNo,
-          keyPressed: {
-            north: false,
-            south: false,
-            east: false,
-            west: false,
-            northEast: false,
-            northWest: false,
-            southEast: false,
-            southWest: false,
-            attack: false,
-            defend: false,
-            strafe: false,
-            cycleWeapon: false,
-            cycleArmor: false,
-            dodge: false,
-            menu: false,
-          },
-        }
-      )
-
-      this.players[elem.plyrNo-1].strafing.state = false;
-
-      if (this.connectedGamepadsInit !== true && connectedGamepads[0]) {
-
-        if (connectedGamepads[connectedGamepadIndexB]) {
-          elem.type = connectedGamepads[connectedGamepadIndexB].id.substr(0,11);
-          elem.id = connectedGamepads[connectedGamepadIndexB].id.substr(0,11)+'_'+connectedGamepads[connectedGamepadIndexB].index;
-          elem.mapping = connectedGamepads[connectedGamepadIndexB].mapping;
-          elem.gamepadIndex = connectedGamepads[connectedGamepadIndexB].index;
-
-          connectedGamepadIndexB++;
-        }
-
-        // console.log('this.gamepadConfig + connected gamepads',this.gamepadConfig,connectedGamepads,settingsGamepadPlayerCount);
-
-
-        if (this.gamepadConfig.filter(x => x.id !== "").length === settingsGamepadPlayerCount) {
-          this.connectedGamepadsInit = true;
-        }
-
+        connectedGamepads.splice(connectedGamepads.indexOf(x=>x.index===pad.index),1);
       }
-
-    }
-    else {
-      keyPressed.push(
-        {
-          state: false,
-          plyrNo: elem.plyrNo,
-          // keyPressed: undefined,
-          keyPressed: {
-            north: false,
-            south: false,
-            east: false,
-            west: false,
-            northEast: false,
-            northWest: false,
-            southEast: false,
-            southWest: false,
-            attack: false,
-            defend: false,
-            strafe: false,
-            cycleWeapon: false,
-            cycleArmor: false,
-            dodge: false,
-            menu: false,
-          }
-        }
-      )
     }
 
+    // console.log('connectedGamepads',connectedGamepads);
 
-  }
-  connectedGamepadIndexB = 0;
+    let currentGamepadPlayer;
+    let settingsGamepadPlayerCount = this.gamepadConfig.filter(x => x.input === "Gamepad").length;
 
+    if (this.gamepadPollCounter.count1 === 0) {
+      this.gamepadPollCounter.count1 = 1;
+    } else {
+      this.gamepadPollCounter.count1 = 0;
+    }
+    if (this.gamepadPollCounter.count2 === 0) {
+      this.gamepadPollCounter.count2 = 1;
+    } else {
+      this.gamepadPollCounter.count2 = 0;
+    }
 
+    let keyPressed = []
+    let connectedGamepadIndexB = 0;
 
-  let showSettingsKeyPressState = false;
+    for (const elem of this.gamepadConfig) {
+      let indx = this.gamepadConfig.indexOf(x=>x.plyrNo === elem.plyrNo);
 
-  let gamepadEngaged = false;
-  // for(let g = 0; g < gamepads.length; g++) {
-  for(let g = 0; g < connectedGamepads.length; g++) {
-    const gp = connectedGamepads[g];
+      if (elem.input === "Gamepad") {
 
-    if (!!gp) {
-
-      // console.log('gp',gp);
-      let gamepadConfigRef = this.gamepadConfig.find(x => x.gamepadIndex === gp.index);
-
-      if (gamepadConfigRef) {
-
-        currentGamepadPlayer = gamepadConfigRef.plyrNo;
-        const keyPressedIndex = currentGamepadPlayer-1;
-
-        if (
-          gp.id.substr(0,11) !== "Joy-Con (R)" &&
-          gp.id.substr(0,11) !== "Joy-Con (L)"
-        ) {
-
-
-
-          // CHECK BUTTONS!!
-          for (const btn of gp.buttons) {
-            if (btn.pressed === true ) {
-
-              // DEBUGGING
-              if (
-                // b btn
-                gp.buttons.indexOf(btn) === 0 ||
-                // a btn
-                gp.buttons.indexOf(btn) === 1 ||
-                // y btn
-                gp.buttons.indexOf(btn) === 2 ||
-                // x btn
-                gp.buttons.indexOf(btn) === 3 ||
-                // l btn
-                gp.buttons.indexOf(btn) === 4 ||
-                // r btn
-                gp.buttons.indexOf(btn) === 5 ||
-                // l trigger
-                gp.buttons.indexOf(btn) === 6 ||
-                // r trigger
-                gp.buttons.indexOf(btn) === 7 ||
-                // - btn
-                gp.buttons.indexOf(btn) === 8 ||
-                // + btn
-                gp.buttons.indexOf(btn) === 9 ||
-                // l stick press
-                gp.buttons.indexOf(btn) === 10 ||
-                // r stick press
-                gp.buttons.indexOf(btn) === 11 ||
-                // dpad up
-                gp.buttons.indexOf(btn) === 12 ||
-                // dpad down
-                gp.buttons.indexOf(btn) === 13 ||
-                // dpad left
-                gp.buttons.indexOf(btn) === 14 ||
-                // dpad right
-                gp.buttons.indexOf(btn) === 15
-              ) {
-                // console.log('player '+currentGamepadPlayer+' btn ',gp.buttons.indexOf(btn),' pressed');
-                // console.log('gp',gp);
-                gamepadEngaged = true;
-              }
-
-
-              switch (gp.buttons.indexOf(btn)) {
-                case 0:
-                  // b btn
-                  // console.log('player '+currentGamepadPlayer+' defend btn pressed');
-                  keyPressed[keyPressedIndex].keyPressed.defend = true;
-                break;
-                case 1:
-                  // a btn
-                  // console.log('player '+currentGamepadPlayer+' attack btn pressed');
-                  keyPressed[keyPressedIndex].keyPressed.attack = true;
-                break;
-                case 2:
-                  // y btn
-                  // console.log('player '+currentGamepadPlayer+' strafe btn pressed');
-                  keyPressed[keyPressedIndex].keyPressed.strafe = true;
-                break;
-                case 3:
-                  // x btn
-                  // console.log('player '+currentGamepadPlayer+' dodge btn pressed');
-                  keyPressed[keyPressedIndex].keyPressed.dodge = true;
-                break;
-                case 4:
-                  // l btn
-                  // console.log('player '+currentGamepadPlayer+' cycle weapon btn pressed');
-                  keyPressed[keyPressedIndex].keyPressed.cycleWeapon = true;
-                break;
-                case 5:
-                  // r btn
-                  // console.log('player '+currentGamepadPlayer+' cycle armor btn pressed');
-                  keyPressed[keyPressedIndex].keyPressed.cycleArmor = true;
-                break;
-                case 6:
-                  // l trigger
-
-                break;
-                case 7:
-                  // r trigger
-                break;
-                case 8:
-                  // - btn
-                  if (this.players[currentGamepadPlayer-1].dead.state === true) {
-                    this.respawn(this.playerscurrentGamepadPlayer-1)
-                  }
-                break;
-                case 9:
-                  // + btn
-                  if (this.players[currentGamepadPlayer-1].dead.state === true) {
-                    this.respawn(this.playerscurrentGamepadPlayer-1)
-                  }
-                break;
-                case 10:
-                  // l stick press
-                break;
-                case 11:
-                  // r stick press
-                break;
-                case 12:
-                  // dpad up
-                break;
-                case 13:
-                  // dpad down
-                break;
-                case 14:
-                  // dpad left
-                break;
-                case 15:
-                  // dpad right
-                break;
-                default:
-
-              }
-
-            }
-          }
-
-
-
-          // CHECK AXES!!
-          // DEBUGGING
-          for (const axis of gp.axes) {
-
-            if (axis !== 0) {
-              if (gp.axes.indexOf(axis) === 0) {
-                // console.log('player '+currentGamepadPlayer+' left stick x axis value',axis.toFixed(2));
-              }
-              if (gp.axes.indexOf(axis) === 1) {
-                // console.log('player '+currentGamepadPlayer+' left stick y axis value',axis.toFixed(2));
-              }
-              if (gp.axes.indexOf(axis) === 2) {
-                // console.log('player '+currentGamepadPlayer+' right stick x axis value',axis.toFixed(2));
-              }
-              if (gp.axes.indexOf(axis) === 3) {
-                // console.log('player '+currentGamepadPlayer+' right stick y axis value',axis.toFixed(2));
-              }
-
-              // console.log('gp',gp);
-            }
-          }
-          const getAxesDirection = (x,y) => {
-
-            let dir;
-            let magnitude;
-
-            if (x < -0.5 && y < -0.5) dir = 'up-left';
-            else if (x < -0.5 && y >= -0.5 && y <= 0.5) dir = 'left';
-            else if (x < -0.5 && y > 0.5) dir = 'down-left';
-            else if (x >= -0.5 && x <= 0.5 && y < -0.5) dir = 'up';
-            else if (x >= -0.5 && x <= 0.5 && y >= -0.5 && y <= 0.5) dir = 'neutral';
-            else if (x >= -0.5 && x <= 0.5 && y > 0.5) dir = 'down';
-            else if (x > 0.5 && y < -0.5) dir = 'up-right';
-            else if (x > 0.5 && y >= -0.5 && y <= 0.5) dir = 'right';
-            else if (x > 0.5 && y > 0.5) dir = 'down-right';
-
-
-            // if (Math.abs(x) > Math.abs(y)) {
-            //   if (x < -0.5 && y < -0.5) dir = 'up-left';
-            //   else if (x < -0.5 && y > 0.5) dir = 'down-left';
-            //   else if (x > 0.5 && y < -0.5) dir = 'up-right';
-            //   else if (x > 0.5 && y > 0.5) dir = 'down-right';
-            //   else if (x < -0.5) dir = 'left';
-            //   else dir = 'right';
-            // } else {
-            //   if (x < -0.5 && y < -0.5) dir = 'up-left';
-            //   else if (x < -0.5 && y > 0.5) dir = 'down-left';
-            //   else if (x > 0.5 && y < -0.5) dir = 'up-right';
-            //   else if (x > 0.5 && y > 0.5) dir = 'down-right';
-            //   else if (y < -0.5) dir = 'up';
-            //   else dir = 'down';
-            // }
-            //
-            // if (Math.abs(x) > Math.abs(y)) {
-            //    if (x < -0.5 && y < -0.5) {
-            //       dir = 'up-left';
-            //       magnitude = Math.sqrt(x*x + y*y);
-            //     }
-            //    else if (x < -0.5 && y > 0.5) {
-            //       dir = 'down-left';
-            //       magnitude = Math.sqrt(x*x + y*y);
-            //     }
-            //    else if (x > 0.5 && y < -0.5) {
-            //       dir = 'up-right';
-            //       magnitude = Math.sqrt(x*x + y*y);
-            //     }
-            //    else if (x > 0.5 && y > 0.5) {
-            //       dir = 'down-right';
-            //       magnitude = Math.sqrt(x*x + y*y);
-            //     }
-            //    else if (x < -0.5) {
-            //       dir = 'left';
-            //       magnitude = Math.abs(x);
-            //     }
-            //    else {
-            //       dir = 'right';
-            //       magnitude = Math.abs(x);
-            //     }
-            //  } else {
-            //    if (x < -0.5 && y < -0.5) {
-            //       dir = 'up-left';
-            //       magnitude = Math.sqrt(x*x + y*y);
-            //     }
-            //    else if (x < -0.5 && y > 0.5) {
-            //       dir = 'down-left';
-            //       magnitude = Math.sqrt(x*x + y*y);
-            //     }
-            //    else if (x > 0.5 && y < -0.5) {
-            //       dir = 'up-right';
-            //       magnitude = Math.sqrt(x*x + y*y);
-            //     }
-            //    else if (x > 0.5 && y > 0.5) {
-            //       dir = 'down-right';
-            //       magnitude = Math.sqrt(x*x + y*y);
-            //     }
-            //    else if (y < -0.5) {
-            //       dir = 'up';
-            //       magnitude = Math.abs(y);
-            //     }
-            //    else {
-            //       dir = 'down';
-            //       magnitude = Math.abs(y);
-            //     }
-            //  }
-
-
-            // only return direction if magnitude is more than a a certain amount
-             if (!dir) {
-               dir = 'neutral';
-             }
-             if (!magnitude) {
-               magnitude = 0;
-             }
-
-
-             return {direction:dir,magnitude:magnitude};
-
-          }
-
-          // axes 0(x),1(y) == left stick, 2(x),3(y) == right stick
-
-
-          let preDirection;
-          let direction;
-          let x;
-          let y;
-          if (gp.axes[0]!== 0 || gp.axes[1] !== 0) {
-            x = gp.axes[0];
-            y = gp.axes[1];
-            preDirection = getAxesDirection(x,y).direction;
-            switch (preDirection) {
-              case 'up':
-              case 'up-right':
-                direction = 'north'
-              break;
-              case 'left':
-              case 'up-left':
-                direction = 'west'
-              break;
-              case 'down':
-              case 'down-left':
-                direction = 'south'
-              break;
-              case 'right':
-              case 'down-right':
-                direction = 'east'
-              break;
-              default:
-            }
-            if (direction) {
-              gamepadEngaged = true;
-              keyPressed[keyPressedIndex].keyPressed[direction] = true;
-            }
-            // console.log('player ',currentGamepadPlayer,' gamepad left stick to ',preDirection,direction,' magnitude',getAxesDirection(x,y).magnitude);
-          }
-          if (gp.axes[2]!== 0 || gp.axes[3] !== 0) {
-            x = gp.axes[2];
-            y = gp.axes[3];
-            preDirection = getAxesDirection(x,y).direction;
-            switch (preDirection) {
-              case 'up':
-              case 'up-right':
-                direction = 'north'
-              break;
-              case 'left':
-              case 'up-left':
-                direction = 'west'
-              break;
-              case 'down':
-              case 'down-left':
-                direction = 'south'
-              break;
-              case 'right':
-              case 'down-right':
-                direction = 'east'
-              break;
-              default:
-            }
-            if (direction) {
-              gamepadEngaged = true;
-              keyPressed[keyPressedIndex].keyPressed[direction] = true;
-            }
-
-            // console.log('player ',currentGamepadPlayer,' gamepad right stick to ',preDirection,direction,' magnitude',getAxesDirection(x,y).magnitude);
-          }
-
-
-
-        }
-        else {
-
-          if (
-            gp.id.substr(0,11) === "Joy-Con (R)" ||
-            gp.id.substr(0,11) === "Joy-Con (L)"
-          ) {
-            console.log("can't use single joycon. please re-configure controller/gamepad settings");
-            keyPressed[keyPressedIndex].state = false;
-            keyPressed[keyPressedIndex].keyPressed = {
+        keyPressed.push(
+          {
+            state: true,
+            plyrNo: elem.plyrNo,
+            keyPressed: {
               north: false,
               south: false,
               east: false,
@@ -3633,121 +3220,543 @@ class App extends Component {
               attack: false,
               defend: false,
               strafe: false,
-              cycleWeapon: false,
               cycleArmor: false,
               dodge: false,
               menu: false,
-            };
-            showSettingsKeyPressState = true;
-            this.connectedGamepadsInit = false;
+            },
+          }
+        )
+
+        this.players[elem.plyrNo-1].strafing.state = false;
+
+        if (this.connectedGamepadsInit !== true && connectedGamepads[0]) {
+
+          if (connectedGamepads[connectedGamepadIndexB]) {
+            elem.type = connectedGamepads[connectedGamepadIndexB].id.substr(0,11);
+            elem.id = connectedGamepads[connectedGamepadIndexB].id.substr(0,11)+'_'+connectedGamepads[connectedGamepadIndexB].index;
+            elem.mapping = connectedGamepads[connectedGamepadIndexB].mapping;
+            elem.gamepadIndex = connectedGamepads[connectedGamepadIndexB].index;
+
+            connectedGamepadIndexB++;
           }
 
+          // console.log('this.gamepadConfig + connected gamepads',this.gamepadConfig,connectedGamepads,settingsGamepadPlayerCount);
+
+
+          if (this.gamepadConfig.filter(x => x.id !== "").length === settingsGamepadPlayerCount) {
+            this.connectedGamepadsInit = true;
+          }
 
         }
 
       }
       else {
-        // console.log('found a connected gamepad not assigned to a player. do nothing',gp.index);
+        keyPressed.push(
+          {
+            state: false,
+            plyrNo: elem.plyrNo,
+            // keyPressed: undefined,
+            keyPressed: {
+              north: false,
+              south: false,
+              east: false,
+              west: false,
+              attack: false,
+              defend: false,
+              strafe: false,
+              dodge: false,
+              pull: false,
+              kick: false,
+              cycleArmor: false,
+              discardWeapon: false,
+              discardArmor: false,
+              uiMenu: false,
+              playerMenu: false,
+              rotateRight: false,
+              rotateLeft: false,
+            }
+          }
+        )
       }
 
 
     }
-  }
+    connectedGamepadIndexB = 0;
 
 
 
-  let player = this.players[currentGamepadPlayer-1];
+    let showSettingsKeyPressState = false;
 
-  // if (player && gamepadEngaged === true) {
-  if (player) {
+    let gamepadEngaged = false;
+    // for(let g = 0; g < gamepads.length; g++) {
+    for(let g = 0; g < connectedGamepads.length; g++) {
+      const gp = connectedGamepads[g];
 
-    if (keyPressed[currentGamepadPlayer-1].state === true) {
-      this.keyPressed[currentGamepadPlayer-1] = keyPressed[currentGamepadPlayer-1].keyPressed;
-      // console.log('xxx',this.keyPressed[currentGamepadPlayer-1]);
-    }
+      if (!!gp) {
+
+        // console.log('gp',gp);
+        let gamepadConfigRef = this.gamepadConfig.find(x => x.gamepadIndex === gp.index);
+
+        if (gamepadConfigRef) {
+
+          currentGamepadPlayer = gamepadConfigRef.plyrNo;
+          const keyPressedIndex = currentGamepadPlayer-1;
+
+          if (
+            gp.id.substr(0,11) !== "Joy-Con (R)" &&
+            gp.id.substr(0,11) !== "Joy-Con (L)"
+          ) {
 
 
-    if (showSettingsKeyPressState === true) {
-      this.showSettingsKeyPress.state = showSettingsKeyPressState;
-    }
+
+            // CHECK BUTTONS!!
+            for (const btn of gp.buttons) {
+              if (btn.pressed === true ) {
+
+                // DEBUGGING
+                if (
+                  // b btn
+                  gp.buttons.indexOf(btn) === 0 ||
+                  // a btn
+                  gp.buttons.indexOf(btn) === 1 ||
+                  // y btn
+                  gp.buttons.indexOf(btn) === 2 ||
+                  // x btn
+                  gp.buttons.indexOf(btn) === 3 ||
+                  // l btn
+                  gp.buttons.indexOf(btn) === 4 ||
+                  // r btn
+                  gp.buttons.indexOf(btn) === 5 ||
+                  // l trigger
+                  gp.buttons.indexOf(btn) === 6 ||
+                  // r trigger
+                  gp.buttons.indexOf(btn) === 7 ||
+                  // - btn
+                  gp.buttons.indexOf(btn) === 8 ||
+                  // + btn
+                  gp.buttons.indexOf(btn) === 9 ||
+                  // l stick press
+                  gp.buttons.indexOf(btn) === 10 ||
+                  // r stick press
+                  gp.buttons.indexOf(btn) === 11 ||
+                  // dpad up
+                  gp.buttons.indexOf(btn) === 12 ||
+                  // dpad down
+                  gp.buttons.indexOf(btn) === 13 ||
+                  // dpad left
+                  gp.buttons.indexOf(btn) === 14 ||
+                  // dpad right
+                  gp.buttons.indexOf(btn) === 15
+                ) {
+                  // console.log('player '+currentGamepadPlayer+' btn ',gp.buttons.indexOf(btn),' pressed');
+                  // console.log('gp',gp);
+                  gamepadEngaged = true;
+                }
+
+
+                switch (gp.buttons.indexOf(btn)) {
+                  case 0:
+                    // b btn
+                    // console.log('player '+currentGamepadPlayer+' defend btn pressed');
+                    keyPressed[keyPressedIndex].keyPressed.defend = true;
+                  break;
+                  case 1:
+                    // a btn
+                    // console.log('player '+currentGamepadPlayer+' attack btn pressed');
+                    keyPressed[keyPressedIndex].keyPressed.attack = true;
+                  break;
+                  case 2:
+                    // y btn
+                    // console.log('player '+currentGamepadPlayer+' strafe btn pressed');
+                    keyPressed[keyPressedIndex].keyPressed.strafe = true;
+                  break;
+                  case 3:
+                    // x btn
+                    // console.log('player '+currentGamepadPlayer+' dodge btn pressed');
+                    keyPressed[keyPressedIndex].keyPressed.dodge = true;
+                  break;
+                  case 4:
+                    // l btn
+                    // console.log('player '+currentGamepadPlayer+' discard weapon btn pressed');
+                    keyPressed[keyPressedIndex].keyPressed.discardWeapon = true;
+                  break;
+                  case 5:
+                    // r btn
+                    if (this.players[currentGamepadPlayer-1].dead.state === true) {
+                      this.respawn(this.playerscurrentGamepadPlayer-1)
+                      // console.log('player '+currentGamepadPlayer+' cycle weapon btn pressed: RESPAWN');
+                    }
+                    else {
+                      // console.log('player '+currentGamepadPlayer+' cycle weapon btn pressed');
+                      keyPressed[keyPressedIndex].keyPressed.cycleWeapon = true;
+                    }
+                  break;
+                  case 6:
+                    // l trigger
+                    // console.log('player '+currentGamepadPlayer+' discard armor btn pressed');
+                    keyPressed[keyPressedIndex].keyPressed.discardArmor = true;
+                  break;
+                  case 7:
+                    // r trigger
+                    // console.log('player '+currentGamepadPlayer+' cycle armor btn pressed');
+                    keyPressed[keyPressedIndex].keyPressed.cycleArmor = true;
+                  break;
+                  case 8:
+                    // - btn
+                    showSettingsKeyPressState = true;
+                  break;
+                  case 9:
+                    // + btn
+                    this.gameReset('soft');
+                  break;
+                  case 10:
+                    // l stick press
+                  break;
+                  case 11:
+                    // r stick press
+                  break;
+                  case 12:
+                    // dpad up
+                    // console.log('player '+currentGamepadPlayer+' kick btn pressed');
+                    keyPressed[keyPressedIndex].keyPressed.kick = true;
+                  break;
+                  case 13:
+                    // dpad down
+                    // console.log('player '+currentGamepadPlayer+' pull btn pressed');
+                    keyPressed[keyPressedIndex].keyPressed.pull = true;
+                  break;
+                  case 14:
+                    // dpad left
+                    // console.log('player '+currentGamepadPlayer+' ui menu toggle btn pressed');
+                    keyPressed[keyPressedIndex].keyPressed.uiMenu = true;
+                  break;
+                  case 15:
+                    // dpad right
+                    // console.log('player '+currentGamepadPlayer+' player menu toggle btn pressed');
+                    keyPressed[keyPressedIndex].keyPressed.playerMenu = true;
+                  break;
+                  default:
+
+                }
+
+              }
+            }
 
 
 
-    if (player.defending.state === true && player.defending.count === 0) {
-      if (this.keyPressed[currentGamepadPlayer-1].defend === false) {
-        console.log('player',player.number,' stop defending1 @ gamepad');
-        // player.defending.state = false;
+            // CHECK AXES!!
+            // DEBUGGING
+            // axes 0(x),1(y) == left stick, 2(x),3(y) == right stick
+            for (const axis of gp.axes) {
 
-        // player.defending = {
-        //   state: false,
-        //   count: 0,
-        //   limit: player.defending.limit,
-        // }
-        // player.defendDecay = {
-        //   state: false,
-        //   count: 0,
-        //   limit: player.defendDecay.limit,
-        // }
+              if (axis !== 0) {
+                if (gp.axes.indexOf(axis) === 0) {
+                  // console.log('player '+currentGamepadPlayer+' left stick x axis value',axis.toFixed(2));
+                }
+                if (gp.axes.indexOf(axis) === 1) {
+                  // console.log('player '+currentGamepadPlayer+' left stick y axis value',axis.toFixed(2));
+                }
+                if (gp.axes.indexOf(axis) === 2) {
+                  // console.log('player '+currentGamepadPlayer+' right stick x axis value',axis.toFixed(2));
+                }
+                if (gp.axes.indexOf(axis) === 3) {
+                  // console.log('player '+currentGamepadPlayer+' right stick y axis value',axis.toFixed(2));
+                }
+
+                // console.log('gp',gp);
+              }
+            }
+
+
+
+            const getAxesDirection = (x,y) => {
+
+              let dir;
+              let magnitude;
+
+              if (x < -0.5 && y < -0.5) dir = 'up-left';
+              else if (x < -0.5 && y >= -0.5 && y <= 0.5) dir = 'left';
+              else if (x < -0.5 && y > 0.5) dir = 'down-left';
+              else if (x >= -0.5 && x <= 0.5 && y < -0.5) dir = 'up';
+              else if (x >= -0.5 && x <= 0.5 && y >= -0.5 && y <= 0.5) dir = 'neutral';
+              else if (x >= -0.5 && x <= 0.5 && y > 0.5) dir = 'down';
+              else if (x > 0.5 && y < -0.5) dir = 'up-right';
+              else if (x > 0.5 && y >= -0.5 && y <= 0.5) dir = 'right';
+              else if (x > 0.5 && y > 0.5) dir = 'down-right';
+
+
+              // ALTERNATE METHOD, 2ND W/ MAGNITUDE
+              // if (Math.abs(x) > Math.abs(y)) {
+              //   if (x < -0.5 && y < -0.5) dir = 'up-left';
+              //   else if (x < -0.5 && y > 0.5) dir = 'down-left';
+              //   else if (x > 0.5 && y < -0.5) dir = 'up-right';
+              //   else if (x > 0.5 && y > 0.5) dir = 'down-right';
+              //   else if (x < -0.5) dir = 'left';
+              //   else dir = 'right';
+              // } else {
+              //   if (x < -0.5 && y < -0.5) dir = 'up-left';
+              //   else if (x < -0.5 && y > 0.5) dir = 'down-left';
+              //   else if (x > 0.5 && y < -0.5) dir = 'up-right';
+              //   else if (x > 0.5 && y > 0.5) dir = 'down-right';
+              //   else if (y < -0.5) dir = 'up';
+              //   else dir = 'down';
+              // }
+              //
+              // if (Math.abs(x) > Math.abs(y)) {
+              //    if (x < -0.5 && y < -0.5) {
+              //       dir = 'up-left';
+              //       magnitude = Math.sqrt(x*x + y*y);
+              //     }
+              //    else if (x < -0.5 && y > 0.5) {
+              //       dir = 'down-left';
+              //       magnitude = Math.sqrt(x*x + y*y);
+              //     }
+              //    else if (x > 0.5 && y < -0.5) {
+              //       dir = 'up-right';
+              //       magnitude = Math.sqrt(x*x + y*y);
+              //     }
+              //    else if (x > 0.5 && y > 0.5) {
+              //       dir = 'down-right';
+              //       magnitude = Math.sqrt(x*x + y*y);
+              //     }
+              //    else if (x < -0.5) {
+              //       dir = 'left';
+              //       magnitude = Math.abs(x);
+              //     }
+              //    else {
+              //       dir = 'right';
+              //       magnitude = Math.abs(x);
+              //     }
+              //  } else {
+              //    if (x < -0.5 && y < -0.5) {
+              //       dir = 'up-left';
+              //       magnitude = Math.sqrt(x*x + y*y);
+              //     }
+              //    else if (x < -0.5 && y > 0.5) {
+              //       dir = 'down-left';
+              //       magnitude = Math.sqrt(x*x + y*y);
+              //     }
+              //    else if (x > 0.5 && y < -0.5) {
+              //       dir = 'up-right';
+              //       magnitude = Math.sqrt(x*x + y*y);
+              //     }
+              //    else if (x > 0.5 && y > 0.5) {
+              //       dir = 'down-right';
+              //       magnitude = Math.sqrt(x*x + y*y);
+              //     }
+              //    else if (y < -0.5) {
+              //       dir = 'up';
+              //       magnitude = Math.abs(y);
+              //     }
+              //    else {
+              //       dir = 'down';
+              //       magnitude = Math.abs(y);
+              //     }
+              //  }
+
+
+              // only return direction if magnitude is more than a a certain amount
+               if (!dir) {
+                 dir = 'neutral';
+               }
+               if (!magnitude) {
+                 magnitude = 0;
+               }
+
+
+               return {direction:dir,magnitude:magnitude};
+
+            };
+            let preDirection;
+            let direction;
+            let x;
+            let y;
+
+
+            // LEFT ANALOG STICK (MOVE, TURN, PUSH ETC)
+            if (gp.axes[0]!== 0 || gp.axes[1] !== 0) {
+              x = gp.axes[0];
+              y = gp.axes[1];
+              preDirection = getAxesDirection(x,y).direction;
+              switch (preDirection) {
+                case 'up':
+                case 'up-right':
+                  direction = 'north'
+                break;
+                case 'left':
+                case 'up-left':
+                  direction = 'west'
+                break;
+                case 'down':
+                case 'down-left':
+                  direction = 'south'
+                break;
+                case 'right':
+                case 'down-right':
+                  direction = 'east'
+                break;
+                default:
+              }
+              if (direction) {
+                gamepadEngaged = true;
+                keyPressed[keyPressedIndex].keyPressed[direction] = true;
+              }
+              // console.log('player ',currentGamepadPlayer,' gamepad left stick to ',preDirection,direction,' magnitude',getAxesDirection(x,y).magnitude);
+            }
+
+
+            // RIGHT ANALOG STICK (STAGE ROTATE)
+            if (gp.axes[2]!== 0 || gp.axes[3] !== 0) {
+              x = gp.axes[2];
+              y = gp.axes[3];
+              preDirection = getAxesDirection(x,y).direction;
+              switch (preDirection) {
+                case 'up':
+                case 'up-right':
+                  direction = 'north'
+                break;
+                case 'left':
+                case 'up-left':
+                  direction = 'west'
+                break;
+                case 'down':
+                case 'down-left':
+                  direction = 'south'
+                break;
+                case 'right':
+                case 'down-right':
+                  direction = 'east'
+                break;
+                default:
+              }
+              if (direction) {
+                gamepadEngaged = true;
+                // keyPressed[keyPressedIndex].keyPressed[direction] = true;
+                if (direction === "east") {
+                  keyPressed[keyPressedIndex].keyPressed.rotateRight = true;
+                }
+                if (direction == "west") {
+                  keyPressed[keyPressedIndex].keyPressed.rotateLeft = true;
+                }
+              }
+
+
+
+              // console.log('player ',currentGamepadPlayer,' gamepad right stick to ',preDirection,direction,' magnitude',getAxesDirection(x,y).magnitude);
+            }
+
+
+
+          }
+
+          // NOT USING PRO CONTROLLER OR BOTH JOYCONS
+          else {
+
+            if (
+              gp.id.substr(0,11) === "Joy-Con (R)" ||
+              gp.id.substr(0,11) === "Joy-Con (L)"
+            ) {
+              console.log("can't use single joycon. please re-configure controller/gamepad settings");
+              keyPressed[keyPressedIndex].state = false;
+              keyPressed[keyPressedIndex].keyPressed = {
+                north: false,
+                south: false,
+                east: false,
+                west: false,
+                attack: false,
+                defend: false,
+                strafe: false,
+                dodge: false,
+                pull: false,
+                kick: false,
+                cycleArmor: false,
+                discardWeapon: false,
+                discardArmor: false,
+                uiMenu: false,
+                playerMenu: false,
+                rotateRight: false,
+                rotateLeft: false,
+              };
+              showSettingsKeyPressState = true;
+              this.connectedGamepadsInit = false;
+            }
+
+
+          }
+
+        }
+        else {
+          // console.log('found a connected gamepad not assigned to a player. do nothing',gp.index);
+        }
+
+
       }
     }
 
 
-    // STRAFE CHECKS
-    if (
-      keyPressed[currentGamepadPlayer-1].keyPressed.strafe === false &&
-      this.players[currentGamepadPlayer-1].moving.state === true &&
-      this.players[currentGamepadPlayer-1].strafing.state === true
-    ) {
-      this.players[currentGamepadPlayer-1].strafeReleaseHook = true
+
+    let player = this.players[currentGamepadPlayer-1];
+
+    // if (player && gamepadEngaged === true) {
+    if (player) {
+
+      if (keyPressed[currentGamepadPlayer-1].state === true) {
+        this.keyPressed[currentGamepadPlayer-1] = keyPressed[currentGamepadPlayer-1].keyPressed;
+        // console.log('xxx',this.keyPressed[currentGamepadPlayer-1]);
+      }
+
+
+      if (showSettingsKeyPressState === true) {
+        this.showSettingsKeyPress.state = showSettingsKeyPressState;
+      }
+
+
+
+      if (player.defending.state === true && player.defending.count === 0) {
+        if (this.keyPressed[currentGamepadPlayer-1].defend === false) {
+          console.log('player',player.number,' stop defending1 @ gamepad');
+          // player.defending.state = false;
+
+          // player.defending = {
+          //   state: false,
+          //   count: 0,
+          //   limit: player.defending.limit,
+          // }
+          // player.defendDecay = {
+          //   state: false,
+          //   count: 0,
+          //   limit: player.defendDecay.limit,
+          // }
+        }
+      }
+
+
+      // STRAFE CHECKS
+      if (
+        keyPressed[currentGamepadPlayer-1].keyPressed.strafe === false &&
+        this.players[currentGamepadPlayer-1].moving.state === true &&
+        this.players[currentGamepadPlayer-1].strafing.state === true
+      ) {
+        this.players[currentGamepadPlayer-1].strafeReleaseHook = true
+      }
+      if (
+        keyPressed[currentGamepadPlayer-1].keyPressed.strafe === false &&
+        this.players[currentGamepadPlayer-1].moving.state !== true &&
+        this.keyPressed[currentGamepadPlayer-1].strafe === true
+      ) {
+        this.players[currentGamepadPlayer-1].strafeReleaseHook = true;
+      }
+      else {
+        this.players[currentGamepadPlayer-1].strafing.state = keyPressed[currentGamepadPlayer-1].keyPressed.strafe;
+      }
+
+
+
     }
-    if (
-      keyPressed[currentGamepadPlayer-1].keyPressed.strafe === false &&
-      this.players[currentGamepadPlayer-1].moving.state !== true &&
-      this.keyPressed[currentGamepadPlayer-1].strafe === true
-    ) {
-      this.players[currentGamepadPlayer-1].strafeReleaseHook = true;
-    }
-    else {
-      this.players[currentGamepadPlayer-1].strafing.state = keyPressed[currentGamepadPlayer-1].keyPressed.strafe;
-    }
 
-
-    // if (
-    //   state === false &&
-    //   this.players[0].moving.state === true &&
-    //   this.players[0].strafing.state === true
-    // ) {
-    //   this.players[0].strafeReleaseHook = true
-    // }
-    // if (
-    //   state === false &&
-    //   this.players[0].moving.state !== true &&
-    //   this.keyPressed[0].strafe === true
-    // ) {
-    //   this.players[0].strafeReleaseHook = true;
-    // }
-    // else {
-    //
-    //   this.keyPressed[0].strafe = state;
-    //   this.players[0].strafing.state = state;
-    //   this.currentPlayer = 1;
-    // }
-
-
-    // if (player.turning.state === true && player.turning.toDirection === this.turnCheckerDirection) {
-    //   console.log('player',player.number,' turn-ing');
-    //   if (this.keyPressed[currentGamepadPlayer-1][this.turnCheckerDirection] == false) {
-    //     console.log('player',player.number,' turn-stop');
-    //     player.turning.state = false;
-    //   }
-    // }
 
 
   }
-
-
-
-}
   addListeners = (canvas,canvas2) => {
     // console.log('adding listeners');
 
@@ -4228,37 +4237,14 @@ class App extends Component {
   }
   handleKeyPress = (event, state) => {
 
-    // console.log('handling key press', event.key, state);
+    // console.log('handling key press', event.key, state, event);
 
 
     let direction;
     let keyInput = event.key
 
     switch(keyInput) {
-      // case 'q' :
-      //  this.keyPressed[0].northWest = state;
-      //  // direction = 'northWest';
-      //  this.turnCheckerDirection = 'northWest';
-      //  this.currentPlayer = 1;
-      // break;
-      // case 'e' :
-      //  this.keyPressed[0].northEast = state;
-      //  // direction = 'northEast';
-      //  this.turnCheckerDirection = 'northEast';
-      //  this.currentPlayer = 1;
-      // break;
-      // case 'z' :
-      //  this.keyPressed[0].southWest = state;
-      //  // direction = 'southWest';
-      //  this.turnCheckerDirection = 'southWest';
-      //  this.currentPlayer = 1;
-      // break;
-      // case 'c' :
-      //  this.keyPressed[0].southEast = state;
-      //  // direction = 'southEast';
-      //  this.turnCheckerDirection = 'southEast';
-      //  this.currentPlayer = 1;
-      // break;
+
 
       case 'w' :
        this.keyPressed[0].north = state;
@@ -4292,6 +4278,20 @@ class App extends Component {
        this.keyPressed[0].defend = state;
        this.currentPlayer = 1;
       break;
+      case 'c' :
+       this.keyPressed[0].dodge = state;
+       this.currentPlayer = 1;
+      break;
+      case 'r' :
+       this.keyPressed[0].pull = state;
+       this.currentPlayer = 1;
+      break;
+      case 'Shift' :
+        if (event.code === "ShiftLeft") {
+          this.keyPressed[0].kick = state;
+          this.currentPlayer = 1;
+        }
+      break;
       case ' ' :
         if (
           state === false &&
@@ -4314,80 +4314,64 @@ class App extends Component {
           this.currentPlayer = 1;
         }
       break;
+
+      case 'q' :
+       this.keyPressed[0].cycleWeapon = state;
+       this.currentPlayer = 1;
+      break;
+      case 'e' :
+       this.keyPressed[0].cycleArmor = state;
+       this.currentPlayer = 1;
+      break;
+      case '2' :
+       this.keyPressed[0].discardWeapon = state;
+       this.currentPlayer = 1;
+      break;
+      case '3' :
+       this.keyPressed[0].discardArmor = state;
+       this.currentPlayer = 1;
+      break;
+      case 'Control' :
+       this.keyPressed[0].playerMenu = state;
+       this.currentPlayer = 1;
+      break;
+      case '5' :
+       this.keyPressed[0].uiMenu = state;
+       this.currentPlayer = 1;
+      break;
+      case '4' :
+        this.showSettingsKeyPress.state = state;
+        this.currentPlayer = 1;
+      break;
       case '1' :
         if (this.players[0].dead.state === true) {
           this.respawn(this.players[0])
         }
       break;
-      case 'r' :
-        this.gameReset('soft');
-      break;
-      case '2' :
-       this.keyPressed[0].cycleWeapon = state;
+      case 'z' :
+       this.keyPressed[0].rotateLeft = state;
        this.currentPlayer = 1;
       break;
-      case '3' :
-       this.keyPressed[0].cycleArmor = state;
-       this.currentPlayer = 1;
-      break;
-      case 'c' :
-       this.keyPressed[0].dodge = state;
+      case 'x' :
+       this.keyPressed[0].rotateRight = state;
        this.currentPlayer = 1;
       break;
 
 
-      // case 'p' :
-      //  this.openVoid = !this.openVoid;
-      // break;
 
-      case '4' :
-       // this.toggleCameraMode(state);
+
+      case '6' :
        this.toggleCameraMode = state ;
       break;
-      case '5' :
+      case '7' :
        this.addAiPlayerKeyPress = state;
       break;
-      case 'Enter' :
-        this.showSettingsKeyPress.state = state;
+      case '`' :
+        this.gameReset('soft');
       break;
 
 
-      // case 'ArrowUp' :
-      //   this.keyPressed[2].north = state;
-      //   this.turnCheckerDirection = 'north';
-      //   this.currentPlayer = 3;
-      // break;
-      // case 'ArrowDown' :
-      //   this.keyPressed[2].south = state;
-      //   this.turnCheckerDirection = 'south';
-      //   this.currentPlayer = 3;
-      // break;
 
-
-      // case 'u' :
-      //  this.keyPressed[1].northWest = state;
-      //  // direction = 'northWest';
-      //  this.turnCheckerDirection = 'northWest';
-      //  this.currentPlayer = 2;
-      // break;
-      // case 'o' :
-      //  this.keyPressed[1].northEast = state;
-      //  // direction = 'northEast';
-      //  this.turnCheckerDirection = 'northEast';
-      //  this.currentPlayer = 2;
-      // break;
-      // case 'm' :
-      //  this.keyPressed[1].southWest = state;
-      //  // direction = 'southWest';
-      //  this.turnCheckerDirection = 'southWest';
-      //  this.currentPlayer = 2;
-      // break;
-      // case '.' :
-      //  this.keyPressed[1].southEast = state;
-      //  // direction = 'southEast';
-      //  this.turnCheckerDirection = 'southEast';
-      //  this.currentPlayer = 2;
-      // break;
 
       case 'i' :
        this.keyPressed[1].north = state;
@@ -4414,13 +4398,25 @@ class App extends Component {
        this.players[1].turnCheckerDirection = 'east';
        this.currentPlayer = 2;
       break;
-      case 'b' :
+      case ';' :
        this.keyPressed[1].attack = state;
        this.currentPlayer = 2;
       break;
-      case 'n' :
+      case '.' :
        this.keyPressed[1].defend = state;
        this.currentPlayer = 2;
+      break;
+      case "'" :
+       this.keyPressed[1].dodge = state;
+       this.currentPlayer = 2;
+      break;
+      case 'p' :
+       this.keyPressed[1].pull = state;
+       this.currentPlayer = 2;
+      break;
+      case 'Enter' :
+         this.keyPressed[1].kick = state;
+         this.currentPlayer = 2;
       break;
       case '/' :
         if (
@@ -4438,29 +4434,60 @@ class App extends Component {
           this.players[1].strafeReleaseHook = true;
         }
         else {
+
           this.keyPressed[1].strafe = state;
           this.players[1].strafing.state = state;
           this.currentPlayer = 2;
         }
       break;
+
+      case 'u' :
+       this.keyPressed[1].cycleWeapon = state;
+       this.currentPlayer = 2;
+      break;
+      case 'o' :
+       this.keyPressed[1].cycleArmor = state;
+       this.currentPlayer = 2;
+      break;
+      case '8' :
+       this.keyPressed[1].discardWeapon = state;
+       this.currentPlayer = 2;
+      break;
+      case '9' :
+       this.keyPressed[1].discardArmor = state;
+       this.currentPlayer = 2;
+      break;
+      case 'Shift' :
+       if (event.code === "ShiftRight") {
+         this.keyPressed[1].playerMenu = state;
+         this.currentPlayer = 2;
+       }
+      break;
       case '0' :
+       this.keyPressed[1].uiMenu = state;
+       this.currentPlayer = 2;
+      break;
+
+      case '=' :
         if (this.players[1].dead.state === true) {
           this.respawn(this.players[1])
         }
       break;
-      case '9' :
-       this.keyPressed[1].cycleWeapon = state;
+      case '-' :
+        this.showSettingsKeyPress.state = state;
+        this.currentPlayer = 2;
+      break;
+      case '[' :
+       this.keyPressed[1].rotateLeft = state;
        this.currentPlayer = 2;
       break;
-      case '8' :
-       this.keyPressed[1].cycleArmor = state;
+      case ']' :
+       this.keyPressed[1].rotateRight = state;
        this.currentPlayer = 2;
       break;
-      case 'm' :
-       this.keyPressed[1].dodge = state;
-       this.currentPlayer = 2;
-      break;
+
     }
+
 
     let player = this.players[this.currentPlayer-1];
 
@@ -23344,16 +23371,19 @@ class App extends Component {
             south: false,
             east: false,
             west: false,
-            northEast: false,
-            northWest: false,
-            southEast: false,
-            southWest: false,
             attack: false,
             defend: false,
             strafe: false,
-            cycleWeapon: false,
-            cycleArmor: false,
             dodge: false,
+            pull: false,
+            kick: false,
+            cycleArmor: false,
+            discardWeapon: false,
+            discardArmor: false,
+            uiMenu: false,
+            playerMenu: false,
+            rotateRight: false,
+            rotateLeft: false,
           }
         )
         this.aiPlayers.push(newPlayerNumber)
@@ -28755,17 +28785,20 @@ class App extends Component {
         south: false,
         east: false,
         west: false,
-        northEast: false,
-        northWest: false,
-        southEast: false,
-        southWest: false,
         attack: false,
         defend: false,
         strafe: false,
+        dodge: false,
+        pull: false,
+        kick: false,
         cycleWeapon: false,
         cycleArmor: false,
-        dodge: false,
-        menu: false,
+        discardWeapon: false,
+        discardArmor: false,
+        uiMenu: false,
+        playerMenu: false,
+        rotateRight: false,
+        rotateLeft: false,
       };
 
       switch(currentInstruction.keyword) {
@@ -30528,7 +30561,6 @@ class App extends Component {
           // player.idleAnim.state = false;
           player.idleAnim.count = 0;
         }
-
 
 
         // TURNER!!
@@ -33168,6 +33200,7 @@ class App extends Component {
               }
 
             }
+
           }
 
           // DODGE START
