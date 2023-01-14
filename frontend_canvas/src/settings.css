@@ -64,6 +64,7 @@
 .controlsImg {
   max-width: 90%;
   margin: 1rem 2rem;
+  border-radius: 20px;
 }
 
 .form {

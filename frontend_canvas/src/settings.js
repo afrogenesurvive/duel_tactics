@@ -14,7 +14,9 @@ import {
   faTh,
   faDice,
 } from '@fortawesome/free-solid-svg-icons';
-import controls from './assets/controls.png'
+import gamepadDefaultDiagram from './assets/inputMap/pad.png'
+import plyr1KeyboardDefaultDiagram from './assets/inputMap/keyboard1.png'
+import plyr2KeyboardDefaultDiagram from './assets/inputMap/keyboard2.png'
 
 import './settings.css';
 
@@ -1717,7 +1719,9 @@ const Settings = (props) => {
       <h2 className="settingsHeading">
         Controls :
       </h2>
-      <img src={controls} className="controlsImg"></img>
+      <img src={plyr1KeyboardDefaultDiagram} className="controlsImg gamepad"></img>
+      <img src={plyr2KeyboardDefaultDiagram} className="controlsImg keyboard1"></img>
+      <img src={gamepadDefaultDiagram} className="controlsImg keyboard2"></img>
 
       </div>
     </div>
