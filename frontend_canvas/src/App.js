@@ -9138,6 +9138,7 @@ class App extends Component {
 
           if (haveSpace === true ) {
 
+            // NO CUREENT WEAPON, EQUIP
             if (player.currentWeapon.name === '' || !player.currentWeapon.name) {
 
               this.players[player.number-1].currentWeapon = {
@@ -9188,14 +9189,21 @@ class App extends Component {
               }
 
               pickUp = true;
+
             }
+
+            // STASH IN INVENTORY
             else {
+
+              // DON'T ALREADY HAVE WEPAON
               if (player.items.weapons.map(weapon => weapon.name).includes(cell.item.name) !== true ) {
+
                 this.players[player.number-1].items.weapons.push({
                   name: cell.item.name,
                   type: cell.item.subType,
                   effect: cell.item.effect,
                 })
+
                 if (cell.item.subType === 'crossbow') {
                   let ammo = parseInt(cell.item.effect.split('+')[1])
                   // console.log('picked up a crossbow checking ammo',ammo);
@@ -9224,6 +9232,7 @@ class App extends Component {
                   count: 1,
                   limit: this.players[player.number-1].statusDisplay.limit,
                 }
+
                 if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupWeapon')) {
                   this.players[player.number-1].popups.push(
                     {
@@ -9240,6 +9249,8 @@ class App extends Component {
                 }
 
               }
+
+              // ALREADY HAVE WEAPON
               else {
 
                 if (cell.item.subType === 'crossbow') {
@@ -9263,6 +9274,7 @@ class App extends Component {
                     )
                   }
                 }
+
                 else {
                   console.log('you already have this weapon');
                   this.players[player.number-1].statusDisplay = {
@@ -9287,10 +9299,14 @@ class App extends Component {
                     )
                   }
                 }
+
               }
+
             }
 
           }
+
+          // NO SPACE TO PICKUP
           else if (cell.item.name !== '') {
             console.log('Not enough space!!');
 
@@ -9319,6 +9335,7 @@ class App extends Component {
           }
 
         }
+
         if (cell.item.type === 'armor') {
           // console.log('picked up armor',player.currentArmor);
 
@@ -9338,87 +9355,8 @@ class App extends Component {
               effect: cell.item.effect,
             })
 
-            switch(cell.item.effect) {
-              case 'hpUp' :
-              // console.log('armor pickup buff');
-                if (this.players[player.number-1].hp < 3) {
-                  // console.log('armor pickup buff hp',this.players[player.number-1].hp);
-                  this.players[player.number-1].hp = player.hp + 1
-                  // console.log('armor pickup buff hp',this.players[player.number-1].hp);
 
-                  this.players[player.number-1].statusDisplay = {
-                    state: true,
-                    status: 'hpUp',
-                    count: 1,
-                    limit: this.players[player.number-1].statusDisplay.limit,
-                  }
-
-                  if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupBuff')) {
-                    this.players[player.number-1].popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit:25,
-                        type: '',
-                        position: '',
-                        msg: 'pickupBuff',
-                        img: '',
-
-                      }
-                    )
-                  }
-
-                  if (!this.players[player.number-1].popups.find(x=>x.msg.split("_")[0] === "hpUp")) {
-                    this.players[player.number-1].popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 30,
-                        type: '',
-                        position: '',
-                        msg: 'hpUp_'+'+'+1+'',
-                        img: '',
-
-                      }
-                    )
-                  }
-
-                }
-              break;
-              case 'speedUp' :
-              // console.log('armor pickup buff');
-                let currentSpd1 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
-                if (this.players[player.number-1].speed.move < .2) {
-
-                  // console.log('armor pickup buff speed',this.players[player.number-1].speed.move);
-                  this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd1+1]
-                  // console.log('armor pickup buff speed',this.players[player.number-1].speed.move);
-
-                  this.players[player.number-1].statusDisplay = {
-                    state: true,
-                    status: 'speedUp',
-                    count: 1,
-                    limit: this.players[player.number-1].statusDisplay.limit,
-                  }
-
-                  if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupBuff')) {
-                    this.players[player.number-1].popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: '',
-                        position: '',
-                        msg: 'pickupBuff',
-                        img: '',
-
-                      }
-                    )
-                  }
-
-                }
-              break;
-            }
+            this.applyRemoveEffect(player,'apply','pickup','armor',cell.item);
 
             pickUp = true;
           }
@@ -9519,413 +9457,15 @@ class App extends Component {
         }
 
         // ITEM
-        else {
+        else if (cell.item.type !== 'weapon' && cell.item.type !== 'armor') {
           // console.log('item',cell.item);
-          let ammo;
-          switch(cell.item.name) {
-            case 'moveSpeedUp' :
-              // console.log('moveSpeedUp');
-              let currentSpd1 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
-              // console.log('dd',currentSpd1,this.players[player.number-1].speed.range[currentSpd1]);
-              // console.log('dd2',currentSpd1,this.players[player.number-1].speed.range[currentSpd1+1]);
-              if (this.players[player.number-1].speed.move < .2) {
-                // console.log('added buff');
-                this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd1+1]
 
-                this.players[player.number-1].statusDisplay = {
-                  state: true,
-                  status: cell.item.name,
-                  count: 1,
-                  limit: this.players[player.number-1].statusDisplay.limit,
-                }
 
-                if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupBuff')) {
-                  this.players[player.number-1].popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit:25,
-                      type: '',
-                      position: '',
-                      msg: 'pickupBuff',
-                      img: '',
-
-                    }
-                  )
-                }
-
-                pickUp = true;
-              }
-              else {
-                console.log('player '+player.number+' you already have max movement speed');
-
-                this.players[player.number-1].statusDisplay = {
-                  state: true,
-                  status: 'Already Max Speed!!',
-                  count: 1,
-                  limit: this.players[player.number-1].statusDisplay.limit,
-                }
-
-                if (!this.players[player.number-1].popups.find(x=>x.msg === 'stop')) {
-                  this.players[player.number-1].popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit:25,
-                      type: '',
-                      position: '',
-                      msg: 'stop',
-                      img: '',
-
-                    }
-                  )
-                }
-              }
-            break;
-            case 'moveSpeedDown' :
-              // console.log('moveSpeedDown');
-              let currentSpd2 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
-              // console.log('ff',currentSpd2,this.players[player.number-1].speed.range[currentSpd2]);
-              // console.log('ff2',currentSpd2,this.players[player.number-1].speed.range[currentSpd2-1]);
-              if (this.players[player.number-1].speed.move > .05) {
-                // console.log('added debuff');
-                this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd2-1]
-
-                this.players[player.number-1].statusDisplay = {
-                  state: true,
-                  status: cell.item.name,
-                  count: 1,
-                  limit: this.players[player.number-1].statusDisplay.limit,
-                }
-
-                if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupDebuff')) {
-                  this.players[player.number-1].popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit:25,
-                      type: '',
-                      position: '',
-                      msg: 'pickupDebuff',
-                      img: '',
-
-                    }
-                  )
-                }
-
-                pickUp = true;
-              }
-            break;
-            case 'hpUp' :
-              // console.log('hpUp');
-              if (this.players[player.number-1].hp === 1 && this.players[player.number-1].speed.move < .1) {
-                this.players[player.number-1].speed.move = .1;
-              }
-              if (this.players[player.number-1].hp < 3) {
-                  this.players[player.number-1].hp ++;
-
-                  this.players[player.number-1].statusDisplay = {
-                    state: true,
-                    status: cell.item.name,
-                    count: 1,
-                    limit: this.players[player.number-1].statusDisplay.limit,
-                  }
-
-                  if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupBuff')) {
-                    this.players[player.number-1].popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit:25,
-                        type: '',
-                        position: '',
-                        msg: 'pickupBuff',
-                        img: '',
-
-                      }
-                    )
-                  }
-
-                  if (!this.players[player.number-1].popups.find(x=>x.msg.split("_")[0] === "hpUp")) {
-                    this.players[player.number-1].popups.push(
-                      {
-                        state: false,
-                        count: 0,
-                        limit: 30,
-                        type: '',
-                        position: '',
-                        msg: 'hpUp_'+'+'+1+'',
-                        img: '',
-
-                      }
-                    )
-                  }
-
-                  pickUp = true;
-              }
-              else {
-                console.log('player '+player.number+' you already have max hp');
-
-                this.players[player.number-1].statusDisplay = {
-                  state: true,
-                  status: 'Already Max HP!!',
-                  count: 1,
-                  limit: this.players[player.number-1].statusDisplay.limit,
-                }
-
-                if (!this.players[player.number-1].popups.find(x=>x.msg === 'stop')) {
-                  this.players[player.number-1].popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit:25,
-                      type: '',
-                      position: '',
-                      msg: 'stop',
-                      img: '',
-
-                    }
-                  )
-                }
-              }
-            break;
-            case 'hpDown' :
-              // console.log('hpDown');
-              if (player.hp > 1) {
-                this.players[player.number-1].hp --;
-
-                this.players[player.number-1].statusDisplay = {
-                  state: true,
-                  status: cell.item.name,
-                  count: 1,
-                  limit: this.players[player.number-1].statusDisplay.limit,
-                }
-
-                if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupDebuff')) {
-                  this.players[player.number-1].popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit:25,
-                      type: '',
-                      position: '',
-                      msg: 'pickupDebuff',
-                      img: '',
-
-                    }
-                  )
-                }
-                if (!this.players[player.number-1].popups.find(x=>x.msg === 'alarmed')) {
-                  this.players[player.number-1].popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit:25,
-                      type: '',
-                      position: '',
-                      msg: 'alarmed',
-                      img: '',
-
-                    }
-                  )
-                }
-                pickUp = true;
-              }
-            break;
-            case 'focusUp' :
-              if (
-                this.players[player.number-1].crits.doubleHit - 2 !== 0
-              ) {
-                this.players[player.number-1].crits.doubleHit = this.players[player.number-1].crits.doubleHit - 2;
-
-                this.players[player.number-1].statusDisplay = {
-                  state: true,
-                  status: cell.item.name,
-                  count: 1,
-                  limit: this.players[player.number-1].statusDisplay.limit,
-                }
-
-                if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupBuff')) {
-                  this.players[player.number-1].popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit:25,
-                      type: '',
-                      position: '',
-                      msg: 'pickupBuff',
-                      img: '',
-
-                    }
-                  )
-                }
-
-              }
-              this.players[player.number-1].crits.guardBreak = this.players[player.number-1].crits.guardBreak + 1;
-
-              pickUp = true;
-            break;
-            case 'focusDown' :
-              this.players[player.number-1].crits.doubleHit = this.players[player.number-1].crits.doubleHit + 2;
-              if (this.players[player.number-1].crits.guardBreak - 1 !== 0) {
-                this.players[player.number-1].crits.guardBreak = this.players[player.number-1].crits.guardBreak - 1
-              }
-
-              this.players[player.number-1].statusDisplay = {
-                state: true,
-                status: cell.item.name,
-                count: 1,
-                limit: this.players[player.number-1].statusDisplay.limit,
-              }
-
-              if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupDebuff')) {
-                this.players[player.number-1].popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit:25,
-                    type: '',
-                    position: '',
-                    msg: 'pickupDebuff',
-                    img: '',
-
-                  }
-                )
-              }
-
-              pickUp = true;
-            break;
-            case 'strengthUp' :
-              this.players[player.number-1].crits.pushBack = this.players[player.number-1].crits.pushBack + 1;
-
-              this.players[player.number-1].crits.guardBreak = this.players[player.number-1].crits.guardBreak + 1;
-
-              this.players[player.number-1].statusDisplay = {
-                state: true,
-                status: cell.item.name,
-                count: 1,
-                limit: this.players[player.number-1].statusDisplay.limit,
-              }
-
-              if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupBuff')) {
-                this.players[player.number-1].popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit:25,
-                    type: '',
-                    position: '',
-                    msg: 'pickupBuff',
-                    img: '',
-
-                  }
-                )
-              }
-
-              pickUp = true;
-            break;
-            case 'strengthDown' :
-              if (
-                this.players[player.number-1].crits.pushBack - 1 !== 0
-              ) {
-                this.players[player.number-1].crits.pushBack = this.players[player.number-1].crits.pushBack - 1;
-
-                this.players[player.number-1].statusDisplay = {
-                  state: true,
-                  status: cell.item.name,
-                  count: 1,
-                  limit: this.players[player.number-1].statusDisplay.limit,
-                }
-
-                if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupDebuff')) {
-                  this.players[player.number-1].popups.push(
-                    {
-                      state: false,
-                      count: 0,
-                      limit:25,
-                      type: '',
-                      position: '',
-                      msg: 'pickupDebuff',
-                      img: '',
-
-                    }
-                  )
-                }
-
-                pickUp = true;
-              }
-              if (this.players[player.number-1].crits.guardBreak - 1 !== 0) {
-                this.players[player.number-1].crits.guardBreak = this.players[player.number-1].crits.guardBreak - 1
-
-                this.players[player.number-1].statusDisplay = {
-                  state: true,
-                  status: cell.item.name,
-                  count: 1,
-                  limit: this.players[player.number-1].statusDisplay.limit,
-                }
-
-                pickUp = true;
-              }
-            break;
-            case 'ammo5' :
-              ammo = parseInt(cell.item.name.split('o')[1])
-              this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
-
-              this.players[player.number-1].statusDisplay = {
-                state: true,
-                status: cell.item.name,
-                count: 1,
-                limit: this.players[player.number-1].statusDisplay.limit,
-              }
-
-              if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupAmmo')) {
-                this.players[player.number-1].popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit:25,
-                    type: '',
-                    position: '',
-                    msg: 'pickupAmmo',
-                    img: '',
-
-                  }
-                )
-              }
-
-              pickUp = true;
-            break;
-            case 'ammo10' :
-              ammo = parseInt(cell.item.name.split('o')[1])
-              this.players[player.number-1].items.ammo = this.players[player.number-1].items.ammo + ammo;
-
-              this.players[player.number-1].statusDisplay = {
-                state: true,
-                status: cell.item.name,
-                count: 1,
-                limit: this.players[player.number-1].statusDisplay.limit,
-              }
-
-              if (!this.players[player.number-1].popups.find(x=>x.msg === 'pickupAmmo')) {
-                this.players[player.number-1].popups.push(
-                  {
-                    state: false,
-                    count: 0,
-                    limit:25,
-                    type: '',
-                    position: '',
-                    msg: 'pickupAmmo',
-                    img: '',
-
-                  }
-                )
-              }
-
-              pickUp = true;
-            break;
-          }
+          pickUp = this.applyRemoveEffect(player,'apply','pickup','item',cell.item);
 
         }
+
+
         if (pickUp === true) {
           // PICKUP ANIM!!
           if (cell.item.type === 'item') {
@@ -9954,6 +9494,7 @@ class App extends Component {
               }
             }
           }
+
 
           cell.item = {
             name: '',
@@ -14338,24 +13879,7 @@ class App extends Component {
             }
           )
 
-
-          switch(item.effect) {
-            case 'hpUp' :
-              if (this.players[player.number-1].hp > 1) {
-                console.log('armor drop debuff hp',this.players[player.number-1].hp);
-                this.players[player.number-1].hp = this.players[player.number-1].hp - 1;
-                console.log('armor drop debuff hp',this.players[player.number-1].hp);
-              }
-            break;
-            case 'speedUp' :
-              let currentSpd1 = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move);
-              if (this.players[player.number-1].speed.move > .05) {
-                console.log('armor drop debuff speed',this.players[player.number-1].speed.move);
-                this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentSpd1-1];
-                console.log('armor drop debuff speed',this.players[player.number-1].speed.move);
-              }
-            break;
-          }
+          this.applyRemoveEffect(player,'remove','deflectDrop','armor',item);
 
           this.players[player.number-1].items.armor.splice(index,1);
           this.players[player.number-1].items.armorIndex = 0;
@@ -14563,6 +14087,7 @@ class App extends Component {
 
             }
           )
+          this.applyRemoveEffect(player,'remove','discard','armor',cellToDrop.item);
 
           this.players[player.number-1].items.armor.splice(index2,1);
           this.players[player.number-1].currentArmor = {
@@ -18690,15 +18215,537 @@ class App extends Component {
 
 
   }
-  applyRemoveEffect = (player,action,type,item) => {
+  applyRemoveEffect = (player,action,subAction,type,item) => {
 
-    call from: pickup, discard, deflect drop, use
+    console.log('applyRemoveEffect',action,subAction,type,item);
+    // call from: pickup, discard, deflect drop, use
+    //
+    // action: apply, remove
+    //
+    // actiontype: pickup, discard, deflect drop, use
+    //
+    // type: armor, weapon, item
 
-    action: apply, remove
+    let pickUp = false;
 
-    actiontype: pickup, discard, deflect drop, use
+    if (action === 'remove') {
 
-    type: armor, weapon, item
+      if (type === 'armor') {
+
+        switch(item.effect) {
+          case 'hpUp' :
+            if (player.hp > 1) {
+              player.hp = player.hp - 1;
+              // console.log(`armor ${subAction} debuff hp`,player.hp);
+            }
+          break;
+          case 'speedUp' :
+            let currentSpd1 = player.speed.range.indexOf(player.speed.move);
+            if (player.speed.move > .05) {
+              player.speed.move = player.speed.range[currentSpd1-1];
+              // console.log(`armor ${subAction} debuff speed`,player.speed.move);
+            }
+          break;
+        }
+
+      }
+    }
+
+    if (action === 'apply') {
+
+      if (type === 'armor') {
+
+        switch(item.effect) {
+          case 'hpUp' :
+          // console.log('armor pickup buff');
+            if (this.players[player.number-1].hp < 3) {
+
+              player.hp = player.hp + 1
+
+              player.statusDisplay = {
+                state: true,
+                status: 'hpUp',
+                count: 1,
+                limit: player.statusDisplay.limit,
+              }
+
+              if (!player.popups.find(x=>x.msg === 'pickupBuff')) {
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:25,
+                    type: '',
+                    position: '',
+                    msg: 'pickupBuff',
+                    img: '',
+
+                  }
+                )
+              }
+
+              if (!player.popups.find(x=>x.msg.split("_")[0] === "hpUp")) {
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 30,
+                    type: '',
+                    position: '',
+                    msg: 'hpUp_'+'+'+1+'',
+                    img: '',
+
+                  }
+                )
+              }
+
+            }
+          break;
+          case 'speedUp' :
+          // console.log('armor pickup buff');
+            let currentSpd1 = player.speed.range.indexOf(player.speed.move)
+            if (player.speed.move < .2) {
+
+              player.speed.move = player.speed.range[currentSpd1+1]
+
+              player.statusDisplay = {
+                state: true,
+                status: 'speedUp',
+                count: 1,
+                limit: player.statusDisplay.limit,
+              }
+
+              if (!player.popups.find(x=>x.msg === 'pickupBuff')) {
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit: 25,
+                    type: '',
+                    position: '',
+                    msg: 'pickupBuff',
+                    img: '',
+
+                  }
+                )
+              }
+
+            }
+          break;
+        }
+
+      }
+
+
+      if (type === 'item') {
+
+        let ammo;
+        switch(item.name) {
+          case 'moveSpeedUp' :
+            // console.log('moveSpeedUp');
+            let currentSpd1 = player.speed.range.indexOf(player.speed.move)
+
+            if (player.speed.move < .2) {
+              // console.log('added buff');
+              player.speed.move = player.speed.range[currentSpd1+1]
+
+              player.statusDisplay = {
+                state: true,
+                status: item.name,
+                count: 1,
+                limit: player.statusDisplay.limit,
+              }
+
+              if (!player.popups.find(x=>x.msg === 'pickupBuff')) {
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:25,
+                    type: '',
+                    position: '',
+                    msg: 'pickupBuff',
+                    img: '',
+
+                  }
+                )
+              }
+
+              pickUp = true;
+            }
+            else {
+              console.log('player '+player.number+' you already have max movement speed');
+
+              player.statusDisplay = {
+                state: true,
+                status: 'Already Max Speed!!',
+                count: 1,
+                limit: this.players[player.number-1].statusDisplay.limit,
+              }
+
+              if (!player.popups.find(x=>x.msg === 'stop')) {
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:25,
+                    type: '',
+                    position: '',
+                    msg: 'stop',
+                    img: '',
+
+                  }
+                )
+              }
+            }
+          break;
+          case 'moveSpeedDown' :
+            // console.log('moveSpeedDown');
+            let currentSpd2 = player.speed.range.indexOf(player.speed.move)
+            // console.log('ff',currentSpd2,this.players[player.number-1].speed.range[currentSpd2]);
+            // console.log('ff2',currentSpd2,this.players[player.number-1].speed.range[currentSpd2-1]);
+            if (player.speed.move > .05) {
+              // console.log('added debuff');
+              player.speed.move = player.speed.range[currentSpd2-1]
+
+              player.statusDisplay = {
+                state: true,
+                status: item.name,
+                count: 1,
+                limit: player.statusDisplay.limit,
+              }
+
+              if (!player.popups.find(x=>x.msg === 'pickupDebuff')) {
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:25,
+                    type: '',
+                    position: '',
+                    msg: 'pickupDebuff',
+                    img: '',
+
+                  }
+                )
+              }
+
+              pickUp = true;
+            }
+          break;
+          case 'hpUp' :
+            // console.log('hpUp');
+            if (player.hp === 1 && player.speed.move < .1) {
+              player.speed.move = .1;
+            }
+            if (player.hp < 3) {
+                player.hp ++;
+
+                player.statusDisplay = {
+                  state: true,
+                  status: item.name,
+                  count: 1,
+                  limit: player.statusDisplay.limit,
+                }
+
+                if (!player.popups.find(x=>x.msg === 'pickupBuff')) {
+                  player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit:25,
+                      type: '',
+                      position: '',
+                      msg: 'pickupBuff',
+                      img: '',
+
+                    }
+                  )
+                }
+
+                if (!player.popups.find(x=>x.msg.split("_")[0] === "hpUp")) {
+                  player.popups.push(
+                    {
+                      state: false,
+                      count: 0,
+                      limit: 30,
+                      type: '',
+                      position: '',
+                      msg: 'hpUp_'+'+'+1+'',
+                      img: '',
+
+                    }
+                  )
+                }
+
+                pickUp = true;
+            }
+            else {
+              console.log('player '+player.number+' you already have max hp');
+
+              player.statusDisplay = {
+                state: true,
+                status: 'Already Max HP!!',
+                count: 1,
+                limit: player.statusDisplay.limit,
+              }
+
+              if (!player.popups.find(x=>x.msg === 'stop')) {
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:25,
+                    type: '',
+                    position: '',
+                    msg: 'stop',
+                    img: '',
+
+                  }
+                )
+              }
+            }
+          break;
+          case 'hpDown' :
+            // console.log('hpDown');
+            if (player.hp > 1) {
+              player.hp --;
+
+              player.statusDisplay = {
+                state: true,
+                status: item.name,
+                count: 1,
+                limit: player.statusDisplay.limit,
+              }
+
+              if (!player.popups.find(x=>x.msg === 'pickupDebuff')) {
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:25,
+                    type: '',
+                    position: '',
+                    msg: 'pickupDebuff',
+                    img: '',
+
+                  }
+                )
+              }
+              if (!player.popups.find(x=>x.msg === 'alarmed')) {
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:25,
+                    type: '',
+                    position: '',
+                    msg: 'alarmed',
+                    img: '',
+
+                  }
+                )
+              }
+              pickUp = true;
+            }
+          break;
+          case 'focusUp' :
+            if (player.crits.doubleHit - 2 !== 0) {
+              player.crits.doubleHit = player.crits.doubleHit - 2;
+
+              player.statusDisplay = {
+                state: true,
+                status: item.name,
+                count: 1,
+                limit: player.statusDisplay.limit,
+              }
+
+              if (!player.popups.find(x=>x.msg === 'pickupBuff')) {
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:25,
+                    type: '',
+                    position: '',
+                    msg: 'pickupBuff',
+                    img: '',
+
+                  }
+                )
+              }
+
+            }
+            player.crits.guardBreak = player.crits.guardBreak + 1;
+
+            pickUp = true;
+          break;
+          case 'focusDown' :
+            player.crits.doubleHit = player.crits.doubleHit + 2;
+            if (player.crits.guardBreak - 1 !== 0) {
+              player.crits.guardBreak = player.crits.guardBreak - 1
+            }
+
+            player.statusDisplay = {
+              state: true,
+              status: item.name,
+              count: 1,
+              limit: player.statusDisplay.limit,
+            }
+
+            if (!player.popups.find(x=>x.msg === 'pickupDebuff')) {
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit:25,
+                  type: '',
+                  position: '',
+                  msg: 'pickupDebuff',
+                  img: '',
+
+                }
+              )
+            }
+
+            pickUp = true;
+          break;
+          case 'strengthUp' :
+            player.crits.pushBack = player.crits.pushBack + 1;
+
+            player.crits.guardBreak = player.crits.guardBreak + 1;
+
+            player.statusDisplay = {
+              state: true,
+              status: item.name,
+              count: 1,
+              limit: player.statusDisplay.limit,
+            }
+
+            if (!player.popups.find(x=>x.msg === 'pickupBuff')) {
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit:25,
+                  type: '',
+                  position: '',
+                  msg: 'pickupBuff',
+                  img: '',
+
+                }
+              )
+            }
+
+            pickUp = true;
+          break;
+          case 'strengthDown' :
+            if (player.crits.pushBack - 1 !== 0) {
+              player.crits.pushBack = player.crits.pushBack - 1;
+
+              player.statusDisplay = {
+                state: true,
+                status: item.name,
+                count: 1,
+                limit: player.statusDisplay.limit,
+              }
+
+              if (!player.popups.find(x=>x.msg === 'pickupDebuff')) {
+                player.popups.push(
+                  {
+                    state: false,
+                    count: 0,
+                    limit:25,
+                    type: '',
+                    position: '',
+                    msg: 'pickupDebuff',
+                    img: '',
+
+                  }
+                )
+              }
+
+              pickUp = true;
+            }
+            if (player.crits.guardBreak - 1 !== 0) {
+              player.crits.guardBreak = player.crits.guardBreak - 1
+
+              player.statusDisplay = {
+                state: true,
+                status: item.name,
+                count: 1,
+                limit: player.statusDisplay.limit,
+              }
+
+              pickUp = true;
+            }
+          break;
+          case 'ammo5' :
+            ammo = parseInt(item.name.split('o')[1])
+            player.items.ammo = player.items.ammo + ammo;
+
+            player.statusDisplay = {
+              state: true,
+              status: item.name,
+              count: 1,
+              limit: player.statusDisplay.limit,
+            }
+
+            if (!player.popups.find(x=>x.msg === 'pickupAmmo')) {
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit:25,
+                  type: '',
+                  position: '',
+                  msg: 'pickupAmmo',
+                  img: '',
+
+                }
+              )
+            }
+
+            pickUp = true;
+          break;
+          case 'ammo10' :
+            ammo = parseInt(item.name.split('o')[1])
+            player.items.ammo = player.items.ammo + ammo;
+
+            player.statusDisplay = {
+              state: true,
+              status: item.name,
+              count: 1,
+              limit: player.statusDisplay.limit,
+            }
+
+            if (!player.popups.find(x=>x.msg === 'pickupAmmo')) {
+              player.popups.push(
+                {
+                  state: false,
+                  count: 0,
+                  limit:25,
+                  type: '',
+                  position: '',
+                  msg: 'pickupAmmo',
+                  img: '',
+
+                }
+              )
+            }
+
+            pickUp = true;
+          break;
+        }
+
+
+      }
+
+    }
+
+
+    this.players[player.number-1] = player;
+    return pickUp;
 
 
   }
@@ -22614,6 +22661,9 @@ class App extends Component {
           },
         };
 
+
+        this.applyRemoveEffect(player,'apply','pickup','weapon',player.currentWeapon);
+        this.applyRemoveEffect(player,'apply','pickup','armor',player.currentArmor);
 
       }
 
@@ -32059,7 +32109,7 @@ class App extends Component {
         if (player.itemDrop.state === true) {
           if (player.itemDrop.count < player.itemDrop.limit) {
             player.itemDrop.count++
-            console.log('dropping item anim');
+            // console.log('dropping item anim');
           }
           else if (player.itemDrop.count >= player.itemDrop.limit) {
             player.itemDrop = {
@@ -32078,7 +32128,7 @@ class App extends Component {
         if (player.itemPickup.state === true) {
           if (player.itemPickup.count < player.itemPickup.limit) {
             player.itemPickup.count++
-            console.log('picking item anim');
+            // console.log('picking item anim');
           }
           else if (player.itemPickup.count >= player.itemPickup.limit) {
             player.itemPickup = {
