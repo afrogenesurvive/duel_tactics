@@ -31757,22 +31757,7 @@ class App extends Component {
 
 
 
-        // DISCARD GEAR!!
-        if (this.keyPressed[player.number-1].discardWeapon === true &&
-          player.discardGear.state !== true
-        ) {
 
-            this.discardGear(player,"weapon")
-            player.discardGear.state = true;
-        }
-        if (
-          this.keyPressed[player.number-1].discardArmor === true &&
-          player.discardGear.state !== true
-        ) {
-
-            this.discardGear(player,"armor")
-            player.discardGear.state = true;
-        }
         // DISCARD GEAR STEPPER!!
         if (player.discardGear.state === true) {
           if (player.discardGear.count < player.discardGear.limit) {
@@ -33166,6 +33151,23 @@ class App extends Component {
             }
           }
 
+
+          // DISCARD GEAR/PICKUP GEAR & ITEMS!!
+          if (this.keyPressed[player.number-1].discardWeapon === true &&
+            player.discardGear.state !== true
+          ) {
+
+              this.discardGear(player,"weapon")
+              player.discardGear.state = true;
+          }
+          if (
+            this.keyPressed[player.number-1].discardArmor === true &&
+            player.discardGear.state !== true
+          ) {
+
+              this.discardGear(player,"armor")
+              player.discardGear.state = true;
+          }
 
         }
 
