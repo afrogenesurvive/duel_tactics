@@ -9132,6 +9132,8 @@ class App extends Component {
       // let cell = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y)
       if (cell.item.name !== '') {
         // console.log('picked up an item');
+
+        // GEAR
         if (cell.item.type === 'weapon') {
 
           if (haveSpace === true ) {
@@ -9322,6 +9324,7 @@ class App extends Component {
 
           if (haveSpace === true ) {
 
+          // EQUIP
           if (player.currentArmor.name === '' || !player.currentArmor.name) {
             // console.log('gg',cell.item.effect);
             this.players[player.number-1].currentArmor = {
@@ -9419,7 +9422,10 @@ class App extends Component {
 
             pickUp = true;
           }
+
+          // STASH TO INVENTORY
           else {
+
             if (player.items.armor.map(armor => armor.name).includes(cell.item.name) !== true ) {
               this.players[player.number-1].items.armor.push({
                 name: cell.item.name,
@@ -9451,6 +9457,7 @@ class App extends Component {
               }
 
             }
+
             else {
               console.log('you already have this armor');
               this.players[player.number-1].statusDisplay = {
@@ -9477,9 +9484,11 @@ class App extends Component {
 
 
             }
+
           }
 
           }
+          // INVENTORY FULL
           else if (cell.item.name !== '') {
             console.log('Not enough space!!');
 
@@ -9508,6 +9517,8 @@ class App extends Component {
           }
 
         }
+
+        // ITEM
         else {
           // console.log('item',cell.item);
           let ammo;
@@ -14222,7 +14233,7 @@ class App extends Component {
 
       if (dropWhat === 1) {
 
-        if (player.items.weapons.length > 0 && player.currentWeapon.name !== "") {
+        if (player.currentWeapon.name !== "") {
 
           dropped = true;
 
@@ -14269,10 +14280,8 @@ class App extends Component {
 
 
           // CURRENT WEAPON DROPPED, DROP DEFENSE
-          // if (player.currentArmor === {} || !player.currentArmor || player.currentArmor.name === '') {
-          //
-          // }
-          if (player.defending.state === true) {
+          if (player.currentArmor === {} || !player.currentArmor || player.currentArmor.name === '') {
+
             this.players[player.number-1].defending = {
               state: false,
               count: 0,
@@ -14293,7 +14302,7 @@ class App extends Component {
       }
       else {
 
-        if (player.items.armor.length > 0 && player.currentArmor.name !== "") {
+        if (player.currentArmor.name !== "") {
 
           dropped = true;
           let index = player.items.armor.findIndex(armor => armor.name === player.currentArmor.name);
@@ -18681,7 +18690,18 @@ class App extends Component {
 
 
   }
+  applyRemoveEffect = (player,action,type,item) => {
 
+    call from: pickup, discard, deflect drop, use
+
+    action: apply, remove
+
+    actiontype: pickup, discard, deflect drop, use
+
+    type: armor, weapon, item
+
+
+  }
 
   preObstaclePushCheck = (player,target) => {
     // console.log('pre push check');
@@ -32446,8 +32466,8 @@ class App extends Component {
           player.elasticCounter.state !== true &&
           player.pulling.state !== true &&
           player.pushing.state !== true &&
-          player.itemDrop.state === true &&
-          player.itemPickup.state === true
+          player.itemDrop.state !== true &&
+          player.itemPickup.state !== true
         ) {
           // CONFIRM MOVE KEYPRESS!!
           if (
@@ -32990,8 +33010,8 @@ class App extends Component {
           player.elasticCounter.state !== true &&
           player.pulling.state !== true &&
           player.pushing.state !== true &&
-          player.itemDrop.state === true &&
-          player.itemPickup.state === true
+          player.itemDrop.state !== true &&
+          player.itemPickup.state !== true
         ) {
 
 
