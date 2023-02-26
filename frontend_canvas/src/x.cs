@@ -1,1167 +1,55 @@
 
+.ToString("MM/dd/yyyy")
 
-        // main layout.cs
-        // switch company
-        private void clients()
-        {
-            ctx.Company = new Company();
+string path = Environment.CurrentDirectory;
+path = path.Substring(0, Environment.CurrentDirectory.Length - 17);
+var stream = File.OpenRead(Path.Combine(path, @"AppData/csv/Timesheet1.csv"));
 
-            ctx.ArchiveViewer = false;
-            ctx.ArchiveYear = 0;
-            ctx.ArchivePeriod = 0;
-            ctx.ArchiveType = "";
 
-            nm.NavigateTo("/");
+var directory = $"{Path.GetDirectoryName(context.DeploymentDirectory)}\\net6.0\\AppData\\csv\\Timesheet1.csv";
+var stream = File.OpenRead(directory);
 
-        }
 
+// --------------------------------------------
+// --------------------------------------------
+// --------------------------------------------
 
-        // open form
-        private async Task ToggleArchive(string args)
-        {
-            if(args == "on")
-            {
-                await JS.InvokeVoidAsync("showModal", "archive-modal");
-            }
-            else
-            {
-                ctx.ArchiveViewer = false;
-                ctx.ArchiveYear = 0;
-                ctx.ArchivePeriod = 0;
-                ctx.ArchiveType = "";
 
-                try
-                {
 
-                    var svc = await DataManagementService.Load;
-                    //_isButtonLoading = true;
-                    ctx.Company = await svc.GetCompanyById(ctx.Company.id);
+// RECORD
 
-                    await JS.InvokeVoidAsync("closeModal");
-                    //_isButtonLoading = false;
-                    Notifier.Send();
 
-                    nm.NavigateTo("/company");
-
-                }
-                catch (ApplicationException ex)
-                {
-                    _isButtonLoading = false;
-                    await JS.InvokeAsync<string>("notify", new object[] { ex.Message });
-
-                }
-
-
-            }
-
-        }
-
-
-        // submit form
-        private async Task SetArchiveMode()
-        {
-            if (archiveYear == 0)
-            {
-                archiveYear = 2022;
-            }
-
-            try
-            {
-                _isButtonLoading = true;
-                var svc = await DataManagementService.Load;
-                var prollsvc = await PayrollService.Load;
-
-                ctx.ArchiveViewer = true;
-                ctx.ArchiveYear = archiveYear;
-                ctx.ArchiveType = archiveType;
-                ctx.ArchivePeriod = archivePeriod;
-                payroll = await svc.GetPayrollByContextOrId(ctx);
-
-                ctx.Company = payroll.Company;
-
-
-                switch (ctx.ArchiveType)
-                {
-                    case "fortnightly":
-                        payrolls = await prollsvc.GetPayrollByType(ctx, "fortnightly");
-                        break;
-                    case "monthly":
-                        payrolls = await prollsvc.GetPayrollByType(ctx, "monthly");
-                        break;
-                    case "bimonthly":
-                        payrolls = await prollsvc.GetPayrollByType(ctx, "bimonthly");
-                        break;
-                    case "weekly":
-                        payrolls = await prollsvc.GetPayrollByType(ctx, "weekly");
-                        break;
-                    default:
-                        break;
-                }
-                foreach (var proll in payrolls)
-                {
-                    if (!periods.Contains(proll.PayCycle.Period))
-                    {
-                        periods.Add(proll.PayCycle.Period);
-                    }
-                }
-
-
-                await JS.InvokeVoidAsync("closeModal");
-                _isButtonLoading = false;
-
-
-                Notifier.Send();
-
-
-                //nm.NavigateTo("/company");
-
-            }
-            catch (ApplicationException ex)
-            {
-                ctx.ArchiveViewer = false;
-                ctx.ArchiveYear = 0;
-                ctx.ArchiveType = "";
-                ctx.ArchivePeriod = 0;
-
-                _isButtonLoading = false;
-                await JS.InvokeAsync<string>("notify", new object[] { ex.Message });
-
-            }
-
-
-            pageWrapperClass = "page-wrapper archivePageWrap";
-            _isButtonLoading = false;
-        }
-
-
-        private async Task SwitchArchivePeriod()
-        {
-            try
-            {
-                _isButtonLoading = true;
-                var svc = await DataManagementService.Load;
-
-                ctx.ArchivePeriod = archivePeriod;
-
-                payroll = await svc.GetPayrollByContextOrId(ctx);
-
-                ctx.Company = payroll.Company;
-
-                _isButtonLoading = false;
-
-                Notifier.Send();
-
-                nm.NavigateTo("/company");
-            }
-            catch (ApplicationException ex)
-            {
-                _isButtonLoading = false;
-                await JS.InvokeAsync<string>("notify", new object[] { ex.Message });
-
-            }
-            _isButtonLoading = false;
-        }
-
-
-        // mainLayout.blazor
-
-        <li>
-               <a style="cursor:pointer" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Archive Viewer</a>
-               <div class="dropdown-menu" style="cursor:pointer;">
-                   @if (ctx.ArchiveViewer == true && ctx.Company.id != "")
-                   {
-                       <a class="dropdown-item" @onclick="@(e => ToggleArchive("off"))">Off</a>
-                       <hr />
-
-                       <EditForm Model="ctx.ArchivePeriod">
-                           <div class="row">
-                               <div class="col-sm-12">
-                                   <div class="form-group" style="padding: 0 .5rem;">
-                                       <label for="filter_all" class="col-form-label" style="width:100%;text-align:center;">Switch Period</label>
-                                       <InputSelect id="filter_all" class="form-control" @bind-Value="archivePeriod">
-                                           @foreach (var period in periods)
-                                           {
-                                               <option value="@period">Period @period</option>
-                                           }
-                                       </InputSelect>
-
-                                       @*<LoadingButton IsLoading="_isButtonLoading" class="btn btn-secondary" Type="ButtonTypes.Button" @onclick="SwitchArchivePeriod">
-                                           <Content>
-                                               <i class="fas fa-check"></i>
-                                           </Content>
-                                           <LoadingContent>
-                                               <i class="fa fa-spinner fa-spin"></i> Loading...
-                                           </LoadingContent>
-                                           </LoadingButton>*@
-                                       <button type="button" class="btn btn-secondary" @onclick="SwitchArchivePeriod"><i class="fas fa-check"></i></button>
-                                   </div>
-
-                               </div>
-                           </div>
-                       </EditForm>
-                   }
-
-                   @if (ctx.ArchiveViewer == false && ctx.Company.id != "")
-                   {
-                       <a class="dropdown-item" @onclick="@(e => ToggleArchive("on"))">On</a>
-                   }
-                   @if (ctx.Company.id == "")
-                   {
-                       <a class="dropdown-item">Choose a Company</a>
-                   }
-               </div>
-           </li>
-
-
-        @if (ctx.ArchiveViewer == true)
-            {
-                <div class="row" style="width:85%;margin-left:17rem;">
-
-                    <Alert Type="NotificationTypes.Primary"
-                           NotificationStyle="NotificationStyles.Normal"
-                           IsVisible="true"
-                           AutoClose="false"
-                           ShowCloseButton="false"
-                           ShowIcon="true">
-                        <Content>
-                            <p>You are now in <strong>Archive Mode.</strong> Period: <strong>@ctx.ArchivePeriod</strong></p>
-                        </Content>
-                    </Alert>
-
-                </div>
-            }
-
-
-      <div id="archive-modal" class="modal custom-modal fade" role="dialog">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Archive Mode</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <EditForm Model="archiveYear" OnSubmit="SetArchiveMode">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Year</label>
-                                    <InputSelect class="select form-control" @bind-Value="archiveYear">
-
-                                        @for (int i = thisYear; i > start; i--)
-                                        {
-                                            <option>@i</option>
-                                        }
-                                    </InputSelect>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Type</label>
-                                    <InputSelect class="form-control" @bind-Value="archiveType">
-                                        <option value="fortnightly">Fortnightly</option>
-                                        <option value="monthly">Monthly</option>
-                                        <option value="bimonthly">Bi-Monthly</option>
-                                        <option value="weekly">Weekly</option>
-                                    </InputSelect>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Period</label><br />
-                                    <InputNumber @bind-Value="archivePeriod" class="form-control" />
-                                </div>
-                            </div>
-
-                            <div class="submit-section">
-                                <LoadingButton class="btn btn-primary submit-btn" Type="ButtonTypes.Submit" IsLoading="@_isButtonLoading">
-                                    <Content>Submit </Content>
-                                    <LoadingContent>
-                                        <i class="fa fa-spinner fa-spin"></i> Submitting...
-                                    </LoadingContent>
-                                </LoadingButton>
-                                <a href="javascript:void(0);" data-bs-dismiss="modal" class="btn btn-primary cancel-btn">Cancel</a>
-                            </div>
-                        </div>
-                    </EditForm>
-
-                </div>
-            </div>
-        </div>
-      </div>
-
-
-
-      // notifierService.cs
-
-      using PayrollSystem.Data.Enums;
-      using PayrollSystem.Data.Models;
-      using PayrollSystem.Data.Repositories;
-      using PayrollSystem.Helpers;
-      using System.Globalization;
-      using System.Linq;
-      using System.Text;
-
-      namespace PayrollSystem.Services
-      {
-          public class NotifierService
-          {
-
-
-              public NotifierService()
-              {
-
-              }
-
-              //public static Lazy<Task<NotifierService>> instance = new(Create);
-
-              //public static Task<NotifierService> Load => instance.Value;
-
-              //public static async Task<NotifierService> Create()
-              //{
-              //    return new NotifierService();
-              //}
-
-              public void Send()
-              {
-                  Notify?.Invoke();
-              }
-
-              public event Func<Task> Notify;
-
-
-          }
-      }
-
-
-
-      // companyPage.cs/ reciever notfier notification
-
-      protected async override Task OnInitializedAsync()
-        {
-
-
-            Notifier.Notify += OnNotify;
-
-        }
-
-
-        public async Task OnNotify()
-        {
-            await InvokeAsync(() =>
-            {
-                Console.WriteLine("The threshold was reached...2");
-                StateHasChanged();
-            });
-        }
-
-        public void Dispose()
-        {
-            Notifier.Notify -= OnNotify;
-        }
-
-
-
-
-// ----------------------------------
-// ----------------------------------
-// ----------------------------------
-// ----------------------------------
-
-
-
-
-// Unit Tests > Reports.cs
-
-using Abacus_Unit_Tests.TestDataScope;
-using AbacusApi.Constants;
-using AbacusApi.Features.Payroll;
-using AbacusApi.Data.Models;
-using AbacusApi.Helpers;
-using AbacusApi.Repositories.Search;
-using AbacusApi.Services;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualBasic.FileIO;
-using System.IO;
-using System.Net;
-using Microsoft.Azure.Cosmos.Linq;
-using System.Linq;
-using AbacusApi.Features;
-using AbacusApi.Repositories;
-using System.ComponentModel.Design;
-
-namespace Abacus_Unit_Tests
-{
-    [TestClass]
-    public class Reports
-    {
-        public static DataManagementService data;
-        public static PayrollOperations ops;
-        readonly PayrollRepository payrollRepo;
-        public static ReportGenerator rep;
-        public static StateContext ctx = new StateContext();
-
-
-        [ClassInitialize]
-        public static async Task Init(TestContext context)
-        {
-            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
-
-
-            var build = WebHost.CreateDefaultBuilder()
-                .UseEnvironment("Development")
-                .UseStartup<Startup>().Build();
-
-            ops = build.Services.GetRequiredService<PayrollOperations>();
-            data = build.Services.GetRequiredService<DataManagementService>();
-            rep = build.Services.GetRequiredService<ReportGenerator>();
-
-            var company = TestData.CompanyTestData;
-            ctx.CompanyCode = company.Code;
-            ctx.Company = company;
-            ctx.User = TestData.User;
-
-            await data.CreateCompany(ctx, ctx.Company);
-            await ShouldUploadEmployees(ctx);
-
-        }
-
-        #region CompanyTests
-
-        public static async Task ShouldUploadEmployees(StateContext ctx)
-        {
-            List<List<string>> data = new();
-            using (var client = new HttpClient())
-            {
-                var stream = await client.GetStreamAsync("https://storageaccountvisua8d03.blob.core.windows.net/products/EmployeeSheet.csv");
-
-                TextFieldParser parser = new TextFieldParser(stream);
-
-                var index = 0;
-
-                parser.TextFieldType = FieldType.Delimited;
-                parser.SetDelimiters(",");
-
-                while (!parser.EndOfData)
-                {
-                    List<string> d = new List<string>();
-                    var fields = parser.ReadFields();
-
-
-                    foreach (var field in fields)
-                    {
-
-                        d.Add(field);
-                    }
-
-                    if (index > 0)
-                    {
-                        data.Add(d);
-                    }
-
-                    index++;
-                }
-
-            }
-            var svc = await DataManagementService.Load;
-            var (employees, errors) = await svc.UploadEmployees(ctx, data);
-            Assert.AreEqual(43, employees.Count());
-            Assert.AreEqual(errors.Count(), 0);
-
-
-        }
-
-        #endregion
-
-
-        #region ReportTests
-
-        [TestMethod]
-        public async Task ShouldGeneratePayrollSummary()
-        {
-            string type = "fortnightly";
-
-            NewPayrollForm form = new NewPayrollForm();
-            var company = await data.GetCompany(ctx?.CompanyCode);
-            form.CompanyId = company.id;
-            form.Period = 1;
-            form.StartDate = new DateTime(2022, 01, 17);
-            form.EndDate = new DateTime(2022, 01, 28);
-            form.Type = PayrollTypes.fortnightly;
-            ops.ctx = ctx;
-
-            var payroll = await ops.CreatePayroll(form);
-            var payrolls = await payrollRepo.GetAllCurrentPayrollsByCompanyId(company.id, type);
-            var result = await rep.GeneratePayrollSummary(format.PDF, type);
-
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.Earnings.Count > 0);
-            Assert.IsTrue(result.Statutories.Count > 0);
-            Assert.IsTrue(result.NonStatutories.Count > 0);
-            Assert.IsTrue(result.Totals.Count > 0);
-            Assert.IsTrue(result.TotalEmployees > 0);
-
-        }
-
-
-        #endregion
-
-    }
-}
-
-
-// Unit Tests > Startup.cs
-
-using AbacusApi.Features;
-using AbacusApi.Features.Payroll;
-using AbacusApi.Repositories;
-using AbacusApi.Repositories.Search;
-using AbacusApi.Services;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Abacus_Unit_Tests
-{
-    public class Startup
-    {
-
-        public void ConfigureServices(IServiceCollection sc)
-        {
-            sc.AddSingleton<StateContext>();
-            sc.AddSingleton<PayrollOperations>();
-            sc.AddSingleton<DataManagementService>();
-            sc.AddSingleton<CompanyRepository>();
-            sc.AddSingleton<CompanySearchRepository>();
-            sc.AddSingleton<EmployeeSearchRepository>();
-            sc.AddSingleton<EmployeeRepository>();
-            sc.AddSingleton<UploadRepository>();
-
-            sc.AddSingleton<PayrollRepository>();
-            sc.AddSingleton<LogRepository>();
-            sc.AddSingleton<TaxHeaderRepository>();
-
-            sc.AddSingleton<ReportGenerator>();
-        }
-
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-
-        }
-
-    }
-}
-
-
-
-
-
-
-
-// ReportsController.cs
-
-/// <summary>
-///
-/// </summary>
-/// <param name="type"></param>
-/// <returns></returns>
-[Route("v1/api/CreatePayrollSummary/{type}")]
-[HttpGet]
-public async Task<IActionResult> CreatePayrollSummary(string type)
-{
-
-    var payrollSummary = await svc.GeneratePayrollSummary(format.PDF, type);
-    return Ok(payrollSummary);
-}
-
-
-// PayrollSummaryResults.cs
-
-using System;
-namespace AbacusApi.Features
-{
-    public record PayrollSummaryResults(
-
-        List<Summary> Earnings,
-        List<Summary> Statutories,
-        List<Summary> NonStatutories,
-        List<Summary> Totals,
-        (decimal, decimal) Threshold,
-        int TotalEmployees
-    );
-
-    public record Summary(
-
-        string Description,
-        Detail Units,
-        Detail Employee,
-        Detail Employer
-    );
-    public record Detail(
-
-        decimal Previous,
-        decimal Current,
-        decimal MTD,
-        decimal YTD
-    );
-}
-
-
-// ReportBuilder.cs
-
-using AbacusApi.Features.Report.Services;
-using AbacusApi.Repositories;
-using AbacusApi.Services;
-
-namespace AbacusApi.Features.Report.Providers
-{
-
-    public enum Reports
-    {
-        Payslip,
-        AllPayslips,
-        EmployeeRegister,
-        PayrollRegister
-    }
-
-    public class ReportBuilder
-    {
-        readonly PayrollRepository payrollRep;
-        readonly public StateContext ctx;
-
-        public ReportBuilder(PayrollRepository payrollRep, StateContext ctx)
-        {
-            this.payrollRep = payrollRep;
-            this.ctx = ctx;
-        }
-
-        public async Task<IReport<TResult>> CreateReportProvider<TResult>(Reports type)
-        {
-
-            switch (type)
-            {
-                case Reports.Payslip:
-                    return new PayslipService<TResult>(payrollRep);
-
-                case Reports.AllPayslips:
-                    return new PayslipService<TResult>(payrollRep);
-
-                case Reports.PayrollRegister:
-                    return new PayrollSummaryService<TResult>(payrollRep,ctx);
-
-                default:
-                    throw new InvalidOperationException();
-            }
-        }
-
-    }
-}
-
-
-// ReportGenerator.cs
-
-using AbacusApi.Features.Report;
-using AbacusApi.Features.Report.Providers;
-using AbacusApi.Repositories;
-using AbacusApi.Services;
-
-namespace AbacusApi.Features
-{
-    public enum format { PDF, PDFPreview, CSV }
-    public class ReportGenerator
-    {
-        ReportBuilder builder;
-        public ReportGenerator(PayrollRepository payrollRep, StateContext ctx)
-        {
-            builder = new ReportBuilder(payrollRep,ctx);
-        }
-
-        public async Task<PayslipResults> GeneratePayslip(format format, string employeeId, string payrollId)
-        {
-            IReport<PayslipResults> provider = await builder.CreateReportProvider<PayslipResults>(Reports.Payslip);
-            switch (format)
-            {
-                case format.PDF:
-                    var data = new Dictionary<string, string>
-                    {
-                        { "employeeId", employeeId },
-                        { "payrollId", payrollId }
-                    };
-                    return await provider.GeneratePDF(data);
-                case format.PDFPreview:
-                    return await provider.GeneratePDFPreview();
-                case format.CSV:
-                    return await provider.GenerateCSV();
-                default:
-                    throw new InvalidOperationException();
-            }
-        }
-
-        public async Task<PayrollSummaryResults> GeneratePayrollSummary(format format, string type)
-        {
-            IReport<PayrollSummaryResults> provider = await builder.CreateReportProvider<PayrollSummaryResults>(Reports.PayrollRegister);
-            switch (format)
-            {
-                case format.PDF:
-                    var data = new Dictionary<string, string>
-                    {
-                        { "type", type }
-                    };
-                    return await provider.GeneratePDF(data);
-                case format.PDFPreview:
-                    return await provider.GeneratePDFPreview();
-                case format.CSV:
-                    return await provider.GenerateCSV();
-                default:
-                    throw new InvalidOperationException();
-            }
-        }
-
-
-    }
-}
-
-
-// PayrollSummaryService.cs
-
-using System.Data;
-using AbacusApi.Data.Models;
-using AbacusApi.Helpers;
-using AbacusApi.Repositories;
-using AbacusApi.Services;
-
-namespace AbacusApi.Features.Report.Services
-{
-    public class PayrollSummaryService<T> : IReport<T>
-    {
-        readonly public StateContext ctx;
-        readonly PayrollRepository payrollRep;
-        private Payrolls payroll { get; set; } = new Payrolls();
-
-        public PayrollSummaryService(PayrollRepository payrollRep, StateContext ctx)
-        {
-            this.payrollRep = payrollRep;
-            this.ctx = ctx;
-        }
-
-        public Task<T> GenerateCSV()
-        {
-            return default;
-        }
-
-        public async Task<T> GeneratePDF(Dictionary<string, string> param)
-        {
-
-            var payrolls = await payrollRep.GetAllCurrentPayrollsByCompanyId(ctx.Company.id, param["type"]);
-            Contracts.Requires(payrolls != null, "Payroll does not exist");
-
-
-            List<Transaction> YtdTransactions = new();
-            List<Statutory> YtdStatutories = new();
-            List<NonStatutory> nonStatutories = new();
-
-            var currentPayroll = payrolls.FirstOrDefault(x => x.PayCycle.Period == payrolls.Max(x => x.PayCycle.Period), new Payrolls());
-            var previousPayroll = payrolls.FirstOrDefault(x => x.PayCycle.Period == payrolls.Max(x => x.PayCycle.Period) - 1, new Payrolls());
-            var employeeData = payrolls.SelectMany(x => x.EmployeeData);
-
-
-            foreach (var data in employeeData)
-            {
-                YtdTransactions.AddRange(data.Transactions);
-                YtdStatutories.AddRange(data.Cache.Statutory);
-                nonStatutories.AddRange(data.Cache.NonStatutory);
-            }
-
-            var groupedTrans = YtdTransactions.GroupBy(x => x.Code.Description)
-                    .Select(x => x.ToList()).ToList();
-
-            var groupedStat = YtdStatutories.GroupBy(x => x.Tax)
-                .Select(x => x.ToList()).ToList();
-
-            var groupedNonStat = nonStatutories.GroupBy(x => x.Description)
-                .Select(x => x.ToList()).ToList();
-
-
-
-            var gross = previousPayroll.EmployeeData.Sum(x => x.YTDCache.Gross);
-            var taxableGross = previousPayroll.EmployeeData.Sum(x => x.YTDCache.TaxableGross);
-            var net = previousPayroll.EmployeeData.Sum(x => x.YTDCache.Net);
-
-            List<Summary> totals = new List<Summary>();
-            totals.Add(new Summary(
-                "Gross",
-                new Detail(0, 0, 0, 0),
-                new Detail(gross, currentPayroll.EmployeeData.Sum(x => x.Cache.Gross), 0, employeeData.Sum(x => x.Cache.Gross)),
-                new Detail(0, 0, 0, 0)
-            ));
-            totals.Add(new Summary(
-                "Taxable Gross",
-                new Detail(0, 0, 0, 0),
-                new Detail(taxableGross, currentPayroll.EmployeeData.Sum(x => x.Cache.TaxableGross), 0, employeeData.Sum(x => x.Cache.TaxableGross)),
-                new Detail(0, 0, 0, 0)
-            ));
-            totals.Add(new Summary(
-                "Net",
-                new Detail(0, 0, 0, 0),
-                new Detail(net, currentPayroll.EmployeeData.Sum(x => x.Cache.Net), 0, employeeData.Sum(x => x.Cache.Net)),
-                new Detail(0, 0, 0, 0)
-            ));
-
-            var res = new PayrollSummaryResults(
-                SetEarnings(groupedTrans, currentPayroll),
-                SetStatutories(groupedStat, currentPayroll, previousPayroll),
-                SetNonStatutories(groupedNonStat, currentPayroll, previousPayroll),
-                totals,
-                (0, 0),
-                currentPayroll.EmployeeData.Count()
-            );
-
-
-            return (T)(object)res;
-
-            throw new ArgumentNullException(nameof(currentPayroll));
-        }
-
-        public Task<T> GeneratePDFPreview()
-        {
-            return default;
-        }
-
-        List<Summary> SetEarnings(List<List<Transaction>> data, Payrolls currentProll)
-        {
-
-            return data
-                .Select(y => new Summary(
-                    y[0].Code.Description,
-                    new Detail(0, currentProll.EmployeeData.SelectMany(x => x.Cache.Transactions).Where(x => x.Code.Description == y[0].Code.Description).Sum(x => x.Hours), 0, y.Sum(x => x.Hours)),
-                    new Detail(0, currentProll.EmployeeData.SelectMany(x => x.Cache.Transactions).Where(x => x.Code.Description == y[0].Code.Description).Sum(x => x.Amount), 0, y.Sum(x => x.Amount)),
-                    new Detail(0, 0, 0, 0)
-                )).ToList();
-        }
-
-        List<Summary> SetStatutories(List<List<Statutory>> data, Payrolls currentProll, Payrolls previousProll)
-        {
-
-            return data
-                .Select(y => new Summary(
-                    y[0].Tax,
-                    new Detail(0, 0, 0, 0),
-                    new Detail(previousProll.EmployeeData.SelectMany(x => x.YTDCache.Statutory).Where(x => x.Tax == y[0].Tax).Sum(x => x.EmployeeAmount), currentProll.EmployeeData.SelectMany(x => x.Cache.Statutory).Where(x => x.Tax == y[0].Tax).Sum(x => x.EmployeeAmount), 0, y.Sum(x => x.EmployeeAmount)),
-                    new Detail(previousProll.EmployeeData.SelectMany(x => x.YTDCache.Statutory).Where(x => x.Tax == y[0].Tax).Sum(x => x.EmployerAmount), currentProll.EmployeeData.SelectMany(x => x.Cache.Statutory).Where(x => x.Tax == y[0].Tax).Sum(x => x.EmployerAmount), 0, y.Sum(x => x.EmployerAmount))
-                )).ToList();
-        }
-
-        List<Summary> SetNonStatutories(List<List<NonStatutory>> data, Payrolls currentProll, Payrolls previousProll)
-        {
-
-            return data
-                .Select(y => new Summary(
-                    y[0].Description,
-                    new Detail(0, 0, 0, 0),
-                    new Detail(previousProll.EmployeeData.SelectMany(x => x.YTDCache.NonStatutory).Where(x => x.Description == y[0].Description).Sum(x => x.EmployeeAmount), currentProll.EmployeeData.SelectMany(x => x.Cache.NonStatutory).Where(x => x.Description == y[0].Description).Sum(x => x.EmployeeAmount), 0, y.Sum(x => x.EmployeeAmount)),
-                    new Detail(previousProll.EmployeeData.SelectMany(x => x.YTDCache.NonStatutory).Where(x => x.Description == y[0].Description).Sum(x => x.EmployerAmount), currentProll.EmployeeData.SelectMany(x => x.Cache.NonStatutory).Where(x => x.Description == y[0].Description).Sum(x => x.EmployerAmount), 0, y.Sum(x => x.EmployerAmount))
-                )).ToList();
-        }
-
-    }
-}
-
-
-// Contracts.cs
-
-
-public static void Requires(bool check, string message)
-{
-    if (!check)
-        ThrowException(message);
-}
-
-
-
-using Abacus_Unit_Tests.TestDataScope;
-using AbacusApi.Constants;
-using AbacusApi.Features.Payroll;
-using AbacusApi.Data.Models;
-using AbacusApi.Helpers;
-using AbacusApi.Repositories.Search;
-using AbacusApi.Services;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualBasic.FileIO;
-using System.IO;
-using System.Net;
-using Microsoft.Azure.Cosmos.Linq;
-using System.Linq;
-using AbacusApi.Features;
-using AbacusApi.Repositories;
-using System.ComponentModel.Design;
-
-namespace Abacus_Unit_Tests
-{
-    [TestClass]
-    public class Reports
-    {
-        public static DataManagementService data;
-        public static PayrollOperations ops;
-        readonly PayrollRepository payrollRepo;
-        public static ReportGenerator rep;
-        public static StateContext ctx = new StateContext();
-
-
-        [ClassInitialize]
-        public static async Task Init(TestContext context)
-        {
-            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
-
-
-            var build = WebHost.CreateDefaultBuilder()
-                .UseEnvironment("Development")
-                .UseStartup<Startup>().Build();
-
-            ops = build.Services.GetRequiredService<PayrollOperations>();
-            data = build.Services.GetRequiredService<DataManagementService>();
-            rep = build.Services.GetRequiredService<ReportGenerator>();
-
-            var company = TestData.CompanyTestData;
-            ctx.CompanyCode = company.Code;
-            ctx.Company = company;
-            ctx.User = TestData.User;
-
-            await data.CreateCompany(ctx, ctx.Company);
-            await ShouldUploadEmployees(ctx);
-
-        }
-
-        #region CompanyTests
-
-        public static async Task ShouldUploadEmployees(StateContext ctx)
-        {
-            List<List<string>> data = new();
-            using (var client = new HttpClient())
-            {
-                var stream = await client.GetStreamAsync("https://storageaccountvisua8d03.blob.core.windows.net/products/EmployeeSheet.csv");
-
-                TextFieldParser parser = new TextFieldParser(stream);
-
-                var index = 0;
-
-                parser.TextFieldType = FieldType.Delimited;
-                parser.SetDelimiters(",");
-
-                while (!parser.EndOfData)
-                {
-                    List<string> d = new List<string>();
-                    var fields = parser.ReadFields();
-
-
-                    foreach (var field in fields)
-                    {
-
-                        d.Add(field);
-                    }
-
-                    if (index > 0)
-                    {
-                        data.Add(d);
-                    }
-
-                    index++;
-                }
-
-            }
-            var svc = await DataManagementService.Load;
-            var (employees, errors) = await svc.UploadEmployees(ctx, data);
-            Assert.AreEqual(43, employees.Count());
-            Assert.AreEqual(errors.Count(), 0);
-
-
-        }
-
-
-        [TestMethod]
-        public async Task ShouldGeneratePayrollSummary()
-        {
-            string type = "fortnightly";
-
-            NewPayrollForm form = new NewPayrollForm();
-            var company = await data.GetCompany(ctx?.CompanyCode);
-            form.CompanyId = company.id;
-            form.Period = 1;
-            form.StartDate = new DateTime(2022, 01, 17);
-            form.EndDate = new DateTime(2022, 01, 28);
-            form.Type = PayrollTypes.fortnightly;
-            ops.ctx = ctx;
-
-            var payroll = await ops.CreatePayroll(form);
-            var payrolls = await payrollRepo.GetAllCurrentPayrollsByCompanyId(company.id, type);
-            var result = await rep.GeneratePayrollSummary(format.PDF, type);
-
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.Earnings.Count > 0);
-            Assert.IsTrue(result.Statutories.Count > 0);
-            Assert.IsTrue(result.NonStatutories.Count > 0);
-            Assert.IsTrue(result.Totals.Count > 0);
-            Assert.IsTrue(result.TotalEmployees > 0);
-
-        }
-
-    }
-}
-
-
-
-//[TestMethod]
-        //public async Task ShouldGenerateDeductionListing()
-        //{
-
-        //    var payrolls = await payrollRepo.GetAllCurrentPayrollsByCompanyId(ctx.Company.id, PayrollTypes.fortnightly);
-        //    var currentPayroll = payrolls.FirstOrDefault(x => x.PayCycle.Period == payrolls.Max(x => x.PayCycle.Period));
-
-        //    var result = await rep.GenerateDeductionListing(format.PDF, currentPayroll.id);
-
-        //    Assert.IsNotNull(result);
-
-        //}
-
-
-
-        public static async Task ShouldCalculatePayroll(Payrolls payroll)
-                {
-
-                    foreach (EmployeeData emp in payroll.EmployeeData)
-                    {
-                        await emp.CalculateEmployeePay(emp, payroll.TaxHeaders, payroll);
-                        emp.CalculateTransactionAmounts();
-                    }
-
-                    foreach (EmployeeData emp in payroll.EmployeeData)
-                    {
-                        Assert.IsTrue(emp.Cache.Transactions.Count > 0);
-                        Assert.IsTrue(emp.YTDCache.Transactions.Count > 0);
-                    }
-
-                    //Parallel.ForEach(payroll.EmployeeData, async (emp) =>
-                    //{
-                    //    await emp.CalculateEmployeePay(emp, payroll.TaxHeaders, payroll);
-                    //    emp.CalculateTransactionAmounts();
-                    //});
-
-                    //Parallel.ForEach(payroll.EmployeeData.Take(10), data =>
-                    //{
-                    //    Assert.IsTrue(data.Cache.Transactions.Count > 0);
-                    //    Assert.IsTrue(data.YTDCache.Transactions.Count > 0);
-                    //});
-                }
-
-
-
-
-
-
-
-
-
-// reportsController.cs
-
-// /// <summary>
-// /// Report
-// /// </summary>
-// /// <param name="payrollId"></param>
-// /// <returns></returns>
-// [Route("v1/api/CreateDeductionListing/{payrollId}")]
-// [HttpGet]
-// public async Task<IActionResult> CreateDeductionListing(string payrollId)
-// {
-//     var deductionListing = await svc.GenerateDeductionListing(format.PDF, payrollId);
-//     return Ok(deductionListing);
-// }
-
-
-
-// ReportBuilder.cs
-
-// case Reports.DeductionListing:
-// return new DeductionListingService<TResult>(payrollRep, ctx);
-
-
-
-// ReportGenereator.cs
-
-
-// public async Task<DeductionListingResults> GenerateDeductionListing(format format, string payrollId)
-// {
-//     IReport<DeductionListingResults> provider = await builder.CreateReportProvider<DeductionListingResults>(Reports.DeductionListing);
-//     switch (format)
-//     {
-//         case format.PDF:
-//             var data = new Dictionary<string, string>
-//             {{ "payrollId", payrollId }};
-//             return await provider.GeneratePDF(data);
-//         case format.PDFPreview:
-//             return await provider.GeneratePDFPreview();
-//         case format.CSV:
-//             return await provider.GenerateCSV();
-//         default:
-//             throw new InvalidOperationException();
-//     }
-// }
-
-
-
-// DeductionListing Results
 
 using System;
 using System.Collections.Generic;
 using AbacusApi.Data.Models;
 
+
 namespace AbacusApi.Features
 {
-    public record DeductionListingResults(
-        string CompanyName,
-        DateTime endDate,
-        string printedBy,
-        string reportNumber,
-        List<Deduction> Report
-    );
 
-    public record Deduction(
-        string Abbreviation,
-        string Description,
-        string Policy,
-        List<DeductionListing> Listings,
-        DeductionFooter footer);
+    public record AuditReportByDepartmentResults(
+        string AuditCompany,
+        string criteria,
+        List<AuditByDepartment> Audits,
+        List<AuditDetail> Totals);
 
-    public record DeductionFooter(
-        int employeeCount,
-        decimal totalEmployeeAmount,
-        decimal totalEmployerAmount,
-        decimal totalDeductions
-        );
+    public record AuditByDepartment(
+        string PayrollDate,
+        string DepartmentName,
+        string DepartmentNo,
+        int PayCycles,
+        decimal TotalGross,
+        decimal TotalTaxableGross,
+        List<AuditDetail> Employee,
+        List<AuditDetail> Employer);
 
-    public record DeductionListing(
-        string DepartmentCode,
-        string EmployeeId,
-        string EmployeeName,
-        decimal EmployeeAmount,
-        decimal EmployerAmount,
-        decimal TotalAmount);
 
 
 }
 
 
-
-// Deduction Lsiting Service
+// SERVICE
 
 
 using System;
@@ -1176,48 +64,128 @@ using AbacusApi.Repositories;
 using AbacusApi.Services;
 using Microsoft.Azure.Cosmos.Core;
 using Microsoft.Azure.Cosmos.Serialization.HybridRow.RecordIO;
+using AbacusApi.Constants;
+using System.ComponentModel.Design;
+using AbacusApi.Features.Report.Templates;
+using AbacusApi.Integrations.PDFShift;
+using Microsoft.Azure.Cosmos.Serialization.HybridRow;
+using System.Text.Json;
 
 namespace AbacusApi.Features.Report.Services
 {
-    public class DeductionListingService<T> : IReport<T>
+    public class AuditReportByDepartmentService<T> : IReport<T>
     {
         readonly public StateContext ctx;
         readonly PayrollRepository payrollRep;
+        readonly PDFGenerator PDF;
+        ITemplateProvider provider = TemplateConnector.CreateTemplateProvider(PDFTemplates.auditReportByDepartment);
 
-        List<Deduction> deductions = new List<Deduction>();
 
-        public DeductionListingService(PayrollRepository payrollRep, StateContext ctx)
+        List<AuditByDepartment> audits = new List<AuditByDepartment>();
+
+
+
+        public AuditReportByDepartmentService(PayrollRepository payrollRep, PDFGenerator PDF, StateContext ctx)
         {
             this.payrollRep = payrollRep;
+            this.PDF = PDF;
             this.ctx = ctx;
         }
 
-        public Task<T> GenerateCSV()
+        public Task<string> GenerateCSV(Dictionary<string, string> param)
         {
             return default;
         }
 
-        public async Task<T> GeneratePDF(Dictionary<string, string> param)
+        public async Task<string> GeneratePDF(Dictionary<string, string> param)
         {
 
-            var payroll = await payrollRep.GetPayrollById(param["payrollID"]);
-            Contracts.Requires(payroll != null, "Payroll does not exist");
-            Contracts.Requires(payroll.EmployeeData.Count > 0, "Cannot generate listing on empty payroll.");
+            string[] payrollIds = param["payrollIds"].Split(',');
+            List<Filter> filters = JsonSerializer.Deserialize<List<Filter>>(param["filters"]);
+            string[] departments = filters[0].Value.Split(',');
 
-            await payroll.EmployeeData.Select(x => Deductions(x, payroll.Company)).Parallel();
 
-            var res = new DeductionListingResults(
-                payroll.Company.CompanyName,
-                payroll.PayCycle.EndDate,
-                $"{ctx.User.FirstName} {ctx.User.LastName}",
-                "54245",
-                deductions
+            List<Payrolls> payrolls = new List<Payrolls>();
+            List<Payrolls> filtered_payrolls = new List<Payrolls>();
+
+
+
+            if (payrollIds[0].IsNullOrEmptyWhitespace())
+            {
+                payrolls = await payrollRep.GetAllPayrollsByCompanyId(ctx.Company.id, false, 0);
+            }
+            else
+            {
+                payrolls = await payrollRep.GetPayrollsByIds(payrollIds);
+            }
+
+
+
+            if (filtered_payrolls.Count > 0)
+                payrolls = filtered_payrolls;
+
+            Contracts.Requires(payrolls.Count > 0, "No Payrolls found.");
+            Contracts.Requires(payrolls[0].EmployeeData.Count > 0, "Cannot generate listing on empty payroll.");
+
+            await payrolls.Select(x => Audits(x,departments,filters)).Parallel();
+
+            Contracts.Requires(audits.Count > 0, "No Audits found.");
+
+
+
+            List<AuditDetail> totals = new List<AuditDetail>();
+
+            totals.AddRange(
+                payrolls.SelectMany(p => p.EmployeeData)
+                  .SelectMany(e => e.Cache.Statutory)
+                  .GroupBy(s => s.Tax)
+                  .Select(g => new AuditDetail(g.Key, g.Sum(s => s.EmployeeAmount + s.EmployerAmount)))
+                  .ToList()
+                );
+            totals.AddRange(
+                payrolls.SelectMany(p => p.EmployeeData)
+                  .SelectMany(e => e.Cache.NonStatutory)
+                  .GroupBy(s => s.Description)
+                  .Select(g => new AuditDetail(g.Key, g.Sum(s => s.EmployeeAmount + s.EmployerAmount)))
+                  .ToList()
+                );
+
+            totals.Add(new AuditDetail("TotalTaxes",
+                payrolls.SelectMany(p => p.EmployeeData).Sum(f => f.Cache.StatutoryTotal)
+            ));
+            totals.Add(new AuditDetail("Pension",
+                payrolls.SelectMany(p => p.EmployeeData).Sum(s => s.Employee.Pension.Code.GetEmployeeAmount() + s.Employee.Pension.Code.GetEmployerAmount())
+            ));
+            totals.Add(new AuditDetail("EmployeeTotal",
+                payrolls.Select(p => p.EmployeeData.Count()).Sum()
+            ));
+
+
+
+
+            var result = new AuditReportByDepartmentResults(
+                ctx.Company.CompanyName,
+                @$"{filters[0].Field}, {filters[0].Value}",
+                audits,
+                totals
             );
 
 
-            return (T)(object)res;
+            var filename = param.ContainsKey("filename") ? param["filename"] : "auditReportByDepartment.pdf";
 
-            throw new ArgumentNullException(nameof(payroll));
+
+            var footer = await File.ReadAllTextAsync(@"AppData/Templates/AuditReports/footer.html");
+            var header = await File.ReadAllTextAsync(@"AppData/Templates/AuditReports/header.html");
+            footer = footer.Replace("{{owner}}", $"{ctx.User.FirstName} {ctx.User.LastName}").Replace("{{date}}", DateTime.UtcNow.ConvertTOEST().ToShortDateString());
+
+
+            var body = await provider.GetTemplate(result);
+
+            var res = await PDF.Generate(filename, body, header, footer, landscape: true);
+
+            return res.url;
+
+            throw new ArgumentNullException(nameof(payrolls));
         }
 
         public Task<T> GeneratePDFPreview()
@@ -1227,245 +195,728 @@ namespace AbacusApi.Features.Report.Services
 
 
 
-        async Task Deductions(EmployeeData data, Company company)
+        async Task Audits(Payrolls payroll, string[] departments, List<Filter> filters)
         {
-            var stats = data.Cache.Statutory;
-            foreach (var stat in stats)
-            {
-                var i = deductions.FindIndex(x => x.Description == stat.Tax);
-                if (i == -1)
+
+
+                foreach (var data in payroll.EmployeeData)
                 {
-
-                    deductions.Add(new Deduction(
-                        stat.Tax,
-                        stat.Tax,
-                        string.Empty,
-                        new List<DeductionListing>() { DeductionListings(data.Employee, stat.EmployeeAmount, stat.EmployerAmount) },
-                        new DeductionFooter(1, 1, 0, 0)));
-                }
-                else
-                {
-                    deductions[i].Listings.Add(DeductionListings(data.Employee, stat.EmployeeAmount, stat.EmployerAmount));
-
-                    deductions[i] = deductions[i] with { footer = new DeductionFooter(
-                        deductions[i].Listings.Count,
-                        deductions[i].Listings.Sum(x => x.EmployeeAmount),
-                        deductions[i].Listings.Sum(x => x.EmployerAmount),
-                        deductions[i].Listings.Sum(x => x.TotalAmount)
-                        ) };
-                }
-            }
-
-            var nonstats = data.Cache.NonStatutory;
-            foreach (var nonstat in nonstats)
-            {
-                var i = deductions.FindIndex(x => x.Description == nonstat.Description);
-                if (i == -1)
-                {
-
-                    var abbr = "";
-
-                    if (ctx.Company.TryGetDeductionCode(nonstat.Code, out DeductionCode deductionCode))
+                    if (data != null)
                     {
-                        abbr = deductionCode.Abbreviation;
+
+
+                        var add_this_audit = false;
+                        var empCurrent = data.Cache;
+                        var audit = audits.FirstOrDefault(e => e.DepartmentNo == data.Employee.Employment.Department.Code);
+
+                        if (departments != null && departments.Count() > 0)
+                        {
+                            if (departments.Contains(data.Employee.Employment.Department.Code)) add_this_audit = true;
+                        }
+
+
+                    //if (filters[0].Field.ToLower() == "department")
+                    //{
+                    //    add_this_audit = false;
+
+                    //    if (filters[0].FieldChildren.Count > 0 && filter.FieldChildren.Contains(data.Employee.Employment.Department.Code.ToLower()))
+                    //    {
+                    //        add_this_audit = true;
+                    //    }
+
+                    //}
+
+
+                    if (filters[0].Value.ToLower() == "all")
+                        {
+                            add_this_audit = true;
+                        }
+
+
+                        #region add audit
+                        if (add_this_audit)
+                        {
+                            if (audit == null)
+                            {
+                                audit = new AuditByDepartment(
+                                    payroll.PayCycle.EndDate.ToString(),
+                                    data.Employee.Employment.Department.Description,
+                                    data.Employee.Employment.Department.Code,
+                                    0,
+                                    empCurrent.Gross,
+                                    empCurrent.TaxableGross,
+                                    AuditDetails(data).Item1,
+                                    AuditDetails(data).Item2
+                                    );
+                                audits.Add(audit);
+                            }
+                            else
+                            {
+                                var existingAudit = audit;
+                                audit = new AuditByDepartment(
+                                    payroll.PayCycle.EndDate.ToString(),
+                                    data.Employee.Employment.Department.Description,
+                                    data.Employee.Employment.Department.Code,
+                                    0,
+                                    (existingAudit.TotalGross + empCurrent.Gross),
+                                    (existingAudit.TotalTaxableGross + empCurrent.TaxableGross),
+                                    AuditDetails(data).Item1,
+                                    AuditDetails(data).Item2
+                                    );
+                                audits.Where(a => a.DepartmentNo == audit.DepartmentNo).ToList().ForEach(adt => adt = audit);
+                            }
+
+
+                        }
+                        #endregion
                     }
 
-                    if (ctx.Company.TryGetLoanCode(nonstat.Code, out LoanCode loanCode))
-                    {
-                        abbr = loanCode.Abbreviation;
-                    }
 
-                    deductions.Add(new Deduction(
-                        abbr,
-                        nonstat.Description,
-                        nonstat.Policy,
-                        new List<DeductionListing>() { DeductionListings(data.Employee, nonstat.EmployeeAmount, nonstat.EmployerAmount) },
-                        new DeductionFooter(1, 1, 0, 0)));
                 }
-                else
-                {
-                    deductions[i].Listings.Add(DeductionListings(data.Employee, nonstat.EmployeeAmount, nonstat.EmployerAmount));
-
-                    deductions[i] = deductions[i] with
-                    {
-                        footer = new DeductionFooter(
-                        deductions[i].Listings.Count,
-                        deductions[i].Listings.Sum(x => x.EmployeeAmount),
-                        deductions[i].Listings.Sum(x => x.EmployerAmount),
-                        deductions[i].Listings.Sum(x => x.TotalAmount)
-                        )
-                    };
-                }
-            }
 
             await Task.CompletedTask;
+        }
+
+
+        (List<AuditDetail>, List<AuditDetail>) AuditDetails(EmployeeData data)
+        {
+            List<AuditDetail> employee = new List<AuditDetail>();
+            List<AuditDetail> employer = new List<AuditDetail>();
+
+
+            #region add employee net pay
+            var empCurrent = data.Cache;
+            var audit = audits.FirstOrDefault(e => e.DepartmentNo == data.Employee.Employment.Department.Code);
+
+
+            //call func for emp net and return employee and add
+
+            var employee_net = new AuditDetail("",0);
+            var employee_pension = new AuditDetail("", 0);
+            var employer_pension = new AuditDetail("",0);
+            if (audit == null)
+            {
+                employee_net = null;
+                employee_pension = null;
+                employer_pension = null;
+            }
+            else
+            {
+                employee_net = audit.Employee.FirstOrDefault(e => e.Description == "NetPay");
+                employee_pension = audit.Employee.FirstOrDefault(e => e.Description == "Pension");
+                employer_pension = audit.Employer.FirstOrDefault(e => e.Description == "Pension");
+            }
+
+            if (employee_net == null)
+            {
+                employee.Add(EmployeeNet(data, employee_net));
+            }
+            else
+            {
+                employee.Where(e => e.Description == "NetPay").ToList().ForEach(p => p = EmployeeNet(data, employee_net));
+            }
+            #endregion
+
+            //do employee count
+
+
+
+
+            #region add employee pension
+
+            var pension = data.Employee?.Pension?.Code;
+            if (employee_pension == null)
+            {
+                employee.Add(EmployeePension(employee_pension, pension));
+            }
+            else
+            {
+                employee.Where(e => e.Description == "Pension").ToList().ForEach(p => p = EmployeePension(employee_pension, pension));
+            }
+            #endregion
+
+
+            #region add employer pension
+
+
+            if (employer_pension == null)
+            {
+                employer.Add(EmployerPension(employee_pension, pension));
+            }
+            else
+            {
+                employer.Where(e => e.Description == "Pension").ToList().ForEach(p => p = EmployerPension(employee_pension, pension));
+            }
+
+            //var pensionSummary = totals.FirstOrDefault(t => t.Description == "Pension");
+            //if (pension != null)
+            //{
+            //    AuditDetail existingPensionTotal = pensionSummary;
+            //    pensionSummary = new AuditDetail(
+            //        existingPensionTotal.Description,
+            //        existingPensionTotal.Amount + pension.GetEmployeeAmount() + pension.GetEmployerAmount());
+            //}
+            //else
+            //{
+            //    AuditDetail existingPensionTotal = pensionSummary;
+            //    pensionSummary = new AuditDetail(
+            //        existingPensionTotal.Description,
+            //        existingPensionTotal.Amount);
+            //}
+            //totals.Where(t => t.Description == pensionSummary.Description).ToList().ForEach(e => e = pensionSummary);
+            #endregion
+
+
+            #region start adding statutories
+            foreach (var stat in empCurrent.Statutory)
+            {
+                #region set employee employer stat amount
+
+
+
+                var audit_detail_employee = new AuditDetail("",0);
+                var audit_detail_employer = new AuditDetail("",0);
+                if (audit == null)
+                {
+                    audit_detail_employee = null;
+                    audit_detail_employer = null;
+                }
+                else
+                {
+                    audit_detail_employee = audit.Employee.FirstOrDefault(s => s.Description == stat.Tax);
+                    audit_detail_employer = audit.Employer.FirstOrDefault(s => s.Description == stat.Tax);
+                }
+
+
+                if (audit_detail_employee == null)
+                {
+                    employee.Add(StatutoryEmployee(audit_detail_employee, stat));
+                }
+                else
+                {
+                    employee.Where(s => s.Description == stat.Tax).ToList().ForEach(s => s = StatutoryEmployee(audit_detail_employee, stat));
+                }
+
+
+
+                if (audit_detail_employer == null)
+                {
+                    employer.Add(StatutoryEmployer(audit_detail_employee, stat));
+                }
+                else
+                {
+                    employer.Where(s => s.Description == stat.Tax).ToList().ForEach(s => s = StatutoryEmployer(audit_detail_employee, stat));
+                }
+
+                //var total = totals.FirstOrDefault(t => t.Description == stat.Tax);
+                //if (total == null)
+                //{
+                //    total = new AuditDetail(
+                //        stat.Tax,
+                //        stat.EmployeeAmount + stat.EmployerAmount);
+                //    totals.Add(total);
+                //}
+                //else
+                //{
+                //    AuditDetail existingStatTotal = total;
+                //    total = new AuditDetail(
+                //        stat.Tax,
+                //        existingStatTotal.Amount + stat.EmployeeAmount + stat.EmployerAmount);
+                //    totals.Where(t => t.Description == total.Description).ToList().ForEach(e => e = total);
+                //}
+                #endregion
+
+
+                #region update statutory summary
+                //var statSummary = totals.FirstOrDefault(t => t.Description == "StatutorySummary");
+
+                //totals.Where(t => t.Description == statSummary.Description).ToList().ForEach(e => e = new AuditDetail(
+                //    statSummary.Description,
+                //    statSummary.Amount + stat.EmployeeAmount + stat.EmployerAmount));
+                #endregion
+
+            }
+            #endregion
+
+
+            foreach (var nonstat in empCurrent.NonStatutory)
+            {
+                #region set employee employer nonstat amount
+
+                var audit_detail_employee = new AuditDetail("", 0);
+                var audit_detail_employer = new AuditDetail("", 0);
+                if (audit == null)
+                {
+                    audit_detail_employee = null;
+                    audit_detail_employer = null;
+                }
+                else
+                {
+                    audit_detail_employee = audit.Employee.FirstOrDefault(s => s.Description == nonstat.Description);
+                    audit_detail_employer = audit.Employer.FirstOrDefault(s => s.Description == nonstat.Description);
+                }
+
+                if (audit_detail_employee == null)
+                {
+                    employee.Add(NonStatutoryEmployee(audit_detail_employee, nonstat));
+                }
+                else
+                {
+                    employee.Where(s => s.Description == nonstat.Description).ToList().ForEach(s => s = NonStatutoryEmployee(audit_detail_employee, nonstat));
+                }
+
+
+
+                if (audit_detail_employer == null)
+                {
+                    employer.Add(NonStatutoryEmployer(audit_detail_employer, nonstat));
+                }
+                else
+                {
+                    employer.Where(s => s.Description == nonstat.Description).ToList().ForEach(s => s = NonStatutoryEmployer(audit_detail_employer, nonstat));
+                }
+                #endregion
+
+
+                #region start adding nonstatutories
+                //var total = totals.FirstOrDefault(t => t.Description == nonstat.Description);
+
+
+                //if (total == null)
+                //{
+                //    total = new AuditDetail(
+                //        nonstat.Description,
+                //        nonstat.EmployerAmount + nonstat.EmployeeAmount);
+                //    totals.Add(total);
+                //}
+                //else
+                //{
+                //    AuditDetail existingNonstatTotal = total;
+                //    total = new AuditDetail(
+                //        existingNonstatTotal.Description,
+                //        existingNonstatTotal.Amount + nonstat.EmployerAmount + nonstat.EmployeeAmount);
+                //    totals.Where(t => t.Description == total.Description).ToList().ForEach(e => e = total);
+                //}
+                #endregion
+
+                //var nonstatTotal = new AuditDetail("", 0);
+                //if(audit == null)
+                //{
+                //    nonstatTotal = null;
+                //}
+                //else
+                //{
+                //    nonstatTotal = audit.Employee.FirstOrDefault(t => t.Description == "NonStatTotal");
+                //}
+                //if(nonstatTotal == null)
+                //{
+                //    employee.Add(new AuditDetail(
+                //    "NonStatTotal",
+                //    nonstat.EmployeeAmount));
+                //}
+                //else
+                //{
+                //    employee.Where(t => t.Description == nonstatTotal.Description).ToList().ForEach(e => e = new AuditDetail(
+                //    nonstatTotal.Description,
+                //    nonstatTotal.Amount + nonstat.EmployeeAmount));
+                //}
+
+
+                #region update nonstatutory summary
+                //var nonstatSummary = totals.FirstOrDefault(t => t.Description == "NonStatutorySummary");
+
+                //totals.Where(t => t.Description == nonstatSummary.Description).ToList().ForEach(e => e = new AuditDetail(
+                //    nonstatSummary.Description,
+                //    nonstatSummary.Amount + nonstat.EmployeeAmount + nonstat.EmployerAmount));
+                #endregion
+
+            }
+
+
+            return (employee, employer);
+        }
+
+        AuditDetail EmployeeNet(EmployeeData data, AuditDetail employee_net)
+        {
+            var empCurrent = data.Cache;
+            if (employee_net == null)
+            {
+
+                employee_net = new AuditDetail(
+                    "NetPay",
+                    empCurrent.Net);
+
+            }
+            else
+            {
+                AuditDetail existingEmployeeNet = employee_net;
+                employee_net = new AuditDetail(
+                    existingEmployeeNet.Description,
+                    (existingEmployeeNet.Amount + empCurrent.Net));
+            }
+
+            return employee_net;
 
         }
 
-        DeductionListing DeductionListings(Employee employee, decimal employeeAmount, decimal employerAmount)
-            => new DeductionListing(
-                employee.Employment.Department.Code,
-                employee.EmployeeId,
-                employee.Name(),
-                employeeAmount,
-                employerAmount,
-                employeeAmount + employerAmount);
+        AuditDetail EmployeePension(AuditDetail employee_pension, PensionCode pension)
+        {
+            if (employee_pension == null)
+            {
+                employee_pension = new AuditDetail(
+                    "Pension",
+                    pension.GetEmployeeAmount());
+            }
+            else
+            {
+                AuditDetail existingEmployeePension = employee_pension;
+                employee_pension = new AuditDetail(
+                    "Pension",
+                    existingEmployeePension.Amount + pension.GetEmployeeAmount());
+            }
+            return employee_pension;
+        }
 
+        AuditDetail EmployerPension(AuditDetail employer_pension, PensionCode pension)
+        {
+            if (employer_pension == null)
+            {
+                decimal amount = 0;
+                if (pension != null)
+                {
+                    amount = pension.GetEmployerAmount();
+                }
+                employer_pension = new AuditDetail(
+                    "Pension",
+                    amount);
+            }
+            else
+            {
+                AuditDetail existingEmployerPension = employer_pension;
+                decimal amount = existingEmployerPension.Amount;
+                if (pension != null)
+                {
+                    amount = existingEmployerPension.Amount + pension.GetEmployerAmount();
+                }
+                employer_pension = new AuditDetail(
+                    "Pension",
+                    amount);
+            }
+            return employer_pension;
+        }
 
+        AuditDetail StatutoryEmployee(AuditDetail audit_detail_employee, Statutory stat)
+        {
+            if (audit_detail_employee == null)
+            {
+                audit_detail_employee = new AuditDetail(
+                    stat.Tax,
+                    stat.EmployeeAmount);
+            }
+            else
+            {
+                AuditDetail existingStatEmployeeAudit = audit_detail_employee;
+                audit_detail_employee = new AuditDetail(
+                    stat.Tax,
+                    existingStatEmployeeAudit.Amount + stat.EmployeeAmount);
+            }
+
+            return audit_detail_employee;
+        }
+
+        AuditDetail StatutoryEmployer(AuditDetail audit_detail_employer, Statutory stat)
+        {
+            if (audit_detail_employer == null)
+            {
+                audit_detail_employer = new AuditDetail(
+                    stat.Tax,
+                    stat.EmployerAmount);
+            }
+            else
+            {
+                AuditDetail existingStatEmployerAudit = audit_detail_employer;
+                audit_detail_employer = new AuditDetail(
+                    stat.Tax,
+                    existingStatEmployerAudit.Amount + stat.EmployerAmount);
+            }
+
+            return audit_detail_employer;
+        }
+
+        AuditDetail NonStatutoryEmployee(AuditDetail audit_detail_employee, NonStatutory nonstat)
+        {
+            if (audit_detail_employee == null)
+            {
+                audit_detail_employee = new AuditDetail(
+                    nonstat.Description,
+                    nonstat.EmployeeAmount);
+            }
+            else
+            {
+                AuditDetail existingStatEmployeeAudit = audit_detail_employee;
+                audit_detail_employee = new AuditDetail(
+                    nonstat.Description,
+                    existingStatEmployeeAudit.Amount + nonstat.EmployeeAmount);
+            }
+
+            return audit_detail_employee;
+        }
+
+        AuditDetail NonStatutoryEmployer(AuditDetail audit_detail_employer, NonStatutory nonstat)
+        {
+            if (audit_detail_employer == null)
+            {
+                audit_detail_employer = new AuditDetail(
+                    nonstat.Description,
+                    nonstat.EmployeeAmount);
+            }
+            else
+            {
+                AuditDetail existingStatEmployerAudit = audit_detail_employer;
+                audit_detail_employer = new AuditDetail(
+                    nonstat.Description,
+                    existingStatEmployerAudit.Amount + nonstat.EmployerAmount);
+            }
+
+            return audit_detail_employer;
+        }
 
     }
 }
 
 
+// TEMPLATE
 
-
-// unit test > reports.cs
-
-
-public static async Task ShouldCalculatePayroll(Payrolls payroll)
-  {
-
-      foreach (EmployeeData emp in payroll.EmployeeData)
-      {
-          await emp.CalculateEmployeePay(emp, payroll.TaxHeaders, payroll);
-          emp.CalculateTransactionAmounts();
-          //emp.YTDCache = await emp.GetLastYTDCache(emp.Employee.id, payroll.PayCycle.Period, ctx.Company.id);
-      }
-
-      foreach (EmployeeData emp in payroll.EmployeeData)
-      {
-          Assert.IsTrue(emp.Cache.Transactions.Count > 0);
-          Assert.IsTrue(emp.YTDCache.Transactions.Count > 0);
-      }
-
-  }
-
-
-
-
-        #endregion
-
-
-        #region ReportTests
-
-        [TestMethod]
-        public async Task ShouldGeneratePayrollRegister()
-        {
-            string type = "fortnightly";
-
-            var result = await rep.GeneratePayrollRegister(format.PDF, "1", type);
-
-            Assert.IsNotNull(result);
-            //Assert.IsTrue(result.Earning.Count > 0);
-            //Assert.IsTrue(result.Deduction.Count > 0);
-            //Assert.IsTrue(result.Totals.Count > 0);
-            //Assert.IsTrue(result.Info.TotalEmployees > 0);
-
-        }
-
-
-        [TestMethod]
-        public async Task ShouldGenerateDeductionListing()
-        {
-
-            var payrolls = await payrollRepo.GetAllCurrentPayrollsByCompanyId(ctx.Company.id, PayrollTypes.fortnightly);
-            var currentPayroll = payrolls.FirstOrDefault(x => x.PayCycle.Period == payrolls.Max(x => x.PayCycle.Period));
-
-            var result = await rep.GenerateDeductionListing(format.PDF, currentPayroll.id);
-
-            Assert.IsNotNull(result);
-
-        }
-
-
-// --------------------------------------------
-// --------------------------------------------
-// --------------------------------------------
-
-
-
-// ReportsController.cs
-using System.Linq;
+using System;
+using System.Reflection;
 using AbacusApi.Data.Models;
-using AbacusApi.Features;
+using AbacusApi.Helpers;
+using Microsoft.Azure.Cosmos.Serialization.HybridRow;
+using AbacusApi.Constants;
 
-
-[Route("v1/api/reports/CreatePayslip/{employeeId}/{payrollId}/{type}")]
-
-[Route("v1/api/reports/CreatePayrollRegister/{period}/{type}")]
-
-try
+namespace AbacusApi.Features.Report.Templates
 {
-    var payrollRegister = await svc.GeneratePayrollRegister(format.PDF, period, type);
-    return Ok(payrollRegister);
+    public class AuditReportByDepartmentTemplate : ITemplateProvider
+    {
+        public async Task<string> GetTemplate(object results)
+        {
+
+            var pages = await File.ReadAllTextAsync(@"AppData/Templates/AuditReports/AuditReport.html");
+            var page = await File.ReadAllTextAsync(@"AppData/Templates/AuditReports/AuditReportByDepartment-pages.html");
+
+            var data = (AuditReportByDepartmentResults)results;
+
+            var pageData = string.Empty;
+            var index = 0;
+            foreach (var audit in Chunks(data.Audits, 30).Select((value, i) => new { i, value }))
+            {
+                index += 30;
+                var copy = page;
+
+                var audits = string.Empty;
+                var mainItems = string.Empty;
+                var deductionItems = string.Empty;
+                var contributionItems = string.Empty;
+                var totals = string.Empty;
+
+
+                foreach (var item in audit.value)
+                {
+                    mainItems += @$"
+                        <tr>
+                            <td>{item.PayrollDate}</td>
+                            <td align=""left"">{item.DepartmentNo}</td>
+                            <td align=""left"">{item.DepartmentName}</td>
+                            <td align=""left"">{item.TotalGross.FormatCurrency()}</td>
+                            <td align=""left"">{item.TotalTaxableGross.FormatCurrency()}</td>
+                        </tr>";
+                }
+
+
+                foreach (var item in audit.value)
+                {
+                    foreach (var detail in item.Employee)
+                    {
+                        deductionItems += $@"
+                        <td align=""left"">{detail.Amount.FormatCurrency()}</td>";
+                    }
+
+                    foreach (var detail in item.Employer)
+                    {
+                        contributionItems += $@"
+                        <td align=""left"">{detail.Amount.FormatCurrency()}</td>";
+                    }
+                }
+
+                if(index >= data.Audits.Count)
+                {
+                    foreach (var total in data.Totals)
+                    {
+                        if (
+                                total.Description == "Pension" ||
+                                total.Description == "TotalTaxes" ||
+                                total.Description == "NIS" ||
+                                total.Description == "NHT" ||
+                                total.Description == "Nd. Tax" ||
+                                total.Description == "HEART" ||
+                                total.Description == "PAYE"
+                        )
+                        {
+                            totals += $@"<tr>
+                                <td class=""spc"">{total.Description}</td>
+                                <td>{total.Amount.FormatCurrency()}</td>
+                            </tr>";
+
+                        }
+                        if (total.Description == "EmployeeTotal")
+                        {
+                            totals += $@"<tr>
+                                <td class=""spc"">{total.Description}</td>
+                                <td>{total.Amount}</td>
+                            </tr>";
+
+                        }
+                    }
+                }
+
+
+
+                copy = page
+                .Replace("{{page}}", (audit.i + 1).ToString())
+                .Replace("{{report_no}}", ReportNums.AuditReportbyDept)
+                .Replace("{{logo}}", "")
+                .Replace("{{company_name}}", data.AuditCompany)
+                .Replace("{{criteria}}", data.criteria)
+                .Replace("{{main_items}}", mainItems)
+                .Replace("{{deduction_items}}", deductionItems)
+                .Replace("{{contribution_items}}", contributionItems)
+                .Replace("{{totals}}", totals);
+
+                pageData += copy;
+
+            }
+
+
+            pages = pages.Replace("{{pages}}", pageData);
+            //await File.WriteAllTextAsync(@"AppData/Templates/AuditReports/auditReportByDepartmentFinal.html", pages);
+
+            return pages;
+        }
+
+        private IEnumerable<IEnumerable<Audit>> Chunks<Audit>(List<Audit> fullList, int batchSize)
+        {
+            int total = 0;
+            var chunkedList = new List<List<Audit>>();
+            while (total < fullList.Count)
+            {
+                var chunk = fullList.Skip(total).Take(batchSize);
+                chunkedList.Add(chunk.ToList());
+                total += batchSize;
+            }
+
+            return chunkedList;
+        }
+    }
+
+
+
 }
-catch (ApplicationException ex)
+
+
+
+// REPORT BUILDER
+
+
+readonly PayrollRepository payrollRep;
+readonly public StateContext ctx;
+readonly PDFGenerator PDF;
+public Calculator calc;
+
+public ReportBuilder(PayrollRepository payrollRep, StateContext ctx, PDFGenerator PDF, Calculator calc)
 {
-    return BadRequest(ex.Message);
+    this.payrollRep = payrollRep;
+    this.ctx = ctx;
+    this.PDF = PDF;
+    this.calc = calc;
 }
 
 
 
-
-/// <summary>
-/// Report
-/// </summary>
-/// <param name="payrollId"></param>
-/// <returns></returns>
-[Route("v1/api/reports/EmployeeRegister/{payrollId}")]
-
-
-[Route("v1/api/reports/CreateDeductionListing/{payrollId}")]
+case Reports.AuditReportByDepartment:
+    return new AuditReportByDepartmentService<TResult>(payrollRep, PDF, ctx);
 
 
 
-try
+// REPORT GENERATOR
+
+ReportBuilder builder;
+readonly PDFGenerator PDF;
+public Calculator calc;
+public ReportGenerator(PayrollRepository payrollRep, StateContext ctx, PDFGenerator PDF, Calculator calc)
 {
-    var deductionListing = await svc.GenerateDeductionListing(format.PDF, payrollId);
-    return Ok(deductionListing);
+    builder = new ReportBuilder(payrollRep, ctx, PDF, calc);
 }
-catch (ApplicationException ex)
+
+public async Task<TResult> GenerateAuditReportByDepartment<TResult>(format format, string payrollIds, string filters)
 {
-    return BadRequest(ex.Message);
+    var data = new Dictionary<string, string>();
+    IReport<TResult> provider = await builder.CreateReportProvider<TResult>(Reports.AuditReportByDepartment);
+    switch (format)
+    {
+        case format.PDF:
+
+            data = new Dictionary<string, string>
+            {
+                { "payrollIds", payrollIds },
+                {"filters", filters }
+            };
+            //return await provider.GeneratePDF(data);
+            var url = await provider.GeneratePDF(data);
+            return (TResult)(object)url;
+        case format.PDFPreview:
+            return await provider.GeneratePDFPreview();
+        case format.CSV:
+            url = await provider.GenerateCSV(data);
+            return (TResult)(object)url;
+        default:
+            throw new InvalidOperationException();
+    }
 }
 
 
 
-/// <summary>
-/// Report
-/// </summary>
-/// <param name="payrollId"></param>
-/// <returns></returns>
-[Route("v1/api/reports/EmployeeRegister/{payrollId}")]
-[HttpGet]
-public async Task<IActionResult> EmployeeRegister(string payrollId)
+// PAYROLL PayrollRepository
+
+public async Task<List<Payrolls>> GetPayrollsByIds(string[] ids)
 {
-  var report = await svc.GenerateEmployeeRegister(format.PDF,payrollId);
-  return Ok(report);
+
+    var idQueryString = "('" + string.Join("','", ids) + "')";
+    var baseQueryString = $"SELECT * FROM c WHERE c.id IN ";
+    var finalQUeryString = baseQueryString + idQueryString;
+
+    var payrolls = await GetItemsAsync(finalQUeryString);
+    return payrolls;
 }
 
 
 
+
+// REPORTS CONTROLLER
 
 /// <summary>
 /// Report
 /// </summary>
 /// <param name="payrollIds"></param>
 /// <returns></returns>
-[Route("v1/api/reports/CreateAuditReportByDepartment")]
+[Route("v1/api/reports/CreateAuditReportByDepartment/{payrollIds}/")]
 [HttpPut]
-public async Task<IActionResult> CreateAuditReportByDepartment(List<string> payrollIds, List<Filter> filters)
+public async Task<IActionResult> CreateAuditReportByDepartment(string payrollIds, List<Filter> filters)
 {
 
     try
     {
-        string ids = string.Join(",", payrollIds);
-        string depts = "";
-        if (filters[0].FieldChildren.Count > 0)
-        {
-            depts = string.Join(",", filters[0].FieldChildren);
-        }
-        var auditReportByDepartment = await svc.GenerateAuditReportByDepartment(format.PDF, ids, depts, filters);
+        string jsonFilters = JsonSerializer.Serialize(filters);
+        var auditReportByDepartment = await svc.GenerateAuditReportByDepartment<string>(format.PDF, payrollIds, jsonFilters);
         return Ok(auditReportByDepartment);
     }
     catch (ApplicationException ex)
@@ -1474,12 +925,77 @@ public async Task<IActionResult> CreateAuditReportByDepartment(List<string> payr
     }
 }
 
+
+
+// UNIT TEST
+
+
+[TestMethod]
+public async Task ShouldGenerateAuditReportByDepartment()
+{
+
+    var filter = new Filter();
+    filter.Field = "department";
+    filter.Value = "all";
+    var filters = new List<Filter> { filter };
+    string jsonFilters = JsonSerializer.Serialize(filters);
+    var result = await rep.GenerateAuditReportByDepartment<string>(format.PDF, payroll.id, jsonFilters);
+
+    Assert.IsTrue(result != "");
+    Assert.IsNotNull(result);
+
 }
 
 
 
-// AuditReportResults.cs
+// --------------------------------------------
+// --------------------------------------------
+// --------------------------------------------
 
+// PayrollRepository
+
+public async Task<List<Payrolls>> GetPayrollsByIds(string[] ids)
+{
+
+    var idQueryString = "('" + string.Join("','", ids) + "')";
+    var baseQueryString = $"SELECT * FROM c WHERE c.id IN ";
+    var finalQUeryString = baseQueryString + idQueryString;
+
+    var payrolls = await GetItemsAsync(finalQUeryString);
+    return payrolls;
+}
+
+
+
+// controller
+
+/// <summary>
+/// Report
+/// </summary>
+/// <param name="payrollIds"></param>
+/// <returns></returns>
+[Route("v1/api/reports/CreateAuditReportByEmployee/{payrollIds}")]
+[HttpPut]
+public async Task<IActionResult> CreateAuditReportByEmployee(string payrollIds, List<Filter> filters)
+{
+
+    try
+    {
+        string jsonFilters = JsonSerializer.Serialize(filters);
+        var auditReportByEmployee = await svc.GenerateAuditReportByEmployee<string>(format.PDF, payrollIds, jsonFilters);
+        return Ok(auditReportByEmployee);
+    }
+    catch (ApplicationException ex)
+    {
+        return BadRequest(ex.Message);
+    }
+}
+
+
+
+
+
+// Record
 
 using System;
 using System.Collections.Generic;
@@ -1489,101 +1005,48 @@ using AbacusApi.Data.Models;
 namespace AbacusApi.Features
 {
 
-public record AuditReportResults(
-    string CompanyName,
-    string printedBy,
-    string ReportNumber,
-    AuditReport Report);
+    public record AuditReportByEmployeeResults(
+        string AuditCompany,
+        string criteria,
+        List<AuditByEmployee> Audits,
+        List<AuditDetail> Totals);
 
-public record AuditReport(
-    string AuditCompany,
-    List<Audit> Audits,
-    List<AuditDetail> Totals);
-
-public record Audit(
-    string PayrollDate,
-    string Quarter,
-    string Month,
-    string EmployeeName,
-    string EmployeeNo,
-    string DepartmentName,
-    string DepartmentNo,
-    int PayCycles,
-    decimal TotaGross,
-    decimal TotaTaxableGross,
-    List<AuditDetail> Employee,
-    List<AuditDetail> Employer);
-
-public record AuditDetail(
-    string Description,
-    decimal Amount);
+    public record AuditByEmployee(
+        string PayrollDate,
+        string EmployeeName,
+        string EmployeeNo,
+        int PayCycles,
+        decimal TotalGross,
+        decimal TotalTaxableGross,
+        List<AuditDetail> Employee,
+        List<AuditDetail> Employer);
 
 
 }
 
 
-// PayrollSummaryResults.cs
-
-string CompanyName,
-        int Cycle,
-        string Type,
-        string ReportNumber,
-        DateTime endDate,
-        decimal Threshold,
-        int TotalEmployees);
-
-
-
 // ReportBuilder.cs
 
-DeductionListing,
-AuditReportByDepartment,
-AuditReportByEmployee,
-AuditReportByMonth,
-AuditReportByQuarter
+
+readonly PayrollRepository payrollRep;
+readonly public StateContext ctx;
+readonly PDFGenerator PDF;
+public Calculator calc;
+
+public ReportBuilder(PayrollRepository payrollRep, StateContext ctx, PDFGenerator PDF, Calculator calc)
+{
+    this.payrollRep = payrollRep;
+    this.ctx = ctx;
+    this.PDF = PDF;
+    this.calc = calc;
+}
+
+case Reports.AuditReportByEmployee:
+    return new AuditReportByEmployeeService<TResult>(payrollRep, PDF, ctx);
 
 
 
-case Reports.AuditReportByDepartment:
-  return new AuditReportByDepartmentService<TResult>(payrollRep, ctx);
-
-
-
-// ReportGenerator.cs
-
-ReportBuilder builder;
-StateContext ctx;
-
-
-
-public ReportGenerator(PayrollRepository payrollRep, StateContext ctx)
-  {
-      builder = new ReportBuilder(payrollRep, ctx);
-      this.ctx = ctx;
-  }
-
-
-  public async Task<AuditReportResults> GenerateAuditReportByDepartment(format format, string payrollIds, string departments, List<Filter> filters)
-          {
-              IReport<AuditReportResults> provider = await builder.CreateReportProvider<AuditReportResults>(Reports.AuditReportByDepartment);
-              switch (format)
-              {
-                  case format.PDF:
-                      ctx.Filters = filters;
-                      var data = new Dictionary<string, string>
-                      {
-                          { "payrollIds", payrollIds },
-                          { "departments", departments }
-                      };
-                      return await provider.GeneratePDF(data);
-                  case format.PDFPreview:
-                      return await provider.GeneratePDFPreview();
-
-
-
-
-
-// AuditReportByDepartment.cs
+// Service
 
 
 using System;
@@ -1600,146 +1063,123 @@ using Microsoft.Azure.Cosmos.Core;
 using Microsoft.Azure.Cosmos.Serialization.HybridRow.RecordIO;
 using AbacusApi.Constants;
 using System.ComponentModel.Design;
+using AbacusApi.Features.Report.Templates;
+using AbacusApi.Integrations.PDFShift;
+using Microsoft.Azure.Cosmos.Serialization.HybridRow;
+using System.Text.Json;
 
 namespace AbacusApi.Features.Report.Services
 {
-    public class AuditReportByDepartmentService<T> : IReport<T>
+    public class AuditReportByEmployeeService<T> : IReport<T>
     {
         readonly public StateContext ctx;
         readonly PayrollRepository payrollRep;
+        readonly PDFGenerator PDF;
+        ITemplateProvider provider = TemplateConnector.CreateTemplateProvider(PDFTemplates.auditReportByEmployee);
 
-        List<Deduction> deductions = new List<Deduction>();
-        //AuditReport report = new AuditReport();
-        IEnumerable<Payrolls> payrolls = new List<Payrolls>();
-        List<Payrolls> filtered_payrolls = new List<Payrolls>();
 
-        public AuditReportByDepartmentService(PayrollRepository payrollRep, StateContext ctx)
+        List<AuditByEmployee> audits = new List<AuditByEmployee>();
+
+
+        public AuditReportByEmployeeService(PayrollRepository payrollRep, PDFGenerator PDF, StateContext ctx)
         {
             this.payrollRep = payrollRep;
+            this.PDF = PDF;
             this.ctx = ctx;
         }
 
-        public Task<T> GenerateCSV()
+        public Task<string> GenerateCSV(Dictionary<string, string> param)
         {
             return default;
         }
 
-        public async Task<T> GeneratePDF(Dictionary<string, string> param)
+        public async Task<string> GeneratePDF(Dictionary<string, string> param)
         {
 
-            AuditReport report = new AuditReport();
             string[] payrollIds = param["payrollIds"].Split(',');
-            string[] departments = param["departments"].Split(',');
+            List<Filter> filters = JsonSerializer.Deserialize<List<Filter>>(param["filters"]);
+            string[] employees = filters[0].Value.Split(',');
+
+            List<Payrolls> payrolls = new List<Payrolls>();
+            List<Payrolls> filtered_payrolls = new List<Payrolls>();
 
 
-            Filter filter = new Filter();
-            if (ctx.Filters[1].Field != "")
-            {
-                filter = ctx.Filters[1];
-            }
-            else
-            {
-                filter = ctx.Filters[0];
-            }
 
-            if (payrollIds != null)
-            {
-                foreach (var payrollId in payrollIds)
-                {
-                    var payroll = await payrollRep.GetPayrollById(payrollId);
-                    payrolls.ToList().Add(payroll);
-                }
-            }
-            else
+            if (payrollIds[0].IsNullOrEmptyWhitespace())
             {
                 payrolls = await payrollRep.GetAllPayrollsByCompanyId(ctx.Company.id, false, 0);
             }
-
-            if (filter.Field.ToLower() == "month")
-            {
-                foreach (var payroll in payrolls)
-                {
-                    if (filter.FieldChildren.Contains(payroll.GetPayrollMonth()))
-                    {
-                        filtered_payrolls.Add(payroll);
-                    }
-                }
-            }
             else
             {
-
-                if (filter.Field.ToLower() == "quarter")
-                {
-
-                    foreach (var payroll in payrolls)
-                    {
-                        if (filter.FieldChildren.Contains(payroll.GetPayrollQuarter()))
-                        {
-                            filtered_payrolls.Add(payroll);
-                        }
-                    }
-                }
-
+                payrolls = await payrollRep.GetPayrollsByIds(payrollIds);
             }
 
 
-            report.Totals.Add(new AuditDetail("StatutorySummary", 0));
-            report.Totals.Add(new AuditDetail("NonStatutorySummary", 0));
-            report.Totals.Add(new AuditDetail("TotalTaxes", 0));
-            report.Totals.Add(new AuditDetail("Pension", 0));
-            report.Totals.Add(new AuditDetail("EmployeeTotal", 0));
 
             if (filtered_payrolls.Count > 0)
                 payrolls = filtered_payrolls;
 
+            Contracts.Requires(payrolls.Count > 0, "No Payrolls found.");
+            Contracts.Requires(payrolls[0].EmployeeData.Count > 0, "Cannot generate listing on empty payroll.");
 
-            //var payroll = new Payrolls();
-            //var payroll = await payrollRep.GetPayrollById();
-            //Contracts.Requires(payroll != null, "Payroll does not exist");
-            //Contracts.Requires(payroll.EmployeeData.Count > 0, "Cannot generate listing on empty payroll.");
+            await payrolls.Select(x => Audits(x, employees, filters)).Parallel();
 
-            //await payroll.EmployeeData.Select(x => Deductions(x, payroll.Company)).Parallel();
+            Contracts.Requires(audits.Count > 0, "No Audits found.");
 
-            var res = new AuditReportResults(
+            List<AuditDetail> totals = new List<AuditDetail>();
+
+
+            totals.AddRange(
+                payrolls.SelectMany(p => p.EmployeeData)
+                  .SelectMany(e => e.Cache.Statutory)
+                  .GroupBy(s => s.Tax)
+                  .Select(g => new AuditDetail(g.Key, g.Sum(s => s.EmployeeAmount + s.EmployerAmount)))
+                  .ToList()
+                );
+            totals.AddRange(
+                payrolls.SelectMany(p => p.EmployeeData)
+                  .SelectMany(e => e.Cache.NonStatutory)
+                  .GroupBy(s => s.Description)
+                  .Select(g => new AuditDetail(g.Key, g.Sum(s => s.EmployeeAmount + s.EmployerAmount)))
+                  .ToList()
+                );
+
+            totals.Add(new AuditDetail("TotalTaxes",
+                payrolls.SelectMany(p => p.EmployeeData).Sum(f => f.Cache.StatutoryTotal)
+            ));
+            totals.Add(new AuditDetail("Pension",
+                payrolls.SelectMany(p => p.EmployeeData).Sum(s => s.Employee.Pension.Code.GetEmployeeAmount() + s.Employee.Pension.Code.GetEmployerAmount())
+            ));
+            totals.Add(new AuditDetail("EmployeeTotal",
+                payrolls.Select(p => p.EmployeeData.Count()).Sum()
+            ));
+
+
+            var result = new AuditReportByEmployeeResults(
                 ctx.Company.CompanyName,
-                $"{ctx.User.FirstName} {ctx.User.LastName}",
-                ReportNums.AuditReportbyDept,
-                new AuditReport(
-                    ctx.Company.CompanyName,
-                    new List<Audit>
-                    {
-                        new Audit(
-                            "",
-                            "",
-                            "",
-                            "",
-                            "",
-                            "",
-                            "",
-                            0,
-                            0,
-                            0,
-                            new List<AuditDetail>
-                            {
-                                new AuditDetail("",0)
-                            },
-                            new List<AuditDetail>
-                            {
-                                new AuditDetail("",0)
-                            }
-                        )
-                    },
-                    new List<AuditDetail>
-                    {
-                        new AuditDetail("",0)
-                    }
-                    )
+                @$"{filters[0].Field}, {filters[0].Value}",
+                    audits,
+                    totals
             );
 
 
-            return (T)(object)res;
+            var filename = param.ContainsKey("filename") ? param["filename"] : "auditReportByEmployee.pdf";
 
-            throw new ArgumentNullException(nameof(payroll));
+            string path = Environment.CurrentDirectory;
+            path = path.Substring(0, Environment.CurrentDirectory.Length - 17);
+
+            var footer = await File.ReadAllTextAsync(Path.Combine(path, @"AppData/Templates/AuditReports/footer.html"));
+            var header = await File.ReadAllTextAsync(Path.Combine(path, @"AppData/Templates/AuditReports/header.html"));
+            footer = footer.Replace("{{owner}}", $"{ctx.User.FirstName} {ctx.User.LastName}").Replace("{{date}}", DateTime.UtcNow.ConvertTOEST().ToShortDateString());
+
+
+            var body = await provider.GetTemplate(result);
+
+            var res = await PDF.Generate(filename, body, header, footer, landscape: true);
+
+            return res.url;
+
+            throw new ArgumentNullException(nameof(payrolls));
         }
 
         public Task<T> GeneratePDFPreview()
@@ -1749,559 +1189,1142 @@ namespace AbacusApi.Features.Report.Services
 
 
 
-        async Task Deductions(EmployeeData data, Company company)
+        async Task Audits(Payrolls payroll, string[] employees, List<Filter> filters)
         {
-            var stats = data.Cache.Statutory;
-            foreach (var stat in stats)
+
+
+            foreach (var data in payroll.EmployeeData)
             {
-                var i = deductions.FindIndex(x => x.Description == stat.Tax);
-                if (i == -1)
+                if (data != null)
                 {
 
-                    deductions.Add(new Deduction(
-                        stat.Tax,
-                        stat.Tax,
-                        string.Empty,
-                        new List<DeductionListing>() { DeductionListings(data.Employee, stat.EmployeeAmount, stat.EmployerAmount) },
-                        new DeductionFooter(1, 1, 0, 0)));
-                }
-                else
-                {
-                    deductions[i].Listings.Add(DeductionListings(data.Employee, stat.EmployeeAmount, stat.EmployerAmount));
 
-                    deductions[i] = deductions[i] with
+                    var add_this_audit = false;
+                    var empCurrent = data.Cache;
+                    var audit = audits.FirstOrDefault(e => e.EmployeeNo == data.Employee.EmployeeId);
+
+
+
+                    if (employees != null && employees.Count() > 0)
                     {
-                        footer = new DeductionFooter(
-                        deductions[i].Listings.Count,
-                        deductions[i].Listings.Sum(x => x.EmployeeAmount),
-                        deductions[i].Listings.Sum(x => x.EmployerAmount),
-                        deductions[i].Listings.Sum(x => x.TotalAmount)
-                        )
-                    };
-                }
-            }
-
-            var nonstats = data.Cache.NonStatutory;
-            foreach (var nonstat in nonstats)
-            {
-                var i = deductions.FindIndex(x => x.Description == nonstat.Description);
-                if (i == -1)
-                {
-
-                    var abbr = "";
-
-                    if (ctx.Company.TryGetDeductionCode(nonstat.Code, out DeductionCode deductionCode))
+                        if (employees.Contains(data.Employee.EmployeeId)) add_this_audit = true;
+                    }
+                    else
                     {
-                        abbr = deductionCode.Abbreviation;
+                        add_this_audit = true;
                     }
 
-                    if (ctx.Company.TryGetLoanCode(nonstat.Code, out LoanCode loanCode))
+                    //if (filter.Field.ToLower() == "employee")
+                    //{
+                    //    add_this_audit = false;
+
+                    //    if (filter.FieldChildren.Count > 0 && filter.FieldChildren.Contains(data.Employee.EmployeeId.ToLower()))
+                    //    {
+                    //        add_this_audit = true;
+
+                    //    }
+                    //}
+
+
+                    if (filters[0].Value.ToLower() == "all")
                     {
-                        abbr = loanCode.Abbreviation;
+                        add_this_audit = true;
                     }
 
-                    deductions.Add(new Deduction(
-                        abbr,
-                        nonstat.Description,
-                        nonstat.Policy,
-                        new List<DeductionListing>() { DeductionListings(data.Employee, nonstat.EmployeeAmount, nonstat.EmployerAmount) },
-                        new DeductionFooter(1, 1, 0, 0)));
-                }
-                else
-                {
-                    deductions[i].Listings.Add(DeductionListings(data.Employee, nonstat.EmployeeAmount, nonstat.EmployerAmount));
 
-                    deductions[i] = deductions[i] with
+                    #region add audit
+                    if (add_this_audit)
                     {
-                        footer = new DeductionFooter(
-                        deductions[i].Listings.Count,
-                        deductions[i].Listings.Sum(x => x.EmployeeAmount),
-                        deductions[i].Listings.Sum(x => x.EmployerAmount),
-                        deductions[i].Listings.Sum(x => x.TotalAmount)
-                        )
-                    };
+                        if (audit == null)
+                        {
+                            audit = new AuditByEmployee(
+                                payroll.PayCycle.EndDate.ToString(),
+                                data.Employee.Name(),
+                                data.Employee.EmployeeId,
+                                0,
+                                empCurrent.Gross,
+                                empCurrent.TaxableGross,
+                                AuditDetails(data).Item1,
+                                AuditDetails(data).Item2
+                                );
+                            audits.Add(audit);
+                        }
+                        else
+                        {
+                            AuditByEmployee existingAudit = audit;
+                            audit = new AuditByEmployee(
+                                payroll.PayCycle.EndDate.ToString(),
+                                data.Employee.Name(),
+                                data.Employee.EmployeeId,
+                                0,
+                                (existingAudit.TotalGross + empCurrent.Gross),
+                                (existingAudit.TotalTaxableGross + empCurrent.TaxableGross),
+                                AuditDetails(data).Item1,
+                                AuditDetails(data).Item2
+                                );
+                            audits.Where(a => a.EmployeeNo == audit.EmployeeNo).ToList().ForEach(adt => adt = audit);
+                        }
+
+
+                    }
+                    #endregion
                 }
+
+
             }
 
             await Task.CompletedTask;
+        }
+
+
+        (List<AuditDetail>, List<AuditDetail>) AuditDetails(EmployeeData data)
+        {
+            List<AuditDetail> employee = new List<AuditDetail>();
+            List<AuditDetail> employer = new List<AuditDetail>();
+
+
+            #region add employee net pay
+            var empCurrent = data.Cache;
+            var audit = audits.FirstOrDefault(e => e.EmployeeNo == data.Employee.EmployeeId);
+
+
+            //call func for emp net and return employee and add
+
+            var employee_net = new AuditDetail("", 0);
+            var employee_pension = new AuditDetail("", 0);
+            var employer_pension = new AuditDetail("", 0);
+            if (audit == null)
+            {
+                employee_net = null;
+                employee_pension = null;
+                employer_pension = null;
+            }
+            else
+            {
+                employee_net = audit.Employee.FirstOrDefault(e => e.Description == "NetPay");
+                employee_pension = audit.Employee.FirstOrDefault(e => e.Description == "Pension");
+                employer_pension = audit.Employer.FirstOrDefault(e => e.Description == "Pension");
+            }
+
+
+            if (employee_net == null)
+            {
+                employee.Add(EmployeeNet(data, employee_net));
+            }
+            else
+            {
+                employee.Where(e => e.Description == "NetPay").ToList().ForEach(p => p = EmployeeNet(data, employee_net));
+            }
+            #endregion
+
+            //do employee count
+
+            //totals.Where(t => t.Description == "EmployeeTotal").ToList().ForEach(t =>
+            //{
+            //    AuditDetail existingTotal = t;
+            //    t = new AuditDetail(
+            //        existingTotal.Description,
+            //        (t.Amount + 1)); ;
+            //});
+            //tally total statutories per employee
+
+            //totals.Where(t => t.Description == "TotalTaxes").ToList().ForEach(t =>
+            //{
+            //    AuditDetail existingTotal = t;
+            //    t = new AuditDetail(
+            //        existingTotal.Description,
+            //        (t.Amount + empCurrent.StatutoryTotal));
+            //});
+
+
+            #region add employee pension
+            var pension = data.Employee?.Pension?.Code;
+            if (employee_pension == null)
+            {
+                employee.Add(EmployeePension(employee_pension, pension));
+            }
+            else
+            {
+                employee.Where(e => e.Description == "Pension").ToList().ForEach(p => p = EmployeePension(employee_pension, pension));
+            }
+            #endregion
+
+
+            #region add employer pension
+
+
+            if (employer_pension == null)
+            {
+                employer.Add(EmployerPension(employee_pension, pension));
+            }
+            else
+            {
+                employer.Where(e => e.Description == "Pension").ToList().ForEach(p => p = EmployerPension(employee_pension, pension));
+            }
+
+            //var pensionSummary = totals.FirstOrDefault(t => t.Description == "Pension");
+            //if (pension != null)
+            //{
+            //    AuditDetail existingPensionTotal = pensionSummary;
+            //    pensionSummary = new AuditDetail(
+            //        existingPensionTotal.Description,
+            //        existingPensionTotal.Amount + pension.GetEmployeeAmount() + pension.GetEmployerAmount());
+            //}
+            //else
+            //{
+            //    AuditDetail existingPensionTotal = pensionSummary;
+            //    pensionSummary = new AuditDetail(
+            //        existingPensionTotal.Description,
+            //        existingPensionTotal.Amount);
+            //}
+            //totals.Where(t => t.Description == pensionSummary.Description).ToList().ForEach(e => e = pensionSummary);
+            #endregion
+
+
+            #region start adding statutories
+            foreach (var stat in empCurrent.Statutory)
+            {
+                #region set employee employer stat amount
+
+                var audit_detail_employee = new AuditDetail("", 0);
+                var audit_detail_employer = new AuditDetail("", 0);
+                if (audit == null)
+                {
+                    audit_detail_employee = null;
+                    audit_detail_employer = null;
+                }
+                else
+                {
+                    audit_detail_employee = audit.Employee.FirstOrDefault(s => s.Description == stat.Tax);
+                    audit_detail_employer = audit.Employer.FirstOrDefault(s => s.Description == stat.Tax);
+                }
+
+
+                if (audit_detail_employee == null)
+                {
+                    employee.Add(StatutoryEmployee(audit_detail_employee, stat));
+                }
+                else
+                {
+                    employee.Where(s => s.Description == stat.Tax).ToList().ForEach(s => s = StatutoryEmployee(audit_detail_employee, stat));
+                }
+
+
+                if (audit_detail_employer == null)
+                {
+                    employer.Add(StatutoryEmployer(audit_detail_employee, stat));
+                }
+                else
+                {
+                    employer.Where(s => s.Description == stat.Tax).ToList().ForEach(s => s = StatutoryEmployer(audit_detail_employee, stat));
+                }
+
+                //var total = totals.FirstOrDefault(t => t.Description == stat.Tax);
+                //if (total == null)
+                //{
+                //    total = new AuditDetail(
+                //        stat.Tax,
+                //        stat.EmployeeAmount + stat.EmployerAmount);
+                //    totals.Add(total);
+                //}
+                //else
+                //{
+                //    AuditDetail existingStatTotal = total;
+                //    total = new AuditDetail(
+                //        stat.Tax,
+                //        existingStatTotal.Amount + stat.EmployeeAmount + stat.EmployerAmount);
+                //    totals.Where(t => t.Description == total.Description).ToList().ForEach(e => e = total);
+                //}
+                #endregion
+
+
+                #region update statutory summary
+                //var statSummary = totals.FirstOrDefault(t => t.Description == "StatutorySummary");
+
+                //totals.Where(t => t.Description == statSummary.Description).ToList().ForEach(e => e = new AuditDetail(
+                //    statSummary.Description,
+                //    statSummary.Amount + stat.EmployeeAmount + stat.EmployerAmount));
+                #endregion
+
+            }
+            #endregion
+
+
+            foreach (var nonstat in empCurrent.NonStatutory)
+            {
+                #region set employee employer nonstat amount
+
+
+                var audit_detail_employee = new AuditDetail("", 0);
+                var audit_detail_employer = new AuditDetail("", 0);
+                if (audit == null)
+                {
+                    audit_detail_employee = null;
+                    audit_detail_employer = null;
+                }
+                else
+                {
+                    audit_detail_employee = audit.Employee.FirstOrDefault(s => s.Description == nonstat.Description);
+                    audit_detail_employer = audit.Employer.FirstOrDefault(s => s.Description == nonstat.Description);
+                }
+
+
+                if (audit_detail_employee == null)
+                {
+                    employee.Add(NonStatutoryEmployee(audit_detail_employee, nonstat));
+                }
+                else
+                {
+                    employee.Where(s => s.Description == nonstat.Description).ToList().ForEach(s => s = NonStatutoryEmployee(audit_detail_employee, nonstat));
+                }
+
+
+
+                if (audit_detail_employer == null)
+                {
+                    employer.Add(NonStatutoryEmployer(audit_detail_employer, nonstat));
+                }
+                else
+                {
+                    employer.Where(s => s.Description == nonstat.Description).ToList().ForEach(s => s = NonStatutoryEmployer(audit_detail_employer, nonstat));
+                }
+                #endregion
+
+
+                #region start adding nonstatutories
+                //var total = totals.FirstOrDefault(t => t.Description == nonstat.Description);
+
+
+                //if (total == null)
+                //{
+                //    total = new AuditDetail(
+                //        nonstat.Description,
+                //        nonstat.EmployerAmount + nonstat.EmployeeAmount);
+                //    totals.Add(total);
+                //}
+                //else
+                //{
+                //    AuditDetail existingNonstatTotal = total;
+                //    total = new AuditDetail(
+                //        existingNonstatTotal.Description,
+                //        existingNonstatTotal.Amount + nonstat.EmployerAmount + nonstat.EmployeeAmount);
+                //    totals.Where(t => t.Description == total.Description).ToList().ForEach(e => e = total);
+                //}
+                #endregion
+
+                //var nonstatTotal = new AuditDetail("", 0);
+                //if (audit == null)
+                //{
+                //    nonstatTotal = null;
+                //}
+                //else
+                //{
+                //    nonstatTotal = audit.Employee.FirstOrDefault(t => t.Description == "NonStatTotal");
+                //}
+                //if (nonstatTotal == null)
+                //{
+                //    employee.Add(new AuditDetail(
+                //    "NonStatTotal",
+                //    nonstat.EmployeeAmount));
+                //}
+                //else
+                //{
+                //    employee.Where(t => t.Description == nonstatTotal.Description).ToList().ForEach(e => e = new AuditDetail(
+                //    nonstatTotal.Description,
+                //    nonstatTotal.Amount + nonstat.EmployeeAmount));
+                //}
+
+
+                #region update nonstatutory summary
+                //var nonstatSummary = totals.FirstOrDefault(t => t.Description == "NonStatutorySummary");
+
+                //totals.Where(t => t.Description == nonstatSummary.Description).ToList().ForEach(e => e = new AuditDetail(
+                //    nonstatSummary.Description,
+                //    nonstatSummary.Amount + nonstat.EmployeeAmount + nonstat.EmployerAmount));
+                #endregion
+
+            }
+
+
+            return (employee, employer);
+        }
+
+        AuditDetail EmployeeNet(EmployeeData data, AuditDetail employee_net)
+        {
+            var empCurrent = data.Cache;
+            if (employee_net == null)
+            {
+
+                employee_net = new AuditDetail(
+                    "NetPay",
+                    empCurrent.Net);
+
+            }
+            else
+            {
+                AuditDetail existingEmployeeNet = employee_net;
+                employee_net = new AuditDetail(
+                    existingEmployeeNet.Description,
+                    (existingEmployeeNet.Amount + empCurrent.Net));
+            }
+
+            return employee_net;
 
         }
 
-        DeductionListing DeductionListings(Employee employee, decimal employeeAmount, decimal employerAmount)
-            => new DeductionListing(
-                employee.Employment.Department.Code,
-                employee.EmployeeId,
-                employee.Name(),
-                employeeAmount,
-                employerAmount,
-                employeeAmount + employerAmount);
+        AuditDetail EmployeePension(AuditDetail employee_pension, PensionCode pension)
+        {
+            if (employee_pension == null)
+            {
+                employee_pension = new AuditDetail(
+                    "Pension",
+                    pension.GetEmployeeAmount());
+            }
+            else
+            {
+                AuditDetail existingEmployeePension = employee_pension;
+                employee_pension = new AuditDetail(
+                    "Pension",
+                    existingEmployeePension.Amount + pension.GetEmployeeAmount());
+            }
+            return employee_pension;
+        }
 
+        AuditDetail EmployerPension(AuditDetail employer_pension, PensionCode pension)
+        {
+            if (employer_pension == null)
+            {
+                decimal amount = 0;
+                if (pension != null)
+                {
+                    amount = pension.GetEmployerAmount();
+                }
+                employer_pension = new AuditDetail(
+                    "Pension",
+                    amount);
+            }
+            else
+            {
+                AuditDetail existingEmployerPension = employer_pension;
+                decimal amount = existingEmployerPension.Amount;
+                if (pension != null)
+                {
+                    amount = existingEmployerPension.Amount + pension.GetEmployerAmount();
+                }
+                employer_pension = new AuditDetail(
+                    "Pension",
+                    amount);
+            }
+            return employer_pension;
+        }
 
+        AuditDetail StatutoryEmployee(AuditDetail audit_detail_employee, Statutory stat)
+        {
+            if (audit_detail_employee == null)
+            {
+                audit_detail_employee = new AuditDetail(
+                    stat.Tax,
+                    stat.EmployeeAmount);
+            }
+            else
+            {
+                AuditDetail existingStatEmployeeAudit = audit_detail_employee;
+                audit_detail_employee = new AuditDetail(
+                    stat.Tax,
+                    existingStatEmployeeAudit.Amount + stat.EmployeeAmount);
+            }
+
+            return audit_detail_employee;
+        }
+
+        AuditDetail StatutoryEmployer(AuditDetail audit_detail_employer, Statutory stat)
+        {
+            if (audit_detail_employer == null)
+            {
+                audit_detail_employer = new AuditDetail(
+                    stat.Tax,
+                    stat.EmployerAmount);
+            }
+            else
+            {
+                AuditDetail existingStatEmployerAudit = audit_detail_employer;
+                audit_detail_employer = new AuditDetail(
+                    stat.Tax,
+                    existingStatEmployerAudit.Amount + stat.EmployerAmount);
+            }
+
+            return audit_detail_employer;
+        }
+
+        AuditDetail NonStatutoryEmployee(AuditDetail audit_detail_employee, NonStatutory nonstat)
+        {
+            if (audit_detail_employee == null)
+            {
+                audit_detail_employee = new AuditDetail(
+                    nonstat.Description,
+                    nonstat.EmployeeAmount);
+            }
+            else
+            {
+                AuditDetail existingStatEmployeeAudit = audit_detail_employee;
+                audit_detail_employee = new AuditDetail(
+                    nonstat.Description,
+                    existingStatEmployeeAudit.Amount + nonstat.EmployeeAmount);
+            }
+
+            return audit_detail_employee;
+        }
+
+        AuditDetail NonStatutoryEmployer(AuditDetail audit_detail_employer, NonStatutory nonstat)
+        {
+            if (audit_detail_employer == null)
+            {
+                audit_detail_employer = new AuditDetail(
+                    nonstat.Description,
+                    nonstat.EmployeeAmount);
+            }
+            else
+            {
+                AuditDetail existingStatEmployerAudit = audit_detail_employer;
+                audit_detail_employer = new AuditDetail(
+                    nonstat.Description,
+                    existingStatEmployerAudit.Amount + nonstat.EmployerAmount);
+            }
+
+            return audit_detail_employer;
+        }
 
     }
 }
 
 
 
-// DeductionListingService.cs
+// Template
 
+
+using System;
+using System.Reflection;
 using AbacusApi.Constants;
+using AbacusApi.Data.Models;
+using AbacusApi.Helpers;
+using Microsoft.Azure.Cosmos.Serialization.HybridRow;
+
+namespace AbacusApi.Features.Report.Templates
+{
+    public class AuditReportByEmployeeTemplate : ITemplateProvider
+    {
+        public async Task<string> GetTemplate(object results)
+        {
+            string path = Environment.CurrentDirectory;
+            path = path.Substring(0, Environment.CurrentDirectory.Length - 17);
+
+            var pages = await File.ReadAllTextAsync(Path.Combine(path, @"AppData/Templates/AuditReports/AuditReport.html"));
+            var page = await File.ReadAllTextAsync(Path.Combine(path, @"AppData/Templates/AuditReports/AuditReportByEmployee-pages.html"));
+
+            var data = (AuditReportByEmployeeResults)results;
+
+            var pageData = string.Empty;
+            var index = 0;
+            foreach (var audit in Chunks(data.Audits, 30).Select((value, i) => new { i, value }))
+            {
+                index += 30;
+                var copy = page;
+
+                var audits = string.Empty;
+                var mainItems = string.Empty;
+                var deductionItems = string.Empty;
+                var contributionItems = string.Empty;
+                var totals = string.Empty;
+
+                foreach (var item in audit.value)
+                {
+                    mainItems += @$"
+                        <tr>
+                            <td >{item.PayrollDate}</td>
+                            <td align=""left"">{item.EmployeeName}</td>
+                            <td align=""left"">{item.EmployeeNo}</td>
+                            <td align=""left"">{item.TotalGross}</td>
+                            <td align=""left"">{item.TotalTaxableGross}</td>
+                        </tr>";
+                }
+
+
+                foreach (var item in audit.value)
+                {
+                    foreach (var detail in item.Employee)
+                    {
+                        deductionItems += $@"
+                        <td align=""left"">{detail.Amount}</td>";
+                    }
+
+                    foreach (var detail in item.Employer)
+                    {
+                        contributionItems += $@"
+                        <td align=""left"">{detail.Amount}</td>";
+                    }
+                }
+
+                if (index >= data.Audits.Count)
+                {
+                    foreach (var total in data.Totals)
+                    {
+                        if (
+                                total.Description == "Pension" ||
+                                total.Description == "TotalTaxes" ||
+                                total.Description == "NIS" ||
+                                total.Description == "NHT" ||
+                                total.Description == "Nd. Tax" ||
+                                total.Description == "HEART" ||
+                                total.Description == "PAYE"
+                        )
+                        {
+                            totals += $@"<tr>
+                                <td class=""spc"">{total.Description}</td>
+                                <td>{total.Amount.FormatCurrency()}</td>
+                            </tr>";
+
+                        }
+                        if (total.Description == "EmployeeTotal")
+                        {
+                            totals += $@"<tr>
+                                <td class=""spc"">{total.Description}</td>
+                                <td>{total.Amount}</td>
+                            </tr>";
+
+                        }
+                    }
+                }
+
+
+                copy = page
+                .Replace("{{page}}", (audit.i + 1).ToString())
+                .Replace("{{report_no}}", ReportNums.AuditReportbyEmp)
+                .Replace("{{log}}", "")
+                .Replace("{{company_name}}", data.AuditCompany)
+                .Replace("{{criteria}}", data.criteria)
+                .Replace("{main_items}}", mainItems)
+                .Replace("{{deduction_items}}", deductionItems)
+                .Replace("{{contribution_items}}", contributionItems)
+                .Replace("{{totals}}", totals);
+
+                pageData += copy;
+
+            }
+
+
+            pages = pages.Replace("{{pages}}", pageData);
+            //await File.WriteAllTextAsync(@"AppData/Templates/AuditReports/auditReportByEmployeeFinal.html", pages);
+
+            return pages;
+        }
+
+        private IEnumerable<IEnumerable<Audit>> Chunks<Audit>(List<Audit> fullList, int batchSize)
+        {
+            int total = 0;
+            var chunkedList = new List<List<Audit>>();
+            while (total < fullList.Count)
+            {
+                var chunk = fullList.Skip(total).Take(batchSize);
+                chunkedList.Add(chunk.ToList());
+                total += batchSize;
+            }
+
+            return chunkedList;
+        }
+    }
+
+}
 
 
 
-payroll.Company.CompanyName,
-payroll.PayCycle.EndDate,
-$"{ctx.User.FirstName} {ctx.User.LastName}",
-"54245",
-ReportNums.DeductionList,
-deductions
+// TemplateConnector
+
+case PDFTemplates.auditReportByEmployee:
+  return new AuditReportByEmployeeTemplate();
+
+
+// ReportGenerator
+
+
+public async Task<TResult> GenerateAuditReportByEmployee<TResult>(format format, string payrollIds, string filters)
+{
+    var data = new Dictionary<string, string>();
+    IReport<TResult> provider = await builder.CreateReportProvider<TResult>(Reports.AuditReportByEmployee);
+    switch (format)
+    {
+        case format.PDF:
+            data = new Dictionary<string, string>
+            {
+                { "payrollIds", payrollIds },
+                {"filters", filters }
+            };
+            var url = await provider.GeneratePDF(data);
+            return (TResult)(object)url;
+        case format.PDFPreview:
+            return await provider.GeneratePDFPreview();
+        case format.CSV:
+            url = await provider.GenerateCSV(data);
+            return (TResult)(object)url;
+        default:
+            throw new InvalidOperationException();
+    }
+}
 
 
 
-// PayrollRegisterService.cs
+// Filter DTO
 
 
-using AbacusApi.Constants;
+public class Filter
+{
+    public IDictionary<string, string> ConditionMap = new Dictionary<string, string>() {
+        {"is equal", "==" },
+        { "is not equal", "!=" },
+        {"is less than","<"},
+        { "is less or equal", "<=" },
+        { "is greater than",">" },
+        { "is greater or equal", ">=" },
+        { "and", "&&" },
+        { "or", "||" },
+        { "", "" },
+        };
+    public string Field { get; set; } = "";// define top level property to filter ex. Department, Earnings, Statutories etc..
+    public string Value { get; set; } = "";
+    public string Condition { get; set; } = "";
+    public static class filterConditions
+    {
+        public const string IsEqual = "is equal";
+        public const string IsNotEqual = "is not equal";
+        public const string IsLessThan = "is less than";
+        public const string IsLessOrEqual = "is less or equal";
+        public const string IsGreaterThan = "is greater than";
+        public const string IsGreaterOrEqual = "is greater or equal";
+
+    }
+
+}
 
 
-ReportNums.PayrollRegister,
+
+// Test
+
+
+[TestMethod]
+public async Task ShouldGenerateAuditReportByEmployee()
+{
+
+    var filter = new Filter();
+    filter.Field = "employee";
+    filter.Value = "all";
+    var filters = new List<Filter> { filter };
+    string jsonFilters = JsonSerializer.Serialize(filters);
+    var result = await rep.GenerateAuditReportByEmployee<string>(format.PDF, payroll.id, jsonFilters);
+
+    Assert.IsTrue(result != "");
+    Assert.IsNotNull(result);
+    //Assert.IsTrue(result.Report.Audits.Count > 0);
+
+}
+
+
+if (filters[0].Value.ToLower() == "all")
+{
+    add_this_audit = true;
+}
+
+
+foreach (var audit in Chunks(data.Audits, 30).Select((value, i) => new { i, value }))
+{
+  index += 30;
+  var copy = page;
+
+  var audits = string.Empty;
+  var mainItems = string.Empty;
+  var deductionItems = string.Empty;
+  var contributionItems = string.Empty;
+  var totals = string.Empty;
+
+
+  foreach (var item in audit.value)
+  {
+      mainItems += @$"
+          <tr>
+              <td>{item.PayrollDate}</td>
+              <td align=""left"">{item.DepartmentNo}</td>
+              <td align=""left"">{item.DepartmentName}</td>
+              <td align=""left"">{item.TotalGross.FormatCurrency()}</td>
+              <td align=""left"">{item.TotalTaxableGross.FormatCurrency()}</td>
+          </tr>";
+  }
+
+
+  foreach (var item in audit.value)
+  {
+      foreach (var detail in item.Employee)
+      {
+          deductionItems += $@"
+          <td align=""left"">{detail.Amount.FormatCurrency()}</td>";
+      }
+
+      foreach (var detail in item.Employer)
+      {
+          contributionItems += $@"
+          <td align=""left"">{detail.Amount.FormatCurrency()}</td>";
+      }
+  }
+
+  if (index >= data.Audits.Count)
+  {
+      foreach (var total in data.Totals)
+      {
+          if (
+                  total.Description == "Pension" ||
+                  total.Description == "TotalTaxes" ||
+                  total.Description == "NIS" ||
+                  total.Description == "NHT" ||
+                  total.Description == "Nd. Tax" ||
+                  total.Description == "HEART" ||
+                  total.Description == "PAYE"
+          )
+          {
+              totals += $@"<tr>
+                  <td class=""spc"">{total.Description}</td>
+                  <td>{total.Amount.FormatCurrency()}</td>
+              </tr>";
+
+          }
+          if (total.Description == "EmployeeTotal")
+          {
+              totals += $@"<tr>
+                  <td class=""spc"">{total.Description}</td>
+                  <td>{total.Amount}</td>
+              </tr>";
+
+          }
+      }
+  }
+
+
+
+  copy = page
+  .Replace("{{page}}", (audit.i + 1).ToString())
+  .Replace("{{report_no}}", ReportNums.AuditReportbyDept)
+  .Replace("{{logo}}", "")
+  .Replace("{{company_name}}", data.AuditCompany)
+  .Replace("{{criteria}}", data.criteria)
+  .Replace("{{main_items}}", mainItems)
+  .Replace("{{deduction_items}}", deductionItems)
+  .Replace("{{contribution_items}}", contributionItems)
+  .Replace("{{totals}}", totals);
+
+  pageData += copy;
+
+}
+
+
+foreach (var item in audit.value)
+{
+
+    deductionItems += $@"<tr>";
+    foreach (var detail in item.Employee)
+    {
+
+        deductionItems += $@"
+            <td align=""left"">{detail.Amount.FormatCurrency()}</td>";
+    }
+    deductionItems += $@"</tr>";
+
+
+    contributionItems += $@"<tr>";
+    foreach (var detail in item.Employer)
+    {
+        contributionItems += $@"
+            <td align=""left"">{detail.Amount.FormatCurrency()}</td>";
+    }
+    contributionItems += $@"</tr>";
+
+
+}
+
+
+
+
+
+// --------------------------------------------
+// --------------------------------------------
+// --------------------------------------------
+
+
+
+changed json serialize method, removed calc from report builder/generator
+
+using Newtonsoft.Json;
+
+string jsonFilters = JsonConvert.SerializeObject(filters);
+
+List<Filter> filters = JsonConvert.DeserializeObject<List<Filter>>(param["filters"]);
+
+
+
+// --------------------------------------------
+// --------------------------------------------
+// --------------------------------------------
+
+
+dept summary: endpoint, pdf razor pg, report client etc
+
+string type = string.Empty;
+        string period = string.Empty;
+
+
+period = payroll.PayCycle.Period.ToString();
+            type = payroll.type;
+
+
+
+
+
+"/Users/michaelgrandison/Documents/GitHub/CaribbeanHRPhyeonix/PayrollSystem"
+
+
+
+
+
+var footer = @$"
+               <footer>
+                   <span>If you have any questions about this payslip, please contact: </span>
+                   <br />
+                   <span>The Payroll Department at 876-789-4561 or gmail.com</span>
+               </footer>
+            ";
+
+            string path = Environment.CurrentDirectory;
+            var footer = await File.ReadAllTextAsync(Path.Combine(path, @"Pages/Reports/Print/PayslipFooter.html"));
+            //var footer = await File.ReadAllTextAsync(@"Pages/Reports/Print/PayslipFooter.html");
+
+
+
+
+<style>
+  span {
+     font-family: Montserrat, Verdana, Geneva, Tahoma, sans-serif;
+     letter-spacing: 0.03em;
+     font-size: 9px;
+  }
+
+  footer {
+     text-align: center;
+  }
+</style>
+<footer>
+   <span>If you have any questions about this payslip, please contact: </span>
+   <br />
+   <span>The Payroll Department at 876-789-4561 or gmail.com</span>
+</footer>
+
 
 
 
 string path = Environment.CurrentDirectory;
-                path = path.Substring(0, Environment.CurrentDirectory.Length - 17);
-                var stream = File.OpenRead(Path.Combine(path, @"AppData/csv/Timesheet1.csv"));
-
-
-
-
-
-// --------------------------------------------_
-// --------------------------------------------_
-// --------------------------------------------_
-
-
-
-
-// Cache.cs
-
-using PayrollSystem.Data.Enums;
-using PayrollSystem.Helpers;
-
-namespace PayrollSystem.Data.Models
+var header = await System.IO.File.ReadAllTextAsync(Path.Combine(path, @"Pages/Reports/Print/header.html"));
+var footer = await System.IO.File.ReadAllTextAsync(Path.Combine(path, @"Pages/Reports/Print/footer.html"));
+var request = new RestRequest("/v3/convert/pdf", Method.Post);
+var json = new
 {
-    public class Cache
+    source = body,
+    sandbox = true,
+    footer = new { source = footer, height = "25" },
+    landscape = landscape,
+    remove_blank = true,
+    delay = 3,
+    format = "Letter",
+};
+
+
+
+public async Task<Payrolls> OverrideTransactionsByBatchNumber(IStateContext ctx, List<List<string>> timesheet, string payrollID, int batchNum)
+{
+    await RemoveTransactionsByBatchNumber(ctx, batchNum, payrollID);
+    var payroll = await AddTransactions2(ctx, timesheet, payrollID, batchNum);
+    return payroll;
+}
+
+public async Task<Payrolls> UpdateTransactionsByBatchNumber(IStateContext ctx, List<List<string>> timesheet, string payrollID, int batchNum)
+{
+    var logs = new List<Log>();
+    var payroll = await payrollRep.GetPayrollById(payrollID);
+    //Contracts.AreNull(payroll, $"Payroll with ID {payrollID} does not exist");
+    Contracts.Requires(!payroll.Committed, "This payroll is already commited. Command Cancelled.");
+
+    var emps = timesheet.GroupBy(x => x[0]);
+
+    foreach (var emp in emps)
     {
-        public Cache(){}
+        var employee = payroll.EmployeeData.Find(x => x.Employee.EmployeeId == emp.Key);
 
-        public Cache(bool firstCalc)
+        if(employee != null)
         {
-            IsFirstCalc = firstCalc;
-        }
 
-        public List<Transaction> Transactions = new List<Transaction>();
-
-        public List<Statutory> Statutory { get; set; } = new List<Statutory>();
-
-        public Statutory GetTax(string tax) => Statutory.FirstOrDefault(x => x.Tax == tax, new Statutory());
-
-        public void CalculateNis(TaxHeader? nisData)
-        {
-            Contracts.Requires(nisData != null, "Nis Tax header is null, please check taxes and defaults");
-            var statutory = new Statutory();
-            statutory.Tax = nisData!.TaxCode;
-
-            var employeeNis = nisData.TaxTierEmployee[0];
-            var employerNis = nisData.TaxTierEmployer[0];
-
-            decimal activeEmpTreshold = employeeNis.Threshold;
-            decimal activeEmpRate =  employeeNis.Rate;
-
-            decimal activeEmlTreshold = employerNis.Threshold;
-            decimal activeEmlRate = employerNis.Rate;
-
-            if (employeeNis.EffectiveDate < DateTime.Now)
+            foreach (var row in emp)
             {
-                activeEmpTreshold = employeeNis.PreThreshold;
-                activeEmpRate = employeeNis.PreRate;
 
-                activeEmlTreshold = employerNis.PreThreshold;
-                activeEmlRate = employerNis.PreRate;
-            }
-
-            statutory.EmployeeRate = activeEmpRate;
-            statutory.EmployerRate = activeEmlRate;
-
-            decimal threshold = (activeEmpTreshold * activeEmpRate) / 26;
-            decimal g = TaxableGross * activeEmpRate;
-
-            if (g > threshold)
-            {
-                statutory.EmployeeAmount = threshold;
-            }
-            else
-            {
-                statutory.EmployeeAmount = g;
-            }
-
-            threshold = (activeEmlTreshold * activeEmlRate) / 26;
-            g = TaxableGross * activeEmlRate;
-
-
-            if (g > threshold)
-            {
-                statutory.EmployerAmount = threshold;
-            }
-            else
-            {
-                statutory.EmployerAmount = g;
-            }
-
-            UpdateStatutory(statutory);
-        }
-
-        public void CalculatePension(Pension data)
-        {
-            var pension = data;
-
-            if(pension != null && pension.Code != null && pension.Code.Code != "no data")
-            {
-                var statutory = new Statutory();
-                statutory.Tax = $"{pension.Code.Code} - Pension";
-
-                if (pension.Code.isEmployeePercent())
+                if (ctx.Company.TryGetTransactionCode(row[1], out TransactionCode code))
                 {
-                    statutory.EmployeeAmount = Gross * pension.Code.GetEmployeePercent();
-                }
-                else
-                {
-                    statutory.EmployeeAmount = pension.Code.GetEmployeeAmount();
-                }
 
-                UpdateStatutory(statutory);
-            }
-        }
-
-        public decimal GetPensionEmployeeAmount()
-        {
-            var p = Statutory.Where(x => x.Tax.Contains("pension")).LastOrDefault();
-            if (p == null)
-                return 0;
-            return p.EmployeeAmount;
-        }
-
-        public void CalcuateNht(TaxHeader? data)
-        {
-            Contracts.Requires(data != null, "Nht Tax header is null, please check taxes and defaults");
-            var statutory = new Statutory();
-            statutory.Tax = data!.TaxCode;
-
-            statutory.EmployeeAmount = TaxableGross * data.TaxTierEmployee[0].Rate;
-            statutory.EmployerAmount = TaxableGross * data.TaxTierEmployer[0].Rate;
-            statutory.EmployeeRate = data.TaxTierEmployee[0].Rate;
-            statutory.EmployerRate = data.TaxTierEmployer[0].Rate;
-
-            UpdateStatutory(statutory);
-        }
-
-        public void CalculateHeart(TaxHeader? data)
-        {
-            Contracts.Requires(data != null, "Heart Tax header is null, please check taxes and defaults");
-            var statutory = new Statutory();
-            statutory.Tax = data!.TaxCode;
-
-            statutory.EmployerAmount = TaxableGross * data.TaxTierEmployer[0].Rate;
-            statutory.EmployerRate = data.TaxTierEmployer[0].Rate;
-
-            UpdateStatutory(statutory);
-        }
-
-        public void CalculateEdTax(PreviousEmployment emp, TaxHeader? data)
-        {
-            Contracts.Requires(data != null, "Ed Tax header is null, please check taxes and defaults");
-            var statutory = new Statutory();
-            statutory.Tax = data!.TaxCode;
-
-            statutory.EmployeeAmount = CalculateStatutoryIncome(emp) * data.TaxTierEmployee[0].Rate;
-            statutory.EmployerAmount = CalculateStatutoryIncome(emp) * data.TaxTierEmployer[0].Rate;
-            statutory.EmployeeRate = data.TaxTierEmployee[0].Rate;
-            statutory.EmployerRate = data.TaxTierEmployer[0].Rate;
-
-            UpdateStatutory(statutory);
-        }
-
-        public List<NonStatutory> CalculateDeduction(Employee data, Company company)
-        {
-            List<NonStatutory> deduct = new List<NonStatutory>();
-
-
-            var code = company.HealthCodes.Find(x => x.Code == data.Health.Code?.Code);
-
-            if (code != null && code.isEnable)
-            {
-
-                if (code != null)
-                    data.Health.Code = code;
-
-                switch (data.Health.Type)
-                {
-                    case HealthType.Single:
-                        NonStatutory stat = new NonStatutory();
-                        stat.Code = data.Health.Code.Code;
-                        stat.Description = $"{data.Health.Code.Code} - single";
-                        stat.EmployeeAmount = data.Health.Code.EmployeeAmount.GetSingle();
-                        stat.EmployerAmount = data.Health.Code.EmployerAmount.GetSingle();
-                        deduct.Add(stat);
-
-                        break;
-                    case HealthType.Multiple:
-
-                        stat = new NonStatutory();
-                        stat.Code = data.Health.Code.Code;
-                        stat.Description = $"{data.Health.Code.Code} - multiple";
-                        stat.EmployeeAmount = data.Health.Code.EmployeeAmount.GetMultiple();
-                        stat.EmployerAmount = data.Health.Code.EmployerAmount.GetMultiple();
-                        deduct.Add(stat);
-
-                        break;
-                    case HealthType.Family:
-                        stat = new NonStatutory();
-                        stat.Code = data.Health.Code.Code;
-                        stat.Description = $"{data.Health.Code.Code} - family";
-                        stat.EmployeeAmount = data.Health.Code.EmployeeAmount.GetFamily();
-                        stat.EmployerAmount = data.Health.Code.EmployerAmount.GetFamily();
-                        deduct.Add(stat);
-
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            foreach (var deduction in data.Deductions)
-            {
-                if (deduction.Enabled == false)
-                {
-                    continue;
-                }
-
-                    var i = company.DeductionCodes.FindIndex(x => x.Code == deduction.Code);
-
-                    NonStatutory deducStat = new()
+                    if (employee.Transactions.FirstOrDefault(x => x.Code.Code == code.Code && x.BatchNumber == batchNum) != null)
                     {
-                        Code = deduction.Code,
-                        Description = i > -1 ? company.DeductionCodes[i].Description : deduction.Code,
-                        Policy = deduction.Policy,
-                        EmployeeAmount = deduction.GetDeductionAmount(),
-                        BeforeTax = deduction.BeforeTax
-                    };
-
-
-                deduct.Add(deducStat);
-            }
-
-            foreach (var loan in data.Loans)
-            {
-                if(loan.Suspended)
-                {
-                    continue;
-                }
-
-                    decimal payment = 0;
-                    if (loan.GetRepaymentAmount() > loan.GetBalance())
-                    {
-                        payment = loan.GetBalance();
+                        var trans = new Transaction(row, batchNum, code);
+                        var log = employee.UpdateTransactionByCode(ctx, trans, batchNum);
+                        logs.Add(log);
                     }
                     else
                     {
-                        payment = loan.GetRepaymentAmount();
+                        var transaction = new Transaction(row, batchNum, code!);
+                        logs.Add(employee.AddTransaction(ctx, transaction));
                     }
 
-                    var loanCodeDes = company.LoanCodes.Find(x => x.Code == loan.Code);
-
-
-                    NonStatutory stat = new NonStatutory
-                    {
-                        Code = loan.Code,
-                        Description = loanCodeDes?.Description ?? loan.Code,
-                        EmployeeAmount = payment,
-                        BeforeTax = loan.BeforeTax
-                    };
-                if (payment != 0)
-                {
-                    deduct.Add(stat);
                 }
 
-                deduct.Add(stat);
             }
-
-            return deduct;
         }
-
-        public bool IsFirstCalc { get; set; } = true;
-
-        public void CalculatePaye(PreviousEmployment emp, TaxHeader? data, Cache ytd, Payrolls payroll, int period)
-        {
-
-            Contracts.Requires(data != null, "Paye header is null, please check taxes and defaults");
-            var ytdStat = ytd.Statutory.Find(x => x.Tax.ToLower() == "paye");
-            var statutory = new Statutory();
-            statutory.Tax = data!.TaxCode;
-
-            var statutoryIncome = CalculateStatutoryIncome(emp);
-
-            (decimal tax25, decimal tax30) = GetTaxFreeIncome(payroll, data);
-
-            if (statutoryIncome > tax30)
-            {
-                statutory.EmployeeAmount = (tax30 - tax25) * data.TaxTierEmployee[1].Rate;
-                statutory.EmployeeAmount += (statutoryIncome - tax30) * data.TaxTierEmployee[0].Rate;
-            }
-
-            else if (statutoryIncome > tax25)
-            {
-                statutory.EmployeeAmount = (statutoryIncome - tax25) * data.TaxTierEmployee[1].Rate;
-            }
-
-
-            var expected = CalculatePaye(ytd.CalculateStatutoryIncome(emp) + statutoryIncome + (emp.GetGross() - emp.GetNis()), data, (tax25 * period, tax30 * period));
-
-            if(ytdStat != null)
-            {
-
-                statutory.EmployeeAmount = expected.EmployeeAmount - ytdStat.EmployeeAmount;
-
-                IsFirstCalc = false;
-            }
-
-            UpdateStatutory(statutory);
-        }
-
-        public Statutory CalculatePaye(decimal statutoryIncome, TaxHeader data, (decimal tax25, decimal tax30) tax)
-        {
-            var statutory = new Statutory();
-
-            if (statutoryIncome > tax.tax30)
-            {
-                statutory.EmployeeAmount = (tax.tax30 - tax.tax25) * data.TaxTierEmployee[1].Rate;
-                statutory.EmployeeAmount += (statutoryIncome - tax.tax30) * data.TaxTierEmployee[0].Rate;
-            }
-
-            else if (statutoryIncome > tax.tax25)
-            {
-                statutory.EmployeeAmount = (statutoryIncome - tax.tax25) * data.TaxTierEmployee[1].Rate;
-            }
-
-            //Console.WriteLine(statutoryIncome);
-            //Console.WriteLine(tax.tax25);
-            //Console.WriteLine(tax.tax25);
-            //Console.WriteLine(statutoryIncome - tax.tax25);
-            //Console.WriteLine(data.TaxTierEmployee[1].Rate);
-
-            return statutory;
-        }
-
-        private void UpdateStatutory(Statutory statutory)
-        {
-            var i = Statutory.FindIndex(x => x.Tax == statutory.Tax);
-
-            if (i > 0)
-                Statutory[i] = statutory;
-            else
-                Statutory.Add(statutory);
-        }
-
-        public static (decimal, decimal) GetTaxFreeIncome(Payrolls payroll, TaxHeader data, bool year = false)
-        {
-            decimal TaxFreeIncome25 = 0;
-            decimal TaxFreeIncome30 = 0;
-
-            int count = 0;
-            switch (payroll.type)
-            {
-                case PayrollTypes.fortnightly:
-                    count = 26;
-                    break;
-                case PayrollTypes.weekly:
-                    count = 52;
-                    break;
-                case PayrollTypes.bimonthly:
-                    count = 24;
-                    break;
-                case PayrollTypes.monthly:
-                    count = 12;
-                    break;
-                default:
-                    break;
-            }
-
-            if (year)
-            {
-                TaxFreeIncome25 = data.TaxTierEmployee[1].Threshold;
-                TaxFreeIncome30 = data.TaxTierEmployee[0].Threshold;
-                return (TaxFreeIncome25, TaxFreeIncome30);
-            }
-
-            TaxFreeIncome25 = data.TaxTierEmployee[1].Threshold / count;
-            TaxFreeIncome30 = data.TaxTierEmployee[0].Threshold / count;
-            return (TaxFreeIncome25, TaxFreeIncome30);
-        }
-
-        public List<NonStatutory> NonStatutory { get; set; } = new List<NonStatutory>();
-
-        public decimal Gross { get; set; } = 0;
-        public decimal TaxableGross { get; set; } = 0;
-
-        public decimal StatutoryIncome { set; get; } = 0;
-
-        // Please check this line of code for pension issue
-
-        public decimal CalculateStatutoryIncome(PreviousEmployment previous)
-        {
-            var index = Statutory.FindIndex(x => x.Tax.Contains("pension"));
-
-            var nis = GetTax("NIS").EmployeeAmount;
-
-            if (index != -1)
-                return TaxableGross - (nis + Statutory[index].EmployeeAmount);
-
-            StatutoryIncome = TaxableGross - (nis);
-
-            return StatutoryIncome;
-        }
-
-        //public decimal CalculateStatutoryIncome
-        //{
-        //    get
-        //    {
-        //        //return TaxableGross - (GetTax("NIS").EmployeeAmount + GetTax("Pension").EmployeeAmount);
-
-        //    }
-
-        //    set
-        //    {
-        //        StatutoryIncome = value;
-        //    }
-        //}
-        public decimal Net { get; set; } = 0;
-        public decimal TotalDeductions { get; set; } = 0;
-        public decimal StatutoryTotal { get; set; } = 0;
 
     }
+
+    await Persist(payroll, logs);
+    return payroll;
 }
 
 
+public async Task<Payrolls> AddTransactions2(IStateContext ctx, List<List<string>> timesheet, string payrollID, int batchNum)
+{
+    var logs = new List<Log>();
+    var payroll = await payrollRep.GetPayrollById(payrollID);
+    Contracts.AreNotNull(payroll, "payroll not found");
+    var raw = timesheet.Skip(1);
+    foreach (var data in raw)
+    {
+
+        Dictionary<string, string> codesData = new Dictionary<string, string>();
+        for (int i = 1; i < data.Count; i = i + 2)
+        {
+            if (timesheet[0][i].IsNullOrEmptyWhitespace()) continue;
+            codesData[timesheet[0][i]] = $"{data[i]},{data[i + 1]}";
+        }
+
+        var index = payroll!.EmployeeData.FindIndex(x => x.Employee.EmployeeId == data[0]);
+        if (index < 0)
+        {
+            var empId = data[0];
+            if (payroll.Company.EmployeeIDPadding > 2) empId = data[0].PadLeft(payroll.Company.EmployeeIDPadding, '0');
+
+            var emp = await employeeRep.GetEmployeeByCompanyId(empId, payroll.Company.id);
+            Contracts.AreNotNull(emp, $"Employee with id {empId} not found");
+
+            payroll!.EmployeeData.Add(new EmployeeData()
+            {
+                Employee = emp
+            });
+            index = payroll!.EmployeeData.FindIndex(x => x.Employee.EmployeeId == data[0]);
+        }
+
+        var employeeData = payroll.EmployeeData[index];
+        foreach (var item in codesData)
+        {
+            var code = payroll.Company.TransactionCodes.Find(x => x.Code.ToLower() == item.Key.ToLower());
+            Contracts.AreNotNull(code, $"Transaction code {item.Key} not found");
+
+            var valueData = item.Value.Split(',');
+            if (!decimal.TryParse(valueData[0], out decimal amount)) Contracts.Requires(false,
+                $"Transaction {item.Key} from employee " +
+                $"{employeeData.Employee.FirstName} {employeeData.Employee.FirstName} has invalid number");
+
+            if (!decimal.TryParse(valueData[1], out decimal rate))
+                rate = 0;
+
+            if(rate == 0 && code.Type == PaymentTypes.PaymentOfHours)
+            {
+                rate = employeeData.Employee.Employment.GetRate();
+            }
+
+            if (amount == 0)
+            {
+                continue;
+            }
+            else
+            {
+                if (employeeData.Transactions.FirstOrDefault(x => x.Code.Code == code.Code && x.BatchNumber == batchNum) != null)
+                {
+                    var trans = new Transaction(data, batchNum, code);
+                    var log = employeeData.UpdateTransactionByCode(ctx, trans, batchNum);
+                    logs.Add(log);
+                }
+                else
+                {
+                    var transaction = new Transaction(code!.Type, amount, rate, batchNum, code!);
+                    logs.Add(employeeData.AddTransaction(ctx, transaction));
+                }
+            }
+
+        }
 
 
-DataManagementService.cs
+
+    }
+
+    await Persist(payroll, logs.Take(5).ToList());
+    return payroll;
+}
+
+
+6001
+6003
+6006
+6009
+6010
+6013
+6014
+6016
+6017
+6021
+6025
 
 
 
-loan.Balance = loan.InitialAmount;
+payroll = await payrollSvc.GetPayrollById(payrollID);
+
+				empData = payroll.EmployeeData;
+				var companyPadding = payroll.Company.EmployeeIDPadding;
+
+				foreach (var emp in empData)
+                {
+                    thresholds.Add(new EmployeeThesHold(emp.Employee.id, await GetThreshold(emp)));
+
+					if(companyPadding > 0)
+						emp.Employee.EmployeeId.PadLeft(companyPadding, '0');
+                }
 
 
 
-newLoan.SetInitialAmount(loanAmt);
-newLoan.SetRepaymentAmount(loanInstallments);
-//newLoan.SetBalance(loanAmt);
-newLoan.SetBalance(loanAmt);
+                void UpdateNewCode(ChangeEventArgs e)
+                        {
+
+                            var a = payroll.Company.TransactionCodes.FirstOrDefault(x => x.Code == e.Value);
+                            var b = payroll.Company.TransactionCodes.FirstOrDefault(x => x.Code == e.Value.ToString());
+                            //var y = payroll.Company.TransactionCodes.FirstOrDefault(x => x.Code.ToLower() == e.Value.ToLower());
+                            var c = payroll.Company.TransactionCodes.FirstOrDefault(x => x.Code.ToLower() == e.Value.ToString().ToLower());
+                        }
+
+
+
+
+
+                        var exists = false;
+                                    if (employeeData != null)
+                                    {
+                                        if (employeeData.Transactions.FirstOrDefault(x => x.Code.Code == transaction.Code.Code && x.BatchNumber == transaction.BatchNumber && x.Rate == transaction.Rate && x.id != transaction.id) != null)
+                                        {
+                                            exists = true;
+                                        }
+                                    }
+
+                                    Contracts.Requires(!exists, "Transaction with the same Code, Rate & Batch Number Already Exists");

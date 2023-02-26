@@ -3201,7 +3201,7 @@ class App extends Component {
 
     let keyPressed = []
     let connectedGamepadIndexB = 0;
-
+    console.log('xxx',this.gamepadConfig);
     for (const elem of this.gamepadConfig) {
       let indx = this.gamepadConfig.indexOf(x=>x.plyrNo === elem.plyrNo);
 
@@ -3216,17 +3216,20 @@ class App extends Component {
               south: false,
               east: false,
               west: false,
-              northEast: false,
-              northWest: false,
-              southEast: false,
-              southWest: false,
               attack: false,
               defend: false,
               strafe: false,
-              cycleArmor: false,
               dodge: false,
-              menu: false,
-            },
+              pull: false,
+              kick: false,
+              cycleArmor: false,
+              discardWeapon: false,
+              discardArmor: false,
+              uiMenu: false,
+              playerMenu: false,
+              rotateRight: false,
+              rotateLeft: false,
+            }
           }
         )
 
@@ -3254,11 +3257,11 @@ class App extends Component {
 
       }
       else {
+        // dummy object for setting global keypressed by index
         keyPressed.push(
           {
             state: false,
             plyrNo: elem.plyrNo,
-            // keyPressed: undefined,
             keyPressed: {
               north: false,
               south: false,
@@ -9097,7 +9100,7 @@ class App extends Component {
     return bolt;
 
   }
-  checkDestination = (player,checkTerrain) => {
+  checkDestination = (player,pickupOnly) => {
     // console.log('checking for item or enviro effect');
 
     this.players[player.number-1].terrainMoveSpeed.state = false;
@@ -9914,32 +9917,32 @@ class App extends Component {
         }
         if (pickUp === true) {
           // PICKUP ANIM!!
-          // if (cell.item.type === 'item') {
-          //   this.players[player.number-1].itemPickup = {
-          //     state: true,
-          //     count: 0,
-          //     limit: 10,
-          //     item: {
-          //       name: cell.item.name,
-          //     },
-          //     gear: {
-          //       type: '',
-          //     }
-          //   }
-          // }
-          // else if (cell.item.type === 'weapon' || cell.item.type === 'armor') {
-          //   this.players[player.number-1].itemPickup = {
-          //     state: true,
-          //     count: 0,
-          //     limit: 10,
-          //     item: {
-          //       name: '',
-          //     },
-          //     gear: {
-          //       type: cell.item.subType,
-          //     }
-          //   }
-          // }
+          if (cell.item.type === 'item') {
+            this.players[player.number-1].itemPickup = {
+              state: true,
+              count: 0,
+              limit: 10,
+              item: {
+                name: cell.item.name,
+              },
+              gear: {
+                type: '',
+              }
+            }
+          }
+          else if (cell.item.type === 'weapon' || cell.item.type === 'armor') {
+            this.players[player.number-1].itemPickup = {
+              state: true,
+              count: 0,
+              limit: 10,
+              item: {
+                name: '',
+              },
+              gear: {
+                type: cell.item.subType,
+              }
+            }
+          }
 
           cell.item = {
             name: '',
@@ -10099,19 +10102,27 @@ class App extends Component {
       break;
     }
 
-    if(cell.rubble === true ) {
-      // console.log('stepped on rubble @ check destination. removing it too');
+    if (pickupOnly !== true ) {
 
-      let applyHazard = this.rnJesus(1,3);
+      if(cell.rubble === true ) {
+        // console.log('stepped on rubble @ check destination. removing it too');
 
-      if (applyHazard === 1) {
+        let applyHazard = this.rnJesus(1,3);
 
-        this.handleMiscPlayerDamage(player,"applyHazard");
+        if (applyHazard === 1) {
 
+          this.handleMiscPlayerDamage(player,"applyHazard");
+
+        }
+
+        this.gridInfo.find(x => x.number.x === cell.number.x && x.number.y === cell.number.y).rubble = false;
       }
 
-      this.gridInfo.find(x => x.number.x === cell.number.x && x.number.y === cell.number.y).rubble = false;
     }
+    else {
+      console.log('check Destination pickuponly');
+    }
+
 
   }
   obstacleCheckDestination = (cell,player) => {
@@ -14418,154 +14429,159 @@ class App extends Component {
     let cellToDrop = this.gridInfo.find(elem => elem.number.x === player.currentPosition.cell.number.x && elem.number.y === player.currentPosition.cell.number.y);
 
 
-    this.players[player.number-1].defending = {
-      state: false,
-      count: 0,
-      limit: player.defending.limit
-    }
     this.players[player.number-1].action = 'idle';
 
-    this.players[player.number-1].defendDecay = {
-      state: false,
-      count: 0,
-      limit: player.defendDecay.limit,
-    }
-    this.players[player.number-1].stamina.current += this.staminaCostRef.defend.pre;
 
 
     if (cellToDrop.item.name === '') {
 
-      if (type === 'weapon' && player.items.weapons.length > 0) {
+      if (type === 'weapon') {
 
+        if (player.currentWeapon.name !== "") {
 
-        let index = player.items.weapons.findIndex(weapon => weapon.name === player.currentWeapon.name);
+          let index = player.items.weapons.findIndex(weapon => weapon.name === player.currentWeapon.name);
 
-        let weapon = player.currentWeapon;
+          let weapon = player.currentWeapon;
 
-        cellToDrop.item = {
-          name: weapon.name,
-          type: 'weapon',
-          subType: weapon.type,
-          effect: weapon.effect,
-          initDrawn: false
-        }
-
-
-        this.players[player.number-1].itemDrop = {
-          state: true,
-          count: 0,
-          limit: 10,
-          item: {
-            name: '',
-          },
-          gear: {
-            type: this.players[player.number-1].items.weapons[index].type,
+          cellToDrop.item = {
+            name: weapon.name,
+            type: 'weapon',
+            subType: weapon.type,
+            effect: weapon.effect,
+            initDrawn: false
           }
-        }
-        this.players[player.number-1].statusDisplay = {
-          state: true,
-          status: weapon.name+' discarded!',
-          count: 1,
-          limit: this.players[player.number-1].statusDisplay.limit,
-        }
 
-        this.players[player.number-1].popups.push(
-          {
-            state: false,
+
+          this.players[player.number-1].itemDrop = {
+            state: true,
             count: 0,
-            limit: 25,
-            type: '',
-            position: '',
-            msg: 'dropWeapon',
-            img: '',
-
+            limit: 10,
+            item: {
+              name: '',
+            },
+            gear: {
+              type: this.players[player.number-1].items.weapons[index].type,
+            }
           }
-        )
+          this.players[player.number-1].statusDisplay = {
+            state: true,
+            status: weapon.name+' discarded!',
+            count: 1,
+            limit: this.players[player.number-1].statusDisplay.limit,
+          }
 
-        this.players[player.number-1].items.weapons.splice(index,1);
-        this.players[player.number-1].currentWeapon = {
-          name: "",
-          type: "",
-          effect: "",
+          this.players[player.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 25,
+              type: '',
+              position: '',
+              msg: 'dropWeapon',
+              img: '',
+
+            }
+          )
+
+          this.players[player.number-1].items.weapons.splice(index,1);
+          this.players[player.number-1].currentWeapon = {
+            name: "",
+            type: "",
+            effect: "",
+          }
+
+
+          if (player.currentArmor === {} || !player.currentArmor || player.currentArmor.name === '') {
+
+            this.players[player.number-1].defending = {
+              state: false,
+              count: 0,
+              limit: this.players[player.number-1].defending.limit,
+            }
+            this.players[player.number-1].action = "idle";
+          }
+
+        }
+        else {
+          console.log('no weapon equipped to discard');
         }
 
-        if (player.currentArmor === {} || !player.currentArmor || player.currentArmor.name === '') {
+      }
+      if (type === 'armor') {
 
-          this.players[player.number-1].defending = {
-            state: false,
+
+        if (player.currentArmor.name !== "") {
+
+          let index2 = player.items.armor.findIndex(armor => armor.name === player.currentArmor.name);
+
+          let armor = player.currentArmor;
+
+          cellToDrop.item = {
+            name: armor.name,
+            type: 'armor',
+            subType: armor.type,
+            effect: armor.effect,
+            initDrawn: false
+          }
+
+          this.players[player.number-1].itemDrop = {
+            state: true,
             count: 0,
-            limit: this.players[player.number-1].defending.limit,
+            limit: 10,
+            item: {
+              name: '',
+            },
+            gear: {
+              type: this.players[player.number-1].items.armor[index2].type,
+            }
           }
-          this.players[player.number-1].action = "idle";
+          this.players[player.number-1].statusDisplay = {
+            state: true,
+            status: armor.name+' discarded!',
+            count: 1,
+            limit: this.players[player.number-1].statusDisplay.limit,
+          }
+
+          this.players[player.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 25,
+              type: '',
+              position: '',
+              msg: 'dropArmor',
+              img: '',
+
+            }
+          )
+
+          this.players[player.number-1].items.armor.splice(index2,1);
+          this.players[player.number-1].currentArmor = {
+            name: "",
+            type: "",
+            effect: "",
+          }
+
+          if (player.currentWeapon === {} || !player.currentWeapon || player.currentWeapon.name === '') {
+
+            this.players[player.number-1].defending = {
+              state: false,
+              count: 0,
+              limit: this.players[player.number-1].defending.limit,
+            }
+            this.players[player.number-1].action = "idle";
+          }
+
         }
+        else {
+          console.log('no armor equipped to discard');
+        }
+
 
 
       }
-      if (type === 'armor' && player.items.armor.length > 0) {
-
-        let index2 = player.items.armor.findIndex(armor => armor.name === player.currentArmor.name);
-
-        let armor = player.currentArmor;
-
-        cellToDrop.item = {
-          name: armor.name,
-          type: 'armor',
-          subType: armor.type,
-          effect: armor.effect,
-          initDrawn: false
-        }
-
-        this.players[player.number-1].itemDrop = {
-          state: true,
-          count: 0,
-          limit: 10,
-          item: {
-            name: '',
-          },
-          gear: {
-            type: this.players[player.number-1].items.armor[index2].type,
-          }
-        }
-        this.players[player.number-1].statusDisplay = {
-          state: true,
-          status: armor.name+' discarded!',
-          count: 1,
-          limit: this.players[player.number-1].statusDisplay.limit,
-        }
-
-        this.players[player.number-1].popups.push(
-          {
-            state: false,
-            count: 0,
-            limit: 25,
-            type: '',
-            position: '',
-            msg: 'dropArmor',
-            img: '',
-
-          }
-        )
-
-        this.players[player.number-1].items.armor.splice(index2,1);
-        this.players[player.number-1].currentArmor = {
-          name: "",
-          type: "",
-          effect: "",
-        }
-
-        if (player.currentWeapon === {} || !player.currentWeapon || player.currentWeapon.name === '') {
-
-          this.players[player.number-1].defending = {
-            state: false,
-            count: 0,
-            limit: this.players[player.number-1].defending.limit,
-          }
-          this.players[player.number-1].action = "idle";
-        }
-
-
-      }
-    } else {
+    }
+    else {
       console.log('cell occupied. Cant drop gear');
 
       this.players[player.number-1].statusDisplay = {
@@ -14589,6 +14605,8 @@ class App extends Component {
           }
         )
       }
+
+      this.checkDestination(player,true);
 
     }
 
@@ -30154,7 +30172,7 @@ class App extends Component {
                 }
 
 
-                this.checkDestination(player);
+                this.checkDestination(player,false);
                 if (player.drowning !== true && player.pushBack.state !== true && player.dead.state !== true) {
                   this.getTarget(player);
                 }
@@ -30334,7 +30352,7 @@ class App extends Component {
                   }
                 }
 
-                this.checkDestination(player);
+                this.checkDestination(player,false);
                 // let trgt = this.getTarget(player);
 
                 if (pushBack === true ) {
@@ -30707,47 +30725,6 @@ class App extends Component {
           player.strafeReleaseHook = false;
           this.getTarget(player);
           // console.log('strafe release hook');
-        }
-
-
-        // ITEM PICKUP/DROP ANIM COUNTER!
-        if (player.itemDrop.state === true) {
-          if (player.itemDrop.count < player.itemDrop.limit) {
-            player.itemDrop.count++
-            // console.log('dropping item anim');
-          }
-          else if (player.itemDrop.count >= player.itemDrop.limit) {
-            player.itemDrop = {
-              state: false,
-              count: 0,
-              limit: 10,
-              item: {
-                name: '',
-              },
-              gear: {
-                type: '',
-              }
-            }
-          }
-        }
-        if (player.itemPickup.state === true) {
-          if (player.itemPickup.count < player.itemPickup.limit) {
-            player.itemPickup.count++
-            // console.log('picking item anim');
-          }
-          else if (player.itemPickup.count >= player.itemPickup.limit) {
-            player.itemPickup = {
-              state: false,
-              count: 0,
-              limit: 10,
-              item: {
-                name: '',
-              },
-              gear: {
-                type: '',
-              }
-            };
-          }
         }
 
 
@@ -31781,9 +31758,7 @@ class App extends Component {
 
 
         // DISCARD GEAR!!
-        if (
-          this.keyPressed[player.number-1].defend === true &&
-          this.keyPressed[player.number-1].cycleWeapon === true &&
+        if (this.keyPressed[player.number-1].discardWeapon === true &&
           player.discardGear.state !== true
         ) {
 
@@ -31791,8 +31766,7 @@ class App extends Component {
             player.discardGear.state = true;
         }
         if (
-          this.keyPressed[player.number-1].defend === true &&
-          this.keyPressed[player.number-1].cycleArmor === true &&
+          this.keyPressed[player.number-1].discardArmor === true &&
           player.discardGear.state !== true
         ) {
 
@@ -31815,7 +31789,7 @@ class App extends Component {
 
 
         // WEAPON/ARMOR CYCLE CHECK!!
-        if (this.keyPressed[player.number-1].cycleWeapon === true && player.cycleWeapon.state === false && player.defending.state !== true && this.keyPressed[player.number-1].defend === false) {
+        if (this.keyPressed[player.number-1].cycleWeapon === true && player.cycleWeapon.state === false) {
 
 
           if (player.cycleWeapon.count < player.cycleWeapon.limit) {
@@ -31911,17 +31885,17 @@ class App extends Component {
             }
 
             let myCell = this.gridInfo.find(cell => cell.number.x === player.currentPosition.cell.number.x && cell.number.y === player.currentPosition.cell.number.y)
-            if (myCell.item.name !== '') {
-              // console.log('found an item. picking it up');
-              this.checkDestination(player)
-            }
+            // if (myCell.item.name !== '') {
+            //   // console.log('found an item. picking it up');
+            //   this.checkDestination(player)
+            // }
           }
 
         }
         else if (this.keyPressed[player.number-1].cycleWeapon === true && player.cycleWeapon.state === true) {
           console.log('already cycling weapon');
         }
-        if (this.keyPressed[player.number-1].cycleArmor === true && player.cycleArmor.state === false && player.defending.state !== true && this.keyPressed[player.number-1].defend === false) {
+        if (this.keyPressed[player.number-1].cycleArmor === true && player.cycleArmor.state === false) {
           if (player.cycleArmor.count < player.cycleArmor.limit) {
             player.cycleArmor.count++
             // console.log('player.cycleArmor.count',player.cycleArmor.count);
@@ -32065,14 +32039,55 @@ class App extends Component {
             }
 
             let myCell = this.gridInfo.find(cell => cell.number.x === player.currentPosition.cell.number.x && cell.number.y === player.currentPosition.cell.number.y)
-            if (myCell.item.name !== '') {
-              // console.log('found an item. picking it up');
-              this.checkDestination(player)
-            }
+            // if (myCell.item.name !== '') {
+            //   // console.log('found an item. picking it up');
+            //   this.checkDestination(player)
+            // }
           }
         }
         else if (this.keyPressed[player.number-1].cycleArmor === true && player.cycleArmor.state === true) {
           console.log('already cycling armor');
+        }
+
+
+        // ITEM PICKUP/DROP ANIM COUNTER!
+        if (player.itemDrop.state === true) {
+          if (player.itemDrop.count < player.itemDrop.limit) {
+            player.itemDrop.count++
+            console.log('dropping item anim');
+          }
+          else if (player.itemDrop.count >= player.itemDrop.limit) {
+            player.itemDrop = {
+              state: false,
+              count: 0,
+              limit: 10,
+              item: {
+                name: '',
+              },
+              gear: {
+                type: '',
+              }
+            }
+          }
+        }
+        if (player.itemPickup.state === true) {
+          if (player.itemPickup.count < player.itemPickup.limit) {
+            player.itemPickup.count++
+            console.log('picking item anim');
+          }
+          else if (player.itemPickup.count >= player.itemPickup.limit) {
+            player.itemPickup = {
+              state: false,
+              count: 0,
+              limit: 10,
+              item: {
+                name: '',
+              },
+              gear: {
+                type: '',
+              }
+            };
+          }
         }
 
 
@@ -32445,7 +32460,9 @@ class App extends Component {
           player.halfPushBack.state !== true &&
           player.elasticCounter.state !== true &&
           player.pulling.state !== true &&
-          player.pushing.state !== true
+          player.pushing.state !== true &&
+          player.itemDrop.state === true &&
+          player.itemPickup.state === true
         ) {
           // CONFIRM MOVE KEYPRESS!!
           if (
@@ -32987,7 +33004,9 @@ class App extends Component {
           player.halfPushBack.state !== true &&
           player.elasticCounter.state !== true &&
           player.pulling.state !== true &&
-          player.pushing.state !== true
+          player.pushing.state !== true &&
+          player.itemDrop.state === true &&
+          player.itemPickup.state === true
         ) {
 
 
@@ -35279,7 +35298,7 @@ class App extends Component {
 
     // MENU
 
-    if (player.ai.state !== true && this.keyPressed[player.number-1].cycleWeapon === true && this.keyPressed[player.number-1].cycleArmor === true) {
+    if (player.ai.state !== true && this.keyPressed[player.number-1].playerMenu === true) {
       // toggle the menu here
     }
 
