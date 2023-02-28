@@ -10184,6 +10184,17 @@ class App extends Component {
         // CROSSBOW BLUNT ATTACK
         if (player.bluntAttack === true) {
 
+          this.cellsUnderAttack.push(
+            {
+              number: {
+                x: player.target.cell1.number.x,
+                y: player.target.cell1.number.y,
+              },
+              count: 1,
+              limit: 8,
+            },
+          )
+
           // TARGET CELL 1 FREE NO ITEM OR BOLT
           if (
             player.target.cell1.free === true &&
@@ -18217,7 +18228,7 @@ class App extends Component {
   }
   applyRemoveEffect = (player,action,subAction,type,item) => {
 
-    console.log('applyRemoveEffect',action,subAction,type,item);
+    // console.log('applyRemoveEffect',action,subAction,type,item);
     // call from: pickup, discard, deflect drop, use
     //
     // action: apply, remove
@@ -30843,22 +30854,27 @@ class App extends Component {
 
             // APPLY BLUNT ATTACK
             if (player.dodging.countState === true || player.dodging.state === true || this.keyPressed[player.number-1].dodge === true) {
-              console.log('was attacking then pressed dodging. blunt attack');
-              player.dodging = {
-                countState: false,
-                state: false,
-                count: 0,
-                limit: 20,
-                peak: {
-                  start: 5,
-                  end: 10,
+              console.log('was attacking then pressed dodging. blunt attack. reset attack count',player.attacking.count);
+
+              if (player.bluntAttack !== true) {
+
+                player.dodging = {
+                  countState: false,
+                  state: false,
+                  count: 0,
+                  limit: 20,
+                  peak: {
+                    start: 5,
+                    end: 10,
+                  }
+                };
+                this.keyPressed[player.number-1].dodge = false;
+                player.bluntAttack = true;
+                if (player.elasticCounter.state === true && player.elasticCounter.type === "dodging") {
+                  player.elasticCounter.state = false;
                 }
-              };
-              this.keyPressed[player.number-1].dodge = false;
-              player.bluntAttack = true;
-              if (player.elasticCounter.state === true && player.elasticCounter.type === "dodging") {
-                player.elasticCounter.state = false;
               }
+
             }
 
 
@@ -30885,68 +30901,85 @@ class App extends Component {
               }
 
 
-                this.getTarget(player)
-                // CELLS UNDER PRE ATTACK!
-                let cellUnderPreAttack1 = this.gridInfo.find(elem => elem.number.x === player.target.cell1.number.x && elem.number.y === player.target.cell1.number.y)
-                let cellUnderPreAttack2;
-                if (player.currentWeapon.type === 'spear') {
-                  cellUnderPreAttack2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y)
-                }
-                if (player.currentWeapon.type === 'spear') {
+              this.getTarget(player)
 
-                  this.cellsUnderPreAttack.push(
-                    {
-                      number: {
-                        x: player.target.cell1.number.x,
-                        y: player.target.cell1.number.y,
-                      },
-                      count: 1,
-                      limit: 8,
-                    },
-                  )
-                  this.cellsUnderPreAttack.push(
-                    {
-                      number: {
-                        x: player.target.cell2.number.x,
-                        y: player.target.cell2.number.y,
-                      },
-                      count: 1,
-                      limit: 8,
-                    },
-                  )
+              // CELLS UNDER PRE ATTACK!
+              let cellUnderPreAttack1 = this.gridInfo.find(elem => elem.number.x === player.target.cell1.number.x && elem.number.y === player.target.cell1.number.y)
+              let cellUnderPreAttack2;
+              if (player.currentWeapon.type === 'spear') {
+                cellUnderPreAttack2 = this.gridInfo.find(elem => elem.number.x === player.target.cell2.number.x && elem.number.y === player.target.cell2.number.y)
+              }
+              if (player.currentWeapon.type === 'spear') {
 
-
-                }
-                else if (player.currentWeapon.type === 'sword' || player.currentWeapon.type === '') {
-                  // console.log('sword target',player.target);
-
-                  this.cellsUnderPreAttack.push({
+                this.cellsUnderPreAttack.push(
+                  {
                     number: {
                       x: player.target.cell1.number.x,
                       y: player.target.cell1.number.y,
                     },
                     count: 1,
                     limit: 8,
-                  })
+                  },
+                )
+                this.cellsUnderPreAttack.push(
+                  {
+                    number: {
+                      x: player.target.cell2.number.x,
+                      y: player.target.cell2.number.y,
+                    },
+                    count: 1,
+                    limit: 8,
+                  },
+                )
 
-                }
 
-                // console.log('this.cellsUnderPreAttack',this.cellsUnderPreAttack[0],this.cellsUnderPreAttack[1]);
+              }
+              if (player.currentWeapon.type === 'sword' || player.currentWeapon.type === '') {
+                console.log('sword/unarmed melee target',player.target);
 
-                // CAMERA ATTACK FOCUS
-                if (
-                  this.settingAutoCamera === false &&
-                  player.ai.state !== true &&
-                  this.camera.preInstructions.length === 0 &&
-                  this.camera.instructions.length === 0
-                ) {
-                  // this.setAutoCamera('attackFocus',player)
-                }
-                else {
-                  console.log('no setting auto cam: attackFocus');
-                }
+                this.cellsUnderPreAttack.push({
+                  number: {
+                    x: player.target.cell1.number.x,
+                    y: player.target.cell1.number.y,
+                  },
+                  count: 1,
+                  limit: 8,
+                })
+
+              }
+
+              // if (player.currentWeapon.type === 'crossbow' && player.bluntAttack === true) {
+              if (player.currentWeapon.type === 'crossbow') {
+                console.log('crossbow melee target',player.target);
+
+                this.cellsUnderPreAttack.push({
+                  number: {
+                    x: player.target.cell1.number.x,
+                    y: player.target.cell1.number.y,
+                  },
+                  count: 1,
+                  limit: 8,
+                })
+
+              }
+
+              // console.log('this.cellsUnderPreAttack',this.cellsUnderPreAttack[0],this.cellsUnderPreAttack[1]);
+
+              // CAMERA ATTACK FOCUS
+              if (
+                this.settingAutoCamera === false &&
+                player.ai.state !== true &&
+                this.camera.preInstructions.length === 0 &&
+                this.camera.instructions.length === 0
+              ) {
+                // this.setAutoCamera('attackFocus',player)
+              }
+              else {
+                console.log('no setting auto cam: attackFocus');
+              }
 
             }
+
             if (player.attacking.count > 2) {
 
               if (!player.popups.find(x => x.msg === "attacking")) {
@@ -31100,6 +31133,9 @@ class App extends Component {
 
               }
 
+              if (player.currentWeapon.type === 'crossbow' && player.bluntAttack === true) {
+                melee = true;
+              }
 
               if (melee === true ) {
 
@@ -35410,6 +35446,22 @@ class App extends Component {
             bolt.currentPosition.number = cell.number;
 
             let infoCell = this.gridInfo.find(x => x.number.x === cell.number.x && x.number.y === cell.number.y);
+
+            console.log('yyz',infoCell.number,this.players[bolt.owner-1].currentPosition.cell.number,cell.number);
+            if (infoCell.number.x !== this.players[bolt.owner-1].currentPosition.cell.number.x && infoCell.number.y !== this.players[bolt.owner-1].currentPosition.cell.number.y) {
+              this.cellsUnderAttack.push(
+                {
+                  number: {
+                    x: infoCell.number.x,
+                    y: infoCell.number.y,
+                  },
+                  count: 1,
+                  limit: 5,
+                },
+              )
+            }
+
+
 
             if (infoCell.elevation.number === bolt.elevation) {
 
