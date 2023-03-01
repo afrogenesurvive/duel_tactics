@@ -30854,7 +30854,7 @@ class App extends Component {
 
             // APPLY BLUNT ATTACK
             if (player.dodging.countState === true || player.dodging.state === true || this.keyPressed[player.number-1].dodge === true) {
-              console.log('was attacking then pressed dodging. blunt attack. reset attack count',player.attacking.count);
+              // console.log('was attacking then pressed dodging. blunt attack');
 
               if (player.bluntAttack !== true) {
 
@@ -30950,7 +30950,7 @@ class App extends Component {
 
               // if (player.currentWeapon.type === 'crossbow' && player.bluntAttack === true) {
               if (player.currentWeapon.type === 'crossbow') {
-                console.log('crossbow melee target',player.target);
+                // console.log('crossbow melee target',player.target);
 
                 this.cellsUnderPreAttack.push({
                   number: {
@@ -35447,13 +35447,16 @@ class App extends Component {
 
             let infoCell = this.gridInfo.find(x => x.number.x === cell.number.x && x.number.y === cell.number.y);
 
-            console.log('yyz',infoCell.number,this.players[bolt.owner-1].currentPosition.cell.number,cell.number);
-            if (infoCell.number.x !== this.players[bolt.owner-1].currentPosition.cell.number.x && infoCell.number.y !== this.players[bolt.owner-1].currentPosition.cell.number.y) {
+
+            if (cell.number.x === this.players[bolt.owner-1].currentPosition.cell.number.x && cell.number.y === this.players[bolt.owner-1].currentPosition.cell.number.y) {
+
+            }
+            else {
               this.cellsUnderAttack.push(
                 {
                   number: {
-                    x: infoCell.number.x,
-                    y: infoCell.number.y,
+                    x: cell.number.x,
+                    y: cell.number.y,
                   },
                   count: 1,
                   limit: 5,
