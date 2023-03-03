@@ -1380,8 +1380,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 3,
-              y: 7,
+              x: 5,
+              y: 0,
             },
             center: {
               x: 0,
@@ -9970,79 +9970,352 @@ class App extends Component {
 
   }
   jumpCollisionCheck = (type,subType,player) => {
+    console.log('jumpCollisionCheck',type,subType);
 
-    type = barrier, obstacle, player
-    subtype = cell 1 farbarrier, cell 2 barrier, player number
 
-    If barrier
-    if (cell1.barrier.state === true) {
+    let jumpComplete = true;
+    let cellRef = undefined;
+    let otherPlayer = undefined;
 
-      if (cell1.barrier.position === player.direction) {
-        cell1BarrierFar = true;
-      }
-      if (cell1.barrier.position === this.getOppositeDirection(player.direction)) {
-        cell1BarrierNear = true;
-      }
-
+    if (subType === "cell1") {
+      cellRef = this.gridInfo.find(x => x.number.x === player.target.cell1.number.x && x.number.y === player.target.cell1.number.y)
     }
-    if (cell2.barrier.state === true) {
-
-      if (cell2.barrier.position === this.getOppositeDirection(player.direction)) {
-        cell2Barrier = true;
+    if (subType === "cell2") {
+      cellRef = this.gridInfo.find(x => x.number.x === player.target.cell2.number.x && x.number.y === player.target.cell2.number.y)
+    }
+    if (type === "player") {
+      for(const plyr of this.players) {
+        if (plyr.currentPosition.cell.number.x === cellRef.number.x && plyr.currentPosition.cell.number.y === cellRef.number.y) {
+          otherPlayer = plyr;
+        }
       }
-
     }
 
-    1. unbrokend/damaged impediment
-    1.a if barrier, pushback player
-    1.b if obstacle, chance to pushback obstacle
-    1.b.1 no pushback obstacle, pushback player
-    1.b.2 pushback obstacle, pushback player
-    1.b.3 pushback obstacle, advance to target
 
-    2. break impediment, plyr pushback
-    3. break impediment, advance to target
-    4. chance to injure player
-    4.a consider stats and armor
-    5. Move/damage obstacle when player is at cell1
-    6. If player, chance to damage both or push plyr back
-
-    if no pushback/complete jump,
-    this.checkDestination(player,false);
-
-    let advantage = this.checkCombatAdvantage(player,targetPlayerRef);
-    this.setDeflection(targetPlayerRef,'bluntAttacked',false);
-    this.pushBack(player,this.getOppositeDirection(player.direction));
-    this.canPushObstacle(player,targetCell,'hitPush');
-
-    let playerAPushDir = this.getOppositeDirection(opp.direction);
-    let playerBPushDir = this.getOppositeDirection(player.direction);
-
-
-    player.strafing = {
-      state: true,
-      direction: playerAPushDir
+    let obstacle = undefined;
+    let barrier = undefined;
+    if (type === "barrier" && cellRef.barrier.state === true) {
+      barrier = cellRef.barrier;
     }
-    player.action = 'strafe moving';
-    player.moving = {
-      state: true,
-      step: 0,
-      course: '',
-      origin: {
-        number: {
-          x: player.currentPosition.cell.number.x,
-          y: player.currentPosition.cell.number.y
+    if (type === "obstacle" && cellRef.obstacle.state === true) {
+      obstacle = cellRef.obstacle;
+    }
+
+
+    let shouldDamageObstacle = (args) => {
+
+      if (args.destructible.state === true) {
+
+
+          let hp = args.hp - 1;
+          cellRef.obstacle = {
+            state: cellRef.obstacle.state,
+            name: cellRef.obstacle.name,
+            type: cellRef.obstacle.type,
+            hp: hp,
+            destructible: cellRef.obstacle.destructible,
+            locked: cellRef.obstacle.locked,
+            weight: cellRef.obstacle.weight,
+            height: cellRef.obstacle.height,
+            items: cellRef.obstacle.items,
+            effects: cellRef.obstacle.effects,
+            moving: cellRef.obstacle.moving
+          };
+
+
+      }
+      else {
+
+        if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === cellRef.number.x && x.cell.number.y === cellRef.number.y)) {
+           this.cellPopups.push(
+             {
+               state: false,
+               count: 0,
+               limit: 35,
+               type: '',
+               position: '',
+               msg: 'unbreakable',
+               color: '',
+               img: '',
+               cell: this.gridInfo.find(x => x.number.x === cellRef.number.x && x.number.y === cellRef.number.y)
+             }
+           )
+         }
+
+      }
+
+      if (args.hp <= 0) {
+        animateDamageDestroy('obstacle','destroy',obstacle)
+
+      }
+      else {
+
+        animateDamageDestroy('obstacle','damage',obstacle)
+
+      }
+
+
+      return cellRef.obstacle;
+
+    }
+
+    let shouldDamageBarrier = (args) => {
+
+      if (args.destructible.state === true) {
+
+          let hp = args.barrier.hp - 1;
+
+          cellRef.barrier =
+          {
+            state: cellRef.barrier.state,
+            name: cellRef.barrier.name,
+            type: cellRef.barrier.type,
+            hp: hp,
+            destructible: cellRef.barrier.destructible,
+            locked: cellRef.barrier.locked,
+            position: cellRef.barrier.position,
+            height: cellRef.barrier.height,
+          };
+
+      }
+      else {
+
+        if (!this.cellPopups.find(x => x.msg === "unbreakable" && x.cell.number.x === cellRef.number.x && x.cell.number.y === cellRef.number.y)) {
+           this.cellPopups.push(
+             {
+               state: false,
+               count: 0,
+               limit: 35,
+               type: '',
+               position: '',
+               msg: 'unbreakable',
+               color: '',
+               img: '',
+               cell: this.gridInfo.find(x => x.number.x === cellRef.number.x && x.number.y === cellRef.number.y)
+             }
+           )
+         }
+
+      }
+
+      if (obstacle.hp <= 0) {
+        animateDamageDestroy('obstacle','destroy',obstacle)
+
+      }
+      else {
+
+        animateDamageDestroy('obstacle','damage',obstacle)
+
+      }
+
+
+      return cellRef.barrier;
+
+    }
+
+
+    let animateDamageDestroy = (type,action,args) => {
+
+
+
+
+      // this.obstacleBarrierToDestroy.push({
+      //   type: 'obstacle',
+      //   action: 'damage',
+      //   count: 0,
+      //   limit: 30,
+      //   complete: false,
+      //   cell: targetCell,
+      // })
+      // this.players[player.number-1].statusDisplay = {
+      //     state: true,
+      //     status: 'Destroyed '+targetCell.obstacle.name+'!',
+      //     count: 1,
+      //     limit: this.players[player.number-1].statusDisplay.limit,
+      //   }
+
+      // if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+      //       player.popups.push(
+      //         {
+      //           state: false,
+      //           count: 0,
+      //           limit: 30,
+      //           type: '',
+      //           position: '',
+      //           msg: 'destroyedItem',
+      //           img: '',
+      //
+      //         }
+      //       )
+      //     }
+
+
+      if(action === "destroy") {
+
+        // if (targetCell.obstacle.items[0]) {
+        //     itemsToDrop = targetCell.obstacle.items;
+        //   }
+        // if (itemsToDrop[0]) {
+        //   // console.log('dropping obstacle items melee',itemsToDrop);
+        //   this.obstacleItemDrop(targetCell,player);
+        //
+        // }
+
+        if (destructible.leaveRubble = true) {
+          if (cellRef.terrain.type !== 'void' && cellRef.terrain.type !== 'deep') {
+            cellRef.rubble = true;
+          }
+        }
+      }
+
+
+    }
+
+
+    let interruptJump = () => {
+
+      player.jumping.state = false;
+      player.currentPosition.cell.number = player.target[subType].number;
+      player.currentPosition.cell.center = player.target[subType].center;
+      player.strafing.state = false;
+      player.action = 'idle';
+      player.moving = {
+        state: false,
+        step: 0,
+        course: '',
+        origin: {
+          number: {
+            x: player.target.cell2.number.x,
+            y: player.target.cell2.number.y
+          },
+          center: {
+            x: player.target.cell2.center.x,
+            y: player.target.cell2.center.y
+          },
         },
-        center: {
-          x: player.currentPosition.cell.center,
-          y: player.currentPosition.cell.center
-        },
-      },
-      destination: player.target.cell2.center
+        destination: {
+          x: 0,
+          y: 0,
+        }
+      }
+
+      jumpComplete = false;
+
+      if (type === "barrier") {
+        if (this.rnJesus(0,player.crits.pushBack) === 0) {
+          this.pushBack(player,this.getOppositeDirection(player.direction));
+        }
+        else {
+          this.setDeflection(player,'bluntAttacked',false);
+          this.checkDestination(player,false);
+        }
+      }
+
+
+
     }
-    // player.target.void = true;
-    let nextPosition = this.lineCrementer(player);
-    player.nextPosition = nextPosition;
+
+
+
+    switch (type) {
+      case "barrier":
+
+       barrier = shouldDamageBarrier(barrier)
+       this.handleMiscPlayerDamage(player,"jumpCollision")
+
+       player = this.players[player.number-1];
+
+       if (player.dead.state === true) {
+         // DO NOTHING
+       }
+       else {
+         if (barrier.hp > 0) {
+           interruptJump();
+           this.pushBack(player,this.getOppositeDirection(player.direction));
+
+         }
+         else {
+           // DO NOTHING, COMPLETE JUMP
+         }
+       }
+
+      break;
+      case "obstacle":
+
+        obstacle = shouldDamageObstacle(obstacle);
+        this.handleMiscPlayerDamage(player,"jumpCollision")
+
+        player = this.players[player.number-1];
+        if (player.dead.state === true) {
+          // DO NOTHING
+        }
+        else {
+          if (obstacle.hp > 0) {
+            if (player.hp > obstacle.hp) {
+
+              this.canPushObstacle(player,cellRef,'jumpCollision');
+
+              if (this.rnJesus(0,player.crits.pushBack) === 0) {
+                interruptJump();
+              }
+              else {
+                // DO NOTHING, COMPLETE JUMP
+              }
+
+            }
+            else {
+              interruptJump();
+            }
+
+          }
+          else {
+            // DO NOTHING, COMPLETE JUMP
+          }
+        }
+
+      break;
+      case "player":
+
+
+        let advantage = this.checkCombatAdvantage(player,otherPlayer);
+
+        let losingPlayer;
+        let damageBoth = false;
+        if (this.rnJesus(0,5) === 0) {
+          this.handleMiscPlayerDamage(player,"jumpCollision")
+          this.handleMiscPlayerDamage(otherPlayer,"jumpCollision")
+        }
+        else {
+          this.handleMiscPlayerDamage(losingPlayer,"jumpCollision")
+        }
+
+        player = this.players[player.number-1];
+        otherPlayer = this.players[otherPlayer.number-1];
+        if (player.dead.state !== true) {
+
+          if (otherPlayer.dead.state === true) {
+            // COMPLETE JUMP
+          }
+          else {
+            if (player.hp > otherPlayer.hp) {
+              // COMPLETE JUMP
+              this.pushBack(otherPlayer,this.getOppositeDirection(otherPlayer.direction));
+            }
+            else {
+              interruptJump();
+              if (this.rnJesus(0,5) === 0) {
+                this.pushBack(otherPlayer,this.getOppositeDirection(otherPlayer.direction));
+              }
+            }
+          }
+        }
+
+      break;
+      default:
+
+    }
+
+
 
   }
 
@@ -11890,6 +12163,52 @@ class App extends Component {
 
       }
 
+
+    }
+
+    if(type === "jumpCollision") {
+
+      if (player.hp - 1 <= 0) {
+        this.killPlayer(this.players[player.number-1]);
+
+        let randomItemIndex = this.rnJesus(0,this.itemList.length-1)
+        this.placeItems({init: false, item: this.itemList[randomItemIndex].name})
+
+        this.players[player.number-1].points--;
+
+        this.pointChecker(player)
+      } else {
+
+        this.players[player.number-1].hp -= 1;
+
+        this.setDeflection(player,'attacked',false);
+
+        if (!this.players[player.number-1].popups.find(x=>x.msg.split("_")[0] === "hpDown")) {
+          this.players[player.number-1].popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 30,
+              type: '',
+              position: '',
+              msg: 'hpDown_'+'-'+1+'',
+              img: '',
+
+            }
+          )
+        }
+
+        if (this.players[player.number-1].hp === 1) {
+
+          // ADJUST TARGET MOVE SPEED
+          let currentMoveSpeedIndx = this.players[player.number-1].speed.range.indexOf(this.players[player.number-1].speed.move)
+          if (currentMoveSpeedIndx > 0) {
+            this.players[player.number-1].speed.move = this.players[player.number-1].speed.range[currentMoveSpeedIndx-1]
+          }
+
+        }
+
+      }
 
     }
 
@@ -18989,6 +19308,11 @@ class App extends Component {
       impactDirection = player.prePush.direction;
     }
 
+    if (type === "jumpCollision") {
+      impactDirection = player.direction;
+      movePlayer = false;
+      pushStrengthPlayer += 30;
+    }
 
 
     let destCell = this.getCellFromDirection(1,obstacleCell.number,impactDirection);
@@ -29660,7 +29984,6 @@ class App extends Component {
           // console.log('pressed2',key,'plyr',player.number);
         }
 
-
       }
     }
 
@@ -30146,6 +30469,9 @@ class App extends Component {
 
         let atDestRanges1 = [false,false,false,false];
         let atDestRanges2 = [false,false,false,false];
+        let refCell1 = this.gridInfo.find(x => x.number.x === player.target.cell1.number.x && x.number.y === player.target.cell1.number.y)
+        let refCell2 = this.gridInfo.find(x => x.number.x === player.target.cell2.number.x && x.number.y === player.target.cell2.number.y)
+
 
         if (player.target.cell1.void === true) {
           if (player.falling.state === true) {
@@ -30168,28 +30494,28 @@ class App extends Component {
             nextPosition.y >= player.target.cell1.center.y-1 &&
             nextPosition.y <= player.target.cell1.center.y+1
           ) {
-            atDestRanges[0] = true;
+            atDestRanges1[0] = true;
             destRngIndx = 0;
           }
           if (
             nextPosition.x === player.target.cell1.center.x-0.25 &&
             nextPosition.y === player.target.cell1.center.y+0.5
           ) {
-            atDestRanges[1] = true;
+            atDestRanges1[1] = true;
             destRngIndx = 1;
           }
           if (
             nextPosition.x === player.target.cell1.center.x &&
             nextPosition.y === player.target.cell1.center.y
           ) {
-            atDestRanges[2] = true;
+            atDestRanges1[2] = true;
             destRngIndx = 2;
           }
           if (
             nextPosition.x === player.target.cell1.center.x-5 &&
             nextPosition.y === player.target.cell1.center.y-5
           ) {
-            atDestRanges[3] = true;
+            atDestRanges1[3] = true;
             destRngIndx = 3;
           }
 
@@ -30222,10 +30548,10 @@ class App extends Component {
           // }
 
 
-          for (const el of atDestRanges) {
+          for (const el of atDestRanges1) {
             if (el === true) {
 
-              let indx = atDestRanges.indexOf(el);
+              let indx = atDestRanges1.indexOf(el);
 
               player.newMoveDelay.state = true;
 
@@ -30457,17 +30783,19 @@ class App extends Component {
 
               let blocked = false;
               let blockType = "";
-              if (player.target.cell1.barrier.state === true) {
 
-                if (player.target.cell1.barrier.position === player.direction) {
+              if (refCell1.barrier.state === true) {
+
+                if (refCell1.barrier.position === player.direction) {
                   blocked = true;
                   blockType = "cell1";
                 }
 
               }
-              if (player.target.cell2.barrier.state === true) {
 
-                if (player.target.cell2.barrier.position === this.getOppositeDirection(player.direction)) {
+              if (refCell2.barrier.state === true) {
+
+                if (refCell2.barrier.position === this.getOppositeDirection(player.direction)) {
                   blocked = true;
                   blockType = "cell2";
                 }
@@ -30476,36 +30804,14 @@ class App extends Component {
 
               if (blocked === true) {
 
-                player.jumping.state = false;
-                player.currentPosition.cell.number = player.target.cell2.number;
-                player.currentPosition.cell.center = player.target.cell2.center;
-                player.strafing.state = false;
-                player.action = 'idle';
-                player.moving = {
-                  state: false,
-                  step: 0,
-                  course: '',
-                  origin: {
-                    number: {
-                      x: player.target.cell2.number.x,
-                      y: player.target.cell2.number.y
-                    },
-                    center: {
-                      x: player.target.cell2.center.x,
-                      y: player.target.cell2.center.y
-                    },
-                  },
-                  destination: {
-                    x: 0,
-                    y: 0,
-                  }
-                }
+                this.jumpCollisionCheck("barrier",blockType,player);
 
-                this.jumpCollisionCheck('barrier',blockType,player)
+                // console.log('barrier bloackage ',blockType);
 
               }
 
-              console.log('@ mid jump cell 1',player.target.cell1);
+              // console.log('@ mid jump cell 1',player.target.cell1);
+
             }
           }
 
@@ -30561,8 +30867,6 @@ class App extends Component {
                 let blocked = false;
                 let blockType = "";
                 let blockSubType = "";
-                let refCell = this.gridInfo.find(x => x.number.x === player.target.cell2.number.x && x.number.y === player.target.cell2.number.y)
-
                 // for (const plyr of this.players) {
                 //   if (
                 //     // plyr.currentPosition.cell.number.x === player.currentPosition.cell.number.x &&
@@ -30617,29 +30921,24 @@ class App extends Component {
                   if (
                     plyr.number !== player.number &&
                     plyr.moving.state !== true &&
-                    plyr.currentPosition.cell.number.x === plyr.target.cell2.number.x &&
-                    plyr.currentPosition.cell.number.y === plyr.target.cell2.number.y
+                    plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
+                    plyr.currentPosition.cell.number.y === player.target.cell2.number.y
                   ) {
                     blocked = true;
                     blockType = "player";
-                    blockSubType = plyr.number;
+                    blockSubType = "cell2";
                   }
                 }
 
-                if (refCell.obstacle.state === true) {
-                  blocked = type;
+                if (refCell2.obstacle.state === true) {
+                  blocked = true;
                   blockType = "obstacle";
-                  blockSubType = refCell.obstacle;
+                  blockSubType = "cell2";
                 }
 
-                if (blocked === true && blockType === "obstacle") {
+                if (blocked === true) {
 
-                  this.jumpCollisionCheck('obstacle',blockType,player)
-
-                }
-                if (blocked === true && blockType === "player") {
-
-                  this.jumpCollisionCheck('player',blockSubType,player)
+                  this.jumpCollisionCheck(blockType,blockSubType,player)
 
                 }
 
@@ -30673,6 +30972,7 @@ class App extends Component {
                     }
                   }
 
+                  // console.log('no blockage. Arrived at jump dest');
 
                 }
 
