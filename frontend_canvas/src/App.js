@@ -340,9 +340,9 @@ class App extends Component {
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_*_2.2_a_0a*','**_*_2.3_a_0a*','**_c_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_a_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_h_3.2_a_0a*','**_h_3.3_a_0a*','**_h_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_a_3.9_a_0a*'],
       row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_c_4.3_f_0a*','**_*_4.4_a_0a*','**_*_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','**_*_4.9_a_0a*'],
-      row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','**_*_5.2_f_0a*','**_*_5.3_f_0a*','**_*_5.4_k_0a*','**_*_5.5_a_0a*','**_*_5.6_g_0a*','**_*_5.7_a_0a*','**_*_5.8_a_0a*','**_*_5.9_a_0a*'],
-      row6: ['**_*_6.0_j_0a*','**_*_6.1_j_0a*','**_*_6.2_b_0a*','**_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_b_0a*','**_*_6.8_j_0a*','**_*_6.9_d_0a*'],
-      row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_j_0a*','**_*_7.3_j_0a*','**_*_7.4_j_0a*','**_*_7.5_a_0a*','**_c_7.6_a_0a*','**_*_7.7_a_0a*','**_*_7.8_a_0a*','**_*_7.9_d_0a*'],
+      row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','ce_*_5.2_a_0a*','**_*_5.3_a_0a*','ce_*_5.4_a_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','**_*_5.8_a_0a*','**_*_5.9_a_0a*'],
+      row6: ['**_*_6.0_b_0a*','**_*_6.1_j_0a*','cw_*_6.2_j_0a*','cw_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_j_0a*','ce_*_6.8_j_0a*','ce_*_6.9_j_0a*'],
+      row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_a_0a*','**_*_7.3_a_0a*','**_*_7.4_a_0a*','**_*_7.5_a_0a*','**_c_7.6_a_0a*','cw*_*_7.7_a_0a*','**_*_7.8_a_0a*','cw_*_7.9_d_0a*'],
       row8: ['**_*_8.0_a_0a*','**_*_8.1_a_0a*','**_*_8.2_a_0a*','**_*_8.3_a_0a*','**_*_8.4_a_0a*','**_*_8.5_a_0a*','**_c_8.6_a_0a*','**_*_8.7_a_0a*','**_*_8.8_a_0a*','**_*_8.9_d_0a*'],
       row9: ['**_*_9.0_a_0a*','**_a_9.1_a_0a*','**_*_9.2_a_0a*','**_*_9.3_a_0a*','**_*_9.4_a_0a*','**_*_9.5_a_0a*','**_*_9.6_a_0a*','**_*_9.7_a_0a*','**_*_9.8_a_0a*','**_*_9.9_a_0a*'],
     };
@@ -1380,8 +1380,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 2,
-              y: 5,
+              x: 3,
+              y: 7,
             },
             center: {
               x: 0,
@@ -1871,8 +1871,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 1,
-              y: 2,
+              x: 7,
+              y: 5,
             },
             center: {
               x: 0,
@@ -9967,6 +9967,44 @@ class App extends Component {
         plyr2.ai.targetAcquired = false;
       }
     }
+
+  }
+  jumpCollisionCheck = (type) => {
+
+    type = barrier, obstacle, player
+
+    If barrier
+    if (cell1.barrier.state === true) {
+
+      if (cell1.barrier.position === player.direction) {
+        cell1BarrierFar = true;
+      }
+      if (cell1.barrier.position === this.getOppositeDirection(player.direction)) {
+        cell1BarrierNear = true;
+      }
+
+    }
+    if (cell2.barrier.state === true) {
+
+      if (cell2.barrier.position === this.getOppositeDirection(player.direction)) {
+        cell2Barrier = true;
+      }
+
+    }
+
+    1. unbrokend/damaged impediment
+    1.a if barrier, pushback player
+    1.b if obstacle, chance to pushback obstacle
+    1.b.1 no pushback obstacle, pushback player
+    1.b.2 pushback obstacle, pushback player
+    1.b.3 pushback obstacle, advance to target
+
+    2. break impediment, plyr pushback
+    3. break impediment, advance to target
+    4. chance to injure player
+    4.a consider stats and armor
+    5. Move/damage obstacle when player is at cell1
+    6. If player, chance to damage both or push plyr back
 
   }
 
@@ -30068,7 +30106,8 @@ class App extends Component {
         player.nextPosition = nextPosition;
 
 
-        let atDestRanges = [false,false,false,false];
+        let atDestRanges1 = [false,false,false,false];
+        let atDestRanges2 = [false,false,false,false];
 
         if (player.target.cell1.void === true) {
           if (player.falling.state === true) {
@@ -30345,64 +30384,105 @@ class App extends Component {
 
 
           if (
+            nextPosition.x >= player.target.cell1.center.x-1 &&
+            nextPosition.x <= player.target.cell1.center.x+1 &&
+            nextPosition.y >= player.target.cell1.center.y-1 &&
+            nextPosition.y <= player.target.cell1.center.y+1
+          ) {
+            atDestRanges1[0] = true;
+          }
+
+          if (
+            nextPosition.x === player.target.cell1.center.x-0.25 &&
+            nextPosition.y === player.target.cell1.center.y+0.5
+          ) {
+            atDestRanges1[1] = true;
+          }
+
+          if (
+            nextPosition.x === player.target.cell1.center.x &&
+            nextPosition.y === player.target.cell1.center.y
+          ) {
+            atDestRanges1[2] = true;
+          }
+
+          if (
+            nextPosition.x === player.target.cell1.center.x-5 &&
+            nextPosition.y === player.target.cell1.center.y-5
+          ) {
+            atDestRanges1[3] = true;
+          }
+
+
+          for (const el of atDestRanges1) {
+            if (el === true) {
+
+
+              if (cell1.barrier.state === true) {
+
+                if (cell1.barrier.position === player.direction) {
+                  cell1BarrierFar = true;
+                }
+                if (cell1.barrier.position === this.getOppositeDirection(player.direction)) {
+                  cell1BarrierNear = true;
+                }
+
+              }
+              if (cell2.barrier.state === true) {
+
+                if (cell2.barrier.position === this.getOppositeDirection(player.direction)) {
+                  cell2Barrier = true;
+                }
+
+              }
+
+              if blocked, stop movement and call collison checker
+
+            }
+          }
+
+
+
+
+
+          if (
             nextPosition.x >= player.target.cell2.center.x-1 &&
             nextPosition.x <= player.target.cell2.center.x+1 &&
             nextPosition.y >= player.target.cell2.center.y-1 &&
             nextPosition.y <= player.target.cell2.center.y+1
           ) {
-            atDestRanges[0] = true;
+            atDestRanges2[0] = true;
           }
 
           if (
             nextPosition.x === player.target.cell2.center.x-0.25 &&
             nextPosition.y === player.target.cell2.center.y+0.5
           ) {
-            atDestRanges[1] = true;
+            atDestRanges2[1] = true;
           }
 
           if (
             nextPosition.x === player.target.cell2.center.x &&
             nextPosition.y === player.target.cell2.center.y
           ) {
-            atDestRanges[2] = true;
+            atDestRanges2[2] = true;
           }
 
           if (
             nextPosition.x === player.target.cell2.center.x-5 &&
             nextPosition.y === player.target.cell2.center.y-5
           ) {
-            atDestRanges[3] = true;
+            atDestRanges2[3] = true;
           }
 
 
-          for (const el of atDestRanges) {
+          for (const el of atDestRanges2) {
             if (el === true) {
 
               // console.log('at jump destination',player.target.cell2.number);
               // console.log('next position is destination a',player.number);
               player.newMoveDelay.state = true;
 
-
-              let pushBack = false;
-              let opp;
-
-              for (const plyr of this.players) {
-                if (
-                  // plyr.currentPosition.cell.number.x === player.currentPosition.cell.number.x &&
-                  // plyr.currentPosition.cell.number.y === player.currentPosition.cell.number.y
-                  // plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
-                  // plyr.currentPosition.cell.number.y === player.target.cell2.number.y
-                  plyr.target.cell1.number.x === player.target.cell2.number.x &&
-                  plyr.target.cell1.number.y === player.target.cell2.number.y &&
-                  plyr.moving.state === true
-                ) {
-
-                  // console.log('jump destination occupied, fall into target 1',player.direction);
-
-                  pushBack = true;
-                  opp = plyr;
-                }
-              }
 
               // Jump dest cell not void
               if (player.target.cell2.void === false) {
@@ -30433,42 +30513,64 @@ class App extends Component {
                   }
                 }
 
+
+
+                // check for obstacle and player collisions here and call jump collision checker
+
+
                 this.checkDestination(player,false);
                 // let trgt = this.getTarget(player);
 
-                if (pushBack === true ) {
+                let pushBack = false;
+                let opp;
 
-                  let playerAPushDir = this.getOppositeDirection(opp.direction);
-                  let playerBPushDir = this.getOppositeDirection(player.direction);
+                for (const plyr of this.players) {
+                  if (
+                    // plyr.currentPosition.cell.number.x === player.currentPosition.cell.number.x &&
+                    // plyr.currentPosition.cell.number.y === player.currentPosition.cell.number.y
+                    // plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
+                    // plyr.currentPosition.cell.number.y === player.target.cell2.number.y
+                    plyr.target.cell1.number.x === player.target.cell2.number.x &&
+                    plyr.target.cell1.number.y === player.target.cell2.number.y &&
+                    plyr.moving.state === true
+                  ) {
+
+                    console.log('jump destination occupied, fall into target 1',player.direction);
+
+                    pushBack = true;
+                    opp = plyr;
 
 
-                  player.strafing = {
-                    state: true,
-                    direction: playerAPushDir
-                  }
-                  player.action = 'strafe moving';
-                  player.moving = {
-                    state: true,
-                    step: 0,
-                    course: '',
-                    origin: {
-                      number: {
-                        x: player.currentPosition.cell.number.x,
-                        y: player.currentPosition.cell.number.y
+                    let playerAPushDir = this.getOppositeDirection(opp.direction);
+                    let playerBPushDir = this.getOppositeDirection(player.direction);
+
+
+                    player.strafing = {
+                      state: true,
+                      direction: playerAPushDir
+                    }
+                    player.action = 'strafe moving';
+                    player.moving = {
+                      state: true,
+                      step: 0,
+                      course: '',
+                      origin: {
+                        number: {
+                          x: player.currentPosition.cell.number.x,
+                          y: player.currentPosition.cell.number.y
+                        },
+                        center: {
+                          x: player.currentPosition.cell.center,
+                          y: player.currentPosition.cell.center
+                        },
                       },
-                      center: {
-                        x: player.currentPosition.cell.center,
-                        y: player.currentPosition.cell.center
-                      },
-                    },
-                    destination: player.target.cell2.center
+                      destination: player.target.cell2.center
+                    }
+                    // player.target.void = true;
+                    let nextPosition = this.lineCrementer(player);
+                    player.nextPosition = nextPosition;
+
                   }
-                  // player.target.void = true;
-                  let nextPosition = this.lineCrementer(player);
-                  player.nextPosition = nextPosition;
-
-
-
                 }
 
               }
@@ -32837,81 +32939,35 @@ class App extends Component {
 
                     // CHECK ALL 3 JUMPING CELLS FOR BARRIERS BASED ON POSITION
                     let myCellBlocked = false;
-                    let cell1BarrierFacing = false;
-                    let cell2BarrierFacing = false;
+                    let cell1BarrierNear = false;
+                    let cell1BarrierFar = false;
+                    let cell2Barrier = false;
                     if (myCell.barrier.state === true && myCell.barrier.position === player.direction) {
                       myCellBlocked = true;
                     }
                     if (cell1.barrier.state === true) {
-                      switch (cell1.barrier.position) {
-                        case 'north':
-                          if (
-                            player.direction === 'south' ||
-                            player.direction === 'north'
-                          ) {
-                            cell1BarrierFacing = true;
-                          }
-                          break;
-                        case 'south':
-                          if (
-                            player.direction === 'south' ||
-                            player.direction === 'north'
-                          ) {
-                            cell1BarrierFacing = true;
-                          }
-                          break;
-                        case 'east':
-                          if (
-                            player.direction === 'east' ||
-                            player.direction === 'west'
-                          ) {
-                            cell1BarrierFacing = true;
-                          }
-                          break;
-                        case 'west':
-                          if (
-                            player.direction === 'east' ||
-                            player.direction === 'west'
-                          ) {
-                            cell1BarrierFacing = true;
-                          }
-                          break;
-                        default:
 
+                      if (cell1.barrier.position === player.direction) {
+                        cell1BarrierFar = true;
                       }
+                      if (cell1.barrier.position === this.getOppositeDirection(player.direction)) {
+                        cell1BarrierNear = true;
+                      }
+
                     }
                     if (cell2.barrier.state === true) {
-                      switch (cell2.barrier.position) {
-                        case 'north':
-                          if (player.direction === 'south') {
-                            cell2BarrierFacing = true;
-                          }
-                          break;
-                        case 'south':
-                          if (player.direction === 'north') {
-                            cell2BarrierFacing = true;
-                          }
-                          break;
-                        case 'east':
-                          if (player.direction === 'west') {
-                            cell2BarrierFacing = true;
-                          }
-                          break;
-                        case 'west':
-                          if (player.direction === 'east') {
-                            cell2BarrierFacing = true;
-                          }
-                          break;
-                        default:
 
+                      if (cell2.barrier.position === this.getOppositeDirection(player.direction)) {
+                        cell2Barrier = true;
                       }
+
                     }
 
                     if (
-                      cell1.obstacle.state !== true &&
-                      cell2.obstacle.state !== true &&
-                      cell1BarrierFacing !== true &&
-                      cell2BarrierFacing !== true &&
+                      // cell1.obstacle.state !== true &&
+                      // cell2.obstacle.state !== true &&
+                      cell1BarrierNear !== true &&
+                      // cell2Barrier !== true &&
                       myCellBlocked !== true
                     ) {
                       // console.log('no obstacles at jump destination');
@@ -32945,6 +33001,7 @@ class App extends Component {
                           // nextPosition = this.jumpCrementer(player);
                           player.nextPosition = nextPosition;
 
+
                           // RESET CELL INFO PLAYER
                           if (
                             this.mouseOverCell.state === true &&
@@ -32976,54 +33033,6 @@ class App extends Component {
                       }
 
 
-                      // JUMPING INTO PLYR OCCUPIED CELL CAUSES OVERLAP PUSHBACK. IF NOT USE THE FOLLOWING
-                      // let targetOccupied = false;
-                      // for (const plyr of this.players) {
-                      //   if (
-                      //     plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
-                      //     plyr.currentPosition.cell.number.y === player.target.cell2.number.y
-                      //   ) {
-                      //     // console.log('c');
-                      //     targetOccupied = true
-                      //   }
-                      //
-                      // }
-                      //
-                      // if (targetOccupied !== true) {
-                      //   if (
-                      //     cell2.void.state !== true &&
-                      //     cell2.terrain.type !== 'deep'
-                      //   ) {
-                      //     // console.log('can jump');
-                      //     this.players[player.number-1].jumping.checking = false;
-                      //     this.players[player.number-1].jumping.state = true;
-                      //     player.action = 'jumping'
-                      //     player.stamina.current = player.stamina.current - this.staminaCostRef.jump;
-                      //
-                      //     player.moving = {
-                      //       state: true,
-                      //       step: 0,
-                      //       course: '',
-                      //       origin: {
-                      //         number: player.currentPosition.cell.number,
-                      //         center: player.currentPosition.cell.center,
-                      //       },
-                      //       destination: target.cell2.center
-                      //     }
-                      //
-                      //     nextPosition = this.lineCrementer(player);
-                      //     // nextPosition = this.jumpCrementer(player);
-                      //     player.nextPosition = nextPosition;
-                      //   } else {
-                      //     // console.log('can only jump over voids or deep water cell 2');
-                      //     this.players[player.number-1].jumping.checking = false;
-                      //   }
-                      // }
-                      // else {
-                      //   // console.log('jump destination occupied');
-                      //   this.players[player.number-1].jumping.checking = false;
-                      // }
-
                     }
                     else {
                       // console.log('jump obstacle detected');
@@ -33039,12 +33048,12 @@ class App extends Component {
                       if (myCellBlocked === true) {
                         console.log("can't jump! barrier in player cell blocking");
                       }
-                      if (cell1BarrierFacing === true) {
+                      if (cell1BarrierNear === true) {
                         console.log("can't jump! barrier cell 1 blocking");
                       }
-                      if (cell2BarrierFacing === true) {
-                        console.log("can't jump! barrier cell 2 blocking");
-                      }
+                      // if (cell2Barrier === true) {
+                      //   console.log("can't jump! barrier cell 2 blocking");
+                      // }
 
                     }
                   } else {
@@ -35447,7 +35456,7 @@ class App extends Component {
 
             let infoCell = this.gridInfo.find(x => x.number.x === cell.number.x && x.number.y === cell.number.y);
 
-
+            // PATH HIGHLIGHT
             if (cell.number.x === this.players[bolt.owner-1].currentPosition.cell.number.x && cell.number.y === this.players[bolt.owner-1].currentPosition.cell.number.y) {
 
             }
@@ -35463,8 +35472,6 @@ class App extends Component {
                 },
               )
             }
-
-
 
             if (infoCell.elevation.number === bolt.elevation) {
 
@@ -35532,8 +35539,8 @@ class App extends Component {
 
             }
 
-
             else {
+
               if (infoCell.elevation.number < bolt.elevation) {
                 console.log('bolt moving over lower cell. ');
 
@@ -35544,6 +35551,7 @@ class App extends Component {
                 console.log('bolt hit cell of higher elevation.');
                 bolt.kill = true;
               }
+
             }
 
 
