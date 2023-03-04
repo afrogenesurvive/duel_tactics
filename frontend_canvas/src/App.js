@@ -1381,7 +1381,7 @@ class App extends Component {
           cell: {
             number: {
               x: 5,
-              y: 0,
+              y: 6,
             },
             center: {
               x: 0,
@@ -10008,8 +10008,12 @@ class App extends Component {
 
 
           let hp = args.hp - 1;
+          let state = true;
+          if (hp <= 0) {
+            state = false;
+          }
           cellRef.obstacle = {
-            state: cellRef.obstacle.state,
+            state: state,
             name: cellRef.obstacle.name,
             type: cellRef.obstacle.type,
             hp: hp,
@@ -10044,13 +10048,13 @@ class App extends Component {
 
       }
 
-      if (args.hp <= 0) {
-        animateDamageDestroy('obstacle','destroy',obstacle)
+      if (cellRef.obstacle.hp <= 0) {
+        animateDamageDestroy('obstacle','destroy',cellRef.obstacle)
 
       }
       else {
 
-        animateDamageDestroy('obstacle','damage',obstacle)
+        animateDamageDestroy('obstacle','damage',cellRef.obstacle)
 
       }
 
@@ -10063,11 +10067,14 @@ class App extends Component {
 
       if (args.destructible.state === true) {
 
-          let hp = args.barrier.hp - 1;
-
+          let hp = args.hp - 2;
+          let state = true;
+          if (hp <= 0) {
+            state = false;
+          }
           cellRef.barrier =
           {
-            state: cellRef.barrier.state,
+            state: state,
             name: cellRef.barrier.name,
             type: cellRef.barrier.type,
             hp: hp,
@@ -10098,13 +10105,13 @@ class App extends Component {
 
       }
 
-      if (obstacle.hp <= 0) {
-        animateDamageDestroy('obstacle','destroy',obstacle)
+      if (cellRef.barrier.hp <= 0) {
+        animateDamageDestroy('barrier','destroy',cellRef.barrier)
 
       }
       else {
 
-        animateDamageDestroy('obstacle','damage',obstacle)
+        animateDamageDestroy('barrier','damage',cellRef.barrier)
 
       }
 
@@ -10117,56 +10124,75 @@ class App extends Component {
     let animateDamageDestroy = (type,action,args) => {
 
 
+      if (action === "damage") {
+
+        this.obstacleBarrierToDestroy.push({
+          type: type,
+          action: 'damage',
+          count: 0,
+          limit: 30,
+          complete: false,
+          cell: cellRef,
+        })
+        this.players[player.number-1].statusDisplay = {
+          state: true,
+          status: 'Damaged '+cellRef[type].name+'!',
+          count: 1,
+          limit: player.statusDisplay.limit,
+        }
 
 
-      // this.obstacleBarrierToDestroy.push({
-      //   type: 'obstacle',
-      //   action: 'damage',
-      //   count: 0,
-      //   limit: 30,
-      //   complete: false,
-      //   cell: targetCell,
-      // })
-      // this.players[player.number-1].statusDisplay = {
-      //     state: true,
-      //     status: 'Destroyed '+targetCell.obstacle.name+'!',
-      //     count: 1,
-      //     limit: this.players[player.number-1].statusDisplay.limit,
-      //   }
 
-      // if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
-      //       player.popups.push(
-      //         {
-      //           state: false,
-      //           count: 0,
-      //           limit: 30,
-      //           type: '',
-      //           position: '',
-      //           msg: 'destroyedItem',
-      //           img: '',
-      //
-      //         }
-      //       )
-      //     }
+      }
+      if (action === "destroy") {
 
 
-      if(action === "destroy") {
+        this.obstacleBarrierToDestroy.push({
+          type: type,
+          action: 'destroy',
+          count: 0,
+          limit: 30,
+          complete: false,
+          cell: cellRef,
+        })
+        this.players[player.number-1].statusDisplay = {
+          state: true,
+          status: 'Destroyed '+cellRef[type].name+'!',
+          count: 1,
+          limit: player.statusDisplay.limit,
+        }
 
-        // if (targetCell.obstacle.items[0]) {
-        //     itemsToDrop = targetCell.obstacle.items;
-        //   }
-        // if (itemsToDrop[0]) {
-        //   // console.log('dropping obstacle items melee',itemsToDrop);
-        //   this.obstacleItemDrop(targetCell,player);
-        //
-        // }
 
-        if (destructible.leaveRubble = true) {
+        if (!player.popups.find(x=>x.msg === 'destroyedItem')) {
+          player.popups.push(
+            {
+              state: false,
+              count: 0,
+              limit: 30,
+              type: '',
+              position: '',
+              msg: 'destroyedItem',
+              img: '',
+
+            }
+          )
+        }
+
+
+        if (cellRef.obstacle.items[0]) {
+            this.obstacleItemDrop(cellRef,player);
+        }
+
+        if (cellRef.obstacle.destructible.leaveRubble === true || cellRef.barrier.destructible.leaveRubble === true) {
           if (cellRef.terrain.type !== 'void' && cellRef.terrain.type !== 'deep') {
             cellRef.rubble = true;
           }
         }
+
+
       }
+
+
 
 
     }
@@ -10175,53 +10201,147 @@ class App extends Component {
     let interruptJump = () => {
 
       player.jumping.state = false;
-      player.currentPosition.cell.number = player.target[subType].number;
-      player.currentPosition.cell.center = player.target[subType].center;
       player.strafing.state = false;
       player.action = 'idle';
-      player.moving = {
-        state: false,
-        step: 0,
-        course: '',
-        origin: {
-          number: {
-            x: player.target.cell2.number.x,
-            y: player.target.cell2.number.y
-          },
-          center: {
-            x: player.target.cell2.center.x,
-            y: player.target.cell2.center.y
-          },
-        },
-        destination: {
-          x: 0,
-          y: 0,
-        }
-      }
 
       jumpComplete = false;
 
       if (type === "barrier") {
-        if (this.rnJesus(0,player.crits.pushBack) === 0) {
-          this.pushBack(player,this.getOppositeDirection(player.direction));
+
+        player.moving = {
+          state: false,
+          step: 0,
+          course: '',
+          origin: {
+            number: {
+              x: player.target.cell1.number.x,
+              y: player.target.cell1.number.y
+            },
+            center: {
+              x: player.target.cell1.center.x,
+              y: player.target.cell1.center.y
+            },
+          },
+          destination: {
+            x: 0,
+            y: 0,
+          }
         }
-        else {
-          this.setDeflection(player,'bluntAttacked',false);
-          this.checkDestination(player,false);
-        }
+        player.currentPosition.cell.number = player.target.cell1.number;
+        player.currentPosition.cell.center = player.target.cell1.center;
+
+        this.checkDestination(player,false);
+
       }
 
+      if (type === "obstacle" || type === "player") {
+
+        player.moving = {
+          state: false,
+          step: 0,
+          course: '',
+          origin: {
+            number: {
+              x: player.target.cell2.number.x,
+              y: player.target.cell2.number.y
+            },
+            center: {
+              x: player.target.cell2.center.x,
+              y: player.target.cell2.center.y
+            },
+          },
+          destination: {
+            x: 0,
+            y: 0,
+          }
+        }
+        player.currentPosition.cell.number = player.target.cell2.number;
+        player.currentPosition.cell.center = player.target.cell2.center;
+
+        this.pushBack(player,this.getOppositeDirection(player.direction));
+      }
 
 
     }
 
+
+    let completeJump = () => {
+
+
+      if (type === "obstacle") {
+
+        this.players[player.number-1].jumping.checking = false;
+        player.jumping.state = false;
+        player.currentPosition.cell.number = player.target[subType].number;
+        player.currentPosition.cell.center = player.target[subType].center;
+        player.strafing.state = false;
+        player.action = 'idle';
+        player.moving = {
+          state: false,
+          step: 0,
+          course: '',
+          origin: {
+            number: {
+              x: player.target.cell2.number.x,
+              y: player.target.cell2.number.y
+            },
+            center: {
+              x: player.target.cell2.center.x,
+              y: player.target.cell2.center.y
+            },
+          },
+          destination: {
+            x: 0,
+            y: 0,
+          }
+        }
+
+        this.checkDestination(player,false);
+
+      }
+
+      if (type === "barrier") {
+
+
+
+        // this.players[player.number-1].jumping.checking = false;
+        // this.players[player.number-1].jumping.state = true;
+        // player.action = 'jumping'
+        this.players[player.number-1].jumping.checking = false;
+        this.players[player.number-1].jumping.state = true;
+        player.action = 'jumping'
+        player.moving = {
+          state: true,
+          step: player.moving.step,
+          course: '',
+          origin: {
+            // number: player.target.cell1.number,
+            // center: player.target.cell1.center,
+            number: player.currentPosition.cell.number,
+            center: player.currentPosition.cell.center,
+          },
+          destination: player.target.cell2.center
+        }
+        // player.currentPosition.cell.number = player.target.cell2.number;
+        // player.currentPosition.cell.center = player.target.cell2.center;
+
+
+        let nextPosition = this.lineCrementer(player);
+        // nextPosition = this.jumpCrementer(player);
+        player.nextPosition = nextPosition;
+
+
+      }
+
+
+    }
 
 
     switch (type) {
       case "barrier":
 
        barrier = shouldDamageBarrier(barrier)
-       this.handleMiscPlayerDamage(player,"jumpCollision")
+       // this.handleMiscPlayerDamage(player,"jumpCollision")
 
        player = this.players[player.number-1];
 
@@ -10229,14 +10349,34 @@ class App extends Component {
          // DO NOTHING
        }
        else {
-         if (barrier.hp > 0) {
-           interruptJump();
-           this.pushBack(player,this.getOppositeDirection(player.direction));
+         if (subType === 'cell1') {
 
+           let cell2Ref = this.gridInfo.find(x => x.number.x === player.target.cell2.number.x && x.number.y === player.target.cell2.number.y)
+
+           if (cell2Ref.barrier.state === true && cell2Ref.barrier.position === this.getOppositeDirection(player.direction)) {
+             interruptJump();
+           }
+           else {
+             if (barrier.hp > 0) {
+               interruptJump();
+
+             }
+             else {
+               // DO NOTHING, COMPLETE JUMP
+               completeJump()
+             }
+           }
          }
-         else {
-           // DO NOTHING, COMPLETE JUMP
+         if (subType === "cell2") {
+           if (barrier.hp > 0) {
+             interruptJump();
+           }
+           else {
+             // DO NOTHING, COMPLETE JUMP
+             completeJump()
+           }
          }
+
        }
 
       break;
@@ -10251,15 +10391,17 @@ class App extends Component {
         }
         else {
           if (obstacle.hp > 0) {
+
             if (player.hp > obstacle.hp) {
 
-              this.canPushObstacle(player,cellRef,'jumpCollision');
+              let canPush = this.canPushObstacle(player,cellRef,'jumpCollision');
 
-              if (this.rnJesus(0,player.crits.pushBack) === 0) {
-                interruptJump();
+              if (canPush === true) {
+                // DO NOTHING, COMPLETE JUMP
+                completeJump()
               }
               else {
-                // DO NOTHING, COMPLETE JUMP
+                interruptJump();
               }
 
             }
@@ -10269,6 +10411,7 @@ class App extends Component {
 
           }
           else {
+            completeJump()
             // DO NOTHING, COMPLETE JUMP
           }
         }
@@ -10278,12 +10421,13 @@ class App extends Component {
 
 
         let advantage = this.checkCombatAdvantage(player,otherPlayer);
-
+        console.log('advantage', advantage);
         let losingPlayer;
         let damageBoth = false;
-        if (this.rnJesus(0,5) === 0) {
+        if (advantage === 0) {
           this.handleMiscPlayerDamage(player,"jumpCollision")
           this.handleMiscPlayerDamage(otherPlayer,"jumpCollision")
+          // this.setDeflection(otherPlayer,'bluntAttacked',false);
         }
         else {
           this.handleMiscPlayerDamage(losingPlayer,"jumpCollision")
@@ -10295,17 +10439,22 @@ class App extends Component {
 
           if (otherPlayer.dead.state === true) {
             // COMPLETE JUMP
+            completeJump()
           }
           else {
             if (player.hp > otherPlayer.hp) {
               // COMPLETE JUMP
+              console.log("B");
               this.pushBack(otherPlayer,this.getOppositeDirection(otherPlayer.direction));
+              completeJump()
+
             }
             else {
+              console.log("A");
               interruptJump();
-              if (this.rnJesus(0,5) === 0) {
+              // if (this.rnJesus(0,5) === 0) {
                 this.pushBack(otherPlayer,this.getOppositeDirection(otherPlayer.direction));
-              }
+              // }
             }
           }
         }
@@ -12181,7 +12330,7 @@ class App extends Component {
 
         this.players[player.number-1].hp -= 1;
 
-        this.setDeflection(player,'attacked',false);
+        // this.setDeflection(player,'attacked',false);
 
         if (!this.players[player.number-1].popups.find(x=>x.msg.split("_")[0] === "hpDown")) {
           this.players[player.number-1].popups.push(
@@ -19804,6 +19953,16 @@ class App extends Component {
 
       }
 
+
+    }
+
+    if (type === "jumpCollision") {
+      if (canPushTargetFree === true) {
+        return true;
+      }
+      else {
+        return false;
+      }
 
     }
 
@@ -30555,7 +30714,7 @@ class App extends Component {
 
               player.newMoveDelay.state = true;
 
-              if (player.target.cell1.void === false) {
+              if (player.target.cell1.void === false && player.pushBack.state !== true) {
 
                 player.currentPosition.cell.number = player.target.cell1.number;
                 player.currentPosition.cell.center = player.target.cell1.center;
@@ -30688,6 +30847,8 @@ class App extends Component {
                 }
 
 
+                player.currentPosition.cell.number = player.target.cell1.number;
+                player.currentPosition.cell.center = player.target.cell1.center;
                 player.pushBack.state = false;
                 player.strafing = {
                   state: false,
@@ -30696,7 +30857,7 @@ class App extends Component {
                 player.moving.state = false;
                 player.speed.move = player.pushBack.prePushMoveSpeed;
                 this.getTarget(player);
-
+                this.checkDestination(player,false);
 
 
               }
@@ -30784,20 +30945,21 @@ class App extends Component {
               let blocked = false;
               let blockType = "";
 
-              if (refCell1.barrier.state === true) {
-
-                if (refCell1.barrier.position === player.direction) {
-                  blocked = true;
-                  blockType = "cell1";
-                }
-
-              }
-
               if (refCell2.barrier.state === true) {
 
                 if (refCell2.barrier.position === this.getOppositeDirection(player.direction)) {
                   blocked = true;
                   blockType = "cell2";
+                }
+
+              }
+
+              // CHECK 1ST CELL 2ND BECAUSE OF OVERWRITE W/ BARRIERS IN 2 CELLS
+              if (refCell1.barrier.state === true) {
+
+                if (refCell1.barrier.position === player.direction) {
+                  blocked = true;
+                  blockType = "cell1";
                 }
 
               }
@@ -30811,7 +30973,7 @@ class App extends Component {
               }
 
               // console.log('@ mid jump cell 1',player.target.cell1);
-
+              break;
             }
           }
 
@@ -30944,7 +31106,7 @@ class App extends Component {
 
                 if (blocked !== true) {
 
-                  this.checkDestination(player,false);
+
 
 
                   player.jumping.state = false;
@@ -30971,8 +31133,9 @@ class App extends Component {
                       y: 0,
                     }
                   }
+                  this.checkDestination(player,false);
 
-                  // console.log('no blockage. Arrived at jump dest');
+                  console.log('no blockage. Arrived at jump dest');
 
                 }
 
@@ -33446,9 +33609,9 @@ class App extends Component {
                       if (cell1.obstacle.state === true) {
                         console.log("can't jump! obstacle in cell1");
                       }
-                      if (cell2.obstacle.state === true) {
-                        console.log("can't jump! obstacle in cell2");
-                      }
+                      // if (cell2.obstacle.state === true) {
+                      //   console.log("can't jump! obstacle in cell2");
+                      // }
                       if (myCellBlocked === true) {
                         console.log("can't jump! barrier in player cell blocking");
                       }
@@ -36053,7 +36216,7 @@ class App extends Component {
     let newDirection;
 
     if (player.falling.state === true) {
-      // console.log('player',player.number,'falling count',player.falling.count,'position',player.nextPosition);
+      console.log('player',player.number,'falling count',player.falling.count,'position',player.nextPosition);
       if (player.falling.count === player.falling.limit) {
         this.killPlayer(player)
       }
@@ -38069,7 +38232,7 @@ class App extends Component {
                     this.camera.instructions.length === 0
                   ) {
 
-                  this.setAutoCamera('playerSpawnFocus',plyr)
+                  // this.setAutoCamera('playerSpawnFocus',plyr)
                 }
                 else {
                   console.log('no setting auto cam: playerSpawnFocus');
