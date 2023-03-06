@@ -337,8 +337,8 @@ class App extends Component {
     this.levelData9 = {
       row0: ['**_a_0.0_a_0a*','**_i_0.1_a_0a*','**_*_0.2_a_0a*','cw_*_0.3_a_0a*','cw_h_0.4_a_0a*','cw_*_0.5_a_0a*','**_*_0.6_a_0a*','**_i_0.7_a_0a*','**_*_0.8_h_0a*','**_*_0.9_h_0a*'],
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
-      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_*_2.2_a_0a*','**_*_2.3_a_0a*','**_h_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_j_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
-      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_h_3.2_a_0a*','**_h_3.3_a_0a*','**_h_3.4_a_0a*','**_*_3.5_a_0a*','**_h_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_a_3.9_a_0a*'],
+      row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_*_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_j_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
+      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_h_3.2_a_0a*','**_*_3.3_a_0a*','**_h_3.4_a_0a*','**_*_3.5_a_0a*','**_h_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_a_3.9_a_0a*'],
       row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_c_4.3_f_0a*','**_*_4.4_a_0a*','**_*_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','**_*_4.9_a_0a*'],
       row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','ce_*_5.2_a_0a*','**_*_5.3_a_0a*','ce_h_5.4_a_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','**_*_5.8_a_0a*','**_*_5.9_a_0a*'],
       row6: ['**_*_6.0_b_0a*','**_*_6.1_j_0a*','cw_*_6.2_j_0a*','cw_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_j_0a*','ce_*_6.8_j_0a*','ce_*_6.9_j_0a*'],
@@ -1380,8 +1380,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 5,
-              y: 6,
+              x: 4,
+              y: 4,
             },
             center: {
               x: 0,
@@ -1871,7 +1871,7 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 7,
+              x: 3,
               y: 5,
             },
             center: {
@@ -10510,7 +10510,7 @@ class App extends Component {
 
   }
   obstaclePlayerOverlap = (type,cell,player,obstacle) => {
-    console.log('obstaclePlayerOverlap',type,cell.number,player,obstacle);
+    console.log('obstaclePlayerOverlap');
 
     let obstacleDirection = this.getOppositeDirection(this.getDirectionFromCells(obstacle.moving.origin.number,obstacle.moving.destination.number));
 
@@ -12994,60 +12994,77 @@ class App extends Component {
 
     if (object === 'player') {
 
-      let point = {
-        x: data.currentPosition.cell.center.x,
-        y: data.currentPosition.cell.center.y,
-      };
 
+      if (data.halfPushBack !== true) {
+        let point = {
+          x: data.currentPosition.cell.center.x,
+          y: data.currentPosition.cell.center.y,
+        };
 
-      data.halfPushBack = {
-        state: true,
-        direction: direction,
-        type: blockType,
-        countUp: {
+        data.halfPushBack = {
           state: true,
-          count: 0,
-          limit: 6,
-        },
-        countDown: {
-          state: false,
-          count: 0,
-          limit: 6,
-        },
-        coords: {
-          x: point.x-(this.playerDrawWidth/2),
-          y: point.y-(this.playerDrawHeight/2),
-        },
+          direction: direction,
+          type: blockType,
+          countUp: {
+            state: true,
+            count: 0,
+            limit: 6,
+          },
+          countDown: {
+            state: false,
+            count: 0,
+            limit: 6,
+          },
+          coords: {
+            x: point.x-(this.playerDrawWidth/2),
+            y: point.y-(this.playerDrawHeight/2),
+          },
+        }
+
+        this.players[data.number-1] = data;
+      }
+      else {
+        console.log('player already being 1/2 pushed back!!');
       }
 
-      this.players[data.number-1] = data;
+
 
     }
 
     if (object === "obstacle") {
 
-      this.halfPushBackObstacles.push ({
-        state: true,
-        myCellNo: data.number,
-        blockCellNo: this.getCellFromDirection(1,data.number,direction),
-        blockType: blockType,
-        direction: direction,
-        obstacle: data.obstacle,
-        countUp: {
+
+      if (this.halfPushBackObstacles.find(x => x.state !== true && x.myCellNo !== data.number)) {
+
+        this.halfPushBackObstacles.push ({
           state: true,
-          count: 0,
-          limit: 10,
-        },
-        countDown: {
-          state: false,
-          count: 0,
-          limit: 10,
-        },
-        coords: {
-          x: undefined,
-          y: undefined,
-        },
-      })
+          myCellNo: data.number,
+          blockCellNo: this.getCellFromDirection(1,data.number,direction),
+          blockType: blockType,
+          direction: direction,
+          obstacle: data.obstacle,
+          countUp: {
+            state: true,
+            count: 0,
+            limit: 10,
+          },
+          countDown: {
+            state: false,
+            count: 0,
+            limit: 10,
+          },
+          coords: {
+            x: undefined,
+            y: undefined,
+          },
+        })
+
+      }
+      else {
+        console.log("obsatcle already being 1/2 pushed back!!");
+      }
+
+
 
     }
 
@@ -13914,88 +13931,97 @@ class App extends Component {
 
       if (targetFree === true) {
 
-        if (destCellRef) {
 
-          let obstacleCrementObj = this.obstacleMoveCrementer(targetCellRef,destCellRef);
+        if (targetCellRef.obstacle.moving.state !== true) {
 
-          targetCellRef.obstacle =
-          {
-            state: targetCellRef.obstacle.state,
-            name: targetCellRef.obstacle.name,
-            type: targetCellRef.obstacle.type,
-            hp: targetCellRef.obstacle.hp,
-            destructible: targetCellRef.obstacle.destructible,
-            locked: targetCellRef.obstacle.locked,
-            weight: targetCellRef.obstacle.weight,
-            height: targetCellRef.obstacle.height,
-            items: targetCellRef.obstacle.items,
-            effects: targetCellRef.obstacle.effects,
-            moving: {
-              state: true,
-              step: obstacleCrementObj.step,
-              origin: {
-                number: targetCellRef.number,
-                center: targetCellRef.center,
-              },
-              destination: {
-                number: destCellRef.number,
-                center: destCellRef.center,
-              },
-              currentPosition: targetCellRef.center,
-              nextPosition: obstacleCrementObj.pos,
-              moveSpeed: moveSpeed,
-              pushable: true,
-              pushed: true,
-              pusher: -1,
-              falling: targetCellRef.obstacle.moving.falling,
-            }
-          };
+          if (destCellRef) {
 
+
+            let obstacleCrementObj = this.obstacleMoveCrementer(targetCellRef,destCellRef);
+
+            targetCellRef.obstacle =
+            {
+              state: targetCellRef.obstacle.state,
+              name: targetCellRef.obstacle.name,
+              type: targetCellRef.obstacle.type,
+              hp: targetCellRef.obstacle.hp,
+              destructible: targetCellRef.obstacle.destructible,
+              locked: targetCellRef.obstacle.locked,
+              weight: targetCellRef.obstacle.weight,
+              height: targetCellRef.obstacle.height,
+              items: targetCellRef.obstacle.items,
+              effects: targetCellRef.obstacle.effects,
+              moving: {
+                state: true,
+                step: obstacleCrementObj.step,
+                origin: {
+                  number: targetCellRef.number,
+                  center: targetCellRef.center,
+                },
+                destination: {
+                  number: destCellRef.number,
+                  center: destCellRef.center,
+                },
+                currentPosition: targetCellRef.center,
+                nextPosition: obstacleCrementObj.pos,
+                moveSpeed: moveSpeed,
+                pushable: true,
+                pushed: true,
+                pusher: -1,
+                falling: targetCellRef.obstacle.moving.falling,
+              }
+            };
+
+
+          }
+
+          if (!destCellRef) {
+
+            let voidCenter = this.getVoidCenter(1,direction,targetCellRef.center);
+
+            let obstacleCrementObj = this.obstacleMoveCrementer(targetCellRef,{center:voidCenter});
+
+            targetCellRef.obstacle =
+            {
+              state: targetCellRef.obstacle.state,
+              name: targetCellRef.obstacle.name,
+              type: targetCellRef.obstacle.type,
+              hp: targetCellRef.obstacle.hp,
+              destructible: targetCellRef.obstacle.destructible,
+              locked: targetCellRef.obstacle.locked,
+              weight: targetCellRef.obstacle.weight,
+              height: targetCellRef.obstacle.height,
+              items: targetCellRef.obstacle.items,
+              effects: targetCellRef.obstacle.effects,
+              moving: {
+                state: true,
+                step: obstacleCrementObj.step,
+                origin: {
+                  number: targetCellRef.number,
+                  center: targetCellRef.center,
+                },
+                destination: {
+                  number: {
+                    x: undefined,
+                    y: undefined
+                  },
+                  center: voidCenter,
+                },
+                currentPosition: targetCellRef.center,
+                nextPosition: obstacleCrementObj.pos,
+                moveSpeed: moveSpeed,
+                pushable: true,
+                pushed: true,
+                pusher: -1,
+                falling: targetCellRef.obstacle.moving.falling,
+              }
+            };
+
+          }
 
         }
-
-        if (!destCellRef) {
-
-          let voidCenter = this.getVoidCenter(1,direction,targetCellRef.center);
-
-          let obstacleCrementObj = this.obstacleMoveCrementer(targetCellRef,{center:voidCenter});
-
-          targetCellRef.obstacle =
-          {
-            state: targetCellRef.obstacle.state,
-            name: targetCellRef.obstacle.name,
-            type: targetCellRef.obstacle.type,
-            hp: targetCellRef.obstacle.hp,
-            destructible: targetCellRef.obstacle.destructible,
-            locked: targetCellRef.obstacle.locked,
-            weight: targetCellRef.obstacle.weight,
-            height: targetCellRef.obstacle.height,
-            items: targetCellRef.obstacle.items,
-            effects: targetCellRef.obstacle.effects,
-            moving: {
-              state: true,
-              step: obstacleCrementObj.step,
-              origin: {
-                number: targetCellRef.number,
-                center: targetCellRef.center,
-              },
-              destination: {
-                number: {
-                  x: undefined,
-                  y: undefined
-                },
-                center: voidCenter,
-              },
-              currentPosition: targetCellRef.center,
-              nextPosition: obstacleCrementObj.pos,
-              moveSpeed: moveSpeed,
-              pushable: true,
-              pushed: true,
-              pusher: -1,
-              falling: targetCellRef.obstacle.moving.falling,
-            }
-          };
-
+        else {
+          console.log('obstacle already being 1/2 pushed back!!');
         }
 
       }
@@ -14059,69 +14085,79 @@ class App extends Component {
 
       if (targetFree === true) {
 
-        // this.players[targetPlayer.number-1].strafing.direction = impactDirection;
-        // this.players[targetPlayer.number-1].strafing.state = true;
-        // this.players[targetPlayer.number-1].action = 'strafe moving';
-        this.players[impacteePlayerRef.number-1].action = 'moving';
 
-        this.unsetDeflection(impacteePlayerRef);
+        if (this.players[impacteePlayerRef.number-1].moving.state !== true) {
+
+          // this.players[targetPlayer.number-1].strafing.direction = impactDirection;
+          // this.players[targetPlayer.number-1].strafing.state = true;
+          // this.players[targetPlayer.number-1].action = 'strafe moving';
+          this.players[impacteePlayerRef.number-1].action = 'moving';
+
+          this.unsetDeflection(impacteePlayerRef);
 
 
-        this.players[impacteePlayerRef.number-1].pushed = {
-          state: true,
-          pusher: -1,
-          moveSpeed: moveSpeed,
-        }
-        this.getTarget(impacteePlayerRef);
-
-        if (destCellRef) {
-
-          this.players[impacteePlayerRef.number-1].moving = {
+          this.players[impacteePlayerRef.number-1].pushed = {
             state: true,
-            step: 0,
-            course: '',
-            origin: {
-              number: {
-                x: impacteePlayerRef.currentPosition.cell.number.x,
-                y: impacteePlayerRef.currentPosition.cell.number.y
-              },
-              center: {
-                x: impacteePlayerRef.currentPosition.cell.center,
-                y: impacteePlayerRef.currentPosition.cell.center
-              },
-            },
-            destination: destCellRef.center
+            pusher: -1,
+            moveSpeed: moveSpeed,
           }
-          let targetPlyrNextPosition = this.lineCrementer(impacteePlayerRef);
-          this.players[impacteePlayerRef.number-1].nextPosition = targetPlyrNextPosition;
+          this.getTarget(impacteePlayerRef);
 
+          if (destCellRef) {
+
+            this.players[impacteePlayerRef.number-1].moving = {
+              state: true,
+              step: 0,
+              course: '',
+              origin: {
+                number: {
+                  x: impacteePlayerRef.currentPosition.cell.number.x,
+                  y: impacteePlayerRef.currentPosition.cell.number.y
+                },
+                center: {
+                  x: impacteePlayerRef.currentPosition.cell.center,
+                  y: impacteePlayerRef.currentPosition.cell.center
+                },
+              },
+              destination: destCellRef.center
+            }
+            let targetPlyrNextPosition = this.lineCrementer(impacteePlayerRef);
+            this.players[impacteePlayerRef.number-1].nextPosition = targetPlyrNextPosition;
+
+
+          }
+
+          if (!destCellRef) {
+
+            let voidCenter = this.getVoidCenter(1,direction,targetCellRef.center);
+
+            this.players[impacteePlayerRef.number-1].moving = {
+              state: true,
+              step: 0,
+              course: '',
+              origin: {
+                number: {
+                  x: impacteePlayerRef.currentPosition.cell.number.x,
+                  y: impacteePlayerRef.currentPosition.cell.number.y
+                },
+                center: {
+                  x: impacteePlayerRef.currentPosition.cell.center,
+                  y: impacteePlayerRef.currentPosition.cell.center
+                },
+              },
+              destination: voidCenter
+            }
+            let targetPlyrNextPosition = this.lineCrementer(impacteePlayerRef);
+            this.players[impacteePlayerRef.number-1].nextPosition = targetPlyrNextPosition;
+
+          }
 
         }
-
-        if (!destCellRef) {
-
-          let voidCenter = this.getVoidCenter(1,direction,targetCellRef.center);
-
-          this.players[impacteePlayerRef.number-1].moving = {
-            state: true,
-            step: 0,
-            course: '',
-            origin: {
-              number: {
-                x: impacteePlayerRef.currentPosition.cell.number.x,
-                y: impacteePlayerRef.currentPosition.cell.number.y
-              },
-              center: {
-                x: impacteePlayerRef.currentPosition.cell.center,
-                y: impacteePlayerRef.currentPosition.cell.center
-              },
-            },
-            destination: voidCenter
-          }
-          let targetPlyrNextPosition = this.lineCrementer(impacteePlayerRef);
-          this.players[impacteePlayerRef.number-1].nextPosition = targetPlyrNextPosition;
-
+        else {
+          console.log("player is already being pushed back!!");
         }
+
+
 
       }
 
