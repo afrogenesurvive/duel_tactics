@@ -338,12 +338,12 @@ class App extends Component {
       row0: ['**_a_0.0_a_0a*','**_i_0.1_a_0a*','**_*_0.2_a_0a*','cw_*_0.3_a_0a*','cw_h_0.4_a_0a*','cw_*_0.5_a_0a*','**_*_0.6_a_0a*','**_i_0.7_a_0a*','**_*_0.8_h_0a*','**_*_0.9_h_0a*'],
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_*_2.2_a_0a*','**_*_2.3_a_0a*','**_h_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_j_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
-      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_h_3.2_a_0a*','**_h_3.3_a_0a*','**_h_3.4_a_0a*','**_*_3.5_a_0a*','**_*_3.6_k_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_a_3.9_a_0a*'],
+      row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_h_3.2_a_0a*','**_h_3.3_a_0a*','**_h_3.4_a_0a*','**_*_3.5_a_0a*','**_h_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_a_3.9_a_0a*'],
       row4: ['**_*_4.0_a_0a*','**_*_4.1_a_0a*','**_*_4.2_f_0a*','**_c_4.3_f_0a*','**_*_4.4_a_0a*','**_*_4.5_a_0a*','**_*_4.6_g_0a*','**_*_4.7_a_0a*','**_*_4.8_a_0a*','**_*_4.9_a_0a*'],
-      row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','ce_*_5.2_a_0a*','**_*_5.3_a_0a*','ce_*_5.4_a_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','**_*_5.8_a_0a*','**_*_5.9_a_0a*'],
+      row5: ['**_*_5.0_a_0a*','**_*_5.1_a_0a*','ce_*_5.2_a_0a*','**_*_5.3_a_0a*','ce_h_5.4_a_0a*','**_*_5.5_a_0a*','**_*_5.6_a_0a*','**_*_5.7_a_0a*','**_*_5.8_a_0a*','**_*_5.9_a_0a*'],
       row6: ['**_*_6.0_b_0a*','**_*_6.1_j_0a*','cw_*_6.2_j_0a*','cw_*_6.3_j_0a*','**_*_6.4_j_0a*','**_*_6.5_j_0a*','**_*_6.6_j_0a*','**_*_6.7_j_0a*','ce_*_6.8_j_0a*','ce_*_6.9_j_0a*'],
       row7: ['**_*_7.0_j_0a*','**_*_7.1_j_0a*','**_*_7.2_a_0a*','**_*_7.3_a_0a*','**_*_7.4_a_0a*','**_*_7.5_a_0a*','**_h_7.6_a_0a*','cw*_*_7.7_a_0a*','**_*_7.8_a_0a*','cw_*_7.9_d_0a*'],
-      row8: ['**_*_8.0_a_0a*','**_*_8.1_a_0a*','**_*_8.2_a_0a*','**_*_8.3_a_0a*','**_*_8.4_a_0a*','**_*_8.5_a_0a*','**_h_8.6_a_0a*','**_*_8.7_a_0a*','**_*_8.8_a_0a*','**_*_8.9_d_0a*'],
+      row8: ['**_*_8.0_a_0a*','**_*_8.1_a_0a*','**_*_8.2_a_0a*','**_*_8.3_a_0a*','**_*_8.4_a_0a*','**_*_8.5_a_0a*','**_*_8.6_a_0a*','**_*_8.7_a_0a*','**_*_8.8_a_0a*','**_*_8.9_d_0a*'],
       row9: ['**_*_9.0_a_0a*','**_a_9.1_a_0a*','**_*_9.2_a_0a*','**_*_9.3_a_0a*','**_*_9.4_a_0a*','**_*_9.5_a_0a*','**_*_9.6_a_0a*','**_*_9.7_a_0a*','**_*_9.8_a_0a*','**_*_9.9_a_0a*'],
     };
     this.levelData6 = {
@@ -10013,7 +10013,7 @@ class App extends Component {
 
   }
   jumpCollisionCheck = (type,subType,player) => {
-    console.log('jumpCollisionCheck',type,subType);
+    // console.log('jumpCollisionCheck',type,subType);
 
 
     let jumpComplete = true;
@@ -10439,7 +10439,7 @@ class App extends Component {
         else {
 
           if (obstacle.hp > 0) {
-            
+
             if (player.hp >= obstacle.hp) {
 
               let canPush = this.canPushObstacle(player,cellRef,'jumpCollision');
@@ -10509,10 +10509,54 @@ class App extends Component {
 
 
   }
-  obstaclePlayerOverlap = (type,cell) => {
-    console.log('obstaclePlayerOverlap',type,cell.number);
+  obstaclePlayerOverlap = (type,cell,player,obstacle) => {
+    console.log('obstaclePlayerOverlap',type,cell.number,player,obstacle);
 
-    // only if not pulling
+    let obstacleDirection = this.getOppositeDirection(this.getDirectionFromCells(obstacle.moving.origin.number,obstacle.moving.destination.number));
+
+    let pushPull = false;
+    if (
+      player.pulling.state === true ||
+      player.pushing.state === true
+      // player.postPull.state
+    ) {
+      pushPull = true;
+    }
+    if (pushPull !== true) {
+
+      if (type === "player") {
+        if (this.rnJesus(0,5) === 0) {
+          if (this.rnJesus(0,2) === 0) {
+            this.pushBack(player,this.getOppositeDirection(player.direction));
+          }
+          else {
+            this.canPushObstacle(player,cell,`overlap_${obstacleDirection}`);
+          }
+        }
+        else {
+          this.canPushObstacle(player,cell,`overlap_${obstacleDirection}`);
+          this.pushBack(player,this.getOppositeDirection(player.direction));
+        }
+      }
+
+      if (type === "obstacle") {
+        if (this.rnJesus(0,5) === 0) {
+          if (this.rnJesus(0,2) === 0) {
+            this.pushBack(player,this.getOppositeDirection(player.direction));
+          }
+          else {
+            this.canPushObstacle(player,cell,`overlap_${obstacleDirection}`);
+          }
+        }
+        else {
+          this.canPushObstacle(player,cell,`overlap_${obstacleDirection}`);
+          this.pushBack(player,this.getOppositeDirection(player.direction));
+        }
+      }
+
+
+    }
+
 
   }
 
@@ -19506,6 +19550,12 @@ class App extends Component {
 
     if (type === "jumpCollision") {
       impactDirection = player.direction;
+      movePlayer = false;
+      pushStrengthPlayer += 30;
+    }
+
+    if (type.split('_')[0] === 'overlap') {
+      impactDirection = type.split('_')[1];
       movePlayer = false;
       pushStrengthPlayer += 30;
     }
@@ -30941,7 +30991,7 @@ class App extends Component {
                 this.checkDestination(player,false);
 
                 if (refCell1.obstacle.state === true) {
-                  this.obstaclePlayerOverlap('player',refCell2)
+                  this.obstaclePlayerOverlap('player',refCell2,player,refCell1.obstacle)
                 }
 
 
@@ -31124,7 +31174,7 @@ class App extends Component {
 
 
                 if (refCell2.obstacle.state === true) {
-                  this.obstaclePlayerOverlap('player',refCell2)
+                  this.obstaclePlayerOverlap('player',refCell2,player,refCell2.obstacle)
                 }
 
                 this.checkDestination(player,false);
@@ -34273,20 +34323,14 @@ class App extends Component {
                     state: false,
                     step: 0,
                     origin: {
-                      number: {
-                        x: undefined,
-                        y: undefined,
-                      },
+                      number: originCellRef.number,
                       center: {
                         x: undefined,
                         y: undefined,
                       },
                     },
                     destination: {
-                      number: {
-                        x: undefined,
-                        y: undefined,
-                      },
+                      number: destCellRef.number,
                       center: {
                         x: undefined,
                         y: undefined,
@@ -34390,7 +34434,8 @@ class App extends Component {
 
               for(const plyr of this.players) {
                 if (plyr.currentPosition.cell.number.x === destCellRef.number.x && plyr.currentPosition.cell.number.y === destCellRef.number.y) {
-                  this.obstaclePlayerOverlap('obstacle',destCellRef)
+
+                  this.obstaclePlayerOverlap('obstacle',destCellRef,plyr,destCellRef.obstacle)
                 }
               }
 
