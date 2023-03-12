@@ -6828,13 +6828,22 @@ class App extends Component {
     // if mode is zoom
 
 
+
     let diff;
-    if (zoom === 1) {
+    let zoomThresh = 1;
+    if (window.innerWidth < 1100) {
+      if (this.gridWidth >= 12) {
+        zoomThresh = .8;
+      }
+    }
+
+    if (parseFloat(zoom.toFixed(1)) === zoomThresh) {
 
       this.camera.pan.x = -1;
       this.camera.pan.y = -1;
-      this.camera.zoomFocusPan.x = -1;
-      this.camera.zoomFocusPan.y = -1;
+      this.camera.zoomFocusPan.x = -zoomThresh;
+      this.camera.zoomFocusPan.y = -zoomThresh;
+
       this.camera.adjustedPan.x = -1;
       this.camera.adjustedPan.y = -1;
 
@@ -6848,7 +6857,7 @@ class App extends Component {
 
 
     // ZOOMING IN & OUT ABOVE THRESHOLD
-    if (zoom < 1) {
+    if (zoom < zoomThresh) {
 
       diff = 1 - zoom;
 
@@ -6862,7 +6871,7 @@ class App extends Component {
 
 
     // ZOOMING BELOW THRESHOLD
-    if (zoom > 1) {
+    if (zoom > zoomThresh) {
 
       diff = zoom - 1;
       let diffx;
@@ -6893,7 +6902,7 @@ class App extends Component {
           // pan limits must get smaller proportional to zoom,
           // try original pan and adjusted pan and multiply by zoom/zoom-1
 
-          let increment = 0;
+          let increment = 10;
           if ((zoom-1) >= .5) {
             increment = 10;
           }
@@ -6907,8 +6916,9 @@ class App extends Component {
             increment = 30;
           }
           if ((zoom-1) < .05) {
-            increment = 35;
+            increment = 90;
           }
+          increment = 50;
           if (this.camera.pan.x > -1) {
             this.camera.pan.x -= increment;
             this.camera.adjustedPan.x -= (20*(this.camera.zoom.x-1));
@@ -6948,6 +6958,7 @@ class App extends Component {
 
 
         // SET PAN LIMITS BASED ON ZOOM
+        // +(this.gridWidth-9)*50
         this.camera.limits.pan.x.min = -(this.camera.zoom.x *150)
         this.camera.limits.pan.x.max = (this.camera.zoom.x *150)
         this.camera.limits.pan.y.min = -(this.camera.zoom.x *75)
@@ -35265,9 +35276,10 @@ class App extends Component {
 
         // ONLY PAN IF CANT SEE WHOLE MAP
         let canPan = false;
+
         if (window.innerWidth < 1100) {
           if (this.gridWidth >= 12) {
-            if (this.camera.zoom.x > .7) {
+            if (this.camera.zoom.x > .8) {
               canPan = true;
             }
           } else {
@@ -35275,7 +35287,8 @@ class App extends Component {
               canPan = true;
             }
           }
-        } else {
+        }
+        else {
           if (this.camera.zoom.x > 1) {
             canPan = true;
           }
