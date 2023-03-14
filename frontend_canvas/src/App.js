@@ -6819,14 +6819,11 @@ class App extends Component {
     this.camera.fixed = true;
   }
   setZoomPan = (canvas) => {
+    // console.log('setZoomPan');
     // ADJUST PAN AND ZOOM RELATIVE TO EACH OTHER TO KEEP CENTERED WHEN ZOOMING IN
     // AND CENTERING THE GRID WHEN ZOOMING OUT
 
     let zoom = this.camera.zoom.x;
-
-
-    // if mode is zoom
-
 
 
     let diff;
@@ -6837,7 +6834,7 @@ class App extends Component {
       }
     }
 
-    if (parseFloat(zoom.toFixed(1)) === zoomThresh) {
+    if (parseFloat(zoom.toFixed(2)) === zoomThresh) {
 
       this.camera.pan.x = -1;
       this.camera.pan.y = -1;
@@ -6899,9 +6896,6 @@ class App extends Component {
 
           // ADJUST PAN INCREMENT FOR ZOOM OUT CENTERING
 
-          // pan limits must get smaller proportional to zoom,
-          // try original pan and adjusted pan and multiply by zoom/zoom-1
-
           let increment = 10;
           if ((zoom-1) >= .5) {
             increment = 10;
@@ -6918,7 +6912,7 @@ class App extends Component {
           if ((zoom-1) < .05) {
             increment = 90;
           }
-          increment = 50;
+          // increment = 50;
           if (this.camera.pan.x > -1) {
             this.camera.pan.x -= increment;
             this.camera.adjustedPan.x -= (20*(this.camera.zoom.x-1));
@@ -6945,9 +6939,6 @@ class App extends Component {
 
           }
 
-          // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)-((this.camera.adjustedPan.x+this.camera.pan.x)*(1-zoom));
-          // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)-((this.camera.adjustedPan.y+this.camera.pan.y)*(1-zoom));
-
 
           this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
           this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
@@ -6958,15 +6949,37 @@ class App extends Component {
 
 
         // SET PAN LIMITS BASED ON ZOOM
-        // +(this.gridWidth-9)*50
-        this.camera.limits.pan.x.min = -(this.camera.zoom.x *150)
-        this.camera.limits.pan.x.max = (this.camera.zoom.x *150)
-        this.camera.limits.pan.y.min = -(this.camera.zoom.x *75)
-        this.camera.limits.pan.y.max = (this.camera.zoom.x *75)
+        let aMod = 0;
+        let xMod = 150;
+        let yMod = 75;
+        let xMod2 = 35;
+        let yMod2 = 35;
 
+        if (this.gridWidth < 9) {
+          yMod2 = 20
+          xMod2 = 20;
+          aMod = 1-((this.gridWidth-9)/-9);
+          xMod = 75;
+          yMod = 40;
+        }
+        if (this.gridWidth > 9) {
+          xMod = 200;
+          yMod2 = 50;
+          xMod2 = 30;
+          aMod = this.gridWidth-9
+        }
+        this.camera.limits.pan.x.min = -((this.camera.zoom.x * xMod)+(aMod*xMod2))
+        this.camera.limits.pan.x.max = ((this.camera.zoom.x * xMod)+(aMod*xMod2))
+        this.camera.limits.pan.y.min = -((this.camera.zoom.x * yMod)+(aMod*yMod2))
+        this.camera.limits.pan.y.max = ((this.camera.zoom.x * yMod)+(aMod*yMod2))
+
+        // console.log('aMod',aMod);
+        // console.log('aMod*xMod',aMod*xMod);
+        // console.log('aMod*yMod',aMod*yMod);
+        // console.log('x: min ',this.camera.limits.pan.x.min,' max ',this.camera.limits.pan.x.max);
+        // console.log('y: min ',this.camera.limits.pan.y.min,' max ',this.camera.limits.pan.y.max);
 
       }
-
 
 
 
@@ -8498,7 +8511,6 @@ class App extends Component {
 
 
   }
-
 
 
   rnJesus = (min,max) => {
@@ -10716,6 +10728,7 @@ class App extends Component {
 
 
   }
+
 
   meleeAttackPeak = (player) => {
     // console.log('meleeAttackPeak',player.target.myCellBlock);
@@ -19589,6 +19602,7 @@ class App extends Component {
 
   }
 
+
   preObstaclePushCheck = (player,target) => {
     // console.log('pre push check');
 
@@ -23016,6 +23030,8 @@ class App extends Component {
       count: 0,
       limit: 35,
     };
+    // this.resetCameraSwitch = true;
+    this.camera.state = false;
 
     for (const player of this.players) {
 
@@ -23123,6 +23139,7 @@ class App extends Component {
           }
 
         }
+
         player.currentWeapon = currentWeapon;
         player.currentArmor = currentArmor;
         player.items = items;
@@ -35149,6 +35166,7 @@ class App extends Component {
 
         }
 
+
     }
     //INPUT MODE SWITCH
     if (this.toggleCameraMode === false && this.camera.state === true) {
@@ -35244,11 +35262,11 @@ class App extends Component {
           setFocus = true;
           setZoomPan = true;
 
-          // console.log('zooming in');
+          // console.log('zooming in',this.camera.zoom.x);
         }
         if (this.keyPressed[player.number-1].north === true && this.camera.zoom.x >= this.camera.limits.zoom.max) {
           this.camera.limits.state.zoom = true;
-          console.log('zoom in limit',this.camera.limits.state.zoom);
+          // console.log('zoom in limit',this.camera.limits.state.zoom);
 
         }
         if (
@@ -35263,10 +35281,10 @@ class App extends Component {
           setFocus = true;
           setZoomPan = true;
 
-          // console.log('zooming out');
+          // console.log('zooming out',this.camera.zoom.x);
         }
         if (this.keyPressed[player.number-1].south === true && this.camera.zoom.x <= this.camera.limits.zoom.min) {
-          console.log('zoom out limit');
+          // console.log('zoom out limit');
           this.camera.limits.state.zoom = true;
         }
 
@@ -35294,7 +35312,9 @@ class App extends Component {
           }
         }
 
+
         if (canPan === true) {
+          // console.log('canPan',canPan);
 
           if (
             this.keyPressed[player.number-1].north === true &&
@@ -35310,11 +35330,11 @@ class App extends Component {
             setZoomPan = true;
             findFocusCell = true;
 
-            // console.log('panning north');
+            // console.log('panning north',this.camera.pan.y);
 
           }
           if (this.keyPressed[player.number-1].north === true && this.camera.pan.y >= this.camera.limits.pan.y.max) {
-            console.log('pan limit north');
+            // console.log('pan limit north',this.camera.pan.y,'/',this.camera.limits.pan.y.max);
             this.camera.limits.state.pan = true;
           }
           if (
@@ -35331,11 +35351,11 @@ class App extends Component {
             setZoomPan = true;
             findFocusCell = true;
 
-            // console.log('panning south');
+            // console.log('panning south',this.camera.pan.y);
 
           }
           if (this.keyPressed[player.number-1].south === true && this.camera.pan.y <= this.camera.limits.pan.y.min) {
-            console.log('pan limit south');
+            // console.log('pan limit south',this.camera.pan.y,'/',this.camera.limits.pan.y.min);
             this.camera.limits.state.pan = true;
           }
           if (
@@ -35352,10 +35372,10 @@ class App extends Component {
             setZoomPan = true;
             findFocusCell = true;
 
-            // console.log('panning east');
+            // console.log('panning east',this.camera.pan.x);
           }
           if (this.keyPressed[player.number-1].east === true && this.camera.pan.x <= this.camera.limits.pan.x.min) {
-            console.log('pan limit east');
+            // console.log('pan limit east',this.camera.pan.x,'/',this.camera.limits.pan.x.min);
             this.camera.limits.state.pan = true;
           }
           if (
@@ -35372,10 +35392,10 @@ class App extends Component {
             setZoomPan = true;
             findFocusCell = true;
 
-            // console.log('panning west');
+            // console.log('panning west',this.camera.pan.x);
           }
           if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
-            console.log('pan limit west');
+            // console.log('pan limit west',this.camera.pan.x,'/',this.camera.limits.pan.x.max);
             this.camera.limits.state.pan = true;
           }
 
@@ -35492,7 +35512,7 @@ class App extends Component {
         instructions: [],
       };
 
-
+      this.setZoomPan(canvas);
 
       // this.setCameraFocus('reset', canvas, context, canvas2, context2);
 
