@@ -6017,6 +6017,11 @@ class App extends Component {
       weaponType = 'ranged'
     }
 
+    if (this.camera.preInstructions.length > 0 || this.camera.instructions.length > 0) {
+      this.camera.preInstructions = [];
+      this.camera.instructions = [];
+    }
+
 
     let zoomAdjust = 0;
     switch (args) {
@@ -6201,6 +6206,8 @@ class App extends Component {
 
 
           }
+
+
           else {
 
 
@@ -6208,10 +6215,6 @@ class App extends Component {
 
             // console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
 
-            // let intermediateCell = {
-            //   x: parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)].x,
-            //   y: parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)].y,
-            // }
             let intermediateCell = {
               x: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].x,
               y: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].y,
@@ -6714,6 +6717,7 @@ class App extends Component {
 
     }
 
+    console.log('AutoCameraSet',args,this.camera.preInstructions);
   }
   setCameraFocus = (focusType, canvas, context, canvas2, context2) => {
     // console.log('setting camera focus','zoom',this.camera.zoom.x,'pan',this.camera.pan);
@@ -12783,6 +12787,8 @@ class App extends Component {
             }
           )
         }
+
+        this.setAutoCamera('attackFocusBreak',player)
 
         break;
       case 'defending':
@@ -31640,6 +31646,8 @@ class App extends Component {
               player.popups.splice(player.popups.findIndex(x=>x.msg === 'attacking'),1)
             }
 
+            this.setAutoCamera('attackFocusBreak',player)
+
             // if (!player.popups.find(x=>x.msg === 'attackFeint3')) {
             //   player.popups.push(
             //     {
@@ -31870,7 +31878,7 @@ class App extends Component {
                 this.camera.preInstructions.length === 0 &&
                 this.camera.instructions.length === 0
               ) {
-                // this.setAutoCamera('attackFocus',player)
+                this.setAutoCamera('attackFocus',player)
               }
               else {
                 console.log('no setting auto cam: attackFocus');
@@ -32084,7 +32092,7 @@ class App extends Component {
               this.camera.preInstructions.length === 0 &&
               this.camera.instructions.length === 0
             ) {
-              // this.setAutoCamera('attackFocusBreak',player)
+              this.setAutoCamera('attackFocusBreak',player)
             }
 
             else {
@@ -35601,17 +35609,21 @@ class App extends Component {
             this.camera.currentPreInstruction++;
           }
 
+          console.log('auto camera: pre instructions parsed: ',this.camera.instructions);
+
         }
+
 
 
         // PARSED INSTRUCTIONS!
         if (this.camera.instructions.length > 0 && this.camera.currentInstruction < this.camera.instructions.length) {
-          // console.log('stepping through all instructions... current',this.camera.currentInstruction,this.camera.instructions[this.camera.currentInstruction]);
+          console.log('auto camera: stepping through all instructions... current',this.camera.currentInstruction,this.camera.instructions[this.camera.currentInstruction]);
 
           if (this.camera.instructions[this.camera.currentInstruction].speed === 'fast') {
 
             // CONTINUE EXECUTING CURRENT INSTRUCTION
             if (this.camera.instructions[this.camera.currentInstruction].count < this.camera.instructions[this.camera.currentInstruction].limit) {
+
 
               if (this.camera.instructions[this.camera.currentInstruction].action === 'wait') {
 
@@ -35817,6 +35829,7 @@ class App extends Component {
                   }
 
                 }
+
                 if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'zoom') {
                   // console.log('single instruction: adjusting zoom x -/+ based on direction',this.camera.instructions[this.camera.currentInstruction].count,this.camera.instructions[this.camera.currentInstruction].limit);
 
