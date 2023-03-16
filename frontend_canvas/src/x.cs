@@ -14,7 +14,7 @@ var stream = File.OpenRead(directory);
 // --------------------------------------------
 // --------------------------------------------
 
-
+cpd873ft
 
 consider an html canvas of fixed length and width of 500 px each with a red border of 5px. At the canvas' centred yellow square of side length 250 px. On top of the yellow square is a 25 square (blue outlines only) grid, also of side length 250px. I'd like to able to do several things with this canvas using context scale and translate: 1. store 'original position', 'original view' or 'default view' corresponding to zoom and pan values used with scale and translate; 2. be able to zoom in, focusing on the centre point of the current view; 3. be able to pan in 4 directions; 4. zoom out while adjusting the pan towards the original position.
 
@@ -309,73 +309,139 @@ panStart.y = event.clientY;
 
 
       // Function to draw the canvas and grid
-function draw() {
-  // Save the current transformation matrix
-  ctx.save();
+      function draw() {
+        // Save the current transformation matrix
+        ctx.save();
 
-  // Clear the canvas
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Clear the canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Set the translation and scale values
-  ctx.translate(panX + squareSize / 2, panY + squareSize / 2);
-  ctx.scale(zoom, zoom);
-  ctx.translate(-squareSize / 2, -squareSize / 2);
+        // Set the translation and scale values
+        ctx.translate(panX + squareSize / 2, panY + squareSize / 2);
+        ctx.scale(zoom, zoom);
+        ctx.translate(-squareSize / 2, -squareSize / 2);
 
-  // Draw the yellow square
-  ctx.fillStyle = "yellow";
-  ctx.fillRect(0, 0, squareSize, squareSize);
+        // Draw the yellow square
+        ctx.fillStyle = "yellow";
+        ctx.fillRect(0, 0, squareSize, squareSize);
 
-  // Draw the blue grid
-  ctx.strokeStyle = "blue";
-  ctx.beginPath();
-  for (var i = 0; i <= numCols; i++) {
-    var x = i * cellSize;
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, squareSize);
-  }
-  for (var j = 0; j <= numRows; j++) {
-    var y = j * cellSize;
-    ctx.moveTo(0, y);
-    ctx.lineTo(squareSize, y);
-  }
-  ctx.stroke();
+        // Draw the blue grid
+        ctx.strokeStyle = "blue";
+        ctx.beginPath();
+        for (var i = 0; i <= numCols; i++) {
+          var x = i * cellSize;
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, squareSize);
+        }
+        for (var j = 0; j <= numRows; j++) {
+          var y = j * cellSize;
+          ctx.moveTo(0, y);
+          ctx.lineTo(squareSize, y);
+        }
+        ctx.stroke();
 
-  // Restore the original transformation matrix
-  ctx.restore();
+        // Restore the original transformation matrix
+        ctx.restore();
 
-  // Update the current position and zoom level elements
-  currentPosition.innerHTML =
-    "Current position: (" +
-    panX.toFixed(2) +
-    ", " +
-    panY.toFixed(2) +
-    ")";
-  currentZoomLevel.innerHTML = "Current zoom level: " + zoom.toFixed(2);
-}
+        // Update the current position and zoom level elements
+        currentPosition.innerHTML =
+          "Current position: (" +
+          panX.toFixed(2) +
+          ", " +
+          panY.toFixed(2) +
+          ")";
+        currentZoomLevel.innerHTML = "Current zoom level: " + zoom.toFixed(2);
+      }
 
-// Draw the canvas and grid initially
-draw();
+      // Draw the canvas and grid initially
+      draw();
 
-// Handle key presses
-document.addEventListener("keydown", function (event) {
-  switch (event.key) {
-    case "+":
-      zoomIn();
-      break;
-    case "-":
-      zoomOut();
-      break;
-    case "ArrowUp":
-      panUp();
-      break;
-    case "ArrowDown":
-      panDown();
-      break;
-    case "ArrowLeft":
-      panLeft();
-      break;
-    case "ArrowRight":
-      panRight();
-      break;
-  }
-});
+      // Handle key presses
+      document.addEventListener("keydown", function (event) {
+        switch (event.key) {
+          case "+":
+            zoomIn();
+            break;
+          case "-":
+            zoomOut();
+            break;
+          case "ArrowUp":
+            panUp();
+            break;
+          case "ArrowDown":
+            panDown();
+            break;
+          case "ArrowLeft":
+            panLeft();
+            break;
+          case "ArrowRight":
+            panRight();
+            break;
+        }
+      });
+
+
+
+
+
+
+
+
+public static Employee newEmployee
+        {
+            get
+            {
+                return new Employee()
+                {
+                    EmployeeId = "999",
+                    FirstName = "Michael",
+                    LastName = "Stone",
+                    Trn = "00889966",
+                    Nis = "00554433",
+                    EdTaxPayable = ActiveStatus.Enabled,
+                    PayePayable = ActiveStatus.Enabled,
+                    NisPayable = ActiveStatus.Enabled,
+
+                    Employment = new Employment()
+                    {
+                        Status = EmploymentStatus.InActive,
+                        StartDate = DateTime.Now,
+                        Rate = "100",
+                        BasePay = "1000",
+                        TerminationDate = null,
+                        PayCycle = PayrollTypes.fortnightly
+                    },
+                    Pension = new Pension()
+                    {
+                        id = Guid.NewGuid().ToString(),
+                        Bank = new Banking()
+                        {
+                            id = Guid.NewGuid().ToString(),
+                            Bank = new BankCode()
+                            {
+                                Name = "NCB Bank",
+                                Branch = "Mo Bay",
+                                id = Guid.NewGuid().ToString(),
+                                Code = "NCB"
+                            }
+                        },
+                        Code = new PensionCode()
+                        {
+                            id = Guid.NewGuid().ToString(),
+                            Code = "VM",
+                            EmployeeAmount = "2000",
+                            EmployerAmount = "2400",
+                            Abbreviation = "VM PEN",
+                            isEnable = true
+                        },
+                        Enable = true
+
+                    }
+                };
+            }
+        }
+
+
+        var employee = await datasvc.CreateEmployee(ctx, newEmployee);
+
+        public static DataManagementService datasvc;

@@ -6017,9 +6017,29 @@ class App extends Component {
       weaponType = 'ranged'
     }
 
+    let reset = false;
+    let attackFocusBreakZoomCorrection = "";
     if (this.camera.preInstructions.length > 0 || this.camera.instructions.length > 0) {
+      console.log('resetting previous pre instructions',this.camera.preInstructions);
+      console.log('resetting previous instructions',this.camera.instructions);
+      reset = true;
+
+      if (args === "attackFocusBreak") {
+        if (this.camera.instructions.length > 0) {
+          if (
+            this.camera.instructions[this.camera.instructions.length-1].action === "zoom_in" ||
+            this.camera.instructions[this.camera.instructions.length-1].action === "zoom_out"
+          ) {
+            attackFocusBreakZoomCorrection = `zoom_out_${this.camera.instructions[this.camera.instructions.length-1].count}`
+          }
+        }
+      }
+
       this.camera.preInstructions = [];
       this.camera.instructions = [];
+      this.camera.currentInstruction = 0;
+      this.settingAutoCamera = false;
+      reset = true;
     }
 
 
@@ -6184,6 +6204,7 @@ class App extends Component {
                   'zoom_out_'+zoomAdjust+''
                 )
               }
+              // console.log('atkFocus',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
             }
 
             if (weaponType === 'ranged') {
@@ -6247,24 +6268,24 @@ class App extends Component {
 
       break;
       case 'attackFocusBreak':
-        // if ((this.camera.zoom.x-1) > 0) {
-        //   console.log('auto cam attack focus break zoom out amt ',Math.ceil(((this.camera.zoom.x-1)*10)*5));
-        //   zoomAdjust = Math.ceil(((this.camera.zoom.x-1)*10)*5)
-        //   this.camera.preInstructions.push(
-        //     'zoom_out_'+zoomAdjust+''
-        //   )
-        // }
 
-        if ((this.camera.zoom.x-1) > .15) {
-          // console.log('auto cam attack focus break zoom out amt ',Math.ceil((((this.camera.zoom.x-1)-.15)*10)*5));
-          zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.15)*10)*5);
-          this.camera.preInstructions.push(
-            'zoom_out_'+zoomAdjust+''
-          )
+      console.log('atkFocusBreak',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
+        if ((this.camera.zoom.x-1) > 0) {
+
+          if (reset === true) {
+            console.log('1');
+            this.camera.preInstructions.push(attackFocusBreakZoomCorrection)
+          }
+
+          else {
+            console.log('2');
+            this.camera.preInstructions.push(
+              'zoom_out_'+10+''
+            )
+          }
+
         }
-        else {
-          this.settingAutoCamera = false;
-        }
+
       break;
       case 'playerSpawnFocus':
 
@@ -23036,7 +23057,83 @@ class App extends Component {
       count: 0,
       limit: 35,
     };
-    // this.resetCameraSwitch = true;
+
+    this.camera = {
+      state: true,
+      startCount: 0,
+      startLimit: 4,
+      mode: 'pan',
+      fixed: false,
+      target: {
+        type: 'player',
+        plyrNo: 1,
+        cell: {
+          x: undefined,
+          y: undefined,
+        }
+      },
+      focus: {
+        x: undefined,
+        y: undefined,
+      },
+      focusCell: {
+        x: this.camera.focusCell.x,
+        y: this.camera.focusCell.y,
+      },
+      cellToPanOrigin: {
+        x: undefined,
+        y: undefined,
+      },
+      zoom: {
+        x: 1,
+        y: 1,
+      },
+      zoomDirection: 'in',
+      pan: {
+        x: 1,
+        y: 1,
+      },
+      panDirection: 'east',
+      zoomFocusPan: {
+        x: -1,
+        y: -1,
+      },
+      adjustedPan: {
+        x: 1,
+        y: 1,
+      },
+      limits: {
+        zoom: {
+          min: .5,
+          max: 2.5,
+        },
+        pan: {
+          x: {
+            min: -400,
+            max: 400,
+          },
+          y: {
+            min: -200,
+            max: 200,
+          }
+        },
+        state: {
+          count: 0,
+          limit: 10,
+          zoom: false,
+          pan: false,
+        }
+      },
+      instructionType: 'default',
+      currentPreInstruction: 0,
+      preInstructions: [],
+      currentInstruction: 0,
+      instructions: [],
+    };
+    this.camera.preInstructions = [];
+    this.camera.instructions = [];
+    this.camera.currentInstruction = 0;
+    this.settingAutoCamera = false;
     this.camera.state = false;
 
     for (const player of this.players) {
@@ -32087,7 +32184,7 @@ class App extends Component {
             player.action = 'idle';
 
             if (
-              this.settingAutoCamera === false &&
+              // this.settingAutoCamera === false &&
               player.ai.state !== true &&
               this.camera.preInstructions.length === 0 &&
               this.camera.instructions.length === 0
@@ -35609,15 +35706,14 @@ class App extends Component {
             this.camera.currentPreInstruction++;
           }
 
-          console.log('auto camera: pre instructions parsed: ',this.camera.instructions);
+          // console.log('auto camera: pre instructions parsed: ',this.camera.instructions);
 
         }
 
 
-
         // PARSED INSTRUCTIONS!
         if (this.camera.instructions.length > 0 && this.camera.currentInstruction < this.camera.instructions.length) {
-          console.log('auto camera: stepping through all instructions... current',this.camera.currentInstruction,this.camera.instructions[this.camera.currentInstruction]);
+          // console.log(this.camera.zoom.x-1,'auto camera: stepping through all instructions... current',this.camera.currentInstruction,this.camera.instructions[this.camera.currentInstruction]);
 
           if (this.camera.instructions[this.camera.currentInstruction].speed === 'fast') {
 
@@ -35641,26 +35737,26 @@ class App extends Component {
                     if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'pan') {
                       // console.log('auto camera panning/moving',this.camera.instructions[this.camera.currentInstruction].count);
 
-                      // console.log('single instruction: adjusting pan x/y -/+ based on direction');
+                      console.log(this.camera.zoom.x-1,'single instruction: adjusting pan x/y -/+ based on direction');
 
                       switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
                         case 'north':
-                          this.camera.pan.y += 1;
+                          this.camera.pan.y += 10;
                           this.camera.adjustedPan.y += (1*this.camera.zoom.x);
                           this.camera.panDirection = 'north';
                         break;
                         case 'south':
-                        this.camera.pan.y -= 1;
+                        this.camera.pan.y -= 10;
                         this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
                         this.camera.panDirection = 'south';
                         break;
                         case 'east':
-                          this.camera.pan.x -= 1;
+                          this.camera.pan.x -= 10;
                           this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
                           this.camera.panDirection = 'east';
                         break;
                         case 'west':
-                          this.camera.pan.x += 1;
+                          this.camera.pan.x += 10;
                           this.camera.adjustedPan.x += (1*this.camera.zoom.x);
                           this.camera.panDirection = 'west';
                         break;
@@ -35677,7 +35773,7 @@ class App extends Component {
                     }
 
                     if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'zoom') {
-                      // console.log('single instruction: adjusting zoom x -/+ based on direction',this.camera.instructions[this.camera.currentInstruction].count,this.camera.instructions[this.camera.currentInstruction].limit);
+                      console.log(this.camera.zoom.x-1,'single instruction: adjusting zoom x -/+ based on direction',this.camera.instructions[this.camera.currentInstruction].count,this.camera.instructions[this.camera.currentInstruction].limit);
 
                       switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
                         case 'in':
@@ -35735,22 +35831,22 @@ class App extends Component {
 
                 switch (this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1]) {
                   case 'north':
-                    this.camera.pan.y += 1;
+                    this.camera.pan.y += 10;
                     this.camera.adjustedPan.y += (1*this.camera.zoom.x);
                     this.camera.panDirection = 'north';
                   break;
                   case 'south':
-                  this.camera.pan.y -= 1;
+                  this.camera.pan.y -= 10;
                   this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
                   this.camera.panDirection = 'south';
                   break;
                   case 'east':
-                    this.camera.pan.x -= 1;
+                    this.camera.pan.x -= 10;
                     this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
                     this.camera.panDirection = 'east';
                   break;
                   case 'west':
-                    this.camera.pan.x += 1;
+                    this.camera.pan.x += 10;
                     this.camera.adjustedPan.x += (1*this.camera.zoom.x);
                     this.camera.panDirection = 'west';
                   break;
@@ -35799,22 +35895,22 @@ class App extends Component {
 
                   switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
                     case 'north':
-                      this.camera.pan.y += 1;
+                      this.camera.pan.y += 10;
                       this.camera.adjustedPan.y += (1*this.camera.zoom.x);
                       this.camera.panDirection = 'north';
                     break;
                     case 'south':
-                    this.camera.pan.y -= 1;
+                    this.camera.pan.y -= 10;
                     this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
                     this.camera.panDirection = 'south';
                     break;
                     case 'east':
-                      this.camera.pan.x -= 1;
+                      this.camera.pan.x -= 10;
                       this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
                       this.camera.panDirection = 'east';
                     break;
                     case 'west':
-                      this.camera.pan.x += 1;
+                      this.camera.pan.x += 10;
                       this.camera.adjustedPan.x += (1*this.camera.zoom.x);
                       this.camera.panDirection = 'west';
                     break;
@@ -35885,22 +35981,22 @@ class App extends Component {
 
                 switch (this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1]) {
                   case 'north':
-                    this.camera.pan.y += 1;
+                    this.camera.pan.y += 10;
                     this.camera.adjustedPan.y += (1*this.camera.zoom.x);
                     this.camera.panDirection = 'north';
                   break;
                   case 'south':
-                  this.camera.pan.y -= 1;
+                  this.camera.pan.y -= 10;
                   this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
                   this.camera.panDirection = 'south';
                   break;
                   case 'east':
-                    this.camera.pan.x -= 1;
+                    this.camera.pan.x -= 10;
                     this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
                     this.camera.panDirection = 'east';
                   break;
                   case 'west':
-                    this.camera.pan.x += 1;
+                    this.camera.pan.x += 10;
                     this.camera.adjustedPan.x += (1*this.camera.zoom.x);
                     this.camera.panDirection = 'west';
                   break;
@@ -40295,6 +40391,8 @@ class App extends Component {
       this.camera.pan.x = -1
       this.camera.pan.y = -1
     }
+
+    this.setZoomPan(canvas);
 
 
     if (this.showSettingsCanvasData.state === true) {
