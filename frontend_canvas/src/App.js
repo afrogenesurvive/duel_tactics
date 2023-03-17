@@ -6017,6 +6017,12 @@ class App extends Component {
       weaponType = 'ranged'
     }
 
+    let zoomAdjustCalc = (args) => {
+
+      return args*.5;
+
+    }
+
     let reset = false;
     let attackFocusBreakZoomCorrection = "";
     if (this.camera.preInstructions.length > 0 || this.camera.instructions.length > 0) {
@@ -6045,6 +6051,17 @@ class App extends Component {
 
     let zoomAdjust = 0;
     switch (args) {
+      case 'test':
+        this.camera.preInstructions.push(
+          'zoom_in_'+50+'',
+          'waitFor_50',
+          'moveTo_'+9+'_'+4+'_fast',
+          // 'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_fast',
+          // 'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_slow',
+
+        )
+
+      break;
       case 'attackFocus':
 
 
@@ -6279,8 +6296,9 @@ class App extends Component {
 
           else {
             console.log('2');
+            let zoomDifference = 0;
             this.camera.preInstructions.push(
-              'zoom_out_'+10+''
+              'zoom_outToInit'
             )
           }
 
@@ -30557,6 +30575,10 @@ class App extends Component {
     }
 
     let nextPosition;
+
+    if (this.time === 100) {
+      this.setAutoCamera('test',player)
+    }
 
 
     if (player.dead.state === true) {
