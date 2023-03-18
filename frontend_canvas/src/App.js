@@ -5994,7 +5994,7 @@ class App extends Component {
     this.camera.state = false;
     this.camera.fixed = false;
     this.settingAutoCamera = true;
-    // console.log('setting auto camera instructions: ',args);
+    console.log('setting auto camera instructions: ',args);
 
 
     // if board is over a certain size
@@ -6055,7 +6055,7 @@ class App extends Component {
         this.camera.preInstructions.push(
           'zoom_in_'+50+'',
           'waitFor_50',
-          'moveTo_'+9+'_'+4+'_fast',
+          'moveTo_'+9+'_'+4+'_slow',
           // 'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_fast',
           // 'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_slow',
 
@@ -6286,7 +6286,6 @@ class App extends Component {
       break;
       case 'attackFocusBreak':
 
-      console.log('atkFocusBreak',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
         if ((this.camera.zoom.x-1) > 0) {
 
           if (reset === true) {
@@ -35394,7 +35393,6 @@ class App extends Component {
         if (this.keyPressed[player.number-1].north === true && this.camera.zoom.x >= this.camera.limits.zoom.max) {
           this.camera.limits.state.zoom = true;
           // console.log('zoom in limit',this.camera.limits.state.zoom);
-
         }
         if (
           this.keyPressed[player.number-1].south === true &&
@@ -35757,30 +35755,54 @@ class App extends Component {
                     // console.log('single instruction: auto camera',this.camera.instructions[this.camera.currentInstruction].action,' count:',this.camera.instructions[this.camera.currentInstruction].count);
 
                     if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'pan') {
-                      // console.log('auto camera panning/moving',this.camera.instructions[this.camera.currentInstruction].count);
+                      console.log('auto camera panning/moving',this.camera.instructions[this.camera.currentInstruction]);
 
-                      console.log(this.camera.zoom.x-1,'single instruction: adjusting pan x/y -/+ based on direction');
+                      // console.log(this.camera.zoom.x-1,'single instruction: adjusting pan x/y -/+ based on direction');
 
                       switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
                         case 'north':
-                          this.camera.pan.y += 10;
-                          this.camera.adjustedPan.y += (1*this.camera.zoom.x);
-                          this.camera.panDirection = 'north';
+                          if (this.camera.pan.y >= this.camera.limits.pan.y.max) {
+                            // console.log('pan limit north',this.camera.pan.y,'/',this.camera.limits.pan.y.max);
+                            this.camera.limits.state.pan = true;
+                          }
+                          else {
+                            this.camera.pan.y += 10;
+                            this.camera.adjustedPan.y += (1*this.camera.zoom.x);
+                            this.camera.panDirection = 'north';
+                          }
                         break;
                         case 'south':
-                        this.camera.pan.y -= 10;
-                        this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
-                        this.camera.panDirection = 'south';
+                          if (this.camera.pan.y <= this.camera.limits.pan.y.min) {
+                            // console.log('pan limit south',this.camera.pan.y,'/',this.camera.limits.pan.y.min);
+                            this.camera.limits.state.pan = true;
+                          }
+                          else {
+                            this.camera.pan.y -= 10;
+                            this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
+                            this.camera.panDirection = 'south';
+                          }
                         break;
                         case 'east':
-                          this.camera.pan.x -= 10;
-                          this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
-                          this.camera.panDirection = 'east';
+                          if (this.camera.pan.x <= this.camera.limits.pan.x.min) {
+                            // console.log('pan limit east',this.camera.pan.x,'/',this.camera.limits.pan.x.min);
+                            this.camera.limits.state.pan = true;
+                          }
+                          else {
+                            this.camera.pan.x -= 10;
+                            this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
+                            this.camera.panDirection = 'east';
+                          }
                         break;
                         case 'west':
-                          this.camera.pan.x += 10;
-                          this.camera.adjustedPan.x += (1*this.camera.zoom.x);
-                          this.camera.panDirection = 'west';
+                          if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
+                            // console.log('pan limit west',this.camera.pan.x,'/',this.camera.limits.pan.x.max);
+                            this.camera.limits.state.pan = true;
+                          }
+                          else {
+                            this.camera.pan.x += 10;
+                            this.camera.adjustedPan.x += (1*this.camera.zoom.x);
+                            this.camera.panDirection = 'west';
+                          }
                         break;
                       }
 
@@ -35797,16 +35819,29 @@ class App extends Component {
                     if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'zoom') {
                       console.log(this.camera.zoom.x-1,'single instruction: adjusting zoom x -/+ based on direction',this.camera.instructions[this.camera.currentInstruction].count,this.camera.instructions[this.camera.currentInstruction].limit);
 
+
                       switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
                         case 'in':
-                          this.camera.zoom.x += .02 ;
-                          this.camera.zoom.y += .02 ;
-                          this.camera.zoomDirection = 'in';
+                          if (this.camera.zoom.x >= this.camera.limits.zoom.max) {
+                            this.camera.limits.state.zoom = true;
+                            // console.log('zoom in limit',this.camera.limits.state.zoom);
+                          }
+                          else {
+                            this.camera.zoom.x += .02 ;
+                            this.camera.zoom.y += .02 ;
+                            this.camera.zoomDirection = 'in';
+                          }
                         break;
                         case 'out':
-                          this.camera.zoom.x -= .02 ;
-                          this.camera.zoom.y -= .02 ;
-                          this.camera.zoomDirection = 'out';
+                          if (this.camera.zoom.x <= this.camera.limits.zoom.min) {
+                            // console.log('zoom out limit');
+                            this.camera.limits.state.zoom = true;
+                          }
+                          else {
+                            this.camera.zoom.x -= .02 ;
+                            this.camera.zoom.y -= .02 ;
+                            this.camera.zoomDirection = 'out';
+                          }
                         break;
                         case 'outToInit':
                           this.setInitZoom.state = true;
@@ -35851,26 +35886,51 @@ class App extends Component {
               for (var i = 0; i < this.camera.instructions[this.camera.currentInstruction].limit2; i++) {
                 // console.log('single instruction2: auto camera',this.camera.instructions[this.camera.currentInstruction].action2,' count:',this.camera.instructions[this.camera.currentInstruction].count2);
 
+
                 switch (this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1]) {
                   case 'north':
-                    this.camera.pan.y += 10;
-                    this.camera.adjustedPan.y += (1*this.camera.zoom.x);
-                    this.camera.panDirection = 'north';
+                    if (this.camera.pan.y >= this.camera.limits.pan.y.max) {
+                      // console.log('pan limit north',this.camera.pan.y,'/',this.camera.limits.pan.y.max);
+                      this.camera.limits.state.pan = true;
+                    }
+                    else {
+                      this.camera.pan.y += 10;
+                      this.camera.adjustedPan.y += (1*this.camera.zoom.x);
+                      this.camera.panDirection = 'north';
+                    }
                   break;
                   case 'south':
-                  this.camera.pan.y -= 10;
-                  this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
-                  this.camera.panDirection = 'south';
+                    if (this.camera.pan.y <= this.camera.limits.pan.y.min) {
+                      // console.log('pan limit south',this.camera.pan.y,'/',this.camera.limits.pan.y.min);
+                      this.camera.limits.state.pan = true;
+                    }
+                    else {
+                      this.camera.pan.y -= 10;
+                      this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
+                      this.camera.panDirection = 'south';
+                    }
                   break;
                   case 'east':
-                    this.camera.pan.x -= 10;
-                    this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
-                    this.camera.panDirection = 'east';
+                    if (this.camera.pan.x <= this.camera.limits.pan.x.min) {
+                      // console.log('pan limit east',this.camera.pan.x,'/',this.camera.limits.pan.x.min);
+                      this.camera.limits.state.pan = true;
+                    }
+                    else {
+                      this.camera.pan.x -= 10;
+                      this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
+                      this.camera.panDirection = 'east';
+                    }
                   break;
                   case 'west':
-                    this.camera.pan.x += 10;
-                    this.camera.adjustedPan.x += (1*this.camera.zoom.x);
-                    this.camera.panDirection = 'west';
+                    if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
+                      // console.log('pan limit west',this.camera.pan.x,'/',this.camera.limits.pan.x.max);
+                      this.camera.limits.state.pan = true;
+                    }
+                    else {
+                      this.camera.pan.x += 10;
+                      this.camera.adjustedPan.x += (1*this.camera.zoom.x);
+                      this.camera.panDirection = 'west';
+                    }
                   break;
                 }
 
@@ -35917,24 +35977,48 @@ class App extends Component {
 
                   switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
                     case 'north':
-                      this.camera.pan.y += 10;
-                      this.camera.adjustedPan.y += (1*this.camera.zoom.x);
-                      this.camera.panDirection = 'north';
+                      if (this.camera.pan.y >= this.camera.limits.pan.y.max) {
+                        // console.log('pan limit north',this.camera.pan.y,'/',this.camera.limits.pan.y.max);
+                        this.camera.limits.state.pan = true;
+                      }
+                      else {
+                        this.camera.pan.y += 10;
+                        this.camera.adjustedPan.y += (1*this.camera.zoom.x);
+                        this.camera.panDirection = 'north';
+                      }
                     break;
                     case 'south':
-                    this.camera.pan.y -= 10;
-                    this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
-                    this.camera.panDirection = 'south';
+                      if (this.camera.pan.y <= this.camera.limits.pan.y.min) {
+                        // console.log('pan limit south',this.camera.pan.y,'/',this.camera.limits.pan.y.min);
+                        this.camera.limits.state.pan = true;
+                      }
+                      else {
+                        this.camera.pan.y -= 10;
+                        this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
+                        this.camera.panDirection = 'south';
+                      }
                     break;
                     case 'east':
-                      this.camera.pan.x -= 10;
-                      this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
-                      this.camera.panDirection = 'east';
+                      if (this.camera.pan.x <= this.camera.limits.pan.x.min) {
+                        // console.log('pan limit east',this.camera.pan.x,'/',this.camera.limits.pan.x.min);
+                        this.camera.limits.state.pan = true;
+                      }
+                      else {
+                        this.camera.pan.x -= 10;
+                        this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
+                        this.camera.panDirection = 'east';
+                      }
                     break;
                     case 'west':
-                      this.camera.pan.x += 10;
-                      this.camera.adjustedPan.x += (1*this.camera.zoom.x);
-                      this.camera.panDirection = 'west';
+                      if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
+                        // console.log('pan limit west',this.camera.pan.x,'/',this.camera.limits.pan.x.max);
+                        this.camera.limits.state.pan = true;
+                      }
+                      else {
+                        this.camera.pan.x += 10;
+                        this.camera.adjustedPan.x += (1*this.camera.zoom.x);
+                        this.camera.panDirection = 'west';
+                      }
                     break;
                   }
 
@@ -35953,14 +36037,26 @@ class App extends Component {
 
                   switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
                     case 'in':
-                      this.camera.zoom.x += .02 ;
-                      this.camera.zoom.y += .02 ;
-                      this.camera.zoomDirection = 'in';
+                      if (this.camera.zoom.x >= this.camera.limits.zoom.max) {
+                        this.camera.limits.state.zoom = true;
+                        // console.log('zoom in limit',this.camera.limits.state.zoom);
+                      }
+                      else {
+                        this.camera.zoom.x += .02 ;
+                        this.camera.zoom.y += .02 ;
+                        this.camera.zoomDirection = 'in';
+                      }
                     break;
                     case 'out':
-                      this.camera.zoom.x -= .02 ;
-                      this.camera.zoom.y -= .02 ;
-                      this.camera.zoomDirection = 'out';
+                      if (this.camera.zoom.x <= this.camera.limits.zoom.min) {
+                        // console.log('zoom out limit');
+                        this.camera.limits.state.zoom = true;
+                      }
+                      else {
+                        this.camera.zoom.x -= .02 ;
+                        this.camera.zoom.y -= .02 ;
+                        this.camera.zoomDirection = 'out';
+                      }
                     break;
                     case 'outToInit':
                       this.setInitZoom.state = true;
@@ -36003,24 +36099,48 @@ class App extends Component {
 
                 switch (this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1]) {
                   case 'north':
-                    this.camera.pan.y += 10;
-                    this.camera.adjustedPan.y += (1*this.camera.zoom.x);
-                    this.camera.panDirection = 'north';
+                    if (this.camera.pan.y >= this.camera.limits.pan.y.max) {
+                      // console.log('pan limit north',this.camera.pan.y,'/',this.camera.limits.pan.y.max);
+                      this.camera.limits.state.pan = true;
+                    }
+                    else {
+                      this.camera.pan.y += 10;
+                      this.camera.adjustedPan.y += (1*this.camera.zoom.x);
+                      this.camera.panDirection = 'north';
+                    }
                   break;
                   case 'south':
-                  this.camera.pan.y -= 10;
-                  this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
-                  this.camera.panDirection = 'south';
+                    if (this.camera.pan.y <= this.camera.limits.pan.y.min) {
+                      // console.log('pan limit south',this.camera.pan.y,'/',this.camera.limits.pan.y.min);
+                      this.camera.limits.state.pan = true;
+                    }
+                    else {
+                      this.camera.pan.y -= 10;
+                      this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
+                      this.camera.panDirection = 'south';
+                    }
                   break;
                   case 'east':
-                    this.camera.pan.x -= 10;
-                    this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
-                    this.camera.panDirection = 'east';
+                    if (this.camera.pan.x <= this.camera.limits.pan.x.min) {
+                      // console.log('pan limit east',this.camera.pan.x,'/',this.camera.limits.pan.x.min);
+                      this.camera.limits.state.pan = true;
+                    }
+                    else {
+                      this.camera.pan.x -= 10;
+                      this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
+                      this.camera.panDirection = 'east';
+                    }
                   break;
                   case 'west':
-                    this.camera.pan.x += 10;
-                    this.camera.adjustedPan.x += (1*this.camera.zoom.x);
-                    this.camera.panDirection = 'west';
+                    if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
+                      // console.log('pan limit west',this.camera.pan.x,'/',this.camera.limits.pan.x.max);
+                      this.camera.limits.state.pan = true;
+                    }
+                    else {
+                      this.camera.pan.x += 10;
+                      this.camera.adjustedPan.x += (1*this.camera.zoom.x);
+                      this.camera.panDirection = 'west';
+                    }
                   break;
                 }
 
