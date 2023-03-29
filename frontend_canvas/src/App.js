@@ -1380,8 +1380,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 4,
-              y: 4,
+              x: 9,
+              y: 9,
             },
             center: {
               x: 0,
@@ -6053,8 +6053,8 @@ class App extends Component {
     switch (args) {
       case 'test':
         this.camera.preInstructions.push(
-          'zoom_in_'+50+'',
-          'waitFor_50',
+          // 'zoom_in_'+50+'',
+          // 'waitFor_50',
           'moveTo_'+9+'_'+4+'_slow',
           // 'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_fast',
           // 'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_slow',
@@ -30584,7 +30584,8 @@ class App extends Component {
     let nextPosition;
 
     if (this.time === 100) {
-      this.setAutoCamera('test',player)
+      this.setAutoCamera('test',player);
+      console.log('xxx');
     }
 
 
@@ -35231,11 +35232,6 @@ class App extends Component {
     // CAMERA
     // SWITCH ON
 
-    // this.setInitZoom = {
-    //   state: true,
-    //   windowWidth: window.innerWidth,
-    //   gridWidth: this.gridWidth,
-    // }
 
     if (this.setInitZoom.state === true) {
 
@@ -35734,7 +35730,7 @@ class App extends Component {
             this.camera.currentPreInstruction++;
           }
 
-          // console.log('auto camera: pre instructions parsed: ',this.camera.instructions);
+          console.log('auto camera: pre instructions parsed: ',this.camera.instructions);
 
         }
 
@@ -35770,44 +35766,44 @@ class App extends Component {
                       switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
                         case 'north':
                           if (this.camera.pan.y >= this.camera.limits.pan.y.max) {
-                            // console.log('pan limit north',this.camera.pan.y,'/',this.camera.limits.pan.y.max);
+                            console.log('pan limit north',this.camera.pan.y,'/',this.camera.limits.pan.y.max);
                             this.camera.limits.state.pan = true;
                           }
                           else {
-                            this.camera.pan.y += 10;
+                            this.camera.pan.y += 1;
                             this.camera.adjustedPan.y += (1*this.camera.zoom.x);
                             this.camera.panDirection = 'north';
                           }
                         break;
                         case 'south':
                           if (this.camera.pan.y <= this.camera.limits.pan.y.min) {
-                            // console.log('pan limit south',this.camera.pan.y,'/',this.camera.limits.pan.y.min);
+                            console.log('pan limit south',this.camera.pan.y,'/',this.camera.limits.pan.y.min);
                             this.camera.limits.state.pan = true;
                           }
                           else {
-                            this.camera.pan.y -= 10;
+                            this.camera.pan.y -= 1;
                             this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
                             this.camera.panDirection = 'south';
                           }
                         break;
                         case 'east':
                           if (this.camera.pan.x <= this.camera.limits.pan.x.min) {
-                            // console.log('pan limit east',this.camera.pan.x,'/',this.camera.limits.pan.x.min);
+                            console.log('pan limit east',this.camera.pan.x,'/',this.camera.limits.pan.x.min);
                             this.camera.limits.state.pan = true;
                           }
                           else {
-                            this.camera.pan.x -= 10;
+                            this.camera.pan.x -= 1;
                             this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
                             this.camera.panDirection = 'east';
                           }
                         break;
                         case 'west':
                           if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
-                            // console.log('pan limit west',this.camera.pan.x,'/',this.camera.limits.pan.x.max);
+                            console.log('pan limit west',this.camera.pan.x,'/',this.camera.limits.pan.x.max);
                             this.camera.limits.state.pan = true;
                           }
                           else {
-                            this.camera.pan.x += 10;
+                            this.camera.pan.x += 1;
                             this.camera.adjustedPan.x += (1*this.camera.zoom.x);
                             this.camera.panDirection = 'west';
                           }
@@ -35902,7 +35898,7 @@ class App extends Component {
                       this.camera.limits.state.pan = true;
                     }
                     else {
-                      this.camera.pan.y += 10;
+                      this.camera.pan.y += 1;
                       this.camera.adjustedPan.y += (1*this.camera.zoom.x);
                       this.camera.panDirection = 'north';
                     }
@@ -35913,7 +35909,7 @@ class App extends Component {
                       this.camera.limits.state.pan = true;
                     }
                     else {
-                      this.camera.pan.y -= 10;
+                      this.camera.pan.y -= 1;
                       this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
                       this.camera.panDirection = 'south';
                     }
@@ -35924,7 +35920,7 @@ class App extends Component {
                       this.camera.limits.state.pan = true;
                     }
                     else {
-                      this.camera.pan.x -= 10;
+                      this.camera.pan.x -= 1;
                       this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
                       this.camera.panDirection = 'east';
                     }
@@ -35935,7 +35931,7 @@ class App extends Component {
                       this.camera.limits.state.pan = true;
                     }
                     else {
-                      this.camera.pan.x += 10;
+                      this.camera.pan.x += 1;
                       this.camera.adjustedPan.x += (1*this.camera.zoom.x);
                       this.camera.panDirection = 'west';
                     }
@@ -35990,7 +35986,7 @@ class App extends Component {
                         this.camera.limits.state.pan = true;
                       }
                       else {
-                        this.camera.pan.y += 10;
+                        this.camera.pan.y += 1;
                         this.camera.adjustedPan.y += (1*this.camera.zoom.x);
                         this.camera.panDirection = 'north';
                       }
@@ -36001,7 +35997,7 @@ class App extends Component {
                         this.camera.limits.state.pan = true;
                       }
                       else {
-                        this.camera.pan.y -= 10;
+                        this.camera.pan.y -= 1;
                         this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
                         this.camera.panDirection = 'south';
                       }
@@ -36012,7 +36008,7 @@ class App extends Component {
                         this.camera.limits.state.pan = true;
                       }
                       else {
-                        this.camera.pan.x -= 10;
+                        this.camera.pan.x -= 1;
                         this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
                         this.camera.panDirection = 'east';
                       }
@@ -36023,7 +36019,7 @@ class App extends Component {
                         this.camera.limits.state.pan = true;
                       }
                       else {
-                        this.camera.pan.x += 10;
+                        this.camera.pan.x += 1;
                         this.camera.adjustedPan.x += (1*this.camera.zoom.x);
                         this.camera.panDirection = 'west';
                       }
@@ -36112,7 +36108,7 @@ class App extends Component {
                       this.camera.limits.state.pan = true;
                     }
                     else {
-                      this.camera.pan.y += 10;
+                      this.camera.pan.y += 1;
                       this.camera.adjustedPan.y += (1*this.camera.zoom.x);
                       this.camera.panDirection = 'north';
                     }
@@ -36123,7 +36119,7 @@ class App extends Component {
                       this.camera.limits.state.pan = true;
                     }
                     else {
-                      this.camera.pan.y -= 10;
+                      this.camera.pan.y -= 1;
                       this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
                       this.camera.panDirection = 'south';
                     }
@@ -36134,7 +36130,7 @@ class App extends Component {
                       this.camera.limits.state.pan = true;
                     }
                     else {
-                      this.camera.pan.x -= 10;
+                      this.camera.pan.x -= 1;
                       this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
                       this.camera.panDirection = 'east';
                     }
@@ -36145,7 +36141,7 @@ class App extends Component {
                       this.camera.limits.state.pan = true;
                     }
                     else {
-                      this.camera.pan.x += 10;
+                      this.camera.pan.x += 1;
                       this.camera.adjustedPan.x += (1*this.camera.zoom.x);
                       this.camera.panDirection = 'west';
                     }
