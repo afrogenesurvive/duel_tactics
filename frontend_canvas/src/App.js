@@ -30581,6 +30581,8 @@ class App extends Component {
       }
     }
 
+
+
     let nextPosition;
 
     if (this.time === 100) {
