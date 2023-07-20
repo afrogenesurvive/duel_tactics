@@ -1165,7 +1165,7 @@ const Settings = (props) => {
     <div className="settingsOverlay">
       <div className="settingsContainer">
       <h2 className="settingsHeading">
-        Settings x:
+        Settings :
       </h2>
 
       <Form onSubmit={props.onConfirm} className="form">

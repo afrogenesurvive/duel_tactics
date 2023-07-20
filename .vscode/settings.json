@@ -1,0 +1,6 @@
+{
+    "editor.foldingStrategy": "indentation",
+    "editor.folding": true,
+    "editor.showFoldingControls": "always",
+    "notebook.showFoldingControls": "always"
+}

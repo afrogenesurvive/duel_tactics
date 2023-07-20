@@ -1,0 +1,112 @@
+.settingsOverlay {
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(0,0,0,.9);
+  z-index: 5;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.loadingOverlay {
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(0,0,0,.99);
+  z-index: 6;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.settingsContainer {
+  margin: 0 auto;
+  border: 1px solid #ffffff;
+  height: 70%;
+  /* height: 32rem; */
+  width: 70%;
+  padding: 1rem;
+  border-radius: 5px;
+  background-color: rgba(0,0,0,.8);
+  overflow: scroll;
+  text-align: center;
+}
+.formBtnRow {
+  text-align: center;
+  margin: 1rem auto;
+}
+
+.formBtn {
+ margin: 0 2rem;
+}
+
+.formLabel {
+  font-size: 1.2rem;
+}
+.settingsHeading {
+  text-align: center;
+  margin: 3rem 0 0 0;
+}
+
+.loadingImg {
+  margin: 0 auto;
+}
+
+.controlsImg {
+  max-width: 90%;
+  margin: 1rem 2rem;
+  border-radius: 20px;
+}
+
+.form {
+  margin: 0 auto;
+  width: 80%;
+}
+
+.btnSubCont {
+  margin: 0 auto;
+}
+
+.multiAiFormBox {
+  border: 1px solid #ffffff;
+  border-radius: 5px;
+  text-align: center;
+}
+.multiAiFormAi {
+  border: 1px solid #ffffff;
+  border-radius: 5px;
+  margin: 0 auto;
+}
+
+.settingsCanvasContainer {
+  z-index: 7;
+  /* margin: 0 2.5rem; */
+}
+
+.settingsCanvas {
+  margin: .5rem;
+  border: 1px solid #ffffff;
+  border-radius: 5px;
+  padding: .5rem;
+}
+.icon {
+  color: #ffffff;
+  margin: 0 .5rem;
+  /* margin: .5rem; */
+}
+.icon:hover {
+  color: green;
+}
+
+#settingsCanvas2 {
+  /* display: none; */
+}

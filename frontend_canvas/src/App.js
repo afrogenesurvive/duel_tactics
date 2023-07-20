@@ -320,7 +320,7 @@ class App extends Component {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     ];
     this.levelData12 = {
-      row0: ['**_a_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*','**_*_0.7_a_0a*','**_*_0.8_a_0a*','**_*_0.9_a_0a*','**_*_0.10_a_0a*','**_*_0.11_a_0a*','**_*_0.12_a_0a*'],
+      row0: ['**_*_0.0_a_0a*','**_*_0.1_a_0a*','**_*_0.2_a_0a*','**_*_0.3_a_0a*','**_*_0.4_a_0a*','**_*_0.5_a_0a*','**_*_0.6_a_0a*','**_*_0.7_a_0a*','**_*_0.8_a_0a*','**_*_0.9_a_0a*','**_*_0.10_a_0a*','**_*_0.11_a_0a*','**_*_0.12_a_0a*'],
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*','**_*_1.10_a_0a*','**_*_1.11_a_0a*','**_*_1.12_a_0a*'],
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_a_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*','**_*_2.10_a_0a*','**_*_2.11_a_0a*','**_*_2.12_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_c_3.2_a_0a*','**_*_3.3_a_0a*','**_*_3.4_a_0a*','**_*_3.5_a_0a*','**_h_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_*_3.9_a_0a*','**_*_3.10_a_0a*','**_*_3.11_a_0a*','**_*_3.12_a_0a*'],
@@ -335,7 +335,7 @@ class App extends Component {
       row12: ['**_*_12.0_a_0a*','**_*_12.1_a_0a*','**_*_12.2_a_0a*','**_*_12.3_a_0a*','**_*_12.4_a_0a*','**_*_12.5_a_0a*','**_*_12.6_a_0a*','**_*_12.7_a_0a*','**_*_12.8_a_0a*','**_*_12.9_a_0a*','**_*_12.10_a_0a*','**_*_12.11_a_0a*','**_*_12.12_a_0a*'],
     };
     this.levelData9 = {
-      row0: ['**_a_0.0_a_0a*','**_i_0.1_a_0a*','**_*_0.2_a_0a*','cw_*_0.3_a_0a*','cw_h_0.4_a_0a*','cw_*_0.5_a_0a*','**_*_0.6_a_0a*','**_i_0.7_a_0a*','**_*_0.8_h_0a*','**_*_0.9_h_0a*'],
+      row0: ['**_*_0.0_a_0a*','**_i_0.1_a_0a*','**_*_0.2_a_0a*','cw_*_0.3_a_0a*','cw_h_0.4_a_0a*','cw_*_0.5_a_0a*','**_*_0.6_a_0a*','**_i_0.7_a_0a*','**_*_0.8_h_0a*','**_*_0.9_h_0a*'],
       row1: ['**_*_1.0_a_0a*','**_*_1.1_a_0a*','**_*_1.2_a_0a*','**_*_1.3_a_0a*','**_*_1.4_a_0a*','**_*_1.5_a_0a*','**_*_1.6_a_0a*','**_*_1.7_a_0a*','**_*_1.8_a_0a*','**_*_1.9_a_0a*'],
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_*_2.2_a_0a*','**_*_2.3_a_0a*','**_*_2.4_a_0a*','**_*_2.5_a_0a*','**_*_2.6_j_0a*','**_*_2.7_a_0a*','**_*_2.8_a_0a*','**_*_2.9_a_0a*'],
       row3: ['**_c_3.0_a_0a*','**_*_3.1_a_0a*','**_h_3.2_a_0a*','**_*_3.3_a_0a*','**_h_3.4_a_0a*','**_*_3.5_a_0a*','**_h_3.6_a_0a*','**_*_3.7_a_0a*','**_*_3.8_a_0a*','**_a_3.9_a_0a*'],
@@ -6023,30 +6023,31 @@ class App extends Component {
 
     }
 
+
     let reset = false;
     let attackFocusBreakZoomCorrection = "";
-    if (this.camera.preInstructions.length > 0 || this.camera.instructions.length > 0) {
-      console.log('resetting previous pre instructions',this.camera.preInstructions);
-      console.log('resetting previous instructions',this.camera.instructions);
-      reset = true;
+    // if (this.camera.preInstructions.length > 0 || this.camera.instructions.length > 0) {
+    //   console.log('resetting previous pre instructions',this.camera.preInstructions);
+    //   console.log('resetting previous instructions',this.camera.instructions);
+    //   reset = true;
 
-      if (args === "attackFocusBreak") {
-        if (this.camera.instructions.length > 0) {
-          if (
-            this.camera.instructions[this.camera.instructions.length-1].action === "zoom_in" ||
-            this.camera.instructions[this.camera.instructions.length-1].action === "zoom_out"
-          ) {
-            attackFocusBreakZoomCorrection = `zoom_out_${this.camera.instructions[this.camera.instructions.length-1].count}`
-          }
-        }
-      }
+    //   if (args === "attackFocusBreak") {
+    //     if (this.camera.instructions.length > 0) {
+    //       if (
+    //         this.camera.instructions[this.camera.instructions.length-1].action === "zoom_in" ||
+    //         this.camera.instructions[this.camera.instructions.length-1].action === "zoom_out"
+    //       ) {
+    //         attackFocusBreakZoomCorrection = `zoom_out_${this.camera.instructions[this.camera.instructions.length-1].count}`
+    //       }
+    //     }
+    //   }
 
-      this.camera.preInstructions = [];
-      this.camera.instructions = [];
-      this.camera.currentInstruction = 0;
-      this.settingAutoCamera = false;
-      reset = true;
-    }
+    //   this.camera.preInstructions = [];
+    //   this.camera.instructions = [];
+    //   this.camera.currentInstruction = 0;
+    //   this.settingAutoCamera = false;
+    //   reset = true;
+    // }
 
 
     let zoomAdjust = 0;
@@ -6055,7 +6056,7 @@ class App extends Component {
         this.camera.preInstructions.push(
           // 'zoom_in_'+50+'',
           // 'waitFor_50',
-          'moveTo_'+9+'_'+4+'_slow',
+          // 'moveTo_'+9+'_'+4+'_slow',
           // 'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_fast',
           // 'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_slow',
 
@@ -30585,9 +30586,15 @@ class App extends Component {
 
     let nextPosition;
 
-    if (this.time === 100) {
+    if (this.time === 100 && player.number === 1) {
       this.setAutoCamera('test',player);
-      console.log('xxx');
+      // this.setAutoCamera('attackFocus',player);
+      // this.setAutoCamera('attackFocusBreak',player);
+      // this.setAutoCamera('playerSpawnFocus',player);
+      // this.setAutoCamera('aiSpawnFocus',player);
+      // this.setAutoCamera('pushbackPan',player);
+      // this.setAutoCamera('followBolt',player);
+      // console.log('xxx');
     }
 
 
@@ -31063,7 +31070,8 @@ class App extends Component {
       // DON'T READ INPUTS. JUST MOVE!!
       if (player.moving.state === true) {
 
-        // console.log('player',player.number,player.action);
+        // console.log('player ',player.number,' ',player.action,' : ',player.moving);
+
         nextPosition = this.lineCrementer(player);
         player.nextPosition = nextPosition;
 
@@ -31176,8 +31184,9 @@ class App extends Component {
                   x: 0,
                   y: 0,
                 }
-              }
+              };
 
+            
               if (player.strafing.state === true) {
 
                 if (
@@ -35465,7 +35474,7 @@ class App extends Component {
 
           }
           if (this.keyPressed[player.number-1].north === true && this.camera.pan.y >= this.camera.limits.pan.y.max) {
-            // console.log('pan limit north',this.camera.pan.y,'/',this.camera.limits.pan.y.max);
+            console.log('pan limit north',this.camera.pan.y,'/',this.camera.limits.pan.y.max);
             this.camera.limits.state.pan = true;
           }
           if (
@@ -35976,15 +35985,16 @@ class App extends Component {
                 if (this.camera.instructions[this.camera.currentInstruction].action === 'wait') {
                   // console.log('single instruction: auto camera waiting');
                 }
+
                 if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'pan') {
-                  // console.log('auto camera panning/moving',this.camera.instructions[this.camera.currentInstruction].count);
+                  console.log('auto camera panning/moving',this.camera.instructions[this.camera.currentInstruction].action,this.camera.instructions[this.camera.currentInstruction].count);
 
                   // console.log('single instruction: adjusting pan x/y -/+ based on direction');
 
                   switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
                     case 'north':
                       if (this.camera.pan.y >= this.camera.limits.pan.y.max) {
-                        // console.log('pan limit north',this.camera.pan.y,'/',this.camera.limits.pan.y.max);
+                        console.log('pan limit north',this.camera.pan.y,'/',this.camera.limits.pan.y.max);
                         this.camera.limits.state.pan = true;
                       }
                       else {
@@ -35995,10 +36005,11 @@ class App extends Component {
                     break;
                     case 'south':
                       if (this.camera.pan.y <= this.camera.limits.pan.y.min) {
-                        // console.log('pan limit south',this.camera.pan.y,'/',this.camera.limits.pan.y.min);
+                        console.log('pan limit south',this.camera.pan.y,'/',this.camera.limits.pan.y.min);
                         this.camera.limits.state.pan = true;
                       }
                       else {
+                        console.log('heeeere');
                         this.camera.pan.y -= 1;
                         this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
                         this.camera.panDirection = 'south';
@@ -36006,7 +36017,7 @@ class App extends Component {
                     break;
                     case 'east':
                       if (this.camera.pan.x <= this.camera.limits.pan.x.min) {
-                        // console.log('pan limit east',this.camera.pan.x,'/',this.camera.limits.pan.x.min);
+                        console.log('pan limit east',this.camera.pan.x,'/',this.camera.limits.pan.x.min);
                         this.camera.limits.state.pan = true;
                       }
                       else {
@@ -36017,7 +36028,7 @@ class App extends Component {
                     break;
                     case 'west':
                       if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
-                        // console.log('pan limit west',this.camera.pan.x,'/',this.camera.limits.pan.x.max);
+                        console.log('pan limit west',this.camera.pan.x,'/',this.camera.limits.pan.x.max);
                         this.camera.limits.state.pan = true;
                       }
                       else {
@@ -36173,6 +36184,7 @@ class App extends Component {
               }
 
             }
+
           }
 
 
@@ -37156,10 +37168,10 @@ class App extends Component {
             //   break;
             //   case 'defending':
             //   let animIndex2 = plyr.defending.count -1;
-            //
+            
             //   if (plyr.defendDecay.state !== true) {
             //     if (plyr.defending.count > 0) {
-            //
+            
             //       finalAnimIndex = animIndex2;
             //       // console.log('anim testing def wind up',plyr.defending.count,'plyr',plyr.number, animIndex2);
             //     }
@@ -37174,7 +37186,7 @@ class App extends Component {
             //       animIndex2 = plyr.defendDecay.count-1;
             //     }
             //     else {
-            //
+            
             //       if (plyr.defendDecay.count%10 === 0) {
             //         animIndex2 = 9;
             //       }
@@ -37182,7 +37194,7 @@ class App extends Component {
             //         let mod = (Math.floor(plyr.defendDecay.count/10)*10)
             //         animIndex2 = (plyr.defendDecay.count-mod)-1;
             //       }
-            //
+            
             //     }
             //     finalAnimIndex = animIndex2;
             //   }
@@ -37694,7 +37706,7 @@ class App extends Component {
           // MOVING & MID STRAFE KEY RELEASE
           if (plyr.target.cell1.void === false && plyr.moving.state === true && plyr.falling.state !== true && plyr.jumping.state !== true) {
             let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
-            // console.log('move',finalAnimIndex);
+            console.log('move',finalAnimIndex);
             // if (plyr.direction === 'north' || plyr.direction === 'northWest' || plyr.direction === 'west') {
             //   if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
             //     // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
@@ -38339,7 +38351,8 @@ class App extends Component {
 
           }
 
-          // DEPTH SORTING!!
+          // DEPTH SORTING END!!
+
 
 
           if (plyr.respawn === true) {
@@ -40973,7 +40986,7 @@ class App extends Component {
                 </OverlayTrigger>
 
               </a>
-              )}
+              
 
             </div>
 
