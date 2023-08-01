@@ -1323,7 +1323,7 @@ const Settings = (props) => {
                   <FontAwesomeIcon onClick={props.updateSettingsCanvasData.bind(this, {type:'human_start',plyrNo:posArray.plyrNo})} icon={faTh} size="sm" className="icon"/>
                   <FontAwesomeIcon onClick={e=>handlePlyrStartPosStateChange(posArray.plyrNo,'random')} icon={faDice} size="sm" className="icon"/>
                   <Form.Control as="select" value={posArray.selected} onChange={e=>handlePlyrStartPosStateChange(posArray.plyrNo,e.target.value)}>
-                    <option selected >{posArray.selected.x},{posArray.selected.y}</option>
+                    <option >{posArray.selected.x},{posArray.selected.y}</option>
                     {posArray.posArray.map((pos) => {
                       if (pos === 'random') {
                         return<option>{pos}</option>
@@ -1520,7 +1520,7 @@ const Settings = (props) => {
                       <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='start')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start',e.target.value)}>
                       {posArray.selected.map((selected) => {
                         if (selected.type === 'start') {
-                          return<option selected >{selected.cell.x},{selected.cell.y}</option>
+                          return<option >{selected.cell.x},{selected.cell.y}</option>
                         }
                       })}
                         {posArray.posArray.map((pos) => {
@@ -1557,7 +1557,7 @@ const Settings = (props) => {
                       <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='start')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start',e.target.value)}>
                       {posArray.selected.map((selected) => {
                         if (selected.type === 'start') {
-                          return<option selected >{selected.cell.x},{selected.cell.y}</option>
+                          return<option >{selected.cell.x},{selected.cell.y}</option>
                         }
                       })}
                         {posArray.posArray.map((pos) => {
@@ -1589,7 +1589,7 @@ const Settings = (props) => {
                       <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='defend')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'defend',e.target.value)}>
                       {posArray.selected.map((selected) => {
                         if (selected.type === 'defend') {
-                          return<option selected >{selected.cell.x},{selected.cell.y}</option>
+                          return<option >{selected.cell.x},{selected.cell.y}</option>
                         }
                       })}
                         {posArray.posArray.map((pos) => {
@@ -1626,7 +1626,7 @@ const Settings = (props) => {
                       <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='start')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'start',e.target.value)}>
                       {posArray.selected.map((selected) => {
                         if (selected.type === 'start') {
-                          return<option selected >{selected.cell.x},{selected.cell.y}</option>
+                          return<option >{selected.cell.x},{selected.cell.y}</option>
                         }
                       })}
                         {posArray.posArray.map((pos) => {
@@ -1656,7 +1656,7 @@ const Settings = (props) => {
                       <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='patrol1')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol1',e.target.value)}>
                       {posArray.selected.map((selected) => {
                         if (selected.type === 'patrol1') {
-                          return<option selected >{selected.cell.x},{selected.cell.y}</option>
+                          return<option >{selected.cell.x},{selected.cell.y}</option>
                         }
                       })}
                         {posArray.posArray.map((pos) => {
@@ -1686,7 +1686,7 @@ const Settings = (props) => {
                       <Form.Control as="select" value={posArray.selected.filter(x=>x.type==='patrol2')[0]} onChange={e=>handleAiStartPosStateChange(posArray.mission,posArray.plyrNo,'patrol2',e.target.value)}>
                       {posArray.selected.map((selected) => {
                         if (selected.type === 'patrol2') {
-                          return<option selected >{selected.cell.x},{selected.cell.y}</option>
+                          return<option >{selected.cell.x},{selected.cell.y}</option>
                         }
                       })}
                         {posArray.posArray.map((pos) => {

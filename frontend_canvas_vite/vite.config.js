@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import reactRefresh from '@vitejs/plugin-react-refresh';
+import svgr from "vite-plugin-svgr";
 
 
 const sourceJSPattern = /\/src\/.*\.js$/;
@@ -16,7 +17,14 @@ const sourceJSPattern = /\/src\/.*\.js$/;
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    svgr({
+      svgrOptions: {
+          ref: true,
+      },
+    }),
+  ],
   optimizeDeps: { 
     include: ['react', 'react-dom'],
     esbuildOptions: {
@@ -26,6 +34,7 @@ export default defineConfig({
     }, 
   },
   build: {
+    outDir: './build',
     minify: false,
     target: 'es2018', // Optional: Set the target to the desired ECMAScript version
     rollupOptions: {
@@ -45,6 +54,10 @@ export default defineConfig({
   //   include: [sourceJSPattern],
   //   exclude: [],
   // },
+  server: {
+    port: 3000,
+    host: true
+  },
 })
 
 

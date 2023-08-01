@@ -209,6 +209,7 @@ import CellInfo from './cellInfo'
 import Loading from './loading'
 import AiStatus from './aiStatus'
 import CameraControl from './cameraControl'
+import Helper from './helper'
 
 import pointInPolygon from 'point-in-polygon';
 
@@ -3065,7 +3066,7 @@ class App extends Component {
 
   componentDidMount() {
 
-    console.log('heere');
+    // Helper.init()
 
     this.easyStar = new Easystar.js();
 
@@ -6057,12 +6058,15 @@ class App extends Component {
     switch (args) {
       case 'test':
         this.camera.preInstructions.push(
-          // 'zoom_in_'+50+'',
-          // 'waitFor_50',
+          'zoom_in_'+50+'',
+          'waitFor_50',
           // 'moveTo_'+9+'_'+4+'_slow',
-          // 'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_fast',
+          'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_fast',
+          'waitFor_50',
+          'moveTo_'+9+'_'+0+'_fast',
           // 'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_slow',
-
+          'zoom_out_'+30+'',
+          // 'zoom_outToInit',
         )
 
       break;
@@ -9303,10 +9307,10 @@ class App extends Component {
   isBoltInCell = (cellNumber) => {
 
     let bolt = false;
-    for (const bolt of this.projectiles) {
+    for (const bolt2 of this.projectiles) {
       if (
-        cellNumber.x === bolt.currentPosition.number.x &&
-        cellNumber.y === bolt.currentPosition.number.y
+        cellNumber.x === bolt2.currentPosition.number.x &&
+        cellNumber.y === bolt2.currentPosition.number.y
       ) {
         bolt = true;
       }
@@ -35744,7 +35748,7 @@ class App extends Component {
             this.camera.currentPreInstruction++;
           }
 
-          console.log('auto camera: pre instructions parsed: ',this.camera.instructions);
+          // console.log('auto camera: pre instructions parsed: ',this.camera.instructions);
 
         }
 
@@ -35761,7 +35765,7 @@ class App extends Component {
 
               if (this.camera.instructions[this.camera.currentInstruction].action === 'wait') {
 
-                  // console.log('single instruction: auto camera waiting. count:',this.camera.instructions[this.camera.currentInstruction].count);
+                  console.log('single instruction: auto camera waiting fast. count ',this.camera.instructions[this.camera.currentInstruction].count);
                   this.camera.instructions[this.camera.currentInstruction].count++;
 
 
@@ -35773,53 +35777,57 @@ class App extends Component {
                     // console.log('single instruction: auto camera',this.camera.instructions[this.camera.currentInstruction].action,' count:',this.camera.instructions[this.camera.currentInstruction].count);
 
                     if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'pan') {
-                      console.log('auto camera panning/moving',this.camera.instructions[this.camera.currentInstruction]);
+                      // console.log('auto camera fast panning/moving',this.camera.instructions[this.camera.currentInstruction]);
 
                       // console.log(this.camera.zoom.x-1,'single instruction: adjusting pan x/y -/+ based on direction');
 
                       switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
                         case 'north':
                           if (this.camera.pan.y >= this.camera.limits.pan.y.max) {
-                            console.log('pan limit north',this.camera.pan.y,'/',this.camera.limits.pan.y.max);
+                            console.log('auto cam pan limit north fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.max,this.camera.instructions[this.camera.currentInstruction].count);
                             this.camera.limits.state.pan = true;
                           }
                           else {
                             this.camera.pan.y += 1;
                             this.camera.adjustedPan.y += (1*this.camera.zoom.x);
                             this.camera.panDirection = 'north';
+                            console.log('auto cam panning north fast ',this.camera.instructions[this.camera.currentInstruction].count)
                           }
                         break;
                         case 'south':
                           if (this.camera.pan.y <= this.camera.limits.pan.y.min) {
-                            console.log('pan limit south',this.camera.pan.y,'/',this.camera.limits.pan.y.min);
+                            console.log('auto cam pan limit south fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.min,this.camera.instructions[this.camera.currentInstruction].count);
                             this.camera.limits.state.pan = true;
                           }
                           else {
                             this.camera.pan.y -= 1;
                             this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
                             this.camera.panDirection = 'south';
+                            console.log('auto cam panning south fast ',this.camera.instructions[this.camera.currentInstruction].count)
                           }
                         break;
                         case 'east':
                           if (this.camera.pan.x <= this.camera.limits.pan.x.min) {
-                            console.log('pan limit east',this.camera.pan.x,'/',this.camera.limits.pan.x.min);
+                            console.log('auto cam pan limit east fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.min,this.camera.instructions[this.camera.currentInstruction].count);
                             this.camera.limits.state.pan = true;
                           }
                           else {
                             this.camera.pan.x -= 1;
                             this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
                             this.camera.panDirection = 'east';
+                            console.log('auto cam panning east fast ',this.camera.instructions[this.camera.currentInstruction].count)
                           }
                         break;
                         case 'west':
                           if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
-                            console.log('pan limit west',this.camera.pan.x,'/',this.camera.limits.pan.x.max);
+                            console.log('auto cam pan limit west fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.max,this.camera.instructions[this.camera.currentInstruction].count);
                             this.camera.limits.state.pan = true;
                           }
                           else {
                             this.camera.pan.x += 1;
                             this.camera.adjustedPan.x += (1*this.camera.zoom.x);
                             this.camera.panDirection = 'west';
+                            console.log('auto cam panning west fast ',this.camera.instructions[this.camera.currentInstruction].count)
                           }
                         break;
                       }
@@ -35835,30 +35843,32 @@ class App extends Component {
                     }
 
                     if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'zoom') {
-                      console.log(this.camera.zoom.x-1,'single instruction: adjusting zoom x -/+ based on direction',this.camera.instructions[this.camera.currentInstruction].count,this.camera.instructions[this.camera.currentInstruction].limit);
+                      // console.log(this.camera.zoom.x-1,'single instruction: adjusting zoom x -/+ based on direction',this.camera.instructions[this.camera.currentInstruction].count,this.camera.instructions[this.camera.currentInstruction].limit);
 
 
                       switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
                         case 'in':
                           if (this.camera.zoom.x >= this.camera.limits.zoom.max) {
                             this.camera.limits.state.zoom = true;
-                            // console.log('zoom in limit',this.camera.limits.state.zoom);
+                            console.log('auto cam zoom in limit fast',this.camera.zoom.x,'/',this.camera.limits.zoom.max,this.camera.instructions[this.camera.currentInstruction].count);
                           }
                           else {
                             this.camera.zoom.x += .02 ;
                             this.camera.zoom.y += .02 ;
                             this.camera.zoomDirection = 'in';
+                            console.log('auto cam zooming in fast ',this.camera.instructions[this.camera.currentInstruction].count);
                           }
                         break;
                         case 'out':
                           if (this.camera.zoom.x <= this.camera.limits.zoom.min) {
-                            // console.log('zoom out limit');
                             this.camera.limits.state.zoom = true;
+                            console.log('auto cam zoom in limit fast ',this.camera.zoom.x,'/',this.camera.limits.zoom.min,this.camera.instructions[this.camera.currentInstruction].count);
                           }
                           else {
                             this.camera.zoom.x -= .02 ;
                             this.camera.zoom.y -= .02 ;
                             this.camera.zoomDirection = 'out';
+                            console.log('auto cam zooming out fast ',this.camera.instructions[this.camera.currentInstruction].count);
                           }
                         break;
                         case 'outToInit':
@@ -35903,51 +35913,55 @@ class App extends Component {
 
               for (var i = 0; i < this.camera.instructions[this.camera.currentInstruction].limit2; i++) {
                 // console.log('single instruction2: auto camera',this.camera.instructions[this.camera.currentInstruction].action2,' count:',this.camera.instructions[this.camera.currentInstruction].count2);
-
+                // console.log('step through a single secondary instruction',this.camera.instructions[this.camera.currentInstruction],'count2',this.camera.instructions[this.camera.currentInstruction].count2);
 
                 switch (this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1]) {
                   case 'north':
                     if (this.camera.pan.y >= this.camera.limits.pan.y.max) {
-                      // console.log('pan limit north',this.camera.pan.y,'/',this.camera.limits.pan.y.max);
+                      console.log('secondary: auto cam pan limit north fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.max,this.camera.instructions[this.camera.currentInstruction].count2);
                       this.camera.limits.state.pan = true;
                     }
                     else {
                       this.camera.pan.y += 1;
                       this.camera.adjustedPan.y += (1*this.camera.zoom.x);
                       this.camera.panDirection = 'north';
+                      console.log('secondary: auto cam panning north fast ',this.camera.instructions[this.camera.currentInstruction].count2);
                     }
                   break;
                   case 'south':
                     if (this.camera.pan.y <= this.camera.limits.pan.y.min) {
-                      // console.log('pan limit south',this.camera.pan.y,'/',this.camera.limits.pan.y.min);
                       this.camera.limits.state.pan = true;
+                      console.log('secondary: auto cam pan limit south fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.min,this.camera.instructions[this.camera.currentInstruction].count2);
                     }
                     else {
                       this.camera.pan.y -= 1;
                       this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
                       this.camera.panDirection = 'south';
+                      console.log('secondary: auto cam panning south fast ',this.camera.instructions[this.camera.currentInstruction].count2);
                     }
                   break;
                   case 'east':
                     if (this.camera.pan.x <= this.camera.limits.pan.x.min) {
-                      // console.log('pan limit east',this.camera.pan.x,'/',this.camera.limits.pan.x.min);
                       this.camera.limits.state.pan = true;
+                      console.log('secondary: auto cam pan limit south fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.min,this.camera.instructions[this.camera.currentInstruction].count2);
                     }
                     else {
                       this.camera.pan.x -= 1;
                       this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
                       this.camera.panDirection = 'east';
+                      console.log('secondary: auto cam panning east fast ',this.camera.instructions[this.camera.currentInstruction].count2);
                     }
                   break;
                   case 'west':
                     if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
-                      // console.log('pan limit west',this.camera.pan.x,'/',this.camera.limits.pan.x.max);
                       this.camera.limits.state.pan = true;
+                      console.log('secondary: auto cam pan limit west fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.max,this.camera.instructions[this.camera.currentInstruction].count2);
                     }
                     else {
                       this.camera.pan.x += 1;
                       this.camera.adjustedPan.x += (1*this.camera.zoom.x);
                       this.camera.panDirection = 'west';
+                      console.log('secondary: auto cam panning west fast ',this.camera.instructions[this.camera.currentInstruction].count2);
                     }
                   break;
                 }
@@ -35986,58 +36000,63 @@ class App extends Component {
                 // console.log('step through a single instruction',this.camera.instructions[this.camera.currentInstruction],'count',this.camera.instructions[this.camera.currentInstruction].count);
 
                 if (this.camera.instructions[this.camera.currentInstruction].action === 'wait') {
-                  // console.log('single instruction: auto camera waiting');
+                  console.log('single instruction: auto camera waiting slow. count',this.camera.instructions[this.camera.currentInstruction].count);
                 }
 
                 if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'pan') {
-                  console.log('auto camera panning/moving',this.camera.instructions[this.camera.currentInstruction].action,this.camera.instructions[this.camera.currentInstruction].count);
+                  // console.log('auto camera slow panning/moving',this.camera.instructions[this.camera.currentInstruction].action,this.camera.instructions[this.camera.currentInstruction].count);
 
                   // console.log('single instruction: adjusting pan x/y -/+ based on direction');
 
                   switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
                     case 'north':
                       if (this.camera.pan.y >= this.camera.limits.pan.y.max) {
-                        console.log('pan limit north',this.camera.pan.y,'/',this.camera.limits.pan.y.max);
+                        console.log('auto cam pan limit north slow ',this.camera.pan.y,'/',this.camera.limits.pan.y.max,this.camera.instructions[this.camera.currentInstruction].count);
                         this.camera.limits.state.pan = true;
                       }
                       else {
                         this.camera.pan.y += 1;
                         this.camera.adjustedPan.y += (1*this.camera.zoom.x);
                         this.camera.panDirection = 'north';
+                        console.log('auto cam panning north slow ',this.camera.instructions[this.camera.currentInstruction].count);
                       }
                     break;
                     case 'south':
                       if (this.camera.pan.y <= this.camera.limits.pan.y.min) {
-                        console.log('pan limit south',this.camera.pan.y,'/',this.camera.limits.pan.y.min);
                         this.camera.limits.state.pan = true;
+                        console.log('auto cam pan limit south slow ',this.camera.pan.y,'/',this.camera.limits.pan.y.min,this.camera.instructions[this.camera.currentInstruction].count);
                       }
                       else {
-                        console.log('heeeere');
+                        
                         this.camera.pan.y -= 1;
                         this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
                         this.camera.panDirection = 'south';
+                        console.log('auto cam panning south slow ',this.camera.instructions[this.camera.currentInstruction].count);
                       }
                     break;
                     case 'east':
                       if (this.camera.pan.x <= this.camera.limits.pan.x.min) {
                         console.log('pan limit east',this.camera.pan.x,'/',this.camera.limits.pan.x.min);
                         this.camera.limits.state.pan = true;
+                        console.log('auto cam pan limit east slow ',this.camera.pan.x,'/',this.camera.limits.pan.x.min,this.camera.instructions[this.camera.currentInstruction].count);
                       }
                       else {
                         this.camera.pan.x -= 1;
                         this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
                         this.camera.panDirection = 'east';
+                        console.log('auto cam panning east slow ',this.camera.instructions[this.camera.currentInstruction].count);
                       }
                     break;
                     case 'west':
                       if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
-                        console.log('pan limit west',this.camera.pan.x,'/',this.camera.limits.pan.x.max);
                         this.camera.limits.state.pan = true;
+                        console.log('auto cam pan limit west slow ',this.camera.pan.x,'/',this.camera.limits.pan.x.max,this.camera.instructions[this.camera.currentInstruction].count);
                       }
                       else {
                         this.camera.pan.x += 1;
                         this.camera.adjustedPan.x += (1*this.camera.zoom.x);
                         this.camera.panDirection = 'west';
+                        console.log('auto cam panning west slow ',this.camera.instructions[this.camera.currentInstruction].count);
                       }
                     break;
                   }
@@ -36053,29 +36072,31 @@ class App extends Component {
                 }
 
                 if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'zoom') {
-                  // console.log('single instruction: adjusting zoom x -/+ based on direction',this.camera.instructions[this.camera.currentInstruction].count,this.camera.instructions[this.camera.currentInstruction].limit);
+                  // console.log('single instruction: slow adjusting zoom x -/+ based on direction',this.camera.instructions[this.camera.currentInstruction].count,this.camera.instructions[this.camera.currentInstruction].limit);
 
                   switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
                     case 'in':
                       if (this.camera.zoom.x >= this.camera.limits.zoom.max) {
                         this.camera.limits.state.zoom = true;
-                        // console.log('zoom in limit',this.camera.limits.state.zoom);
+                        console.log('auto cam zoom in limit slow ',this.camera.zoom.x,'/',this.camera.limits.zoom.max,this.camera.instructions[this.camera.currentInstruction].count);
                       }
                       else {
                         this.camera.zoom.x += .02 ;
                         this.camera.zoom.y += .02 ;
                         this.camera.zoomDirection = 'in';
+                        console.log('auto cam zooming in slow ',this.camera.instructions[this.camera.currentInstruction].count);
                       }
                     break;
                     case 'out':
                       if (this.camera.zoom.x <= this.camera.limits.zoom.min) {
-                        // console.log('zoom out limit');
                         this.camera.limits.state.zoom = true;
+                        console.log('auto cam zoom out limit slow ',this.camera.zoom.x,'/',this.camera.limits.zoom.min,this.camera.instructions[this.camera.currentInstruction].count);
                       }
                       else {
                         this.camera.zoom.x -= .02 ;
                         this.camera.zoom.y -= .02 ;
                         this.camera.zoomDirection = 'out';
+                        console.log('auto cam zooming out slow ',this.camera.instructions[this.camera.currentInstruction].count);
                       }
                     break;
                     case 'outToInit':
@@ -36120,46 +36141,50 @@ class App extends Component {
                 switch (this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1]) {
                   case 'north':
                     if (this.camera.pan.y >= this.camera.limits.pan.y.max) {
-                      // console.log('pan limit north',this.camera.pan.y,'/',this.camera.limits.pan.y.max);
                       this.camera.limits.state.pan = true;
+                      console.log('secondary; auto cam pan limit north slow',this.camera.pan.y,'/',this.camera.limits.pan.y.max,this.camera.instructions[this.camera.currentInstruction].count2);
                     }
                     else {
                       this.camera.pan.y += 1;
                       this.camera.adjustedPan.y += (1*this.camera.zoom.x);
                       this.camera.panDirection = 'north';
+                      console.log('secondary: auto cam panning south slow ',this.camera.instructions[this.camera.currentInstruction].count2)
                     }
                   break;
                   case 'south':
                     if (this.camera.pan.y <= this.camera.limits.pan.y.min) {
-                      // console.log('pan limit south',this.camera.pan.y,'/',this.camera.limits.pan.y.min);
                       this.camera.limits.state.pan = true;
+                      console.log('secondary; auto cam pan limit south slow',this.camera.pan.y,'/',this.camera.limits.pan.y.min,this.camera.instructions[this.camera.currentInstruction].count2);
                     }
                     else {
                       this.camera.pan.y -= 1;
                       this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
                       this.camera.panDirection = 'south';
+                      console.log('secondary: auto cam panning south slow ',this.camera.instructions[this.camera.currentInstruction].count2)
                     }
                   break;
                   case 'east':
                     if (this.camera.pan.x <= this.camera.limits.pan.x.min) {
-                      // console.log('pan limit east',this.camera.pan.x,'/',this.camera.limits.pan.x.min);
                       this.camera.limits.state.pan = true;
+                      console.log('secondary; auto cam pan limit east slow',this.camera.pan.x,'/',this.camera.limits.pan.x.min,this.camera.instructions[this.camera.currentInstruction].count2);
                     }
                     else {
                       this.camera.pan.x -= 1;
                       this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
                       this.camera.panDirection = 'east';
+                      console.log('secondary: auto cam panning east slow ',this.camera.instructions[this.camera.currentInstruction].count2)
                     }
                   break;
                   case 'west':
                     if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
-                      // console.log('pan limit west',this.camera.pan.x,'/',this.camera.limits.pan.x.max);
                       this.camera.limits.state.pan = true;
+                      console.log('secondary; auto cam pan limit west slow ',this.camera.pan.x,'/',this.camera.limits.pan.x.max,this.camera.instructions[this.camera.currentInstruction].count2);
                     }
                     else {
                       this.camera.pan.x += 1;
                       this.camera.adjustedPan.x += (1*this.camera.zoom.x);
                       this.camera.panDirection = 'west';
+                      console.log('secondary: auto cam panning west slow ',this.camera.instructions[this.camera.currentInstruction].count2)
                     }
                   break;
                 }
@@ -37709,7 +37734,7 @@ class App extends Component {
           // MOVING & MID STRAFE KEY RELEASE
           if (plyr.target.cell1.void === false && plyr.moving.state === true && plyr.falling.state !== true && plyr.jumping.state !== true) {
             let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
-            console.log('move',finalAnimIndex);
+            // console.log('move',finalAnimIndex);
             // if (plyr.direction === 'north' || plyr.direction === 'northWest' || plyr.direction === 'west') {
             //   if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
             //     // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
@@ -38357,7 +38382,7 @@ class App extends Component {
           // DEPTH SORTING END!!
 
 
-
+          // RESPAWN
           if (plyr.respawn === true) {
 
             if (
@@ -38484,7 +38509,8 @@ class App extends Component {
 
               }
 
-            }
+          }
+          // DEAD
           if (plyr.dead.state === true && player.dead.count > 0 && plyr.dead.count < plyr.dead.limit) {
 
             if (
@@ -38495,6 +38521,7 @@ class App extends Component {
               context.drawImage(this.indicatorImgs.death, plyr.ghost.position.cell.center.x-15, plyr.ghost.position.cell.center.y-15, 25,25);
             }
           }
+          // GHOST
           if (plyr.ghost.state === true && player.dead.count === 0) {
             if (x === plyr.ghost.position.cell.number.x && y === plyr.ghost.position.cell.number.y) {
               // console.log('player ',plyr.number,'ghost @',plyr.ghost.position.cell.number,plyr.ghost.position.cell.center);
@@ -40871,6 +40898,10 @@ class App extends Component {
             </p>
           </div>
 
+          <Helper
+            players={this.players}
+          />
+
           <div className={this.state.containerInnerClass}>
 
             <canvas
@@ -41081,9 +41112,9 @@ class App extends Component {
           )}
 
 
-          <svg className="popupProgressSvg hidden" ref="popupProgressSvg"  xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 30 30" shape-rendering="crispEdges">
+          <svg className="popupProgressSvg hidden" ref="popupProgressSvg"  xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 30 30" shapeRendering="crispEdges">
             <metadata>Made with Pixels to Svg https://codepen.io/shshaw/pen/XbxvNj</metadata>
-            <path id="border" stroke="yellow" stroke-width="5px" d="M4 0h21M2 1h26M1 2h2M27 2h2M1 3h1M28 3h1M1 4h1M28 4h2M0 5h2M28 5h2M0 6h2M28 6h2M0 7h2M28 7h2M0 8h2M28 8h2M0 9h2M28 9h2M0 10h2M28 10h2M0 11h2M28 11h2M0 12h2M28 12h2M0 13h2M28 13h2M0 14h2M28 14h2M0 15h2M28 15h2M0 16h2M28 16h2M0 17h2M28 17h2M0 18h2M28 18h2M0 19h2M28 19h2M0 20h2M28 20h2M0 21h2M28 21h2M0 22h2M28 22h2M0 23h2M28 23h2M0 24h2M28 24h2M0 25h2M28 25h1M1 26h1M28 26h1M1 27h2M27 27h2M2 28h26M5 29h21" />
+            <path id="border" stroke="yellow" strokeWidth="5px" d="M4 0h21M2 1h26M1 2h2M27 2h2M1 3h1M28 3h1M1 4h1M28 4h2M0 5h2M28 5h2M0 6h2M28 6h2M0 7h2M28 7h2M0 8h2M28 8h2M0 9h2M28 9h2M0 10h2M28 10h2M0 11h2M28 11h2M0 12h2M28 12h2M0 13h2M28 13h2M0 14h2M28 14h2M0 15h2M28 15h2M0 16h2M28 16h2M0 17h2M28 17h2M0 18h2M28 18h2M0 19h2M28 19h2M0 20h2M28 20h2M0 21h2M28 21h2M0 22h2M28 22h2M0 23h2M28 23h2M0 24h2M28 24h2M0 25h2M28 25h1M1 26h1M28 26h1M1 27h2M27 27h2M2 28h26M5 29h21" />
             <rect id="rect" x="1" y="1" rx="5" ry="5" width="95%" height="0%" fill="url(#grad)"/>
             <defs>
               <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
