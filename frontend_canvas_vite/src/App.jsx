@@ -6053,6 +6053,26 @@ class App extends Component {
     //   reset = true;
     // }
 
+    if (this.camera.preInstructions.length > 0 || this.camera.instructions.length > 0) {
+      if (args === "attackFocusBreak") {
+        if (this.camera.instructions.length > 0) {
+          if (
+            this.camera.instructions[this.camera.instructions.length-1].action === "zoom_in" ||
+            this.camera.instructions[this.camera.instructions.length-1].action === "zoom_out"
+          ) {
+            attackFocusBreakZoomCorrection = `zoom_out_${this.camera.instructions[this.camera.instructions.length-1].count}`
+          }
+  
+          this.camera.preInstructions = [];
+          this.camera.instructions = [];
+          this.camera.currentInstruction = 0;
+          this.settingAutoCamera = false;
+          reset = true;
+        }
+      }
+    }
+    
+
 
     let zoomAdjust = 0;
     switch (args) {
@@ -6062,7 +6082,7 @@ class App extends Component {
           'waitFor_50',
           // 'moveTo_'+9+'_'+4+'_slow',
           'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_slow',
-          'waitFor_50',
+          // 'waitFor_50',
           // 'moveTo_'+9+'_'+0+'_slow',
           // 'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_slow',
           'zoom_out_'+30+'',
@@ -6294,20 +6314,21 @@ class App extends Component {
       break;
       case 'attackFocusBreak':
 
-        if ((this.camera.zoom.x-1) > 0) {
+        if ((this.camera.zoom.x-1) > -.05) {
 
           if (reset === true) {
             console.log('1');
             this.camera.preInstructions.push(attackFocusBreakZoomCorrection)
           }
 
-          else {
-            console.log('2');
-            let zoomDifference = 0;
-            this.camera.preInstructions.push(
-              'zoom_outToInit'
-            )
-          }
+          // else {
+          //   console.log('2');
+          //   let zoomDifference = 0;
+          //   this.camera.preInstructions.push(
+          //     'zoom_outToInit'
+          //   )
+          // }
+          // this.camera.preInstructions.push(attackFocusBreakZoomCorrection)
 
         }
 
@@ -30594,7 +30615,7 @@ class App extends Component {
 
     let nextPosition;
 
-    if (this.time === 100 && player.number === 1) {
+    if (this.time === 150 && player.number === 1) {
       // this.setAutoCamera('test',player);
       // this.setAutoCamera('attackFocus',player);
       // this.setAutoCamera('attackFocusBreak',player);
@@ -35765,7 +35786,8 @@ class App extends Component {
 
               // CONTINUE EXECUTING CURRENT INSTRUCTION
               if (this.camera.instructions[this.camera.currentInstruction].count < this.camera.instructions[this.camera.currentInstruction].limit) {
-  
+                
+                // console.log('1',this.camera.instructions[this.camera.currentInstruction],this.camera.instructions[this.camera.currentInstruction].count,this.camera.instructions[this.camera.currentInstruction].limit);
   
                 if (this.camera.instructions[this.camera.currentInstruction].action === 'wait') {
   
@@ -35774,6 +35796,7 @@ class App extends Component {
   
   
                 }
+
                 else {
   
                   for (var i = 0; i < this.camera.instructions[this.camera.currentInstruction].limit; i++) {
@@ -35786,6 +35809,7 @@ class App extends Component {
                         // console.log(this.camera.zoom.x-1,'single instruction: adjusting pan x/y -/+ based on direction');
   
                         switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
+
                           case 'north':
                             if (this.camera.pan.y >= this.camera.limits.pan.y.max) {
                               // console.log('auto cam pan limit north fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.max,this.camera.instructions[this.camera.currentInstruction].count);
@@ -35795,7 +35819,7 @@ class App extends Component {
                               this.camera.pan.y += 1;
                               this.camera.adjustedPan.y += (1*this.camera.zoom.x);
                               this.camera.panDirection = 'north';
-                              console.log('auto cam panning north fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                              // console.log('auto cam panning north fast ',this.camera.instructions[this.camera.currentInstruction].count)
                             }
                           break;
                           case 'south':
@@ -35807,7 +35831,7 @@ class App extends Component {
                               this.camera.pan.y -= 1;
                               this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
                               this.camera.panDirection = 'south';
-                              console.log('auto cam panning south fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                              // console.log('auto cam panning south fast ',this.camera.instructions[this.camera.currentInstruction].count)
                             }
                           break;
                           case 'east':
@@ -35819,7 +35843,7 @@ class App extends Component {
                               this.camera.pan.x -= 1;
                               this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
                               this.camera.panDirection = 'east';
-                              console.log('auto cam panning east fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                              // console.log('auto cam panning east fast ',this.camera.instructions[this.camera.currentInstruction].count)
                             }
                           break;
                           case 'west':
@@ -35831,7 +35855,7 @@ class App extends Component {
                               this.camera.pan.x += 1;
                               this.camera.adjustedPan.x += (1*this.camera.zoom.x);
                               this.camera.panDirection = 'west';
-                              console.log('auto cam panning west fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                              // console.log('auto cam panning west fast ',this.camera.instructions[this.camera.currentInstruction].count)
                             }
                           break;
                         }
@@ -35860,7 +35884,7 @@ class App extends Component {
                               this.camera.zoom.x += .02 ;
                               this.camera.zoom.y += .02 ;
                               this.camera.zoomDirection = 'in';
-                              console.log('auto cam zooming in fast ',this.camera.instructions[this.camera.currentInstruction].count);
+                              // console.log('auto cam zooming in fast ',this.camera.instructions[this.camera.currentInstruction].count);
                             }
                           break;
                           case 'out':
@@ -35872,11 +35896,16 @@ class App extends Component {
                               this.camera.zoom.x -= .02 ;
                               this.camera.zoom.y -= .02 ;
                               this.camera.zoomDirection = 'out';
-                              console.log('auto cam zooming out fast ',this.camera.instructions[this.camera.currentInstruction].count);
+                              // console.log('auto cam zooming out fast ',this.camera.instructions[this.camera.currentInstruction].count);
                             }
                           break;
                           case 'outToInit':
-                            this.setInitZoom.state = true;
+                            // this.setInitZoom.state = true;
+                            this.setInitZoom = {
+                              state: true,
+                              windowWidth: window.innerWidth,
+                              gridWidth: this.gridWidth,
+                            }
                           break;
                         }
   
@@ -35899,9 +35928,9 @@ class App extends Component {
               else if (
                 this.camera.instructions[this.camera.currentInstruction].count >= this.camera.instructions[this.camera.currentInstruction].limit
               ) {
-  
+
                 if (this.camera.instructions[this.camera.currentInstruction].action2 === "" && this.camera.currentInstruction < this.camera.instructions.length) {
-                  // console.log('single instruction finished w/ no secondaries. step to next instruction');
+                  console.log('single instruction finished w/ no secondaries. step to next instruction');
                   this.camera.currentInstruction++;
                 }
   
@@ -35929,7 +35958,7 @@ class App extends Component {
                         this.camera.pan.y += 1;
                         this.camera.adjustedPan.y += (1*this.camera.zoom.x);
                         this.camera.panDirection = 'north';
-                        console.log('secondary: auto cam panning north fast ',this.camera.instructions[this.camera.currentInstruction].count2);
+                        // console.log('secondary: auto cam panning north fast ',this.camera.instructions[this.camera.currentInstruction].count2);
                       }
                     break;
                     case 'south':
@@ -35941,7 +35970,7 @@ class App extends Component {
                         this.camera.pan.y -= 1;
                         this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
                         this.camera.panDirection = 'south';
-                        console.log('secondary: auto cam panning south fast ',this.camera.instructions[this.camera.currentInstruction].count2);
+                        // console.log('secondary: auto cam panning south fast ',this.camera.instructions[this.camera.currentInstruction].count2);
                       }
                     break;
                     case 'east':
@@ -35953,7 +35982,7 @@ class App extends Component {
                         this.camera.pan.x -= 1;
                         this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
                         this.camera.panDirection = 'east';
-                        console.log('secondary: auto cam panning east fast ',this.camera.instructions[this.camera.currentInstruction].count2);
+                        // console.log('secondary: auto cam panning east fast ',this.camera.instructions[this.camera.currentInstruction].count2);
                       }
                     break;
                     case 'west':
@@ -35965,7 +35994,7 @@ class App extends Component {
                         this.camera.pan.x += 1;
                         this.camera.adjustedPan.x += (1*this.camera.zoom.x);
                         this.camera.panDirection = 'west';
-                        console.log('secondary: auto cam panning west fast ',this.camera.instructions[this.camera.currentInstruction].count2);
+                        // console.log('secondary: auto cam panning west fast ',this.camera.instructions[this.camera.currentInstruction].count2);
                       }
                     break;
                   }
@@ -35992,6 +36021,9 @@ class App extends Component {
   
             }
 
+          }
+
+          if (this.camera.instructions[this.camera.currentInstruction]) {
 
             if (
               this.camera.instructions[this.camera.currentInstruction].speed === 'slow' ||
@@ -36021,7 +36053,7 @@ class App extends Component {
                         this.camera.pan.y += 1;
                         this.camera.adjustedPan.y += (1*this.camera.zoom.x);
                         this.camera.panDirection = 'north';
-                        console.log('auto cam panning north slow ',this.camera.instructions[this.camera.currentInstruction].count);
+                        // console.log('auto cam panning north slow ',this.camera.instructions[this.camera.currentInstruction].count);
                       }
                     break;
                     case 'south':
@@ -36034,12 +36066,12 @@ class App extends Component {
                         this.camera.pan.y -= 1;
                         this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
                         this.camera.panDirection = 'south';
-                        console.log('auto cam panning south slow ',this.camera.instructions[this.camera.currentInstruction].count);
+                        // console.log('auto cam panning south slow ',this.camera.instructions[this.camera.currentInstruction].count);
                       }
                     break;
                     case 'east':
                       if (this.camera.pan.x <= this.camera.limits.pan.x.min) {
-                        console.log('pan limit east',this.camera.pan.x,'/',this.camera.limits.pan.x.min);
+                        // console.log('pan limit east',this.camera.pan.x,'/',this.camera.limits.pan.x.min);
                         this.camera.limits.state.pan = true;
                         // console.log('auto cam pan limit east slow ',this.camera.pan.x,'/',this.camera.limits.pan.x.min,this.camera.instructions[this.camera.currentInstruction].count);
                       }
@@ -36047,7 +36079,7 @@ class App extends Component {
                         this.camera.pan.x -= 1;
                         this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
                         this.camera.panDirection = 'east';
-                        console.log('auto cam panning east slow ',this.camera.instructions[this.camera.currentInstruction].count);
+                        // console.log('auto cam panning east slow ',this.camera.instructions[this.camera.currentInstruction].count);
                       }
                     break;
                     case 'west':
@@ -36059,7 +36091,7 @@ class App extends Component {
                         this.camera.pan.x += 1;
                         this.camera.adjustedPan.x += (1*this.camera.zoom.x);
                         this.camera.panDirection = 'west';
-                        console.log('auto cam panning west slow ',this.camera.instructions[this.camera.currentInstruction].count);
+                        // console.log('auto cam panning west slow ',this.camera.instructions[this.camera.currentInstruction].count);
                       }
                     break;
                   }
@@ -36087,7 +36119,7 @@ class App extends Component {
                         this.camera.zoom.x += .02 ;
                         this.camera.zoom.y += .02 ;
                         this.camera.zoomDirection = 'in';
-                        console.log('auto cam zooming in slow ',this.camera.instructions[this.camera.currentInstruction].count);
+                        // console.log('auto cam zooming in slow ',this.camera.instructions[this.camera.currentInstruction].count);
                       }
                     break;
                     case 'out':
@@ -36099,11 +36131,16 @@ class App extends Component {
                         this.camera.zoom.x -= .02 ;
                         this.camera.zoom.y -= .02 ;
                         this.camera.zoomDirection = 'out';
-                        console.log('auto cam zooming out slow ',this.camera.instructions[this.camera.currentInstruction].count);
+                        // console.log('auto cam zooming out slow ',this.camera.instructions[this.camera.currentInstruction].count);
                       }
                     break;
                     case 'outToInit':
-                      this.setInitZoom.state = true;
+                      // this.setInitZoom.state = true;
+                      this.setInitZoom = {
+                        state: true,
+                        windowWidth: window.innerWidth,
+                        gridWidth: this.gridWidth,
+                      }
                     break;
                   }
 
@@ -36151,7 +36188,7 @@ class App extends Component {
                       this.camera.pan.y += 1;
                       this.camera.adjustedPan.y += (1*this.camera.zoom.x);
                       this.camera.panDirection = 'north';
-                      console.log('secondary: auto cam panning south slow ',this.camera.instructions[this.camera.currentInstruction].count2)
+                      // console.log('secondary: auto cam panning south slow ',this.camera.instructions[this.camera.currentInstruction].count2)
                     }
                   break;
                   case 'south':
@@ -36163,7 +36200,7 @@ class App extends Component {
                       this.camera.pan.y -= 1;
                       this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
                       this.camera.panDirection = 'south';
-                      console.log('secondary: auto cam panning south slow ',this.camera.instructions[this.camera.currentInstruction].count2)
+                      // console.log('secondary: auto cam panning south slow ',this.camera.instructions[this.camera.currentInstruction].count2)
                     }
                   break;
                   case 'east':
@@ -36175,7 +36212,7 @@ class App extends Component {
                       this.camera.pan.x -= 1;
                       this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
                       this.camera.panDirection = 'east';
-                      console.log('secondary: auto cam panning east slow ',this.camera.instructions[this.camera.currentInstruction].count2)
+                      // console.log('secondary: auto cam panning east slow ',this.camera.instructions[this.camera.currentInstruction].count2)
                     }
                   break;
                   case 'west':
@@ -36187,7 +36224,7 @@ class App extends Component {
                       this.camera.pan.x += 1;
                       this.camera.adjustedPan.x += (1*this.camera.zoom.x);
                       this.camera.panDirection = 'west';
-                      console.log('secondary: auto cam panning west slow ',this.camera.instructions[this.camera.currentInstruction].count2)
+                      // console.log('secondary: auto cam panning west slow ',this.camera.instructions[this.camera.currentInstruction].count2)
                     }
                   break;
                 }
@@ -36218,8 +36255,6 @@ class App extends Component {
 
           }
 
-
-          // }
 
           // FINISHED CAMERA INSTRUCTIONS
           if (this.camera.currentInstruction >= this.camera.instructions.length) {
@@ -41335,6 +41370,7 @@ class App extends Component {
       </React.Fragment>
     )
   }
+  
 }
 
 export default App;
