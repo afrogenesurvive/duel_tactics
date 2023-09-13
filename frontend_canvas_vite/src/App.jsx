@@ -6030,28 +6030,6 @@ class App extends Component {
 
     let reset = false;
     let attackFocusBreakZoomCorrection = "";
-    // if (this.camera.preInstructions.length > 0 || this.camera.instructions.length > 0) {
-    //   console.log('resetting previous pre instructions',this.camera.preInstructions);
-    //   console.log('resetting previous instructions',this.camera.instructions);
-    //   reset = true;
-
-    //   if (args === "attackFocusBreak") {
-    //     if (this.camera.instructions.length > 0) {
-    //       if (
-    //         this.camera.instructions[this.camera.instructions.length-1].action === "zoom_in" ||
-    //         this.camera.instructions[this.camera.instructions.length-1].action === "zoom_out"
-    //       ) {
-    //         attackFocusBreakZoomCorrection = `zoom_out_${this.camera.instructions[this.camera.instructions.length-1].count}`
-    //       }
-    //     }
-    //   }
-
-    //   this.camera.preInstructions = [];
-    //   this.camera.instructions = [];
-    //   this.camera.currentInstruction = 0;
-    //   this.settingAutoCamera = false;
-    //   reset = true;
-    // }
 
     if (this.camera.preInstructions.length > 0 || this.camera.instructions.length > 0) {
       if (args === "attackFocusBreak") {
@@ -6321,15 +6299,13 @@ class App extends Component {
             this.camera.preInstructions.push(attackFocusBreakZoomCorrection)
           }
 
-          // else {
-          //   console.log('2');
-          //   let zoomDifference = 0;
-          //   this.camera.preInstructions.push(
-          //     'zoom_outToInit'
-          //   )
-          // }
-          // this.camera.preInstructions.push(attackFocusBreakZoomCorrection)
-
+          else {
+            console.log('2');
+            let zoomDifference = 0;
+            this.camera.preInstructions.push(
+              'zoom_outToInit'
+            )
+          }
         }
 
       break;
