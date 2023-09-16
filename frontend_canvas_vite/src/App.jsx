@@ -6059,11 +6059,11 @@ class App extends Component {
           'zoom_in_'+50+'',
           'waitFor_50',
           // 'moveTo_'+9+'_'+4+'_slow',
-          'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_slow',
+          'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_fast',
           // 'waitFor_50',
           // 'moveTo_'+9+'_'+0+'_slow',
           // 'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_slow',
-          'zoom_out_'+30+'',
+          'zoom_out_'+50+'',
           // 'zoom_outToInit',
         )
 
@@ -6295,12 +6295,10 @@ class App extends Component {
         if ((this.camera.zoom.x-1) > -.05) {
 
           if (reset === true) {
-            console.log('1');
             this.camera.preInstructions.push(attackFocusBreakZoomCorrection)
           }
 
           else {
-            console.log('2');
             let zoomDifference = 0;
             this.camera.preInstructions.push(
               'zoom_outToInit'
@@ -30591,17 +30589,6 @@ class App extends Component {
 
     let nextPosition;
 
-    if (this.time === 150 && player.number === 1) {
-      // this.setAutoCamera('test',player);
-      // this.setAutoCamera('attackFocus',player);
-      // this.setAutoCamera('attackFocusBreak',player);
-      // this.setAutoCamera('playerSpawnFocus',player);
-      // this.setAutoCamera('aiSpawnFocus',player);
-      // this.setAutoCamera('pushbackPan',player);
-      // this.setAutoCamera('followBolt',player);
-      // console.log('xxx');
-    }
-
 
     if (player.dead.state === true) {
 
@@ -35246,8 +35233,17 @@ class App extends Component {
 
 
     // CAMERA
-    // SWITCH ON
 
+    if (this.time === 50 && player.number === 1) {
+      this.setAutoCamera('test',player);
+      // this.setAutoCamera('attackFocus',player);
+      // this.setAutoCamera('attackFocusBreak',player);
+      // this.setAutoCamera('playerSpawnFocus',player);
+      // this.setAutoCamera('aiSpawnFocus',player);
+      // this.setAutoCamera('pushbackPan',player);
+      // this.setAutoCamera('followBolt',player);
+      // console.log('xxx');
+    }
 
     if (this.setInitZoom.state === true) {
 
@@ -35759,6 +35755,7 @@ class App extends Component {
           if (this.camera.instructions[this.camera.currentInstruction]) {
 
             if (this.camera.instructions[this.camera.currentInstruction].speed === 'fast') {
+              // console.log('here',this.camera.instructions[this.camera.currentInstruction]);
 
               // CONTINUE EXECUTING CURRENT INSTRUCTION
               if (this.camera.instructions[this.camera.currentInstruction].count < this.camera.instructions[this.camera.currentInstruction].limit) {
@@ -35836,6 +35833,7 @@ class App extends Component {
                           break;
                         }
   
+                        this.camera.mode = 'pan';
                         this.setZoomPan(canvas);
                         // this.setCameraFocus('input',canvas, context, canvas2, context2);
                         this.findFocusCell('panToCell',{},canvas,context)
@@ -35885,7 +35883,7 @@ class App extends Component {
                           break;
                         }
   
-  
+                        this.camera.mode = 'zoom';
                         this.setZoomPan(canvas);
                         // this.setCameraFocus('input',canvas, context, canvas2, context2);
                         this.findFocusCell('panToCell',{},canvas,context)
@@ -35975,6 +35973,7 @@ class App extends Component {
                     break;
                   }
   
+                  this.camera.mode = 'pan';
                   this.setZoomPan(canvas);
                   // this.setCameraFocus('input',canvas, context, canvas2, context2);
                   this.findFocusCell('panToCell',{},canvas,context)
@@ -36005,7 +36004,8 @@ class App extends Component {
               this.camera.instructions[this.camera.currentInstruction].speed === 'slow' ||
               this.camera.instructions[this.camera.currentInstruction].speed === ''
             ) {
-
+              // console.log('there',this.camera.instructions[this.camera.currentInstruction]);
+              
               // CONTINUE EXECUTING CURRENT INSTRUCTION
               if (this.camera.instructions[this.camera.currentInstruction].count < this.camera.instructions[this.camera.currentInstruction].limit) {
                 // console.log('step through a single instruction',this.camera.instructions[this.camera.currentInstruction],'count',this.camera.instructions[this.camera.currentInstruction].count);
@@ -36072,6 +36072,7 @@ class App extends Component {
                     break;
                   }
 
+                  this.camera.mode = 'pan';
                   this.setZoomPan(canvas);
                   // this.setCameraFocus('input',canvas, context, canvas2, context2);
                   this.findFocusCell('panToCell',{},canvas,context)
@@ -36121,12 +36122,15 @@ class App extends Component {
                   }
 
                   // ZOOMING IN & OUT ABOVE THRESHOLD
-                  this.setZoomPan(canvas);
-
+                  // this.setZoomPan(canvas);
                   // this.setCameraFocus('input',canvas, context, canvas2, context2);
-                  this.findFocusCell('panToCell',{},canvas,context)
+                  // this.findFocusCell('panToCell',{},canvas,context)
 
                 }
+
+                this.camera.mode = 'zoom';
+                this.setZoomPan(canvas);
+                this.findFocusCell('panToCell',{},canvas,context)
 
                 this.camera.instructions[this.camera.currentInstruction].count++;
 
@@ -36205,6 +36209,7 @@ class App extends Component {
                   break;
                 }
 
+                this.camera.mode = 'pan';
                 this.setZoomPan(canvas);
                 // this.setCameraFocus('input',canvas, context, canvas2, context2);
                 this.findFocusCell('panToCell',{},canvas,context)
