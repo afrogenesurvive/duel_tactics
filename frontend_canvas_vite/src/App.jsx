@@ -5735,7 +5735,7 @@ class App extends Component {
                   action2:'',
                   count: 0,
                   count2: 0,
-                  limit: 75,
+                  limit: 50,
                   limit2: 0,
                   speed: speed,
                 },
@@ -5748,8 +5748,8 @@ class App extends Component {
                   action2:'pan_east',
                   count: 0,
                   count2: 0,
-                  limit: 75,
-                  limit2: 125,
+                  limit: 50,
+                  limit2: 75,
                   speed: speed,
                 },
               )
@@ -5761,7 +5761,7 @@ class App extends Component {
                   action2:'',
                   count: 0,
                   count2: 0,
-                  limit: 125,
+                  limit: 75,
                   limit2: 0,
                   speed: speed,
                 },
@@ -5774,8 +5774,8 @@ class App extends Component {
                   action2:'pan_east',
                   count: 0,
                   count2: 0,
-                  limit: 75,
-                  limit2: 125,
+                  limit: 50,
+                  limit2: 75,
                   speed: speed,
                 },
               )
@@ -5787,7 +5787,7 @@ class App extends Component {
                   action2:'',
                   count: 0,
                   count2: 0,
-                  limit: 75,
+                  limit: 50,
                   limit2: 0,
                   speed: speed,
                 },
@@ -5800,8 +5800,8 @@ class App extends Component {
                   action2:'pan_west',
                   count: 0,
                   count2: 0,
-                  limit: 75,
-                  limit2: 125,
+                  limit: 50,
+                  limit2: 75,
                   speed: speed,
                 },
               )
@@ -5813,7 +5813,7 @@ class App extends Component {
                   action2:'',
                   count: 0,
                   count2: 0,
-                  limit: 125,
+                  limit: 75,
                   limit2: 0,
                   speed: speed,
                 },
@@ -5826,8 +5826,8 @@ class App extends Component {
                   action2:'pan_west',
                   count: 0,
                   count2: 0,
-                  limit: 75,
-                  limit2: 125,
+                  limit: 50,
+                  limit2: 75,
                   speed: speed,
                 },
               )
@@ -6221,7 +6221,7 @@ class App extends Component {
     switch (args) {
       case 'test':
         this.camera.preInstructions.push(
-          'zoom_in_'+10+'',
+          'zoom_in_'+1+'',
           // 'waitFor_50',
           'moveTo_'+9+'_'+9+'_fast',
           // 'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_slow',
@@ -7198,27 +7198,27 @@ class App extends Component {
         case 'north':
           baseLimit = 200;
           panAmount = this.camera.pan.y;
-          this.camera.limits.pan.y.max = baseLimit + ((zoomMod/10) * panAmount);
+          this.camera.limits.pan.y.max = baseLimit + ((zoomMod/5) * panAmount);
           // console.log('1',baseLimit,panAmount,zoomMod);
         break;
         case 'south':
           baseLimit = -200;
           panAmount = this.camera.pan.y;
-          this.camera.limits.pan.y.min = baseLimit + ((zoomMod/10) * panAmount);
+          this.camera.limits.pan.y.min = baseLimit + ((zoomMod/5) * panAmount);
           // console.log('2',baseLimit,panAmount,zoomMod);
         break;
         case 'east':
           // baseLimit = -400;
           baseLimit = -300;
           panAmount = this.camera.pan.x;
-          this.camera.limits.pan.x.min = baseLimit + ((zoomMod/10) * panAmount);
+          this.camera.limits.pan.x.min = baseLimit + ((zoomMod/5) * panAmount);
           // console.log('3',baseLimit,panAmount,zoomMod);
         break;
         case 'west':
           // baseLimit = 400;
           baseLimit = 300;
           panAmount = this.camera.pan.x;
-          this.camera.limits.pan.x.max = baseLimit + ((zoomMod/10) * panAmount);
+          this.camera.limits.pan.x.max = baseLimit + ((zoomMod/5) * panAmount);
           // console.log('4',baseLimit,panAmount,zoomMod);
         break;
         default:
@@ -7226,8 +7226,8 @@ class App extends Component {
       }
       // console.log('baseLimit',baseLimit);
       // console.log('panAmount',panAmount);
-      console.log('x: min ',this.camera.limits.pan.x.min,' max ',this.camera.limits.pan.x.max);
-      console.log('y: min ',this.camera.limits.pan.y.min,' max ',this.camera.limits.pan.y.max);
+      // console.log('x: min ',this.camera.limits.pan.x.min,' max ',this.camera.limits.pan.x.max);
+      // console.log('y: min ',this.camera.limits.pan.y.min,' max ',this.camera.limits.pan.y.max);
 
 
     }
@@ -35492,7 +35492,7 @@ class App extends Component {
     // CAMERA
 
     if (this.time === 50 && player.number === 1) {
-      // this.setAutoCamera('test',player);
+      this.setAutoCamera('test',player);
       // this.setAutoCamera('attackFocus',player);
       // this.setAutoCamera('attackFocusBreak',player);
       // this.setAutoCamera('playerSpawnFocus',player);
