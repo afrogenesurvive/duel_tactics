@@ -1382,7 +1382,7 @@ class App extends Component {
           cell: {
             number: {
               x: 9,
-              y: 9,
+              y: 4,
             },
             center: {
               x: 0,
@@ -5630,16 +5630,16 @@ class App extends Component {
         ySteps = y2-y1;
       }
 
-      for (var i = 0; i < xSteps; i++) {
-        preInstructions.push(
-          xDirection
-        )
-      }
-      for (var j = 0; j < ySteps; j++) {
-        preInstructions.push(
-          yDirection
-        )
-      }
+      // for (var i = 0; i < xSteps; i++) {
+      //   preInstructions.push(
+      //     xDirection
+      //   )
+      // }
+      // for (var j = 0; j < ySteps; j++) {
+      //   preInstructions.push(
+      //     yDirection
+      //   )
+      // }
 
       // console.log('origin',originCell,'destination',destCell,'instructions',preInstructions);
 
@@ -5648,261 +5648,260 @@ class App extends Component {
 
 
 
-      // let cancelPath = false;
-      // let pathSet = [];
-      // this.updatePathArray();
-      // this.easyStar = new Easystar.js();
-      // this.easyStar.setGrid(this.pathArray);
-      // this.easyStar.setAcceptableTiles([0]);
-      // this.easyStar.enableDiagonals();
-      // let test = {
-      //   origin: {x: 0, y:8},
-      //   dest: {x: 9, y:2},
-      // }
-      // // let test2 = this.easyStar.findPath(test.origin.x, test.origin.y, test.dest.x, test.dest.y, function( path ) {
-      // let test2 = this.easyStar.findPath(originCell.x, originCell.y, destCell.x, destCell.y, function( path ) {
-      //   if (path === null) {
-      //     cancelPath = true;
-      //     console.log("Path was not found");
-      //   } else {
-      //     pathSet = path;
-      //   }
-      // });
-      // this.easyStar.setIterationsPerCalculation(4000)
-      // this.easyStar.calculate();
-      // setTimeout(()=>{
-      //   if (cancelPath === true) {
-      //     console.log('cancel path');
-      //     this.easyStar = new Easystar.js();
-      //   }
-      //   else {
-      //     console.log('path setA',pathSet);
-      //     // finish();
-      //   }
-        
+      let cancelPath = false;
+      let pathSet = [];
+      this.updatePathArray();
+      this.easyStar = new Easystar.js();
+      this.easyStar.setGrid(this.pathArray);
+      this.easyStar.setAcceptableTiles([0]);
+      this.easyStar.enableDiagonals();
+      let test = {
+        origin: {x: 0, y:8},
+        dest: {x: 9, y:2},
+      }
+      // let test2 = this.easyStar.findPath(test.origin.x, test.origin.y, test.dest.x, test.dest.y, function( path ) {
+      let test2 = this.easyStar.findPath(originCell.x, originCell.y, destCell.x, destCell.y, function( path ) {
+        if (path === null) {
+          cancelPath = true;
+          console.log("Path was not found");
+        } else {
+          pathSet = path;
+        }
+      });
+      this.easyStar.setIterationsPerCalculation(4000)
+      this.easyStar.calculate();
+      setTimeout(()=>{
+        if (cancelPath === true) {
+          console.log('cancel path');
+          this.easyStar = new Easystar.js();
+        }
+        else {
+          console.log('path setA',pathSet);
+          finish();
+        }
 
-      // }, 50);
+      }, 50);
       // console.log('test',test2);
       // console.log('path setB',pathSet);
-      // const finish = () => {
+      const finish = () => {
 
-      //   let indx = 0
-      //   for (const cell of pathSet) {
+        let indx = 0
+        for (const cell of pathSet) {
 
-      //     if (indx < pathSet.length-1) {
+          if (indx < pathSet.length-1) {
             
-      //       let pointA = cell;
-      //       let pointB = pathSet[indx+1]
-      //       let direction;
+            let pointA = cell;
+            let pointB = pathSet[indx+1]
+            let direction;
 
-      //       if (pointA.x - pointB.x === 1 && pointA.y - pointB.y === 1) {
-      //       direction = 'north'; 
-      //       }
-      //       if (pointA.x - pointB.x === 0 && pointA.y - pointB.y === 1) {
-      //       direction = 'northEast'; 
-      //       }
-      //       if (pointA.x - pointB.x === -1 && pointA.y - pointB.y === 1) {
-      //       direction = 'east'; 
-      //       }
-      //       if (pointA.x - pointB.x === -1 && pointA.y - pointB.y === 0) {
-      //       direction = 'southEast'; 
-      //       }
-      //       if (pointA.x - pointB.x === -1 && pointA.y - pointB.y === -1) {
-      //       direction = 'south'; 
-      //       }
-      //       if (pointA.x - pointB.x === 0 && pointA.y - pointB.y === -1) {
-      //       direction = 'southWest'; 
-      //       }
-      //       if (pointA.x - pointB.x === 1 && pointA.y - pointB.y === -1) {
-      //       direction = 'west'; 
-      //       }
-      //       if (pointA.x - pointB.x === 1 && pointA.y - pointB.y === 0) {
-      //       direction = 'northWest'; 
-      //       }
+            if (pointA.x - pointB.x === 1 && pointA.y - pointB.y === 1) {
+            direction = 'north'; 
+            }
+            if (pointA.x - pointB.x === 0 && pointA.y - pointB.y === 1) {
+            direction = 'northEast'; 
+            }
+            if (pointA.x - pointB.x === -1 && pointA.y - pointB.y === 1) {
+            direction = 'east'; 
+            }
+            if (pointA.x - pointB.x === -1 && pointA.y - pointB.y === 0) {
+            direction = 'southEast'; 
+            }
+            if (pointA.x - pointB.x === -1 && pointA.y - pointB.y === -1) {
+            direction = 'south'; 
+            }
+            if (pointA.x - pointB.x === 0 && pointA.y - pointB.y === -1) {
+            direction = 'southWest'; 
+            }
+            if (pointA.x - pointB.x === 1 && pointA.y - pointB.y === -1) {
+            direction = 'west'; 
+            }
+            if (pointA.x - pointB.x === 1 && pointA.y - pointB.y === 0) {
+            direction = 'northWest'; 
+            }
 
-      //       preInstructions.push(direction)
-      //       indx++
+            preInstructions.push(direction)
+            indx++
 
-      //     }
+          }
           
-      //   }
+        }
 
-      //   for (const instruction of preInstructions) {
-      //     switch (instruction) {
-      //       case 'north':
-      //         this.camera.instructions.push(
-      //           {
-      //             action:'pan_north',
-      //             action2:'',
-      //             count: 0,
-      //             count2: 0,
-      //             limit: 75,
-      //             limit2: 0,
-      //             speed: speed,
-      //           },
-      //         )
-      //       break;
-      //       case 'northEast':
-      //         this.camera.instructions.push(
-      //           {
-      //             action:'pan_north',
-      //             action2:'pan_east',
-      //             count: 0,
-      //             count2: 0,
-      //             limit: 75,
-      //             limit2: 125,
-      //             speed: speed,
-      //           },
-      //         )
-      //       break;
-      //       case 'east':
-      //         this.camera.instructions.push(
-      //           {
-      //             action:'pan_east',
-      //             action2:'',
-      //             count: 0,
-      //             count2: 0,
-      //             limit: 125,
-      //             limit2: 0,
-      //             speed: speed,
-      //           },
-      //         )
-      //       break;
-      //       case 'southEast':
-      //         this.camera.instructions.push(
-      //           {
-      //             action:'pan_south',
-      //             action2:'pan_east',
-      //             count: 0,
-      //             count2: 0,
-      //             limit: 75,
-      //             limit2: 125,
-      //             speed: speed,
-      //           },
-      //         )
-      //       break;
-      //       case 'south':
-      //         this.camera.instructions.push(
-      //           {
-      //             action:'pan_south',
-      //             action2:'',
-      //             count: 0,
-      //             count2: 0,
-      //             limit: 75,
-      //             limit2: 0,
-      //             speed: speed,
-      //           },
-      //         )
-      //       break;
-      //       case 'southWest':
-      //         this.camera.instructions.push(
-      //           {
-      //             action:'pan_south',
-      //             action2:'pan_west',
-      //             count: 0,
-      //             count2: 0,
-      //             limit: 75,
-      //             limit2: 125,
-      //             speed: speed,
-      //           },
-      //         )
-      //       break;
-      //       case 'west':
-      //         this.camera.instructions.push(
-      //           {
-      //             action:'pan_west',
-      //             action2:'',
-      //             count: 0,
-      //             count2: 0,
-      //             limit: 125,
-      //             limit2: 0,
-      //             speed: speed,
-      //           },
-      //         )
-      //       break;
-      //       case 'northWest':
-      //         this.camera.instructions.push(
-      //           {
-      //             action:'pan_north',
-      //             action2:'pan_west',
-      //             count: 0,
-      //             count2: 0,
-      //             limit: 75,
-      //             limit2: 125,
-      //             speed: speed,
-      //           },
-      //         )
-      //       break;
-      //       default:
-      //       break;
-      //     }
-      //   }
+        for (const instruction of preInstructions) {
+          switch (instruction) {
+            case 'north':
+              this.camera.instructions.push(
+                {
+                  action:'pan_north',
+                  action2:'',
+                  count: 0,
+                  count2: 0,
+                  limit: 75,
+                  limit2: 0,
+                  speed: speed,
+                },
+              )
+            break;
+            case 'northEast':
+              this.camera.instructions.push(
+                {
+                  action:'pan_north',
+                  action2:'pan_east',
+                  count: 0,
+                  count2: 0,
+                  limit: 75,
+                  limit2: 125,
+                  speed: speed,
+                },
+              )
+            break;
+            case 'east':
+              this.camera.instructions.push(
+                {
+                  action:'pan_east',
+                  action2:'',
+                  count: 0,
+                  count2: 0,
+                  limit: 125,
+                  limit2: 0,
+                  speed: speed,
+                },
+              )
+            break;
+            case 'southEast':
+              this.camera.instructions.push(
+                {
+                  action:'pan_south',
+                  action2:'pan_east',
+                  count: 0,
+                  count2: 0,
+                  limit: 75,
+                  limit2: 125,
+                  speed: speed,
+                },
+              )
+            break;
+            case 'south':
+              this.camera.instructions.push(
+                {
+                  action:'pan_south',
+                  action2:'',
+                  count: 0,
+                  count2: 0,
+                  limit: 75,
+                  limit2: 0,
+                  speed: speed,
+                },
+              )
+            break;
+            case 'southWest':
+              this.camera.instructions.push(
+                {
+                  action:'pan_south',
+                  action2:'pan_west',
+                  count: 0,
+                  count2: 0,
+                  limit: 75,
+                  limit2: 125,
+                  speed: speed,
+                },
+              )
+            break;
+            case 'west':
+              this.camera.instructions.push(
+                {
+                  action:'pan_west',
+                  action2:'',
+                  count: 0,
+                  count2: 0,
+                  limit: 125,
+                  limit2: 0,
+                  speed: speed,
+                },
+              )
+            break;
+            case 'northWest':
+              this.camera.instructions.push(
+                {
+                  action:'pan_north',
+                  action2:'pan_west',
+                  count: 0,
+                  count2: 0,
+                  limit: 75,
+                  limit2: 125,
+                  speed: speed,
+                },
+              )
+            break;
+            default:
+            break;
+          }
+        }
 
-      //  console.log('instructionsA',this.camera.instructions);
+       console.log('instructionsA',this.camera.instructions);
 
-      // } 
+      } 
 
 
       // console.log('preInstructions',preInstructions);
-      for (const instruction of preInstructions) {
-        let indx = preInstructions.indexOf(instruction);
+      // for (const instruction of preInstructions) {
+      //   let indx = preInstructions.indexOf(instruction);
 
-        switch (instruction) {
-          case 'north':
-          this.camera.instructions.push(
-            {
-              action:'pan_north',
-              action2:'pan_east',
-              count: 0,
-              count2: 0,
-              limit: 25,
-              limit2: 50,
-              speed: speed,
-            },
-          )
-          break;
-          case 'south':
-          this.camera.instructions.push(
-            {
-              action:'pan_south',
-              action2:'pan_west',
-              count: 0,
-              count2: 0,
-              limit: 25,
-              limit2: 50,
-              speed: speed,
-            },
-          )
-          break;
-          case 'east':
-          this.camera.instructions.push(
-            {
-              action:'pan_south',
-              action2:'pan_east',
-              count: 0,
-              count2: 0,
-              limit: 25,
-              limit2: 50,
-              speed: speed,
-            },
-          )
-          break;
-          case 'west':
-          this.camera.instructions.push(
-            {
-              action:'pan_north',
-              action2:'pan_west',
-              count: 0,
-              count2: 0,
-              limit: 25,
-              limit2: 50,
-              speed: speed,
-            },
-          )
-          break;
-        }
+      //   switch (instruction) {
+      //     case 'north':
+      //     this.camera.instructions.push(
+      //       {
+      //         action:'pan_north',
+      //         action2:'pan_east',
+      //         count: 0,
+      //         count2: 0,
+      //         limit: 25,
+      //         limit2: 50,
+      //         speed: speed,
+      //       },
+      //     )
+      //     break;
+      //     case 'south':
+      //     this.camera.instructions.push(
+      //       {
+      //         action:'pan_south',
+      //         action2:'pan_west',
+      //         count: 0,
+      //         count2: 0,
+      //         limit: 25,
+      //         limit2: 50,
+      //         speed: speed,
+      //       },
+      //     )
+      //     break;
+      //     case 'east':
+      //     this.camera.instructions.push(
+      //       {
+      //         action:'pan_south',
+      //         action2:'pan_east',
+      //         count: 0,
+      //         count2: 0,
+      //         limit: 25,
+      //         limit2: 50,
+      //         speed: speed,
+      //       },
+      //     )
+      //     break;
+      //     case 'west':
+      //     this.camera.instructions.push(
+      //       {
+      //         action:'pan_north',
+      //         action2:'pan_west',
+      //         count: 0,
+      //         count2: 0,
+      //         limit: 25,
+      //         limit2: 50,
+      //         speed: speed,
+      //       },
+      //     )
+      //     break;
+      //   }
 
-      }
+      // }
 
       // console.log('auto camera instructions',this.camera.instructions);
 
@@ -6111,7 +6110,7 @@ class App extends Component {
               },
             )
           }
-          console.log('this.cellsToHighlight2',this.cellsToHighlight2);
+          // console.log('this.cellsToHighlight2',this.cellsToHighlight2);
         }
 
       }
@@ -6224,8 +6223,8 @@ class App extends Component {
         this.camera.preInstructions.push(
           'zoom_in_'+10+'',
           // 'waitFor_50',
-          // 'moveTo_'+9+'_'+0+'_fast',
-          'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_slow',
+          'moveTo_'+9+'_'+9+'_fast',
+          // 'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_slow',
           // 'waitFor_50',
           // 'moveTo_'+9+'_'+0+'_slow',
           // 'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_slow',
@@ -6925,6 +6924,7 @@ class App extends Component {
     }
 
     console.log('AutoCameraSet',args,this.camera.preInstructions);
+
   }
   setCameraFocus = (focusType, canvas, context, canvas2, context2) => {
     console.log('setting camera focus','zoom',this.camera.zoom.x,'pan',this.camera.pan);
@@ -7046,9 +7046,19 @@ class App extends Component {
         zoomThresh = .8;
       }
     }
+    // console.log('setZoomPan: zoom ',zoom);
+    // if ((this.camera.zoom.x-1) > -.05) {
+    //   console.log('3a');
+    // }
+    // if ((this.camera.zoom.x-1) < -.05) {
+    //   console.log('2a');
+    // }
+    // if ((this.camera.zoom.x-1) === -.05) {
+    //   console.log('1a');
+    // }
 
     if (parseFloat(zoom.toFixed(2)) === zoomThresh) {
-
+      // console.log('1b');
       this.camera.pan.x = -1;
       this.camera.pan.y = -1;
       this.camera.zoomFocusPan.x = -zoomThresh;
@@ -7068,7 +7078,7 @@ class App extends Component {
 
     // ZOOMING IN & OUT ABOVE THRESHOLD
     if (zoom < zoomThresh) {
-
+      // console.log('2b');
       diff = 1 - zoom;
 
       this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
@@ -7082,7 +7092,7 @@ class App extends Component {
 
     // ZOOMING BELOW THRESHOLD
     if (zoom > zoomThresh) {
-
+      // console.log('3b');
       diff = zoom - 1;
       let diffx;
       let diffy;
@@ -7157,8 +7167,6 @@ class App extends Component {
           this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
           this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
-
-
         }
 
 
@@ -7182,6 +7190,40 @@ class App extends Component {
           xMod2 = 30;
           aMod = this.gridWidth-9
         }
+
+
+        // let baseLimit;
+        // let panAmount;
+        // switch (this.camera.panDirection) {
+        //   case 'north':
+        //     baseLimit = 200;
+        //     panAmount = this.camera.pan.y;
+        //     this.camera.limits.pan.y.max = baseLimit + (zoom-1 * panAmount);
+        //     console.log('1',baseLimit,panAmount);
+        //   break;
+        //   case 'south':
+        //     baseLimit = -200;
+        //     panAmount = this.camera.pan.y;
+        //     this.camera.limits.pan.y.min = baseLimit + (zoom-1 * panAmount);
+        //     console.log('2',baseLimit,panAmount);
+        //   break;
+        //   case 'east':
+        //     baseLimit = -400;
+        //     panAmount = this.camera.pan.x;
+        //     this.camera.limits.pan.x.min = baseLimit + (zoom-1 * panAmount);
+        //     console.log('3',baseLimit,panAmount);
+        //   break;
+        //   case 'west':
+        //     baseLimit = 400;
+        //     panAmount = this.camera.pan.x;
+        //     this.camera.limits.pan.x.max = baseLimit + (zoom-1 * panAmount);
+        //     console.log('4',baseLimit,panAmount);
+        //   break;
+        //   default:
+        //     break;
+        // }
+
+
         // this.camera.limits.pan.x.min = -((this.camera.zoom.x * xMod)+(aMod*xMod2))
         // this.camera.limits.pan.x.max = ((this.camera.zoom.x * xMod)+(aMod*xMod2))
         // this.camera.limits.pan.y.min = -((this.camera.zoom.x * yMod)+(aMod*yMod2))
@@ -7196,9 +7238,104 @@ class App extends Component {
       }
 
 
+      // if camera mode is pan
+      // (this.camera.zoom.x-1) > -.05)
+      console.log('beep',zoom-1);
+      let zoomMod;
+      if ((zoom-1) > 0) {
+        zoomMod = (zoom-1);
+        // zoomMod = (zoom-1)*10
+      }
+      // else if ((zoom-1) < -.05) {
+      else {
+        zoomMod = .01;
+        // zoomMod = 1;
+      }
+      let baseLimit;
+      let panAmount;
+      switch (this.camera.panDirection) {
+        case 'north':
+          baseLimit = 200;
+          panAmount = this.camera.pan.y;
+          this.camera.limits.pan.y.max = baseLimit + (zoomMod * panAmount);
+          console.log('1',baseLimit,panAmount,zoomMod);
+        break;
+        case 'south':
+          baseLimit = -200;
+          panAmount = this.camera.pan.y;
+          this.camera.limits.pan.y.min = baseLimit + (zoomMod * panAmount);
+          console.log('2',baseLimit,panAmount,zoomMod);
+        break;
+        case 'east':
+          baseLimit = -400;
+          panAmount = this.camera.pan.x;
+          this.camera.limits.pan.x.min = baseLimit + (zoomMod * panAmount);
+          console.log('3',baseLimit,panAmount,zoomMod);
+        break;
+        case 'west':
+          baseLimit = 400;
+          panAmount = this.camera.pan.x;
+          this.camera.limits.pan.x.max = baseLimit + (zoomMod * panAmount);
+          console.log('4',baseLimit,panAmount,zoomMod);
+        break;
+        default:
+          break;
+      }
+      console.log('baseLimit',baseLimit);
+      console.log('panAmount',panAmount);
+      console.log('x: min ',this.camera.limits.pan.x.min,' max ',this.camera.limits.pan.x.max);
+      console.log('y: min ',this.camera.limits.pan.y.min,' max ',this.camera.limits.pan.y.max);
+
 
     }
 
+    // // if camera mode is pan
+    // // (this.camera.zoom.x-1) > -.05)
+    // console.log('beep',zoom-1);
+    // let zoomMod;
+    // if ((zoom-1) > 0) {
+    //   zoomMod = (zoom-1);
+    //   // zoomMod = (zoom-1)*10
+    // }
+    // // else if ((zoom-1) < -.05) {
+    // else {
+    //   zoomMod = .01;
+    //   // zoomMod = 1;
+    // }
+    // let baseLimit;
+    // let panAmount;
+    // switch (this.camera.panDirection) {
+    //   case 'north':
+    //     baseLimit = 200;
+    //     panAmount = this.camera.pan.y;
+    //     this.camera.limits.pan.y.max = baseLimit + (zoomMod * panAmount);
+    //     console.log('1',baseLimit,panAmount,zoomMod);
+    //   break;
+    //   case 'south':
+    //     baseLimit = -200;
+    //     panAmount = this.camera.pan.y;
+    //     this.camera.limits.pan.y.min = baseLimit + (zoomMod * panAmount);
+    //     console.log('2',baseLimit,panAmount,zoomMod);
+    //   break;
+    //   case 'east':
+    //     baseLimit = -400;
+    //     panAmount = this.camera.pan.x;
+    //     this.camera.limits.pan.x.min = baseLimit + (zoomMod * panAmount);
+    //     console.log('3',baseLimit,panAmount,zoomMod);
+    //   break;
+    //   case 'west':
+    //     baseLimit = 400;
+    //     panAmount = this.camera.pan.x;
+    //     this.camera.limits.pan.x.max = baseLimit + (zoomMod * panAmount);
+    //     console.log('4',baseLimit,panAmount,zoomMod);
+    //   break;
+    //   default:
+    //     break;
+    // }
+    // console.log('baseLimit',baseLimit);
+    // console.log('panAmount',panAmount);
+    // console.log('x: min ',this.camera.limits.pan.x.min,' max ',this.camera.limits.pan.x.max);
+    // console.log('y: min ',this.camera.limits.pan.y.min,' max ',this.camera.limits.pan.y.max);
 
     const x = this.canvasWidth/2;
     const y = this.canvasHeight/2;
@@ -35411,7 +35548,7 @@ class App extends Component {
     // CAMERA
 
     if (this.time === 50 && player.number === 1) {
-      this.setAutoCamera('test',player);
+      // this.setAutoCamera('test',player);
       // this.setAutoCamera('attackFocus',player);
       // this.setAutoCamera('attackFocusBreak',player);
       // this.setAutoCamera('playerSpawnFocus',player);
@@ -35619,13 +35756,13 @@ class App extends Component {
               canPan = true;
             }
           } else {
-            if (this.camera.zoom.x > 1) {
+            if (this.camera.zoom.x-1 > -.05) {
               canPan = true;
             }
           }
         }
         else {
-          if (this.camera.zoom.x > 1) {
+          if (this.camera.zoom.x > -.05) {
             canPan = true;
           }
         }
@@ -35673,7 +35810,7 @@ class App extends Component {
 
           }
           if (this.keyPressed[player.number-1].south === true && this.camera.pan.y <= this.camera.limits.pan.y.min) {
-            // console.log('pan limit south',this.camera.pan.y,'/',this.camera.limits.pan.y.min);
+            console.log('pan limit south',this.camera.pan.y,'/',this.camera.limits.pan.y.min);
             this.camera.limits.state.pan = true;
           }
           if (
@@ -35693,7 +35830,7 @@ class App extends Component {
             // console.log('panning east',this.camera.pan.x);
           }
           if (this.keyPressed[player.number-1].east === true && this.camera.pan.x <= this.camera.limits.pan.x.min) {
-            // console.log('pan limit east',this.camera.pan.x,'/',this.camera.limits.pan.x.min);
+            console.log('pan limit east',this.camera.pan.x,'/',this.camera.limits.pan.x.min);
             this.camera.limits.state.pan = true;
           }
           if (
@@ -35713,7 +35850,7 @@ class App extends Component {
             // console.log('panning west',this.camera.pan.x);
           }
           if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
-            // console.log('pan limit west',this.camera.pan.x,'/',this.camera.limits.pan.x.max);
+            console.log('pan limit west',this.camera.pan.x,'/',this.camera.limits.pan.x.max);
             this.camera.limits.state.pan = true;
           }
 
@@ -35855,7 +35992,7 @@ class App extends Component {
           switch (preInstruction.split("_")[0]) {
             case 'moveTo':
 
-            let speed = preInstruction.split("_")[3];
+              let speed = preInstruction.split("_")[3];
               if (preInstruction.split("_")[0] === "moveTo") {
                 focusCell.x = parseInt(preInstruction.split("_")[1])
                 focusCell.y = parseInt(preInstruction.split("_")[2])
@@ -36500,7 +36637,7 @@ class App extends Component {
                           break;
                           case 'south':
                             if (this.camera.pan.y <= this.camera.limits.pan.y.min) {
-                              // console.log('auto cam pan limit south fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.min,this.camera.instructions[this.camera.currentInstruction].count);
+                              console.log('auto cam pan limit south fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.min,this.camera.instructions[this.camera.currentInstruction].count);
                               this.camera.limits.state.pan = true;
                             }
                             else {
@@ -36565,7 +36702,7 @@ class App extends Component {
                             break;
                             case 'south':
                               if (this.camera.pan.y <= this.camera.limits.pan.y.min) {
-                                // console.log('auto cam pan limit south fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.min,this.camera.instructions[this.camera.currentInstruction].count);
+                                console.log('auto cam pan limit south fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.min,this.camera.instructions[this.camera.currentInstruction].count);
                                 this.camera.limits.state.pan = true;
                               }
                               else {
