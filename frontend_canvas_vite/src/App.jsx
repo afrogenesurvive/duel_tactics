@@ -5648,6 +5648,202 @@ class App extends Component {
 
 
 
+      // let cancelPath = false;
+      // let pathSet = [];
+      // this.updatePathArray();
+      // this.easyStar = new Easystar.js();
+      // this.easyStar.setGrid(this.pathArray);
+      // this.easyStar.setAcceptableTiles([0]);
+      // this.easyStar.enableDiagonals();
+      // let test = {
+      //   origin: {x: 0, y:8},
+      //   dest: {x: 9, y:2},
+      // }
+      // // let test2 = this.easyStar.findPath(test.origin.x, test.origin.y, test.dest.x, test.dest.y, function( path ) {
+      // let test2 = this.easyStar.findPath(originCell.x, originCell.y, destCell.x, destCell.y, function( path ) {
+      //   if (path === null) {
+      //     cancelPath = true;
+      //     console.log("Path was not found");
+      //   } else {
+      //     pathSet = path;
+      //   }
+      // });
+      // this.easyStar.setIterationsPerCalculation(4000)
+      // this.easyStar.calculate();
+      // setTimeout(()=>{
+      //   if (cancelPath === true) {
+      //     console.log('cancel path');
+      //     this.easyStar = new Easystar.js();
+      //   }
+      //   else {
+      //     console.log('path setA',pathSet);
+      //     // finish();
+      //   }
+        
+
+      // }, 50);
+      // console.log('test',test2);
+      // console.log('path setB',pathSet);
+      // const finish = () => {
+
+      //   let indx = 0
+      //   for (const cell of pathSet) {
+
+      //     if (indx < pathSet.length-1) {
+            
+      //       let pointA = cell;
+      //       let pointB = pathSet[indx+1]
+      //       let direction;
+
+      //       if (pointA.x - pointB.x === 1 && pointA.y - pointB.y === 1) {
+      //       direction = 'north'; 
+      //       }
+      //       if (pointA.x - pointB.x === 0 && pointA.y - pointB.y === 1) {
+      //       direction = 'northEast'; 
+      //       }
+      //       if (pointA.x - pointB.x === -1 && pointA.y - pointB.y === 1) {
+      //       direction = 'east'; 
+      //       }
+      //       if (pointA.x - pointB.x === -1 && pointA.y - pointB.y === 0) {
+      //       direction = 'southEast'; 
+      //       }
+      //       if (pointA.x - pointB.x === -1 && pointA.y - pointB.y === -1) {
+      //       direction = 'south'; 
+      //       }
+      //       if (pointA.x - pointB.x === 0 && pointA.y - pointB.y === -1) {
+      //       direction = 'southWest'; 
+      //       }
+      //       if (pointA.x - pointB.x === 1 && pointA.y - pointB.y === -1) {
+      //       direction = 'west'; 
+      //       }
+      //       if (pointA.x - pointB.x === 1 && pointA.y - pointB.y === 0) {
+      //       direction = 'northWest'; 
+      //       }
+
+      //       preInstructions.push(direction)
+      //       indx++
+
+      //     }
+          
+      //   }
+
+      //   for (const instruction of preInstructions) {
+      //     switch (instruction) {
+      //       case 'north':
+      //         this.camera.instructions.push(
+      //           {
+      //             action:'pan_north',
+      //             action2:'',
+      //             count: 0,
+      //             count2: 0,
+      //             limit: 75,
+      //             limit2: 0,
+      //             speed: speed,
+      //           },
+      //         )
+      //       break;
+      //       case 'northEast':
+      //         this.camera.instructions.push(
+      //           {
+      //             action:'pan_north',
+      //             action2:'pan_east',
+      //             count: 0,
+      //             count2: 0,
+      //             limit: 75,
+      //             limit2: 125,
+      //             speed: speed,
+      //           },
+      //         )
+      //       break;
+      //       case 'east':
+      //         this.camera.instructions.push(
+      //           {
+      //             action:'pan_east',
+      //             action2:'',
+      //             count: 0,
+      //             count2: 0,
+      //             limit: 125,
+      //             limit2: 0,
+      //             speed: speed,
+      //           },
+      //         )
+      //       break;
+      //       case 'southEast':
+      //         this.camera.instructions.push(
+      //           {
+      //             action:'pan_south',
+      //             action2:'pan_east',
+      //             count: 0,
+      //             count2: 0,
+      //             limit: 75,
+      //             limit2: 125,
+      //             speed: speed,
+      //           },
+      //         )
+      //       break;
+      //       case 'south':
+      //         this.camera.instructions.push(
+      //           {
+      //             action:'pan_south',
+      //             action2:'',
+      //             count: 0,
+      //             count2: 0,
+      //             limit: 75,
+      //             limit2: 0,
+      //             speed: speed,
+      //           },
+      //         )
+      //       break;
+      //       case 'southWest':
+      //         this.camera.instructions.push(
+      //           {
+      //             action:'pan_south',
+      //             action2:'pan_west',
+      //             count: 0,
+      //             count2: 0,
+      //             limit: 75,
+      //             limit2: 125,
+      //             speed: speed,
+      //           },
+      //         )
+      //       break;
+      //       case 'west':
+      //         this.camera.instructions.push(
+      //           {
+      //             action:'pan_west',
+      //             action2:'',
+      //             count: 0,
+      //             count2: 0,
+      //             limit: 125,
+      //             limit2: 0,
+      //             speed: speed,
+      //           },
+      //         )
+      //       break;
+      //       case 'northWest':
+      //         this.camera.instructions.push(
+      //           {
+      //             action:'pan_north',
+      //             action2:'pan_west',
+      //             count: 0,
+      //             count2: 0,
+      //             limit: 75,
+      //             limit2: 125,
+      //             speed: speed,
+      //           },
+      //         )
+      //       break;
+      //       default:
+      //       break;
+      //     }
+      //   }
+
+      //  console.log('instructionsA',this.camera.instructions);
+
+      // } 
+
+
+      // console.log('preInstructions',preInstructions);
       for (const instruction of preInstructions) {
         let indx = preInstructions.indexOf(instruction);
 
@@ -5663,14 +5859,6 @@ class App extends Component {
               limit2: 50,
               speed: speed,
             },
-            // {
-            //   action:'pan_north',
-            //   action2:'pan_east',
-            //   count: 0,
-            //   count2: 0,
-            //   limit: 25,
-            //   limit2: 50,
-            // },
           )
           break;
           case 'south':
@@ -5684,14 +5872,6 @@ class App extends Component {
               limit2: 50,
               speed: speed,
             },
-            // {
-            //   action:'pan_south',
-            //   action2:'pan_west',
-            //   count: 0,
-            //   count2: 0,
-            //   limit: 25,
-            //   limit2: 50,
-            // },
           )
           break;
           case 'east':
@@ -5705,14 +5885,6 @@ class App extends Component {
               limit2: 50,
               speed: speed,
             },
-            // {
-            //   action:'pan_south',
-            //   action2:'pan_east',
-            //   count: 0,
-            //   count2: 0,
-            //   limit: 25,
-            //   limit2: 50,
-            // },
           )
           break;
           case 'west':
@@ -5726,14 +5898,6 @@ class App extends Component {
               limit2: 50,
               speed: speed,
             },
-            // {
-            //   action:'pan_north',
-            //   action2:'pan_west',
-            //   count: 0,
-            //   count2: 0,
-            //   limit: 25,
-            //   limit2: 50,
-            // },
           )
           break;
         }
@@ -5757,6 +5921,8 @@ class App extends Component {
       // ADJUSTED FOR CANVAS SCALE & TRANSFORM
       let newX = (x-this.camera.zoomFocusPan.x)/this.camera.zoom.x;
       let newY = (y-this.camera.zoomFocusPan.y)/this.camera.zoom.y;
+      // this.camera.focus.x = newX
+      // this.camera.focus.y = newY
 
       let insideGrid = false;
 
@@ -5945,7 +6111,7 @@ class App extends Component {
               },
             )
           }
-          // console.log('this.cellsToHighlight2',this.cellsToHighlight2);
+          console.log('this.cellsToHighlight2',this.cellsToHighlight2);
         }
 
       }
@@ -6056,14 +6222,14 @@ class App extends Component {
     switch (args) {
       case 'test':
         this.camera.preInstructions.push(
-          'zoom_in_'+50+'',
-          'waitFor_50',
-          // 'moveTo_'+9+'_'+4+'_slow',
-          'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_fast',
+          'zoom_in_'+10+'',
+          // 'waitFor_50',
+          // 'moveTo_'+9+'_'+0+'_fast',
+          'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_slow',
           // 'waitFor_50',
           // 'moveTo_'+9+'_'+0+'_slow',
           // 'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_slow',
-          'zoom_out_'+50+'',
+          // 'zoom_out_'+50+'',
           // 'zoom_outToInit',
         )
 
@@ -6761,7 +6927,7 @@ class App extends Component {
     console.log('AutoCameraSet',args,this.camera.preInstructions);
   }
   setCameraFocus = (focusType, canvas, context, canvas2, context2) => {
-    // console.log('setting camera focus','zoom',this.camera.zoom.x,'pan',this.camera.pan);
+    console.log('setting camera focus','zoom',this.camera.zoom.x,'pan',this.camera.pan);
 
     if (focusType === 'init' || focusType === 'reset') {
 
@@ -6788,7 +6954,7 @@ class App extends Component {
 
       let zoom = this.camera.zoom.x;
       if (this.camera.mode === 'pan') {
-        console.log('beep');
+        // console.log('beep');
         switch (this.camera.panDirection) {
           case 'north':
             this.camera.focus.y -= 10;
@@ -6840,10 +7006,12 @@ class App extends Component {
         //     }
         //
         //
-        //     this.camera.focus.x = ((canvas.width/2)-this.camera.zoomFocusPan.x)/this.camera.zoom.x;
-        //     this.camera.focus.y = ((canvas.height/2)-this.camera.zoomFocusPan.y)/this.camera.zoom.y;
-        //
-        //
+            this.camera.focus.x = ((canvas.width/2)-this.camera.zoomFocusPan.x)/this.camera.zoom.x;
+            this.camera.focus.y = ((canvas.height/2)-this.camera.zoomFocusPan.y)/this.camera.zoom.y;
+            // const x = this.canvasWidth/2;
+            // const y = this.canvasHeight/2;
+            // this.camera.focus.x = (x-this.camera.zoomFocusPan.x)/this.camera.zoom.x;
+            // this.camera.focus.y = (y-this.camera.zoomFocusPan.y)/this.camera.zoom.y;
         //
         // }
         //
@@ -6985,7 +7153,7 @@ class App extends Component {
 
           }
 
-          console.log('increment ',increment,'zoom',zoom);
+          // console.log('increment ',increment,'zoom',zoom);
           this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
           this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
@@ -7030,6 +7198,14 @@ class App extends Component {
 
 
     }
+
+
+    const x = this.canvasWidth/2;
+    const y = this.canvasHeight/2;
+    let newX = (x-this.camera.zoomFocusPan.x)/this.camera.zoom.x;
+    let newY = (y-this.camera.zoomFocusPan.y)/this.camera.zoom.y;
+    this.camera.focus.x = newX
+    this.camera.focus.y = newY
 
     // console.log('ZFP!',this.camera.zoomFocusPan.x.toFixed(2),',',this.camera.zoomFocusPan.y.toFixed(2));
 
@@ -28589,7 +28765,7 @@ class App extends Component {
 
     // if player cycling and path set not true add cycle gear to plyr instructions
 
-    let cancelPath = false
+    let cancelPath = false;
 
     // SET PATH !!
     let pathSet = [];
@@ -35298,6 +35474,7 @@ class App extends Component {
 
               // this.setCameraFocus('input',canvas, context, canvas2, context2);
               this.findFocusCell('panToCell',{},canvas,context)
+              
             }
 
             if ((this.camera.zoom.x-1) < -.05) {
@@ -35541,7 +35718,7 @@ class App extends Component {
           }
 
         } else {
-          // console.log('cant pan at this zoom');
+          console.log('cant pan at this zoom');
           // this.camera.limits.state.pan = true;
 
           if (
@@ -36249,7 +36426,7 @@ class App extends Component {
 
                 if (this.camera.instructions[this.camera.currentInstruction].action === 'wait') {
                   // waiting/ do nothing
-                  console.log('waiting',this.camera.instructions[this.camera.currentInstruction].count);
+                  // console.log('waiting',this.camera.instructions[this.camera.currentInstruction].count);
                   this.camera.instructions[this.camera.currentInstruction].count++;
                 }
                 else {
@@ -36259,7 +36436,7 @@ class App extends Component {
                     for (var i = 0; i < this.camera.instructions[this.camera.currentInstruction].limit; i++) {
 
                       if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'zoom') {
-                        console.log('fast zooming ',this.camera.instructions[this.camera.currentInstruction].action.split("_")[1],' primary. coount:  ',this.camera.instructions[this.camera.currentInstruction].count);
+                        // console.log('fast zooming ',this.camera.instructions[this.camera.currentInstruction].action.split("_")[1],' primary. coount:  ',this.camera.instructions[this.camera.currentInstruction].count);
                         switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
                           case 'in':
                             if (this.camera.zoom.x >= this.camera.limits.zoom.max) {
@@ -36304,7 +36481,7 @@ class App extends Component {
 
 
                       if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'pan') {
-                        console.log('fast panning ',this.camera.instructions[this.camera.currentInstruction].action.split("_")[1],' primary. count: ',this.camera.instructions[this.camera.currentInstruction].count);
+                        // console.log('fast panning ',this.camera.instructions[this.camera.currentInstruction].action.split("_")[1],' primary. count: ',this.camera.instructions[this.camera.currentInstruction].count);
 
   
                         switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
@@ -36370,7 +36547,7 @@ class App extends Component {
                           this.camera.instructions[this.camera.currentInstruction].count2 < this.camera.instructions[this.camera.currentInstruction].limit2
                         ) {
 
-                          console.log('fast panning ',this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1],' secondary. count: ',this.camera.instructions[this.camera.currentInstruction].count2);
+                          // console.log('fast panning ',this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1],' secondary. count: ',this.camera.instructions[this.camera.currentInstruction].count2);
                           secondaryAction = true;
                           switch (this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1]) {
 
@@ -36434,8 +36611,10 @@ class App extends Component {
                       }
 
                       this.camera.instructions[this.camera.currentInstruction].count++;
+                      // console.log('1a');
                       if (secondaryAction === true) {
-                        // secondaryAction = false;
+                        secondaryAction = false;
+                        // console.log('2a');
                         this.camera.instructions[this.camera.currentInstruction].count2++;
                       }
 
@@ -36446,7 +36625,7 @@ class App extends Component {
                   else {
 
                     if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'zoom') {
-                      console.log('slow zooming ',this.camera.instructions[this.camera.currentInstruction].action.split("_")[1],' primary. count: ',this.camera.instructions[this.camera.currentInstruction].count);
+                      // console.log('slow zooming ',this.camera.instructions[this.camera.currentInstruction].action.split("_")[1],' primary. count: ',this.camera.instructions[this.camera.currentInstruction].count);
                       switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
                         case 'in':
                           if (this.camera.zoom.x >= this.camera.limits.zoom.max) {
@@ -36491,7 +36670,7 @@ class App extends Component {
 
 
                     if (this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'pan') {
-                      console.log('slow panning ',this.camera.instructions[this.camera.currentInstruction].action.split("_")[1],' primary. count: ',this.camera.instructions[this.camera.currentInstruction].count);
+                      // console.log('slow panning ',this.camera.instructions[this.camera.currentInstruction].action.split("_")[1],' primary. count: ',this.camera.instructions[this.camera.currentInstruction].count);
 
                       switch (this.camera.instructions[this.camera.currentInstruction].action.split("_")[1]) {
 
@@ -36555,7 +36734,7 @@ class App extends Component {
                         this.camera.instructions[this.camera.currentInstruction].action2 !== "" &&
                         this.camera.instructions[this.camera.currentInstruction].count2 < this.camera.instructions[this.camera.currentInstruction].limit2
                       ) {
-                        console.log('slow panning ',this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1],' secondary. count: ',this.camera.instructions[this.camera.currentInstruction].count2);
+                        // console.log('slow panning ',this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1],' secondary. count: ',this.camera.instructions[this.camera.currentInstruction].count2);
                         secondaryAction = true;
                         switch (this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1]) {
 
@@ -36615,14 +36794,91 @@ class App extends Component {
                         this.findFocusCell('panToCell',{},canvas,context)
 
                       }
+                      // this.camera.instructions[this.camera.currentInstruction].count2++;
+
 
                     }
+
+
+                    // if (
+                    //   this.camera.instructions[this.camera.currentInstruction].action.split("_")[0] === 'pan' &&
+                    //   this.camera.instructions[this.camera.currentInstruction].action2 !== "" &&
+                    //   this.camera.instructions[this.camera.currentInstruction].count2 < this.camera.instructions[this.camera.currentInstruction].limit2
+                    // ) {
+                    //   console.log('slow panning ',this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1],' secondary. count: ',this.camera.instructions[this.camera.currentInstruction].count2);
+                    //   secondaryAction = true;
+                    //   switch (this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1]) {
+
+                    //     case 'north':
+                    //       if (this.camera.pan.y >= this.camera.limits.pan.y.max) {
+                    //         // console.log('auto cam pan limit north fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.max,this.camera.instructions[this.camera.currentInstruction].count);
+                    //         this.camera.limits.state.pan = true;
+                    //       }
+                    //       else {
+                    //         this.camera.pan.y += 1;
+                    //         this.camera.adjustedPan.y += (1*this.camera.zoom.x);
+                    //         this.camera.panDirection = 'north';
+                    //         // console.log('auto cam panning north fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                    //       }
+                    //     break;
+                    //     case 'south':
+                    //       if (this.camera.pan.y <= this.camera.limits.pan.y.min) {
+                    //         // console.log('auto cam pan limit south fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.min,this.camera.instructions[this.camera.currentInstruction].count);
+                    //         this.camera.limits.state.pan = true;
+                    //       }
+                    //       else {
+                    //         this.camera.pan.y -= 1;
+                    //         this.camera.adjustedPan.y -= (1*this.camera.zoom.x);
+                    //         this.camera.panDirection = 'south';
+                    //         // console.log('auto cam panning south fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                    //       }
+                    //     break;
+                    //     case 'east':
+                    //       if (this.camera.pan.x <= this.camera.limits.pan.x.min) {
+                    //         // console.log('auto cam pan limit east fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.min,this.camera.instructions[this.camera.currentInstruction].count);
+                    //         this.camera.limits.state.pan = true;
+                    //       }
+                    //       else {
+                    //         this.camera.pan.x -= 1;
+                    //         this.camera.adjustedPan.x -= (1*this.camera.zoom.x);
+                    //         this.camera.panDirection = 'east';
+                    //         // console.log('auto cam panning east fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                    //       }
+                    //     break;
+                    //     case 'west':
+                    //       if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
+                    //         // console.log('auto cam pan limit west fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.max,this.camera.instructions[this.camera.currentInstruction].count);
+                    //         this.camera.limits.state.pan = true;
+                    //       }
+                    //       else {
+                    //         this.camera.pan.x += 1;
+                    //         this.camera.adjustedPan.x += (1*this.camera.zoom.x);
+                    //         this.camera.panDirection = 'west';
+                    //         // console.log('auto cam panning west fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                    //       }
+                    //     break;
+                    //   }
+
+                    //   this.camera.mode = 'pan';
+                    //   this.setZoomPan(canvas);
+                    //   // this.setCameraFocus('input',canvas, context, canvas2, context2);
+                    //   this.findFocusCell('panToCell',{},canvas,context)
+
+                    // }
+
 
                     this.camera.instructions[this.camera.currentInstruction].count++;
+                    // console.log('1b');
                     if (secondaryAction === true) {
-                      // secondaryAction = false;
+                      secondaryAction = false;
+                      // console.log('2b');
                       this.camera.instructions[this.camera.currentInstruction].count2++;
                     }
+
+
+
+
+
 
                   }
 
@@ -36633,16 +36889,16 @@ class App extends Component {
                 if (secondaryAction === true) {
                   if (this.camera.instructions[this.camera.currentInstruction].count >= this.camera.instructions[this.camera.currentInstruction].limit) {
                       this.camera.currentInstruction++;
-                      console.log('next primary1 instruction');
+                      // console.log('finished primary instruction');
                   }
                   if (this.camera.instructions[this.camera.currentInstruction].count2 >= this.camera.instructions[this.camera.currentInstruction].limit2) {
                       // this.camera.currentInstruction++;
-                      console.log('next secondary instruction');
+                      // console.log('finished secondary instruction');
                   }
                 } else {
                   if (this.camera.instructions[this.camera.currentInstruction].count >= this.camera.instructions[this.camera.currentInstruction].limit) {
                       this.camera.currentInstruction++;
-                      console.log('next primary2 instruction');
+                      // console.log('finished primary instruction only');
                   }
                 }
               }
@@ -39618,11 +39874,11 @@ class App extends Component {
         // CAMERA FOCUS POINT
         if (x === this.gridWidth && y === this.gridWidth ) {
           // console.log('Camera centered');
-          // context.fillStyle = 'yellow';
-          // context.beginPath();
-          // context.arc(this.camera.focus.x, this.camera.focus.y, 10, 0, 2 * Math.PI);
+          context.fillStyle = 'yellow';
+          context.beginPath();
+          context.arc(this.camera.focus.x, this.camera.focus.y, 10, 0, 2 * Math.PI);
           // context.arc(this.camera.zoomFocusPan.x, this.camera.zoomFocusPan.y, 10, 0, 2 * Math.PI);
-          // context.fill();
+          context.fill();
 
         }
 
