@@ -7058,19 +7058,26 @@ class App extends Component {
 
     // if (parseFloat(zoom.toFixed(2)) === zoomThresh) {
     if (zoom-1 === zoomThresh) {
-      console.log('1b',zoomThresh);
+      console.log('1b');
       this.camera.pan.x = -1;
       this.camera.pan.y = -1;
-      // this.camera.zoomFocusPan.x = -zoomThresh;
-      // this.camera.zoomFocusPan.y = -zoomThresh;
-      this.camera.zoomFocusPan.x = zoomThresh;
-      this.camera.zoomFocusPan.y = zoomThresh;
+      
 
       this.camera.adjustedPan.x = -1;
       this.camera.adjustedPan.y = -1;
 
-      this.camera.focus.x = (canvas.width/2);
-      this.camera.focus.y = (canvas.height/2);
+      // this.camera.focus.x = (canvas.width/2);
+      // this.camera.focus.y = (canvas.height/2);
+
+      
+      // this.camera.zoomFocusPan.x = -zoomThresh;
+      // this.camera.zoomFocusPan.y = -zoomThresh;
+
+      // this.camera.zoomFocusPan.x = zoomThresh;
+      // this.camera.zoomFocusPan.y = zoomThresh;
+
+      this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+      this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
       // this.camera.limits.pan.x.max = 400;
       // this.camera.limits.pan.x.min = -400;
@@ -7080,11 +7087,14 @@ class App extends Component {
 
     // ZOOMING IN & OUT ABOVE THRESHOLD
     if (zoom-1 < zoomThresh) {
-      console.log('2b',zoomThresh);
+      console.log('2b');
       diff = 1 - zoom;
 
-      this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
-      this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
+      // this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
+      // this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
+
+      this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+      this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
       // this.camera.limits.pan.x.max = 400;
       // this.camera.limits.pan.x.min = -400;
@@ -7094,7 +7104,7 @@ class App extends Component {
 
     // ZOOMING BELOW THRESHOLD
     if (zoom-1 > zoomThresh) {
-      console.log('3b',zoomThresh);
+      console.log('3b');
       diff = zoom - 1;
       let diffx;
       let diffy;
@@ -35518,6 +35528,10 @@ class App extends Component {
               this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
               this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
 
+              // TRY THESE FOR CAM SMOOTHNESS
+              this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+              this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+
               // this.setCameraFocus('input',canvas, context, canvas2, context2);
               this.findFocusCell('panToCell',{},canvas,context)
             }
@@ -35547,6 +35561,10 @@ class App extends Component {
 
               this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
               this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
+
+              // TRY THESE FOR CAM SMOOTHNESS
+              this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+              this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
 
 
