@@ -7041,33 +7041,30 @@ class App extends Component {
 
     let diff;
     let zoomThresh = 1;
-    if (window.innerWidth < 1100) {
-      if (this.gridWidth >= 12) {
-        zoomThresh = .8;
-      }
-      else {
-        zoomThresh = -.05;
-      }
+    // if (window.innerWidth < 1100) {
+    //   if (this.gridWidth >= 12) {
+    //     zoomThresh = -.25;
+    //   }
+    //   else {
+    //     zoomThresh = -.05;
+    //   }
+    // }
+    if (this.gridWidth >= 12) {
+      zoomThresh = -.25;
     }
-    // console.log('setZoomPan: zoom ',zoom);
-    // if ((this.camera.zoom.x-1) > -.05) {
-    //   console.log('3a');
-    // }
-    // if ((this.camera.zoom.x-1) < -.05) {
-    //   console.log('2a');
-    // }
-    // if ((this.camera.zoom.x-1) === -.05) {
-    //   console.log('1a');
-    // }
-    // console.log('zoom',zoom-1,'zoomThresh',zoomThresh);
+    else {
+      zoomThresh = -.05;
+    }
 
     // if (parseFloat(zoom.toFixed(2)) === zoomThresh) {
     if (zoom-1 === zoomThresh) {
-      // console.log('1b');
+      console.log('1b',zoomThresh);
       this.camera.pan.x = -1;
       this.camera.pan.y = -1;
-      this.camera.zoomFocusPan.x = -zoomThresh;
-      this.camera.zoomFocusPan.y = -zoomThresh;
+      // this.camera.zoomFocusPan.x = -zoomThresh;
+      // this.camera.zoomFocusPan.y = -zoomThresh;
+      this.camera.zoomFocusPan.x = zoomThresh;
+      this.camera.zoomFocusPan.y = zoomThresh;
 
       this.camera.adjustedPan.x = -1;
       this.camera.adjustedPan.y = -1;
@@ -7075,29 +7072,29 @@ class App extends Component {
       this.camera.focus.x = (canvas.width/2);
       this.camera.focus.y = (canvas.height/2);
 
-      this.camera.limits.pan.x.max = 400;
-      this.camera.limits.pan.x.min = -400;
+      // this.camera.limits.pan.x.max = 400;
+      // this.camera.limits.pan.x.min = -400;
 
     }
 
 
     // ZOOMING IN & OUT ABOVE THRESHOLD
     if (zoom-1 < zoomThresh) {
-      // console.log('2b');
+      console.log('2b',zoomThresh);
       diff = 1 - zoom;
 
       this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
       this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
 
-      this.camera.limits.pan.x.max = 400;
-      this.camera.limits.pan.x.min = -400;
+      // this.camera.limits.pan.x.max = 400;
+      // this.camera.limits.pan.x.min = -400;
 
     }
 
 
     // ZOOMING BELOW THRESHOLD
     if (zoom-1 > zoomThresh) {
-      // console.log('3b');
+      console.log('3b',zoomThresh);
       diff = zoom - 1;
       let diffx;
       let diffy;
@@ -35492,7 +35489,7 @@ class App extends Component {
     // CAMERA
 
     if (this.time === 50 && player.number === 1) {
-      this.setAutoCamera('test',player);
+      // this.setAutoCamera('test',player);
       // this.setAutoCamera('attackFocus',player);
       // this.setAutoCamera('attackFocusBreak',player);
       // this.setAutoCamera('playerSpawnFocus',player);
@@ -35694,19 +35691,30 @@ class App extends Component {
         // ONLY PAN IF CANT SEE WHOLE MAP
         let canPan = false;
 
-        if (window.innerWidth < 1100) {
-          if (this.gridWidth >= 12) {
-            if (this.camera.zoom.x > .8) {
-              canPan = true;
-            }
-          } else {
-            if (this.camera.zoom.x-1 > -.05) {
-              canPan = true;
-            }
+        // if (window.innerWidth < 1100) {
+        //   if (this.gridWidth >= 12) {
+        //     // if (this.camera.zoom.x > .8) {
+        //     if (this.camera.zoom.x-1 > -.25) {
+        //       canPan = true;
+        //     }
+        //   } else {
+        //     if (this.camera.zoom.x-1 > -.05) {
+        //       canPan = true;
+        //     }
+        //   }
+        // }
+        // else {
+        //   if (this.camera.zoom.x > -.05) {
+        //     canPan = true;
+        //   }
+        // }
+        if (this.gridWidth >= 12) {
+          // if (this.camera.zoom.x > .8) {
+          if (this.camera.zoom.x-1 > -.25) {
+            canPan = true;
           }
-        }
-        else {
-          if (this.camera.zoom.x > -.05) {
+        } else {
+          if (this.camera.zoom.x-1 > -.05) {
             canPan = true;
           }
         }
