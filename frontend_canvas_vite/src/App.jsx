@@ -7045,6 +7045,9 @@ class App extends Component {
       if (this.gridWidth >= 12) {
         zoomThresh = .8;
       }
+      else {
+        zoomThresh = -.05;
+      }
     }
     // console.log('setZoomPan: zoom ',zoom);
     // if ((this.camera.zoom.x-1) > -.05) {
@@ -7056,8 +7059,10 @@ class App extends Component {
     // if ((this.camera.zoom.x-1) === -.05) {
     //   console.log('1a');
     // }
+    // console.log('zoom',zoom-1,'zoomThresh',zoomThresh);
 
-    if (parseFloat(zoom.toFixed(2)) === zoomThresh) {
+    // if (parseFloat(zoom.toFixed(2)) === zoomThresh) {
+    if (zoom-1 === zoomThresh) {
       // console.log('1b');
       this.camera.pan.x = -1;
       this.camera.pan.y = -1;
@@ -7077,7 +7082,7 @@ class App extends Component {
 
 
     // ZOOMING IN & OUT ABOVE THRESHOLD
-    if (zoom < zoomThresh) {
+    if (zoom-1 < zoomThresh) {
       // console.log('2b');
       diff = 1 - zoom;
 
@@ -7091,7 +7096,7 @@ class App extends Component {
 
 
     // ZOOMING BELOW THRESHOLD
-    if (zoom > zoomThresh) {
+    if (zoom-1 > zoomThresh) {
       // console.log('3b');
       diff = zoom - 1;
       let diffx;
@@ -7170,77 +7175,13 @@ class App extends Component {
         }
 
 
-        // SET PAN LIMITS BASED ON ZOOM
-        let aMod = 0;
-        let xMod = 150;
-        let yMod = 75;
-        let xMod2 = 35;
-        let yMod2 = 35;
-
-        if (this.gridWidth < 9) {
-          yMod2 = 20
-          xMod2 = 20;
-          aMod = 1-((this.gridWidth-9)/-9);
-          xMod = 75;
-          yMod = 40;
-        }
-        if (this.gridWidth > 9) {
-          xMod = 200;
-          yMod2 = 50;
-          xMod2 = 30;
-          aMod = this.gridWidth-9
-        }
-
-
-        // let baseLimit;
-        // let panAmount;
-        // switch (this.camera.panDirection) {
-        //   case 'north':
-        //     baseLimit = 200;
-        //     panAmount = this.camera.pan.y;
-        //     this.camera.limits.pan.y.max = baseLimit + (zoom-1 * panAmount);
-        //     console.log('1',baseLimit,panAmount);
-        //   break;
-        //   case 'south':
-        //     baseLimit = -200;
-        //     panAmount = this.camera.pan.y;
-        //     this.camera.limits.pan.y.min = baseLimit + (zoom-1 * panAmount);
-        //     console.log('2',baseLimit,panAmount);
-        //   break;
-        //   case 'east':
-        //     baseLimit = -400;
-        //     panAmount = this.camera.pan.x;
-        //     this.camera.limits.pan.x.min = baseLimit + (zoom-1 * panAmount);
-        //     console.log('3',baseLimit,panAmount);
-        //   break;
-        //   case 'west':
-        //     baseLimit = 400;
-        //     panAmount = this.camera.pan.x;
-        //     this.camera.limits.pan.x.max = baseLimit + (zoom-1 * panAmount);
-        //     console.log('4',baseLimit,panAmount);
-        //   break;
-        //   default:
-        //     break;
-        // }
-
-
-        // this.camera.limits.pan.x.min = -((this.camera.zoom.x * xMod)+(aMod*xMod2))
-        // this.camera.limits.pan.x.max = ((this.camera.zoom.x * xMod)+(aMod*xMod2))
-        // this.camera.limits.pan.y.min = -((this.camera.zoom.x * yMod)+(aMod*yMod2))
-        // this.camera.limits.pan.y.max = ((this.camera.zoom.x * yMod)+(aMod*yMod2))
-
-        // console.log('aMod',aMod);
-        // console.log('aMod*xMod',aMod*xMod);
-        // console.log('aMod*yMod',aMod*yMod);
-        // console.log('x: min ',this.camera.limits.pan.x.min,' max ',this.camera.limits.pan.x.max);
-        // console.log('y: min ',this.camera.limits.pan.y.min,' max ',this.camera.limits.pan.y.max);
-
       }
 
 
+      // SET PAN LIMITS BASED ON ZOOM
       // if camera mode is pan
       // (this.camera.zoom.x-1) > -.05)
-      console.log('beep',zoom-1);
+      // console.log('beep',zoom-1);
       let zoomMod;
       if ((zoom-1) > 0) {
         zoomMod = (zoom-1);
@@ -7257,38 +7198,41 @@ class App extends Component {
         case 'north':
           baseLimit = 200;
           panAmount = this.camera.pan.y;
-          this.camera.limits.pan.y.max = baseLimit + (zoomMod * panAmount);
-          console.log('1',baseLimit,panAmount,zoomMod);
+          this.camera.limits.pan.y.max = baseLimit + ((zoomMod/10) * panAmount);
+          // console.log('1',baseLimit,panAmount,zoomMod);
         break;
         case 'south':
           baseLimit = -200;
           panAmount = this.camera.pan.y;
-          this.camera.limits.pan.y.min = baseLimit + (zoomMod * panAmount);
-          console.log('2',baseLimit,panAmount,zoomMod);
+          this.camera.limits.pan.y.min = baseLimit + ((zoomMod/10) * panAmount);
+          // console.log('2',baseLimit,panAmount,zoomMod);
         break;
         case 'east':
-          baseLimit = -400;
+          // baseLimit = -400;
+          baseLimit = -300;
           panAmount = this.camera.pan.x;
-          this.camera.limits.pan.x.min = baseLimit + (zoomMod * panAmount);
-          console.log('3',baseLimit,panAmount,zoomMod);
+          this.camera.limits.pan.x.min = baseLimit + ((zoomMod/10) * panAmount);
+          // console.log('3',baseLimit,panAmount,zoomMod);
         break;
         case 'west':
-          baseLimit = 400;
+          // baseLimit = 400;
+          baseLimit = 300;
           panAmount = this.camera.pan.x;
-          this.camera.limits.pan.x.max = baseLimit + (zoomMod * panAmount);
-          console.log('4',baseLimit,panAmount,zoomMod);
+          this.camera.limits.pan.x.max = baseLimit + ((zoomMod/10) * panAmount);
+          // console.log('4',baseLimit,panAmount,zoomMod);
         break;
         default:
           break;
       }
-      console.log('baseLimit',baseLimit);
-      console.log('panAmount',panAmount);
+      // console.log('baseLimit',baseLimit);
+      // console.log('panAmount',panAmount);
       console.log('x: min ',this.camera.limits.pan.x.min,' max ',this.camera.limits.pan.x.max);
       console.log('y: min ',this.camera.limits.pan.y.min,' max ',this.camera.limits.pan.y.max);
 
 
     }
 
+    // SET PAN LIMITS BASED ON ZOOM
     // // if camera mode is pan
     // // (this.camera.zoom.x-1) > -.05)
     // console.log('beep',zoom-1);
@@ -35785,7 +35729,7 @@ class App extends Component {
             setZoomPan = true;
             findFocusCell = true;
 
-            // console.log('panning north',this.camera.pan.y);
+            console.log('input panning north',this.camera.pan.y);
 
           }
           if (this.keyPressed[player.number-1].north === true && this.camera.pan.y >= this.camera.limits.pan.y.max) {
@@ -35806,7 +35750,7 @@ class App extends Component {
             setZoomPan = true;
             findFocusCell = true;
 
-            // console.log('panning south',this.camera.pan.y);
+            console.log('input panning south',this.camera.pan.y);
 
           }
           if (this.keyPressed[player.number-1].south === true && this.camera.pan.y <= this.camera.limits.pan.y.min) {
@@ -35827,7 +35771,7 @@ class App extends Component {
             setZoomPan = true;
             findFocusCell = true;
 
-            // console.log('panning east',this.camera.pan.x);
+            console.log('input panning east',this.camera.pan.x);
           }
           if (this.keyPressed[player.number-1].east === true && this.camera.pan.x <= this.camera.limits.pan.x.min) {
             console.log('pan limit east',this.camera.pan.x,'/',this.camera.limits.pan.x.min);
@@ -35847,7 +35791,7 @@ class App extends Component {
             setZoomPan = true;
             findFocusCell = true;
 
-            // console.log('panning west',this.camera.pan.x);
+            console.log('input panning west',this.camera.pan.x);
           }
           if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
             console.log('pan limit west',this.camera.pan.x,'/',this.camera.limits.pan.x.max);
