@@ -7069,7 +7069,7 @@ class App extends Component {
       // this.camera.focus.x = (canvas.width/2);
       // this.camera.focus.y = (canvas.height/2);
 
-      
+
       // this.camera.zoomFocusPan.x = -zoomThresh;
       // this.camera.zoomFocusPan.y = -zoomThresh;
 
@@ -7199,17 +7199,26 @@ class App extends Component {
         zoomMod = .01;
         // zoomMod = 1;
       }
-      let baseLimit;
+      let baseLimit = 0;
+      let baseLimitMod = 0;
+      
+      console.log('zoomMod',zoomMod);
       let panAmount;
       switch (this.camera.panDirection) {
         case 'north':
           baseLimit = 200;
+          if (this.gridWidth >= 12) {
+            baseLimit = 250;
+          }
           panAmount = this.camera.pan.y;
           this.camera.limits.pan.y.max = baseLimit + ((zoomMod/5) * panAmount);
           // console.log('1',baseLimit,panAmount,zoomMod);
         break;
         case 'south':
           baseLimit = -200;
+          if (this.gridWidth >= 12) {
+            baseLimit = -250;
+          }
           panAmount = this.camera.pan.y;
           this.camera.limits.pan.y.min = baseLimit + ((zoomMod/5) * panAmount);
           // console.log('2',baseLimit,panAmount,zoomMod);
@@ -7217,6 +7226,9 @@ class App extends Component {
         case 'east':
           // baseLimit = -400;
           baseLimit = -300;
+          if (this.gridWidth >= 12) {
+            baseLimit = -400;
+          }
           panAmount = this.camera.pan.x;
           this.camera.limits.pan.x.min = baseLimit + ((zoomMod/5) * panAmount);
           // console.log('3',baseLimit,panAmount,zoomMod);
@@ -7224,6 +7236,9 @@ class App extends Component {
         case 'west':
           // baseLimit = 400;
           baseLimit = 300;
+          if (this.gridWidth >= 12) {
+            baseLimit = 400;
+          }
           panAmount = this.camera.pan.x;
           this.camera.limits.pan.x.max = baseLimit + ((zoomMod/5) * panAmount);
           // console.log('4',baseLimit,panAmount,zoomMod);
@@ -7233,8 +7248,8 @@ class App extends Component {
       }
       // console.log('baseLimit',baseLimit);
       // console.log('panAmount',panAmount);
-      // console.log('x: min ',this.camera.limits.pan.x.min,' max ',this.camera.limits.pan.x.max);
-      // console.log('y: min ',this.camera.limits.pan.y.min,' max ',this.camera.limits.pan.y.max);
+      console.log('x: min ',this.camera.limits.pan.x.min,' max ',this.camera.limits.pan.x.max);
+      console.log('y: min ',this.camera.limits.pan.y.min,' max ',this.camera.limits.pan.y.max);
 
 
     }
