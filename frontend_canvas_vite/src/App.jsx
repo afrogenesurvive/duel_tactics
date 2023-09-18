@@ -5672,11 +5672,11 @@ class App extends Component {
       this.easyStar.calculate();
       setTimeout(()=>{
         if (cancelPath === true) {
-          console.log('cancel path');
+          // console.log('cancel path');
           this.easyStar = new Easystar.js();
         }
         else {
-          console.log('path setA',pathSet);
+          // console.log('path setA',pathSet);
           finish();
         }
 
@@ -5735,7 +5735,7 @@ class App extends Component {
                   action2:'',
                   count: 0,
                   count2: 0,
-                  limit: 50,
+                  limit: 25,
                   limit2: 0,
                   speed: speed,
                 },
@@ -5748,8 +5748,8 @@ class App extends Component {
                   action2:'pan_east',
                   count: 0,
                   count2: 0,
-                  limit: 50,
-                  limit2: 75,
+                  limit: 25,
+                  limit2: 130,
                   speed: speed,
                 },
               )
@@ -5761,7 +5761,7 @@ class App extends Component {
                   action2:'',
                   count: 0,
                   count2: 0,
-                  limit: 75,
+                  limit: 130,
                   limit2: 0,
                   speed: speed,
                 },
@@ -5774,8 +5774,8 @@ class App extends Component {
                   action2:'pan_east',
                   count: 0,
                   count2: 0,
-                  limit: 50,
-                  limit2: 75,
+                  limit: 25,
+                  limit2: 130,
                   speed: speed,
                 },
               )
@@ -5787,7 +5787,7 @@ class App extends Component {
                   action2:'',
                   count: 0,
                   count2: 0,
-                  limit: 50,
+                  limit: 25,
                   limit2: 0,
                   speed: speed,
                 },
@@ -5800,8 +5800,8 @@ class App extends Component {
                   action2:'pan_west',
                   count: 0,
                   count2: 0,
-                  limit: 50,
-                  limit2: 75,
+                  limit: 25,
+                  limit2: 130,
                   speed: speed,
                 },
               )
@@ -5813,7 +5813,7 @@ class App extends Component {
                   action2:'',
                   count: 0,
                   count2: 0,
-                  limit: 75,
+                  limit: 130,
                   limit2: 0,
                   speed: speed,
                 },
@@ -5826,8 +5826,8 @@ class App extends Component {
                   action2:'pan_west',
                   count: 0,
                   count2: 0,
-                  limit: 50,
-                  limit2: 75,
+                  limit: 25,
+                  limit2: 130,
                   speed: speed,
                 },
               )
@@ -5837,7 +5837,7 @@ class App extends Component {
           }
         }
 
-       console.log('instructionsA',this.camera.instructions);
+      //  console.log('instructionsA',this.camera.instructions);
 
       } 
 
@@ -6223,7 +6223,7 @@ class App extends Component {
         this.camera.preInstructions.push(
           'zoom_in_'+1+'',
           // 'waitFor_50',
-          'moveTo_'+9+'_'+9+'_fast',
+          'moveTo_'+4+'_'+8+'_fast',
           // 'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_slow',
           // 'waitFor_50',
           // 'moveTo_'+9+'_'+0+'_slow',
@@ -6923,7 +6923,7 @@ class App extends Component {
 
     }
 
-    console.log('AutoCameraSet',args,this.camera.preInstructions);
+    // console.log('AutoCameraSet',args,this.camera.preInstructions);
 
   }
   setCameraFocus = (focusType, canvas, context, canvas2, context2) => {
@@ -7058,7 +7058,7 @@ class App extends Component {
 
     // if (parseFloat(zoom.toFixed(2)) === zoomThresh) {
     if (zoom-1 === zoomThresh) {
-      console.log('1b');
+      // console.log('1b');
       this.camera.pan.x = -1;
       this.camera.pan.y = -1;
       
@@ -7087,7 +7087,7 @@ class App extends Component {
 
     // ZOOMING IN & OUT ABOVE THRESHOLD
     if (zoom-1 < zoomThresh) {
-      console.log('2b');
+      // console.log('2b');
       diff = 1 - zoom;
 
       // this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
@@ -7104,7 +7104,7 @@ class App extends Component {
 
     // ZOOMING BELOW THRESHOLD
     if (zoom-1 > zoomThresh) {
-      console.log('3b');
+      // console.log('3b');
       diff = zoom - 1;
       let diffx;
       let diffy;
@@ -7202,7 +7202,7 @@ class App extends Component {
       let baseLimit = 0;
       let baseLimitMod = 0;
       
-      console.log('zoomMod',zoomMod);
+      // console.log('zoomMod',zoomMod);
       let panAmount;
       switch (this.camera.panDirection) {
         case 'north':
@@ -7217,7 +7217,7 @@ class App extends Component {
         case 'south':
           baseLimit = -200;
           if (this.gridWidth >= 12) {
-            baseLimit = -250;
+            baseLimit = -200;
           }
           panAmount = this.camera.pan.y;
           this.camera.limits.pan.y.min = baseLimit + ((zoomMod/5) * panAmount);
@@ -7248,8 +7248,8 @@ class App extends Component {
       }
       // console.log('baseLimit',baseLimit);
       // console.log('panAmount',panAmount);
-      console.log('x: min ',this.camera.limits.pan.x.min,' max ',this.camera.limits.pan.x.max);
-      console.log('y: min ',this.camera.limits.pan.y.min,' max ',this.camera.limits.pan.y.max);
+      // console.log('x: min ',this.camera.limits.pan.x.min,' max ',this.camera.limits.pan.x.max);
+      // console.log('y: min ',this.camera.limits.pan.y.min,' max ',this.camera.limits.pan.y.max);
 
 
     }
@@ -35514,7 +35514,7 @@ class App extends Component {
     // CAMERA
 
     if (this.time === 50 && player.number === 1) {
-      // this.setAutoCamera('test',player);
+      this.setAutoCamera('test',player);
       // this.setAutoCamera('attackFocus',player);
       // this.setAutoCamera('attackFocusBreak',player);
       // this.setAutoCamera('playerSpawnFocus',player);
