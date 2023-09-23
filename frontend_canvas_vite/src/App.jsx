@@ -5695,28 +5695,28 @@ class App extends Component {
             let direction;
 
             if (pointA.x - pointB.x === 1 && pointA.y - pointB.y === 1) {
-            direction = 'north'; 
+              direction = 'north'; 
             }
             if (pointA.x - pointB.x === 0 && pointA.y - pointB.y === 1) {
-            direction = 'northEast'; 
+              direction = 'northEast'; 
             }
             if (pointA.x - pointB.x === -1 && pointA.y - pointB.y === 1) {
-            direction = 'east'; 
+              direction = 'east'; 
             }
             if (pointA.x - pointB.x === -1 && pointA.y - pointB.y === 0) {
-            direction = 'southEast'; 
+              direction = 'southEast'; 
             }
             if (pointA.x - pointB.x === -1 && pointA.y - pointB.y === -1) {
-            direction = 'south'; 
+              direction = 'south'; 
             }
             if (pointA.x - pointB.x === 0 && pointA.y - pointB.y === -1) {
-            direction = 'southWest'; 
+              direction = 'southWest'; 
             }
             if (pointA.x - pointB.x === 1 && pointA.y - pointB.y === -1) {
-            direction = 'west'; 
+              direction = 'west'; 
             }
             if (pointA.x - pointB.x === 1 && pointA.y - pointB.y === 0) {
-            direction = 'northWest'; 
+              direction = 'northWest'; 
             }
 
             preInstructions.push(direction)
@@ -5726,6 +5726,14 @@ class App extends Component {
           
         }
 
+
+        // define a&b 
+        // if a = 5, b = 7.07
+        // a is the no of ticks/stepz from 4,4 center to 5,5
+        let a = 50
+        let b = 70
+
+        console.log('preInstructions',preInstructions);
         for (const instruction of preInstructions) {
           switch (instruction) {
             case 'north':
@@ -5735,7 +5743,7 @@ class App extends Component {
                   action2:'',
                   count: 0,
                   count2: 0,
-                  limit: 50,
+                  limit: a,
                   limit2: 0,
                   speed: speed,
                 },
@@ -5748,8 +5756,8 @@ class App extends Component {
                   action2:'pan_east',
                   count: 0,
                   count2: 0,
-                  limit: 50,
-                  limit2: 100,
+                  limit: a/2,
+                  limit2: b,
                   speed: speed,
                 },
               )
@@ -5761,7 +5769,7 @@ class App extends Component {
                   action2:'',
                   count: 0,
                   count2: 0,
-                  limit: 100,
+                  limit: b,
                   limit2: 0,
                   speed: speed,
                 },
@@ -5774,8 +5782,8 @@ class App extends Component {
                   action2:'pan_east',
                   count: 0,
                   count2: 0,
-                  limit: 50,
-                  limit2: 100,
+                  limit: a/2,
+                  limit2: b/2,
                   speed: speed,
                 },
               )
@@ -5787,7 +5795,7 @@ class App extends Component {
                   action2:'',
                   count: 0,
                   count2: 0,
-                  limit: 50,
+                  limit: a,
                   limit2: 0,
                   speed: speed,
                 },
@@ -5800,8 +5808,8 @@ class App extends Component {
                   action2:'pan_west',
                   count: 0,
                   count2: 0,
-                  limit: 50,
-                  limit2: 100,
+                  limit: a/2,
+                  limit2: b/2,
                   speed: speed,
                 },
               )
@@ -5813,7 +5821,7 @@ class App extends Component {
                   action2:'',
                   count: 0,
                   count2: 0,
-                  limit: 100,
+                  limit: b,
                   limit2: 0,
                   speed: speed,
                 },
@@ -5826,8 +5834,8 @@ class App extends Component {
                   action2:'pan_west',
                   count: 0,
                   count2: 0,
-                  limit: 50,
-                  limit2: 100,
+                  limit: a/2,
+                  limit2: b/2,
                   speed: speed,
                 },
               )
@@ -6223,7 +6231,7 @@ class App extends Component {
         this.camera.preInstructions.push(
           'zoom_in_'+1+'',
           // 'waitFor_50',
-          'moveTo_'+0+'_'+0+'_fast',
+          'moveTo_'+4+'_'+3+'_fast',
           // 'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_slow',
           // 'waitFor_50',
           // 'moveTo_'+9+'_'+0+'_slow',
@@ -35527,7 +35535,7 @@ class App extends Component {
 
     // CAMERA
 
-    if (this.time === 150 && player.number === 1) {
+    if (this.time === 100 && player.number === 1) {
       this.setAutoCamera('test',player);
       // this.setAutoCamera('attackFocus',player);
       // this.setAutoCamera('attackFocusBreak',player);
@@ -36624,7 +36632,7 @@ class App extends Component {
 
                           case 'north':
                             if (this.camera.pan.y >= this.camera.limits.pan.y.max) {
-                              // console.log('auto cam pan limit north fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.max,this.camera.instructions[this.camera.currentInstruction].count);
+                              console.log('auto cam pan limit north fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.max,this.camera.instructions[this.camera.currentInstruction].count);
                               this.camera.limits.state.pan = true;
                             }
                             else {
@@ -36660,7 +36668,7 @@ class App extends Component {
                           break;
                           case 'west':
                             if (this.keyPressed[player.number-1].west === true && this.camera.pan.x >= this.camera.limits.pan.x.max) {
-                              // console.log('auto cam pan limit west fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.max,this.camera.instructions[this.camera.currentInstruction].count);
+                              console.log('auto cam pan limit west fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.max,this.camera.instructions[this.camera.currentInstruction].count);
                               this.camera.limits.state.pan = true;
                             }
                             else {
