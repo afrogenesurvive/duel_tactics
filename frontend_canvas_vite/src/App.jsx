@@ -7121,14 +7121,39 @@ class App extends Component {
             
           }
           if ((zoom-1) < .25 && (zoom-1) >= .15) {
-            increment = 20;
+            // increment = 20;
+            if (this.gridWidth >= 12) {
+              increment = 15;
+            }
+            else {
+              increment = 20;
+            }
           }
           if ((zoom-1) < .15 && (zoom-1) >= .05) {
-            increment = 30;
+            // increment = 30;
+            if (this.gridWidth >= 12) {
+              // increment = 20;
+              increment = 15;
+            }
+            else {
+              increment = 30;
+            }
           }
           if ((zoom-1) < .05) {
-            increment = 90;
+            // increment = 90;
+            if (this.gridWidth >= 12) {
+              increment = 10;
+            }
+            else {
+              increment = 90;
+            }
           }
+          // if ((zoom-1) <= 0) {
+          // if ((zoom-1) <= .02) {
+          //   console.log('booop');
+          //   increment = 10;
+          // }
+          
           // increment = 10;
           // try increment based on zoom, increment should go up as you zoom out
           if (this.camera.pan.x > -1) {
@@ -7157,6 +7182,7 @@ class App extends Component {
 
           }
 
+          // console.log('increment ',increment,'zoom',zoom-1);
           this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
           this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
