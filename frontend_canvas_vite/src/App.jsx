@@ -6156,12 +6156,19 @@ class App extends Component {
             attackFocusBreakZoomCorrection = `zoom_out_${this.camera.instructions[this.camera.instructions.length-1].count}`
           }
   
-          this.camera.preInstructions = [];
-          this.camera.instructions = [];
-          this.camera.currentInstruction = 0;
-          this.settingAutoCamera = false;
-          reset = true;
+          // this.camera.preInstructions = [];
+          // this.camera.instructions = [];
+          // this.camera.currentInstruction = 0;
+          // this.settingAutoCamera = false;
+          // reset = true;
         }
+        // this.autoCamPanWaitingForPath = false;
+        this.camera.preInstructions = [];
+        this.camera.currentPreInstruction = 0;
+        this.camera.instructions = [];
+        this.camera.currentInstruction = 0;
+        this.settingAutoCamera = false;
+        reset = true;
       }
     }
     
@@ -6435,10 +6442,11 @@ class App extends Component {
 
       break;
       case 'attackFocusBreak':
-
+        this.autoCamPanWaitingForPath = false;
         if ((this.camera.zoom.x-1) > -.05) {
 
-          if (reset === true) {
+          if (reset === true && attackFocusBreakZoomCorrection !== '') {
+            console.log('gg',attackFocusBreakZoomCorrection);
             this.camera.preInstructions.push(attackFocusBreakZoomCorrection)
           }
 
@@ -6902,7 +6910,7 @@ class App extends Component {
 
     }
 
-    console.log('AutoCameraSet',args,this.camera.preInstructions);
+    console.log('AutoCameraSet',args,this.camera.preInstructions,this.camera.currentPreInstruction,this.camera.zoom.x-1);
 
   }
   setCameraFocus = (focusType, canvas, context, canvas2, context2) => {
@@ -7188,7 +7196,7 @@ class App extends Component {
 
         }
 
-
+        
       }
 
 
@@ -15021,7 +15029,7 @@ class App extends Component {
 
 
           // CURRENT WEAPON DROPPED, DROP DEFENSE
-          if (player.currentArmor === {} || !player.currentArmor || player.currentArmor.name === '') {
+          if (!player.currentArmor.name || !player.currentArmor || player.currentArmor.name === '') {
 
             this.players[player.number-1].defending = {
               state: false,
@@ -15089,7 +15097,7 @@ class App extends Component {
             effect: '',
           }
 
-          if (player.currentWeapon === {} || !player.currentWeapon || player.currentWeapon.name === '') {
+          if (!player.currentWeapon.name || !player.currentWeapon || player.currentWeapon.name === '') {
 
             this.players[player.number-1].defending = {
               state: false,
@@ -15224,7 +15232,7 @@ class App extends Component {
           }
 
 
-          if (player.currentArmor === {} || !player.currentArmor || player.currentArmor.name === '') {
+          if (!player.currentArmor.name || !player.currentArmor || player.currentArmor.name === '') {
 
             this.players[player.number-1].defending = {
               state: false,
@@ -15296,7 +15304,7 @@ class App extends Component {
             effect: "",
           }
 
-          if (player.currentWeapon === {} || !player.currentWeapon || player.currentWeapon.name === '') {
+          if (!player.currentWeapon.name || !player.currentWeapon || player.currentWeapon.name === '') {
 
             this.players[player.number-1].defending = {
               state: false,
@@ -35993,64 +36001,79 @@ class App extends Component {
             x: undefined,
             y: undefined,
           }
-          // console.log('Step through pre instructions...','preInstructions',preInstruction);
+          console.log('Step through pre instructions...','preInstructions',preInstruction);
 
-          switch (preInstruction.split("_")[0]) {
-            case 'moveTo':
-
-              let speed = preInstruction.split("_")[3];
-              if (preInstruction.split("_")[0] === "moveTo" && this.autoCamPanWaitingForPath !== true) {
-                this.autoCamPanWaitingForPath = true;
-                focusCell.x = parseInt(preInstruction.split("_")[1])
-                focusCell.y = parseInt(preInstruction.split("_")[2])
-
-                this.findFocusCell('cellToPan',focusCell,canvas,context,speed)
-              }
-            break;
-            case 'zoom':
-              if (preInstruction.split("_")[1] === 'outToInit') {
-                this.camera.instructions.push(
-                  {
-                    action:'zoom_outToInit',
-                    action2:'',
-                    count: 0,
-                    count2: 0,
-                    limit: 1,
-                    limit2: 0,
-                    speed: "",
-                  }
-                )
-              }
-              else {
-                this.camera.instructions.push(
-                  {
-                    action:'zoom_'+preInstruction.split("_")[1],
-                    action2:'',
-                    count: 0,
-                    count2: 0,
-                    limit: parseInt(preInstruction.split("_")[2]),
-                    limit2: 0,
-                    speed: "",
-                  }
-                )
-              }
-
-            break;
-            case 'waitFor':
-              this.camera.instructions.push(
-                {
-                  action:'wait',
-                  action2:'',
-                  count: 0,
-                  count2: 0,
-                  limit: parseInt(preInstruction.split("_")[1]),
-                  limit2: 0,
-                  speed: "",
+          // if (preInstruction) {
+           
+            switch (preInstruction.split("_")[0]) {
+              case 'moveTo':
+  
+                let speed = preInstruction.split("_")[3];
+                if (preInstruction.split("_")[0] === "moveTo" && this.autoCamPanWaitingForPath !== true) {
+                  this.autoCamPanWaitingForPath = true;
+                  focusCell.x = parseInt(preInstruction.split("_")[1])
+                  focusCell.y = parseInt(preInstruction.split("_")[2])
+  
+                  this.findFocusCell('cellToPan',focusCell,canvas,context,speed)
                 }
-              )
+              break;
+              case 'zoom':
+                if (preInstruction.split("_")[1] === 'outToInit') {
+                  this.camera.instructions.push(
+                    {
+                      action:'zoom_outToInit',
+                      action2:'',
+                      count: 0,
+                      count2: 0,
+                      limit: 1,
+                      limit2: 0,
+                      speed: "",
+                    }
+                  )
+                }
+                else {
+                  this.camera.instructions.push(
+                    {
+                      action:'zoom_'+preInstruction.split("_")[1],
+                      action2:'',
+                      count: 0,
+                      count2: 0,
+                      limit: parseInt(preInstruction.split("_")[2]),
+                      limit2: 0,
+                      speed: "",
+                    }
+                  )
+                }
+  
+              break;
+              case 'waitFor':
+                this.camera.instructions.push(
+                  {
+                    action:'wait',
+                    action2:'',
+                    count: 0,
+                    count2: 0,
+                    limit: parseInt(preInstruction.split("_")[1]),
+                    limit2: 0,
+                    speed: "",
+                  }
+                )
+  
+              break;
+            }
+  
+            // if (this.camera.currentPreInstruction ===  this.camera.preInstructions.length-1) {
+            //   // console.log('this is the last preInstruction. Empty array');
+            //   this.camera.preInstructions = [];
+            //   this.camera.currentPreInstruction = 0;
+            //   // console.log('camera instructions',this.camera.instructions);
+            // } else {
+            //   this.camera.currentPreInstruction++;
+            // }
+  
+            // // console.log('auto camera: pre instruction parsed: ',this.camera.instructions);
 
-            break;
-          }
+          // }
 
           if (this.camera.currentPreInstruction ===  this.camera.preInstructions.length-1) {
             // console.log('this is the last preInstruction. Empty array');
@@ -36061,7 +36084,7 @@ class App extends Component {
             this.camera.currentPreInstruction++;
           }
 
-          // console.log('auto camera: pre instruction parsed: ',this.camera.instructions);
+          console.log('auto camera: pre instruction parsed: ',this.camera.instructions,this.autoCamPanWaitingForPath);
 
         
         }
