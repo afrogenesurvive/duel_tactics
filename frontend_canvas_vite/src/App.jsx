@@ -6355,15 +6355,16 @@ class App extends Component {
           if (parsedPreInstructions.length < 4) {
 
             // console.log('attack focus auto cam: 2 players in close range');
-
-
-            this.camera.preInstructions.push(
-              'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_fast',
-              // 'moveTo_'+this.players[0].currentPosition.cell.number.x+'_'+this.players[0].currentPosition.cell.number.y+'_fast',
-              // 'waitFor_50',
-            )
+            
 
             if (weaponType === 'melee') {
+
+              this.camera.preInstructions.push(
+                'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_fast',
+                // 'moveTo_'+this.players[0].currentPosition.cell.number.x+'_'+this.players[0].currentPosition.cell.number.y+'_fast',
+                // 'waitFor_50',
+              )
+
               if ((this.camera.zoom.x-1) < .50) {
                 // console.log('auto camera 2 player close melee attack focus zoom in amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
                 zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
@@ -6378,10 +6379,12 @@ class App extends Component {
                   'zoom_out_'+zoomAdjust+''
                 )
               }
+
               // console.log('atkFocus',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
             }
 
             if (weaponType === 'ranged') {
+
               if ((this.camera.zoom.x-1) < .35) {
                 // console.log('auto camera 2 player close ranged attack focus zoom in amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5));
                 zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
@@ -6415,6 +6418,7 @@ class App extends Component {
               y: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].y,
             }
 
+            
             this.camera.preInstructions.push(
               'moveTo_'+intermediateCell.x+'_'+intermediateCell.y+'_fast',
               // 'waitFor_50',
@@ -6435,6 +6439,8 @@ class App extends Component {
                 'zoom_out_'+zoomAdjust+''
               )
             }
+
+            
 
           }
 
@@ -7190,7 +7196,7 @@ class App extends Component {
 
           }
 
-          // console.log('increment ',increment,'zoom',zoom-1);
+          console.log('increment ',increment,'zoom',zoom-1);
           this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
           this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
@@ -13137,7 +13143,7 @@ class App extends Component {
             }
           )
         }
-
+        console.log('attackFocusBreak 1');
         this.setAutoCamera('attackFocusBreak',player)
 
         break;
@@ -32078,13 +32084,22 @@ class App extends Component {
 
                   player.elasticCounter.state = false;
                 }
-            }
-            let popup = player.popups.find(x=>x.msg === 'attacking')
-            if (popup) {
-              player.popups.splice(player.popups.findIndex(x=>x.msg === 'attacking'),1)
-            }
 
-            this.setAutoCamera('attackFocusBreak',player)
+                let popup = player.popups.find(x=>x.msg === 'attacking')
+                if (popup) {
+                  player.popups.splice(player.popups.findIndex(x=>x.msg === 'attacking'),1)
+                }
+
+                console.log('attackFocusBreak 2');
+                this.setAutoCamera('attackFocusBreak',player)
+            }
+            // let popup = player.popups.find(x=>x.msg === 'attacking')
+            // if (popup) {
+            //   player.popups.splice(player.popups.findIndex(x=>x.msg === 'attacking'),1)
+            // }
+
+            // console.log('attackFocusBreak 2');
+            // this.setAutoCamera('attackFocusBreak',player)
 
             // if (!player.popups.find(x=>x.msg === 'attackFeint3')) {
             //   player.popups.push(
@@ -32530,6 +32545,7 @@ class App extends Component {
               this.camera.preInstructions.length === 0 &&
               this.camera.instructions.length === 0
             ) {
+              console.log('attackFocusBreak 3');
               this.setAutoCamera('attackFocusBreak',player)
             }
 
@@ -35558,25 +35574,26 @@ class App extends Component {
 
         if (this.setInitZoom.gridWidth >= 12) {
 
-          if (this.setInitZoom.windowWidth < 1100) {
+          // if (this.setInitZoom.windowWidth < 1100) {
 
             if ((this.camera.zoom.x-1) >= -.25) {
 
-              this.camera.zoom.x -= .04 ;
-              this.camera.zoom.y -= .04 ;
+              this.camera.zoom.x -= .02 ;
+              this.camera.zoom.y -= .02 ;
               this.camera.zoomDirection = 'out';
 
               let zoom = this.camera.zoom.x;
               let diff = 1 - zoom;
 
-              this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
-              this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
+              // this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
+              // this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
 
               // TRY THESE FOR CAM SMOOTHNESS
               this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
               this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
               // this.setCameraFocus('input',canvas, context, canvas2, context2);
+              this.setZoomPan(canvas);
               this.findFocusCell('panToCell',{},canvas,context)
             }
 
@@ -35584,7 +35601,7 @@ class App extends Component {
               this.setInitZoom.state = false;
             }
 
-          }
+          // }
           if (this.setInitZoom.windowWidth > 1100) {
 
           }
@@ -35592,39 +35609,42 @@ class App extends Component {
 
         if (this.setInitZoom.gridWidth < 12) {
 
-          if (this.setInitZoom.windowWidth < 1100) {
+          // if (this.setInitZoom.windowWidth < 1100) {
 
             if ((this.camera.zoom.x-1) >= -.05) {
 
-              this.camera.zoom.x -= .04 ;
-              this.camera.zoom.y -= .04 ;
-              this.camera.zoomDirection = 'in';
+              this.camera.zoom.x -= .02 ;
+              this.camera.zoom.y -= .02 ;
+              // this.camera.zoomDirection = 'in';
+              this.camera.zoomDirection = 'out';
 
               let zoom = this.camera.zoom.x;
               let diff = 1 - zoom;
 
-              this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
-              this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
+              // this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
+              // this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
 
               // TRY THESE FOR CAM SMOOTHNESS
               this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
               this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
+              this.camera.mode = "zoom";
 
-
+              // console.log('zooming out to init',this.camera.zoom.x-1);
               // this.setCameraFocus('input',canvas, context, canvas2, context2);
+              this.setZoomPan(canvas);
               this.findFocusCell('panToCell',{},canvas,context)
-              
+
             }
 
             if ((this.camera.zoom.x-1) < -.05) {
               this.setInitZoom.state = false;
             }
 
-          }
+          // }
 
         }
-
+        // console.log('zooming out to init',this.camera.zoom.x-1);
 
     }
     //INPUT MODE SWITCH
@@ -36084,7 +36104,7 @@ class App extends Component {
             this.camera.currentPreInstruction++;
           }
 
-          console.log('auto camera: pre instruction parsed: ',this.camera.instructions,this.autoCamPanWaitingForPath);
+          console.log('auto camera: pre instruction parsed: ',this.camera.instructions);
 
         
         }
@@ -36145,11 +36165,14 @@ class App extends Component {
                           break;
                           case 'outToInit':
                             // this.setInitZoom.state = true;
-                            this.setInitZoom = {
-                              state: true,
-                              windowWidth: window.innerWidth,
-                              gridWidth: this.gridWidth,
+                            if (this.setInitZoom.state !== true) {
+                              this.setInitZoom = {
+                                state: true,
+                                windowWidth: window.innerWidth,
+                                gridWidth: this.gridWidth,
+                              }  
                             }
+                            
                           break;
                         }
   
@@ -36338,10 +36361,12 @@ class App extends Component {
                         break;
                         case 'outToInit':
                           // this.setInitZoom.state = true;
-                          this.setInitZoom = {
-                            state: true,
-                            windowWidth: window.innerWidth,
-                            gridWidth: this.gridWidth,
+                          if (this.setInitZoom.state !== true) {
+                            this.setInitZoom = {
+                              state: true,
+                              windowWidth: window.innerWidth,
+                              gridWidth: this.gridWidth,
+                            } 
                           }
                         break;
                       }
@@ -36532,7 +36557,7 @@ class App extends Component {
 
           // FINISHED CAMERA INSTRUCTIONS
           if (this.camera.currentInstruction >= this.camera.instructions.length) {
-            // console.log('finished camera instructions');
+            console.log('finished camera instructions');
             this.camera.instructions = [];
             this.camera.currentInstruction = 0;
             this.settingAutoCamera = false;
