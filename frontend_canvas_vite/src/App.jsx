@@ -7076,11 +7076,52 @@ class App extends Component {
       // this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
       // this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
 
-      this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
-      this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+      if (this.camera.zoomDirection === "in") {
 
-      // this.camera.limits.pan.x.max = 400;
-      // this.camera.limits.pan.x.min = -400;
+        this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+        this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+
+      }
+      
+
+      if (this.camera.zoomDirection === "out") {
+
+
+        // ADJUST PAN INCREMENT FOR ZOOM OUT CENTERING
+
+        let increment = 70;
+        
+        if (this.camera.pan.x > -1) {
+          this.camera.pan.x -= increment;
+          this.camera.adjustedPan.x -= (20*(this.camera.zoom.x-1));
+          this.camera.panDirection = 'east';
+
+        }
+        if (this.camera.pan.x < -1) {
+          this.camera.pan.x += increment;
+          this.camera.adjustedPan.x += (20*(this.camera.zoom.x-1));
+          this.camera.panDirection = 'west';
+
+        }
+
+        if (this.camera.pan.y < -1) {
+          this.camera.pan.y += 45;
+          this.camera.adjustedPan.y += (1.5*(this.camera.zoom.x-1));
+          this.camera.panDirection = 'north';
+
+        }
+        if (this.camera.pan.y > -1) {
+          this.camera.pan.y -= 45;
+          this.camera.adjustedPan.y -= (1.5*(this.camera.zoom.x-1));
+          this.camera.panDirection = 'south';
+
+        }
+
+        console.log('increment2 ',increment,'zoom',zoom-1);
+        this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+        this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+
+      }
 
     }
 
@@ -7114,89 +7155,79 @@ class App extends Component {
 
           // ADJUST PAN INCREMENT FOR ZOOM OUT CENTERING
 
-          let increment = 10;
+          let xIncrement = 10;
+          let yIncrement = 3.5;
           // if ((zoom-1) >= zoomThresh) {
           if ((zoom-1) >= .5) {
-            // console.log('beep');
-            // if ((zoom-1) >= 1) {
-            //   increment = 5;
-            // }
-            // else {
-            //   increment = 10;
-            // }
-            increment = 5;
+            xIncrement = 5;
           }
           if ((zoom-1) < .5 && (zoom-1) >= .25) {
             if ((zoom-1) >= .36) {
-              increment = 10;
+              xIncrement = 10;
             } else {
-              increment = 15;
+              xIncrement = 15;
             }
             
           }
           if ((zoom-1) < .25 && (zoom-1) >= .15) {
             // increment = 20;
             if (this.gridWidth >= 12) {
-              increment = 15;
+              xIncrement = 15;
             }
             else {
-              increment = 20;
+              xIncrement = 20;
             }
           }
           if ((zoom-1) < .15 && (zoom-1) >= .05) {
             // increment = 30;
             if (this.gridWidth >= 12) {
               // increment = 20;
-              increment = 15;
+              xIncrement = 15;
             }
             else {
-              increment = 30;
+              xIncrement = 30;
             }
           }
           if ((zoom-1) < .05) {
             // increment = 90;
             if (this.gridWidth >= 12) {
-              increment = 10;
+              xIncrement = 40;
+              yIncrement = 40;
             }
             else {
-              increment = 90;
+              xIncrement = 90;
             }
           }
-          // if ((zoom-1) <= 0) {
-          // if ((zoom-1) <= .02) {
-          //   console.log('booop');
-          //   increment = 10;
-          // }
           
           // increment = 10;
           // try increment based on zoom, increment should go up as you zoom out
           if (this.camera.pan.x > -1) {
-            this.camera.pan.x -= increment;
+            this.camera.pan.x -= xIncrement;
             this.camera.adjustedPan.x -= (20*(this.camera.zoom.x-1));
             this.camera.panDirection = 'east';
 
           }
           if (this.camera.pan.x < -1) {
-            this.camera.pan.x += increment;
+            this.camera.pan.x += xIncrement;
             this.camera.adjustedPan.x += (20*(this.camera.zoom.x-1));
             this.camera.panDirection = 'west';
 
           }
 
           if (this.camera.pan.y < -1) {
-            this.camera.pan.y += 3.5;
+            this.camera.pan.y += yIncrement;
             this.camera.adjustedPan.y += (1.5*(this.camera.zoom.x-1));
             this.camera.panDirection = 'north';
 
           }
           if (this.camera.pan.y > -1) {
-            this.camera.pan.y -= 3.5;
+            this.camera.pan.y -= yIncrement;
             this.camera.adjustedPan.y -= (1.5*(this.camera.zoom.x-1));
             this.camera.panDirection = 'south';
 
           }
 
-          console.log('increment ',increment,'zoom',zoom-1);
+          console.log('increment ',xIncrement,'zoom',zoom-1);
           this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
           this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
@@ -7287,56 +7318,7 @@ class App extends Component {
 
 
     }
-
-    // SET PAN LIMITS BASED ON ZOOM
-    // // if camera mode is pan
-    // // (this.camera.zoom.x-1) > -.05)
-    // console.log('beep',zoom-1);
-    // let zoomMod;
-    // if ((zoom-1) > 0) {
-    //   zoomMod = (zoom-1);
-    //   // zoomMod = (zoom-1)*10
-    // }
-    // // else if ((zoom-1) < -.05) {
-    // else {
-    //   zoomMod = .01;
-    //   // zoomMod = 1;
-    // }
-    // let baseLimit;
-    // let panAmount;
-    // switch (this.camera.panDirection) {
-    //   case 'north':
-    //     baseLimit = 200;
-    //     panAmount = this.camera.pan.y;
-    //     this.camera.limits.pan.y.max = baseLimit + (zoomMod * panAmount);
-    //     console.log('1',baseLimit,panAmount,zoomMod);
-    //   break;
-    //   case 'south':
-    //     baseLimit = -200;
-    //     panAmount = this.camera.pan.y;
-    //     this.camera.limits.pan.y.min = baseLimit + (zoomMod * panAmount);
-    //     console.log('2',baseLimit,panAmount,zoomMod);
-    //   break;
-    //   case 'east':
-    //     baseLimit = -400;
-    //     panAmount = this.camera.pan.x;
-    //     this.camera.limits.pan.x.min = baseLimit + (zoomMod * panAmount);
-    //     console.log('3',baseLimit,panAmount,zoomMod);
-    //   break;
-    //   case 'west':
-    //     baseLimit = 400;
-    //     panAmount = this.camera.pan.x;
-    //     this.camera.limits.pan.x.max = baseLimit + (zoomMod * panAmount);
-    //     console.log('4',baseLimit,panAmount,zoomMod);
-    //   break;
-    //   default:
-    //     break;
-    // }
-    // console.log('baseLimit',baseLimit);
-    // console.log('panAmount',panAmount);
-    // console.log('x: min ',this.camera.limits.pan.x.min,' max ',this.camera.limits.pan.x.max);
-    // console.log('y: min ',this.camera.limits.pan.y.min,' max ',this.camera.limits.pan.y.max);
-
+    
     
     const x = this.canvasWidth/2;
     const y = this.canvasHeight/2;
@@ -35576,7 +35558,8 @@ class App extends Component {
 
           // if (this.setInitZoom.windowWidth < 1100) {
 
-            if ((this.camera.zoom.x-1) >= -.25) {
+            // if ((this.camera.zoom.x-1) >= -.25) {
+            if ((this.camera.zoom.x-1) >= 0) {
 
               this.camera.zoom.x -= .02 ;
               this.camera.zoom.y -= .02 ;
@@ -35593,11 +35576,13 @@ class App extends Component {
               this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
               // this.setCameraFocus('input',canvas, context, canvas2, context2);
+              console.log('zooming out to init',this.camera.zoom.x-1);
               this.setZoomPan(canvas);
               this.findFocusCell('panToCell',{},canvas,context)
             }
 
-            if ((this.camera.zoom.x-1) < -.25) {
+            // if ((this.camera.zoom.x-1) < -.25) {
+            if ((this.camera.zoom.x-1) < 0) {
               this.setInitZoom.state = false;
             }
 
