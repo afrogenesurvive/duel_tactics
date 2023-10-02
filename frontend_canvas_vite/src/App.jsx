@@ -6493,184 +6493,191 @@ class App extends Component {
 
 
 
-        if (this.playerNumber === 2) {
+        // if (this.playerNumber === 2) {
 
-          let originCell = {
-            x: this.players[0].currentPosition.cell.number.x,
-            y: this.players[0].currentPosition.cell.number.y,
-          };
-          let destCell = {
-            x: this.players[1].currentPosition.cell.number.x,
-            y: this.players[1].currentPosition.cell.number.y,
-          };
+        //   let originCell = {
+        //     x: this.players[0].currentPosition.cell.number.x,
+        //     y: this.players[0].currentPosition.cell.number.y,
+        //   };
+        //   let destCell = {
+        //     x: this.players[1].currentPosition.cell.number.x,
+        //     y: this.players[1].currentPosition.cell.number.y,
+        //   };
 
-          let x1 = originCell.x;
-          let y1 = originCell.y;
-          let x2 = destCell.x;
-          let y2 = destCell.y;
-          let xSteps = 0;
-          let ySteps = 0;
-          let xDirection = "";
-          let yDirection = "";
-          let preInstructions = [];
+        //   let x1 = originCell.x;
+        //   let y1 = originCell.y;
+        //   let x2 = destCell.x;
+        //   let y2 = destCell.y;
+        //   let xSteps = 0;
+        //   let ySteps = 0;
+        //   let xDirection = "";
+        //   let yDirection = "";
+        //   let preInstructions = [];
 
-          if (x1 > x2) {
-            xDirection = "west";
-            xSteps = x1-x2;
-          }
-          if (x2 > x1) {
-            xDirection = "east";
-            xSteps = x2-x1;
-          }
-          if (y1 > y2) {
-            yDirection = "north";
-            ySteps = y1-y2;
-          }
-          if (y2 > y1) {
-            yDirection = "south";
-            ySteps = y2-y1;
-          }
+        //   if (x1 > x2) {
+        //     xDirection = "west";
+        //     xSteps = x1-x2;
+        //   }
+        //   if (x2 > x1) {
+        //     xDirection = "east";
+        //     xSteps = x2-x1;
+        //   }
+        //   if (y1 > y2) {
+        //     yDirection = "north";
+        //     ySteps = y1-y2;
+        //   }
+        //   if (y2 > y1) {
+        //     yDirection = "south";
+        //     ySteps = y2-y1;
+        //   }
 
-          for (var i = 0; i < xSteps; i++) {
-            preInstructions.push(
-              xDirection
-            )
-          }
-          for (var j = 0; j < ySteps; j++) {
-            preInstructions.push(
-              yDirection
-            )
-          }
+        //   for (var i = 0; i < xSteps; i++) {
+        //     preInstructions.push(
+        //       xDirection
+        //     )
+        //   }
+        //   for (var j = 0; j < ySteps; j++) {
+        //     preInstructions.push(
+        //       yDirection
+        //     )
+        //   }
 
-          let parsedPreInstructions = []
-          let currentCell = {
-            x: originCell.x,
-            y: originCell.y,
-          }
+        //   let parsedPreInstructions = []
+        //   let currentCell = {
+        //     x: originCell.x,
+        //     y: originCell.y,
+        //   }
 
-          parsedPreInstructions.push(originCell)
+        //   parsedPreInstructions.push(originCell)
 
-          for (const instruction of preInstructions) {
+        //   for (const instruction of preInstructions) {
 
-            switch (instruction) {
-              case 'north':
-                currentCell.y -= 1;
-                parsedPreInstructions.push({
-                  x: currentCell.x,
-                  y: currentCell.y,
-                })
-              break;
-              case 'south':
-                currentCell.y += 1;
-                parsedPreInstructions.push({
-                  x: currentCell.x,
-                  y: currentCell.y,
-                })
-              break;
-              case 'west':
-                currentCell.x -= 1;
-                parsedPreInstructions.push({
-                  x: currentCell.x,
-                  y: currentCell.y,
-                })
-              break;
-              case 'east':
-                currentCell.x += 1;
-                parsedPreInstructions.push({
-                  x: currentCell.x,
-                  y: currentCell.y,
-                })
-              break;
-            }
+        //     switch (instruction) {
+        //       case 'north':
+        //         currentCell.y -= 1;
+        //         parsedPreInstructions.push({
+        //           x: currentCell.x,
+        //           y: currentCell.y,
+        //         })
+        //       break;
+        //       case 'south':
+        //         currentCell.y += 1;
+        //         parsedPreInstructions.push({
+        //           x: currentCell.x,
+        //           y: currentCell.y,
+        //         })
+        //       break;
+        //       case 'west':
+        //         currentCell.x -= 1;
+        //         parsedPreInstructions.push({
+        //           x: currentCell.x,
+        //           y: currentCell.y,
+        //         })
+        //       break;
+        //       case 'east':
+        //         currentCell.x += 1;
+        //         parsedPreInstructions.push({
+        //           x: currentCell.x,
+        //           y: currentCell.y,
+        //         })
+        //       break;
+        //     }
 
-              // console.log(''+preInstructions.indexOf(instruction)+'',parsedPreInstructions);
+        //       // console.log(''+preInstructions.indexOf(instruction)+'',parsedPreInstructions);
 
-          }
+        //   }
 
-          if (parsedPreInstructions.length < 4) {
+        //   if (parsedPreInstructions.length < 4) {
 
-            // console.log('plyr spawn focus auto cam: 2 players in close range');
+        //     // console.log('plyr spawn focus auto cam: 2 players in close range');
 
-            this.camera.preInstructions.push(
-              'moveTo_'+this.players[0].currentPosition.cell.number.x+'_'+this.players[0].currentPosition.cell.number.y+'_fast',
-              // 'moveTo_'+this.players[0].currentPosition.cell.number.x+'_'+this.players[0].currentPosition.cell.number.y+'_fast',
-              // 'waitFor_50',
-            )
+        //     this.camera.preInstructions.push(
+        //       'moveTo_'+this.players[0].currentPosition.cell.number.x+'_'+this.players[0].currentPosition.cell.number.y+'_fast',
+        //       // 'moveTo_'+this.players[0].currentPosition.cell.number.x+'_'+this.players[0].currentPosition.cell.number.y+'_fast',
+        //       // 'waitFor_50',
+        //     )
 
-            // if ((this.camera.zoom.x-1) < .50) {
-            //   console.log('auto camera 2 player close melee attack focus zoom in amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5),'current zoom',1-this.camera.zoom.x);
-            //   zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
-            //   this.camera.preInstructions.push(
-            //     'zoom_in_'+zoomAdjust+''
-            //   )
-            // }
-            // if ((this.camera.zoom.x-1) > .50) {
-            //   console.log('auto camera 2 player close melee attack focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5),'current zoom',1-this.camera.zoom.x);
-            //   zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
-            //   this.camera.preInstructions.push(
-            //     'zoom_out_'+zoomAdjust+''
-            //   )
-            // }
+        //     // if ((this.camera.zoom.x-1) < .50) {
+        //     //   console.log('auto camera 2 player close melee attack focus zoom in amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5),'current zoom',1-this.camera.zoom.x);
+        //     //   zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
+        //     //   this.camera.preInstructions.push(
+        //     //     'zoom_in_'+zoomAdjust+''
+        //     //   )
+        //     // }
+        //     // if ((this.camera.zoom.x-1) > .50) {
+        //     //   console.log('auto camera 2 player close melee attack focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5),'current zoom',1-this.camera.zoom.x);
+        //     //   zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
+        //     //   this.camera.preInstructions.push(
+        //     //     'zoom_out_'+zoomAdjust+''
+        //     //   )
+        //     // }
 
-            // zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
-            zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
-            this.camera.preInstructions.push(
-              'zoom_out_'+zoomAdjust+''
-              // 'zoom_outToInit'
-            )
-            console.log('zoomAdjust',zoomAdjust);
+        //     // zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
+        //     zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
+        //     this.camera.preInstructions.push(
+        //       'zoom_out_'+zoomAdjust+''
+        //       // 'zoom_outToInit'
+        //     )
+        //     console.log('zoomAdjust',zoomAdjust);
 
-          }
-          else {
+        //   }
+        //   else {
 
-            // console.log('plyr spawn focus auto cam: 2 players at a distance','zoomadjust',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5));
+        //     // console.log('plyr spawn focus auto cam: 2 players at a distance','zoomadjust',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5));
 
-            // console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
+        //     // console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
 
-            let intermediateCell = {
-              x: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].x,
-              y: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].y,
-            }
+        //     let intermediateCell = {
+        //       x: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].x,
+        //       y: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].y,
+        //     }
 
-            this.camera.preInstructions.push(
-              'moveTo_'+intermediateCell.x+'_'+intermediateCell.y+'_fast',
-              // 'waitFor_50',
-            )
+        //     this.camera.preInstructions.push(
+        //       'moveTo_'+intermediateCell.x+'_'+intermediateCell.y+'_fast',
+        //       // 'waitFor_50',
+        //     )
 
 
-            // if ((this.camera.zoom.x-1) < .35) {
-            //   console.log('auto cam 2 player attack focus distance zoom in amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5),'current zoom',1-this.camera.zoom.x);
-            //   zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
-            //   this.camera.preInstructions.push(
-            //     'zoom_in_'+zoomAdjust+''
-            //   )
-            // }
-            // if ((this.camera.zoom.x-1) > .35) {
-            //   console.log('auto cam 2 player attack focus distance zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5),'current zoom',1-this.camera.zoom.x);
-            //   zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
-            //   this.camera.preInstructions.push(
-            //     'zoom_out_'+zoomAdjust+''
-            //   )
-            // }
+        //     // if ((this.camera.zoom.x-1) < .35) {
+        //     //   console.log('auto cam 2 player attack focus distance zoom in amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5),'current zoom',1-this.camera.zoom.x);
+        //     //   zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
+        //     //   this.camera.preInstructions.push(
+        //     //     'zoom_in_'+zoomAdjust+''
+        //     //   )
+        //     // }
+        //     // if ((this.camera.zoom.x-1) > .35) {
+        //     //   console.log('auto cam 2 player attack focus distance zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5),'current zoom',1-this.camera.zoom.x);
+        //     //   zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
+        //     //   this.camera.preInstructions.push(
+        //     //     'zoom_out_'+zoomAdjust+''
+        //     //   )
+        //     // }
 
-            // zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
-            zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
-            this.camera.preInstructions.push(
-              'zoom_out_'+(zoomAdjust+0)+''
-              // 'zoom_outToInit'
-            )
-            console.log('zoomAdjust2',zoomAdjust);
+        //     // zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
+        //     zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
+        //     this.camera.preInstructions.push(
+        //       'zoom_out_'+(zoomAdjust+0)+''
+        //       // 'zoom_outToInit'
+        //     )
+        //     console.log('zoomAdjust2',zoomAdjust);
 
-          }
+        //   }
 
-        }
-        else {
-          zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5)
+        // }
+        // else {
+        //   // zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5)
+        //   // this.camera.preInstructions.push(
+        //   //   'zoom_out_'+zoomAdjust+''
+        //   //   // 'zoom_outToInit'
+        //   // )
+        // }
+
+        zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5)
           this.camera.preInstructions.push(
-            'zoom_out_'+zoomAdjust+''
-            // 'zoom_outToInit'
+            // attackFocusBreakZoomCorrection
+            // 'zoom_out_'+zoomAdjust+''
+            'zoom_outToInit'
           )
-        }
         // console.log('player spawn focus preInstructions',this.camera.preInstructions);
 
       break;
@@ -7117,7 +7124,7 @@ class App extends Component {
 
         }
 
-        console.log('increment2 ',increment,'zoom',zoom-1);
+        // console.log('increment2 ',increment,'zoom',zoom-1);
         this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
         this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
@@ -7227,7 +7234,7 @@ class App extends Component {
 
           }
 
-          console.log('increment ',xIncrement,'zoom',zoom-1);
+          // console.log('increment ',xIncrement,'zoom',zoom-1);
           this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
           this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
@@ -7318,7 +7325,7 @@ class App extends Component {
 
 
     }
-    
+
     
     const x = this.canvasWidth/2;
     const y = this.canvasHeight/2;
@@ -13125,7 +13132,6 @@ class App extends Component {
             }
           )
         }
-        console.log('attackFocusBreak 1');
         this.setAutoCamera('attackFocusBreak',player)
 
         break;
@@ -32072,7 +32078,6 @@ class App extends Component {
                   player.popups.splice(player.popups.findIndex(x=>x.msg === 'attacking'),1)
                 }
 
-                console.log('attackFocusBreak 2');
                 this.setAutoCamera('attackFocusBreak',player)
             }
             // let popup = player.popups.find(x=>x.msg === 'attacking')
@@ -32527,7 +32532,6 @@ class App extends Component {
               this.camera.preInstructions.length === 0 &&
               this.camera.instructions.length === 0
             ) {
-              console.log('attackFocusBreak 3');
               this.setAutoCamera('attackFocusBreak',player)
             }
 
@@ -35575,8 +35579,9 @@ class App extends Component {
               this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
               this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
+              this.camera.mode = "zoom";
               // this.setCameraFocus('input',canvas, context, canvas2, context2);
-              console.log('zooming out to init',this.camera.zoom.x-1);
+              // console.log('zooming out to init',this.camera.zoom.x-1);
               this.setZoomPan(canvas);
               this.findFocusCell('panToCell',{},canvas,context)
             }
@@ -36006,7 +36011,7 @@ class App extends Component {
             x: undefined,
             y: undefined,
           }
-          console.log('Step through pre instructions...','preInstructions',preInstruction);
+          // console.log('Step through pre instructions...','preInstructions',preInstruction);
 
           // if (preInstruction) {
            
