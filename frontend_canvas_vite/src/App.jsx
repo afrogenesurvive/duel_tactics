@@ -6180,7 +6180,14 @@ class App extends Component {
     else {
       zoomThresh = -.05;
     }
-    
+    let prePanZoom = false;
+    let prePanZoomAmount = 0;
+    if (zoom-1 < zoomThresh) {
+      
+      prePanZoomAmount = ((zoomThresh-(zoom-1))/.02).toFixed(0); 
+      prePanZoomAmount++;
+      prePanZoom = true;
+    }
 
 
     let zoomAdjust = 0;
@@ -6229,17 +6236,6 @@ class App extends Component {
 
       break;
       case 'attackFocus':
-        
-        let prePanZoom = false;
-        let prePanZoomAmount = 0;
-        if (zoom-1 < zoomThresh) {
-          
-          prePanZoomAmount = ((zoomThresh-(zoom-1))/.02).toFixed(0); 
-          prePanZoomAmount++;
-          prePanZoom = true;
-        }
-          
-        
 
         if (this.playerNumber === 1) {
 
@@ -6490,7 +6486,7 @@ class App extends Component {
         if ((this.camera.zoom.x-1) > -.05) {
 
           if (reset === true && attackFocusBreakZoomCorrection !== '') {
-            console.log('gg',attackFocusBreakZoomCorrection);
+            
             this.camera.preInstructions.push(attackFocusBreakZoomCorrection)
           }
 
@@ -6501,7 +6497,7 @@ class App extends Component {
             )
           }
         }
-
+        console.log('beeep',this.camera.preInstructions);
       break;
       case 'playerSpawnFocus':
 
@@ -6509,6 +6505,8 @@ class App extends Component {
           'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_fast',
           // 'waitFor_50',
         )
+
+
 
         if ((this.camera.zoom.x-1) < .50) {
           // console.log('auto camera 1 player spawn focus zoom in amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
@@ -6717,7 +6715,7 @@ class App extends Component {
             'zoom_outToInit'
           )
         // console.log('player spawn focus preInstructions',this.camera.preInstructions);
-
+        console.log('booop',this.camera.preInstructions);
       break;
       case 'aiSpawnFocus':
 
@@ -6961,7 +6959,7 @@ class App extends Component {
 
     }
 
-    console.log('AutoCameraSet',args,this.camera.preInstructions,this.camera.currentPreInstruction,this.camera.zoom.x-1);
+    // console.log('AutoCameraSet',args,this.camera.preInstructions,this.camera.currentPreInstruction,this.camera.zoom.x-1);
 
   }
   setCameraFocus = (focusType, canvas, context, canvas2, context2) => {
@@ -36132,7 +36130,7 @@ class App extends Component {
             this.camera.currentPreInstruction++;
           }
 
-          console.log('auto camera: pre instruction parsed: ',this.camera.instructions);
+          // console.log('auto camera: pre instruction parsed: ',this.camera.instructions);
 
         
         }
@@ -36585,7 +36583,7 @@ class App extends Component {
 
           // FINISHED CAMERA INSTRUCTIONS
           if (this.camera.currentInstruction >= this.camera.instructions.length) {
-            console.log('finished camera instructions');
+            // console.log('finished camera instructions');
             this.camera.instructions = [];
             this.camera.currentInstruction = 0;
             this.settingAutoCamera = false;
