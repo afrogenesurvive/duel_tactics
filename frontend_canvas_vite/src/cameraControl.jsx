@@ -9,7 +9,7 @@ import {
   faTimesCircle,
   faVideo,
   faSearchPlus,
-  faExpandAlt,
+  faArrows,
   faUndo,
   faExclamationTriangle,
 } from '@fortawesome/free-solid-svg-icons';
@@ -71,7 +71,7 @@ const CameraControl = (props) => {
           }
         >
           <a href="javascript:" className="" onClick={props.toggleMode.bind(this, 'pan')}>
-            <FontAwesomeIcon icon={faExpandAlt} size="sm" className="cameraUIIcon"/>: {props.camera.pan.x},{props.camera.pan.y}
+            <FontAwesomeIcon icon={faArrows} size="sm" className="cameraUIIcon"/>: {props.camera.pan.x},{props.camera.pan.y}
             {props.camera.limits.state.pan === true && (
               <FontAwesomeIcon icon={faExclamationTriangle} size="sm" className="cameraUIIconAlert"/>
             )}
@@ -113,7 +113,7 @@ const CameraControl = (props) => {
           }
         >
           <a href="javascript:" className=" cameraModeHighlighted" onClick={props.toggleMode.bind(this, 'pan')}>
-            <FontAwesomeIcon icon={faExpandAlt} size="sm" className="cameraUIIcon"/>: {props.camera.panDirection}, {props.camera.pan.x},{props.camera.pan.y}
+            <FontAwesomeIcon icon={faArrows} size="sm" className="cameraUIIcon"/>: {props.camera.panDirection}, {props.camera.pan.x},{props.camera.pan.y}
             {props.camera.limits.state.pan === true && (
               <FontAwesomeIcon icon={faExclamationTriangle} size="sm" className="cameraUIIconAlert"/>
             )}

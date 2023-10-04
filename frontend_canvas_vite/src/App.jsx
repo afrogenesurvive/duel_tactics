@@ -6485,19 +6485,21 @@ class App extends Component {
         this.autoCamPanWaitingForPath = false;
         if ((this.camera.zoom.x-1) > -.05) {
 
-          if (reset === true && attackFocusBreakZoomCorrection !== '') {
+          // if (reset === true && attackFocusBreakZoomCorrection !== '') {
             
-            this.camera.preInstructions.push(attackFocusBreakZoomCorrection)
-          }
+          //   this.camera.preInstructions.push(attackFocusBreakZoomCorrection)
+          // }
 
-          else {
-            let zoomDifference = 0;
-            this.camera.preInstructions.push(
-              'zoom_outToInit'
-            )
-          }
+          // else {
+          //   let zoomDifference = 0;
+          //   this.camera.preInstructions.push(
+          //     'zoom_outToInit'
+          //   )
+          // }
+          this.camera.preInstructions.push(
+            'zoom_outToInit'
+          )
         }
-        console.log('beeep',this.camera.preInstructions);
       break;
       case 'playerSpawnFocus':
 
@@ -6715,7 +6717,6 @@ class App extends Component {
             'zoom_outToInit'
           )
         // console.log('player spawn focus preInstructions',this.camera.preInstructions);
-        console.log('booop',this.camera.preInstructions);
       break;
       case 'aiSpawnFocus':
 
@@ -7094,7 +7095,7 @@ class App extends Component {
 
     // if (parseFloat(zoom.toFixed(2)) === zoomThresh) {
     if (zoom-1 === zoomThresh) {
-      // console.log('at zoomThresh');
+      console.log('at zoomThresh');
       this.camera.pan.x = -1;
       this.camera.pan.y = -1;
       
@@ -7114,12 +7115,12 @@ class App extends Component {
 
     // ZOOMING IN & OUT ABOVE THRESHOLD
     if (zoom-1 < zoomThresh) {
-      // console.log('above zoomThresh');
+      console.log('above zoomThresh');
 
       // this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
       // this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
 
-      if (this.camera.zoomDirection === "in") {
+      if (this.camera.mode === "zoom" && this.camera.zoomDirection === "in") {
 
         this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
         this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
@@ -7127,12 +7128,17 @@ class App extends Component {
       }
       
 
-      if (this.camera.zoomDirection === "out") {
+      if (this.camera.mode === "zoom" && this.camera.zoomDirection === "out") {
+
+
+        // how many pan steps (x & y) between current & centre
+        // incrementx = panx steps / 
+        // incrementy = pany steps / 
 
 
         // ADJUST PAN INCREMENT FOR ZOOM OUT CENTERING
 
-        let increment = 70;
+        let increment = 0;
         
         if (this.camera.pan.x > -1) {
           this.camera.pan.x -= increment;
@@ -7160,7 +7166,7 @@ class App extends Component {
 
         }
 
-        // console.log('increment2 ',increment,'zoom',zoom-1);
+        console.log('increment2 ',increment,'zoom',zoom-1,'pan x,y',this.camera.pan.x,this.camera.pan.y);
         this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
         this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
@@ -7171,7 +7177,7 @@ class App extends Component {
 
     // ZOOMING BELOW THRESHOLD
     if (zoom-1 > zoomThresh) {
-      // console.log('below zoomThresh');
+      console.log('below zoomThresh');
       diff = zoom - 1;
       let diffx;
       let diffy;
@@ -7195,6 +7201,12 @@ class App extends Component {
         // WHEN ZOOMING OUT INSIDE THRESHOLD, TEND TOWARDS A CENTER ALIGNMENT
         if (this.camera.zoomDirection === "out") {
 
+
+            // the distance between zoomthresh or 0 zoom
+            //   /.02 = zoom steps
+            // how many pan steps (x & y) between current & centre
+            // incrementx = panx steps / zoom steps
+            // incrementy = pany steps / zoom steps
 
           // ADJUST PAN INCREMENT FOR ZOOM OUT CENTERING
 
@@ -7270,7 +7282,7 @@ class App extends Component {
 
           }
 
-          // console.log('increment ',xIncrement,'zoom',zoom-1);
+          console.log('increment x,y',xIncrement,yIncrement,'zoom',zoom-1,'pan x,y',this.camera.pan.x,this.camera.pan.y);
           this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
           this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
@@ -35638,6 +35650,7 @@ class App extends Component {
           // if (this.setInitZoom.windowWidth < 1100) {
 
             if ((this.camera.zoom.x-1) >= -.05) {
+            // if ((this.camera.zoom.x-1) > 0) {
 
               this.camera.zoom.x -= .02 ;
               this.camera.zoom.y -= .02 ;
@@ -35664,6 +35677,7 @@ class App extends Component {
             }
 
             if ((this.camera.zoom.x-1) < -.05) {
+            // if ((this.camera.zoom.x-1) < 0) {
               this.setInitZoom.state = false;
             }
 
