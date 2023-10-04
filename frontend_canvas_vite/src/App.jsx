@@ -6171,6 +6171,15 @@ class App extends Component {
         reset = true;
       }
     }
+
+    let zoom = this.camera.zoom.x;
+    let zoomThresh = 0;
+    if (this.gridWidth >= 12) {
+      zoomThresh = -.25;
+    }
+    else {
+      zoomThresh = -.05;
+    }
     
 
 
@@ -6220,9 +6229,25 @@ class App extends Component {
 
       break;
       case 'attackFocus':
-
+        
+        let prePanZoom = false;
+        let prePanZoomAmount = 0;
+        if (zoom-1 < zoomThresh) {
+          
+          prePanZoomAmount = ((zoomThresh-(zoom-1))/.02).toFixed(0); 
+          prePanZoomAmount++;
+          prePanZoom = true;
+        }
+          
+        
 
         if (this.playerNumber === 1) {
+
+          if (prePanZoom === true) {
+            this.camera.preInstructions.push(
+              'zoom_in_'+prePanZoomAmount+''
+            )
+          }
 
           this.camera.preInstructions.push(
             'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_fast',
@@ -6355,6 +6380,12 @@ class App extends Component {
           if (parsedPreInstructions.length < 4) {
 
             // console.log('attack focus auto cam: 2 players in close range');
+
+            if (prePanZoom === true) {
+              this.camera.preInstructions.push(
+                'zoom_in_'+prePanZoomAmount+''
+              )
+            }
             
 
             if (weaponType === 'melee') {
@@ -6416,6 +6447,13 @@ class App extends Component {
             let intermediateCell = {
               x: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].x,
               y: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].y,
+            }
+
+
+            if (prePanZoom === true) {
+              this.camera.preInstructions.push(
+                'zoom_in_'+prePanZoomAmount+''
+              )
             }
 
             
