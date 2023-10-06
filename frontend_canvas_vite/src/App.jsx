@@ -6196,42 +6196,42 @@ class App extends Component {
         this.camera.preInstructions.push(
           'zoom_in_'+10+'',
           // 'waitFor_50',
-          'moveTo_'+0+'_'+0+'_slow',
-          'waitFor_40',
-          'moveTo_'+9+'_'+0+'_fast',
-          'waitFor_40',
-          'moveTo_'+9+'_'+9+'_fast',
-          'waitFor_40',
-          'moveTo_'+0+'_'+9+'_fast',
-          'waitFor_40',
-          'moveTo_'+1+'_'+8+'_fast',
-          'waitFor_40',
-          'moveTo_'+1+'_'+1+'_fast',
-          'waitFor_40',
-          'moveTo_'+8+'_'+1+'_slow',
-          'waitFor_40',
-          'moveTo_'+8+'_'+8+'_slow',
-          'waitFor_40',
-          'moveTo_'+1+'_'+8+'_slow',
-          'waitFor_40',
-          'moveTo_'+2+'_'+7+'_slow',
-          'waitFor_40',
-          'moveTo_'+2+'_'+2+'_fast',
-          'waitFor_40',
-          'moveTo_'+7+'_'+2+'_fast',
-          'waitFor_40',
-          'moveTo_'+7+'_'+7+'_fast',
-          'zoom_in_'+25+'',
-          'waitFor_40',
+          // 'moveTo_'+0+'_'+0+'_slow',
+          // 'waitFor_40',
+          // 'moveTo_'+9+'_'+0+'_fast',
+          // 'waitFor_40',
+          // 'moveTo_'+9+'_'+9+'_fast',
+          // 'waitFor_40',
+          // 'moveTo_'+0+'_'+9+'_fast',
+          // 'waitFor_40',
+          // 'moveTo_'+1+'_'+8+'_fast',
+          // 'waitFor_40',
+          // 'moveTo_'+1+'_'+1+'_fast',
+          // 'waitFor_40',
+          'moveTo_'+8+'_'+1+'_fast',
+          // 'waitFor_40',
+          // 'moveTo_'+8+'_'+8+'_slow',
+          // 'waitFor_40',
+          // 'moveTo_'+1+'_'+8+'_slow',
+          // 'waitFor_40',
+          // 'moveTo_'+2+'_'+7+'_slow',
+          // 'waitFor_40',
+          // 'moveTo_'+2+'_'+2+'_fast',
+          // 'waitFor_40',
+          // 'moveTo_'+7+'_'+2+'_fast',
+          // 'waitFor_40',
+          // 'moveTo_'+7+'_'+7+'_fast',
+          // 'zoom_in_'+25+'',
+          // 'waitFor_40',
           // 'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_slow',
-          'waitFor_40',
-          'moveTo_'+8+'_'+7+'_slow',
-          'waitFor_40',
-          'moveTo_'+4+'_'+7+'_slow',
+          // 'waitFor_40',
+          // 'moveTo_'+8+'_'+7+'_slow',
+          // 'waitFor_40',
+          // 'moveTo_'+4+'_'+7+'_slow',
           // 'waitFor_40',
           // 'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_slow',
           // 'zoom_out_'+50+'',
-          // 'zoom_outToInit',
+          'zoom_outToInit',
         )
 
       break;
@@ -7091,6 +7091,7 @@ class App extends Component {
     }
     else {
       zoomThresh = -.05;
+      // zoomThresh = 0;
     }
 
     // if (parseFloat(zoom.toFixed(2)) === zoomThresh) {
@@ -7120,57 +7121,60 @@ class App extends Component {
       // this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
       // this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
 
-      if (this.camera.mode === "zoom" && this.camera.zoomDirection === "in") {
+      // if (this.camera.mode === "zoom" && this.camera.zoomDirection === "in") {
 
-        this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
-        this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+      //   this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+      //   this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
-      }
+      // }
       
 
-      if (this.camera.mode === "zoom" && this.camera.zoomDirection === "out") {
+      // if (this.camera.mode === "zoom" && this.camera.zoomDirection === "out") {
 
 
-        // how many pan steps (x & y) between current & centre
-        // incrementx = panx steps / 
-        // incrementy = pany steps / 
+      //   // how many pan steps (x & y) between current & centre
+      //   // incrementx = panx steps / 
+      //   // incrementy = pany steps / 
 
 
-        // ADJUST PAN INCREMENT FOR ZOOM OUT CENTERING
+      //   // ADJUST PAN INCREMENT FOR ZOOM OUT CENTERING
 
-        let increment = 0;
+      //   let increment = 90;
         
-        if (this.camera.pan.x > -1) {
-          this.camera.pan.x -= increment;
-          this.camera.adjustedPan.x -= (20*(this.camera.zoom.x-1));
-          this.camera.panDirection = 'east';
+      //   if (this.camera.pan.x > -1) {
+      //     this.camera.pan.x -= increment;
+      //     this.camera.adjustedPan.x -= (20*(this.camera.zoom.x-1));
+      //     this.camera.panDirection = 'east';
 
-        }
-        if (this.camera.pan.x < -1) {
-          this.camera.pan.x += increment;
-          this.camera.adjustedPan.x += (20*(this.camera.zoom.x-1));
-          this.camera.panDirection = 'west';
+      //   }
+      //   if (this.camera.pan.x < -1) {
+      //     this.camera.pan.x += increment;
+      //     this.camera.adjustedPan.x += (20*(this.camera.zoom.x-1));
+      //     this.camera.panDirection = 'west';
 
-        }
+      //   }
 
-        if (this.camera.pan.y < -1) {
-          this.camera.pan.y += 45;
-          this.camera.adjustedPan.y += (1.5*(this.camera.zoom.x-1));
-          this.camera.panDirection = 'north';
+      //   if (this.camera.pan.y < -1) {
+      //     this.camera.pan.y += 45;
+      //     this.camera.adjustedPan.y += (1.5*(this.camera.zoom.x-1));
+      //     this.camera.panDirection = 'north';
 
-        }
-        if (this.camera.pan.y > -1) {
-          this.camera.pan.y -= 45;
-          this.camera.adjustedPan.y -= (1.5*(this.camera.zoom.x-1));
-          this.camera.panDirection = 'south';
+      //   }
+      //   if (this.camera.pan.y > -1) {
+      //     this.camera.pan.y -= 45;
+      //     this.camera.adjustedPan.y -= (1.5*(this.camera.zoom.x-1));
+      //     this.camera.panDirection = 'south';
 
-        }
+      //   }
 
-        console.log('increment2 ',increment,'zoom',zoom-1,'pan x,y',this.camera.pan.x,this.camera.pan.y);
-        this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
-        this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+      //   console.log('increment2 ',increment,'zoom',zoom-1,'pan x,y',this.camera.pan.x,this.camera.pan.y);
+      //   this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+      //   this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
-      }
+      // }
+
+      this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+      this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
     }
 
@@ -7202,11 +7206,17 @@ class App extends Component {
         if (this.camera.zoomDirection === "out") {
 
 
-            // the distance between zoomthresh or 0 zoom
+            // the distance between current zoom zoomthresh or 0 zoom
             //   /.02 = zoom steps
             // how many pan steps (x & y) between current & centre
             // incrementx = panx steps / zoom steps
             // incrementy = pany steps / zoom steps
+
+            let zoomSteps = (((zoom-1)-zoomThresh)/.02).toFixed(0);
+            console.log('zoomSteps',typeof zoomSteps);
+            if (typeof zoomSteps === 'string') {
+              zoomSteps = parseInt(zoomSteps)
+            }
 
           // ADJUST PAN INCREMENT FOR ZOOM OUT CENTERING
 
@@ -7250,19 +7260,33 @@ class App extends Component {
               yIncrement = 40;
             }
             else {
-              xIncrement = 90;
+              xIncrement = 70;
             }
           }
           
           // increment = 10;
           // try increment based on zoom, increment should go up as you zoom out
           if (this.camera.pan.x > -1) {
+            if (this.camera.pan.x !== 0 && zoomSteps !== 0) {
+             xIncrement = (this.camera.pan.x/zoomSteps).toFixed(0); 
+            }
+            else {
+              xIncrement = 0;
+            }
+            console.log('1',xIncrement);
             this.camera.pan.x -= xIncrement;
             this.camera.adjustedPan.x -= (20*(this.camera.zoom.x-1));
             this.camera.panDirection = 'east';
 
           }
           if (this.camera.pan.x < -1) {
+            if (this.camera.pan.x !== 0 && zoomSteps !== 0) {
+             xIncrement = (this.camera.pan.x/zoomSteps).toFixed(0)*-1; 
+            }
+            else {
+              xIncrement = 0;
+            }
+            console.log('2',xIncrement,zoomSteps);
             this.camera.pan.x += xIncrement;
             this.camera.adjustedPan.x += (20*(this.camera.zoom.x-1));
             this.camera.panDirection = 'west';
@@ -7270,12 +7294,26 @@ class App extends Component {
           }
 
           if (this.camera.pan.y < -1) {
+            if (this.camera.pan.y !== 0 && zoomSteps !== 0) {
+             yIncrement = (this.camera.pan.y/zoomSteps).toFixed(0)*-1; 
+            }
+            else {
+              yIncrement = 0;
+            }
+            console.log('3',yIncrement,zoomSteps);
             this.camera.pan.y += yIncrement;
             this.camera.adjustedPan.y += (1.5*(this.camera.zoom.x-1));
             this.camera.panDirection = 'north';
 
           }
           if (this.camera.pan.y > -1) {
+            if (this.camera.pan.y !== 0 && zoomSteps !== 0) {
+             yIncrement = (this.camera.pan.y/zoomSteps).toFixed(0); 
+            }
+            else {
+              yIncrement = 0;
+            }
+            console.log('4',yIncrement,zoomSteps);
             this.camera.pan.y -= yIncrement;
             this.camera.adjustedPan.y -= (1.5*(this.camera.zoom.x-1));
             this.camera.panDirection = 'south';
