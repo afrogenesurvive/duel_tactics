@@ -6485,20 +6485,18 @@ class App extends Component {
         this.autoCamPanWaitingForPath = false;
         if ((this.camera.zoom.x-1) > -.05) {
 
-          // if (reset === true && attackFocusBreakZoomCorrection !== '') {
+          if (reset === true && attackFocusBreakZoomCorrection !== '') {
             
-          //   this.camera.preInstructions.push(attackFocusBreakZoomCorrection)
-          // }
+            this.camera.preInstructions.push(attackFocusBreakZoomCorrection)
+          }
 
-          // else {
-          //   let zoomDifference = 0;
-          //   this.camera.preInstructions.push(
-          //     'zoom_outToInit'
-          //   )
-          // }
-          this.camera.preInstructions.push(
-            'zoom_outToInit'
-          )
+          else {
+            let zoomDifference = 0;
+            this.camera.preInstructions.push(
+              'zoom_outToInit'
+            )
+          }
+
         }
       break;
       case 'playerSpawnFocus':
@@ -6725,26 +6723,27 @@ class App extends Component {
           // 'waitFor_50',
         )
 
-        if ((this.camera.zoom.x-1) < .35) {
-          // console.log('auto camera 2 player close ranged attack focus zoom in amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5));
-          zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
+
+
+        if ((this.camera.zoom.x-1) < .50) {
+          // console.log('auto camera 1 player spawn focus zoom in amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
+          zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
           this.camera.preInstructions.push(
             'zoom_in_'+zoomAdjust+''
           )
         }
-        if ((this.camera.zoom.x-1) > .35) {
-          // console.log('auto camera 2 player close ranged attack focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5));
-          zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
+        if ((this.camera.zoom.x-1) > .50) {
+          // console.log('auto camera 1 player spawn focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5));
+          zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
           this.camera.preInstructions.push(
-            'zoom_out_'+zoomAdjust+'',
-            'waitFor_50'
+            'zoom_out_'+zoomAdjust+''
           )
         }
 
-
         this.camera.preInstructions.push(
-          'waitFor_100'
+          'waitFor_50'
         )
+
 
         if (this.playerNumber === 1) {
 
@@ -6753,19 +6752,18 @@ class App extends Component {
             // 'waitFor_50',
           )
 
-          if ((this.camera.zoom.x-1) < .35) {
-              // console.log('auto camera 1 player ai spawn focus zoom in amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5),'current zoom',1-this.camera.zoom.x);
-              zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
-              this.camera.preInstructions.push(
-                'zoom_in_'+zoomAdjust+''
-              )
-            }
-          if ((this.camera.zoom.x-1) > .35) {
-            // console.log('auto camera 1 player ai spawn focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5),'current zoom',1-this.camera.zoom.x);
-            zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
+          if ((this.camera.zoom.x-1) < .50) {
+            // console.log('auto camera 1 player spawn focus zoom in amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
+            zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
+            this.camera.preInstructions.push(
+              'zoom_in_'+zoomAdjust+''
+            )
+          }
+          if ((this.camera.zoom.x-1) > .50) {
+            // console.log('auto camera 1 player spawn focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5));
+            zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
             this.camera.preInstructions.push(
               'zoom_out_'+zoomAdjust+''
-              // 'zoom_outToInit'
             )
           }
 
@@ -6876,40 +6874,10 @@ class App extends Component {
               // 'moveTo_'+this.players[0].currentPosition.cell.number.x+'_'+this.players[0].currentPosition.cell.number.y+'_fast',
               // 'waitFor_50',
             )
-            // if ((this.camera.zoom.x-1) < .35) {
-            //     console.log('auto camera 2 player ai spawn focus zoom in amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5),'current zoom',1-this.camera.zoom.x);
-            //     zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
-            //     this.camera.preInstructions.push(
-            //       'zoom_in_'+zoomAdjust+''
-            //     )
-            //   }
-            // if ((this.camera.zoom.x-1) > .35) {
-            //   console.log('auto camera 2 player ai spawn focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5),'current zoom',1-this.camera.zoom.x);
-            //   zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
-            //   this.camera.preInstructions.push(
-            //     'zoom_out_'+zoomAdjust+''
-            //   )
-            // }
-
-            // zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
-            zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
-            this.camera.preInstructions.push(
-              'zoom_out_'+zoomAdjust+''
-              // 'zoom_outToInit'
-            )
-            // console.log('zoomAdjust',zoomAdjust);
 
           }
           else {
 
-            // console.log('ai spawn focus auto cam: 2 players at a distance');
-
-            // console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
-
-            // let intermediateCell = {
-            //   x: parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)].x,
-            //   y: parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)].y,
-            // }
             let intermediateCell = {
               x: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].x,
               y: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].y,
@@ -6921,32 +6889,19 @@ class App extends Component {
             )
 
 
-            // if ((this.camera.zoom.x-1) < .35) {
-            //   console.log('auto cam 2 player attack focus distance zoom in amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5),'current zoom',1-this.camera.zoom.x);
-            //   zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
-            //   this.camera.preInstructions.push(
-            //     'zoom_in_'+zoomAdjust+''
-            //   )
-            // }
-            // if ((this.camera.zoom.x-1) > .35) {
-            //   console.log('auto cam 2 player attack focus distance zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5),'current zoom',1-this.camera.zoom.x);
-            //   zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
-            //   this.camera.preInstructions.push(
-            //     'zoom_out_'+zoomAdjust+''
-            //   )
-            // }
-
-            // zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
-            zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
-            this.camera.preInstructions.push(
-              'zoom_out_'+zoomAdjust+''
-              // 'zoom_outToInit'
-            )
             // console.log('zoomAdjust',zoomAdjust);
 
           }
 
         }
+
+        zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5)
+          this.camera.preInstructions.push(
+            // attackFocusBreakZoomCorrection
+            // 'zoom_out_'+zoomAdjust+''
+            'zoom_outToInit'
+          )
+
         // console.log('aiSpawnFocus this.camera.preInstructions',this.camera.preInstructions);
 
       break;
@@ -6960,7 +6915,7 @@ class App extends Component {
 
     }
 
-    // console.log('AutoCameraSet',args,this.camera.preInstructions,this.camera.currentPreInstruction,this.camera.zoom.x-1);
+    console.log('AutoCameraSet',args,this.camera.preInstructions,this.camera.currentPreInstruction,this.camera.zoom.x-1);
 
   }
   setCameraFocus = (focusType, canvas, context, canvas2, context2) => {
@@ -7096,7 +7051,7 @@ class App extends Component {
 
     // if (parseFloat(zoom.toFixed(2)) === zoomThresh) {
     if (zoom-1 === zoomThresh) {
-      console.log('at zoomThresh');
+      // console.log('at zoomThresh');
       this.camera.pan.x = -1;
       this.camera.pan.y = -1;
       
@@ -7116,72 +7071,69 @@ class App extends Component {
 
     // ZOOMING IN & OUT ABOVE THRESHOLD
     if (zoom-1 < zoomThresh) {
-      console.log('above zoomThresh');
+      // console.log('above zoomThresh');
 
       // this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
       // this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
 
-      // if (this.camera.mode === "zoom" && this.camera.zoomDirection === "in") {
+      if (this.camera.mode === "zoom" && this.camera.zoomDirection === "in") {
 
-      //   this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
-      //   this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+        this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+        this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
-      // }
+      }
       
 
-      // if (this.camera.mode === "zoom" && this.camera.zoomDirection === "out") {
+      if (this.camera.mode === "zoom" && this.camera.zoomDirection === "out") {
 
 
-      //   // how many pan steps (x & y) between current & centre
-      //   // incrementx = panx steps / 
-      //   // incrementy = pany steps / 
+        // how many pan steps (x & y) between current & centre
+        // incrementx = panx steps / 
+        // incrementy = pany steps / 
 
 
-      //   // ADJUST PAN INCREMENT FOR ZOOM OUT CENTERING
+        // ADJUST PAN INCREMENT FOR ZOOM OUT CENTERING
 
-      //   let increment = 90;
+        let increment = 90;
         
-      //   if (this.camera.pan.x > -1) {
-      //     this.camera.pan.x -= increment;
-      //     this.camera.adjustedPan.x -= (20*(this.camera.zoom.x-1));
-      //     this.camera.panDirection = 'east';
+        if (this.camera.pan.x > -1) {
+          this.camera.pan.x -= increment;
+          this.camera.adjustedPan.x -= (20*(this.camera.zoom.x-1));
+          this.camera.panDirection = 'east';
 
-      //   }
-      //   if (this.camera.pan.x < -1) {
-      //     this.camera.pan.x += increment;
-      //     this.camera.adjustedPan.x += (20*(this.camera.zoom.x-1));
-      //     this.camera.panDirection = 'west';
+        }
+        if (this.camera.pan.x < -1) {
+          this.camera.pan.x += increment;
+          this.camera.adjustedPan.x += (20*(this.camera.zoom.x-1));
+          this.camera.panDirection = 'west';
 
-      //   }
+        }
 
-      //   if (this.camera.pan.y < -1) {
-      //     this.camera.pan.y += 45;
-      //     this.camera.adjustedPan.y += (1.5*(this.camera.zoom.x-1));
-      //     this.camera.panDirection = 'north';
+        if (this.camera.pan.y < -1) {
+          this.camera.pan.y += 45;
+          this.camera.adjustedPan.y += (1.5*(this.camera.zoom.x-1));
+          this.camera.panDirection = 'north';
 
-      //   }
-      //   if (this.camera.pan.y > -1) {
-      //     this.camera.pan.y -= 45;
-      //     this.camera.adjustedPan.y -= (1.5*(this.camera.zoom.x-1));
-      //     this.camera.panDirection = 'south';
+        }
+        if (this.camera.pan.y > -1) {
+          this.camera.pan.y -= 45;
+          this.camera.adjustedPan.y -= (1.5*(this.camera.zoom.x-1));
+          this.camera.panDirection = 'south';
 
-      //   }
+        }
 
-      //   console.log('increment2 ',increment,'zoom',zoom-1,'pan x,y',this.camera.pan.x,this.camera.pan.y);
-      //   this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
-      //   this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+        console.log('increment2 ',increment,'zoom',zoom-1,'pan x,y',this.camera.pan.x,this.camera.pan.y);
+        this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+        this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
-      // }
-
-      this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
-      this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+      }
 
     }
 
 
     // ZOOMING BELOW THRESHOLD
     if (zoom-1 > zoomThresh) {
-      console.log('below zoomThresh');
+      // console.log('below zoomThresh');
       diff = zoom - 1;
       let diffx;
       let diffy;
@@ -7206,66 +7158,18 @@ class App extends Component {
         if (this.camera.zoomDirection === "out") {
 
 
-            // the distance between current zoom zoomthresh or 0 zoom
-            //   /.02 = zoom steps
-            // how many pan steps (x & y) between current & centre
-            // incrementx = panx steps / zoom steps
-            // incrementy = pany steps / zoom steps
-
             let zoomSteps = (((zoom-1)-zoomThresh)/.02).toFixed(0);
-            console.log('zoomSteps',typeof zoomSteps);
-            if (typeof zoomSteps === 'string') {
-              zoomSteps = parseInt(zoomSteps)
+            zoomSteps = parseInt(zoomSteps)
+            if (zoomSteps === 0) {
+              zoomSteps = 1;
             }
 
           // ADJUST PAN INCREMENT FOR ZOOM OUT CENTERING
 
           let xIncrement = 10;
           let yIncrement = 3.5;
-          // if ((zoom-1) >= zoomThresh) {
-          if ((zoom-1) >= .5) {
-            xIncrement = 5;
-          }
-          if ((zoom-1) < .5 && (zoom-1) >= .25) {
-            if ((zoom-1) >= .36) {
-              xIncrement = 10;
-            } else {
-              xIncrement = 15;
-            }
-            
-          }
-          if ((zoom-1) < .25 && (zoom-1) >= .15) {
-            // increment = 20;
-            if (this.gridWidth >= 12) {
-              xIncrement = 15;
-            }
-            else {
-              xIncrement = 20;
-            }
-          }
-          if ((zoom-1) < .15 && (zoom-1) >= .05) {
-            // increment = 30;
-            if (this.gridWidth >= 12) {
-              // increment = 20;
-              xIncrement = 15;
-            }
-            else {
-              xIncrement = 30;
-            }
-          }
-          if ((zoom-1) < .05) {
-            // increment = 90;
-            if (this.gridWidth >= 12) {
-              xIncrement = 40;
-              yIncrement = 40;
-            }
-            else {
-              xIncrement = 70;
-            }
-          }
           
-          // increment = 10;
-          // try increment based on zoom, increment should go up as you zoom out
+
           if (this.camera.pan.x > -1) {
             if (this.camera.pan.x !== 0 && zoomSteps !== 0) {
              xIncrement = (this.camera.pan.x/zoomSteps).toFixed(0); 
@@ -7273,7 +7177,6 @@ class App extends Component {
             else {
               xIncrement = 0;
             }
-            console.log('1',xIncrement);
             this.camera.pan.x -= xIncrement;
             this.camera.adjustedPan.x -= (20*(this.camera.zoom.x-1));
             this.camera.panDirection = 'east';
@@ -7286,7 +7189,6 @@ class App extends Component {
             else {
               xIncrement = 0;
             }
-            console.log('2',xIncrement,zoomSteps);
             this.camera.pan.x += xIncrement;
             this.camera.adjustedPan.x += (20*(this.camera.zoom.x-1));
             this.camera.panDirection = 'west';
@@ -7300,7 +7202,6 @@ class App extends Component {
             else {
               yIncrement = 0;
             }
-            console.log('3',yIncrement,zoomSteps);
             this.camera.pan.y += yIncrement;
             this.camera.adjustedPan.y += (1.5*(this.camera.zoom.x-1));
             this.camera.panDirection = 'north';
@@ -7313,14 +7214,13 @@ class App extends Component {
             else {
               yIncrement = 0;
             }
-            console.log('4',yIncrement,zoomSteps);
             this.camera.pan.y -= yIncrement;
             this.camera.adjustedPan.y -= (1.5*(this.camera.zoom.x-1));
             this.camera.panDirection = 'south';
 
           }
 
-          console.log('increment x,y',xIncrement,yIncrement,'zoom',zoom-1,'pan x,y',this.camera.pan.x,this.camera.pan.y);
+          // console.log('increment x,y',xIncrement,yIncrement,'zoom',zoom-1,'pan x,y',this.camera.pan.x,this.camera.pan.y);
           this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
           this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
