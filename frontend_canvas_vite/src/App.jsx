@@ -7094,15 +7094,17 @@ class App extends Component {
 
         // ADJUST PAN INCREMENT FOR ZOOM OUT CENTERING
 
-        let increment = 90;
+        let increment = 70;
         
         if (this.camera.pan.x > -1) {
+          increment = this.camera.pan.x;
           this.camera.pan.x -= increment;
           this.camera.adjustedPan.x -= (20*(this.camera.zoom.x-1));
           this.camera.panDirection = 'east';
 
         }
         if (this.camera.pan.x < -1) {
+          increment = (this.camera.pan.x*-1);
           this.camera.pan.x += increment;
           this.camera.adjustedPan.x += (20*(this.camera.zoom.x-1));
           this.camera.panDirection = 'west';
@@ -7110,13 +7112,17 @@ class App extends Component {
         }
 
         if (this.camera.pan.y < -1) {
-          this.camera.pan.y += 45;
+          increment = (this.camera.pan.y*-1);
+          this.camera.pan.y += increment;
+          // this.camera.pan.y += 45;
           this.camera.adjustedPan.y += (1.5*(this.camera.zoom.x-1));
           this.camera.panDirection = 'north';
 
         }
         if (this.camera.pan.y > -1) {
-          this.camera.pan.y -= 45;
+          increment = this.camera.pan.y;
+          this.camera.pan.y -= increment;
+          // this.camera.pan.y -= 45;
           this.camera.adjustedPan.y -= (1.5*(this.camera.zoom.x-1));
           this.camera.panDirection = 'south';
 
@@ -7127,6 +7133,9 @@ class App extends Component {
         this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
       }
+
+      // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+      // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
     }
 
@@ -7220,7 +7229,7 @@ class App extends Component {
 
           }
 
-          // console.log('increment x,y',xIncrement,yIncrement,'zoom',zoom-1,'pan x,y',this.camera.pan.x,this.camera.pan.y);
+          console.log('increment x,y',xIncrement,yIncrement,'zoom',zoom-1,'pan x,y',this.camera.pan.x,this.camera.pan.y);
           this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
           this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
@@ -35607,7 +35616,7 @@ class App extends Component {
 
               this.camera.mode = "zoom";
 
-              // console.log('zooming out to init',this.camera.zoom.x-1);
+              console.log('zooming out to init',this.camera.zoom.x-1);
               // this.setCameraFocus('input',canvas, context, canvas2, context2);
               this.setZoomPan(canvas);
               this.findFocusCell('panToCell',{},canvas,context)
@@ -36017,13 +36026,25 @@ class App extends Component {
               break;
               case 'zoom':
                 if (preInstruction.split("_")[1] === 'outToInit') {
+                  let zoomThresh = -.05;
+                  let zoomSteps = (((this.camera.zoom.x-1)-zoomThresh)/.02).toFixed(0);
+                  zoomSteps = parseInt(zoomSteps)
+                  if (zoomSteps === 0) {
+                    zoomSteps = 1;
+                  }
+                  if (zoomSteps < 0) {
+                    zoomSteps = zoomSteps*-1
+                  }
+                  console.log('here',zoomSteps,this.camera.zoom.x-1);
                   this.camera.instructions.push(
                     {
-                      action:'zoom_outToInit',
+                      action:'zoom_out_'+zoomSteps,
+                      // action:'zoom_outToInit',
                       action2:'',
                       count: 0,
                       count2: 0,
-                      limit: 1,
+                      limit: zoomSteps,
+                      // limit: 1,
                       limit2: 0,
                       speed: "",
                     }
@@ -36069,7 +36090,7 @@ class App extends Component {
             //   this.camera.currentPreInstruction++;
             // }
   
-            // // console.log('auto camera: pre instruction parsed: ',this.camera.instructions);
+            console.log('auto camera: pre instruction parsed: ',this.camera.instructions[0]);
 
           // }
 
