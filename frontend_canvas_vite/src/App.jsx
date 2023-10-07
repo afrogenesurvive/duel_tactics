@@ -2911,7 +2911,7 @@ class App extends Component {
     this.halfPushBackChaining = true;
     this.halfPushBackChainingMoveAll = true;
 
-    this.showPlayerOutlines = false;
+    this.showPlayerOutlines = true;
 
 
 
@@ -3009,6 +3009,7 @@ class App extends Component {
     this.settingAutoCamera = false;
     this.highlightZoomPanFocusCell = true;
     this.zoomThresh = -.05;
+    this.autoCamPanWaitingForPath = false;
 
 
     // AI
@@ -3062,7 +3063,7 @@ class App extends Component {
 
     this.testDraw = [];
     this.testData = "";
-    this.autoCamPanWaitingForPath = false;
+    
 
   }
 
@@ -4630,6 +4631,7 @@ class App extends Component {
       this.zoomThresh = -.25;
     }
     else {
+      // this.zoomThresh = -.05;
       this.zoomThresh = -.05;
     }
 
@@ -6121,7 +6123,7 @@ class App extends Component {
     this.camera.state = false;
     this.camera.fixed = false;
     this.settingAutoCamera = true;
-    console.log('setting auto camera instructions: ',args,this.camera.pan.x,this.camera.pan.y);
+    // console.log('setting auto camera instructions: ',args,this.camera.pan.x,this.camera.pan.y);
 
 
     // if board is over a certain size
@@ -6153,6 +6155,15 @@ class App extends Component {
 
     let reset = false;
     let attackFocusBreakZoomCorrection = "";
+    let zoomSteps = (((this.camera.zoom.x-1)-this.zoomThresh)/.02).toFixed(0);
+    zoomSteps = parseInt(zoomSteps)
+    if (zoomSteps === 0) {
+      zoomSteps = 1;
+    }
+    if (zoomSteps < 0) {
+      zoomSteps = zoomSteps*-1
+    }
+
 
     if (this.camera.preInstructions.length > 0 || this.camera.instructions.length > 0) {
       if (args === "attackFocusBreak") {
@@ -6161,7 +6172,8 @@ class App extends Component {
             this.camera.instructions[this.camera.instructions.length-1].action === "zoom_in" ||
             this.camera.instructions[this.camera.instructions.length-1].action === "zoom_out"
           ) {
-            attackFocusBreakZoomCorrection = `zoom_out_${this.camera.instructions[this.camera.instructions.length-1].count}`
+            // attackFocusBreakZoomCorrection = `zoom_out_${this.camera.instructions[this.camera.instructions.length-1].count}`
+            attackFocusBreakZoomCorrection = `zoom_out_${zoomSteps}`
           }
   
           // this.camera.preInstructions = [];
@@ -6916,7 +6928,11 @@ class App extends Component {
 
     }
 
-    console.log('AutoCameraSet',args,this.camera.preInstructions,this.camera.currentPreInstruction,this.camera.zoom.x-1);
+    if (this.camera.preInstructions.length === 0) {
+      this.settingAutoCamera = false;
+    }
+
+    // console.log('AutoCameraSet',args,this.camera.preInstructions,this.camera.currentPreInstruction,this.camera.zoom.x-1);
 
   }
   setCameraFocus = (focusType, canvas, context, canvas2, context2) => {
@@ -7169,7 +7185,7 @@ class App extends Component {
              xIncrement = (this.camera.pan.x/zoomSteps).toFixed(0); 
             }
             else {
-              console.log('1 pan',this.camera.pan.x,'zoomSteps',zoomSteps);
+              // console.log('1 pan',this.camera.pan.x,'zoomSteps',zoomSteps);
               xIncrement = 0;
             }
             this.camera.pan.x -= xIncrement;
@@ -7182,7 +7198,7 @@ class App extends Component {
              xIncrement = (this.camera.pan.x/zoomSteps).toFixed(0)*-1; 
             }
             else {
-              console.log('2 pan',this.camera.pan.x,'zoomSteps',zoomSteps);
+              // console.log('2 pan',this.camera.pan.x,'zoomSteps',zoomSteps);
               xIncrement = 0;
             }
             this.camera.pan.x += xIncrement;
@@ -7196,7 +7212,7 @@ class App extends Component {
              yIncrement = (this.camera.pan.y/zoomSteps).toFixed(0)*-1; 
             }
             else {
-              console.log('3 pan',this.camera.pan.y,'zoomSteps',zoomSteps);
+              // console.log('3 pan',this.camera.pan.y,'zoomSteps',zoomSteps);
               yIncrement = 0;
             }
             this.camera.pan.y += yIncrement;
@@ -7209,7 +7225,7 @@ class App extends Component {
              yIncrement = (this.camera.pan.y/zoomSteps).toFixed(0); 
             }
             else {
-              console.log('4 pan',this.camera.pan.y,'zoomSteps',zoomSteps);
+              // console.log('4 pan',this.camera.pan.y,'zoomSteps',zoomSteps);
               yIncrement = 0;
             }
             this.camera.pan.y -= yIncrement;
@@ -7218,7 +7234,7 @@ class App extends Component {
 
           }
 
-          console.log('increment x,y',xIncrement,yIncrement,'zoom',zoom-1,'pan x,y',this.camera.pan.x,this.camera.pan.y);
+          // console.log('increment x,y',xIncrement,yIncrement,'zoom',zoom-1,'pan x,y',this.camera.pan.x,this.camera.pan.y);
           this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
           this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
@@ -35989,8 +36005,8 @@ class App extends Component {
               break;
               case 'zoom':
                 if (preInstruction.split("_")[1] === 'outToInit') {
-                  let zoomThresh = -.05;
-                  let zoomSteps = (((this.camera.zoom.x-1)-zoomThresh)/.02).toFixed(0);
+                  
+                  let zoomSteps = (((this.camera.zoom.x-1)-this.zoomThresh)/.02).toFixed(0);
                   zoomSteps = parseInt(zoomSteps)
                   if (zoomSteps === 0) {
                     zoomSteps = 1;
@@ -36053,7 +36069,7 @@ class App extends Component {
             //   this.camera.currentPreInstruction++;
             // }
   
-            console.log('auto camera: pre instruction parsed: ',this.camera.instructions[0]);
+            // console.log('auto camera: pre instruction parsed: ',this.camera.instructions);
 
           // }
 
