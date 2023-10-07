@@ -3008,6 +3008,7 @@ class App extends Component {
     }
     this.settingAutoCamera = false;
     this.highlightZoomPanFocusCell = true;
+    this.zoomThresh = -.05;
 
 
     // AI
@@ -4625,6 +4626,13 @@ class App extends Component {
       break;
     }
 
+    if (this.gridWidth >= 12) {
+      this.zoomThresh = -.25;
+    }
+    else {
+      this.zoomThresh = -.05;
+    }
+
 
     this.gamepadConfig = [];
     for (const plyr2 of this.settingsFormPlayerData.input) {
@@ -6113,7 +6121,7 @@ class App extends Component {
     this.camera.state = false;
     this.camera.fixed = false;
     this.settingAutoCamera = true;
-    console.log('setting auto camera instructions: ',args);
+    console.log('setting auto camera instructions: ',args,this.camera.pan.x,this.camera.pan.y);
 
 
     // if board is over a certain size
@@ -6173,18 +6181,11 @@ class App extends Component {
     }
 
     let zoom = this.camera.zoom.x;
-    let zoomThresh = 0;
-    if (this.gridWidth >= 12) {
-      zoomThresh = -.25;
-    }
-    else {
-      zoomThresh = -.05;
-    }
     let prePanZoom = false;
     let prePanZoomAmount = 0;
-    if (zoom-1 < zoomThresh) {
+    if (zoom-1 < this.zoomThresh) {
       
-      prePanZoomAmount = ((zoomThresh-(zoom-1))/.02).toFixed(0); 
+      prePanZoomAmount = ((this.zoomThresh-(zoom-1))/.02).toFixed(0); 
       prePanZoomAmount++;
       prePanZoom = true;
     }
@@ -7032,25 +7033,9 @@ class App extends Component {
 
 
     let diff;
-    let zoomThresh = 1;
-    // if (window.innerWidth < 1100) {
-    //   if (this.gridWidth >= 12) {
-    //     zoomThresh = -.25;
-    //   }
-    //   else {
-    //     zoomThresh = -.05;
-    //   }
-    // }
-    if (this.gridWidth >= 12) {
-      zoomThresh = -.25;
-    }
-    else {
-      zoomThresh = -.05;
-      // zoomThresh = 0;
-    }
 
     // if (parseFloat(zoom.toFixed(2)) === zoomThresh) {
-    if (zoom-1 === zoomThresh) {
+    if (zoom-1 === this.zoomThresh) {
       // console.log('at zoomThresh');
       this.camera.pan.x = -1;
       this.camera.pan.y = -1;
@@ -7070,7 +7055,7 @@ class App extends Component {
 
 
     // ZOOMING IN & OUT ABOVE THRESHOLD
-    if (zoom-1 < zoomThresh) {
+    if (zoom-1 < this.zoomThresh) {
       // console.log('above zoomThresh');
 
       // this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
@@ -7141,7 +7126,7 @@ class App extends Component {
 
 
     // ZOOMING BELOW THRESHOLD
-    if (zoom-1 > zoomThresh) {
+    if (zoom-1 > this.zoomThresh) {
       // console.log('below zoomThresh');
       diff = zoom - 1;
       let diffx;
@@ -7167,7 +7152,7 @@ class App extends Component {
         if (this.camera.zoomDirection === "out") {
 
 
-            let zoomSteps = (((zoom-1)-zoomThresh)/.02).toFixed(0);
+            let zoomSteps = (((zoom-1)-this.zoomThresh)/.02).toFixed(0);
             zoomSteps = parseInt(zoomSteps)
             if (zoomSteps === 0) {
               zoomSteps = 1;
@@ -7184,6 +7169,7 @@ class App extends Component {
              xIncrement = (this.camera.pan.x/zoomSteps).toFixed(0); 
             }
             else {
+              console.log('1 pan',this.camera.pan.x,'zoomSteps',zoomSteps);
               xIncrement = 0;
             }
             this.camera.pan.x -= xIncrement;
@@ -7196,6 +7182,7 @@ class App extends Component {
              xIncrement = (this.camera.pan.x/zoomSteps).toFixed(0)*-1; 
             }
             else {
+              console.log('2 pan',this.camera.pan.x,'zoomSteps',zoomSteps);
               xIncrement = 0;
             }
             this.camera.pan.x += xIncrement;
@@ -7209,6 +7196,7 @@ class App extends Component {
              yIncrement = (this.camera.pan.y/zoomSteps).toFixed(0)*-1; 
             }
             else {
+              console.log('3 pan',this.camera.pan.y,'zoomSteps',zoomSteps);
               yIncrement = 0;
             }
             this.camera.pan.y += yIncrement;
@@ -7221,6 +7209,7 @@ class App extends Component {
              yIncrement = (this.camera.pan.y/zoomSteps).toFixed(0); 
             }
             else {
+              console.log('4 pan',this.camera.pan.y,'zoomSteps',zoomSteps);
               yIncrement = 0;
             }
             this.camera.pan.y -= yIncrement;
@@ -7240,15 +7229,10 @@ class App extends Component {
 
 
       // SET PAN LIMITS BASED ON ZOOM
-      // if camera mode is pan
-      // (this.camera.zoom.x-1) > -.05)
-      // console.log('beep',zoom-1);
       let zoomMod;
       if ((zoom-1) > 0) {
         zoomMod = (zoom-1);
-        // zoomMod = (zoom-1)*10
       }
-      // else if ((zoom-1) < -.05) {
       else {
         zoomMod = .01;
         // zoomMod = 1;
@@ -35557,8 +35541,8 @@ class App extends Component {
 
           // if (this.setInitZoom.windowWidth < 1100) {
 
-            // if ((this.camera.zoom.x-1) >= -.25) {
-            if ((this.camera.zoom.x-1) >= 0) {
+            
+            if ((this.camera.zoom.x-1) >= this.zoomThresh) {
 
               this.camera.zoom.x -= .02 ;
               this.camera.zoom.y -= .02 ;
@@ -35574,15 +35558,12 @@ class App extends Component {
               this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
               this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
-              this.camera.mode = "zoom";
-              // this.setCameraFocus('input',canvas, context, canvas2, context2);
-              // console.log('zooming out to init',this.camera.zoom.x-1);
+              this.camera.mode = "zoom";;
               this.setZoomPan(canvas);
               this.findFocusCell('panToCell',{},canvas,context)
             }
 
-            // if ((this.camera.zoom.x-1) < -.25) {
-            if ((this.camera.zoom.x-1) < 0) {
+            if ((this.camera.zoom.x-1) < this.zoomThresh) {
               this.setInitZoom.state = false;
             }
 
@@ -35596,8 +35577,7 @@ class App extends Component {
 
           // if (this.setInitZoom.windowWidth < 1100) {
 
-            if ((this.camera.zoom.x-1) >= -.05) {
-            // if ((this.camera.zoom.x-1) > 0) {
+            if ((this.camera.zoom.x-1) >= this.zoomThresh) {
 
               this.camera.zoom.x -= .02 ;
               this.camera.zoom.y -= .02 ;
@@ -35616,15 +35596,14 @@ class App extends Component {
 
               this.camera.mode = "zoom";
 
-              console.log('zooming out to init',this.camera.zoom.x-1);
+              // console.log('zooming out to init',this.camera.zoom.x-1);
               // this.setCameraFocus('input',canvas, context, canvas2, context2);
               this.setZoomPan(canvas);
               this.findFocusCell('panToCell',{},canvas,context)
 
             }
 
-            if ((this.camera.zoom.x-1) < -.05) {
-            // if ((this.camera.zoom.x-1) < 0) {
+            if ((this.camera.zoom.x-1) < this.zoomThresh) {
               this.setInitZoom.state = false;
             }
 
@@ -35760,30 +35739,14 @@ class App extends Component {
         // ONLY PAN IF CANT SEE WHOLE MAP
         let canPan = false;
 
-        // if (window.innerWidth < 1100) {
-        //   if (this.gridWidth >= 12) {
-        //     // if (this.camera.zoom.x > .8) {
-        //     if (this.camera.zoom.x-1 > -.25) {
-        //       canPan = true;
-        //     }
-        //   } else {
-        //     if (this.camera.zoom.x-1 > -.05) {
-        //       canPan = true;
-        //     }
-        //   }
-        // }
-        // else {
-        //   if (this.camera.zoom.x > -.05) {
-        //     canPan = true;
-        //   }
-        // }
+
         if (this.gridWidth >= 12) {
           // if (this.camera.zoom.x > .8) {
-          if (this.camera.zoom.x-1 > -.25) {
+          if (this.camera.zoom.x-1 > this.zoomThresh) {
             canPan = true;
           }
         } else {
-          if (this.camera.zoom.x-1 > -.05) {
+          if (this.camera.zoom.x-1 > this.zoomThresh) {
             canPan = true;
           }
         }
@@ -36035,7 +35998,7 @@ class App extends Component {
                   if (zoomSteps < 0) {
                     zoomSteps = zoomSteps*-1
                   }
-                  console.log('here',zoomSteps,this.camera.zoom.x-1);
+
                   this.camera.instructions.push(
                     {
                       action:'zoom_out_'+zoomSteps,
