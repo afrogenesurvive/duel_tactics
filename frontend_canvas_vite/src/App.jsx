@@ -6152,6 +6152,102 @@ class App extends Component {
 
     }
 
+    let parsedPreInstructions = []
+    let twoPlayerCalc = () => {
+
+      let originCell = {
+        x: player.currentPosition.cell.number.x,
+        y: player.currentPosition.cell.number.y,
+      };
+      let destCell = {
+        x: this.players[1].currentPosition.cell.number.x,
+        y: this.players[1].currentPosition.cell.number.y,
+      };
+
+      let x1 = originCell.x;
+      let y1 = originCell.y;
+      let x2 = destCell.x;
+      let y2 = destCell.y;
+      let xSteps = 0;
+      let ySteps = 0;
+      let xDirection = "";
+      let yDirection = "";
+      let preInstructions = [];
+
+      if (x1 > x2) {
+        xDirection = "west";
+        xSteps = x1-x2;
+      }
+      if (x2 > x1) {
+        xDirection = "east";
+        xSteps = x2-x1;
+      }
+      if (y1 > y2) {
+        yDirection = "north";
+        ySteps = y1-y2;
+      }
+      if (y2 > y1) {
+        yDirection = "south";
+        ySteps = y2-y1;
+      }
+
+      for (var i = 0; i < xSteps; i++) {
+        preInstructions.push(
+          xDirection
+        )
+      }
+      for (var j = 0; j < ySteps; j++) {
+        preInstructions.push(
+          yDirection
+        )
+      }
+
+      parsedPreInstructions = []
+      let currentCell = {
+        x: originCell.x,
+        y: originCell.y,
+      }
+
+      parsedPreInstructions.push(originCell)
+
+      for (const instruction of preInstructions) {
+
+        switch (instruction) {
+          case 'north':
+            currentCell.y -= 1;
+            parsedPreInstructions.push({
+              x: currentCell.x,
+              y: currentCell.y,
+            })
+          break;
+          case 'south':
+            currentCell.y += 1;
+            parsedPreInstructions.push({
+              x: currentCell.x,
+              y: currentCell.y,
+            })
+          break;
+          case 'west':
+            currentCell.x -= 1;
+            parsedPreInstructions.push({
+              x: currentCell.x,
+              y: currentCell.y,
+            })
+          break;
+          case 'east':
+            currentCell.x += 1;
+            parsedPreInstructions.push({
+              x: currentCell.x,
+              y: currentCell.y,
+            })
+          break;
+        }
+
+        // console.log(''+preInstructions.indexOf(instruction)+'',parsedPreInstructions);
+
+      }
+
+    }
 
     let reset = false;
     let attackFocusBreakZoomCorrection = "";
@@ -6294,97 +6390,7 @@ class App extends Component {
         if (this.playerNumber === 2) {
 
 
-          let originCell = {
-            x: player.currentPosition.cell.number.x,
-            y: player.currentPosition.cell.number.y,
-          };
-          let destCell = {
-            x: this.players[1].currentPosition.cell.number.x,
-            y: this.players[1].currentPosition.cell.number.y,
-          };
-
-          let x1 = originCell.x;
-          let y1 = originCell.y;
-          let x2 = destCell.x;
-          let y2 = destCell.y;
-          let xSteps = 0;
-          let ySteps = 0;
-          let xDirection = "";
-          let yDirection = "";
-          let preInstructions = [];
-
-          if (x1 > x2) {
-            xDirection = "west";
-            xSteps = x1-x2;
-          }
-          if (x2 > x1) {
-            xDirection = "east";
-            xSteps = x2-x1;
-          }
-          if (y1 > y2) {
-            yDirection = "north";
-            ySteps = y1-y2;
-          }
-          if (y2 > y1) {
-            yDirection = "south";
-            ySteps = y2-y1;
-          }
-
-          for (var i = 0; i < xSteps; i++) {
-            preInstructions.push(
-              xDirection
-            )
-          }
-          for (var j = 0; j < ySteps; j++) {
-            preInstructions.push(
-              yDirection
-            )
-          }
-
-          let parsedPreInstructions = []
-          let currentCell = {
-            x: originCell.x,
-            y: originCell.y,
-          }
-
-          parsedPreInstructions.push(originCell)
-
-          for (const instruction of preInstructions) {
-
-            switch (instruction) {
-              case 'north':
-                currentCell.y -= 1;
-                parsedPreInstructions.push({
-                  x: currentCell.x,
-                  y: currentCell.y,
-                })
-              break;
-              case 'south':
-                currentCell.y += 1;
-                parsedPreInstructions.push({
-                  x: currentCell.x,
-                  y: currentCell.y,
-                })
-              break;
-              case 'west':
-                currentCell.x -= 1;
-                parsedPreInstructions.push({
-                  x: currentCell.x,
-                  y: currentCell.y,
-                })
-              break;
-              case 'east':
-                currentCell.x += 1;
-                parsedPreInstructions.push({
-                  x: currentCell.x,
-                  y: currentCell.y,
-                })
-              break;
-            }
-
-              // console.log(''+preInstructions.indexOf(instruction)+'',parsedPreInstructions);
-
-          }
+          twoPlayerCalc();
 
           if (parsedPreInstructions.length < 4) {
 
@@ -6527,7 +6533,6 @@ class App extends Component {
         )
 
 
-
         if ((this.camera.zoom.x-1) < .50) {
           // console.log('auto camera 1 player spawn focus zoom in amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
           zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
@@ -6549,184 +6554,94 @@ class App extends Component {
 
 
 
-        // if (this.playerNumber === 2) {
+        if (this.playerNumber === 2) {
 
-        //   let originCell = {
-        //     x: this.players[0].currentPosition.cell.number.x,
-        //     y: this.players[0].currentPosition.cell.number.y,
-        //   };
-        //   let destCell = {
-        //     x: this.players[1].currentPosition.cell.number.x,
-        //     y: this.players[1].currentPosition.cell.number.y,
-        //   };
+          twoPlayerCalc();
 
-        //   let x1 = originCell.x;
-        //   let y1 = originCell.y;
-        //   let x2 = destCell.x;
-        //   let y2 = destCell.y;
-        //   let xSteps = 0;
-        //   let ySteps = 0;
-        //   let xDirection = "";
-        //   let yDirection = "";
-        //   let preInstructions = [];
+          if (parsedPreInstructions.length < 4) {
 
-        //   if (x1 > x2) {
-        //     xDirection = "west";
-        //     xSteps = x1-x2;
-        //   }
-        //   if (x2 > x1) {
-        //     xDirection = "east";
-        //     xSteps = x2-x1;
-        //   }
-        //   if (y1 > y2) {
-        //     yDirection = "north";
-        //     ySteps = y1-y2;
-        //   }
-        //   if (y2 > y1) {
-        //     yDirection = "south";
-        //     ySteps = y2-y1;
-        //   }
+            // console.log('plyr spawn focus auto cam: 2 players in close range');
 
-        //   for (var i = 0; i < xSteps; i++) {
-        //     preInstructions.push(
-        //       xDirection
-        //     )
-        //   }
-        //   for (var j = 0; j < ySteps; j++) {
-        //     preInstructions.push(
-        //       yDirection
-        //     )
-        //   }
+            this.camera.preInstructions.push(
+              'moveTo_'+this.players[0].currentPosition.cell.number.x+'_'+this.players[0].currentPosition.cell.number.y+'_fast',
+              // 'moveTo_'+this.players[0].currentPosition.cell.number.x+'_'+this.players[0].currentPosition.cell.number.y+'_fast',
+              // 'waitFor_50',
+            )
 
-        //   let parsedPreInstructions = []
-        //   let currentCell = {
-        //     x: originCell.x,
-        //     y: originCell.y,
-        //   }
+            // if ((this.camera.zoom.x-1) < .50) {
+            //   console.log('auto camera 2 player close melee attack focus zoom in amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5),'current zoom',1-this.camera.zoom.x);
+            //   zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
+            //   this.camera.preInstructions.push(
+            //     'zoom_in_'+zoomAdjust+''
+            //   )
+            // }
+            // if ((this.camera.zoom.x-1) > .50) {
+            //   console.log('auto camera 2 player close melee attack focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5),'current zoom',1-this.camera.zoom.x);
+            //   zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
+            //   this.camera.preInstructions.push(
+            //     'zoom_out_'+zoomAdjust+''
+            //   )
+            // }
 
-        //   parsedPreInstructions.push(originCell)
+            // zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
+            zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
+            this.camera.preInstructions.push(
+              'zoom_out_'+zoomAdjust+''
+              // 'zoom_outToInit'
+            )
+            console.log('zoomAdjust',zoomAdjust);
 
-        //   for (const instruction of preInstructions) {
+          }
+          else {
 
-        //     switch (instruction) {
-        //       case 'north':
-        //         currentCell.y -= 1;
-        //         parsedPreInstructions.push({
-        //           x: currentCell.x,
-        //           y: currentCell.y,
-        //         })
-        //       break;
-        //       case 'south':
-        //         currentCell.y += 1;
-        //         parsedPreInstructions.push({
-        //           x: currentCell.x,
-        //           y: currentCell.y,
-        //         })
-        //       break;
-        //       case 'west':
-        //         currentCell.x -= 1;
-        //         parsedPreInstructions.push({
-        //           x: currentCell.x,
-        //           y: currentCell.y,
-        //         })
-        //       break;
-        //       case 'east':
-        //         currentCell.x += 1;
-        //         parsedPreInstructions.push({
-        //           x: currentCell.x,
-        //           y: currentCell.y,
-        //         })
-        //       break;
-        //     }
+            // console.log('plyr spawn focus auto cam: 2 players at a distance','zoomadjust',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5));
 
-        //       // console.log(''+preInstructions.indexOf(instruction)+'',parsedPreInstructions);
+            // console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
 
-        //   }
+            let intermediateCell = {
+              x: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].x,
+              y: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].y,
+            }
 
-        //   if (parsedPreInstructions.length < 4) {
-
-        //     // console.log('plyr spawn focus auto cam: 2 players in close range');
-
-        //     this.camera.preInstructions.push(
-        //       'moveTo_'+this.players[0].currentPosition.cell.number.x+'_'+this.players[0].currentPosition.cell.number.y+'_fast',
-        //       // 'moveTo_'+this.players[0].currentPosition.cell.number.x+'_'+this.players[0].currentPosition.cell.number.y+'_fast',
-        //       // 'waitFor_50',
-        //     )
-
-        //     // if ((this.camera.zoom.x-1) < .50) {
-        //     //   console.log('auto camera 2 player close melee attack focus zoom in amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5),'current zoom',1-this.camera.zoom.x);
-        //     //   zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
-        //     //   this.camera.preInstructions.push(
-        //     //     'zoom_in_'+zoomAdjust+''
-        //     //   )
-        //     // }
-        //     // if ((this.camera.zoom.x-1) > .50) {
-        //     //   console.log('auto camera 2 player close melee attack focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5),'current zoom',1-this.camera.zoom.x);
-        //     //   zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
-        //     //   this.camera.preInstructions.push(
-        //     //     'zoom_out_'+zoomAdjust+''
-        //     //   )
-        //     // }
-
-        //     // zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
-        //     zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
-        //     this.camera.preInstructions.push(
-        //       'zoom_out_'+zoomAdjust+''
-        //       // 'zoom_outToInit'
-        //     )
-        //     console.log('zoomAdjust',zoomAdjust);
-
-        //   }
-        //   else {
-
-        //     // console.log('plyr spawn focus auto cam: 2 players at a distance','zoomadjust',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5));
-
-        //     // console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
-
-        //     let intermediateCell = {
-        //       x: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].x,
-        //       y: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].y,
-        //     }
-
-        //     this.camera.preInstructions.push(
-        //       'moveTo_'+intermediateCell.x+'_'+intermediateCell.y+'_fast',
-        //       // 'waitFor_50',
-        //     )
+            this.camera.preInstructions.push(
+              'moveTo_'+intermediateCell.x+'_'+intermediateCell.y+'_fast',
+              // 'waitFor_50',
+            )
 
 
-        //     // if ((this.camera.zoom.x-1) < .35) {
-        //     //   console.log('auto cam 2 player attack focus distance zoom in amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5),'current zoom',1-this.camera.zoom.x);
-        //     //   zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
-        //     //   this.camera.preInstructions.push(
-        //     //     'zoom_in_'+zoomAdjust+''
-        //     //   )
-        //     // }
-        //     // if ((this.camera.zoom.x-1) > .35) {
-        //     //   console.log('auto cam 2 player attack focus distance zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5),'current zoom',1-this.camera.zoom.x);
-        //     //   zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
-        //     //   this.camera.preInstructions.push(
-        //     //     'zoom_out_'+zoomAdjust+''
-        //     //   )
-        //     // }
+            // if ((this.camera.zoom.x-1) < .35) {
+            //   console.log('auto cam 2 player attack focus distance zoom in amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5),'current zoom',1-this.camera.zoom.x);
+            //   zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
+            //   this.camera.preInstructions.push(
+            //     'zoom_in_'+zoomAdjust+''
+            //   )
+            // }
+            // if ((this.camera.zoom.x-1) > .35) {
+            //   console.log('auto cam 2 player attack focus distance zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5),'current zoom',1-this.camera.zoom.x);
+            //   zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
+            //   this.camera.preInstructions.push(
+            //     'zoom_out_'+zoomAdjust+''
+            //   )
+            // }
 
-        //     // zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
-        //     zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
-        //     this.camera.preInstructions.push(
-        //       'zoom_out_'+(zoomAdjust+0)+''
-        //       // 'zoom_outToInit'
-        //     )
-        //     console.log('zoomAdjust2',zoomAdjust);
+            // zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
+            zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
+            this.camera.preInstructions.push(
+              'zoom_out_'+(zoomAdjust+0)+''
+              // 'zoom_outToInit'
+            )
+            console.log('zoomAdjust2',zoomAdjust);
 
-        //   }
+          }
 
-        // }
-        // else {
-        //   // zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5)
-        //   // this.camera.preInstructions.push(
-        //   //   'zoom_out_'+zoomAdjust+''
-        //   //   // 'zoom_outToInit'
-        //   // )
-        // }
+        }
+        else {
+          // zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5)
+          // this.camera.preInstructions.push(
+          //   'zoom_out_'+zoomAdjust+''
+          //   // 'zoom_outToInit'
+          // )
+        }
 
         zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5)
           this.camera.preInstructions.push(
@@ -6799,97 +6714,7 @@ class App extends Component {
         if (this.playerNumber === 2) {
 
 
-          let originCell = {
-            x: this.players[0].currentPosition.cell.number.x,
-            y: this.players[0].currentPosition.cell.number.y,
-          };
-          let destCell = {
-            x: this.players[1].currentPosition.cell.number.x,
-            y: this.players[1].currentPosition.cell.number.y,
-          };
-
-          let x1 = originCell.x;
-          let y1 = originCell.y;
-          let x2 = destCell.x;
-          let y2 = destCell.y;
-          let xSteps = 0;
-          let ySteps = 0;
-          let xDirection = "";
-          let yDirection = "";
-          let preInstructions = [];
-
-          if (x1 > x2) {
-            xDirection = "west";
-            xSteps = x1-x2;
-          }
-          if (x2 > x1) {
-            xDirection = "east";
-            xSteps = x2-x1;
-          }
-          if (y1 > y2) {
-            yDirection = "north";
-            ySteps = y1-y2;
-          }
-          if (y2 > y1) {
-            yDirection = "south";
-            ySteps = y2-y1;
-          }
-
-          for (var i = 0; i < xSteps; i++) {
-            preInstructions.push(
-              xDirection
-            )
-          }
-          for (var j = 0; j < ySteps; j++) {
-            preInstructions.push(
-              yDirection
-            )
-          }
-
-          let parsedPreInstructions = []
-          let currentCell = {
-            x: originCell.x,
-            y: originCell.y,
-          }
-
-          parsedPreInstructions.push(originCell)
-
-          for (const instruction of preInstructions) {
-
-            switch (instruction) {
-              case 'north':
-                currentCell.y -= 1;
-                parsedPreInstructions.push({
-                  x: currentCell.x,
-                  y: currentCell.y,
-                })
-              break;
-              case 'south':
-                currentCell.y += 1;
-                parsedPreInstructions.push({
-                  x: currentCell.x,
-                  y: currentCell.y,
-                })
-              break;
-              case 'west':
-                currentCell.x -= 1;
-                parsedPreInstructions.push({
-                  x: currentCell.x,
-                  y: currentCell.y,
-                })
-              break;
-              case 'east':
-                currentCell.x += 1;
-                parsedPreInstructions.push({
-                  x: currentCell.x,
-                  y: currentCell.y,
-                })
-              break;
-            }
-
-              // console.log(''+preInstructions.indexOf(instruction)+'',parsedPreInstructions);
-
-          }
+          twoPlayerCalc()
 
           if (parsedPreInstructions.length < 4) {
 
@@ -36002,7 +35827,6 @@ class App extends Component {
           }
           // console.log('Step through pre instructions...','preInstructions',preInstruction);
 
-          // if (preInstruction) {
            
             switch (preInstruction.split("_")[0]) {
               case 'moveTo':
@@ -36073,18 +35897,6 @@ class App extends Component {
               break;
             }
   
-            // if (this.camera.currentPreInstruction ===  this.camera.preInstructions.length-1) {
-            //   // console.log('this is the last preInstruction. Empty array');
-            //   this.camera.preInstructions = [];
-            //   this.camera.currentPreInstruction = 0;
-            //   // console.log('camera instructions',this.camera.instructions);
-            // } else {
-            //   this.camera.currentPreInstruction++;
-            // }
-  
-            // console.log('auto camera: pre instruction parsed: ',this.camera.instructions);
-
-          // }
 
           if (this.camera.currentPreInstruction ===  this.camera.preInstructions.length-1) {
             // console.log('this is the last preInstruction. Empty array');
