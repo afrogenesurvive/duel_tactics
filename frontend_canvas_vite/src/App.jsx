@@ -1872,7 +1872,7 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 9,
+              x: 0,
               y: 0,
             },
             center: {
@@ -5659,6 +5659,7 @@ class App extends Component {
 
 
       // console.log('findFocusCell cellToPan',originCell);
+      let sameCell = originCell.x === destCell.x && originCell.y === destCell.y;
       let cancelPath = false;
       let pathSet = [];
       this.updatePathArray();
@@ -5687,7 +5688,7 @@ class App extends Component {
           this.easyStar = new Easystar.js();
         }
         else {
-          // console.log('path setA',pathSet);
+          console.log('path setA',pathSet);
           finish();
         }
 
@@ -5854,7 +5855,7 @@ class App extends Component {
         }
 
         //  console.log('instructionsA',this.camera.instructions);
-        if (this.camera.instructions.length > 0) {
+        if (this.camera.instructions.length > 0 || sameCell === true) {
           
           this.autoCamPanWaitingForPath = false;  
         }
@@ -6249,6 +6250,45 @@ class App extends Component {
 
     }
 
+
+
+    let getPath = () => {
+      this.autoCamPanWaitingForPath = true;
+      return new Promise((resolve, reject) => {
+        let originCell = {
+          x: player.currentPosition.cell.number.x,
+          y: player.currentPosition.cell.number.y,
+        };
+        let destCell = {
+          x: this.players[1].currentPosition.cell.number.x,
+          y: this.players[1].currentPosition.cell.number.y,
+        };
+    
+        let pathSet = [];
+        this.updatePathArray();
+        this.easyStar = new Easystar.js();
+        this.easyStar.setGrid(this.pathArray);
+        this.easyStar.setAcceptableTiles([0]);
+        this.easyStar.enableDiagonals();
+        this.easyStar.findPath(originCell.x, originCell.y, destCell.x, destCell.y, function(path) {
+          if (path === null) {
+            // console.log("Path was not found");
+            reject("Path was not found");
+          } else {
+            pathSet = path;
+            resolve(pathSet);
+          }
+        });
+        this.easyStar.setIterationsPerCalculation(1000)
+        this.easyStar.calculate();
+      });
+    }
+    
+    // Call the getPath function and wait for its result
+    
+    
+
+
     let reset = false;
     let attackFocusBreakZoomCorrection = "";
     let zoomSteps = (((this.camera.zoom.x-1)-this.zoomThresh)/.02).toFixed(0);
@@ -6299,60 +6339,104 @@ class App extends Component {
     }
 
 
+    let getZoom = (args2) => {
+
+      let zoomSteps2 = 0;
+
+      if (args2 === 'melee') {
+
+
+        if ((this.camera.zoom.x-1) < .50) {
+
+          zoomSteps2 = ((.5-(this.camera.zoom.x-1))/.02).toFixed(0);
+          if (zoomSteps2 === 0) {
+            zoomSteps2 = 1;
+          }
+          if (zoomSteps2 < 0) {
+            zoomSteps2 = zoomSteps2*-1
+          }
+          // console.log('auto camera single player attack focus zoom amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
+          // zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
+          this.camera.preInstructions.push(
+            'zoom_in_'+zoomSteps2+''
+          )
+        }
+        if ((this.camera.zoom.x-1) > .50) {
+
+          zoomSteps2 = (((this.camera.zoom.x-1)-.50)/.02).toFixed(0);
+          if (zoomSteps2 === 0) {
+            zoomSteps2 = 1;
+          }
+          if (zoomSteps2 < 0) {
+            zoomSteps2 = zoomSteps2*-1
+          }
+          // console.log('auto camera single player attack focus zoom amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
+          // zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
+          this.camera.preInstructions.push(
+            'zoom_out_'+zoomSteps2+''
+          )
+        }
+
+      }
+
+      if (args2 === 'ranged') {
+
+        if ((this.camera.zoom.x-1) < .35) {
+          zoomSteps2 = ((.35-(this.camera.zoom.x-1))/.02).toFixed(0);
+          if (zoomSteps2 === 0) {
+            zoomSteps2 = 1;
+          }
+          if (zoomSteps2 < 0) {
+            zoomSteps2 = zoomSteps2*-1
+          }
+          // console.log('auto camera single player attack focus zoom amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5));
+          // zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
+          this.camera.preInstructions.push(
+            'zoom_in_'+zoomSteps2+''
+          )
+        }
+        
+        if ((this.camera.zoom.x-1) > .35) {
+          zoomSteps2 = (((this.camera.zoom.x-1)-.35)/.02).toFixed(0);
+          if (zoomSteps2 === 0) {
+            zoomSteps2 = 1;
+          }
+          if (zoomSteps2 < 0) {
+            zoomSteps2 = zoomSteps2*-1
+          }
+          // console.log('auto camera single player attack focus zoom amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5));
+          // zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
+          this.camera.preInstructions.push(
+            'zoom_out_'+zoomSteps2+''
+          )
+        }
+
+      }
+
+    }
+
+
     let zoomAdjust = 0;
     switch (args) {
       case 'test':
         this.camera.preInstructions.push(
-          'zoom_in_'+10+'',
-          // 'waitFor_50',
-          // 'moveTo_'+0+'_'+0+'_slow',
-          // 'waitFor_40',
-          // 'moveTo_'+9+'_'+0+'_fast',
-          // 'waitFor_40',
-          // 'moveTo_'+9+'_'+9+'_fast',
-          // 'waitFor_40',
-          // 'moveTo_'+0+'_'+9+'_fast',
-          // 'waitFor_40',
-          // 'moveTo_'+1+'_'+8+'_fast',
-          // 'waitFor_40',
-          // 'moveTo_'+1+'_'+1+'_fast',
-          // 'waitFor_40',
-          'moveTo_'+8+'_'+1+'_fast',
-          // 'waitFor_40',
-          // 'moveTo_'+8+'_'+8+'_slow',
-          // 'waitFor_40',
-          // 'moveTo_'+1+'_'+8+'_slow',
-          // 'waitFor_40',
-          // 'moveTo_'+2+'_'+7+'_slow',
-          // 'waitFor_40',
-          // 'moveTo_'+2+'_'+2+'_fast',
-          // 'waitFor_40',
-          // 'moveTo_'+7+'_'+2+'_fast',
-          // 'waitFor_40',
-          // 'moveTo_'+7+'_'+7+'_fast',
-          // 'zoom_in_'+25+'',
-          // 'waitFor_40',
-          // 'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_slow',
-          // 'waitFor_40',
-          // 'moveTo_'+8+'_'+7+'_slow',
-          // 'waitFor_40',
-          // 'moveTo_'+4+'_'+7+'_slow',
-          // 'waitFor_40',
-          // 'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_slow',
-          // 'zoom_out_'+50+'',
-          'zoom_outToInit',
+          // 'zoom_in_'+5+'',
+          // 'moveTo_'+7+'_'+4+'_fast',
+          // 'zoom_in_'+10+'',
+          // 'zoom_outToInit',
         )
 
       break;
       case 'attackFocus':
 
+        if (prePanZoom === true) {
+          this.camera.preInstructions.push(
+            'zoom_in_'+prePanZoomAmount+''
+          )
+        }
+
         if (this.playerNumber === 1) {
 
-          if (prePanZoom === true) {
-            this.camera.preInstructions.push(
-              'zoom_in_'+prePanZoomAmount+''
-            )
-          }
 
           this.camera.preInstructions.push(
             'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_fast',
@@ -6361,25 +6445,73 @@ class App extends Component {
 
           if (weaponType === 'melee') {
 
-            if ((this.camera.zoom.x-1) < .50) {
-              // console.log('auto camera single player attack focus zoom amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
-              zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
-              this.camera.preInstructions.push(
-                'zoom_in_'+zoomAdjust+''
-              )
-            }
+
+            // if ((this.camera.zoom.x-1) < .50) {
+
+            //   zoomSteps2 = ((.5-(this.camera.zoom.x-1))/.02).toFixed(0);
+            //   if (zoomSteps2 === 0) {
+            //     zoomSteps2 = 1;
+            //   }
+            //   if (zoomSteps2 < 0) {
+            //     zoomSteps2 = zoomSteps2*-1
+            //   }
+            //   // console.log('auto camera single player attack focus zoom amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
+            //   // zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
+            //   this.camera.preInstructions.push(
+            //     'zoom_in_'+zoomSteps2+''
+            //   )
+            // }
+            // if ((this.camera.zoom.x-1) > .50) {
+
+            //   zoomSteps2 = (((this.camera.zoom.x-1)-.50)/.02).toFixed(0);
+            //   if (zoomSteps2 === 0) {
+            //     zoomSteps2 = 1;
+            //   }
+            //   if (zoomSteps2 < 0) {
+            //     zoomSteps2 = zoomSteps2*-1
+            //   }
+            //   // console.log('auto camera single player attack focus zoom amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
+            //   // zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
+            //   this.camera.preInstructions.push(
+            //     'zoom_in_'+zoomSteps2+''
+            //   )
+            // }
+            getZoom(weaponType);
 
           }
 
           if (weaponType === 'ranged') {
 
-            if ((this.camera.zoom.x-1) < .35) {
-              // console.log('auto camera single player attack focus zoom amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5));
-              zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
-              this.camera.preInstructions.push(
-                'zoom_in_'+zoomAdjust+''
-              )
-            }
+            // if ((this.camera.zoom.x-1) < .35) {
+            //   zoomSteps2 = ((.35-(this.camera.zoom.x-1))/.02).toFixed(0);
+            //   if (zoomSteps2 === 0) {
+            //     zoomSteps2 = 1;
+            //   }
+            //   if (zoomSteps2 < 0) {
+            //     zoomSteps2 = zoomSteps2*-1
+            //   }
+            //   // console.log('auto camera single player attack focus zoom amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5));
+            //   // zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
+            //   this.camera.preInstructions.push(
+            //     'zoom_in_'+zoomSteps2+''
+            //   )
+            // }
+            
+            // if ((this.camera.zoom.x-1) < .35) {
+            //   zoomSteps2 = (((this.camera.zoom.x-1)-.35)/.02).toFixed(0);
+            //   if (zoomSteps2 === 0) {
+            //     zoomSteps2 = 1;
+            //   }
+            //   if (zoomSteps2 < 0) {
+            //     zoomSteps2 = zoomSteps2*-1
+            //   }
+            //   // console.log('auto camera single player attack focus zoom amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5));
+            //   // zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
+            //   this.camera.preInstructions.push(
+            //     'zoom_in_'+zoomSteps2+''
+            //   )
+            // }
+            getZoom(weaponType);
 
           }
 
@@ -6390,114 +6522,129 @@ class App extends Component {
         if (this.playerNumber === 2) {
 
 
-          twoPlayerCalc();
-
-          if (parsedPreInstructions.length < 4) {
-
-            // console.log('attack focus auto cam: 2 players in close range');
-
-            if (prePanZoom === true) {
-              this.camera.preInstructions.push(
-                'zoom_in_'+prePanZoomAmount+''
-              )
-            }
+          // twoPlayerCalc();
+          getPath()
+          .then((pathSet) => {
+            // console.log('Path set:', pathSet);
+            parsedPreInstructions = pathSet;
             
+            finish()
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          });
 
-            if (weaponType === 'melee') {
+          let finish = () => {
 
+            this.autoCamPanWaitingForPath = false;
+            // console.log('parsedPreInstructions',parsedPreInstructions);
+
+            if (parsedPreInstructions.length < 4) {
+
+              // console.log('attack focus auto cam: 2 players in close range');
+
+              if (prePanZoom === true) {
+                this.camera.preInstructions.push(
+                  'zoom_in_'+prePanZoomAmount+''
+                )
+              }
+              
+
+              if (weaponType === 'melee') {
+
+                this.camera.preInstructions.push(
+                  'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_fast',
+                  // 'moveTo_'+this.players[0].currentPosition.cell.number.x+'_'+this.players[0].currentPosition.cell.number.y+'_fast',
+                  // 'waitFor_50',
+                )
+
+                // if ((this.camera.zoom.x-1) < .50) {
+                //   // console.log('auto camera 2 player close melee attack focus zoom in amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
+                //   zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
+                //   this.camera.preInstructions.push(
+                //     'zoom_in_'+zoomAdjust+''
+                //   )
+                // }
+                // if ((this.camera.zoom.x-1) > .50) {
+                //   // console.log('auto camera 2 player close melee attack focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5));
+                //   zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
+                //   this.camera.preInstructions.push(
+                //     'zoom_out_'+zoomAdjust+''
+                //   )
+                // }
+                getZoom(weaponType);
+
+                // console.log('atkFocus',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
+              }
+
+              if (weaponType === 'ranged') {
+
+                // if ((this.camera.zoom.x-1) < .35) {
+                //   // console.log('auto camera 2 player close ranged attack focus zoom in amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5));
+                //   zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
+                //   this.camera.preInstructions.push(
+                //     'zoom_in_'+zoomAdjust+''
+                //   )
+                // }
+                // if ((this.camera.zoom.x-1) > .35) {
+                //   // console.log('auto camera 2 player close ranged attack focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5));
+                //   zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
+                //   this.camera.preInstructions.push(
+                //     'zoom_out_'+zoomAdjust+''
+                //   )
+                // }
+                getZoom(weaponType);
+
+              }
+
+
+
+            }
+
+
+            else {
+
+
+              // console.log('attack focus auto cam: 2 players at a distance');
+
+              // console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
+
+              let intermediateCell = {
+                x: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].x,
+                y: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].y,
+              }
+
+              
               this.camera.preInstructions.push(
-                'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_fast',
-                // 'moveTo_'+this.players[0].currentPosition.cell.number.x+'_'+this.players[0].currentPosition.cell.number.y+'_fast',
+                'moveTo_'+intermediateCell.x+'_'+intermediateCell.y+'_fast',
                 // 'waitFor_50',
               )
 
-              if ((this.camera.zoom.x-1) < .50) {
-                // console.log('auto camera 2 player close melee attack focus zoom in amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
-                zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
-                this.camera.preInstructions.push(
-                  'zoom_in_'+zoomAdjust+''
-                )
-              }
-              if ((this.camera.zoom.x-1) > .50) {
-                // console.log('auto camera 2 player close melee attack focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5));
-                zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
-                this.camera.preInstructions.push(
-                  'zoom_out_'+zoomAdjust+''
-                )
-              }
 
-              // console.log('atkFocus',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
-            }
+              // if ((this.camera.zoom.x-1) < .35) {
+              //   // console.log('auto cam 2 player attack focus distance zoom in amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5));
+              //   zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
+              //   this.camera.preInstructions.push(
+              //     'zoom_in_'+zoomAdjust+''
+              //   )
+              // }
+              // if ((this.camera.zoom.x-1) > .35) {
+              //   // console.log('auto cam 2 player attack focus distance zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5));
+              //   zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
+              //   this.camera.preInstructions.push(
+              //     'zoom_out_'+zoomAdjust+''
+              //   )
+              // }
 
-            if (weaponType === 'ranged') {
-
-              if ((this.camera.zoom.x-1) < .35) {
-                // console.log('auto camera 2 player close ranged attack focus zoom in amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5));
-                zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
-                this.camera.preInstructions.push(
-                  'zoom_in_'+zoomAdjust+''
-                )
-              }
-              if ((this.camera.zoom.x-1) > .35) {
-                // console.log('auto camera 2 player close ranged attack focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5));
-                zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
-                this.camera.preInstructions.push(
-                  'zoom_out_'+zoomAdjust+''
-                )
-              }
-            }
-
-
-
-          }
-
-
-          else {
-
-
-            // console.log('attack focus auto cam: 2 players at a distance');
-
-            // console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
-
-            let intermediateCell = {
-              x: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].x,
-              y: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].y,
-            }
-
-
-            if (prePanZoom === true) {
-              this.camera.preInstructions.push(
-                'zoom_in_'+prePanZoomAmount+''
-              )
-            }
+              getZoom('ranged');
 
             
-            this.camera.preInstructions.push(
-              'moveTo_'+intermediateCell.x+'_'+intermediateCell.y+'_fast',
-              // 'waitFor_50',
-            )
-
-
-            if ((this.camera.zoom.x-1) < .35) {
-              // console.log('auto cam 2 player attack focus distance zoom in amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5));
-              zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
-              this.camera.preInstructions.push(
-                'zoom_in_'+zoomAdjust+''
-              )
             }
-            if ((this.camera.zoom.x-1) > .35) {
-              // console.log('auto cam 2 player attack focus distance zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5));
-              zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
-              this.camera.preInstructions.push(
-                'zoom_out_'+zoomAdjust+''
-              )
-            }
-
-            
 
           }
 
         }
+
 
       break;
       case 'attackFocusBreak':
@@ -6527,128 +6674,158 @@ class App extends Component {
           )
         }
 
-        this.camera.preInstructions.push(
-          'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_fast',
-          // 'waitFor_50',
-        )
+        if (this.playerNumber === 1) {
 
-
-        if ((this.camera.zoom.x-1) < .50) {
-          // console.log('auto camera 1 player spawn focus zoom in amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
-          zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
           this.camera.preInstructions.push(
-            'zoom_in_'+zoomAdjust+''
+            'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_fast',
+            // 'waitFor_50',
           )
-        }
-        if ((this.camera.zoom.x-1) > .50) {
-          // console.log('auto camera 1 player spawn focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5));
-          zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
+  
+  
+          // if ((this.camera.zoom.x-1) < .50) {
+          //   // console.log('auto camera 1 player spawn focus zoom in amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
+          //   zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
+          //   this.camera.preInstructions.push(
+          //     'zoom_in_'+zoomAdjust+''
+          //   )
+          // }
+          // if ((this.camera.zoom.x-1) > .50) {
+          //   // console.log('auto camera 1 player spawn focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5));
+          //   zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
+          //   this.camera.preInstructions.push(
+          //     'zoom_out_'+zoomAdjust+''
+          //   )
+          // }
+          getZoom('melee');
+
+
           this.camera.preInstructions.push(
-            'zoom_out_'+zoomAdjust+''
+            'waitFor_50'
           )
-        }
-
-        this.camera.preInstructions.push(
-          'waitFor_50'
-        )
-
-
-
-        if (this.playerNumber === 2) {
-
-          twoPlayerCalc();
-
-          if (parsedPreInstructions.length < 4) {
-
-            // console.log('plyr spawn focus auto cam: 2 players in close range');
-
-            this.camera.preInstructions.push(
-              'moveTo_'+this.players[0].currentPosition.cell.number.x+'_'+this.players[0].currentPosition.cell.number.y+'_fast',
-              // 'moveTo_'+this.players[0].currentPosition.cell.number.x+'_'+this.players[0].currentPosition.cell.number.y+'_fast',
-              // 'waitFor_50',
-            )
-
-            // if ((this.camera.zoom.x-1) < .50) {
-            //   console.log('auto camera 2 player close melee attack focus zoom in amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5),'current zoom',1-this.camera.zoom.x);
-            //   zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
-            //   this.camera.preInstructions.push(
-            //     'zoom_in_'+zoomAdjust+''
-            //   )
-            // }
-            // if ((this.camera.zoom.x-1) > .50) {
-            //   console.log('auto camera 2 player close melee attack focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5),'current zoom',1-this.camera.zoom.x);
-            //   zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
-            //   this.camera.preInstructions.push(
-            //     'zoom_out_'+zoomAdjust+''
-            //   )
-            // }
-
-            // zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
-            zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
-            this.camera.preInstructions.push(
-              'zoom_out_'+zoomAdjust+''
-              // 'zoom_outToInit'
-            )
-            console.log('zoomAdjust',zoomAdjust);
-
-          }
-          else {
-
-            // console.log('plyr spawn focus auto cam: 2 players at a distance','zoomadjust',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5));
-
-            // console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
-
-            let intermediateCell = {
-              x: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].x,
-              y: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].y,
-            }
-
-            this.camera.preInstructions.push(
-              'moveTo_'+intermediateCell.x+'_'+intermediateCell.y+'_fast',
-              // 'waitFor_50',
-            )
-
-
-            // if ((this.camera.zoom.x-1) < .35) {
-            //   console.log('auto cam 2 player attack focus distance zoom in amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5),'current zoom',1-this.camera.zoom.x);
-            //   zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
-            //   this.camera.preInstructions.push(
-            //     'zoom_in_'+zoomAdjust+''
-            //   )
-            // }
-            // if ((this.camera.zoom.x-1) > .35) {
-            //   console.log('auto cam 2 player attack focus distance zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5),'current zoom',1-this.camera.zoom.x);
-            //   zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
-            //   this.camera.preInstructions.push(
-            //     'zoom_out_'+zoomAdjust+''
-            //   )
-            // }
-
-            // zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
-            zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
-            this.camera.preInstructions.push(
-              'zoom_out_'+(zoomAdjust+0)+''
-              // 'zoom_outToInit'
-            )
-            console.log('zoomAdjust2',zoomAdjust);
-
-          }
-
-        }
-        else {
-          // zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5)
-          // this.camera.preInstructions.push(
-          //   'zoom_out_'+zoomAdjust+''
-          //   // 'zoom_outToInit'
-          // )
-        }
-
-        zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5)
+  
+  
+          zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5)
           this.camera.preInstructions.push(
             // attackFocusBreakZoomCorrection
             // 'zoom_out_'+zoomAdjust+''
             'zoom_outToInit'
           )
+
+        }
+
+
+        if (this.playerNumber === 2) {
+
+          // twoPlayerCalc();
+          getPath()
+          .then((pathSet) => {
+            // console.log('Path set:', pathSet);
+            parsedPreInstructions = pathSet;
+            
+            finish()
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          });
+
+          let finish = () => {
+
+            this.autoCamPanWaitingForPath = false;
+            if (parsedPreInstructions.length < 4) {
+
+              // console.log('plyr spawn focus auto cam: 2 players in close range');
+
+              this.camera.preInstructions.push(
+                'moveTo_'+this.players[0].currentPosition.cell.number.x+'_'+this.players[0].currentPosition.cell.number.y+'_fast',
+                // 'moveTo_'+this.players[0].currentPosition.cell.number.x+'_'+this.players[0].currentPosition.cell.number.y+'_fast',
+                // 'waitFor_50',
+              )
+
+              // if ((this.camera.zoom.x-1) < .50) {
+              //   console.log('auto camera 2 player close melee attack focus zoom in amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5),'current zoom',1-this.camera.zoom.x);
+              //   zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
+              //   this.camera.preInstructions.push(
+              //     'zoom_in_'+zoomAdjust+''
+              //   )
+              // }
+              // if ((this.camera.zoom.x-1) > .50) {
+              //   console.log('auto camera 2 player close melee attack focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5),'current zoom',1-this.camera.zoom.x);
+              //   zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
+              //   this.camera.preInstructions.push(
+              //     'zoom_out_'+zoomAdjust+''
+              //   )
+              // }
+              getZoom('melee');
+
+              // zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
+              // zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
+              // this.camera.preInstructions.push(
+              //   'zoom_out_'+zoomAdjust+''
+              //   // 'zoom_outToInit'
+              // )
+              // console.log('zoomAdjust',zoomAdjust);
+
+            }
+
+            else {
+
+              // console.log('plyr spawn focus auto cam: 2 players at a distance','zoomadjust',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5));
+
+              // console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
+
+              let intermediateCell = {
+                x: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].x,
+                y: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].y,
+              }
+
+              this.camera.preInstructions.push(
+                'moveTo_'+intermediateCell.x+'_'+intermediateCell.y+'_fast',
+                // 'waitFor_50',
+              )
+
+
+              // if ((this.camera.zoom.x-1) < .35) {
+              //   console.log('auto cam 2 player attack focus distance zoom in amt',Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5),'current zoom',1-this.camera.zoom.x);
+              //   zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
+              //   this.camera.preInstructions.push(
+              //     'zoom_in_'+zoomAdjust+''
+              //   )
+              // }
+              // if ((this.camera.zoom.x-1) > .35) {
+              //   console.log('auto cam 2 player attack focus distance zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5),'current zoom',1-this.camera.zoom.x);
+              //   zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
+              //   this.camera.preInstructions.push(
+              //     'zoom_out_'+zoomAdjust+''
+              //   )
+              // }
+              getZoom('ranged');
+
+              // zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.35)*10)*5);
+              // zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5);
+              // this.camera.preInstructions.push(
+              //   'zoom_out_'+(zoomAdjust+0)+''
+              //   // 'zoom_outToInit'
+              // )
+              // console.log('zoomAdjust2',zoomAdjust);
+
+            }
+
+            this.camera.preInstructions.push(
+              'waitFor_50'
+            )
+    
+    
+            zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5)
+            this.camera.preInstructions.push(
+              // attackFocusBreakZoomCorrection
+              // 'zoom_out_'+zoomAdjust+''
+              'zoom_outToInit'
+            )
+
+          }
+
+        }
+
         // console.log('player spawn focus preInstructions',this.camera.preInstructions);
       break;
       case 'aiSpawnFocus':
@@ -6659,99 +6836,26 @@ class App extends Component {
           )
         }
 
+
+
         this.camera.preInstructions.push(
           'moveTo_'+player.currentPosition.cell.number.x+'_'+player.currentPosition.cell.number.y+'_fast',
           // 'waitFor_50',
         )
 
-
-
-        if ((this.camera.zoom.x-1) < .50) {
-          // console.log('auto camera 1 player spawn focus zoom in amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
-          zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
-          this.camera.preInstructions.push(
-            'zoom_in_'+zoomAdjust+''
-          )
-        }
-        if ((this.camera.zoom.x-1) > .50) {
-          // console.log('auto camera 1 player spawn focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5));
-          zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
-          this.camera.preInstructions.push(
-            'zoom_out_'+zoomAdjust+''
-          )
-        }
+        getZoom('ranged');
 
         this.camera.preInstructions.push(
           'waitFor_50'
         )
 
 
-        if (this.playerNumber === 1) {
-
-          this.camera.preInstructions.push(
-            'moveTo_'+this.players[0].currentPosition.cell.number.x+'_'+this.players[0].currentPosition.cell.number.y+'_fast',
-            // 'waitFor_50',
-          )
-
-          if ((this.camera.zoom.x-1) < .50) {
-            // console.log('auto camera 1 player spawn focus zoom in amt',Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5));
-            zoomAdjust = Math.ceil(((.50-(this.camera.zoom.x-1))*10)*5);
-            this.camera.preInstructions.push(
-              'zoom_in_'+zoomAdjust+''
-            )
-          }
-          if ((this.camera.zoom.x-1) > .50) {
-            // console.log('auto camera 1 player spawn focus zoom out amt',Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5));
-            zoomAdjust = Math.ceil((((this.camera.zoom.x-1)-.50)*10)*5);
-            this.camera.preInstructions.push(
-              'zoom_out_'+zoomAdjust+''
-            )
-          }
-
-        }
-
-
-        if (this.playerNumber === 2) {
-
-
-          twoPlayerCalc()
-
-          if (parsedPreInstructions.length < 4) {
-
-            // console.log('ai spawn focus auto cam: 2 players in close range');
-
-            this.camera.preInstructions.push(
-              'moveTo_'+this.players[0].currentPosition.cell.number.x+'_'+this.players[0].currentPosition.cell.number.y+'_fast',
-              // 'moveTo_'+this.players[0].currentPosition.cell.number.x+'_'+this.players[0].currentPosition.cell.number.y+'_fast',
-              // 'waitFor_50',
-            )
-
-          }
-          else {
-
-            let intermediateCell = {
-              x: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].x,
-              y: parsedPreInstructions[Math.ceil((parsedPreInstructions.length/2))].y,
-            }
-
-            this.camera.preInstructions.push(
-              'moveTo_'+intermediateCell.x+'_'+intermediateCell.y+'_fast',
-              // 'waitFor_50',
-            )
-
-
-            // console.log('zoomAdjust',zoomAdjust);
-
-          }
-
-        }
-
         zoomAdjust = Math.ceil(((.35-(this.camera.zoom.x-1))*10)*5)
-          this.camera.preInstructions.push(
-            // attackFocusBreakZoomCorrection
-            // 'zoom_out_'+zoomAdjust+''
-            'zoom_outToInit'
-          )
+        this.camera.preInstructions.push(
+          // attackFocusBreakZoomCorrection
+          // 'zoom_out_'+zoomAdjust+''
+          'zoom_outToInit'
+        )
 
         // console.log('aiSpawnFocus this.camera.preInstructions',this.camera.preInstructions);
 
@@ -6766,11 +6870,12 @@ class App extends Component {
 
     }
 
-    if (this.camera.preInstructions.length === 0) {
+
+    if (this.camera.preInstructions.length === 0 && this.autoCamPanWaitingForPath !== true) {
       this.settingAutoCamera = false;
     }
 
-    // console.log('AutoCameraSet',args,this.camera.preInstructions,this.camera.currentPreInstruction,this.camera.zoom.x-1);
+    console.log('AutoCameraSet',args,this.camera.preInstructions,this.camera.currentPreInstruction,this.camera.zoom.x-1);
 
   }
   setCameraFocus = (focusType, canvas, context, canvas2, context2) => {
