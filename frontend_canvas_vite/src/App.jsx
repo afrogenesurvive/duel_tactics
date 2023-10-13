@@ -6980,6 +6980,31 @@ class App extends Component {
     // console.log('ZFP!',this.camera.zoomFocusPan.x.toFixed(2),',',this.camera.zoomFocusPan.y.toFixed(2));
 
   }
+  toggleCameraCustomView = (state) => {
+
+      if (state === "on") {
+        this.camera.customView = {
+          state: true,
+          zoom: this.camera.zoom.x,
+          pan: {
+            x: this.camera.pan.x,
+            y: this.camera.pan.y
+          }
+        }
+        // exit camera menu/input controls
+      }
+      else {
+        this.camera.customView = {
+          state: false,
+          zoom: 0,
+          pan: {
+            x: 0,
+            y: 0
+          }
+        }
+        // zoom out to init?
+      }
+  }
 
 
   lineCrementer = (player) => {
@@ -35300,7 +35325,7 @@ class App extends Component {
       let state = this.toggleCameraMode;
     
       if (this.camera.state === false && state === true && this.camera.startCount < this.camera.startLimit) {
-        console.log('starting camera mode ...',this.camera.instructions.length,this.camera.preInstructions.length,this.settingAutoCamera,autoCamPanWaitingForPath);
+        console.log('starting camera mode ...',this.camera.instructions.length,this.camera.preInstructions.length,this.settingAutoCamera,this.autoCamPanWaitingForPath);
         this.camera.startCount++;
       }
       if (this.camera.state === true && state === true && this.camera.startCount < this.camera.startLimit) {
@@ -35628,7 +35653,7 @@ class App extends Component {
           state: false,
           zoom: 0,
           pan: {
-            x: 0,
+            x: 0, 
             y: 0
           }
         }
@@ -41003,6 +41028,7 @@ class App extends Component {
                   close={this.closeCamera}
                   toggleMode={this.toggleCameraModeUI}
                   preReset={this.preResetCamera}
+                  toggleCustomView={this.toggleCameraCustomView}
                 />
               </div>
             )}

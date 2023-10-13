@@ -12,6 +12,8 @@ import {
   faArrows,
   faUndo,
   faExclamationTriangle,
+  faSquare,
+  faCheckSquare
 } from '@fortawesome/free-solid-svg-icons';
 
 
@@ -138,6 +140,43 @@ const CameraControl = (props) => {
           <FontAwesomeIcon icon={faUndo} size="sm" className="cameraUIIcon"/>
         </a>
       </OverlayTrigger>
+      
+      {props.camera.customView.state === true && (
+        <OverlayTrigger
+          placement={'top'}
+          overlay={
+            <Popover id={`popover-positioned-${'top'}`}>
+              <Popover.Body>
+                <strong>Toggle Custom View</strong>
+              </Popover.Body>
+            </Popover>
+          }
+        >
+          <a href="javascript:"  onClick={props.toggleCustomView('off')}>
+            <FontAwesomeIcon icon={faSquare} size="sm" className="cameraUIIcon"/>
+          </a>
+        </OverlayTrigger>    
+      )}
+      
+      
+      
+      {props.camera.customView.state === false && (
+          <OverlayTrigger
+          placement={'top'}
+          overlay={
+            <Popover id={`popover-positioned-${'top'}`}>
+              <Popover.Body>
+                <strong>Toggle Custom View</strong>
+              </Popover.Body>
+            </Popover>
+          }
+        >
+          <a href="javascript:"  onClick={props.toggleCustomView('on')}>
+            <FontAwesomeIcon icon={faCheckSquare} size="sm" className="cameraUIIcon"/>
+          </a>
+        </OverlayTrigger>
+      )}
+      
 
 
     </div>
