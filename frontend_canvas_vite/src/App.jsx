@@ -2994,6 +2994,10 @@ class App extends Component {
         pan: {
           x: 0,
           y: 0
+        },
+        keyPressCount: {
+          start: 0,
+          limit: 4
         }
       }
     };
@@ -6183,7 +6187,7 @@ class App extends Component {
 
 
     if (this.camera.preInstructions.length > 0 || this.camera.instructions.length > 0) {
-      if (args === "attackFocusBreak") {
+      if (args === "attackFocusBreak" || args === 'zoomreset') {
         if (this.camera.instructions.length > 0) {
           if (
             this.camera.instructions[this.camera.instructions.length-1].action === "zoom_in" ||
@@ -6437,6 +6441,11 @@ class App extends Component {
           }
 
         }
+      break;
+      case 'zoomReset':
+        this.camera.preInstructions.push(
+          'zoom_outToInit'
+        )
       break;
       case 'playerSpawnFocus':
 
@@ -6980,18 +6989,22 @@ class App extends Component {
     // console.log('ZFP!',this.camera.zoomFocusPan.x.toFixed(2),',',this.camera.zoomFocusPan.y.toFixed(2));
 
   }
-  toggleCameraCustomView = (state) => {
+  toggleCameraCustomView = () => {
 
-      if (state === "on") {
+    
+      if (this.camera.customView.state === false) {
         this.camera.customView = {
           state: true,
           zoom: this.camera.zoom.x,
           pan: {
             x: this.camera.pan.x,
             y: this.camera.pan.y
+          },
+          keyPressCount: {
+            start: 0,
+            limit: 4
           }
         }
-        // exit camera menu/input controls
       }
       else {
         this.camera.customView = {
@@ -7000,9 +7013,12 @@ class App extends Component {
           pan: {
             x: 0,
             y: 0
+          },
+          keyPressCount: {
+            start: 0,
+            limit: 4
           }
         }
-        // zoom out to init?
       }
   }
 
@@ -23134,6 +23150,10 @@ class App extends Component {
         pan: {
           x: 0,
           y: 0
+        },
+        keyPressCount: {
+          start: 0,
+          limit: 4
         }
       }
     };
@@ -24458,6 +24478,7 @@ class App extends Component {
 
 
         if (
+          this.camera.customView.state !== true &&
           this.settingAutoCamera === false &&
           this.camera.preInstructions.length === 0 &&
           this.camera.instructions.length === 0
@@ -31989,6 +32010,7 @@ class App extends Component {
 
               // CAMERA ATTACK FOCUS
               if (
+                this.camera.customView.state !== true &&
                 this.settingAutoCamera === false &&
                 player.ai.state !== true &&
                 this.camera.preInstructions.length === 0 &&
@@ -32203,6 +32225,7 @@ class App extends Component {
             player.action = 'idle';
 
             if (
+              this.camera.customView.state !== true &&
               // this.settingAutoCamera === false &&
               player.ai.state !== true &&
               this.camera.preInstructions.length === 0 &&
@@ -35337,10 +35360,17 @@ class App extends Component {
         this.camera.startCount = 0;
         this.camera.state = false;
         this.camera.fixed = false;
+
+        if (
+          this.camera.customView.state !== true &&
+          this.settingAutoCamera === false &&
+          this.camera.preInstructions.length === 0 &&
+          this.camera.instructions.length === 0 &&
+          (this.camera.zoom.x-1) > this.zoomThresh
+          ) {
+          this.setAutoCamera('zoomReset',player)
+        }
       }
-
-      
-
 
     }
     //INDICATOR COUNTER
@@ -35391,6 +35421,16 @@ class App extends Component {
       }
       if (this.keyPressed[player.number-1].defend === true) {
         this.camera.mode = 'pan';
+      }
+      if (this.keyPressed[player.number-1].dodge === true) {
+        if (this.camera.customView.keyPressCount.start < this.camera.customView.keyPressCount.limit) {
+          this.camera.customView.keyPressCount.start ++;
+        }
+        if (this.camera.customView.keyPressCount.start >= this.camera.customView.keyPressCount.limit) {
+          this.camera.customView.keyPressCount.start = 0;
+          this.toggleCameraCustomView();
+        }
+        
       }
 
       if (this.camera.mode === 'zoom') {
@@ -35571,7 +35611,6 @@ class App extends Component {
         this.findFocusCell('panToCell',{},canvas,context)
       }
 
-
     };
     // RESET
     if (this.resetCameraSwitch === true) {
@@ -35655,6 +35694,10 @@ class App extends Component {
           pan: {
             x: 0, 
             y: 0
+          },
+          keyPressCount: {
+            start: 0,
+            limit: 4
           }
         }
       };
@@ -38485,6 +38528,7 @@ class App extends Component {
                 context.drawImage(updatedPlayerImg, sx, sy, sWidth, sHeight,  respawnPoint.center.x-25, respawnPoint.center.y-50,this.playerDrawWidth, this.playerDrawHeight)
 
                 if (
+                    this.camera.customView.state !== true &&
                     this.settingAutoCamera === false &&
                     player.ai.state !== true &&
                     this.camera.preInstructions.length === 0 &&

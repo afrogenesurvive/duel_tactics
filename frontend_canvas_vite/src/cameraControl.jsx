@@ -11,10 +11,12 @@ import {
   faSearchPlus,
   faArrows,
   faUndo,
-  faExclamationTriangle,
+  faExclamationTriangle
+} from '@fortawesome/free-solid-svg-icons';
+import {
   faSquare,
   faCheckSquare
-} from '@fortawesome/free-solid-svg-icons';
+} from '@fortawesome/free-regular-svg-icons';
 
 
 import './debugBox.css';
@@ -140,42 +142,28 @@ const CameraControl = (props) => {
           <FontAwesomeIcon icon={faUndo} size="sm" className="cameraUIIcon"/>
         </a>
       </OverlayTrigger>
-      
-      {props.camera.customView.state === true && (
-        <OverlayTrigger
-          placement={'top'}
-          overlay={
-            <Popover id={`popover-positioned-${'top'}`}>
-              <Popover.Body>
-                <strong>Toggle Custom View</strong>
-              </Popover.Body>
-            </Popover>
-          }
-        >
-          <a href="javascript:"  onClick={props.toggleCustomView('off')}>
-            <FontAwesomeIcon icon={faSquare} size="sm" className="cameraUIIcon"/>
-          </a>
-        </OverlayTrigger>    
-      )}
-      
-      
-      
-      {props.camera.customView.state === false && (
-          <OverlayTrigger
-          placement={'top'}
-          overlay={
-            <Popover id={`popover-positioned-${'top'}`}>
-              <Popover.Body>
-                <strong>Toggle Custom View</strong>
-              </Popover.Body>
-            </Popover>
-          }
-        >
-          <a href="javascript:"  onClick={props.toggleCustomView('on')}>
+
+
+      <OverlayTrigger
+        placement={'top'}
+        overlay={
+          <Popover id={`popover-positioned-${'top'}`}>
+            <Popover.Body>
+              <strong>Toggle Custom View</strong>
+            </Popover.Body>
+          </Popover>
+        }
+      >
+        <a href="javascript:"  onClick={props.toggleCustomView}>
+          {props.camera.customView.state === true && (
             <FontAwesomeIcon icon={faCheckSquare} size="sm" className="cameraUIIcon"/>
-          </a>
-        </OverlayTrigger>
-      )}
+          )}
+          {props.camera.customView.state === false && (
+            <FontAwesomeIcon icon={faSquare} size="sm" className="cameraUIIcon"/>
+          )}
+        </a>
+      </OverlayTrigger> 
+      
       
 
 
