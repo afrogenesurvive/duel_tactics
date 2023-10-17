@@ -6443,9 +6443,17 @@ class App extends Component {
         }
       break;
       case 'zoomReset':
-        this.camera.preInstructions.push(
-          'zoom_outToInit'
-        )
+        if ((zoom-1) < this.zoomThresh) {
+          this.camera.preInstructions.push(
+            'zoom_inToInit'
+          )
+        }
+        if ((zoom-1) > this.zoomThresh) {
+          this.camera.preInstructions.push(
+            'zoom_outToInit'
+          )  
+        }
+        
       break;
       case 'playerSpawnFocus':
 
@@ -35356,7 +35364,7 @@ class App extends Component {
         this.camera.startCount++;
       }
       if (this.camera.state === true && state === true && this.camera.startCount >= this.camera.startLimit) {
-        // console.log('thank you for using the camera');
+        console.log('thank you for using the camera');
         this.camera.startCount = 0;
         this.camera.state = false;
         this.camera.fixed = false;
@@ -35365,8 +35373,8 @@ class App extends Component {
           this.camera.customView.state !== true &&
           this.settingAutoCamera === false &&
           this.camera.preInstructions.length === 0 &&
-          this.camera.instructions.length === 0 &&
-          (this.camera.zoom.x-1) > this.zoomThresh
+          this.camera.instructions.length === 0
+          // (this.camera.zoom.x-1) > this.zoomThresh
           ) {
           this.setAutoCamera('zoomReset',player)
         }
@@ -35725,74 +35733,102 @@ class App extends Component {
           // console.log('Step through pre instructions...','preInstructions',preInstruction);
 
            
-            switch (preInstruction.split("_")[0]) {
-              case 'moveTo':
-  
-                let speed = preInstruction.split("_")[3];
-                if (preInstruction.split("_")[0] === "moveTo" && this.autoCamPanWaitingForPath !== true) {
-                  this.autoCamPanWaitingForPath = true;
-                  focusCell.x = parseInt(preInstruction.split("_")[1])
-                  focusCell.y = parseInt(preInstruction.split("_")[2])
-  
-                  this.findFocusCell('cellToPan',focusCell,canvas,context,speed)
-                }
-              break;
-              case 'zoom':
-                if (preInstruction.split("_")[1] === 'outToInit') {
-                  
-                  let zoomSteps = (((this.camera.zoom.x-1)-this.zoomThresh)/.02).toFixed(0);
-                  zoomSteps = parseInt(zoomSteps)
-                  if (zoomSteps === 0) {
-                    zoomSteps = 1;
-                  }
-                  if (zoomSteps < 0) {
-                    zoomSteps = zoomSteps*-1
-                  }
+          switch (preInstruction.split("_")[0]) {
+            case 'moveTo':
 
-                  this.camera.instructions.push(
-                    {
-                      action:'zoom_out_'+zoomSteps,
-                      // action:'zoom_outToInit',
-                      action2:'',
-                      count: 0,
-                      count2: 0,
-                      limit: zoomSteps,
-                      // limit: 1,
-                      limit2: 0,
-                      speed: "",
-                    }
-                  )
+              let speed = preInstruction.split("_")[3];
+              if (preInstruction.split("_")[0] === "moveTo" && this.autoCamPanWaitingForPath !== true) {
+                this.autoCamPanWaitingForPath = true;
+                focusCell.x = parseInt(preInstruction.split("_")[1])
+                focusCell.y = parseInt(preInstruction.split("_")[2])
+
+                this.findFocusCell('cellToPan',focusCell,canvas,context,speed)
+              }
+            break;
+            case 'zoom':
+              if (preInstruction.split("_")[1] === 'outToInit') {
+                
+                let zoomSteps = (((this.camera.zoom.x-1)-this.zoomThresh)/.02).toFixed(0);
+                zoomSteps = parseInt(zoomSteps)
+                if (zoomSteps === 0) {
+                  zoomSteps = 1;
                 }
-                else {
-                  this.camera.instructions.push(
-                    {
-                      action:'zoom_'+preInstruction.split("_")[1],
-                      action2:'',
-                      count: 0,
-                      count2: 0,
-                      limit: parseInt(preInstruction.split("_")[2]),
-                      limit2: 0,
-                      speed: "",
-                    }
-                  )
+                if (zoomSteps < 0) {
+                  zoomSteps = zoomSteps*-1
                 }
-  
-              break;
-              case 'waitFor':
+
                 this.camera.instructions.push(
                   {
-                    action:'wait',
+                    action:'zoom_out_'+zoomSteps,
+                    // action:'zoom_outToInit',
                     action2:'',
                     count: 0,
                     count2: 0,
-                    limit: parseInt(preInstruction.split("_")[1]),
+                    limit: zoomSteps,
+                    // limit: 1,
                     limit2: 0,
                     speed: "",
                   }
                 )
-  
-              break;
-            }
+              }
+              if (preInstruction.split("_")[1] === 'inToInit') {
+                
+                let zoomSteps = ((this.zoomThresh)-(this.camera.zoom.x-1)/.02).toFixed(0);
+                zoomSteps = parseInt(zoomSteps)
+                if (zoomSteps === 0) {
+                  zoomSteps = 1;
+                }
+                if (zoomSteps < 0) {
+                  zoomSteps = zoomSteps*-1
+                }
+
+                this.camera.instructions.push(
+                  {
+                    action:'zoom_in_'+zoomSteps,
+                    // action:'zoom_outToInit',
+                    action2:'',
+                    count: 0,
+                    count2: 0,
+                    limit: zoomSteps,
+                    // limit: 1,
+                    limit2: 0,
+                    speed: "",
+                  }
+                )
+              }
+              else if (
+                preInstruction.split("_")[1] !== 'inToInit' &&
+                preInstruction.split("_")[1] !== 'outToInit'
+              ) {
+                this.camera.instructions.push(
+                  {
+                    action:'zoom_'+preInstruction.split("_")[1],
+                    action2:'',
+                    count: 0,
+                    count2: 0,
+                    limit: parseInt(preInstruction.split("_")[2]),
+                    limit2: 0,
+                    speed: "",
+                  }
+                )
+              }
+
+            break;
+            case 'waitFor':
+              this.camera.instructions.push(
+                {
+                  action:'wait',
+                  action2:'',
+                  count: 0,
+                  count2: 0,
+                  limit: parseInt(preInstruction.split("_")[1]),
+                  limit2: 0,
+                  speed: "",
+                }
+              )
+
+            break;
+          }
   
 
           if (this.camera.currentPreInstruction ===  this.camera.preInstructions.length-1) {
@@ -35804,7 +35840,7 @@ class App extends Component {
             this.camera.currentPreInstruction++;
           }
 
-          // console.log('auto camera: pre instruction parsed: ',this.camera.instructions);
+          console.log('auto camera: pre instruction parsed: ',this.camera.instructions);
 
         
         }
