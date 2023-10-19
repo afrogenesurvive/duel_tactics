@@ -16,6 +16,7 @@ import {
   faBorderAll,
   faChessBoard,
   faExclamationTriangle,
+  faCheckSquare
 } from '@fortawesome/free-solid-svg-icons';
 
 
@@ -6104,6 +6105,17 @@ class App extends Component {
   }
   closeCamera = () => {
     this.camera.state = false;
+    this.camera.fixed = false;
+
+    if (
+      this.camera.customView.state !== true &&
+      this.settingAutoCamera === false &&
+      this.camera.preInstructions.length === 0 &&
+      this.camera.instructions.length === 0
+      // (this.camera.zoom.x-1) > this.zoomThresh
+      ) {
+      this.setAutoCamera('zoomReset',this.players[0])
+    }
   }
   preResetCamera = () => {
 
@@ -41075,7 +41087,13 @@ class App extends Component {
                       </Popover>
                     }
                   >
+                    <div className="icon-container">
                     <FontAwesomeIcon icon={faVideo} size="sm" className="setSwitchIcon"/>
+                    {this.camera.customView.state === true && (
+                      <FontAwesomeIcon icon={faCheckSquare} size="sm" className="setSwitchIcon top-right-icon"/>
+                    )}
+                    </div>
+                    
                   </OverlayTrigger>
 
                 </a>

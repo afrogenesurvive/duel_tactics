@@ -215,6 +215,17 @@
   z-index: 4;
 }
 
+.icon-container {
+  position: relative;
+  display: inline-block;
+}
+.top-right-icon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 15px;
+  color: red;
+}
 .cameraBox {
   border: 2px solid red;
   border-radius: 5px;
