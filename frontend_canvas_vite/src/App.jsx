@@ -41082,7 +41082,13 @@ class App extends Component {
                     overlay={
                       <Popover id={`popover-positioned-${'top'}`}>
                         <Popover.Body>
+                        {this.camera.customView.state !== true && ( 
                           <strong>Toggle Camera Sub-menu</strong>
+                        )}
+                        {this.camera.customView.state === true && ( 
+                          <strong>Toggle Camera Sub-menu (Custom View is set)</strong>
+                        )}
+                          
                         </Popover.Body>
                       </Popover>
                     }
