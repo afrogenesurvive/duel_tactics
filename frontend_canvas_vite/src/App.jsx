@@ -6751,8 +6751,16 @@ class App extends Component {
     if (zoom-1 < this.zoomThresh) {
       // console.log('above zoomThresh');
 
+      // focusX/y is the desire zoom focus point
+      // this.camera.zoomFocusPan.x = canvas.width / 2 - focusX * zoom or zoom-1;
+      // this.camera.zoomFocusPan.y = canvas.height / 2 - focusY * zoom or zoom-1;
+
+
       // this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
       // this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
+
+      // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+      // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
       if (this.camera.mode === "zoom" && this.camera.zoomDirection === "in") {
 
@@ -35350,7 +35358,7 @@ class App extends Component {
           // }
 
         }
-        // console.log('zooming out to init',this.camera.zoom.x-1);
+        console.log('zooming out to init',this.camera.zoom.x-1);
 
     }
     //INPUT MODE SWITCH
