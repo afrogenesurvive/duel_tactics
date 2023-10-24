@@ -4641,7 +4641,12 @@ class App extends Component {
     }
 
     if (this.gridWidth >= 12) {
-      this.zoomThresh = -.25;
+      if (window.innerWidth < 1100) {
+        this.zoomThresh = -.25;
+      }
+      else {
+        this.zoomThresh = -.05;
+      }
     }
     else {
       // this.zoomThresh = -.05;
@@ -35792,6 +35797,7 @@ class App extends Component {
                 )
               }
               if (preInstruction.split("_")[1] === 'inToInit') {
+                console.log('here',this.zoomThresh);
                 
                 let zoomSteps = ((this.zoomThresh)-(this.camera.zoom.x-1)/.02).toFixed(0);
                 zoomSteps = parseInt(zoomSteps)
@@ -40660,11 +40666,11 @@ class App extends Component {
       // this.camera.zoom.x = 1;
       // this.camera.zoom.y = 1;
 
-      this.setInitZoom = {
-        state: true,
-        windowWidth: window.innerWidth,
-        gridWidth: this.gridWidth,
-      }
+      // this.setInitZoom = {
+      //   state: true,
+      //   windowWidth: window.innerWidth,
+      //   gridWidth: this.gridWidth,
+      // }
     }
 
     let diff = 1 - this.camera.zoom.x;
