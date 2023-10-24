@@ -35797,9 +35797,9 @@ class App extends Component {
                 )
               }
               if (preInstruction.split("_")[1] === 'inToInit') {
-                console.log('here',this.zoomThresh);
                 
-                let zoomSteps = ((this.zoomThresh)-(this.camera.zoom.x-1)/.02).toFixed(0);
+                
+                let zoomSteps = (((this.zoomThresh)-(this.camera.zoom.x-1))/.02).toFixed(0);
                 zoomSteps = parseInt(zoomSteps)
                 if (zoomSteps === 0) {
                   zoomSteps = 1;
@@ -35866,7 +35866,7 @@ class App extends Component {
             this.camera.currentPreInstruction++;
           }
 
-          console.log('auto camera: pre instruction parsed: ',this.camera.instructions);
+          // console.log('auto camera: pre instruction parsed: ',this.camera.instructions);
 
         
         }
