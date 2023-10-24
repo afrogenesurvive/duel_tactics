@@ -363,12 +363,6 @@ class App extends Component {
       row2: ['**_*_2.0_a_0a*','**_*_2.1_a_0a*','**_b_2.2_a_0a*','**_*_2.3_a_0a*'],
       row3: ['**_h_3.0_a_0a*','**_*_3.1_a_0a*','**_h_3.2_a_0a*','**_*_3.3_a_0a*'],
     };
-    // this.levelData3 = {
-    //   row0: ['x00x','x01x','x02x','x03x'],
-    //   row1: ['x10x','x11x','x12x','x13x'],
-    //   row2: ['x20x','x21x','x22x','y23x'],
-    //   row3: ['z30x','x31x','x32x','x33x'],
-    // };
     this.terrainLevelDataRef = {
       a:{
         name: 'grass',
@@ -1382,8 +1376,8 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 9,
-              y: 9,
+              x: 1,
+              y: 5,
             },
             center: {
               x: 0,
@@ -6105,7 +6099,7 @@ class App extends Component {
 
   }
   toggleCameraModeUI = (mode) => {
-
+    
     this.camera.mode = mode;
   }
   closeCamera = () => {
@@ -6309,7 +6303,7 @@ class App extends Component {
         }
 
       }
-      console.log('zoomSteps2',zoomSteps2);
+      // console.log('zoomSteps2',zoomSteps2);
     }
 
 
@@ -6719,8 +6713,43 @@ class App extends Component {
 
   }
   menuToggleCamera = () => {
-    this.camera.state = true;
-    this.camera.fixed = true;
+
+
+    let canStart = true;
+    if (
+      this.camera.instructions.length > 0 ||
+      this.camera.preInstructions.length > 0 ||
+      this.settingAutoCamera === true ||
+      this.autoCamPanWaitingForPath === true
+      // this.toggleCameraMode === false
+    ) {
+      canStart = false;
+    }
+    if (this.camera.customView.state === false) {
+        
+      if ((this.camera.zoom.x-1) > this.zoomThresh || (this.camera.zoom.x-1) < this.zoomThresh) {
+        canStart = false;
+      }
+      if ((this.camera.zoom.x-1) > (this.zoomThresh+.01) || (this.camera.zoom.x-1) < (this.zoomThresh-.01)) {
+        canStart = false;
+      }
+      if (this.camera.pan.x < -1 || this.camera.pan.x > -1) {
+        canStart = false;
+      }
+      if (this.camera.pan.y < -1 || this.camera.pan.y > -1) {
+        canStart = false;
+      }
+    }
+
+    if (canStart === true) {
+      this.camera.startCount = 0;
+      this.camera.state = true;
+      this.camera.fixed = true;
+    }
+    if (canStart === false) {
+      console.log("auto cam is probably engaged. Can't start input cam");
+    }
+
   }
   setZoomPan = (canvas) => {
     // console.log('setZoomPan');
@@ -6756,16 +6785,6 @@ class App extends Component {
     if (zoom-1 < this.zoomThresh) {
       // console.log('above zoomThresh');
 
-      // focusX/y is the desire zoom focus point
-      // this.camera.zoomFocusPan.x = canvas.width / 2 - focusX * zoom or zoom-1;
-      // this.camera.zoomFocusPan.y = canvas.height / 2 - focusY * zoom or zoom-1;
-
-
-      // this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
-      // this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
-
-      // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
-      // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
 
       if (this.camera.mode === "zoom" && this.camera.zoomDirection === "in") {
 
@@ -6776,11 +6795,6 @@ class App extends Component {
       
 
       if (this.camera.mode === "zoom" && this.camera.zoomDirection === "out") {
-
-
-        // how many pan steps (x & y) between current & centre
-        // incrementx = panx steps / 
-        // incrementy = pany steps / 
 
 
         // ADJUST PAN INCREMENT FOR ZOOM OUT CENTERING
@@ -6848,6 +6862,23 @@ class App extends Component {
 
         // ZOOM INTO WHAT CAMERA IS CENTERED ON (MAGIC FORMULA!!!)
         if (this.camera.zoomDirection === "in") {
+
+          
+          // this.camera.zoomFocusPan.x = (canvas.width / 2) - (this.players[0].currentPosition.cell.center.x * zoom);
+          // this.camera.zoomFocusPan.y = (canvas.height / 2) - (this.players[0].currentPosition.cell.center.y * zoom);
+          
+          // this.camera.zoomFocusPan.x = (canvas.width / 2) - (this.players[0].currentPosition.cell.center.x * zoom-1);
+          // this.camera.zoomFocusPan.y = (canvas.height / 2) - (this.players[0].currentPosition.cell.center.y * zoom-1);
+          
+
+          // this.camera.zoomFocusPan.x = (diff*(canvas.width/2));
+          // this.camera.zoomFocusPan.y = (diff*(canvas.width/2))-(diff*(canvas.width/6));
+
+          // this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
+          // this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
+
+
+
 
           this.camera.zoomFocusPan.x = ((canvas.width/2)*(1-zoom)+1)+(this.camera.pan.x*zoom);
           this.camera.zoomFocusPan.y = ((canvas.height/2)*(1-zoom)+1)+(this.camera.pan.y*zoom);
@@ -35363,7 +35394,7 @@ class App extends Component {
           // }
 
         }
-        console.log('zooming out to init',this.camera.zoom.x-1);
+        // console.log('zooming out to init',this.camera.zoom.x-1);
 
     }
     //INPUT MODE SWITCH
@@ -35371,17 +35402,51 @@ class App extends Component {
       this.camera.startCount = 0;
     }
     if (this.camera.state === false && this.toggleCameraMode === false && this.camera.startCount >= this.camera.startLimit  && this.camera.instructionType === 'default') {
-      console.log('welcome to camera mode');
-      this.camera.startCount = 0;
-      this.camera.state = true;
-      this.camera.fixed = true;
+      // console.log('welcome to input camera mode');
+
+      let canStart = true;
+      if (
+        this.camera.instructions.length > 0 ||
+        this.camera.preInstructions.length > 0 ||
+        this.settingAutoCamera === true ||
+        this.autoCamPanWaitingForPath === true
+        // this.toggleCameraMode === false
+      ) {
+        canStart = false;
+      }
+      if (this.camera.customView.state === false) {
+          
+        if ((this.camera.zoom.x-1) > this.zoomThresh || (this.camera.zoom.x-1) < this.zoomThresh) {
+          canStart = false;
+        }
+        // if ((this.camera.zoom.x-1) > (this.zoomThresh+.01) || (this.camera.zoom.x-1) < (this.zoomThresh-.01)) {
+        //   canStart = false;
+        // }
+        if (this.camera.pan.x < -1 || this.camera.pan.x > -1) {
+          canStart = false;
+        }
+        if (this.camera.pan.y < -1 || this.camera.pan.y > -1) {
+          canStart = false;
+        }
+      }
+
+      if (canStart === true) {
+        this.camera.startCount = 0;
+        this.camera.state = true;
+        this.camera.fixed = true;
+      }
+      if (canStart === false) {
+        this.camera.startCount = 0;
+        console.log("auto cam is probably engaged. Can't start input cam");
+      }
+      
     }
     if (this.toggleCameraMode === true) {
 
       let state = this.toggleCameraMode;
     
       if (this.camera.state === false && state === true && this.camera.startCount < this.camera.startLimit) {
-        console.log('starting camera mode ...',this.camera.instructions.length,this.camera.preInstructions.length,this.settingAutoCamera,this.autoCamPanWaitingForPath);
+        // console.log('starting camera mode ...');
         this.camera.startCount++;
       }
       if (this.camera.state === true && state === true && this.camera.startCount < this.camera.startLimit) {
@@ -35389,7 +35454,7 @@ class App extends Component {
         this.camera.startCount++;
       }
       if (this.camera.state === true && state === true && this.camera.startCount >= this.camera.startLimit) {
-        console.log('thank you for using the camera');
+        // console.log('thank you for using the camera');
         this.camera.startCount = 0;
         this.camera.state = false;
         this.camera.fixed = false;
