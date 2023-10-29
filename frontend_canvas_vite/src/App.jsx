@@ -43346,8 +43346,7 @@ class App extends Component {
               <a
                 href="javascript:"
                 className="setSwitchLink"
-                onClick={this.openSettings}
-              >
+                onClick={this.openSettings}>
                 <OverlayTrigger
                   placement={"top"}
                   overlay={
@@ -43356,8 +43355,7 @@ class App extends Component {
                         <strong>Show Settings</strong>
                       </Popover.Body>
                     </Popover>
-                  }
-                >
+                  }>
                   <FontAwesomeIcon
                     icon={faCogs}
                     size="sm"
@@ -43370,8 +43368,7 @@ class App extends Component {
                 <a
                   href="javascript:"
                   className="setSwitchLink cameraModeHighlighted"
-                  onClick={this.toggleAiDisplay}
-                >
+                  onClick={this.toggleAiDisplay}>
                   <OverlayTrigger
                     placement={"top"}
                     overlay={
@@ -43380,8 +43377,7 @@ class App extends Component {
                           <strong>Toggle Ai Sub-menu</strong>
                         </Popover.Body>
                       </Popover>
-                    }
-                  >
+                    }>
                     <FontAwesomeIcon
                       icon={faRobot}
                       size="sm"
@@ -43395,8 +43391,7 @@ class App extends Component {
                 <a
                   href="javascript:"
                   className="setSwitchLink"
-                  onClick={this.toggleAiDisplay}
-                >
+                  onClick={this.toggleAiDisplay}>
                   <OverlayTrigger
                     placement={"top"}
                     overlay={
@@ -43405,8 +43400,7 @@ class App extends Component {
                           <strong>Toggle Ai Sub-menu</strong>
                         </Popover.Body>
                       </Popover>
-                    }
-                  >
+                    }>
                     <FontAwesomeIcon
                       icon={faRobot}
                       size="sm"
@@ -43419,8 +43413,7 @@ class App extends Component {
                 <a
                   href="javascript:"
                   className="setSwitchLink"
-                  onClick={this.menuToggleCamera}
-                >
+                  onClick={this.menuToggleCamera}>
                   <OverlayTrigger
                     placement={"top"}
                     overlay={
@@ -43436,8 +43429,7 @@ class App extends Component {
                           )}
                         </Popover.Body>
                       </Popover>
-                    }
-                  >
+                    }>
                     <div className="icon-container">
                       <FontAwesomeIcon
                         icon={faVideo}
@@ -43458,8 +43450,7 @@ class App extends Component {
               <a
                 href="javascript:"
                 className="setSwitchLink"
-                onClick={this.gameReset.bind(this, "soft")}
-              >
+                onClick={this.gameReset.bind(this, "soft")}>
                 <OverlayTrigger
                   placement={"top"}
                   overlay={
@@ -43468,8 +43459,7 @@ class App extends Component {
                         <strong>Reset Game (w/ last settings)</strong>
                       </Popover.Body>
                     </Popover>
-                  }
-                >
+                  }>
                   <FontAwesomeIcon
                     icon={faUndo}
                     size="sm"
@@ -43503,8 +43493,7 @@ class App extends Component {
                         </strong>
                       </Popover.Body>
                     </Popover>
-                  }
-                >
+                  }>
                   <FontAwesomeIcon
                     icon={faChessBoard}
                     size="sm"
@@ -43565,8 +43554,7 @@ class App extends Component {
             ref="popupProgressSvg"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 -0.5 30 30"
-            shapeRendering="crispEdges"
-          >
+            shapeRendering="crispEdges">
             <metadata>
               Made with Pixels to Svg https://codepen.io/shshaw/pen/XbxvNj
             </metadata>
@@ -44217,6 +44205,7 @@ class App extends Component {
             id="enrouteIndicate"
             alt="..."
           />
+
           <img
             src={targetSwitchIndicate}
             className="hidden playerImgs"
@@ -44336,6 +44325,7 @@ class App extends Component {
             id="pickupWeaponIndicate"
             alt="..."
           />
+
           <img
             src={dropWeaponIndicate}
             className="hidden playerImgs"
