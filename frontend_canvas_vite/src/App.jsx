@@ -6430,7 +6430,7 @@ class App extends Component {
     this.camera.state = false;
     this.camera.fixed = false;
     this.settingAutoCamera = true;
-    // console.log('setting auto camera instructions: ',args,this.camera.pan.x,this.camera.pan.y);
+    console.log("setting auto camera instructions: ", args);
 
     let weaponType = "";
     if (
@@ -34901,7 +34901,7 @@ class App extends Component {
           }
 
           if (this.camera.currentPreInstruction === this.camera.preInstructions.length - 1) {
-            // console.log('this is the last preInstruction. Empty array');
+            console.log("this is the last preInstruction. Empty array");
             this.camera.preInstructions = [];
             this.camera.currentPreInstruction = 0;
             // console.log('camera instructions',this.camera.instructions);
@@ -34951,6 +34951,9 @@ class App extends Component {
 
                 break;
             }
+
+            this.setZoomPan(canvas);
+            this.findFocusCell("panToCell", "", {}, canvas, context);
           }
           if (mode === "pan") {
             this.camera.mode = "pan";
@@ -35004,10 +35007,10 @@ class App extends Component {
                 }
                 break;
             }
-          }
 
-          this.setZoomPan(canvas);
-          this.findFocusCell("panToCell", "", {}, canvas, context);
+            this.setZoomPan(canvas);
+            this.findFocusCell("panToCell", "", {}, canvas, context);
+          }
         };
 
         // PARSED INSTRUCTIONS!
@@ -36940,7 +36943,11 @@ class App extends Component {
 
           // FINISHED CAMERA INSTRUCTIONS
           if (this.camera.currentInstruction >= this.camera.instructions.length) {
-            // console.log('finished camera instructions');
+            console.log(
+              "finished camera instructions",
+              this.camera.instructions,
+              this.autoCamPanWaitingForPath
+            );
             this.camera.instructions = [];
             this.camera.currentInstruction = 0;
             this.settingAutoCamera = false;
