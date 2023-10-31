@@ -697,30 +697,10 @@ class App extends Component {
       ],
     };
     this.levelData3 = {
-      row0: [
-        "**_a_0.0_a_0a*",
-        "**_*_0.1_a_0a*",
-        "**_*_0.2_a_0a*",
-        "**_*_0.3_a_0a*",
-      ],
-      row1: [
-        "**_*_1.0_a_0a*",
-        "**_*_1.1_a_0a*",
-        "**_*_1.2_a_0a*",
-        "**_*_1.3_a_0a*",
-      ],
-      row2: [
-        "**_*_2.0_a_0a*",
-        "**_*_2.1_a_0a*",
-        "**_b_2.2_a_0a*",
-        "**_*_2.3_a_0a*",
-      ],
-      row3: [
-        "**_h_3.0_a_0a*",
-        "**_*_3.1_a_0a*",
-        "**_h_3.2_a_0a*",
-        "**_*_3.3_a_0a*",
-      ],
+      row0: ["**_a_0.0_a_0a*", "**_*_0.1_a_0a*", "**_*_0.2_a_0a*", "**_*_0.3_a_0a*"],
+      row1: ["**_*_1.0_a_0a*", "**_*_1.1_a_0a*", "**_*_1.2_a_0a*", "**_*_1.3_a_0a*"],
+      row2: ["**_*_2.0_a_0a*", "**_*_2.1_a_0a*", "**_b_2.2_a_0a*", "**_*_2.3_a_0a*"],
+      row3: ["**_h_3.0_a_0a*", "**_*_3.1_a_0a*", "**_h_3.2_a_0a*", "**_*_3.3_a_0a*"],
     };
     this.terrainLevelDataRef = {
       a: {
@@ -3105,8 +3085,8 @@ class App extends Component {
     };
     this.moveStepRef = [
       [
-        0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65,
-        0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1,
+        0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8,
+        0.85, 0.9, 0.95, 1,
       ],
       [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
       [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1],
@@ -3530,10 +3510,7 @@ class App extends Component {
     let connectedGamepadsCount = gamepads.filter((x) => x !== null).length;
     let connectedGamepads = gamepads.filter((x) => x !== null);
     for (const pad of connectedGamepads) {
-      if (
-        pad.id.substr(0, 11) === "Joy-Con (R)" ||
-        pad.id.substr(0, 11) === "Joy-Con (L)"
-      ) {
+      if (pad.id.substr(0, 11) === "Joy-Con (R)" || pad.id.substr(0, 11) === "Joy-Con (L)") {
         connectedGamepads.splice(
           connectedGamepads.indexOf((x) => x.index === pad.index),
           1
@@ -3544,9 +3521,7 @@ class App extends Component {
     // console.log('connectedGamepads',connectedGamepads);
 
     let currentGamepadPlayer;
-    let settingsGamepadPlayerCount = this.gamepadConfig.filter(
-      (x) => x.input === "Gamepad"
-    ).length;
+    let settingsGamepadPlayerCount = this.gamepadConfig.filter((x) => x.input === "Gamepad").length;
 
     if (this.gamepadPollCounter.count1 === 0) {
       this.gamepadPollCounter.count1 = 1;
@@ -3594,10 +3569,7 @@ class App extends Component {
 
         if (this.connectedGamepadsInit !== true && connectedGamepads[0]) {
           if (connectedGamepads[connectedGamepadIndexB]) {
-            elem.type = connectedGamepads[connectedGamepadIndexB].id.substr(
-              0,
-              11
-            );
+            elem.type = connectedGamepads[connectedGamepadIndexB].id.substr(0, 11);
             elem.id =
               connectedGamepads[connectedGamepadIndexB].id.substr(0, 11) +
               "_" +
@@ -3610,10 +3582,7 @@ class App extends Component {
 
           // console.log('this.gamepadConfig + connected gamepads',this.gamepadConfig,connectedGamepads,settingsGamepadPlayerCount);
 
-          if (
-            this.gamepadConfig.filter((x) => x.id !== "").length ===
-            settingsGamepadPlayerCount
-          ) {
+          if (this.gamepadConfig.filter((x) => x.id !== "").length === settingsGamepadPlayerCount) {
             this.connectedGamepadsInit = true;
           }
         }
@@ -3655,18 +3624,13 @@ class App extends Component {
 
       if (!!gp) {
         // console.log('gp',gp);
-        let gamepadConfigRef = this.gamepadConfig.find(
-          (x) => x.gamepadIndex === gp.index
-        );
+        let gamepadConfigRef = this.gamepadConfig.find((x) => x.gamepadIndex === gp.index);
 
         if (gamepadConfigRef) {
           currentGamepadPlayer = gamepadConfigRef.plyrNo;
           const keyPressedIndex = currentGamepadPlayer - 1;
 
-          if (
-            gp.id.substr(0, 11) !== "Joy-Con (R)" &&
-            gp.id.substr(0, 11) !== "Joy-Con (L)"
-          ) {
+          if (gp.id.substr(0, 11) !== "Joy-Con (R)" && gp.id.substr(0, 11) !== "Joy-Con (L)") {
             // CHECK BUTTONS!!
             for (const btn of gp.buttons) {
               if (btn.pressed === true) {
@@ -3738,9 +3702,7 @@ class App extends Component {
                     break;
                   case 5:
                     // r btn
-                    if (
-                      this.players[currentGamepadPlayer - 1].dead.state === true
-                    ) {
+                    if (this.players[currentGamepadPlayer - 1].dead.state === true) {
                       this.respawn(this.playerscurrentGamepadPlayer - 1);
                       // console.log('player '+currentGamepadPlayer+' cycle weapon btn pressed: RESPAWN');
                     } else {
@@ -3827,8 +3789,7 @@ class App extends Component {
               else if (x < -0.5 && y >= -0.5 && y <= 0.5) dir = "left";
               else if (x < -0.5 && y > 0.5) dir = "down-left";
               else if (x >= -0.5 && x <= 0.5 && y < -0.5) dir = "up";
-              else if (x >= -0.5 && x <= 0.5 && y >= -0.5 && y <= 0.5)
-                dir = "neutral";
+              else if (x >= -0.5 && x <= 0.5 && y >= -0.5 && y <= 0.5) dir = "neutral";
               else if (x >= -0.5 && x <= 0.5 && y > 0.5) dir = "down";
               else if (x > 0.5 && y < -0.5) dir = "up-right";
               else if (x > 0.5 && y >= -0.5 && y <= 0.5) dir = "right";
@@ -3990,10 +3951,7 @@ class App extends Component {
 
           // NOT USING PRO CONTROLLER OR BOTH JOYCONS
           else {
-            if (
-              gp.id.substr(0, 11) === "Joy-Con (R)" ||
-              gp.id.substr(0, 11) === "Joy-Con (L)"
-            ) {
+            if (gp.id.substr(0, 11) === "Joy-Con (R)" || gp.id.substr(0, 11) === "Joy-Con (L)") {
               console.log(
                 "can't use single joycon. please re-configure controller/gamepad settings"
               );
@@ -4032,8 +3990,7 @@ class App extends Component {
     // if (player && gamepadEngaged === true) {
     if (player) {
       if (keyPressed[currentGamepadPlayer - 1].state === true) {
-        this.keyPressed[currentGamepadPlayer - 1] =
-          keyPressed[currentGamepadPlayer - 1].keyPressed;
+        this.keyPressed[currentGamepadPlayer - 1] = keyPressed[currentGamepadPlayer - 1].keyPressed;
         // console.log('xxx',this.keyPressed[currentGamepadPlayer-1]);
       }
 
@@ -4188,9 +4145,7 @@ class App extends Component {
                   if (this.mouseOverCell.count < this.mouseOverCell.threshold) {
                     this.mouseOverCell.count++;
                   }
-                  if (
-                    this.mouseOverCell.count >= this.mouseOverCell.threshold
-                  ) {
+                  if (this.mouseOverCell.count >= this.mouseOverCell.threshold) {
                     this.clicked.cell = cell;
                     if (player) {
                       this.clicked.player = player;
@@ -4450,21 +4405,14 @@ class App extends Component {
 
     if (this.showSettingsCanvasData.state === true) {
       let availibleCells =
-        this.settingsFormPlyrStartPosList[
-          this.settingsFormPlyrStartPosList.length - 1
-        ].posArray;
+        this.settingsFormPlyrStartPosList[this.settingsFormPlyrStartPosList.length - 1].posArray;
       if (this.settingsFormPlyrStartPosList.length < 0) {
         availibleCells =
-          this.settingsFormPlyrStartPosList[
-            this.settingsFormPlyrStartPosList.length - 1
-          ].posArray;
+          this.settingsFormPlyrStartPosList[this.settingsFormPlyrStartPosList.length - 1].posArray;
       }
       let validCell = false;
       for (const cell of availibleCells) {
-        if (
-          cell.x === this.settingsClicked.number.x &&
-          cell.y === this.settingsClicked.number.y
-        ) {
+        if (cell.x === this.settingsClicked.number.x && cell.y === this.settingsClicked.number.y) {
           validCell = true;
         }
       }
@@ -4503,8 +4451,7 @@ class App extends Component {
 
         if (this.showSettingsCanvasData.field.split("_")[0] === "ai") {
           let plyrNo =
-            this.showSettingsCanvasData.plyrNo -
-            this.settingsFormPlyrStartPosList.length;
+            this.showSettingsCanvasData.plyrNo - this.settingsFormPlyrStartPosList.length;
           let type = this.showSettingsCanvasData.type;
           let value = this.settingsClicked.number;
 
@@ -4527,9 +4474,7 @@ class App extends Component {
           } else {
             // console.log('plyrChange',plyrChange);
             let selectedElem = plyrChange.selected.find((j) => j.type === type);
-            let indx = newArray3.findIndex(
-              (j) => j.plyrNo === plyrChange.plyrNo
-            );
+            let indx = newArray3.findIndex((j) => j.plyrNo === plyrChange.plyrNo);
             if (selectedElem) {
               selectedElem.cell = { x: value.x, y: value.y };
             } else {
@@ -5177,10 +5122,8 @@ class App extends Component {
         if (
           !this.gridInfo.find(
             (x) =>
-              x.number.x ===
-                this.players[plyr.plyrNo - 1].startPosition.cell.number.x &&
-              x.number.y ===
-                this.players[plyr.plyrNo - 1].startPosition.cell.number.y
+              x.number.x === this.players[plyr.plyrNo - 1].startPosition.cell.number.x &&
+              x.number.y === this.players[plyr.plyrNo - 1].startPosition.cell.number.y
           )
         ) {
           let cll = { x: undefined, y: undefined };
@@ -5197,8 +5140,7 @@ class App extends Component {
           }
         }
 
-        let playerStartPos =
-          this.players[plyr.plyrNo - 1].startPosition.cell.number;
+        let playerStartPos = this.players[plyr.plyrNo - 1].startPosition.cell.number;
 
         avoidCells.push({ x: playerStartPos.x, y: playerStartPos.y });
       }
@@ -5218,11 +5160,8 @@ class App extends Component {
 
       for (const elem of this.settingsFormPlyrGridInfo) {
         if (
-          this.plyrStartPosCheckCell({ x: elem.number.x, y: elem.number.y }) ===
-            true &&
-          !avoidCells.find(
-            (elem2) => elem2.x === elem.number.x && elem2.y === elem.number.y
-          )
+          this.plyrStartPosCheckCell({ x: elem.number.x, y: elem.number.y }) === true &&
+          !avoidCells.find((elem2) => elem2.x === elem.number.x && elem2.y === elem.number.y)
         ) {
           array1.push({ x: elem.number.x, y: elem.number.y });
         }
@@ -5230,8 +5169,7 @@ class App extends Component {
 
       // NO POSITION SELECTED, GAME STARTING. MARK PLAYR POSITION SELECTED
       if (!plyr.selected) {
-        let playerStartPos =
-          this.players[plyr.plyrNo - 1].startPosition.cell.number;
+        let playerStartPos = this.players[plyr.plyrNo - 1].startPosition.cell.number;
 
         plyr.selected = { x: playerStartPos.x, y: playerStartPos.y };
       }
@@ -5252,9 +5190,7 @@ class App extends Component {
 
     // ADD 'RANDOM' CHOICE TO NEW POSITION AVAILIBLE ARRAY
     let lastAvailiblePosArray =
-      this.settingsFormPlyrStartPosList[
-        this.settingsFormPlyrStartPosList.length - 1
-      ].posArray;
+      this.settingsFormPlyrStartPosList[this.settingsFormPlyrStartPosList.length - 1].posArray;
     let hasRandomCell = lastAvailiblePosArray.find((x) => x === "random");
     if (!hasRandomCell) {
       lastAvailiblePosArray.push("random");
@@ -5275,9 +5211,7 @@ class App extends Component {
   };
   plyrStartPosCheckCell = (cell) => {
     let cellFree = true;
-    let cell2 = this.gridInfo.find(
-      (elem) => elem.number.x === cell.x && elem.number.y === cell.y
-    );
+    let cell2 = this.gridInfo.find((elem) => elem.number.x === cell.x && elem.number.y === cell.y);
     // if (
     //   cell2.levelData.charAt(0) ===  'z' ||
     //   cell2.levelData.charAt(0) ===  'y'
@@ -5355,9 +5289,7 @@ class App extends Component {
         for (const elem of this.settingsFormAiGridInfo) {
           if (
             this.checkCell({ x: elem.number.x, y: elem.number.y }) === true &&
-            !avoidCells.find(
-              (elem2) => elem2.x === elem.number.x && elem2.y === elem.number.y
-            )
+            !avoidCells.find((elem2) => elem2.x === elem.number.x && elem2.y === elem.number.y)
           ) {
             array1.push({ x: elem.number.x, y: elem.number.y });
           }
@@ -5433,9 +5365,7 @@ class App extends Component {
       }
 
       let lastAvailiblePosArray =
-        this.settingsFormAiStartPosList[
-          this.settingsFormAiStartPosList.length - 1
-        ].posArray;
+        this.settingsFormAiStartPosList[this.settingsFormAiStartPosList.length - 1].posArray;
       let hasRandomCell = lastAvailiblePosArray.find((x) => x === "random");
       if (!hasRandomCell) {
         lastAvailiblePosArray.push("random");
@@ -5513,10 +5443,7 @@ class App extends Component {
       this.settingsSceneY = 40;
     }
 
-    if (
-      this.state.showSettings === true &&
-      this.showSettingsCanvasData.state === true
-    ) {
+    if (this.state.showSettings === true && this.showSettingsCanvasData.state === true) {
       let canvas3 = this.canvasRef3.current;
       let context3 = canvas3.getContext("2d");
 
@@ -5642,9 +5569,7 @@ class App extends Component {
           y: iso2.y - offset2.y / 2 - this.cellCenterOffsetY / 2,
         };
 
-        let cell = this.settingsGridInfo.find(
-          (elem) => elem.number.x === x && elem.number.y === y
-        );
+        let cell = this.settingsGridInfo.find((elem) => elem.number.x === x && elem.number.y === y);
         let cellLevelData = this.settingsGridInfo.find(
           (elem) => elem.number.x === x && elem.number.y === y
         ).levelData;
@@ -5663,13 +5588,7 @@ class App extends Component {
           floor = floorImgs.void2;
         }
 
-        context3.drawImage(
-          floor,
-          iso2.x - offset2.x,
-          iso2.y - offset2.y,
-          50,
-          50
-        );
+        context3.drawImage(floor, iso2.x - offset2.x, iso2.y - offset2.y, 50, 50);
 
         context3.fillStyle = "black";
         context3.fillText(
@@ -5682,13 +5601,7 @@ class App extends Component {
         // context3.fillRect(center2.x, center2.y,2.5,2.5);
 
         if (context4) {
-          context4.drawImage(
-            floor,
-            iso2.x - offset2.x,
-            iso2.y - offset2.y,
-            50,
-            50
-          );
+          context4.drawImage(floor, iso2.x - offset2.x, iso2.y - offset2.y, 50, 50);
           context4.fillStyle = "black";
           context4.fillText(
             "" + x + "," + y + "",
@@ -5785,8 +5698,7 @@ class App extends Component {
         }
 
         if (cell.barrier.state === true && cell.void.state !== true) {
-          let barrierImg =
-            barrierImgs[cell.barrier.type][cell.barrier.position];
+          let barrierImg = barrierImgs[cell.barrier.type][cell.barrier.position];
           context3.drawImage(
             barrierImg,
             iso2.x - offset2.x,
@@ -5986,10 +5898,14 @@ class App extends Component {
           let panCount = preInstructions.length;
           let incr = 0;
           let remainder = 0;
+          let greater = "";
 
           let finalArray = [];
+          zoomCount = 5;
+          panCount = 10;
 
           if (zoomCount > panCount) {
+            greater = "zoom";
             incr = Math.floor(zoomCount / panCount);
             remainder = zoomCount % panCount;
 
@@ -6008,6 +5924,7 @@ class App extends Component {
           }
 
           if (panCount > zoomCount) {
+            greater = "pan";
             incr = Math.floor(panCount / zoomCount);
             remainder = panCount % zoomCount;
             for (let index = 0; index < zoomCount; index++) {
@@ -6024,9 +5941,19 @@ class App extends Component {
             }
           }
 
-          console.log("here", finalArray);
+          console.log("beeep", finalArray);
 
           let indx2 = 0;
+
+          let indx3 = 0;
+
+          // make sure no single zoom instruction count exceeds 25
+          // if elem = greater,
+          //   set initial cam instruction
+          //   calc the amount zooms per pan or pans per zoom
+
+          // using multiple pan/zoom intespersals, figure out how to spread broken up zoom/pan instructions across other instructions
+
           for (const elem of finalArray) {
             if (elem === "zoom") {
               this.camera.instructions.push({
@@ -6236,7 +6163,7 @@ class App extends Component {
           }
         }
 
-        //  console.log('instructionsA',this.camera.instructions);
+        console.log("instructionsA", this.camera.instructions);
         if (this.camera.instructions.length > 0 || sameCell === true) {
           this.autoCamPanWaitingForPath = false;
         }
@@ -6429,19 +6356,14 @@ class App extends Component {
         // console.log('panToCell camera.focusCell',this.camera.focusCell);
         if (this.highlightZoomPanFocusCell === true) {
           for (const cell2 of this.cellsToHighlight2) {
-            if (
-              cell2.number.x !== focusCell.number.x ||
-              cell2.number.y !== focusCell.number.y
-            ) {
+            if (cell2.number.x !== focusCell.number.x || cell2.number.y !== focusCell.number.y) {
               let indx = this.cellsToHighlight2.indexOf(cell2);
               this.cellsToHighlight2.splice(indx, 1);
             }
           }
           if (
             !this.cellsToHighlight2.find(
-              (x) =>
-                x.number.x === focusCell.number.x &&
-                x.number.y === focusCell.number.y
+              (x) => x.number.x === focusCell.number.x && x.number.y === focusCell.number.y
             )
           ) {
             this.cellsToHighlight2.push({
@@ -6518,10 +6440,7 @@ class App extends Component {
     ) {
       weaponType = "melee";
     }
-    if (
-      player.currentWeapon.type === "crossbow" ||
-      player.currentWeapon.type === "bow"
-    ) {
+    if (player.currentWeapon.type === "crossbow" || player.currentWeapon.type === "bow") {
       weaponType = "ranged";
     }
 
@@ -6549,21 +6468,15 @@ class App extends Component {
         this.easyStar.setGrid(this.pathArray);
         this.easyStar.setAcceptableTiles([0]);
         this.easyStar.enableDiagonals();
-        this.easyStar.findPath(
-          originCell.x,
-          originCell.y,
-          destCell.x,
-          destCell.y,
-          function (path) {
-            if (path === null) {
-              // console.log("Path was not found");
-              reject("Path was not found");
-            } else {
-              pathSet = path;
-              resolve(pathSet);
-            }
+        this.easyStar.findPath(originCell.x, originCell.y, destCell.x, destCell.y, function (path) {
+          if (path === null) {
+            // console.log("Path was not found");
+            reject("Path was not found");
+          } else {
+            pathSet = path;
+            resolve(pathSet);
           }
-        );
+        });
         this.easyStar.setIterationsPerCalculation(1000);
         this.easyStar.calculate();
       });
@@ -6571,9 +6484,7 @@ class App extends Component {
 
     let reset = false;
     let attackFocusBreakZoomCorrection = "";
-    let zoomSteps = ((this.camera.zoom.x - 1 - this.zoomThresh) / 0.02).toFixed(
-      0
-    );
+    let zoomSteps = ((this.camera.zoom.x - 1 - this.zoomThresh) / 0.02).toFixed(0);
     zoomSteps = parseInt(zoomSteps);
     if (zoomSteps === 0) {
       zoomSteps = 1;
@@ -6582,17 +6493,12 @@ class App extends Component {
       zoomSteps = zoomSteps * -1;
     }
 
-    if (
-      this.camera.preInstructions.length > 0 ||
-      this.camera.instructions.length > 0
-    ) {
+    if (this.camera.preInstructions.length > 0 || this.camera.instructions.length > 0) {
       if (args === "attackFocusBreak" || args === "zoomreset") {
         if (this.camera.instructions.length > 0) {
           if (
-            this.camera.instructions[this.camera.instructions.length - 1]
-              .action === "zoom_in" ||
-            this.camera.instructions[this.camera.instructions.length - 1]
-              .action === "zoom_out"
+            this.camera.instructions[this.camera.instructions.length - 1].action === "zoom_in" ||
+            this.camera.instructions[this.camera.instructions.length - 1].action === "zoom_out"
           ) {
             // attackFocusBreakZoomCorrection = `zoom_out_${this.camera.instructions[this.camera.instructions.length-1].count}`
             attackFocusBreakZoomCorrection = `zoom_out_${zoomSteps}`;
@@ -6686,10 +6592,28 @@ class App extends Component {
       case "test":
         this.camera.preInstructions.push(
           "zoom_in_" + 5 + "",
-          // 'moveTo_'+9+'_'+6+'_slow',
-          // 'zoom_in_'+10+'',
-          // 'zoom_outToInit',
-          "move&&zoom_" + 4 + "_" + 1 + "_slow_" + 10
+          "moveTo_" + 9 + "_" + 4 + "_fast"
+          // "zoom_in_" + 10 + ""
+          // "moveTo_" + 1 + "_" + 8 + "_fast",
+          // "waitFor_20",
+          // "moveTo_" + 1 + "_" + 1 + "_fast",
+          // "waitFor_20",
+          // "moveTo_" + 8 + "_" + 1 + "_fast",
+          // "waitFor_20",
+          // "moveTo_" + 8 + "_" + 8 + "_fast",
+          // "waitFor_20",
+          // "moveTo_" + 6 + "_" + 6 + "_fast",
+          // "waitFor_20",
+          // "moveTo_" + 6 + "_" + 3 + "_slow",
+          // "waitFor_20",
+          // "moveTo_" + 3 + "_" + 3 + "_slow",
+          // "waitFor_20",
+          // "moveTo_" + 3 + "_" + 6 + "_slow",
+          // "waitFor_20",
+          // "moveTo_" + 6 + "_" + 6 + "_slow",
+          // // 'zoom_in_'+10+'',
+          // "zoom_outToInit"
+          // "move&&zoom_" + 4 + "_" + 1 + "_slow_" + 10
         );
 
         break;
@@ -6738,9 +6662,7 @@ class App extends Component {
               // console.log('attack focus auto cam: 2 players in close range');
 
               if (prePanZoom === true) {
-                this.camera.preInstructions.push(
-                  "zoom_in_" + prePanZoomAmount + ""
-                );
+                this.camera.preInstructions.push("zoom_in_" + prePanZoomAmount + "");
               }
 
               if (weaponType === "melee") {
@@ -6764,20 +6686,12 @@ class App extends Component {
               // console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
 
               let intermediateCell = {
-                x: parsedPreInstructions[
-                  Math.ceil(parsedPreInstructions.length / 2)
-                ].x,
-                y: parsedPreInstructions[
-                  Math.ceil(parsedPreInstructions.length / 2)
-                ].y,
+                x: parsedPreInstructions[Math.ceil(parsedPreInstructions.length / 2)].x,
+                y: parsedPreInstructions[Math.ceil(parsedPreInstructions.length / 2)].y,
               };
 
               this.camera.preInstructions.push(
-                "moveTo_" +
-                  intermediateCell.x +
-                  "_" +
-                  intermediateCell.y +
-                  "_fast"
+                "moveTo_" + intermediateCell.x + "_" + intermediateCell.y + "_fast"
                 // 'waitFor_50',
               );
 
@@ -6862,20 +6776,12 @@ class App extends Component {
               // console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
 
               let intermediateCell = {
-                x: parsedPreInstructions[
-                  Math.ceil(parsedPreInstructions.length / 2)
-                ].x,
-                y: parsedPreInstructions[
-                  Math.ceil(parsedPreInstructions.length / 2)
-                ].y,
+                x: parsedPreInstructions[Math.ceil(parsedPreInstructions.length / 2)].x,
+                y: parsedPreInstructions[Math.ceil(parsedPreInstructions.length / 2)].y,
               };
 
               this.camera.preInstructions.push(
-                "moveTo_" +
-                  intermediateCell.x +
-                  "_" +
-                  intermediateCell.y +
-                  "_fast"
+                "moveTo_" + intermediateCell.x + "_" + intermediateCell.y + "_fast"
               );
 
               getZoom("ranged");
@@ -6923,23 +6829,14 @@ class App extends Component {
       default:
     }
 
-    if (
-      this.camera.preInstructions.length === 0 &&
-      this.autoCamPanWaitingForPath !== true
-    ) {
+    if (this.camera.preInstructions.length === 0 && this.autoCamPanWaitingForPath !== true) {
       this.settingAutoCamera = false;
     }
 
     // console.log('AutoCameraSet',args,this.camera.preInstructions,this.camera.currentPreInstruction,this.camera.zoom.x-1);
   };
   setCameraFocus = (focusType, canvas, context, canvas2, context2) => {
-    console.log(
-      "setting camera focus",
-      "zoom",
-      this.camera.zoom.x,
-      "pan",
-      this.camera.pan
-    );
+    console.log("setting camera focus", "zoom", this.camera.zoom.x, "pan", this.camera.pan);
 
     if (focusType === "init" || focusType === "reset") {
       if (this.camera.mode === "pan") {
@@ -7012,10 +6909,8 @@ class App extends Component {
         //     }
         //
         //
-        this.camera.focus.x =
-          (canvas.width / 2 - this.camera.zoomFocusPan.x) / this.camera.zoom.x;
-        this.camera.focus.y =
-          (canvas.height / 2 - this.camera.zoomFocusPan.y) / this.camera.zoom.y;
+        this.camera.focus.x = (canvas.width / 2 - this.camera.zoomFocusPan.x) / this.camera.zoom.x;
+        this.camera.focus.y = (canvas.height / 2 - this.camera.zoomFocusPan.y) / this.camera.zoom.y;
         // const x = this.canvasWidth/2;
         // const y = this.canvasHeight/2;
         // this.camera.focus.x = (x-this.camera.zoomFocusPan.x)/this.camera.zoom.x;
@@ -7044,10 +6939,7 @@ class App extends Component {
       canStart = false;
     }
     if (this.camera.customView.state === false) {
-      if (
-        this.camera.zoom.x - 1 > this.zoomThresh ||
-        this.camera.zoom.x - 1 < this.zoomThresh
-      ) {
+      if (this.camera.zoom.x - 1 > this.zoomThresh || this.camera.zoom.x - 1 < this.zoomThresh) {
         canStart = false;
       }
       if (
@@ -7091,10 +6983,8 @@ class App extends Component {
       this.camera.adjustedPan.x = -1;
       this.camera.adjustedPan.y = -1;
 
-      this.camera.zoomFocusPan.x =
-        (canvas.width / 2) * (1 - zoom) + 1 + this.camera.pan.x * zoom;
-      this.camera.zoomFocusPan.y =
-        (canvas.height / 2) * (1 - zoom) + 1 + this.camera.pan.y * zoom;
+      this.camera.zoomFocusPan.x = (canvas.width / 2) * (1 - zoom) + 1 + this.camera.pan.x * zoom;
+      this.camera.zoomFocusPan.y = (canvas.height / 2) * (1 - zoom) + 1 + this.camera.pan.y * zoom;
 
       // this.camera.limits.pan.x.max = 400;
       // this.camera.limits.pan.x.min = -400;
@@ -7105,8 +6995,7 @@ class App extends Component {
       // console.log('above zoomThresh');
 
       if (this.camera.mode === "zoom" && this.camera.zoomDirection === "in") {
-        this.camera.zoomFocusPan.x =
-          (canvas.width / 2) * (1 - zoom) + 1 + this.camera.pan.x * zoom;
+        this.camera.zoomFocusPan.x = (canvas.width / 2) * (1 - zoom) + 1 + this.camera.pan.x * zoom;
         this.camera.zoomFocusPan.y =
           (canvas.height / 2) * (1 - zoom) + 1 + this.camera.pan.y * zoom;
       }
@@ -7153,8 +7042,7 @@ class App extends Component {
           this.camera.pan.x,
           this.camera.pan.y
         );
-        this.camera.zoomFocusPan.x =
-          (canvas.width / 2) * (1 - zoom) + 1 + this.camera.pan.x * zoom;
+        this.camera.zoomFocusPan.x = (canvas.width / 2) * (1 - zoom) + 1 + this.camera.pan.x * zoom;
         this.camera.zoomFocusPan.y =
           (canvas.height / 2) * (1 - zoom) + 1 + this.camera.pan.y * zoom;
       }
@@ -7171,8 +7059,7 @@ class App extends Component {
       let diffy;
 
       if (this.camera.mode === "pan") {
-        this.camera.zoomFocusPan.x =
-          (canvas.width / 2) * (1 - zoom) + 1 + this.camera.pan.x * zoom;
+        this.camera.zoomFocusPan.x = (canvas.width / 2) * (1 - zoom) + 1 + this.camera.pan.x * zoom;
         this.camera.zoomFocusPan.y =
           (canvas.height / 2) * (1 - zoom) + 1 + this.camera.pan.y * zoom;
       }
@@ -7442,11 +7329,7 @@ class App extends Component {
     }
 
     // console.log('mover stepper',player.moving.step);
-    player.moving.step = +(
-      Math.round(player.moving.step + moveSpeed + "e+" + 3) +
-      "e-" +
-      3
-    );
+    player.moving.step = +(Math.round(player.moving.step + moveSpeed + "e+" + 3) + "e-" + 3);
     // player.moving.step = player.moving.step + moveSpeed;
 
     let newPosition;
@@ -7549,11 +7432,7 @@ class App extends Component {
     let currentPosition = obstacleCell.obstacle.moving.currentPosition;
     let moveSpeed = obstacleCell.obstacle.moving.moveSpeed;
 
-    let step = +(
-      Math.round(obstacleCell.obstacle.moving.step + moveSpeed + "e+" + 3) +
-      "e-" +
-      3
-    );
+    let step = +(Math.round(obstacleCell.obstacle.moving.step + moveSpeed + "e+" + 3) + "e-" + 3);
     // console.log('obstacle moving crementer',step);
 
     // player.moving.step = player.moving.step + moveSpeed;
@@ -7719,12 +7598,8 @@ class App extends Component {
           y: popupCoords.origin.y + this.popupSize,
         };
         midpoint = {
-          x:
-            popupCoords.origin.x +
-            (popupCoords.pt2.x - popupCoords.origin.x) * 0.5,
-          y:
-            popupCoords.origin.y +
-            (popupCoords.pt2.y - popupCoords.origin.y) * 0.5,
+          x: popupCoords.origin.x + (popupCoords.pt2.x - popupCoords.origin.x) * 0.5,
+          y: popupCoords.origin.y + (popupCoords.pt2.y - popupCoords.origin.y) * 0.5,
         };
         popupCoords.anchor = {
           x: midpoint.x,
@@ -7753,12 +7628,8 @@ class App extends Component {
           y: popupCoords.origin.y + this.popupSize,
         };
         midpoint = {
-          x:
-            popupCoords.origin.x +
-            (popupCoords.pt4.x - popupCoords.origin.x) * 0.5,
-          y:
-            popupCoords.origin.y +
-            (popupCoords.pt4.y - popupCoords.origin.y) * 0.5,
+          x: popupCoords.origin.x + (popupCoords.pt4.x - popupCoords.origin.x) * 0.5,
+          y: popupCoords.origin.y + (popupCoords.pt4.y - popupCoords.origin.y) * 0.5,
         };
         popupCoords.anchor = {
           x: midpoint.x - pointerLength,
@@ -7953,26 +7824,17 @@ class App extends Component {
       let defendPeak = this.defendAnimRef.peak[defendType];
       player.defending.limit = this.defendAnimRef.limit[defendType];
 
-      if (
-        player.defending.count < defendPeak &&
-        player.defendDecay.state !== true
-      ) {
+      if (player.defending.count < defendPeak && player.defendDecay.state !== true) {
         phase = "windup";
         perc = (player.defending.count / defendPeak) * 100;
-      } else if (
-        player.defending.count === defendPeak &&
-        player.defendDecay.state !== true
-      ) {
+      } else if (player.defending.count === defendPeak && player.defendDecay.state !== true) {
         phase = "peak";
       }
       if (player.defendDecay.state === true) {
         if (player.defendDecay.count < 5) {
           phase = "peak";
         }
-        if (
-          player.defendDecay.count < player.defendDecay.limit &&
-          player.defendDecay.count > 5
-        ) {
+        if (player.defendDecay.count < player.defendDecay.limit && player.defendDecay.count > 5) {
           phase = "cooldown";
           perc = (player.defendDecay.count / player.defendDecay.limit) * 100;
         }
@@ -8002,10 +7864,7 @@ class App extends Component {
         }
         if (player.attacking.count > attackPeak + 5) {
           phase = "cooldown";
-          perc =
-            ((player.attacking.count - (attackPeak + 5)) /
-              (end - (attackPeak + 5))) *
-            100;
+          perc = ((player.attacking.count - (attackPeak + 5)) / (end - (attackPeak + 5))) * 100;
         }
       }
       if (player.attacking.count >= end) {
@@ -8017,8 +7876,7 @@ class App extends Component {
       let dodgeCondition = false;
       if (
         player.dodging.countState === true &&
-        player.dodging.count <=
-          player.dodging.peak.start - player.crits.dodge &&
+        player.dodging.count <= player.dodging.peak.start - player.crits.dodge &&
         this.keyPressed[player.number - 1].dodge === true
       ) {
         // console.log('dodge condition 1: true');
@@ -8049,8 +7907,7 @@ class App extends Component {
       if (player.dodging.count === 0) {
         // console.log('windup',player.dodging.count);
         phase = "windup";
-        perc =
-          (player.dodging.count / (player.dodging.peak.start - startMod)) * 100;
+        perc = (player.dodging.count / (player.dodging.peak.start - startMod)) * 100;
       }
       if (
         player.dodging.count >= 1 &&
@@ -8058,8 +7915,7 @@ class App extends Component {
       ) {
         // console.log('windup start:',1,'count:',player.dodging.count,'limit:',(player.dodging.peak.start - startMod));
         phase = "windup";
-        perc =
-          (player.dodging.count / (player.dodging.peak.start - startMod)) * 100;
+        perc = (player.dodging.count / (player.dodging.peak.start - startMod)) * 100;
       }
       if (
         player.dodging.count >= player.dodging.peak.start - startMod &&
@@ -8300,12 +8156,9 @@ class App extends Component {
       // console.log('limit',player.dodging.limit);
 
       let countCalcPause =
-        player.dodging.peak.end +
-        endMod -
-        (player.dodging.peak.start - startMod);
+        player.dodging.peak.end + endMod - (player.dodging.peak.start - startMod);
       let countCalcUp = player.dodging.peak.start - startMod;
-      let countCalcDown =
-        player.dodging.limit - (player.dodging.peak.end + endMod);
+      let countCalcDown = player.dodging.limit - (player.dodging.peak.end + endMod);
 
       // if (countCalc > 6) {
       //   countCalc = 6;
@@ -8356,8 +8209,7 @@ class App extends Component {
         attackPeak = this.attackAnimRef.peak.unarmed;
         stamAtkType = "unarmed";
       }
-      let limit = (player.attacking.limit =
-        this.attackAnimRef.limit[stamAtkType]);
+      let limit = (player.attacking.limit = this.attackAnimRef.limit[stamAtkType]);
 
       let countCalcUp = limit - attackPeak;
 
@@ -8509,11 +8361,7 @@ class App extends Component {
       if (subType === "obstacle") {
         data.coords = finalCoords;
 
-        targetCell = this.getCellFromDirection(
-          1,
-          data.myCellNo,
-          data.direction
-        );
+        targetCell = this.getCellFromDirection(1, data.myCellNo, data.direction);
       }
 
       let targetCellRef = this.gridInfo.find(
@@ -8556,10 +8404,7 @@ class App extends Component {
       if (data.elasticCounter.countUp.count <= 3) {
         base = 0.007;
       }
-      if (
-        data.elasticCounter.countUp.count > 3 &&
-        data.elasticCounter.countUp.count < 6
-      ) {
+      if (data.elasticCounter.countUp.count > 3 && data.elasticCounter.countUp.count < 6) {
         base = 0.005;
       }
       if (data.elasticCounter.countUp.count > 6) {
@@ -8629,10 +8474,7 @@ class App extends Component {
           drawCell = data.currentPosition.cell.number;
         }
       }
-      if (
-        data.elasticCounter.pause.state === true &&
-        data.elasticCounter.pause.type === "peak"
-      ) {
+      if (data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "peak") {
         if (targetCellRef) {
           drawCell = targetCellRef.number;
         } else {
@@ -8643,10 +8485,8 @@ class App extends Component {
         drawCell = data.currentPosition.cell.number;
       }
       if (
-        (data.elasticCounter.pause.state === true &&
-          data.elasticCounter.pause.type === "start") ||
-        (data.elasticCounter.pause.state === true &&
-          data.elasticCounter.pause.type === "end")
+        (data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "start") ||
+        (data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "end")
       ) {
         drawCell = data.currentPosition.cell.number;
       }
@@ -8661,10 +8501,7 @@ class App extends Component {
       if (data.elasticCounter.countUp.count <= 3) {
         base = 0.007;
       }
-      if (
-        data.elasticCounter.countUp.count > 3 &&
-        data.elasticCounter.countUp.count < 6
-      ) {
+      if (data.elasticCounter.countUp.count > 3 && data.elasticCounter.countUp.count < 6) {
         base = 0.005;
       }
       if (data.elasticCounter.countUp.count > 6) {
@@ -8737,10 +8574,7 @@ class App extends Component {
           drawCell = data.currentPosition.cell.number;
         }
       }
-      if (
-        data.elasticCounter.pause.state === true &&
-        data.elasticCounter.pause.type === "peak"
-      ) {
+      if (data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "peak") {
         if (targetCellRef) {
           drawCell = targetCellRef.number;
         } else {
@@ -8751,10 +8585,8 @@ class App extends Component {
         drawCell = data.currentPosition.cell.number;
       }
       if (
-        (data.elasticCounter.pause.state === true &&
-          data.elasticCounter.pause.type === "start") ||
-        (data.elasticCounter.pause.state === true &&
-          data.elasticCounter.pause.type === "end")
+        (data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "start") ||
+        (data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "end")
       ) {
         drawCell = data.currentPosition.cell.number;
       }
@@ -8769,10 +8601,7 @@ class App extends Component {
       if (data.elasticCounter.countUp.count <= 3) {
         base = 0.003;
       }
-      if (
-        data.elasticCounter.countUp.count > 3 &&
-        data.elasticCounter.countUp.count < 6
-      ) {
+      if (data.elasticCounter.countUp.count > 3 && data.elasticCounter.countUp.count < 6) {
         base = 0.001;
       }
       if (data.elasticCounter.countUp.count > 6) {
@@ -8842,10 +8671,7 @@ class App extends Component {
           drawCell = data.currentPosition.cell.number;
         }
       }
-      if (
-        data.elasticCounter.pause.state === true &&
-        data.elasticCounter.pause.type === "peak"
-      ) {
+      if (data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "peak") {
         if (targetCellRef) {
           drawCell = targetCellRef.number;
         } else {
@@ -8856,10 +8682,8 @@ class App extends Component {
         drawCell = data.currentPosition.cell.number;
       }
       if (
-        (data.elasticCounter.pause.state === true &&
-          data.elasticCounter.pause.type === "start") ||
-        (data.elasticCounter.pause.state === true &&
-          data.elasticCounter.pause.type === "end")
+        (data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "start") ||
+        (data.elasticCounter.pause.state === true && data.elasticCounter.pause.type === "end")
       ) {
         drawCell = data.currentPosition.cell.number;
       }
@@ -8930,26 +8754,14 @@ class App extends Component {
 
     // SET CELL 1 & 2 NUMBERS
 
-    target.cell1.number = this.getCellFromDirection(
-      1,
-      currentPosition,
-      direction
-    );
-    target.cell2.number = this.getCellFromDirection(
-      2,
-      currentPosition,
-      direction
-    );
+    target.cell1.number = this.getCellFromDirection(1, currentPosition, direction);
+    target.cell2.number = this.getCellFromDirection(2, currentPosition, direction);
 
     let targetCell1Ref = this.gridInfo.find(
-      (x) =>
-        x.number.x === target.cell1.number.x &&
-        x.number.y === target.cell1.number.y
+      (x) => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y
     );
     let targetCell2Ref = this.gridInfo.find(
-      (x) =>
-        x.number.x === target.cell2.number.x &&
-        x.number.y === target.cell2.number.y
+      (x) => x.number.x === target.cell2.number.x && x.number.y === target.cell2.number.y
     );
 
     // CHECK SET VOID AND CENTERS
@@ -9029,10 +8841,7 @@ class App extends Component {
       }
 
       if (targetCell1Ref.barrier.state === true) {
-        if (
-          targetCell1Ref.barrier.position ===
-          this.getOppositeDirection(direction)
-        ) {
+        if (targetCell1Ref.barrier.position === this.getOppositeDirection(direction)) {
           target.cell1.occupant.type = "barrier";
           target.cell1.free = false;
         }
@@ -9040,8 +8849,7 @@ class App extends Component {
         if (targetCell2Ref) {
           if (
             targetCell1Ref.barrier.position === direction ||
-            targetCell2Ref.barrier.position ===
-              this.getOppositeDirection(direction)
+            targetCell2Ref.barrier.position === this.getOppositeDirection(direction)
           ) {
             target.cell2.occupant.type = "barrier";
             target.cell2.free = false;
@@ -9057,10 +8865,7 @@ class App extends Component {
         }
       }
 
-      if (
-        targetCell1Ref.item.name !== "" &&
-        target.cell1.occupant.type !== "player"
-      ) {
+      if (targetCell1Ref.item.name !== "" && target.cell1.occupant.type !== "player") {
         target.cell1.occupant.type = "item";
       }
 
@@ -9079,17 +8884,12 @@ class App extends Component {
         target.cell2.free = false;
       }
 
-      if (
-        targetCell2Ref.barrier.position === this.getOppositeDirection(direction)
-      ) {
+      if (targetCell2Ref.barrier.position === this.getOppositeDirection(direction)) {
         target.cell2.occupant.type = "barrier";
         target.cell2.free = false;
       }
 
-      if (
-        targetCell2Ref.item.name !== "" &&
-        target.cell2.occupant.type !== "player"
-      ) {
+      if (targetCell2Ref.item.name !== "" && target.cell2.occupant.type !== "player") {
         target.cell2.occupant.type = "item";
       }
 
@@ -9150,9 +8950,7 @@ class App extends Component {
     // console.log('check cell',cell);
 
     let cellFree = true;
-    let cell2 = this.gridInfo.find(
-      (elem) => elem.number.x === cell.x && elem.number.y === cell.y
-    );
+    let cell2 = this.gridInfo.find((elem) => elem.number.x === cell.x && elem.number.y === cell.y);
     if (
       // cell2.levelData.charAt(0) ===  'z' ||
       // cell2.levelData.charAt(0) ===  'y'
@@ -9268,52 +9066,28 @@ class App extends Component {
   getDirectionFromCells = (cell1Number, cell2Number) => {
     let direction = "";
 
-    if (
-      cell2Number.x === cell1Number.x &&
-      cell2Number.y === cell1Number.y - 1
-    ) {
+    if (cell2Number.x === cell1Number.x && cell2Number.y === cell1Number.y - 1) {
       direction = "north";
     }
-    if (
-      cell2Number.x === cell1Number.x - 1 &&
-      cell2Number.y === cell1Number.y - 1
-    ) {
+    if (cell2Number.x === cell1Number.x - 1 && cell2Number.y === cell1Number.y - 1) {
       direction = "northWest";
     }
-    if (
-      cell2Number.x === cell1Number.x - 1 &&
-      cell2Number.y === cell1Number.y
-    ) {
+    if (cell2Number.x === cell1Number.x - 1 && cell2Number.y === cell1Number.y) {
       direction = "west";
     }
-    if (
-      cell2Number.x === cell1Number.x - 1 &&
-      cell2Number.y === cell1Number.y + 1
-    ) {
+    if (cell2Number.x === cell1Number.x - 1 && cell2Number.y === cell1Number.y + 1) {
       direction = "southWest";
     }
-    if (
-      cell2Number.x === cell1Number.x &&
-      cell2Number.y === cell1Number.y + 1
-    ) {
+    if (cell2Number.x === cell1Number.x && cell2Number.y === cell1Number.y + 1) {
       direction = "south";
     }
-    if (
-      cell2Number.x === cell1Number.x + 1 &&
-      cell2Number.y === cell1Number.y + 1
-    ) {
+    if (cell2Number.x === cell1Number.x + 1 && cell2Number.y === cell1Number.y + 1) {
       direction = "southEast";
     }
-    if (
-      cell2Number.x === cell1Number.x + 1 &&
-      cell2Number.y === cell1Number.y
-    ) {
+    if (cell2Number.x === cell1Number.x + 1 && cell2Number.y === cell1Number.y) {
       direction = "east";
     }
-    if (
-      cell2Number.x === cell1Number.x + 1 &&
-      cell2Number.y === cell1Number.y - 1
-    ) {
+    if (cell2Number.x === cell1Number.x + 1 && cell2Number.y === cell1Number.y - 1) {
       direction = "northEast";
     }
 
@@ -9617,8 +9391,7 @@ class App extends Component {
 
     for (const cell2 of bolt.target.path) {
       let cell = this.gridInfo.find(
-        (elem) =>
-          elem.number.x === cell2.number.x && elem.number.y === cell2.number.y
+        (elem) => elem.number.x === cell2.number.x && elem.number.y === cell2.number.y
       );
 
       if (cell) {
@@ -9629,16 +9402,8 @@ class App extends Component {
     }
     if (bolt.target.path.length === 1) {
       bolt.target.path.push({
-        number: this.getCellFromDirection(
-          1,
-          bolt.target.path[0].number,
-          bolt.direction
-        ),
-        center: this.getVoidCenter(
-          1,
-          bolt.direction,
-          bolt.target.path[0].center
-        ),
+        number: this.getCellFromDirection(1, bolt.target.path[0].number, bolt.direction),
+        center: this.getVoidCenter(1, bolt.direction, bolt.target.path[0].center),
         vertices: [],
       });
     }
@@ -9715,11 +9480,7 @@ class App extends Component {
             if (cell.item.subType === "crossbow") {
               let ammo = parseInt(cell.item.effect.split("+")[1]);
               // console.log('picked up a crossbow checking ammo',ammo);
-              if (
-                !this.players[player.number - 1].popups.find(
-                  (x) => x.msg === "crossbow"
-                )
-              ) {
+              if (!this.players[player.number - 1].popups.find((x) => x.msg === "crossbow")) {
                 this.players[player.number - 1].popups.push({
                   state: false,
                   count: 0,
@@ -9736,11 +9497,7 @@ class App extends Component {
               // console.log('new ammo amt',this.players[player.number-1].items.ammo);
             }
 
-            if (
-              !this.players[player.number - 1].popups.find(
-                (x) => x.msg === "pickupWeapon"
-              )
-            ) {
+            if (!this.players[player.number - 1].popups.find((x) => x.msg === "pickupWeapon")) {
               this.players[player.number - 1].popups.push({
                 state: false,
                 count: 0,
@@ -9759,9 +9516,7 @@ class App extends Component {
           else {
             // DON'T ALREADY HAVE WEPAON
             if (
-              player.items.weapons
-                .map((weapon) => weapon.name)
-                .includes(cell.item.name) !== true
+              player.items.weapons.map((weapon) => weapon.name).includes(cell.item.name) !== true
             ) {
               this.players[player.number - 1].items.weapons.push({
                 name: cell.item.name,
@@ -9772,11 +9527,7 @@ class App extends Component {
               if (cell.item.subType === "crossbow") {
                 let ammo = parseInt(cell.item.effect.split("+")[1]);
                 // console.log('picked up a crossbow checking ammo',ammo);
-                if (
-                  !this.players[player.number - 1].popups.find(
-                    (x) => x.msg === "crossbow"
-                  )
-                ) {
+                if (!this.players[player.number - 1].popups.find((x) => x.msg === "crossbow")) {
                   this.players[player.number - 1].popups.push({
                     state: false,
                     count: 0,
@@ -9800,11 +9551,7 @@ class App extends Component {
                 limit: this.players[player.number - 1].statusDisplay.limit,
               };
 
-              if (
-                !this.players[player.number - 1].popups.find(
-                  (x) => x.msg === "pickupWeapon"
-                )
-              ) {
+              if (!this.players[player.number - 1].popups.find((x) => x.msg === "pickupWeapon")) {
                 this.players[player.number - 1].popups.push({
                   state: false,
                   count: 0,
@@ -9823,17 +9570,10 @@ class App extends Component {
                 let ammo = parseInt(cell.item.effect.split("+")[1]);
                 this.players[player.number - 1].items.ammo =
                   this.players[player.number - 1].items.ammo + ammo;
-                console.log(
-                  "you already have a crossbow but take the ammo",
-                  ammo
-                );
+                console.log("you already have a crossbow but take the ammo", ammo);
                 cell.item.effect = "ammo+0";
 
-                if (
-                  !this.players[player.number - 1].popups.find(
-                    (x) => x.msg === "pickupAmmo"
-                  )
-                ) {
+                if (!this.players[player.number - 1].popups.find((x) => x.msg === "pickupAmmo")) {
                   this.players[player.number - 1].popups.push({
                     state: false,
                     count: 0,
@@ -9853,11 +9593,7 @@ class App extends Component {
                   limit: this.players[player.number - 1].statusDisplay.limit,
                 };
 
-                if (
-                  !this.players[player.number - 1].popups.find(
-                    (x) => x.msg === "stop"
-                  )
-                ) {
+                if (!this.players[player.number - 1].popups.find((x) => x.msg === "stop")) {
                   this.players[player.number - 1].popups.push({
                     state: false,
                     count: 0,
@@ -9884,11 +9620,7 @@ class App extends Component {
             limit: this.players[player.number - 1].statusDisplay.limit,
           };
 
-          if (
-            !this.players[player.number - 1].popups.find(
-              (x) => x.msg === "inventoryFull"
-            )
-          ) {
+          if (!this.players[player.number - 1].popups.find((x) => x.msg === "inventoryFull")) {
             this.players[player.number - 1].popups.push({
               state: false,
               count: 0,
@@ -9920,24 +9652,14 @@ class App extends Component {
               effect: cell.item.effect,
             });
 
-            this.applyRemoveEffect(
-              player,
-              "apply",
-              "pickup",
-              "armor",
-              cell.item
-            );
+            this.applyRemoveEffect(player, "apply", "pickup", "armor", cell.item);
 
             pickUp = true;
           }
 
           // STASH TO INVENTORY
           else {
-            if (
-              player.items.armor
-                .map((armor) => armor.name)
-                .includes(cell.item.name) !== true
-            ) {
+            if (player.items.armor.map((armor) => armor.name).includes(cell.item.name) !== true) {
               this.players[player.number - 1].items.armor.push({
                 name: cell.item.name,
                 type: cell.item.subType,
@@ -9952,11 +9674,7 @@ class App extends Component {
                 limit: this.players[player.number - 1].statusDisplay.limit,
               };
 
-              if (
-                !this.players[player.number - 1].popups.find(
-                  (x) => x.msg === "pickupArmor"
-                )
-              ) {
+              if (!this.players[player.number - 1].popups.find((x) => x.msg === "pickupArmor")) {
                 this.players[player.number - 1].popups.push({
                   state: false,
                   count: 0,
@@ -9976,11 +9694,7 @@ class App extends Component {
                 limit: this.players[player.number - 1].statusDisplay.limit,
               };
 
-              if (
-                !this.players[player.number - 1].popups.find(
-                  (x) => x.msg === "stop"
-                )
-              ) {
+              if (!this.players[player.number - 1].popups.find((x) => x.msg === "stop")) {
                 this.players[player.number - 1].popups.push({
                   state: false,
                   count: 0,
@@ -10005,11 +9719,7 @@ class App extends Component {
             limit: this.players[player.number - 1].statusDisplay.limit,
           };
 
-          if (
-            !this.players[player.number - 1].popups.find(
-              (x) => x.msg === "inventoryFull"
-            )
-          ) {
+          if (!this.players[player.number - 1].popups.find((x) => x.msg === "inventoryFull")) {
             this.players[player.number - 1].popups.push({
               state: false,
               count: 0,
@@ -10027,13 +9737,7 @@ class App extends Component {
       else if (cell.item.type !== "weapon" && cell.item.type !== "armor") {
         // console.log('item',cell.item);
 
-        pickUp = this.applyRemoveEffect(
-          player,
-          "apply",
-          "pickup",
-          "item",
-          cell.item
-        );
+        pickUp = this.applyRemoveEffect(player, "apply", "pickup", "item", cell.item);
       }
 
       if (pickUp === true) {
@@ -10099,11 +9803,7 @@ class App extends Component {
         this.players[player.number - 1].action = "falling";
         this.players[player.number - 1].drowning = true;
 
-        if (
-          !this.players[player.number - 1].popups.find(
-            (x) => x.msg === "drowning"
-          )
-        ) {
+        if (!this.players[player.number - 1].popups.find((x) => x.msg === "drowning")) {
           this.players[player.number - 1].popups.push({
             state: false,
             count: 0,
@@ -10117,10 +9817,8 @@ class App extends Component {
 
         // this.moveSpeed = plyr.speed.move;
         // this.players[player.number-1].target = this.resetTarget();
-        this.players[player.number - 1].target.cell1.number =
-          player.currentPosition.cell.number;
-        this.players[player.number - 1].target.cell1.center =
-          player.currentPosition.cell.center;
+        this.players[player.number - 1].target.cell1.number = player.currentPosition.cell.number;
+        this.players[player.number - 1].target.cell1.center = player.currentPosition.cell.center;
 
         this.players[player.number - 1].moving = {
           state: true,
@@ -10145,11 +9843,7 @@ class App extends Component {
         this.players[player.number - 1].falling.state = true;
         this.players[player.number - 1].action = "falling";
 
-        if (
-          !this.players[player.number - 1].popups.find(
-            (x) => x.msg === "falling"
-          )
-        ) {
+        if (!this.players[player.number - 1].popups.find((x) => x.msg === "falling")) {
           this.players[player.number - 1].popups.push({
             state: false,
             count: 0,
@@ -10163,10 +9857,8 @@ class App extends Component {
 
         // this.moveSpeed = plyr.speed.move;
         // this.players[player.number-1].target = this.resetTarget();
-        this.players[player.number - 1].target.cell1.number =
-          player.currentPosition.cell.number;
-        this.players[player.number - 1].target.cell1.center =
-          player.currentPosition.cell.center;
+        this.players[player.number - 1].target.cell1.number = player.currentPosition.cell.number;
+        this.players[player.number - 1].target.cell1.center = player.currentPosition.cell.center;
 
         this.players[player.number - 1].moving = {
           state: true,
@@ -10330,10 +10022,7 @@ class App extends Component {
       // DESTROY OBSTACLE W/ OR W/O RUBBLE
       else if (targetCell.obstacle.hp - damage <= 0) {
         let itemsToDrop = [];
-        if (
-          targetCell.obstacle.destructible.leaveRubble === true &&
-          targetCell.rubble !== true
-        ) {
+        if (targetCell.obstacle.destructible.leaveRubble === true && targetCell.rubble !== true) {
           // console.log('leave rubble on ',targetCell.number,'removing obstacle');
           if (targetCell.obstacle.items[0]) {
             itemsToDrop = targetCell.obstacle.items;
@@ -10461,9 +10150,7 @@ class App extends Component {
 
     let foundPlayer;
     let player;
-    let cl = this.gridInfo.find(
-      (elem) => elem.number.x === cell.x && elem.number.y === cell.y
-    );
+    let cl = this.gridInfo.find((elem) => elem.number.x === cell.x && elem.number.y === cell.y);
 
     if (cl.number.x === this.gridWidth && cl.number.y === 0) {
       // console.log('dont void this');
@@ -10561,15 +10248,13 @@ class App extends Component {
     if (subType === "cell1") {
       cellRef = this.gridInfo.find(
         (x) =>
-          x.number.x === player.target.cell1.number.x &&
-          x.number.y === player.target.cell1.number.y
+          x.number.x === player.target.cell1.number.x && x.number.y === player.target.cell1.number.y
       );
     }
     if (subType === "cell2") {
       cellRef = this.gridInfo.find(
         (x) =>
-          x.number.x === player.target.cell2.number.x &&
-          x.number.y === player.target.cell2.number.y
+          x.number.x === player.target.cell2.number.x && x.number.y === player.target.cell2.number.y
       );
     }
     if (type === "player") {
@@ -10631,9 +10316,7 @@ class App extends Component {
             color: "",
             img: "",
             cell: this.gridInfo.find(
-              (x) =>
-                x.number.x === cellRef.number.x &&
-                x.number.y === cellRef.number.y
+              (x) => x.number.x === cellRef.number.x && x.number.y === cellRef.number.y
             ),
           });
         }
@@ -10684,9 +10367,7 @@ class App extends Component {
             color: "",
             img: "",
             cell: this.gridInfo.find(
-              (x) =>
-                x.number.x === cellRef.number.x &&
-                x.number.y === cellRef.number.y
+              (x) => x.number.x === cellRef.number.x && x.number.y === cellRef.number.y
             ),
           });
         }
@@ -10754,10 +10435,7 @@ class App extends Component {
           cellRef.obstacle.destructible.leaveRubble === true ||
           cellRef.barrier.destructible.leaveRubble === true
         ) {
-          if (
-            cellRef.terrain.type !== "void" &&
-            cellRef.terrain.type !== "deep"
-          ) {
+          if (cellRef.terrain.type !== "void" && cellRef.terrain.type !== "deep") {
             cellRef.rubble = true;
           }
         }
@@ -10903,8 +10581,7 @@ class App extends Component {
 
             if (
               cell2Ref.barrier.state === true &&
-              cell2Ref.barrier.position ===
-                this.getOppositeDirection(player.direction)
+              cell2Ref.barrier.position === this.getOppositeDirection(player.direction)
             ) {
               interruptJump();
             } else {
@@ -10937,11 +10614,7 @@ class App extends Component {
         } else {
           if (obstacle.hp > 0) {
             if (player.hp >= obstacle.hp) {
-              let canPush = this.canPushObstacle(
-                player,
-                cellRef,
-                "jumpCollision"
-              );
+              let canPush = this.canPushObstacle(player, cellRef, "jumpCollision");
 
               if (canPush === true) {
                 // DO NOTHING, COMPLETE JUMP
@@ -10975,18 +10648,12 @@ class App extends Component {
           } else {
             if (player.hp > otherPlayer.hp) {
               // COMPLETE JUMP
-              this.pushBack(
-                otherPlayer,
-                this.getOppositeDirection(otherPlayer.direction)
-              );
+              this.pushBack(otherPlayer, this.getOppositeDirection(otherPlayer.direction));
               completeJump();
             } else {
               if (this.rnJesus(0, 5) === 0) {
                 completeJump();
-                this.pushBack(
-                  otherPlayer,
-                  this.getOppositeDirection(otherPlayer.direction)
-                );
+                this.pushBack(otherPlayer, this.getOppositeDirection(otherPlayer.direction));
               } else {
                 interruptJump();
               }
@@ -11002,10 +10669,7 @@ class App extends Component {
     console.log("obstaclePlayerOverlap");
 
     let obstacleDirection = this.getOppositeDirection(
-      this.getDirectionFromCells(
-        obstacle.moving.origin.number,
-        obstacle.moving.destination.number
-      )
+      this.getDirectionFromCells(obstacle.moving.origin.number, obstacle.moving.destination.number)
     );
 
     let pushPull = false;
@@ -11058,12 +10722,10 @@ class App extends Component {
         }
       }
       if (player.bluntAttack === true && player.currentWeapon.name !== "") {
-        playerAttackStamType =
-          this.staminaCostRef.attack[player.currentWeapon.type].blunt;
+        playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].blunt;
       }
       if (player.currentWeapon.name !== "") {
-        playerAttackStamType =
-          this.staminaCostRef.attack[player.currentWeapon.type].normal;
+        playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].normal;
       }
 
       let boltTarget1 = this.isBoltInCell(player.target.cell1.number);
@@ -11226,10 +10888,7 @@ class App extends Component {
         }
       }
 
-      if (
-        player.currentWeapon.type === "crossbow" ||
-        player.currentWeapon.type === "longbow"
-      ) {
+      if (player.currentWeapon.type === "crossbow" || player.currentWeapon.type === "longbow") {
         // CROSSBOW BLUNT ATTACK
         if (player.bluntAttack === true) {
           this.cellsUnderAttack.push({
@@ -11292,14 +10951,7 @@ class App extends Component {
           elem.number.y === player.currentPosition.cell.number.y
       );
 
-      this.attackCellContents(
-        "melee",
-        player,
-        targetCell,
-        targetCell2,
-        myCell,
-        undefined
-      );
+      this.attackCellContents("melee", player, targetCell, targetCell2, myCell, undefined);
     }
 
     this.players[player.number - 1] = player;
@@ -11314,13 +10966,11 @@ class App extends Component {
     // ATTACK STAM UNARMED CHECK & AND POPUPS SET
     let playerAttackStamType;
     if (player.currentWeapon.name !== "") {
-      playerAttackStamType =
-        this.staminaCostRef.attack[player.currentWeapon.type].normal;
+      playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].normal;
     }
 
     if (player.bluntAttack === true && player.currentWeapon.name !== "") {
-      playerAttackStamType =
-        this.staminaCostRef.attack[player.currentWeapon.type].blunt;
+      playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].blunt;
     }
     if (player.currentWeapon.name === "") {
       playerAttackStamType = this.staminaCostRef.attack.unarmed.normal;
@@ -11334,9 +10984,7 @@ class App extends Component {
           player.popups.push({
             state: false,
             count: 0,
-            limit:
-              this.attackAnimRef.limit[weapon] -
-              this.attackAnimRef.peak[weapon],
+            limit: this.attackAnimRef.limit[weapon] - this.attackAnimRef.peak[weapon],
             type: "",
             position: "",
             msg: "attackingBlunt",
@@ -11348,9 +10996,7 @@ class App extends Component {
           player.popups.push({
             state: false,
             count: 0,
-            limit:
-              this.attackAnimRef.limit.unarmed -
-              this.attackAnimRef.peak.unarmed,
+            limit: this.attackAnimRef.limit.unarmed - this.attackAnimRef.peak.unarmed,
             type: "",
             position: "",
             msg: "attackingUnarmed",
@@ -11364,9 +11010,7 @@ class App extends Component {
           player.popups.push({
             state: false,
             count: 0,
-            limit:
-              this.attackAnimRef.limit[weapon] -
-              this.attackAnimRef.peak[weapon],
+            limit: this.attackAnimRef.limit[weapon] - this.attackAnimRef.peak[weapon],
             type: "",
             position: "",
             msg: "attackingBlunt",
@@ -11394,8 +11038,7 @@ class App extends Component {
     if (this.isBoltInCell(player.target["cell" + cellNo].number) === true) {
       this.projectiles.find(
         (x) =>
-          x.currentPosition.number.x ===
-            player.target["cell" + cellNo].number.x &&
+          x.currentPosition.number.x === player.target["cell" + cellNo].number.x &&
           x.currentPosition.number.y === player.target["cell" + cellNo].number.y
       ).kill = true;
 
@@ -11439,20 +11082,12 @@ class App extends Component {
           elem.number.y === player.currentPosition.cell.number.y
       );
 
-      this.attackCellContents(
-        "melee",
-        player,
-        targetCell,
-        targetCell2,
-        myCell,
-        undefined
-      );
+      this.attackCellContents("melee", player, targetCell, targetCell2, myCell, undefined);
     }
 
     // TARGET IS A PLAYER
     if (player.target["cell" + cellNo].occupant.type === "player") {
-      targetPlayerRef =
-        this.players[player.target["cell" + cellNo].occupant.player - 1];
+      targetPlayerRef = this.players[player.target["cell" + cellNo].occupant.player - 1];
 
       if (targetPlayerRef) {
         // IS TARGET DEFENDING?
@@ -11516,8 +11151,7 @@ class App extends Component {
         // SIDE ATTACK
         if (
           targetPlayerRef.direction !== player.direction &&
-          targetPlayerRef.direction !==
-            this.getOppositeDirection(player.direction)
+          targetPlayerRef.direction !== this.getOppositeDirection(player.direction)
         ) {
           // TARGET PLAYER IS DODGING
           if (targetPlayerRef.dodging.state === true) {
@@ -11564,8 +11198,7 @@ class App extends Component {
                 if (targetPlayerRef.defendPeak === true) {
                   this.setDeflection(player, "defended", true);
 
-                  targetPlayerRef.stamina.current +=
-                    this.staminaCostRef.defend.peak;
+                  targetPlayerRef.stamina.current += this.staminaCostRef.defend.peak;
                   targetPlayerRef.success.defendSuccess = {
                     state: true,
                     count: 1,
@@ -11577,11 +11210,7 @@ class App extends Component {
                     count: 1,
                     limit: targetPlayerRef.statusDisplay.limit,
                   };
-                  if (
-                    !targetPlayerRef.popups.find(
-                      (x) => x.msg === "attackParried"
-                    )
-                  ) {
+                  if (!targetPlayerRef.popups.find((x) => x.msg === "attackParried")) {
                     targetPlayerRef.popups.push({
                       state: false,
                       count: 0,
@@ -11611,11 +11240,7 @@ class App extends Component {
                       count: 1,
                       limit: targetPlayerRef.statusDisplay.limit,
                     };
-                    if (
-                      !targetPlayerRef.popups.find(
-                        (x) => x.msg === "defendSuccess"
-                      )
-                    ) {
+                    if (!targetPlayerRef.popups.find((x) => x.msg === "defendSuccess")) {
                       targetPlayerRef.popups.push({
                         state: false,
                         count: 0,
@@ -11676,10 +11301,7 @@ class App extends Component {
         }
 
         // TARGET & PLAYER ARE FACE TO FACE
-        if (
-          player.direction ===
-          this.getOppositeDirection(targetPlayerRef.direction)
-        ) {
+        if (player.direction === this.getOppositeDirection(targetPlayerRef.direction)) {
           // TARGET DODGING
           if (targetPlayerRef.dodging.state === true) {
             console.log(
@@ -11719,10 +11341,7 @@ class App extends Component {
 
               // PUSHBACK ATTACKER/PLAYER
               if (this.rnJesus(0, 2) === 0) {
-                this.pushBack(
-                  player,
-                  this.getOppositeDirection(player.direction)
-                );
+                this.pushBack(player, this.getOppositeDirection(player.direction));
               }
               // PUSHBACK DEFENDER/TARGET
               if (this.rnJesus(0, 2) === 1) {
@@ -11733,10 +11352,7 @@ class App extends Component {
               }
               // PUSHBACK BOTH PLAYERS
               if (this.rnJesus(0, 2) === 2) {
-                this.pushBack(
-                  player,
-                  this.getOppositeDirection(player.direction)
-                );
+                this.pushBack(player, this.getOppositeDirection(player.direction));
                 this.pushBack(
                   targetPlayerRef,
                   this.getOppositeDirection(targetPlayerRef.direction)
@@ -11798,8 +11414,7 @@ class App extends Component {
 
                   this.setDeflection(player, "parried", true);
 
-                  targetPlayerRef.stamina.current +=
-                    this.staminaCostRef.defend.peak;
+                  targetPlayerRef.stamina.current += this.staminaCostRef.defend.peak;
                   targetPlayerRef.success.defendSuccess = {
                     state: true,
                     count: 1,
@@ -11811,11 +11426,7 @@ class App extends Component {
                     count: 1,
                     limit: targetPlayerRef.statusDisplay.limit,
                   };
-                  if (
-                    !targetPlayerRef.popups.find(
-                      (x) => x.msg === "attackParried"
-                    )
-                  ) {
+                  if (!targetPlayerRef.popups.find((x) => x.msg === "attackParried")) {
                     targetPlayerRef.popups.push({
                       state: false,
                       count: 0,
@@ -11852,11 +11463,7 @@ class App extends Component {
                     count: 1,
                     limit: targetPlayerRef.statusDisplay.limit,
                   };
-                  if (
-                    !targetPlayerRef.popups.find(
-                      (x) => x.msg === "defendSuccess"
-                    )
-                  ) {
+                  if (!targetPlayerRef.popups.find((x) => x.msg === "defendSuccess")) {
                     targetPlayerRef.popups.push({
                       state: false,
                       count: 0,
@@ -11916,13 +11523,11 @@ class App extends Component {
     let playerAttackStamType;
 
     if (player.currentWeapon.name !== "") {
-      playerAttackStamType =
-        this.staminaCostRef.attack[player.currentWeapon.type].normal;
+      playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].normal;
     }
 
     if (player.bluntAttack === true && player.currentWeapon.name !== "") {
-      playerAttackStamType =
-        this.staminaCostRef.attack[player.currentWeapon.type].blunt;
+      playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].blunt;
     }
     if (player.currentWeapon.name === "") {
       playerAttackStamType = this.staminaCostRef.attack.unarmed.normal;
@@ -11939,10 +11544,7 @@ class App extends Component {
       defendType = "unarmed";
     }
     let defendPeak = this.defendAnimRef.peak[defendType];
-    if (
-      player.defending.count === defendPeak ||
-      player.defendDecay.state === true
-    ) {
+    if (player.defending.count === defendPeak || player.defendDecay.state === true) {
       playerDefending = true;
     }
 
@@ -11957,12 +11559,7 @@ class App extends Component {
 
     //BOLT TARGET DODGING
     if (player.dodging.state === true) {
-      console.log(
-        "player ",
-        player.number,
-        " just dodged a bolt from ",
-        bolt.owner
-      );
+      console.log("player ", player.number, " just dodged a bolt from ", bolt.owner);
       player.stamina.current += this.staminaCostRef.dodge.pre;
     } else {
       // BOLT NOT DODGED MUST HIT PLAYER
@@ -12069,10 +11666,7 @@ class App extends Component {
                   });
                 }
                 if (this.rnJesus(1, player.crits.pushBack) === 1) {
-                  this.pushBack(
-                    player,
-                    this.getOppositeDirection(player.direction)
-                  );
+                  this.pushBack(player, this.getOppositeDirection(player.direction));
                 }
               }
 
@@ -12245,10 +11839,7 @@ class App extends Component {
                 });
               }
               if (this.rnJesus(1, player.crits.pushBack) === 1) {
-                this.pushBack(
-                  player,
-                  this.getOppositeDirection(player.direction)
-                );
+                this.pushBack(player, this.getOppositeDirection(player.direction));
               }
             }
           }
@@ -12405,12 +11996,9 @@ class App extends Component {
       targetPlayer.attackStrength = 1;
 
       // ADJUST TARGET MOVE SPEED
-      let currentMoveSpeedIndx = targetPlayer.speed.range.indexOf(
-        targetPlayer.speed.move
-      );
+      let currentMoveSpeedIndx = targetPlayer.speed.range.indexOf(targetPlayer.speed.move);
       if (currentMoveSpeedIndx > 0) {
-        targetPlayer.speed.move =
-          targetPlayer.speed.range[currentMoveSpeedIndx - 1];
+        targetPlayer.speed.move = targetPlayer.speed.range[currentMoveSpeedIndx - 1];
       }
       // player.speed.move = .05;
     }
@@ -12622,11 +12210,7 @@ class App extends Component {
           this.attackedCancel(player);
         }
 
-        if (
-          !this.players[player.number - 1].popups.find(
-            (x) => x.msg.split("_")[0] === "hpDown"
-          )
-        ) {
+        if (!this.players[player.number - 1].popups.find((x) => x.msg.split("_")[0] === "hpDown")) {
           this.players[player.number - 1].popups.push({
             state: false,
             count: 0,
@@ -12640,14 +12224,12 @@ class App extends Component {
 
         if (this.players[player.number - 1].hp === 1) {
           // ADJUST TARGET MOVE SPEED
-          let currentMoveSpeedIndx = this.players[
-            player.number - 1
-          ].speed.range.indexOf(this.players[player.number - 1].speed.move);
+          let currentMoveSpeedIndx = this.players[player.number - 1].speed.range.indexOf(
+            this.players[player.number - 1].speed.move
+          );
           if (currentMoveSpeedIndx > 0) {
             this.players[player.number - 1].speed.move =
-              this.players[player.number - 1].speed.range[
-                currentMoveSpeedIndx - 1
-              ];
+              this.players[player.number - 1].speed.range[currentMoveSpeedIndx - 1];
           }
         }
       }
@@ -12671,11 +12253,7 @@ class App extends Component {
 
         this.setDeflection(player, "attacked", false);
 
-        if (
-          !this.players[player.number - 1].popups.find(
-            (x) => x.msg.split("_")[0] === "hpDown"
-          )
-        ) {
+        if (!this.players[player.number - 1].popups.find((x) => x.msg.split("_")[0] === "hpDown")) {
           this.players[player.number - 1].popups.push({
             state: false,
             count: 0,
@@ -12686,11 +12264,7 @@ class App extends Component {
             img: "",
           });
         }
-        if (
-          !this.players[player.number - 1].popups.find(
-            (x) => x.msg === "terrainInjured"
-          )
-        ) {
+        if (!this.players[player.number - 1].popups.find((x) => x.msg === "terrainInjured")) {
           this.players[player.number - 1].popups.push({
             state: false,
             count: 0,
@@ -12704,14 +12278,12 @@ class App extends Component {
 
         if (this.players[player.number - 1].hp === 1) {
           // ADJUST TARGET MOVE SPEED
-          let currentMoveSpeedIndx = this.players[
-            player.number - 1
-          ].speed.range.indexOf(this.players[player.number - 1].speed.move);
+          let currentMoveSpeedIndx = this.players[player.number - 1].speed.range.indexOf(
+            this.players[player.number - 1].speed.move
+          );
           if (currentMoveSpeedIndx > 0) {
             this.players[player.number - 1].speed.move =
-              this.players[player.number - 1].speed.range[
-                currentMoveSpeedIndx - 1
-              ];
+              this.players[player.number - 1].speed.range[currentMoveSpeedIndx - 1];
           }
         }
       }
@@ -12735,11 +12307,7 @@ class App extends Component {
 
         // this.setDeflection(player,'attacked',false);
 
-        if (
-          !this.players[player.number - 1].popups.find(
-            (x) => x.msg.split("_")[0] === "hpDown"
-          )
-        ) {
+        if (!this.players[player.number - 1].popups.find((x) => x.msg.split("_")[0] === "hpDown")) {
           this.players[player.number - 1].popups.push({
             state: false,
             count: 0,
@@ -12753,14 +12321,12 @@ class App extends Component {
 
         if (this.players[player.number - 1].hp === 1) {
           // ADJUST TARGET MOVE SPEED
-          let currentMoveSpeedIndx = this.players[
-            player.number - 1
-          ].speed.range.indexOf(this.players[player.number - 1].speed.move);
+          let currentMoveSpeedIndx = this.players[player.number - 1].speed.range.indexOf(
+            this.players[player.number - 1].speed.move
+          );
           if (currentMoveSpeedIndx > 0) {
             this.players[player.number - 1].speed.move =
-              this.players[player.number - 1].speed.range[
-                currentMoveSpeedIndx - 1
-              ];
+              this.players[player.number - 1].speed.range[currentMoveSpeedIndx - 1];
           }
         }
       }
@@ -12816,11 +12382,7 @@ class App extends Component {
           this.attackedCancel(player);
         }
 
-        if (
-          !this.players[player.number - 1].popups.find(
-            (x) => x.msg.split("_")[0] === "hpDown"
-          )
-        ) {
+        if (!this.players[player.number - 1].popups.find((x) => x.msg.split("_")[0] === "hpDown")) {
           this.players[player.number - 1].popups.push({
             state: false,
             count: 0,
@@ -12834,14 +12396,12 @@ class App extends Component {
 
         if (this.players[player.number - 1].hp === 1) {
           // ADJUST TARGET MOVE SPEED
-          let currentMoveSpeedIndx = this.players[
-            player.number - 1
-          ].speed.range.indexOf(this.players[player.number - 1].speed.move);
+          let currentMoveSpeedIndx = this.players[player.number - 1].speed.range.indexOf(
+            this.players[player.number - 1].speed.move
+          );
           if (currentMoveSpeedIndx > 0) {
             this.players[player.number - 1].speed.move =
-              this.players[player.number - 1].speed.range[
-                currentMoveSpeedIndx - 1
-              ];
+              this.players[player.number - 1].speed.range[currentMoveSpeedIndx - 1];
           }
         }
       }
@@ -12868,10 +12428,7 @@ class App extends Component {
   attackedCancel = (player) => {
     // console.log('player', player.number,' attacked. Cancel action!',player.action);
 
-    if (
-      player.elasticCounter.state === true &&
-      player.elasticCounter.type === player.action
-    ) {
+    if (player.elasticCounter.state === true && player.elasticCounter.type === player.action) {
       player.elasticCounter.state = false;
     }
 
@@ -13146,8 +12703,7 @@ class App extends Component {
     if (player.stamina.current - this.staminaCostRef.pushBack < 0) {
       player.stamina.current = 0;
     } else {
-      player.stamina.current =
-        player.stamina.current - this.staminaCostRef.pushBack;
+      player.stamina.current = player.stamina.current - this.staminaCostRef.pushBack;
     }
 
     let pushBackDirection = hitByPlayerDirection;
@@ -13157,15 +12713,10 @@ class App extends Component {
     };
     let target = this.getTarget(player);
     let targetCell = this.gridInfo.find(
-      (x) =>
-        x.number.x === target.cell1.number.x &&
-        x.number.y === target.cell1.number.y
+      (x) => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y
     );
 
-    if (
-      myCell.barrier.state === true &&
-      myCell.barrier.position === pushBackDirection
-    ) {
+    if (myCell.barrier.state === true && myCell.barrier.position === pushBackDirection) {
       canPushBack = false;
       halfPushBack = true;
       myCellBlock = true;
@@ -13293,11 +12844,7 @@ class App extends Component {
     }
 
     if (object === "obstacle") {
-      if (
-        this.halfPushBackObstacles.find(
-          (x) => x.state !== true && x.myCellNo !== data.number
-        )
-      ) {
+      if (this.halfPushBackObstacles.find((x) => x.state !== true && x.myCellNo !== data.number)) {
         this.halfPushBackObstacles.push({
           state: true,
           myCellNo: data.number,
@@ -13700,10 +13247,7 @@ class App extends Component {
           }
         }
       } else {
-        if (
-          targetCellRef.barrier.position ===
-          this.getOppositeDirection(direction)
-        ) {
+        if (targetCellRef.barrier.position === this.getOppositeDirection(direction)) {
           if (targetCellRef.barrier.destructible.state === true) {
             if (targetCellRef.barrier.hp - damage > 0) {
               let hp = targetCellRef.barrier.hp - damage;
@@ -13826,8 +13370,7 @@ class App extends Component {
         data.halfPushBack.direction
       );
       targetCellRef = this.gridInfo.find(
-        (x) =>
-          x.number.x === targetCellNumber.x && x.number.y === targetCellNumber.y
+        (x) => x.number.x === targetCellNumber.x && x.number.y === targetCellNumber.y
       );
       myCellRef = this.gridInfo.find(
         (x) =>
@@ -13842,10 +13385,7 @@ class App extends Component {
         case "obstacle":
           // IMPACTOR DAMAGE, DEFLECT?
           if (shouldDamageImpactor === true) {
-            this.handleMiscPlayerDamage(
-              data,
-              "halfPushBackImpactor_" + impactee + ""
-            );
+            this.handleMiscPlayerDamage(data, "halfPushBackImpactor_" + impactee + "");
           }
 
           if (shouldDeflectImpactor === true) {
@@ -13872,10 +13412,7 @@ class App extends Component {
         case "player":
           // IMPACTOR DAMAGE, DEFLECT?
           if (shouldDamageImpactor === true) {
-            this.handleMiscPlayerDamage(
-              data,
-              "halfPushBackImpactor_" + impactee + ""
-            );
+            this.handleMiscPlayerDamage(data, "halfPushBackImpactor_" + impactee + "");
           }
 
           if (shouldDeflectImpactor === true) {
@@ -13888,18 +13425,13 @@ class App extends Component {
               x.currentPosition.cell.number.x === targetCellRef.number.x &&
               x.currentPosition.cell.number.y === targetCellRef.number.y
           );
-          shouldDamageImpactee =
-            this.rnJesus(1, impacteePlayerRef.crits.guardBreak) === 1;
+          shouldDamageImpactee = this.rnJesus(1, impacteePlayerRef.crits.guardBreak) === 1;
 
           if (shouldDamageImpactee === true) {
-            this.handleMiscPlayerDamage(
-              impacteePlayerRef,
-              "halfPushBackImpactee_" + impactor + ""
-            );
+            this.handleMiscPlayerDamage(impacteePlayerRef, "halfPushBackImpactee_" + impactor + "");
           }
 
-          shouldDeflectImpactee =
-            this.rnJesus(1, impacteePlayerRef.crits.guardBreak) === 1;
+          shouldDeflectImpactee = this.rnJesus(1, impacteePlayerRef.crits.guardBreak) === 1;
 
           if (this.halfPushBackChainingMoveAll === true) {
             if (impacteePlayerRef.direction === direction) {
@@ -13933,10 +13465,7 @@ class App extends Component {
         case "barrier":
           // IMPACTOR DAMAGE, DEFLECT?
           if (shouldDamageImpactor === true) {
-            this.handleMiscPlayerDamage(
-              data,
-              "halfPushBackImpactor_" + impactee + ""
-            );
+            this.handleMiscPlayerDamage(data, "halfPushBackImpactor_" + impactee + "");
           }
 
           if (shouldDeflectImpactor === true) {
@@ -13951,16 +13480,10 @@ class App extends Component {
           ) {
             myCell = true;
             shouldDamageImpactee =
-              this.rnJesus(
-                1,
-                myCellRef.barrier.height + myCellRef.barrier.hp
-              ) === 1;
+              this.rnJesus(1, myCellRef.barrier.height + myCellRef.barrier.hp) === 1;
           } else {
             shouldDamageImpactee =
-              this.rnJesus(
-                1,
-                targetCellRef.barrier.height + targetCellRef.barrier.hp
-              ) === 1;
+              this.rnJesus(1, targetCellRef.barrier.height + targetCellRef.barrier.hp) === 1;
           }
 
           if (shouldDamageImpactee === true) {
@@ -13971,10 +13494,7 @@ class App extends Component {
         case "higherElevation":
           // DAMAGE, DEFLECT IMPACTOR?
           if (shouldDamageImpactor === true) {
-            this.handleMiscPlayerDamage(
-              data,
-              "halfPushBackImpactor_" + impactee + ""
-            );
+            this.handleMiscPlayerDamage(data, "halfPushBackImpactor_" + impactee + "");
           }
 
           if (shouldDeflectImpactor === true) {
@@ -13990,18 +13510,14 @@ class App extends Component {
     if (type === "obstacle") {
       direction = data.direction;
       targetCellRef = this.gridInfo.find(
-        (x) =>
-          x.number.x === data.blockCellNo.x && x.number.y === data.blockCellNo.y
+        (x) => x.number.x === data.blockCellNo.x && x.number.y === data.blockCellNo.y
       );
       myCellRef = this.gridInfo.find(
         (x) => x.number.x === data.myCellNo.x && x.number.y === data.myCellNo.y
       );
       impactee = data.blockType;
       shouldDamageImpactor =
-        this.rnJesus(
-          1,
-          data.obstacle.height + data.obstacle.weight + data.obstacle.hp
-        ) === 1;
+        this.rnJesus(1, data.obstacle.height + data.obstacle.weight + data.obstacle.hp) === 1;
 
       switch (impactee) {
         case "obstacle":
@@ -14012,10 +13528,7 @@ class App extends Component {
 
           // IMPACTEE
           shouldDamageImpactee =
-            this.rnJesus(
-              1,
-              targetCellRef.obstacle.height + targetCellRef.obstacle.weight
-            ) === 1;
+            this.rnJesus(1, targetCellRef.obstacle.height + targetCellRef.obstacle.weight) === 1;
           if (shouldDamageImpactee === true) {
             damageObstacle("impactee");
           }
@@ -14037,18 +13550,13 @@ class App extends Component {
               x.currentPosition.cell.number.x === targetCellRef.number.x &&
               x.currentPosition.cell.number.y === targetCellRef.number.y
           );
-          shouldDamageImpactee =
-            this.rnJesus(1, impacteePlayerRef.crits.guardBreak) === 1;
+          shouldDamageImpactee = this.rnJesus(1, impacteePlayerRef.crits.guardBreak) === 1;
 
           if (shouldDamageImpactee === true) {
-            this.handleMiscPlayerDamage(
-              impacteePlayerRef,
-              "halfPushBackImpactee_" + impactor + ""
-            );
+            this.handleMiscPlayerDamage(impacteePlayerRef, "halfPushBackImpactee_" + impactor + "");
           }
 
-          shouldDeflectImpactee =
-            this.rnJesus(1, impacteePlayerRef.crits.guardBreak) === 1;
+          shouldDeflectImpactee = this.rnJesus(1, impacteePlayerRef.crits.guardBreak) === 1;
 
           if (this.halfPushBackChainingMoveAll === true) {
             if (impacteePlayerRef.direction === direction) {
@@ -14079,22 +13587,13 @@ class App extends Component {
 
           // IMPACTEE
           let myCell = false;
-          if (
-            myCellRef.barrier.state === true &&
-            myCellRef.barrier.position === data.direction
-          ) {
+          if (myCellRef.barrier.state === true && myCellRef.barrier.position === data.direction) {
             myCell = true;
             shouldDamageImpactee =
-              this.rnJesus(
-                1,
-                myCellRef.barrier.height + myCellRef.barrier.hp
-              ) === 1;
+              this.rnJesus(1, myCellRef.barrier.height + myCellRef.barrier.hp) === 1;
           } else {
             shouldDamageImpactee =
-              this.rnJesus(
-                1,
-                targetCellRef.barrier.height + targetCellRef.barrier.hp
-              ) === 1;
+              this.rnJesus(1, targetCellRef.barrier.height + targetCellRef.barrier.hp) === 1;
           }
 
           if (shouldDamageImpactee === true) {
@@ -14116,11 +13615,7 @@ class App extends Component {
     // impactee = "obstacle";
 
     if (moveObstacle === true && impactee === "obstacle") {
-      let destCell = this.getCellFromDirection(
-        1,
-        targetCellRef.number,
-        direction
-      );
+      let destCell = this.getCellFromDirection(1, targetCellRef.number, direction);
       let destCellRef = this.gridInfo.find(
         (x) => x.number.x === destCell.x && x.number.y === destCell.y
       );
@@ -14144,10 +13639,7 @@ class App extends Component {
       }
 
       let targetFree = true;
-      if (
-        targetCellRef.barrier.state === true &&
-        targetCellRef.barrier.position === direction
-      ) {
+      if (targetCellRef.barrier.state === true && targetCellRef.barrier.position === direction) {
         targetFree = false;
       }
       if (destCellRef) {
@@ -14162,12 +13654,7 @@ class App extends Component {
           targetFree = false;
 
           if (this.halfPushBackChaining === true) {
-            this.startHalfPushBack(
-              "obstacle",
-              "obstacle",
-              direction,
-              targetCellRef
-            );
+            this.startHalfPushBack("obstacle", "obstacle", direction, targetCellRef);
           }
         }
 
@@ -14181,12 +13668,7 @@ class App extends Component {
           targetFree = false;
 
           if (this.halfPushBackChaining === true) {
-            this.startHalfPushBack(
-              "obstacle",
-              "player",
-              direction,
-              targetCellRef
-            );
+            this.startHalfPushBack("obstacle", "player", direction, targetCellRef);
           }
         }
       }
@@ -14194,10 +13676,7 @@ class App extends Component {
       if (targetFree === true) {
         if (targetCellRef.obstacle.moving.state !== true) {
           if (destCellRef) {
-            let obstacleCrementObj = this.obstacleMoveCrementer(
-              targetCellRef,
-              destCellRef
-            );
+            let obstacleCrementObj = this.obstacleMoveCrementer(targetCellRef, destCellRef);
 
             targetCellRef.obstacle = {
               state: targetCellRef.obstacle.state,
@@ -14233,11 +13712,7 @@ class App extends Component {
           }
 
           if (!destCellRef) {
-            let voidCenter = this.getVoidCenter(
-              1,
-              direction,
-              targetCellRef.center
-            );
+            let voidCenter = this.getVoidCenter(1, direction, targetCellRef.center);
 
             let obstacleCrementObj = this.obstacleMoveCrementer(targetCellRef, {
               center: voidCenter,
@@ -14285,11 +13760,7 @@ class App extends Component {
     }
 
     if (movePlayer === true && impactee === "player") {
-      let destCell = this.getCellFromDirection(
-        1,
-        targetCellRef.number,
-        direction
-      );
+      let destCell = this.getCellFromDirection(1, targetCellRef.number, direction);
       let destCellRef = this.gridInfo.find(
         (x) => x.number.x === destCell.x && x.number.y === destCell.y
       );
@@ -14313,10 +13784,7 @@ class App extends Component {
       }
 
       let targetFree = true;
-      if (
-        targetCellRef.barrier.state === true &&
-        targetCellRef.barrier.position === direction
-      ) {
+      if (targetCellRef.barrier.state === true && targetCellRef.barrier.position === direction) {
         targetFree = false;
       }
       if (destCellRef) {
@@ -14330,12 +13798,7 @@ class App extends Component {
         if (destCellRef.obstacle.state === true) {
           targetFree = false;
           if (this.halfPushBackChaining === true) {
-            this.startHalfPushBack(
-              "player",
-              "obstacle",
-              direction,
-              impacteePlayerRef
-            );
+            this.startHalfPushBack("player", "obstacle", direction, impacteePlayerRef);
           }
         }
 
@@ -14349,12 +13812,7 @@ class App extends Component {
           targetFree = false;
 
           if (this.halfPushBackChaining === true) {
-            this.startHalfPushBack(
-              "player",
-              "player",
-              direction,
-              impacteePlayerRef
-            );
+            this.startHalfPushBack("player", "player", direction, impacteePlayerRef);
           }
         }
       }
@@ -14393,16 +13851,11 @@ class App extends Component {
               destination: destCellRef.center,
             };
             let targetPlyrNextPosition = this.lineCrementer(impacteePlayerRef);
-            this.players[impacteePlayerRef.number - 1].nextPosition =
-              targetPlyrNextPosition;
+            this.players[impacteePlayerRef.number - 1].nextPosition = targetPlyrNextPosition;
           }
 
           if (!destCellRef) {
-            let voidCenter = this.getVoidCenter(
-              1,
-              direction,
-              targetCellRef.center
-            );
+            let voidCenter = this.getVoidCenter(1, direction, targetCellRef.center);
 
             this.players[impacteePlayerRef.number - 1].moving = {
               state: true,
@@ -14421,8 +13874,7 @@ class App extends Component {
               destination: voidCenter,
             };
             let targetPlyrNextPosition = this.lineCrementer(impacteePlayerRef);
-            this.players[impacteePlayerRef.number - 1].nextPosition =
-              targetPlyrNextPosition;
+            this.players[impacteePlayerRef.number - 1].nextPosition = targetPlyrNextPosition;
           }
         } else {
           console.log("player is already being pushed back!!");
@@ -14439,9 +13891,7 @@ class App extends Component {
       this.bloodSacrificeEvent.limit = 2000;
       this.bloodSacrificeEvent.restore = true;
       this.openVoid = true;
-      console.log(
-        "the gods have accepted a blood sacrifice. Standby for void tiles"
-      );
+      console.log("the gods have accepted a blood sacrifice. Standby for void tiles");
     }
   };
 
@@ -14451,9 +13901,7 @@ class App extends Component {
 
       if (this.customItemPlacement.state === true) {
         if (this.initItemList.length > this.customItemPlacement.cells.length) {
-          console.log(
-            "not enough cells assigned for custom placement please add more"
-          );
+          console.log("not enough cells assigned for custom placement please add more");
         } else {
           // console.log('start:',this.initItemList.length,this.customItemPlacement.cells.length);
 
@@ -14464,9 +13912,7 @@ class App extends Component {
               center: { x: undefined, y: undefined },
             };
             let cell3Ref = this.gridInfo.find(
-              (elem) =>
-                elem.number.x === cell3.number.x &&
-                elem.number.y === cell3.number.y
+              (elem) => elem.number.x === cell3.number.x && elem.number.y === cell3.number.y
             );
 
             if (!cell3Ref) {
@@ -14475,9 +13921,7 @@ class App extends Component {
               // cell3Ref = this.gridInfo.find(elem => elem.number.x === cell3.number.x && elem.number.y === cell3.number.y);
               // console.log('cell doesnt exist @',this.customItemPlacement.cells[index],'pick new cell',cell3,'item',item2.name);
               if (!cell3) {
-                cell3Ref = this.gridInfo.filter(
-                  (x) => x.obstacle.state === true
-                )[0];
+                cell3Ref = this.gridInfo.filter((x) => x.obstacle.state === true)[0];
                 // console.log('no free cells for placement, replace obatcle? @ ',cell3Ref.number);
                 if (cell3Ref) {
                   let oldLvlData = cell3Ref.levelData.split("_");
@@ -14497,9 +13941,7 @@ class App extends Component {
                 }
               } else {
                 cell3Ref = this.gridInfo.find(
-                  (elem) =>
-                    elem.number.x === cell3.number.x &&
-                    elem.number.y === cell3.number.y
+                  (elem) => elem.number.x === cell3.number.x && elem.number.y === cell3.number.y
                 );
                 // console.log('cell for placement exists',cell3Ref.number,this.customItemPlacement.cells[index],'item',item2.name);
                 if (
@@ -14510,9 +13952,7 @@ class App extends Component {
                   // console.log('b');
                   cell3 = this.getRandomFreeCell();
                   cell3Ref = this.gridInfo.find(
-                    (elem) =>
-                      elem.number.x === cell3.number.x &&
-                      elem.number.y === cell3.number.y
+                    (elem) => elem.number.x === cell3.number.x && elem.number.y === cell3.number.y
                   );
 
                   if (!cell3) {
@@ -14530,9 +13970,7 @@ class App extends Component {
                     continue;
                   } else {
                     cell3Ref = this.gridInfo.find(
-                      (elem) =>
-                        elem.number.x === cell3.number.x &&
-                        elem.number.y === cell3.number.y
+                      (elem) => elem.number.x === cell3.number.x && elem.number.y === cell3.number.y
                     );
                     // console.log('chose another cell',cell3Ref.number);
                   }
@@ -14549,9 +13987,7 @@ class App extends Component {
               }
             } else {
               cell3Ref = this.gridInfo.find(
-                (elem) =>
-                  elem.number.x === cell3.number.x &&
-                  elem.number.y === cell3.number.y
+                (elem) => elem.number.x === cell3.number.x && elem.number.y === cell3.number.y
               );
               // console.log('cell @',this.customItemPlacement.cells[index],cell3Ref.number);
               if (cell3Ref.obstacle.state === true) {
@@ -14563,9 +13999,7 @@ class App extends Component {
                   continue;
                 } else {
                   cell3Ref = this.gridInfo.find(
-                    (elem) =>
-                      elem.number.x === cell3.number.x &&
-                      elem.number.y === cell3.number.y
+                    (elem) => elem.number.x === cell3.number.x && elem.number.y === cell3.number.y
                   );
                   // console.log('cell is clear for placement3',cell3Ref.number,'item',cell3Ref.item.name,index);
                   cell3Ref.item.name = item2.name;
@@ -14575,9 +14009,7 @@ class App extends Component {
                 }
               } else {
                 cell3Ref = this.gridInfo.find(
-                  (elem) =>
-                    elem.number.x === cell3.number.x &&
-                    elem.number.y === cell3.number.y
+                  (elem) => elem.number.x === cell3.number.x && elem.number.y === cell3.number.y
                 );
                 // console.log('cell is clear for placement4',cell3Ref.number,'item',cell3Ref.item.name,index);
 
@@ -14698,11 +14130,7 @@ class App extends Component {
 
     let dropChance = this.rnJesus(1, player.crits.pushBack + 3);
     dropChance = this.rnJesus(1, 1);
-    if (
-      dropChance === 1 &&
-      player.falling.state !== true &&
-      player.dead.state !== true
-    ) {
+    if (dropChance === 1 && player.falling.state !== true && player.dead.state !== true) {
       shouldDrop = true;
 
       if (dropWhat === 1) {
@@ -14715,11 +14143,9 @@ class App extends Component {
           // console.log("dropping weapon player ",player.number,this.players[player.number-1].items.weapons[index].name,index,);
 
           item.name = this.players[player.number - 1].items.weapons[index].name;
-          item.subType =
-            this.players[player.number - 1].items.weapons[index].type;
+          item.subType = this.players[player.number - 1].items.weapons[index].type;
           item.type = "weapon";
-          item.effect =
-            this.players[player.number - 1].items.weapons[index].effect;
+          item.effect = this.players[player.number - 1].items.weapons[index].effect;
 
           this.players[player.number - 1].itemDrop = {
             state: true,
@@ -14780,10 +14206,8 @@ class App extends Component {
           );
           // console.log("dropping armor player ",player.number,this.players[player.number-1].items.armor[index].name);
           item.name = this.players[player.number - 1].items.armor[index].name;
-          item.subType =
-            this.players[player.number - 1].items.armor[index].type;
-          item.effect =
-            this.players[player.number - 1].items.armor[index].effect;
+          item.subType = this.players[player.number - 1].items.armor[index].type;
+          item.effect = this.players[player.number - 1].items.armor[index].effect;
           item.type = "armor";
 
           this.players[player.number - 1].itemDrop = {
@@ -14808,13 +14232,7 @@ class App extends Component {
             img: "",
           });
 
-          this.applyRemoveEffect(
-            player,
-            "remove",
-            "deflectDrop",
-            "armor",
-            item
-          );
+          this.applyRemoveEffect(player, "remove", "deflectDrop", "armor", item);
 
           this.players[player.number - 1].items.armor.splice(index, 1);
           this.players[player.number - 1].items.armorIndex = 0;
@@ -15015,13 +14433,7 @@ class App extends Component {
             msg: "dropArmor",
             img: "",
           });
-          this.applyRemoveEffect(
-            player,
-            "remove",
-            "discard",
-            "armor",
-            cellToDrop.item
-          );
+          this.applyRemoveEffect(player, "remove", "discard", "armor", cellToDrop.item);
 
           this.players[player.number - 1].items.armor.splice(index2, 1);
           this.players[player.number - 1].currentArmor = {
@@ -15056,9 +14468,7 @@ class App extends Component {
         limit: this.players[player.number - 1].statusDisplay.limit,
       };
 
-      if (
-        !this.players[player.number - 1].popups.find((x) => x.msg === "stop")
-      ) {
+      if (!this.players[player.number - 1].popups.find((x) => x.msg === "stop")) {
         this.players[player.number - 1].popups.push({
           state: false,
           count: 0,
@@ -15073,14 +14483,7 @@ class App extends Component {
       this.checkDestination(player, true);
     }
   };
-  attackCellContents = (
-    type,
-    player,
-    targetCell,
-    targetCell2,
-    myCell,
-    bolt
-  ) => {
+  attackCellContents = (type, player, targetCell, targetCell2, myCell, bolt) => {
     if (type === "melee") {
       let doubleHitChance = player.crits.doubleHit;
       let singleHitChance = player.crits.singleHit;
@@ -15125,9 +14528,7 @@ class App extends Component {
                 if (myCell.barrier.destructible.state === true) {
                   // WEAPON CHECK
                   if (
-                    myCell.barrier.destructible.weapons.find(
-                      (x) => x === player.currentWeapon.name
-                    )
+                    myCell.barrier.destructible.weapons.find((x) => x === player.currentWeapon.name)
                   ) {
                     if (myCell.barrier.hp - damage > 0) {
                       let hp = myCell.barrier.hp - damage;
@@ -15179,13 +14580,10 @@ class App extends Component {
                           state: true,
                           status: "Destroyed " + myCell.barrier.name + "!",
                           count: 1,
-                          limit:
-                            this.players[player.number - 1].statusDisplay.limit,
+                          limit: this.players[player.number - 1].statusDisplay.limit,
                         };
 
-                        if (
-                          !player.popups.find((x) => x.msg === "destroyedItem")
-                        ) {
+                        if (!player.popups.find((x) => x.msg === "destroyedItem")) {
                           player.popups.push({
                             state: false,
                             count: 0,
@@ -15214,13 +14612,10 @@ class App extends Component {
                           state: true,
                           status: "Destroyed " + myCell.barrier.name + "!",
                           count: 1,
-                          limit:
-                            this.players[player.number - 1].statusDisplay.limit,
+                          limit: this.players[player.number - 1].statusDisplay.limit,
                         };
 
-                        if (
-                          !player.popups.find((x) => x.msg === "destroyedItem")
-                        ) {
+                        if (!player.popups.find((x) => x.msg === "destroyedItem")) {
                           player.popups.push({
                             state: false,
                             count: 0,
@@ -15251,10 +14646,7 @@ class App extends Component {
                       myCell.barrier.destructible.weapons,
                       ". Deflect player?"
                     );
-                    let shouldDeflect = this.rnJesus(
-                      1,
-                      player.crits.guardBreak
-                    );
+                    let shouldDeflect = this.rnJesus(1, player.crits.guardBreak);
 
                     if (shouldDeflect === 1) {
                       if (this.rnJesus(1, player.crits.pushBack) === 1) {
@@ -15264,25 +14656,14 @@ class App extends Component {
                       }
 
                       if (player.currentWeapon.name === "") {
-                        console.log(
-                          "this barrier is stronger than your fist. Take damage?"
-                        );
-                        let takeDamage = this.rnJesus(
-                          1,
-                          player.crits.guardBreak
-                        );
+                        console.log("this barrier is stronger than your fist. Take damage?");
+                        let takeDamage = this.rnJesus(1, player.crits.guardBreak);
                         if (takeDamage === 1) {
-                          this.handleMiscPlayerDamage(
-                            player,
-                            "obstacleBarrierInvulnurable"
-                          );
+                          this.handleMiscPlayerDamage(player, "obstacleBarrierInvulnurable");
                         }
                       }
                     } else {
-                      this.pushBack(
-                        player,
-                        this.getOppositeDirection(player.direction)
-                      );
+                      this.pushBack(player, this.getOppositeDirection(player.direction));
                     }
 
                     if (
@@ -15303,9 +14684,7 @@ class App extends Component {
                         color: "",
                         img: "",
                         cell: this.gridInfo.find(
-                          (x) =>
-                            x.number.x === myCell.number.x &&
-                            x.number.y === myCell.number.y
+                          (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y
                         ),
                       });
                     }
@@ -15325,22 +14704,14 @@ class App extends Component {
                     }
 
                     if (player.currentWeapon.name === "") {
-                      console.log(
-                        "this barrier is stronger than your fist. Take damage?"
-                      );
+                      console.log("this barrier is stronger than your fist. Take damage?");
                       let takeDamage = this.rnJesus(1, player.crits.guardBreak);
                       if (takeDamage === 1) {
-                        this.handleMiscPlayerDamage(
-                          player,
-                          "obstacleBarrierInvulnurable"
-                        );
+                        this.handleMiscPlayerDamage(player, "obstacleBarrierInvulnurable");
                       }
                     }
                   } else {
-                    this.pushBack(
-                      player,
-                      this.getOppositeDirection(player.direction)
-                    );
+                    this.pushBack(player, this.getOppositeDirection(player.direction));
                   }
 
                   if (
@@ -15361,9 +14732,7 @@ class App extends Component {
                       color: "",
                       img: "",
                       cell: this.gridInfo.find(
-                        (x) =>
-                          x.number.x === myCell.number.x &&
-                          x.number.y === myCell.number.y
+                        (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y
                       ),
                     });
                   }
@@ -15374,10 +14743,7 @@ class App extends Component {
             // FWD BARRIER?
             let fwdBarrier = false;
             if (targetCell.barrier.state === true) {
-              fwdBarrier = this.checkForwardBarrier(
-                player.direction,
-                targetCell
-              );
+              fwdBarrier = this.checkForwardBarrier(player.direction, targetCell);
             }
 
             if (fwdBarrier === true) {
@@ -15438,13 +14804,10 @@ class App extends Component {
                         state: true,
                         status: "Destroyed " + targetCell.barrier.name + "!",
                         count: 1,
-                        limit:
-                          this.players[player.number - 1].statusDisplay.limit,
+                        limit: this.players[player.number - 1].statusDisplay.limit,
                       };
 
-                      if (
-                        !player.popups.find((x) => x.msg === "destroyedItem")
-                      ) {
+                      if (!player.popups.find((x) => x.msg === "destroyedItem")) {
                         player.popups.push({
                           state: false,
                           count: 0,
@@ -15473,13 +14836,10 @@ class App extends Component {
                         state: true,
                         status: "Destroyed " + targetCell.barrier.name + "!",
                         count: 1,
-                        limit:
-                          this.players[player.number - 1].statusDisplay.limit,
+                        limit: this.players[player.number - 1].statusDisplay.limit,
                       };
 
-                      if (
-                        !player.popups.find((x) => x.msg === "destroyedItem")
-                      ) {
+                      if (!player.popups.find((x) => x.msg === "destroyedItem")) {
                         player.popups.push({
                           state: false,
                           count: 0,
@@ -15517,23 +14877,15 @@ class App extends Component {
                     this.setDeflection(player, "defended", false);
 
                     if (player.currentWeapon.name === "") {
-                      console.log(
-                        "this barrier is stronger than your fist. Take damage?"
-                      );
+                      console.log("this barrier is stronger than your fist. Take damage?");
                       let takeDamage = this.rnJesus(1, player.crits.guardBreak);
                       if (takeDamage === 1) {
-                        this.handleMiscPlayerDamage(
-                          player,
-                          "obstacleBarrierInvulnurable"
-                        );
+                        this.handleMiscPlayerDamage(player, "obstacleBarrierInvulnurable");
                       }
                     }
                   }
                   if (this.rnJesus(1, player.crits.pushBack) === 1) {
-                    this.pushBack(
-                      player,
-                      this.getOppositeDirection(player.direction)
-                    );
+                    this.pushBack(player, this.getOppositeDirection(player.direction));
                   }
                   if (
                     !this.cellPopups.find(
@@ -15554,8 +14906,7 @@ class App extends Component {
                       img: "",
                       cell: this.gridInfo.find(
                         (x) =>
-                          x.number.x === targetCell.number.x &&
-                          x.number.y === targetCell.number.y
+                          x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
                       ),
                     });
                   }
@@ -15574,22 +14925,14 @@ class App extends Component {
                   }
 
                   if (player.currentWeapon.name === "") {
-                    console.log(
-                      "this barrier is stronger than your fist. Take damage?"
-                    );
+                    console.log("this barrier is stronger than your fist. Take damage?");
                     let takeDamage = this.rnJesus(1, player.crits.guardBreak);
                     if (takeDamage === 1) {
-                      this.handleMiscPlayerDamage(
-                        player,
-                        "obstacleBarrierInvulnurable"
-                      );
+                      this.handleMiscPlayerDamage(player, "obstacleBarrierInvulnurable");
                     }
                   }
                 } else {
-                  this.pushBack(
-                    player,
-                    this.getOppositeDirection(player.direction)
-                  );
+                  this.pushBack(player, this.getOppositeDirection(player.direction));
                 }
 
                 if (
@@ -15611,8 +14954,7 @@ class App extends Component {
                     img: "",
                     cell: this.gridInfo.find(
                       (x) =>
-                        x.number.x === targetCell.number.x &&
-                        x.number.y === targetCell.number.y
+                        x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
                     ),
                   });
                 }
@@ -15662,9 +15004,7 @@ class App extends Component {
                     // DESTROY OBSTACLE W/ OR W/O RUBBLE
                     else if (targetCell.obstacle.hp - damage <= 0) {
                       let itemsToDrop = [];
-                      if (
-                        targetCell.obstacle.destructible.leaveRubble === true
-                      ) {
+                      if (targetCell.obstacle.destructible.leaveRubble === true) {
                         // console.log('leave rubble on ',targetCell.number,'removing obstacle');
 
                         if (targetCell.obstacle.items[0]) {
@@ -15691,13 +15031,10 @@ class App extends Component {
                           state: true,
                           status: "Destroyed " + targetCell.obstacle.name + "!",
                           count: 1,
-                          limit:
-                            this.players[player.number - 1].statusDisplay.limit,
+                          limit: this.players[player.number - 1].statusDisplay.limit,
                         };
 
-                        if (
-                          !player.popups.find((x) => x.msg === "destroyedItem")
-                        ) {
+                        if (!player.popups.find((x) => x.msg === "destroyedItem")) {
                           player.popups.push({
                             state: false,
                             count: 0,
@@ -15733,13 +15070,10 @@ class App extends Component {
                           state: true,
                           status: "Destroyed " + targetCell.obstacle.name + "!",
                           count: 1,
-                          limit:
-                            this.players[player.number - 1].statusDisplay.limit,
+                          limit: this.players[player.number - 1].statusDisplay.limit,
                         };
 
-                        if (
-                          !player.popups.find((x) => x.msg === "destroyedItem")
-                        ) {
+                        if (!player.popups.find((x) => x.msg === "destroyedItem")) {
                           player.popups.push({
                             state: false,
                             count: 0,
@@ -15775,10 +15109,7 @@ class App extends Component {
                       targetCell.obstacle.destructible.weapons,
                       ". Deflect player?"
                     );
-                    let shouldDeflect = this.rnJesus(
-                      1,
-                      player.crits.guardBreak
-                    );
+                    let shouldDeflect = this.rnJesus(1, player.crits.guardBreak);
 
                     if (shouldDeflect === 1) {
                       if (this.rnJesus(1, player.crits.pushBack) === 1) {
@@ -15788,25 +15119,14 @@ class App extends Component {
                       }
 
                       if (player.currentWeapon.name === "") {
-                        console.log(
-                          "this obstacle is stronger than your fist. Take damage?"
-                        );
-                        let takeDamage = this.rnJesus(
-                          1,
-                          player.crits.guardBreak
-                        );
+                        console.log("this obstacle is stronger than your fist. Take damage?");
+                        let takeDamage = this.rnJesus(1, player.crits.guardBreak);
                         if (takeDamage === 1) {
-                          this.handleMiscPlayerDamage(
-                            player,
-                            "obstacleBarrierInvulnurable"
-                          );
+                          this.handleMiscPlayerDamage(player, "obstacleBarrierInvulnurable");
                         }
                       }
                     } else {
-                      this.pushBack(
-                        player,
-                        this.getOppositeDirection(player.direction)
-                      );
+                      this.pushBack(player, this.getOppositeDirection(player.direction));
                     }
                     if (this.rnJesus(1, 1, player.crits.pushBack === 1)) {
                       this.canPushObstacle(player, targetCell, "hitPush");
@@ -15831,8 +15151,7 @@ class App extends Component {
                         img: "",
                         cell: this.gridInfo.find(
                           (x) =>
-                            x.number.x === targetCell.number.x &&
-                            x.number.y === targetCell.number.y
+                            x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
                         ),
                       });
                     }
@@ -15855,22 +15174,14 @@ class App extends Component {
                     }
 
                     if (player.currentWeapon.name === "") {
-                      console.log(
-                        "this obstacle is stronger than your fist. Take damage?"
-                      );
+                      console.log("this obstacle is stronger than your fist. Take damage?");
                       let takeDamage = this.rnJesus(1, player.crits.guardBreak);
                       if (takeDamage === 1) {
-                        this.handleMiscPlayerDamage(
-                          player,
-                          "obstacleBarrierInvulnurable"
-                        );
+                        this.handleMiscPlayerDamage(player, "obstacleBarrierInvulnurable");
                       }
                     }
                   } else {
-                    this.pushBack(
-                      player,
-                      this.getOppositeDirection(player.direction)
-                    );
+                    this.pushBack(player, this.getOppositeDirection(player.direction));
                   }
                   if (this.rnJesus(1, 1, player.crits.pushBack === 1)) {
                     this.canPushObstacle(player, targetCell, "hitPush");
@@ -15895,8 +15206,7 @@ class App extends Component {
                       img: "",
                       cell: this.gridInfo.find(
                         (x) =>
-                          x.number.x === targetCell.number.x &&
-                          x.number.y === targetCell.number.y
+                          x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
                       ),
                     });
                   }
@@ -15970,9 +15280,7 @@ class App extends Component {
                 if (myCell.barrier.destructible.state === true) {
                   // WEAPON CHECK
                   if (
-                    myCell.barrier.destructible.weapons.find(
-                      (x) => x === player.currentWeapon.name
-                    )
+                    myCell.barrier.destructible.weapons.find((x) => x === player.currentWeapon.name)
                   ) {
                     if (myCell.barrier.hp - damage > 0) {
                       let hp = myCell.barrier.hp - damage;
@@ -16023,13 +15331,10 @@ class App extends Component {
                           state: true,
                           status: "Destroyed " + myCell.barrier.name + "!",
                           count: 1,
-                          limit:
-                            this.players[player.number - 1].statusDisplay.limit,
+                          limit: this.players[player.number - 1].statusDisplay.limit,
                         };
 
-                        if (
-                          !player.popups.find((x) => x.msg === "destroyedItem")
-                        ) {
+                        if (!player.popups.find((x) => x.msg === "destroyedItem")) {
                           player.popups.push({
                             state: false,
                             count: 0,
@@ -16058,13 +15363,10 @@ class App extends Component {
                           state: true,
                           status: "Destroyed " + myCell.barrier.name + "!",
                           count: 1,
-                          limit:
-                            this.players[player.number - 1].statusDisplay.limit,
+                          limit: this.players[player.number - 1].statusDisplay.limit,
                         };
 
-                        if (
-                          !player.popups.find((x) => x.msg === "destroyedItem")
-                        ) {
+                        if (!player.popups.find((x) => x.msg === "destroyedItem")) {
                           player.popups.push({
                             state: false,
                             count: 0,
@@ -16095,10 +15397,7 @@ class App extends Component {
                       myCell.barrier.destructible.weapons,
                       ". Deflect player?"
                     );
-                    let shouldDeflect = this.rnJesus(
-                      1,
-                      player.crits.guardBreak
-                    );
+                    let shouldDeflect = this.rnJesus(1, player.crits.guardBreak);
                     if (shouldDeflect === 1) {
                       if (this.rnJesus(1, player.crits.pushBack) === 1) {
                         this.setDeflection(player, "defended", true);
@@ -16107,25 +15406,14 @@ class App extends Component {
                       }
 
                       if (player.currentWeapon.name === "") {
-                        console.log(
-                          "this barrier is stronger than your fist. Take damage?"
-                        );
-                        let takeDamage = this.rnJesus(
-                          1,
-                          player.crits.guardBreak
-                        );
+                        console.log("this barrier is stronger than your fist. Take damage?");
+                        let takeDamage = this.rnJesus(1, player.crits.guardBreak);
                         if (takeDamage === 1) {
-                          this.handleMiscPlayerDamage(
-                            player,
-                            "obstacleBarrierInvulnurable"
-                          );
+                          this.handleMiscPlayerDamage(player, "obstacleBarrierInvulnurable");
                         }
                       }
                     } else {
-                      this.pushBack(
-                        player,
-                        this.getOppositeDirection(player.direction)
-                      );
+                      this.pushBack(player, this.getOppositeDirection(player.direction));
                     }
 
                     if (
@@ -16146,9 +15434,7 @@ class App extends Component {
                         color: "",
                         img: "",
                         cell: this.gridInfo.find(
-                          (x) =>
-                            x.number.x === myCell.number.x &&
-                            x.number.y === myCell.number.y
+                          (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y
                         ),
                       });
                     }
@@ -16167,22 +15453,14 @@ class App extends Component {
                     }
 
                     if (player.currentWeapon.name === "") {
-                      console.log(
-                        "this barrier is stronger than your fist. Take damage?"
-                      );
+                      console.log("this barrier is stronger than your fist. Take damage?");
                       let takeDamage = this.rnJesus(1, player.crits.guardBreak);
                       if (takeDamage === 1) {
-                        this.handleMiscPlayerDamage(
-                          player,
-                          "obstacleBarrierInvulnurable"
-                        );
+                        this.handleMiscPlayerDamage(player, "obstacleBarrierInvulnurable");
                       }
                     }
                   } else {
-                    this.pushBack(
-                      player,
-                      this.getOppositeDirection(player.direction)
-                    );
+                    this.pushBack(player, this.getOppositeDirection(player.direction));
                   }
 
                   if (
@@ -16203,9 +15481,7 @@ class App extends Component {
                       color: "",
                       img: "",
                       cell: this.gridInfo.find(
-                        (x) =>
-                          x.number.x === myCell.number.x &&
-                          x.number.y === myCell.number.y
+                        (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y
                       ),
                     });
                   }
@@ -16216,10 +15492,7 @@ class App extends Component {
             // FWD BARRIER?
             let fwdBarrier = false;
             if (targetCell.barrier.state === true) {
-              fwdBarrier = this.checkForwardBarrier(
-                player.direction,
-                targetCell
-              );
+              fwdBarrier = this.checkForwardBarrier(player.direction, targetCell);
             }
 
             if (myCellBarrier !== true && fwdBarrier === true) {
@@ -16281,13 +15554,10 @@ class App extends Component {
                         state: true,
                         status: "Destroyed " + targetCell.barrier.name + "!",
                         count: 1,
-                        limit:
-                          this.players[player.number - 1].statusDisplay.limit,
+                        limit: this.players[player.number - 1].statusDisplay.limit,
                       };
 
-                      if (
-                        !player.popups.find((x) => x.msg === "destroyedItem")
-                      ) {
+                      if (!player.popups.find((x) => x.msg === "destroyedItem")) {
                         player.popups.push({
                           state: false,
                           count: 0,
@@ -16316,13 +15586,10 @@ class App extends Component {
                         state: true,
                         status: "Destroyed " + targetCell.barrier.name + "!",
                         count: 1,
-                        limit:
-                          this.players[player.number - 1].statusDisplay.limit,
+                        limit: this.players[player.number - 1].statusDisplay.limit,
                       };
 
-                      if (
-                        !player.popups.find((x) => x.msg === "destroyedItem")
-                      ) {
+                      if (!player.popups.find((x) => x.msg === "destroyedItem")) {
                         player.popups.push({
                           state: false,
                           count: 0,
@@ -16363,22 +15630,14 @@ class App extends Component {
                     }
 
                     if (player.currentWeapon.name === "") {
-                      console.log(
-                        "this barrier is stronger than your fist. Take damage?"
-                      );
+                      console.log("this barrier is stronger than your fist. Take damage?");
                       let takeDamage = this.rnJesus(1, player.crits.guardBreak);
                       if (takeDamage === 1) {
-                        this.handleMiscPlayerDamage(
-                          player,
-                          "obstacleBarrierInvulnurable"
-                        );
+                        this.handleMiscPlayerDamage(player, "obstacleBarrierInvulnurable");
                       }
                     }
                   } else {
-                    this.pushBack(
-                      player,
-                      this.getOppositeDirection(player.direction)
-                    );
+                    this.pushBack(player, this.getOppositeDirection(player.direction));
                   }
 
                   if (
@@ -16400,8 +15659,7 @@ class App extends Component {
                       img: "",
                       cell: this.gridInfo.find(
                         (x) =>
-                          x.number.x === targetCell2.number.x &&
-                          x.number.y === targetCell2.number.y
+                          x.number.x === targetCell2.number.x && x.number.y === targetCell2.number.y
                       ),
                     });
                   }
@@ -16420,22 +15678,14 @@ class App extends Component {
                   }
 
                   if (player.currentWeapon.name === "") {
-                    console.log(
-                      "this barrier is stronger than your fist. Take damage?"
-                    );
+                    console.log("this barrier is stronger than your fist. Take damage?");
                     let takeDamage = this.rnJesus(1, player.crits.guardBreak);
                     if (takeDamage === 1) {
-                      this.handleMiscPlayerDamage(
-                        player,
-                        "obstacleBarrierInvulnurable"
-                      );
+                      this.handleMiscPlayerDamage(player, "obstacleBarrierInvulnurable");
                     }
                   }
                 } else {
-                  this.pushBack(
-                    player,
-                    this.getOppositeDirection(player.direction)
-                  );
+                  this.pushBack(player, this.getOppositeDirection(player.direction));
                 }
 
                 if (
@@ -16457,8 +15707,7 @@ class App extends Component {
                     img: "",
                     cell: this.gridInfo.find(
                       (x) =>
-                        x.number.x === targetCell2.number.x &&
-                        x.number.y === targetCell2.number.y
+                        x.number.x === targetCell2.number.x && x.number.y === targetCell2.number.y
                     ),
                   });
                 }
@@ -16506,9 +15755,7 @@ class App extends Component {
                     // DESTROY OBSTACLE W/ OR W/O RUBBLE
                     else if (targetCell.obstacle.hp - damage <= 0) {
                       let itemsToDrop = [];
-                      if (
-                        targetCell.obstacle.destructible.leaveRubble === true
-                      ) {
+                      if (targetCell.obstacle.destructible.leaveRubble === true) {
                         // console.log('leave rubble on ',targetCell2.number,'removing obstacle');
 
                         if (targetCell.obstacle.items[0]) {
@@ -16535,13 +15782,10 @@ class App extends Component {
                           state: true,
                           status: "Destroyed " + targetCell.obstacle.name + "!",
                           count: 1,
-                          limit:
-                            this.players[player.number - 1].statusDisplay.limit,
+                          limit: this.players[player.number - 1].statusDisplay.limit,
                         };
 
-                        if (
-                          !player.popups.find((x) => x.msg === "destroyedItem")
-                        ) {
+                        if (!player.popups.find((x) => x.msg === "destroyedItem")) {
                           player.popups.push({
                             state: false,
                             count: 0,
@@ -16576,13 +15820,10 @@ class App extends Component {
                           state: true,
                           status: "Destroyed " + targetCell.obstacle.name + "!",
                           count: 1,
-                          limit:
-                            this.players[player.number - 1].statusDisplay.limit,
+                          limit: this.players[player.number - 1].statusDisplay.limit,
                         };
 
-                        if (
-                          !player.popups.find((x) => x.msg === "destroyedItem")
-                        ) {
+                        if (!player.popups.find((x) => x.msg === "destroyedItem")) {
                           player.popups.push({
                             state: false,
                             count: 0,
@@ -16620,10 +15861,7 @@ class App extends Component {
                       targetCell.obstacle.destructible.weapons,
                       ". Deflect player?"
                     );
-                    let shouldDeflect = this.rnJesus(
-                      1,
-                      player.crits.guardBreak
-                    );
+                    let shouldDeflect = this.rnJesus(1, player.crits.guardBreak);
 
                     if (shouldDeflect === 1) {
                       if (this.rnJesus(1, player.crits.pushBack) === 1) {
@@ -16633,25 +15871,14 @@ class App extends Component {
                       }
 
                       if (player.currentWeapon.name === "") {
-                        console.log(
-                          "this obstacle is stronger than your fist. Take damage?"
-                        );
-                        let takeDamage = this.rnJesus(
-                          1,
-                          player.crits.guardBreak
-                        );
+                        console.log("this obstacle is stronger than your fist. Take damage?");
+                        let takeDamage = this.rnJesus(1, player.crits.guardBreak);
                         if (takeDamage === 1) {
-                          this.handleMiscPlayerDamage(
-                            player,
-                            "obstacleBarrierInvulnurable"
-                          );
+                          this.handleMiscPlayerDamage(player, "obstacleBarrierInvulnurable");
                         }
                       }
                     } else {
-                      this.pushBack(
-                        player,
-                        this.getOppositeDirection(player.direction)
-                      );
+                      this.pushBack(player, this.getOppositeDirection(player.direction));
                     }
 
                     if (
@@ -16673,8 +15900,7 @@ class App extends Component {
                         img: "",
                         cell: this.gridInfo.find(
                           (x) =>
-                            x.number.x === targetCell.number.x &&
-                            x.number.y === targetCell.number.y
+                            x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
                         ),
                       });
                     }
@@ -16694,22 +15920,14 @@ class App extends Component {
                     }
 
                     if (player.currentWeapon.name === "") {
-                      console.log(
-                        "this obstacle is stronger than your fist. Take damage?"
-                      );
+                      console.log("this obstacle is stronger than your fist. Take damage?");
                       let takeDamage = this.rnJesus(1, player.crits.guardBreak);
                       if (takeDamage === 1) {
-                        this.handleMiscPlayerDamage(
-                          player,
-                          "obstacleBarrierInvulnurable"
-                        );
+                        this.handleMiscPlayerDamage(player, "obstacleBarrierInvulnurable");
                       }
                     }
                   } else {
-                    this.pushBack(
-                      player,
-                      this.getOppositeDirection(player.direction)
-                    );
+                    this.pushBack(player, this.getOppositeDirection(player.direction));
                   }
                   if (this.rnJesus(1, 1, player.crits.pushBack === 1)) {
                     this.canPushObstacle(player, targetCell, "hitPush");
@@ -16734,8 +15952,7 @@ class App extends Component {
                       img: "",
                       cell: this.gridInfo.find(
                         (x) =>
-                          x.number.x === targetCell.number.x &&
-                          x.number.y === targetCell.number.y
+                          x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
                       ),
                     });
                   }
@@ -16771,8 +15988,7 @@ class App extends Component {
 
                   this.gridInfo.find(
                     (elem) =>
-                      elem.number.x === targetCell.number.x &&
-                      elem.number.y === targetCell.number.y
+                      elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y
                   ).item = {
                     name: "",
                     type: "",
@@ -16786,8 +16002,7 @@ class App extends Component {
                   // console.log('damage/clear rubble @ ',targetCell2.number);
                   this.gridInfo.find(
                     (elem) =>
-                      elem.number.x === targetCell.number.x &&
-                      elem.number.y === targetCell.number.y
+                      elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y
                   ).rubble = false;
                 }
 
@@ -16838,8 +16053,7 @@ class App extends Component {
                         // DESTROY FWD BARRIER W/ OR W/O RUBBLE
                         else if (targetCell.barrier.hp - damage <= 0) {
                           if (
-                            targetCell.barrier.destructible.leaveRubble ===
-                              true &&
+                            targetCell.barrier.destructible.leaveRubble === true &&
                             targetCell.obstacle.state !== true &&
                             targetCell.item.name === ""
                           ) {
@@ -16859,19 +16073,12 @@ class App extends Component {
 
                             this.players[player.number - 1].statusDisplay = {
                               state: true,
-                              status:
-                                "Destroyed " + targetCell.barrier.name + "!",
+                              status: "Destroyed " + targetCell.barrier.name + "!",
                               count: 1,
-                              limit:
-                                this.players[player.number - 1].statusDisplay
-                                  .limit,
+                              limit: this.players[player.number - 1].statusDisplay.limit,
                             };
 
-                            if (
-                              !player.popups.find(
-                                (x) => x.msg === "destroyedItem"
-                              )
-                            ) {
+                            if (!player.popups.find((x) => x.msg === "destroyedItem")) {
                               player.popups.push({
                                 state: false,
                                 count: 0,
@@ -16897,19 +16104,12 @@ class App extends Component {
 
                             this.players[player.number - 1].statusDisplay = {
                               state: true,
-                              status:
-                                "Destroyed " + targetCell.barrier.name + "!",
+                              status: "Destroyed " + targetCell.barrier.name + "!",
                               count: 1,
-                              limit:
-                                this.players[player.number - 1].statusDisplay
-                                  .limit,
+                              limit: this.players[player.number - 1].statusDisplay.limit,
                             };
 
-                            if (
-                              !player.popups.find(
-                                (x) => x.msg === "destroyedItem"
-                              )
-                            ) {
+                            if (!player.popups.find((x) => x.msg === "destroyedItem")) {
                               player.popups.push({
                                 state: false,
                                 count: 0,
@@ -17008,10 +16208,7 @@ class App extends Component {
           }
 
           // CHECK 2ND CELL TARGET 2
-          if (
-            player.currentWeapon.type === "spear" &&
-            checkSpearTarget === true
-          ) {
+          if (player.currentWeapon.type === "spear" && checkSpearTarget === true) {
             let targetCell2 = this.gridInfo.find(
               (elem) =>
                 elem.number.x === player.target.cell2.number.x &&
@@ -17025,9 +16222,7 @@ class App extends Component {
                 if (myCell.barrier.destructible.state === true) {
                   // WEAPON CHECK
                   if (
-                    myCell.barrier.destructible.weapons.find(
-                      (x) => x === player.currentWeapon.name
-                    )
+                    myCell.barrier.destructible.weapons.find((x) => x === player.currentWeapon.name)
                   ) {
                     if (myCell.barrier.hp - damage > 0) {
                       let hp = myCell.barrier.hp - damage;
@@ -17078,13 +16273,10 @@ class App extends Component {
                           state: true,
                           status: "Destroyed " + myCell.barrier.name + "!",
                           count: 1,
-                          limit:
-                            this.players[player.number - 1].statusDisplay.limit,
+                          limit: this.players[player.number - 1].statusDisplay.limit,
                         };
 
-                        if (
-                          !player.popups.find((x) => x.msg === "destroyedItem")
-                        ) {
+                        if (!player.popups.find((x) => x.msg === "destroyedItem")) {
                           player.popups.push({
                             state: false,
                             count: 0,
@@ -17113,13 +16305,10 @@ class App extends Component {
                           state: true,
                           status: "Destroyed " + myCell.barrier.name + "!",
                           count: 1,
-                          limit:
-                            this.players[player.number - 1].statusDisplay.limit,
+                          limit: this.players[player.number - 1].statusDisplay.limit,
                         };
 
-                        if (
-                          !player.popups.find((x) => x.msg === "destroyedItem")
-                        ) {
+                        if (!player.popups.find((x) => x.msg === "destroyedItem")) {
                           player.popups.push({
                             state: false,
                             count: 0,
@@ -17150,10 +16339,7 @@ class App extends Component {
                       myCell.barrier.destructible.weapons,
                       ". Deflect player?"
                     );
-                    let shouldDeflect = this.rnJesus(
-                      1,
-                      player.crits.guardBreak
-                    );
+                    let shouldDeflect = this.rnJesus(1, player.crits.guardBreak);
 
                     if (shouldDeflect === 1) {
                       if (this.rnJesus(1, player.crits.pushBack) === 1) {
@@ -17163,25 +16349,14 @@ class App extends Component {
                       }
 
                       if (player.currentWeapon.name === "") {
-                        console.log(
-                          "this barrier is stronger than your fist. Take damage?"
-                        );
-                        let takeDamage = this.rnJesus(
-                          1,
-                          player.crits.guardBreak
-                        );
+                        console.log("this barrier is stronger than your fist. Take damage?");
+                        let takeDamage = this.rnJesus(1, player.crits.guardBreak);
                         if (takeDamage === 1) {
-                          this.handleMiscPlayerDamage(
-                            player,
-                            "obstacleBarrierInvulnurable"
-                          );
+                          this.handleMiscPlayerDamage(player, "obstacleBarrierInvulnurable");
                         }
                       }
                     } else {
-                      this.pushBack(
-                        player,
-                        this.getOppositeDirection(player.direction)
-                      );
+                      this.pushBack(player, this.getOppositeDirection(player.direction));
                     }
 
                     if (
@@ -17202,9 +16377,7 @@ class App extends Component {
                         color: "",
                         img: "",
                         cell: this.gridInfo.find(
-                          (x) =>
-                            x.number.x === myCell.number.x &&
-                            x.number.y === myCell.number.y
+                          (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y
                         ),
                       });
                     }
@@ -17224,22 +16397,14 @@ class App extends Component {
                     }
 
                     if (player.currentWeapon.name === "") {
-                      console.log(
-                        "this barrier is stronger than your fist. Take damage?"
-                      );
+                      console.log("this barrier is stronger than your fist. Take damage?");
                       let takeDamage = this.rnJesus(1, player.crits.guardBreak);
                       if (takeDamage === 1) {
-                        this.handleMiscPlayerDamage(
-                          player,
-                          "obstacleBarrierInvulnurable"
-                        );
+                        this.handleMiscPlayerDamage(player, "obstacleBarrierInvulnurable");
                       }
                     }
                   } else {
-                    this.pushBack(
-                      player,
-                      this.getOppositeDirection(player.direction)
-                    );
+                    this.pushBack(player, this.getOppositeDirection(player.direction));
                   }
 
                   if (
@@ -17260,9 +16425,7 @@ class App extends Component {
                       color: "",
                       img: "",
                       cell: this.gridInfo.find(
-                        (x) =>
-                          x.number.x === myCell.number.x &&
-                          x.number.y === myCell.number.y
+                        (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y
                       ),
                     });
                   }
@@ -17273,10 +16436,7 @@ class App extends Component {
             if (targetCell2) {
               let fwdBarrier = false;
               if (targetCell2.barrier.state === true) {
-                fwdBarrier = this.checkForwardBarrier(
-                  player.direction,
-                  targetCell2
-                );
+                fwdBarrier = this.checkForwardBarrier(player.direction, targetCell2);
               }
 
               if (fwdBarrier === true) {
@@ -17335,13 +16495,10 @@ class App extends Component {
                           state: true,
                           status: "Destroyed " + targetCell2.barrier.name + "!",
                           count: 1,
-                          limit:
-                            this.players[player.number - 1].statusDisplay.limit,
+                          limit: this.players[player.number - 1].statusDisplay.limit,
                         };
 
-                        if (
-                          !player.popups.find((x) => x.msg === "destroyedItem")
-                        ) {
+                        if (!player.popups.find((x) => x.msg === "destroyedItem")) {
                           player.popups.push({
                             state: false,
                             count: 0,
@@ -17369,13 +16526,10 @@ class App extends Component {
                           state: true,
                           status: "Destroyed " + targetCell2.barrier.name + "!",
                           count: 1,
-                          limit:
-                            this.players[player.number - 1].statusDisplay.limit,
+                          limit: this.players[player.number - 1].statusDisplay.limit,
                         };
 
-                        if (
-                          !player.popups.find((x) => x.msg === "destroyedItem")
-                        ) {
+                        if (!player.popups.find((x) => x.msg === "destroyedItem")) {
                           player.popups.push({
                             state: false,
                             count: 0,
@@ -17406,10 +16560,7 @@ class App extends Component {
                       targetCell2.barrier.destructible.weapons,
                       ". Deflect player?"
                     );
-                    let shouldDeflect = this.rnJesus(
-                      1,
-                      player.crits.guardBreak
-                    );
+                    let shouldDeflect = this.rnJesus(1, player.crits.guardBreak);
 
                     if (shouldDeflect === 1) {
                       if (this.rnJesus(1, player.crits.pushBack) === 1) {
@@ -17419,25 +16570,14 @@ class App extends Component {
                       }
 
                       if (player.currentWeapon.name === "") {
-                        console.log(
-                          "this barrier is stronger than your fist. Take damage?"
-                        );
-                        let takeDamage = this.rnJesus(
-                          1,
-                          player.crits.guardBreak
-                        );
+                        console.log("this barrier is stronger than your fist. Take damage?");
+                        let takeDamage = this.rnJesus(1, player.crits.guardBreak);
                         if (takeDamage === 1) {
-                          this.handleMiscPlayerDamage(
-                            player,
-                            "obstacleBarrierInvulnurable"
-                          );
+                          this.handleMiscPlayerDamage(player, "obstacleBarrierInvulnurable");
                         }
                       }
                     } else {
-                      this.pushBack(
-                        player,
-                        this.getOppositeDirection(player.direction)
-                      );
+                      this.pushBack(player, this.getOppositeDirection(player.direction));
                     }
 
                     if (
@@ -17480,22 +16620,14 @@ class App extends Component {
                     }
 
                     if (player.currentWeapon.name === "") {
-                      console.log(
-                        "this barrier is stronger than your fist. Take damage?"
-                      );
+                      console.log("this barrier is stronger than your fist. Take damage?");
                       let takeDamage = this.rnJesus(1, player.crits.guardBreak);
                       if (takeDamage === 1) {
-                        this.handleMiscPlayerDamage(
-                          player,
-                          "obstacleBarrierInvulnurable"
-                        );
+                        this.handleMiscPlayerDamage(player, "obstacleBarrierInvulnurable");
                       }
                     }
                   } else {
-                    this.pushBack(
-                      player,
-                      this.getOppositeDirection(player.direction)
-                    );
+                    this.pushBack(player, this.getOppositeDirection(player.direction));
                   }
 
                   if (
@@ -17517,8 +16649,7 @@ class App extends Component {
                       img: "",
                       cell: this.gridInfo.find(
                         (x) =>
-                          x.number.x === targetCell2.number.x &&
-                          x.number.y === targetCell2.number.y
+                          x.number.x === targetCell2.number.x && x.number.y === targetCell2.number.y
                       ),
                     });
                   }
@@ -17566,9 +16697,7 @@ class App extends Component {
                       // DESTROY OBSTACLE W/ OR W/O RUBBLE
                       else if (targetCell2.obstacle.hp - damage <= 0) {
                         let itemsToDrop = [];
-                        if (
-                          targetCell2.obstacle.destructible.leaveRubble === true
-                        ) {
+                        if (targetCell2.obstacle.destructible.leaveRubble === true) {
                           // console.log('leave rubble on ',targetCell2.number,'removing obstacle');
 
                           if (targetCell2.obstacle.items[0]) {
@@ -17592,19 +16721,12 @@ class App extends Component {
 
                           this.players[player.number - 1].statusDisplay = {
                             state: true,
-                            status:
-                              "Destroyed " + targetCell2.obstacle.name + "!",
+                            status: "Destroyed " + targetCell2.obstacle.name + "!",
                             count: 1,
-                            limit:
-                              this.players[player.number - 1].statusDisplay
-                                .limit,
+                            limit: this.players[player.number - 1].statusDisplay.limit,
                           };
 
-                          if (
-                            !player.popups.find(
-                              (x) => x.msg === "destroyedItem"
-                            )
-                          ) {
+                          if (!player.popups.find((x) => x.msg === "destroyedItem")) {
                             player.popups.push({
                               state: false,
                               count: 0,
@@ -17636,19 +16758,12 @@ class App extends Component {
 
                           this.players[player.number - 1].statusDisplay = {
                             state: true,
-                            status:
-                              "Destroyed " + targetCell2.obstacle.name + "!",
+                            status: "Destroyed " + targetCell2.obstacle.name + "!",
                             count: 1,
-                            limit:
-                              this.players[player.number - 1].statusDisplay
-                                .limit,
+                            limit: this.players[player.number - 1].statusDisplay.limit,
                           };
 
-                          if (
-                            !player.popups.find(
-                              (x) => x.msg === "destroyedItem"
-                            )
-                          ) {
+                          if (!player.popups.find((x) => x.msg === "destroyedItem")) {
                             player.popups.push({
                               state: false,
                               count: 0,
@@ -17686,10 +16801,7 @@ class App extends Component {
                         targetCell2.obstacle.destructible.weapons,
                         ". Deflect player?"
                       );
-                      let shouldDeflect = this.rnJesus(
-                        1,
-                        player.crits.guardBreak
-                      );
+                      let shouldDeflect = this.rnJesus(1, player.crits.guardBreak);
 
                       if (shouldDeflect === 1) {
                         if (this.rnJesus(1, player.crits.pushBack) === 1) {
@@ -17699,25 +16811,14 @@ class App extends Component {
                         }
 
                         if (player.currentWeapon.name === "") {
-                          console.log(
-                            "this obstacle is stronger than your fist. Take damage?"
-                          );
-                          let takeDamage = this.rnJesus(
-                            1,
-                            player.crits.guardBreak
-                          );
+                          console.log("this obstacle is stronger than your fist. Take damage?");
+                          let takeDamage = this.rnJesus(1, player.crits.guardBreak);
                           if (takeDamage === 1) {
-                            this.handleMiscPlayerDamage(
-                              player,
-                              "obstacleBarrierInvulnurable"
-                            );
+                            this.handleMiscPlayerDamage(player, "obstacleBarrierInvulnurable");
                           }
                         }
                       } else {
-                        this.pushBack(
-                          player,
-                          this.getOppositeDirection(player.direction)
-                        );
+                        this.pushBack(player, this.getOppositeDirection(player.direction));
                       }
 
                       if (
@@ -17751,10 +16852,7 @@ class App extends Component {
                   else {
                     // console.log('attacking invurnerable obstacle, deflect player?');
 
-                    let shouldDeflect = this.rnJesus(
-                      1,
-                      player.crits.guardBreak
-                    );
+                    let shouldDeflect = this.rnJesus(1, player.crits.guardBreak);
 
                     if (shouldDeflect === 1) {
                       if (this.rnJesus(1, player.crits.pushBack) === 1) {
@@ -17764,25 +16862,14 @@ class App extends Component {
                       }
 
                       if (player.currentWeapon.name === "") {
-                        console.log(
-                          "this obstacle is stronger than your fist. Take damage?"
-                        );
-                        let takeDamage = this.rnJesus(
-                          1,
-                          player.crits.guardBreak
-                        );
+                        console.log("this obstacle is stronger than your fist. Take damage?");
+                        let takeDamage = this.rnJesus(1, player.crits.guardBreak);
                         if (takeDamage === 1) {
-                          this.handleMiscPlayerDamage(
-                            player,
-                            "obstacleBarrierInvulnurable"
-                          );
+                          this.handleMiscPlayerDamage(player, "obstacleBarrierInvulnurable");
                         }
                       }
                     } else {
-                      this.pushBack(
-                        player,
-                        this.getOppositeDirection(player.direction)
-                      );
+                      this.pushBack(player, this.getOppositeDirection(player.direction));
                     }
                     if (this.rnJesus(1, 1, player.crits.pushBack === 1)) {
                       this.canPushObstacle(player, targetCell2, "hitPush");
@@ -17827,8 +16914,7 @@ class App extends Component {
                       state: true,
                       status: "Destroyed " + targetCell2.item.name + "!",
                       count: 1,
-                      limit:
-                        this.players[player.number - 1].statusDisplay.limit,
+                      limit: this.players[player.number - 1].statusDisplay.limit,
                     };
 
                     if (!player.popups.find((x) => x.msg === "destroyedItem")) {
@@ -17895,17 +16981,10 @@ class App extends Component {
       }
 
       if (!targetCell) {
-        if (
-          myCell.barrier.state === true &&
-          myCell.barrier.position === player.direction
-        ) {
+        if (myCell.barrier.state === true && myCell.barrier.position === player.direction) {
           if (myCell.barrier.destructible.state === true) {
             // WEAPON CHECK
-            if (
-              myCell.barrier.destructible.weapons.find(
-                (x) => x === player.currentWeapon.name
-              )
-            ) {
+            if (myCell.barrier.destructible.weapons.find((x) => x === player.currentWeapon.name)) {
               if (myCell.barrier.hp - damage > 0) {
                 let hp = myCell.barrier.hp - damage;
 
@@ -18029,23 +17108,15 @@ class App extends Component {
                 this.setDeflection(player, "defended", false);
 
                 if (player.currentWeapon.name === "") {
-                  console.log(
-                    "this barrier is stronger than your fist. Take damage?"
-                  );
+                  console.log("this barrier is stronger than your fist. Take damage?");
                   let takeDamage = this.rnJesus(1, player.crits.guardBreak);
                   if (takeDamage === 1) {
-                    this.handleMiscPlayerDamage(
-                      player,
-                      "obstacleBarrierInvulnurable"
-                    );
+                    this.handleMiscPlayerDamage(player, "obstacleBarrierInvulnurable");
                   }
                 }
               }
               if (this.rnJesus(1, player.crits.pushBack) === 1) {
-                this.pushBack(
-                  player,
-                  this.getOppositeDirection(player.direction)
-                );
+                this.pushBack(player, this.getOppositeDirection(player.direction));
               }
               if (
                 !this.cellPopups.find(
@@ -18065,9 +17136,7 @@ class App extends Component {
                   color: "",
                   img: "",
                   cell: this.gridInfo.find(
-                    (x) =>
-                      x.number.x === myCell.number.x &&
-                      x.number.y === myCell.number.y
+                    (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y
                   ),
                 });
               }
@@ -18087,22 +17156,14 @@ class App extends Component {
               }
 
               if (player.currentWeapon.name === "") {
-                console.log(
-                  "this barrier is stronger than your fist. Take damage?"
-                );
+                console.log("this barrier is stronger than your fist. Take damage?");
                 let takeDamage = this.rnJesus(1, player.crits.guardBreak);
                 if (takeDamage === 1) {
-                  this.handleMiscPlayerDamage(
-                    player,
-                    "obstacleBarrierInvulnurable"
-                  );
+                  this.handleMiscPlayerDamage(player, "obstacleBarrierInvulnurable");
                 }
               }
             } else {
-              this.pushBack(
-                player,
-                this.getOppositeDirection(player.direction)
-              );
+              this.pushBack(player, this.getOppositeDirection(player.direction));
             }
 
             if (
@@ -18123,9 +17184,7 @@ class App extends Component {
                 color: "",
                 img: "",
                 cell: this.gridInfo.find(
-                  (x) =>
-                    x.number.x === myCell.number.x &&
-                    x.number.y === myCell.number.y
+                  (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y
                 ),
               });
             }
@@ -18166,9 +17225,7 @@ class App extends Component {
         // console.log('player ',player.number,'hit fwd barrier ',targetCell.barrier.name,'@ ',targetCell.number,type);
         if (targetCell.barrier.destructible.state === true) {
           // WEAPON CHECK
-          if (
-            targetCell.barrier.destructible.weapons.find((x) => x === "bolt")
-          ) {
+          if (targetCell.barrier.destructible.weapons.find((x) => x === "bolt")) {
             if (targetCell.barrier.hp - damage > 0) {
               // this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier.hp -= damage;
 
@@ -18304,9 +17361,7 @@ class App extends Component {
                 color: "",
                 img: "",
                 cell: this.gridInfo.find(
-                  (x) =>
-                    x.number.x === targetCell.number.x &&
-                    x.number.y === targetCell.number.y
+                  (x) => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
                 ),
               });
             }
@@ -18334,9 +17389,7 @@ class App extends Component {
               color: "",
               img: "",
               cell: this.gridInfo.find(
-                (x) =>
-                  x.number.x === targetCell.number.x &&
-                  x.number.y === targetCell.number.y
+                (x) => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
               ),
             });
           }
@@ -18348,17 +17401,12 @@ class App extends Component {
 
       // NO FWD BARRIER. OBSTACLE?
       else {
-        if (
-          targetCell.obstacle.state === true &&
-          targetCell.obstacle.height >= 1
-        ) {
+        if (targetCell.obstacle.state === true && targetCell.obstacle.height >= 1) {
           // console.log('player ',player.number,'hit obstacle ',targetCell.obstacle.name,' @ ',targetCell.number,type,' for ',damage,' damage');
 
           if (targetCell.obstacle.destructible.state === true) {
             // WEAPON CHECK
-            if (
-              targetCell.obstacle.destructible.weapons.find((x) => x === "bolt")
-            ) {
+            if (targetCell.obstacle.destructible.weapons.find((x) => x === "bolt")) {
               if (targetCell.obstacle.hp - damage > 0) {
                 let hp = targetCell.obstacle.hp - damage;
 
@@ -18515,17 +17563,11 @@ class App extends Component {
                   color: "",
                   img: "",
                   cell: this.gridInfo.find(
-                    (x) =>
-                      x.number.x === targetCell.number.x &&
-                      x.number.y === targetCell.number.y
+                    (x) => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
                   ),
                 });
               }
-              this.canPushObstacle(
-                player,
-                targetCell,
-                `hitPushBolt_${bolt.direction}`
-              );
+              this.canPushObstacle(player, targetCell, `hitPushBolt_${bolt.direction}`);
               // this.canPushObstacle(player,targetCell,'hitPushBolt_'+bolt.direction);
             }
           }
@@ -18551,17 +17593,11 @@ class App extends Component {
                 color: "",
                 img: "",
                 cell: this.gridInfo.find(
-                  (x) =>
-                    x.number.x === targetCell.number.x &&
-                    x.number.y === targetCell.number.y
+                  (x) => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
                 ),
               });
             }
-            this.canPushObstacle(
-              player,
-              targetCell,
-              `hitPushBolt_${bolt.direction}`
-            );
+            this.canPushObstacle(player, targetCell, `hitPushBolt_${bolt.direction}`);
           }
 
           // bolt.kill = true;
@@ -18581,11 +17617,7 @@ class App extends Component {
             // console.log('player ',player.number,'hit rear barrier ',targetCell.barrier.name,' @ ',targetCell.number,type);
             if (targetCell.barrier.destructible.state === true) {
               // WEAPON CHECK
-              if (
-                targetCell.barrier.destructible.weapons.find(
-                  (x) => x === "bolt"
-                )
-              ) {
+              if (targetCell.barrier.destructible.weapons.find((x) => x === "bolt")) {
                 if (targetCell.barrier.hp - damage > 0) {
                   // this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier.hp -= damage;
 
@@ -18636,8 +17668,7 @@ class App extends Component {
                       state: true,
                       status: "Destroyed " + targetCell.barrier.name + "!",
                       count: 1,
-                      limit:
-                        this.players[player.number - 1].statusDisplay.limit,
+                      limit: this.players[player.number - 1].statusDisplay.limit,
                     };
 
                     if (!player.popups.find((x) => x.msg === "destroyedItem")) {
@@ -18669,8 +17700,7 @@ class App extends Component {
                       state: true,
                       status: "Destroyed " + targetCell.barrier.name + "!",
                       count: 1,
-                      limit:
-                        this.players[player.number - 1].statusDisplay.limit,
+                      limit: this.players[player.number - 1].statusDisplay.limit,
                     };
 
                     if (!player.popups.find((x) => x.msg === "destroyedItem")) {
@@ -18723,8 +17753,7 @@ class App extends Component {
                     img: "",
                     cell: this.gridInfo.find(
                       (x) =>
-                        x.number.x === targetCell.number.x &&
-                        x.number.y === targetCell.number.y
+                        x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
                     ),
                   });
                 }
@@ -18752,9 +17781,7 @@ class App extends Component {
                   color: "",
                   img: "",
                   cell: this.gridInfo.find(
-                    (x) =>
-                      x.number.x === targetCell.number.x &&
-                      x.number.y === targetCell.number.y
+                    (x) => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
                   ),
                 });
               }
@@ -18772,29 +17799,25 @@ class App extends Component {
       if (bolt.direction === "north") {
         myCell = this.gridInfo.find(
           (elem) =>
-            elem.number.x === targetCell.number.x + 1 &&
-            elem.number.y === targetCell.number.y
+            elem.number.x === targetCell.number.x + 1 && elem.number.y === targetCell.number.y
         );
       }
       if (bolt.direction === "south") {
         myCell = this.gridInfo.find(
           (elem) =>
-            elem.number.x === targetCell.number.x - 1 &&
-            elem.number.y === targetCell.number.y
+            elem.number.x === targetCell.number.x - 1 && elem.number.y === targetCell.number.y
         );
       }
       if (bolt.direction === "east") {
         myCell = this.gridInfo.find(
           (elem) =>
-            elem.number.x === targetCell.number.x &&
-            elem.number.y === targetCell.number.y - 1
+            elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y - 1
         );
       }
       if (bolt.direction === "east") {
         myCell = this.gridInfo.find(
           (elem) =>
-            elem.number.x === targetCell.number.x &&
-            elem.number.y === targetCell.number.y + 1
+            elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y + 1
         );
       }
 
@@ -18811,11 +17834,9 @@ class App extends Component {
 
       // (targetCell.obstacle.height + targetCell.elevation.number) < bolt.elevation;
       let obstacleHeightCheck =
-        targetCell.obstacle.height + targetCell.elevation.number >=
-        bolt.elevation + 1;
+        targetCell.obstacle.height + targetCell.elevation.number >= bolt.elevation + 1;
       let barrierHeightCheck =
-        targetCell.barrier.height + targetCell.elevation.number >=
-        bolt.elevation + 1;
+        targetCell.barrier.height + targetCell.elevation.number >= bolt.elevation + 1;
 
       // FWD BARRIER?
       let fwdBarrier = false;
@@ -18826,9 +17847,7 @@ class App extends Component {
       if (fwdBarrier === true && barrierHeightCheck === true) {
         if (targetCell.barrier.destructible.state === true) {
           // WEAPON CHECK
-          if (
-            targetCell.barrier.destructible.weapons.find((x) => x === "bolt")
-          ) {
+          if (targetCell.barrier.destructible.weapons.find((x) => x === "bolt")) {
             if (targetCell.barrier.hp - damage > 0) {
               let hp = targetCell.barrier.hp - damage;
               targetCell.barrier = {
@@ -18960,9 +17979,7 @@ class App extends Component {
                 color: "",
                 img: "",
                 cell: this.gridInfo.find(
-                  (x) =>
-                    x.number.x === targetCell.number.x &&
-                    x.number.y === targetCell.number.y
+                  (x) => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
                 ),
               });
             }
@@ -18990,9 +18007,7 @@ class App extends Component {
               color: "",
               img: "",
               cell: this.gridInfo.find(
-                (x) =>
-                  x.number.x === targetCell.number.x &&
-                  x.number.y === targetCell.number.y
+                (x) => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
               ),
             });
           }
@@ -19003,17 +18018,12 @@ class App extends Component {
 
       // NO FWD BARRIER. OBSTACLE?
       else {
-        if (
-          targetCell.obstacle.state === true &&
-          obstacleHeightCheck === true
-        ) {
+        if (targetCell.obstacle.state === true && obstacleHeightCheck === true) {
           // console.log('targetCell.obstacle.hp',targetCell.obstacle.hp);
 
           if (targetCell.obstacle.destructible.state === true) {
             // WEAPON CHECK
-            if (
-              targetCell.obstacle.destructible.weapons.find((x) => x === "bolt")
-            ) {
+            if (targetCell.obstacle.destructible.weapons.find((x) => x === "bolt")) {
               if (targetCell.obstacle.hp - damage > 0) {
                 let hp = targetCell.obstacle.hp - damage;
                 targetCell.obstacle = {
@@ -19039,11 +18049,7 @@ class App extends Component {
                   cell: targetCell,
                 });
 
-                this.canPushObstacle(
-                  player,
-                  targetCell,
-                  `hitPushBolt_${bolt.direction}`
-                );
+                this.canPushObstacle(player, targetCell, `hitPushBolt_${bolt.direction}`);
               }
 
               // DESTROY OBSTACLE W/ OR W/O RUBBLE
@@ -19169,17 +18175,11 @@ class App extends Component {
                   color: "",
                   img: "",
                   cell: this.gridInfo.find(
-                    (x) =>
-                      x.number.x === targetCell.number.x &&
-                      x.number.y === targetCell.number.y
+                    (x) => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
                   ),
                 });
               }
-              this.canPushObstacle(
-                player,
-                targetCell,
-                `hitPushBolt_${bolt.direction}`
-              );
+              this.canPushObstacle(player, targetCell, `hitPushBolt_${bolt.direction}`);
             }
           }
 
@@ -19204,17 +18204,11 @@ class App extends Component {
                 color: "",
                 img: "",
                 cell: this.gridInfo.find(
-                  (x) =>
-                    x.number.x === targetCell.number.x &&
-                    x.number.y === targetCell.number.y
+                  (x) => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
                 ),
               });
             }
-            this.canPushObstacle(
-              player,
-              targetCell,
-              `hitPushBolt_${bolt.direction}`
-            );
+            this.canPushObstacle(player, targetCell, `hitPushBolt_${bolt.direction}`);
           }
 
           this.projectiles.find((blt) => blt.id === bolt.id).kill = true;
@@ -19232,11 +18226,7 @@ class App extends Component {
           if (rearBarrier === true && barrierHeightCheck === true) {
             if (targetCell.barrier.destructible.state === true) {
               // WEAPON CHECK
-              if (
-                targetCell.barrier.destructible.weapons.find(
-                  (x) => x === "bolt"
-                )
-              ) {
+              if (targetCell.barrier.destructible.weapons.find((x) => x === "bolt")) {
                 if (targetCell.barrier.hp - damage > 0) {
                   let hp = targetCell.barrier.hp - damage;
                   targetCell.barrier = {
@@ -19286,8 +18276,7 @@ class App extends Component {
                       state: true,
                       status: "Destroyed " + targetCell.barrier.name + "!",
                       count: 1,
-                      limit:
-                        this.players[player.number - 1].statusDisplay.limit,
+                      limit: this.players[player.number - 1].statusDisplay.limit,
                     };
 
                     if (!player.popups.find((x) => x.msg === "destroyedItem")) {
@@ -19319,8 +18308,7 @@ class App extends Component {
                       state: true,
                       status: "Destroyed " + targetCell.barrier.name + "!",
                       count: 1,
-                      limit:
-                        this.players[player.number - 1].statusDisplay.limit,
+                      limit: this.players[player.number - 1].statusDisplay.limit,
                     };
 
                     if (!player.popups.find((x) => x.msg === "destroyedItem")) {
@@ -19373,8 +18361,7 @@ class App extends Component {
                     img: "",
                     cell: this.gridInfo.find(
                       (x) =>
-                        x.number.x === targetCell.number.x &&
-                        x.number.y === targetCell.number.y
+                        x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
                     ),
                   });
                 }
@@ -19402,9 +18389,7 @@ class App extends Component {
                   color: "",
                   img: "",
                   cell: this.gridInfo.find(
-                    (x) =>
-                      x.number.x === targetCell.number.x &&
-                      x.number.y === targetCell.number.y
+                    (x) => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
                   ),
                 });
               }
@@ -19553,9 +18538,7 @@ class App extends Component {
       for (const cell of availibleCells) {
         let indx = availibleCells.indexOf(cell);
         let item = targetCell.obstacle.items[indx];
-        this.gridInfo.find(
-          (x) => x.number.x === cell.x && x.number.y === cell.y
-        ).item = item;
+        this.gridInfo.find((x) => x.number.x === cell.x && x.number.y === cell.y).item = item;
 
         this.cellsToHighlight2.push({
           number: {
@@ -19714,11 +18697,7 @@ class App extends Component {
 
               pickUp = true;
             } else {
-              console.log(
-                "player " +
-                  player.number +
-                  " you already have max movement speed"
-              );
+              console.log("player " + player.number + " you already have max movement speed");
 
               player.statusDisplay = {
                 state: true,
@@ -19812,9 +18791,7 @@ class App extends Component {
 
               pickUp = true;
             } else {
-              console.log(
-                "player " + player.number + " you already have max hp"
-              );
+              console.log("player " + player.number + " you already have max hp");
 
               player.statusDisplay = {
                 state: true,
@@ -20054,9 +19031,7 @@ class App extends Component {
 
     let resetPush = false;
     let refCell = this.gridInfo.find(
-      (x) =>
-        x.number.x === target.cell1.number.x &&
-        x.number.y === target.cell1.number.y
+      (x) => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y
     );
     let plyrRefCell = this.gridInfo.find(
       (x) =>
@@ -20065,10 +19040,7 @@ class App extends Component {
     );
 
     let myCellCheck = true;
-    if (
-      plyrRefCell.barrier.state === true &&
-      plyrRefCell.barrier.position === player.direction
-    ) {
+    if (plyrRefCell.barrier.state === true && plyrRefCell.barrier.position === player.direction) {
       myCellCheck = false;
     }
     if (myCellCheck !== true) {
@@ -20180,8 +19152,7 @@ class App extends Component {
     let canPushStrength = false;
     let canPushTargetFree = true;
     let pushStrengthThreshold =
-      (obstacleCell.obstacle.height + obstacleCell.obstacle.weight) *
-      thresholdMultiplier;
+      (obstacleCell.obstacle.height + obstacleCell.obstacle.weight) * thresholdMultiplier;
     let pushStrengthPlayer = 0;
     let movePlayer = true;
     let impactDirection = "";
@@ -20214,19 +19185,14 @@ class App extends Component {
       pushStrengthPlayer += 30;
     }
 
-    let destCell = this.getCellFromDirection(
-      1,
-      obstacleCell.number,
-      impactDirection
-    );
+    let destCell = this.getCellFromDirection(1, obstacleCell.number, impactDirection);
     let destCellRef = this.gridInfo.find(
       (x) => x.number.x === destCell.x && x.number.y === destCell.y
     );
     let destCellOccupant = "";
 
     if (player.stamina.current - this.staminaCostRef.push >= 0) {
-      player.stamina.current =
-        player.stamina.current - this.staminaCostRef.push;
+      player.stamina.current = player.stamina.current - this.staminaCostRef.push;
 
       if (player.hp > 1) {
         pushStrengthPlayer += player.hp - 1;
@@ -20263,10 +19229,7 @@ class App extends Component {
 
         if (destCellRef.barrier.state === true) {
           let barrier = false;
-          if (
-            destCellRef.barrier.position ===
-            this.getOppositeDirection(impactDirection)
-          ) {
+          if (destCellRef.barrier.position === this.getOppositeDirection(impactDirection)) {
             barrier = true;
           }
 
@@ -20286,10 +19249,7 @@ class App extends Component {
         if (obstacleCell.barrier.state === true) {
           // --------------
           let barrier = false;
-          if (
-            obstacleCell.barrier.position ===
-            this.getOppositeDirection(impactDirection)
-          ) {
+          if (obstacleCell.barrier.position === this.getOppositeDirection(impactDirection)) {
             barrier = true;
           }
 
@@ -20323,10 +19283,7 @@ class App extends Component {
         if (obstacleCell.barrier.state === true) {
           // --------------
           let barrier = false;
-          if (
-            obstacleCell.barrier.position ===
-            this.getOppositeDirection(impactDirection)
-          ) {
+          if (obstacleCell.barrier.position === this.getOppositeDirection(impactDirection)) {
             barrier = true;
           }
 
@@ -20379,16 +19336,8 @@ class App extends Component {
       }
 
       // if(!destCellRef && pushStrengthPlayer >= pushStrengthThreshold ) {
-      if (
-        canPushStrength === true &&
-        canPushTargetFree === true &&
-        !destCellRef
-      ) {
-        if (
-          !this.players[player.number - 1].popups.find(
-            (x) => x.msg === "canPush"
-          )
-        ) {
+      if (canPushStrength === true && canPushTargetFree === true && !destCellRef) {
+        if (!this.players[player.number - 1].popups.find((x) => x.msg === "canPush")) {
           this.players[player.number - 1].popups.push({
             state: false,
             count: 0,
@@ -20400,34 +19349,20 @@ class App extends Component {
           });
         }
 
-        if (
-          this.players[player.number - 1].popups.find(
-            (x) => x.msg === "prePush"
-          )
-        ) {
+        if (this.players[player.number - 1].popups.find((x) => x.msg === "prePush")) {
           this.players[player.number - 1].popups.splice(
-            this.players[player.number - 1].popups.findIndex(
-              (x) => x.msg === "prePush"
-            ),
+            this.players[player.number - 1].popups.findIndex((x) => x.msg === "prePush"),
             1
           );
         }
-        if (
-          this.players[player.number - 1].popups.find((x) => x.msg === "noPush")
-        ) {
+        if (this.players[player.number - 1].popups.find((x) => x.msg === "noPush")) {
           this.players[player.number - 1].popups.splice(
-            this.players[player.number - 1].popups.findIndex(
-              (x) => x.msg === "noPush"
-            ),
+            this.players[player.number - 1].popups.findIndex((x) => x.msg === "noPush"),
             1
           );
         }
 
-        let voidCenter = this.getVoidCenter(
-          1,
-          impactDirection,
-          obstacleCell.center
-        );
+        let voidCenter = this.getVoidCenter(1, impactDirection, obstacleCell.center);
 
         let obstacleCrementObj = this.obstacleMoveCrementer(obstacleCell, {
           center: voidCenter,
@@ -20509,9 +19444,7 @@ class App extends Component {
       }
 
       // console.log('pushStrengthThreshold/Player',pushStrengthThreshold,pushStrengthPlayer);
-      if (
-        !this.players[player.number - 1].popups.find((x) => x.msg === "canPush")
-      ) {
+      if (!this.players[player.number - 1].popups.find((x) => x.msg === "canPush")) {
         this.players[player.number - 1].popups.push({
           state: false,
           count: 0,
@@ -20523,23 +19456,15 @@ class App extends Component {
         });
       }
 
-      if (
-        this.players[player.number - 1].popups.find((x) => x.msg === "prePush")
-      ) {
+      if (this.players[player.number - 1].popups.find((x) => x.msg === "prePush")) {
         this.players[player.number - 1].popups.splice(
-          this.players[player.number - 1].popups.findIndex(
-            (x) => x.msg === "prePush"
-          ),
+          this.players[player.number - 1].popups.findIndex((x) => x.msg === "prePush"),
           1
         );
       }
-      if (
-        this.players[player.number - 1].popups.find((x) => x.msg === "noPush")
-      ) {
+      if (this.players[player.number - 1].popups.find((x) => x.msg === "noPush")) {
         this.players[player.number - 1].popups.splice(
-          this.players[player.number - 1].popups.findIndex(
-            (x) => x.msg === "noPush"
-          ),
+          this.players[player.number - 1].popups.findIndex((x) => x.msg === "noPush"),
           1
         );
       }
@@ -20549,17 +19474,9 @@ class App extends Component {
         resetPush = true;
       }
 
-      if (
-        canPushStrength === true &&
-        canPushTargetFree === true &&
-        destCellRef
-      ) {
+      if (canPushStrength === true && canPushTargetFree === true && destCellRef) {
         // console.log('ready to push');
-        if (
-          !this.players[player.number - 1].popups.find(
-            (x) => x.msg === "canPush"
-          )
-        ) {
+        if (!this.players[player.number - 1].popups.find((x) => x.msg === "canPush")) {
           this.players[player.number - 1].popups.push({
             state: false,
             count: 0,
@@ -20571,33 +19488,20 @@ class App extends Component {
           });
         }
 
-        if (
-          this.players[player.number - 1].popups.find(
-            (x) => x.msg === "prePush"
-          )
-        ) {
+        if (this.players[player.number - 1].popups.find((x) => x.msg === "prePush")) {
           this.players[player.number - 1].popups.splice(
-            this.players[player.number - 1].popups.findIndex(
-              (x) => x.msg === "prePush"
-            ),
+            this.players[player.number - 1].popups.findIndex((x) => x.msg === "prePush"),
             1
           );
         }
-        if (
-          this.players[player.number - 1].popups.find((x) => x.msg === "noPush")
-        ) {
+        if (this.players[player.number - 1].popups.find((x) => x.msg === "noPush")) {
           this.players[player.number - 1].popups.splice(
-            this.players[player.number - 1].popups.findIndex(
-              (x) => x.msg === "noPush"
-            ),
+            this.players[player.number - 1].popups.findIndex((x) => x.msg === "noPush"),
             1
           );
         }
 
-        let obstacleCrementObj = this.obstacleMoveCrementer(
-          obstacleCell,
-          destCellRef
-        );
+        let obstacleCrementObj = this.obstacleMoveCrementer(obstacleCell, destCellRef);
 
         obstacleCell.obstacle = {
           state: obstacleCell.obstacle.state,
@@ -20714,9 +19618,7 @@ class App extends Component {
         this.players[player.number - 1].newPushPullDelay.state = true;
       }
 
-      if (
-        !this.players[player.number - 1].popups.find((x) => x.msg === "noPush")
-      ) {
+      if (!this.players[player.number - 1].popups.find((x) => x.msg === "noPush")) {
         this.players[player.number - 1].popups.push({
           state: false,
           count: 0,
@@ -20728,23 +19630,15 @@ class App extends Component {
         });
       }
 
-      if (
-        this.players[player.number - 1].popups.find((x) => x.msg === "prePush")
-      ) {
+      if (this.players[player.number - 1].popups.find((x) => x.msg === "prePush")) {
         this.players[player.number - 1].popups.splice(
-          this.players[player.number - 1].popups.findIndex(
-            (x) => x.msg === "prePush"
-          ),
+          this.players[player.number - 1].popups.findIndex((x) => x.msg === "prePush"),
           1
         );
       }
-      if (
-        this.players[player.number - 1].popups.find((x) => x.msg === "noPush")
-      ) {
+      if (this.players[player.number - 1].popups.find((x) => x.msg === "noPush")) {
         this.players[player.number - 1].popups.splice(
-          this.players[player.number - 1].popups.findIndex(
-            (x) => x.msg === "canPush"
-          ),
+          this.players[player.number - 1].popups.findIndex((x) => x.msg === "canPush"),
           1
         );
       }
@@ -20771,9 +19665,7 @@ class App extends Component {
 
     let resetPush = false;
     let targetCell = this.gridInfo.find(
-      (x) =>
-        x.number.x === target.cell1.number.x &&
-        x.number.y === target.cell1.number.y
+      (x) => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y
     );
     let plyrRefCell = this.gridInfo.find(
       (x) =>
@@ -20782,10 +19674,7 @@ class App extends Component {
     );
 
     let myCellCheck = true;
-    if (
-      plyrRefCell.barrier.state === true &&
-      plyrRefCell.barrier.position === pusher.direction
-    ) {
+    if (plyrRefCell.barrier.state === true && plyrRefCell.barrier.position === pusher.direction) {
       myCellCheck = false;
     }
     if (myCellCheck !== true) {
@@ -20795,21 +19684,14 @@ class App extends Component {
 
     let targetOpen = false;
     let targetPlayer = this.players[target.cell1.occupant.player - 1];
-    if (
-      targetPlayer.success.deflected.state === true ||
-      targetPlayer.action === "idle"
-    ) {
+    if (targetPlayer.success.deflected.state === true || targetPlayer.action === "idle") {
       targetOpen = true;
     } else {
       // console.log('target player is no longer deflected or idle');
       resetPush = true;
     }
 
-    if (
-      targetOpen === true &&
-      myCellCheck === true &&
-      pusher.newPushPullDelay.state !== true
-    ) {
+    if (targetOpen === true && myCellCheck === true && pusher.newPushPullDelay.state !== true) {
       if (pusher.prePush.state !== true && pusher.prePush.count === 0) {
         // console.log('start player pre push');
         pusher.prePush = {
@@ -20905,19 +19787,13 @@ class App extends Component {
     let canPushStrength = false;
     let canPushTargetFree = true;
     let pushStrengthThreshold =
-      (targetPlayer.hp +
-        (targetPlayer.crits.pushBack - 3) +
-        (targetPlayer.crits.guardBreak - 2)) *
+      (targetPlayer.hp + (targetPlayer.crits.pushBack - 3) + (targetPlayer.crits.guardBreak - 2)) *
       thresholdMultiplier;
     let pushStrengthPlayer = 0;
     let movePlayer = true;
     let impactDirection = pusher.prePush.direction;
 
-    let destCell = this.getCellFromDirection(
-      1,
-      targetCell.number,
-      impactDirection
-    );
+    let destCell = this.getCellFromDirection(1, targetCell.number, impactDirection);
 
     let destCellRef = this.gridInfo.find(
       (x) => x.number.x === destCell.x && x.number.y === destCell.y
@@ -20925,8 +19801,7 @@ class App extends Component {
     let destCellOccupant = "";
 
     if (pusher.stamina.current - this.staminaCostRef.push >= 0) {
-      pusher.stamina.current =
-        pusher.stamina.current - this.staminaCostRef.push;
+      pusher.stamina.current = pusher.stamina.current - this.staminaCostRef.push;
 
       if (pusher.hp > 1) {
         pushStrengthPlayer += pusher.hp - 1;
@@ -20959,11 +19834,7 @@ class App extends Component {
 
         if (destCellRef.barrier.state === true) {
           let barrier = this.checkForwardBarrier(impactDirection, destCellRef);
-          let destCell = this.getCellFromDirection(
-            1,
-            targetCell.number,
-            impactDirection
-          );
+          let destCell = this.getCellFromDirection(1, targetCell.number, impactDirection);
 
           if (barrier === true) {
             canPushTargetFree = false;
@@ -21059,16 +19930,8 @@ class App extends Component {
         movePlayer = false;
       }
 
-      if (
-        canPushStrength === true &&
-        canPushTargetFree === true &&
-        !destCellRef
-      ) {
-        if (
-          !this.players[pusher.number - 1].popups.find(
-            (x) => x.msg === "canPush"
-          )
-        ) {
+      if (canPushStrength === true && canPushTargetFree === true && !destCellRef) {
+        if (!this.players[pusher.number - 1].popups.find((x) => x.msg === "canPush")) {
           this.players[pusher.number - 1].popups.push({
             state: false,
             count: 0,
@@ -21080,32 +19943,21 @@ class App extends Component {
           });
         }
 
-        if (
-          this.players[pusher.number - 1].popups.find(
-            (x) => x.msg === "prePush"
-          )
-        ) {
+        if (this.players[pusher.number - 1].popups.find((x) => x.msg === "prePush")) {
           this.players[pusher.number - 1].popups.splice(
-            this.players[pusher.number - 1].popups.findIndex(
-              (x) => x.msg === "prePush"
-            ),
+            this.players[pusher.number - 1].popups.findIndex((x) => x.msg === "prePush"),
             1
           );
         }
-        if (
-          this.players[pusher.number - 1].popups.find((x) => x.msg === "noPush")
-        ) {
+        if (this.players[pusher.number - 1].popups.find((x) => x.msg === "noPush")) {
           this.players[pusher.number - 1].popups.splice(
-            this.players[pusher.number - 1].popups.findIndex(
-              (x) => x.msg === "noPush"
-            ),
+            this.players[pusher.number - 1].popups.findIndex((x) => x.msg === "noPush"),
             1
           );
         }
 
         // MOVE TARGET PLAYER
-        this.players[targetPlayer.number - 1].strafing.direction =
-          impactDirection;
+        this.players[targetPlayer.number - 1].strafing.direction = impactDirection;
         this.players[targetPlayer.number - 1].strafing.state = true;
         this.players[targetPlayer.number - 1].action = "strafe moving";
 
@@ -21118,11 +19970,7 @@ class App extends Component {
         };
         this.getTarget(targetPlayer);
 
-        if (
-          !this.players[targetPlayer.number - 1].popups.find(
-            (x) => x.msg === "pushedPulled"
-          )
-        ) {
+        if (!this.players[targetPlayer.number - 1].popups.find((x) => x.msg === "pushedPulled")) {
           this.players[targetPlayer.number - 1].popups.push({
             state: false,
             count: 0,
@@ -21150,8 +19998,7 @@ class App extends Component {
           destination: targetPlayer.target.cell1.center,
         };
         let targetPlyrNextPosition = this.lineCrementer(targetPlayer);
-        this.players[targetPlayer.number - 1].nextPosition =
-          targetPlyrNextPosition;
+        this.players[targetPlayer.number - 1].nextPosition = targetPlyrNextPosition;
 
         // MOVE PUSHER
         this.players[pusher.number - 1].prePush = {
@@ -21201,17 +20048,9 @@ class App extends Component {
         resetPush = true;
       }
 
-      if (
-        canPushStrength === true &&
-        canPushTargetFree === true &&
-        destCellRef
-      ) {
+      if (canPushStrength === true && canPushTargetFree === true && destCellRef) {
         // console.log('ready to push');
-        if (
-          !this.players[pusher.number - 1].popups.find(
-            (x) => x.msg === "canPush"
-          )
-        ) {
+        if (!this.players[pusher.number - 1].popups.find((x) => x.msg === "canPush")) {
           this.players[pusher.number - 1].popups.push({
             state: false,
             count: 0,
@@ -21223,32 +20062,21 @@ class App extends Component {
           });
         }
 
-        if (
-          this.players[pusher.number - 1].popups.find(
-            (x) => x.msg === "prePush"
-          )
-        ) {
+        if (this.players[pusher.number - 1].popups.find((x) => x.msg === "prePush")) {
           this.players[pusher.number - 1].popups.splice(
-            this.players[pusher.number - 1].popups.findIndex(
-              (x) => x.msg === "prePush"
-            ),
+            this.players[pusher.number - 1].popups.findIndex((x) => x.msg === "prePush"),
             1
           );
         }
-        if (
-          this.players[pusher.number - 1].popups.find((x) => x.msg === "noPush")
-        ) {
+        if (this.players[pusher.number - 1].popups.find((x) => x.msg === "noPush")) {
           this.players[pusher.number - 1].popups.splice(
-            this.players[pusher.number - 1].popups.findIndex(
-              (x) => x.msg === "noPush"
-            ),
+            this.players[pusher.number - 1].popups.findIndex((x) => x.msg === "noPush"),
             1
           );
         }
 
         // MOVE TARGET PLAYER
-        this.players[targetPlayer.number - 1].strafing.direction =
-          impactDirection;
+        this.players[targetPlayer.number - 1].strafing.direction = impactDirection;
         this.players[targetPlayer.number - 1].strafing.state = true;
         this.players[targetPlayer.number - 1].action = "strafe moving";
 
@@ -21261,11 +20089,7 @@ class App extends Component {
         };
         this.getTarget(targetPlayer);
 
-        if (
-          !this.players[targetPlayer.number - 1].popups.find(
-            (x) => x.msg === "pushedPulled"
-          )
-        ) {
+        if (!this.players[targetPlayer.number - 1].popups.find((x) => x.msg === "pushedPulled")) {
           this.players[targetPlayer.number - 1].popups.push({
             state: false,
             count: 0,
@@ -21294,8 +20118,7 @@ class App extends Component {
           destination: destCellRef.center,
         };
         let targetPlyrNextPosition = this.lineCrementer(targetPlayer);
-        this.players[targetPlayer.number - 1].nextPosition =
-          targetPlyrNextPosition;
+        this.players[targetPlayer.number - 1].nextPosition = targetPlyrNextPosition;
 
         // MOVE PUSHER
         this.players[pusher.number - 1].prePush = {
@@ -21379,9 +20202,7 @@ class App extends Component {
         this.players[pusher.number - 1].newPushPullDelay.state = true;
       }
 
-      if (
-        !this.players[pusher.number - 1].popups.find((x) => x.msg === "noPush")
-      ) {
+      if (!this.players[pusher.number - 1].popups.find((x) => x.msg === "noPush")) {
         this.players[pusher.number - 1].popups.push({
           state: false,
           count: 0,
@@ -21393,23 +20214,15 @@ class App extends Component {
         });
       }
 
-      if (
-        this.players[pusher.number - 1].popups.find((x) => x.msg === "prePush")
-      ) {
+      if (this.players[pusher.number - 1].popups.find((x) => x.msg === "prePush")) {
         this.players[pusher.number - 1].popups.splice(
-          this.players[pusher.number - 1].popups.findIndex(
-            (x) => x.msg === "prePush"
-          ),
+          this.players[pusher.number - 1].popups.findIndex((x) => x.msg === "prePush"),
           1
         );
       }
-      if (
-        this.players[pusher.number - 1].popups.find((x) => x.msg === "canaPush")
-      ) {
+      if (this.players[pusher.number - 1].popups.find((x) => x.msg === "canaPush")) {
         this.players[pusher.number - 1].popups.splice(
-          this.players[pusher.number - 1].popups.findIndex(
-            (x) => x.msg === "canPush"
-          ),
+          this.players[pusher.number - 1].popups.findIndex((x) => x.msg === "canPush"),
           1
         );
       }
@@ -21428,9 +20241,7 @@ class App extends Component {
 
     let resetPull = false;
     let refCell = this.gridInfo.find(
-      (x) =>
-        x.number.x === target.cell1.number.x &&
-        x.number.y === target.cell1.number.y
+      (x) => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y
     );
     let plyrRefCell = this.gridInfo.find(
       (x) =>
@@ -21439,10 +20250,7 @@ class App extends Component {
     );
     let limit = player.defending.limit - 1;
     let myCellCheck = true;
-    if (
-      plyrRefCell.barrier.state === true &&
-      plyrRefCell.barrier.position === player.direction
-    ) {
+    if (plyrRefCell.barrier.state === true && plyrRefCell.barrier.position === player.direction) {
       myCellCheck = false;
     }
     if (myCellCheck !== true) {
@@ -21589,14 +20397,12 @@ class App extends Component {
     let canPullStrength = false;
     let canPullTargetFree = true;
     let pullStrengthThreshold =
-      (obstacleCell.obstacle.height + obstacleCell.obstacle.weight) *
-      thresholdMultiplier;
+      (obstacleCell.obstacle.height + obstacleCell.obstacle.weight) * thresholdMultiplier;
     let pullStrengthPlayer = 0;
     let impactDirection = player.prePull.direction;
 
     if (player.stamina.current - this.staminaCostRef.pull >= 0) {
-      player.stamina.current =
-        player.stamina.current - this.staminaCostRef.pull;
+      player.stamina.current = player.stamina.current - this.staminaCostRef.pull;
 
       if (player.hp > 1) {
         pullStrengthPlayer += player.hp - 1;
@@ -21679,11 +20485,7 @@ class App extends Component {
 
       if (!destCellRef && pullStrengthPlayer >= pullStrengthThreshold) {
         // console.log('ready to pull',moveSpeed);
-        if (
-          !this.players[player.number - 1].popups.find(
-            (x) => x.msg === "canPull"
-          )
-        ) {
+        if (!this.players[player.number - 1].popups.find((x) => x.msg === "canPull")) {
           this.players[player.number - 1].popups.push({
             state: false,
             count: 0,
@@ -21695,34 +20497,20 @@ class App extends Component {
           });
         }
 
-        if (
-          this.players[player.number - 1].popups.find(
-            (x) => x.msg === "prePull"
-          )
-        ) {
+        if (this.players[player.number - 1].popups.find((x) => x.msg === "prePull")) {
           this.players[player.number - 1].popups.splice(
-            this.players[player.number - 1].popups.findIndex(
-              (x) => x.msg === "prePull"
-            ),
+            this.players[player.number - 1].popups.findIndex((x) => x.msg === "prePull"),
             1
           );
         }
-        if (
-          this.players[player.number - 1].popups.find((x) => x.msg === "noPull")
-        ) {
+        if (this.players[player.number - 1].popups.find((x) => x.msg === "noPull")) {
           this.players[player.number - 1].popups.splice(
-            this.players[player.number - 1].popups.findIndex(
-              (x) => x.msg === "noPull"
-            ),
+            this.players[player.number - 1].popups.findIndex((x) => x.msg === "noPull"),
             1
           );
         }
 
-        let voidCenter = this.getVoidCenter(
-          1,
-          impactDirection,
-          playerCellRef.center
-        );
+        let voidCenter = this.getVoidCenter(1, impactDirection, playerCellRef.center);
 
         let obstacleCrementObj = this.obstacleMoveCrementer(obstacleCell, {
           center: playerCellRef.center,
@@ -21840,17 +20628,9 @@ class App extends Component {
         resetPull = true;
       }
 
-      if (
-        canPullStrength === true &&
-        canPullTargetFree === true &&
-        destCellRef
-      ) {
+      if (canPullStrength === true && canPullTargetFree === true && destCellRef) {
         // console.log('ready to pull',moveSpeed);
-        if (
-          !this.players[player.number - 1].popups.find(
-            (x) => x.msg === "canPull"
-          )
-        ) {
+        if (!this.players[player.number - 1].popups.find((x) => x.msg === "canPull")) {
           this.players[player.number - 1].popups.push({
             state: false,
             count: 0,
@@ -21862,33 +20642,20 @@ class App extends Component {
           });
         }
 
-        if (
-          this.players[player.number - 1].popups.find(
-            (x) => x.msg === "prePull"
-          )
-        ) {
+        if (this.players[player.number - 1].popups.find((x) => x.msg === "prePull")) {
           this.players[player.number - 1].popups.splice(
-            this.players[player.number - 1].popups.findIndex(
-              (x) => x.msg === "prePull"
-            ),
+            this.players[player.number - 1].popups.findIndex((x) => x.msg === "prePull"),
             1
           );
         }
-        if (
-          this.players[player.number - 1].popups.find((x) => x.msg === "noPull")
-        ) {
+        if (this.players[player.number - 1].popups.find((x) => x.msg === "noPull")) {
           this.players[player.number - 1].popups.splice(
-            this.players[player.number - 1].popups.findIndex(
-              (x) => x.msg === "noPull"
-            ),
+            this.players[player.number - 1].popups.findIndex((x) => x.msg === "noPull"),
             1
           );
         }
 
-        let obstacleCrementObj = this.obstacleMoveCrementer(
-          obstacleCell,
-          playerCellRef
-        );
+        let obstacleCrementObj = this.obstacleMoveCrementer(obstacleCell, playerCellRef);
 
         obstacleCell.obstacle = {
           state: obstacleCell.obstacle.state,
@@ -22025,9 +20792,7 @@ class App extends Component {
         this.players[player.number - 1].newPushPullDelay.state = true;
       }
 
-      if (
-        !this.players[player.number - 1].popups.find((x) => x.msg === "noPull")
-      ) {
+      if (!this.players[player.number - 1].popups.find((x) => x.msg === "noPull")) {
         this.players[player.number - 1].popups.push({
           state: false,
           count: 0,
@@ -22039,23 +20804,15 @@ class App extends Component {
         });
       }
 
-      if (
-        this.players[player.number - 1].popups.find((x) => x.msg === "prePull")
-      ) {
+      if (this.players[player.number - 1].popups.find((x) => x.msg === "prePull")) {
         this.players[player.number - 1].popups.splice(
-          this.players[player.number - 1].popups.findIndex(
-            (x) => x.msg === "prePull"
-          ),
+          this.players[player.number - 1].popups.findIndex((x) => x.msg === "prePull"),
           1
         );
       }
-      if (
-        this.players[player.number - 1].popups.find((x) => x.msg === "canPull")
-      ) {
+      if (this.players[player.number - 1].popups.find((x) => x.msg === "canPull")) {
         this.players[player.number - 1].popups.splice(
-          this.players[player.number - 1].popups.findIndex(
-            (x) => x.msg === "canPull"
-          ),
+          this.players[player.number - 1].popups.findIndex((x) => x.msg === "canPull"),
           1
         );
       }
@@ -22066,9 +20823,7 @@ class App extends Component {
 
     let resetPull = false;
     let targetCell = this.gridInfo.find(
-      (x) =>
-        x.number.x === target.cell1.number.x &&
-        x.number.y === target.cell1.number.y
+      (x) => x.number.x === target.cell1.number.x && x.number.y === target.cell1.number.y
     );
     let plyrRefCell = this.gridInfo.find(
       (x) =>
@@ -22077,10 +20832,7 @@ class App extends Component {
     );
     let limit = puller.defending.limit - 1;
     let myCellCheck = true;
-    if (
-      plyrRefCell.barrier.state === true &&
-      plyrRefCell.barrier.position === puller.direction
-    ) {
+    if (plyrRefCell.barrier.state === true && plyrRefCell.barrier.position === puller.direction) {
       myCellCheck = false;
     }
     if (myCellCheck !== true) {
@@ -22090,21 +20842,14 @@ class App extends Component {
 
     let targetOpen = false;
     let targetPlayer = this.players[target.cell1.occupant.player - 1];
-    if (
-      targetPlayer.success.deflected.state === true ||
-      targetPlayer.action === "idle"
-    ) {
+    if (targetPlayer.success.deflected.state === true || targetPlayer.action === "idle") {
       targetOpen = true;
     } else {
       console.log("target player is no longer deflected or idle");
       resetPull = true;
     }
 
-    if (
-      targetOpen === true &&
-      myCellCheck === true &&
-      puller.newPushPullDelay.state !== true
-    ) {
+    if (targetOpen === true && myCellCheck === true && puller.newPushPullDelay.state !== true) {
       if (puller.prePull.state !== true && puller.prePull.count === 0) {
         // console.log('start player pre pull');
         puller.prePull = {
@@ -22195,9 +20940,7 @@ class App extends Component {
         this.players[puller.number - 1].newPushPullDelay.state = true;
       }
 
-      if (
-        !this.players[puller.number - 1].popups.find((x) => x.msg === "noPull")
-      ) {
+      if (!this.players[puller.number - 1].popups.find((x) => x.msg === "noPull")) {
         this.players[puller.number - 1].popups.push({
           state: false,
           count: 0,
@@ -22209,23 +20952,15 @@ class App extends Component {
         });
       }
 
-      if (
-        this.players[puller.number - 1].popups.find((x) => x.msg === "prePull")
-      ) {
+      if (this.players[puller.number - 1].popups.find((x) => x.msg === "prePull")) {
         this.players[puller.number - 1].popups.splice(
-          this.players[puller.number - 1].popups.findIndex(
-            (x) => x.msg === "prePull"
-          ),
+          this.players[puller.number - 1].popups.findIndex((x) => x.msg === "prePull"),
           1
         );
       }
-      if (
-        this.players[puller.number - 1].popups.find((x) => x.msg === "canPull")
-      ) {
+      if (this.players[puller.number - 1].popups.find((x) => x.msg === "canPull")) {
         this.players[puller.number - 1].popups.splice(
-          this.players[puller.number - 1].popups.findIndex(
-            (x) => x.msg === "canPull"
-          ),
+          this.players[puller.number - 1].popups.findIndex((x) => x.msg === "canPull"),
           1
         );
       }
@@ -22240,9 +20975,7 @@ class App extends Component {
     let canPullStrength = false;
     let canPullTargetFree = true;
     let pullStrengthThreshold =
-      (targetPlayer.hp +
-        (targetPlayer.crits.pushBack - 3) +
-        (targetPlayer.crits.guardBreak - 2)) *
+      (targetPlayer.hp + (targetPlayer.crits.pushBack - 3) + (targetPlayer.crits.guardBreak - 2)) *
       thresholdMultiplier;
     let pullStrengthPlayer = 0;
     let movePlayer = true;
@@ -22254,8 +20987,7 @@ class App extends Component {
     );
 
     if (puller.stamina.current - this.staminaCostRef.pull >= 0) {
-      puller.stamina.current =
-        puller.stamina.current - this.staminaCostRef.pull;
+      puller.stamina.current = puller.stamina.current - this.staminaCostRef.pull;
 
       if (puller.hp > 1) {
         pullStrengthPlayer += puller.hp - 1;
@@ -22365,11 +21097,7 @@ class App extends Component {
 
       if (!destCellRef && pullStrengthPlayer >= pullStrengthThreshold) {
         // console.log('ready to pull',moveSpeed);
-        if (
-          !this.players[puller.number - 1].popups.find(
-            (x) => x.msg === "canPull"
-          )
-        ) {
+        if (!this.players[puller.number - 1].popups.find((x) => x.msg === "canPull")) {
           this.players[puller.number - 1].popups.push({
             state: false,
             count: 0,
@@ -22381,40 +21109,25 @@ class App extends Component {
           });
         }
 
-        if (
-          this.players[puller.number - 1].popups.find(
-            (x) => x.msg === "prePull"
-          )
-        ) {
+        if (this.players[puller.number - 1].popups.find((x) => x.msg === "prePull")) {
           this.players[puller.number - 1].popups.splice(
-            this.players[puller.number - 1].popups.findIndex(
-              (x) => x.msg === "prePull"
-            ),
+            this.players[puller.number - 1].popups.findIndex((x) => x.msg === "prePull"),
             1
           );
         }
-        if (
-          this.players[puller.number - 1].popups.find((x) => x.msg === "noPull")
-        ) {
+        if (this.players[puller.number - 1].popups.find((x) => x.msg === "noPull")) {
           this.players[puller.number - 1].popups.splice(
-            this.players[puller.number - 1].popups.findIndex(
-              (x) => x.msg === "noPull"
-            ),
+            this.players[puller.number - 1].popups.findIndex((x) => x.msg === "noPull"),
             1
           );
         }
 
-        let voidCenter = this.getVoidCenter(
-          1,
-          impactDirection,
-          pullerCellRef.center
-        );
+        let voidCenter = this.getVoidCenter(1, impactDirection, pullerCellRef.center);
 
         // MOVE TARGET PLAYER
 
         if (puller.prePull.direction !== targetPlayer.direction) {
-          this.players[targetPlayer.number - 1].strafing.direction =
-            impactDirection;
+          this.players[targetPlayer.number - 1].strafing.direction = impactDirection;
           this.players[targetPlayer.number - 1].strafing.state = true;
           this.players[targetPlayer.number - 1].action = "strafe moving";
         } else {
@@ -22430,11 +21143,7 @@ class App extends Component {
         };
         this.getTarget(targetPlayer);
 
-        if (
-          !this.players[targetPlayer.number - 1].popups.find(
-            (x) => x.msg === "pushedPulled"
-          )
-        ) {
+        if (!this.players[targetPlayer.number - 1].popups.find((x) => x.msg === "pushedPulled")) {
           this.players[targetPlayer.number - 1].popups.push({
             state: false,
             count: 0,
@@ -22463,8 +21172,7 @@ class App extends Component {
           destination: pullerCellRef.center,
         };
         let targetPlyrNextPosition = this.lineCrementer(targetPlayer);
-        this.players[targetPlayer.number - 1].nextPosition =
-          targetPlyrNextPosition;
+        this.players[targetPlayer.number - 1].nextPosition = targetPlyrNextPosition;
 
         // MOVE PUllER
         this.players[puller.number - 1].prePull = {
@@ -22486,8 +21194,7 @@ class App extends Component {
           this.getTarget(puller);
 
           if (puller.turning.delayCount === 0) {
-            this.players[puller.number - 1].strafing.direction =
-              impactDirection;
+            this.players[puller.number - 1].strafing.direction = impactDirection;
             this.players[puller.number - 1].strafing.state = true;
             this.players[puller.number - 1].action = "strafe moving";
             this.players[puller.number - 1].moving = {
@@ -22521,17 +21228,9 @@ class App extends Component {
         resetPull = true;
       }
 
-      if (
-        canPullStrength === true &&
-        canPullTargetFree === true &&
-        destCellRef
-      ) {
+      if (canPullStrength === true && canPullTargetFree === true && destCellRef) {
         // console.log('ready to pull',moveSpeed);
-        if (
-          !this.players[puller.number - 1].popups.find(
-            (x) => x.msg === "canPull"
-          )
-        ) {
+        if (!this.players[puller.number - 1].popups.find((x) => x.msg === "canPull")) {
           this.players[puller.number - 1].popups.push({
             state: false,
             count: 0,
@@ -22543,33 +21242,22 @@ class App extends Component {
           });
         }
 
-        if (
-          this.players[puller.number - 1].popups.find(
-            (x) => x.msg === "prePull"
-          )
-        ) {
+        if (this.players[puller.number - 1].popups.find((x) => x.msg === "prePull")) {
           this.players[puller.number - 1].popups.splice(
-            this.players[puller.number - 1].popups.findIndex(
-              (x) => x.msg === "prePull"
-            ),
+            this.players[puller.number - 1].popups.findIndex((x) => x.msg === "prePull"),
             1
           );
         }
-        if (
-          this.players[puller.number - 1].popups.find((x) => x.msg === "noPull")
-        ) {
+        if (this.players[puller.number - 1].popups.find((x) => x.msg === "noPull")) {
           this.players[puller.number - 1].popups.splice(
-            this.players[puller.number - 1].popups.findIndex(
-              (x) => x.msg === "noPull"
-            ),
+            this.players[puller.number - 1].popups.findIndex((x) => x.msg === "noPull"),
             1
           );
         }
 
         // MOVE TARGET PLAYER
         if (impactDirection !== targetPlayer.direction) {
-          this.players[targetPlayer.number - 1].strafing.direction =
-            impactDirection;
+          this.players[targetPlayer.number - 1].strafing.direction = impactDirection;
           this.players[targetPlayer.number - 1].strafing.state = true;
           this.players[targetPlayer.number - 1].action = "strafe moving";
         } else {
@@ -22586,11 +21274,7 @@ class App extends Component {
 
         this.getTarget(targetPlayer);
 
-        if (
-          !this.players[targetPlayer.number - 1].popups.find(
-            (x) => x.msg === "pushedPulled"
-          )
-        ) {
+        if (!this.players[targetPlayer.number - 1].popups.find((x) => x.msg === "pushedPulled")) {
           this.players[targetPlayer.number - 1].popups.push({
             state: false,
             count: 0,
@@ -22619,8 +21303,7 @@ class App extends Component {
           destination: pullerCellRef.center,
         };
         let targetPlyrNextPosition = this.lineCrementer(targetPlayer);
-        this.players[targetPlayer.number - 1].nextPosition =
-          targetPlyrNextPosition;
+        this.players[targetPlayer.number - 1].nextPosition = targetPlyrNextPosition;
 
         // MOVE PULLER
         this.players[puller.number - 1].prePull = {
@@ -22654,8 +21337,7 @@ class App extends Component {
           this.players[puller.number - 1].prePull.direction = "";
 
           if (puller.turning.delayCount === 0) {
-            this.players[puller.number - 1].strafing.direction =
-              impactDirection;
+            this.players[puller.number - 1].strafing.direction = impactDirection;
             this.players[puller.number - 1].strafing.state = true;
             this.players[puller.number - 1].action = "strafe moving";
             this.players[puller.number - 1].moving = {
@@ -22734,9 +21416,7 @@ class App extends Component {
         this.players[puller.number - 1].newPushPullDelay.state = true;
       }
 
-      if (
-        !this.players[puller.number - 1].popups.find((x) => x.msg === "noPull")
-      ) {
+      if (!this.players[puller.number - 1].popups.find((x) => x.msg === "noPull")) {
         this.players[puller.number - 1].popups.push({
           state: false,
           count: 0,
@@ -22748,23 +21428,15 @@ class App extends Component {
         });
       }
 
-      if (
-        this.players[puller.number - 1].popups.find((x) => x.msg === "prePull")
-      ) {
+      if (this.players[puller.number - 1].popups.find((x) => x.msg === "prePull")) {
         this.players[puller.number - 1].popups.splice(
-          this.players[puller.number - 1].popups.findIndex(
-            (x) => x.msg === "prePull"
-          ),
+          this.players[puller.number - 1].popups.findIndex((x) => x.msg === "prePull"),
           1
         );
       }
-      if (
-        this.players[puller.number - 1].popups.find((x) => x.msg === "canPull")
-      ) {
+      if (this.players[puller.number - 1].popups.find((x) => x.msg === "canPull")) {
         this.players[puller.number - 1].popups.splice(
-          this.players[puller.number - 1].popups.findIndex(
-            (x) => x.msg === "canPull"
-          ),
+          this.players[puller.number - 1].popups.findIndex((x) => x.msg === "canPull"),
           1
         );
       }
@@ -24237,20 +22909,8 @@ class App extends Component {
           },
         };
 
-        this.applyRemoveEffect(
-          player,
-          "apply",
-          "pickup",
-          "weapon",
-          player.currentWeapon
-        );
-        this.applyRemoveEffect(
-          player,
-          "apply",
-          "pickup",
-          "armor",
-          player.currentArmor
-        );
+        this.applyRemoveEffect(player, "apply", "pickup", "weapon", player.currentWeapon);
+        this.applyRemoveEffect(player, "apply", "pickup", "armor", player.currentArmor);
       }
     }
     this.aiTarget = 1;
@@ -24366,12 +23026,7 @@ class App extends Component {
               break;
           }
           // console.log('proposed cell 2',cell3);
-          if (
-            cell3.x < 0 ||
-            cell3.x > this.gridWidth ||
-            cell3.y < 0 ||
-            cell3.y > this.gridWidth
-          ) {
+          if (cell3.x < 0 || cell3.x > this.gridWidth || cell3.y < 0 || cell3.y > this.gridWidth) {
             // console.log('2nd cell is out of bounds');
           } else {
             cell3.x = this.rnJesus(0, this.gridWidth);
@@ -24397,13 +23052,7 @@ class App extends Component {
           }
         }
         if (checkCell === true) {
-          console.log(
-            "random patrol points chosen: start",
-            cell,
-            "patrol points",
-            cell1,
-            cell3
-          );
+          console.log("random patrol points chosen: start", cell, "patrol points", cell1, cell3);
         }
       }
       if (
@@ -24427,12 +23076,7 @@ class App extends Component {
           checkCell = this.checkCell(cell);
         }
         if (checkCell === true) {
-          console.log(
-            "random defend points chosen: start",
-            cell,
-            "defend point",
-            cell4
-          );
+          console.log("random defend points chosen: start", cell, "defend point", cell4);
         }
       }
 
@@ -25007,14 +23651,11 @@ class App extends Component {
         this.aiPlayers.push(newPlayerNumber);
         this.getTarget(this.players[newPlayerNumber - 1]);
         this.updatePathArray();
-        this.players[newPlayerNumber - 1].ai.primaryMission =
-          this.aiInitSettings.primaryMission;
+        this.players[newPlayerNumber - 1].ai.primaryMission = this.aiInitSettings.primaryMission;
         if (!this.aiInitSettings.mission) {
-          this.players[newPlayerNumber - 1].ai.mission =
-            this.aiInitSettings.primaryMission;
+          this.players[newPlayerNumber - 1].ai.mission = this.aiInitSettings.primaryMission;
         } else if (this.aiInitSettings.mission) {
-          this.players[newPlayerNumber - 1].ai.mission =
-            this.aiInitSettings.mission;
+          this.players[newPlayerNumber - 1].ai.mission = this.aiInitSettings.mission;
         }
 
         if (this.aiInitSettings.primaryMission === "patrol") {
@@ -25391,11 +24032,7 @@ class App extends Component {
 
     if (this.allPlayersDead === true) {
       for (const plyr2 of this.players) {
-        if (
-          plyr2.dead.state !== true &&
-          plyr2.respawn !== true &&
-          plyr2.ai.state !== true
-        ) {
+        if (plyr2.dead.state !== true && plyr2.respawn !== true && plyr2.ai.state !== true) {
           this.aiTarget = plyr2.number;
           this.allPlayersDead = false;
           this.resetAiTarget.player = 0;
@@ -25419,10 +24056,7 @@ class App extends Component {
       // console.log('still no targets availible for ai!!');
     }
 
-    if (
-      plyr.ai.mission !== "engage" &&
-      this.aiDeflectedCheck.includes(plyr.number === true)
-    ) {
+    if (plyr.ai.mission !== "engage" && this.aiDeflectedCheck.includes(plyr.number === true)) {
       // console.log('!! AI DEFLECTED BUT NOT ENGAGED, CHECK CIRCUMSTANCES AND BEHAVIOR !!');
     }
 
@@ -25485,9 +24119,7 @@ class App extends Component {
         weaponPriorityIndex
       );
 
-      if (
-        plyr.currentWeapon.type === weaponUpgradePriority[weaponPriorityIndex]
-      ) {
+      if (plyr.currentWeapon.type === weaponUpgradePriority[weaponPriorityIndex]) {
         console.log("priority weapon is my current");
 
         if (
@@ -25496,10 +24128,7 @@ class App extends Component {
           plyr.items.weapons.length < 2
         ) {
           console.log("priority weapon is crossbow but out of ammo!");
-          if (
-            plyr.ai.organizing.weaponPriorityIndex ===
-            weaponUpgradePriority.length - 1
-          ) {
+          if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
             plyr.ai.upgradeWeapon = false;
             console.log("priority index max w/ nothing to retrieve");
           } else {
@@ -25514,10 +24143,7 @@ class App extends Component {
         havePriorityWeapon = false;
       }
 
-      if (
-        inMyInventory &&
-        plyr.currentWeapon.type !== weaponUpgradePriority[weaponPriorityIndex]
-      ) {
+      if (inMyInventory && plyr.currentWeapon.type !== weaponUpgradePriority[weaponPriorityIndex]) {
         console.log(
           "priority weapon is in my inventory. Switching to it",
           plyr.currentWeapon,
@@ -25531,10 +24157,7 @@ class App extends Component {
           plyr.items.weapons.length === 1
         ) {
           console.log("priority weapon is crossbow but out of ammo!");
-          if (
-            plyr.ai.organizing.weaponPriorityIndex ===
-            weaponUpgradePriority.length - 1
-          ) {
+          if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
             plyr.ai.upgradeWeapon = false;
             console.log("priority index max w/ nothing to retrieve");
           } else {
@@ -25555,9 +24178,7 @@ class App extends Component {
 
         // havePriorityWeapon = true;
         // plyr.ai.upgradeWeapon = false
-      } else if (
-        plyr.currentWeapon.type !== weaponUpgradePriority[weaponPriorityIndex]
-      ) {
+      } else if (plyr.currentWeapon.type !== weaponUpgradePriority[weaponPriorityIndex]) {
         havePriorityWeapon = false;
       }
 
@@ -25572,15 +24193,9 @@ class App extends Component {
           console.log("priority weapon is in the field");
 
           if (inTheField.subType === "crossbow") {
-            console.log(
-              "priority is a crossbow",
-              inTheField.effect.split("+")[1]
-            );
+            console.log("priority is a crossbow", inTheField.effect.split("+")[1]);
 
-            if (
-              inTheField.effect.split("+")[1] !== 0 &&
-              inTheField.effect.split("+")[1] !== "0"
-            ) {
+            if (inTheField.effect.split("+")[1] !== 0 && inTheField.effect.split("+")[1] !== "0") {
               let targetSafeData = this.scanTargetAreaThreat({
                 player: plyr.number,
                 point: {
@@ -25621,10 +24236,7 @@ class App extends Component {
               } else {
                 console.log("priority weapon target is unsafe.");
 
-                if (
-                  plyr.ai.organizing.weaponPriorityIndex ===
-                  weaponUpgradePriority.length - 1
-                ) {
+                if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
                   // plyr.ai.upgradeWeapon = false;
                   console.log("priority index max w/ nothing to retrieve");
                 } else {
@@ -25637,10 +24249,7 @@ class App extends Component {
               inTheField.effect.split("+")[1] === "0"
             ) {
               console.log("bow in the field but has no ammo");
-              if (
-                plyr.ai.organizing.weaponPriorityIndex ===
-                weaponUpgradePriority.length - 1
-              ) {
+              if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
                 // plyr.ai.upgradeWeapon = false;
                 console.log("priority index max w/ nothing to retrieve");
               } else {
@@ -25689,10 +24298,7 @@ class App extends Component {
             } else {
               console.log("priority weapon is not in the field");
 
-              if (
-                plyr.ai.organizing.weaponPriorityIndex ===
-                weaponUpgradePriority.length - 1
-              ) {
+              if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
                 // plyr.ai.upgradeWeapon = false;
                 console.log("priority index max w/ nothing to retrieve");
               } else {
@@ -25702,13 +24308,8 @@ class App extends Component {
             }
           }
         } else {
-          console.log(
-            "priority weapon is not in the field, nor current nor inventory"
-          );
-          if (
-            plyr.ai.organizing.weaponPriorityIndex ===
-            weaponUpgradePriority.length - 1
-          ) {
+          console.log("priority weapon is not in the field, nor current nor inventory");
+          if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
             // plyr.ai.upgradeWeapon = false;
             console.log("priority index max w/ nothing to retrieve");
           } else {
@@ -25728,9 +24329,7 @@ class App extends Component {
 
       let armorInTheField;
       if (plyr.hp === 1) {
-        armorInTheField = fieldItemScan.find(
-          (gear) => gear.effect === "hpUp"
-        )[0];
+        armorInTheField = fieldItemScan.find((gear) => gear.effect === "hpUp")[0];
         if (armorInTheField) {
           let targetSafeData2 = this.scanTargetAreaThreat({
             player: plyr.number,
@@ -25769,10 +24368,7 @@ class App extends Component {
             }
           }
 
-          console.log(
-            "found hpup gear in the field. retrieve! @",
-            plyr.ai.retrieving.point
-          );
+          console.log("found hpup gear in the field. retrieve! @", plyr.ai.retrieving.point);
         } else {
           console.log(
             "no hp up gear found in the field",
@@ -25782,9 +24378,7 @@ class App extends Component {
       }
 
       if (plyr.speed.move < 0.1) {
-        armorInTheField = fieldItemScan.find(
-          (gear) => gear.effect === "speedUp"
-        )[0];
+        armorInTheField = fieldItemScan.find((gear) => gear.effect === "speedUp")[0];
 
         if (armorInTheField) {
           let targetSafeData2 = this.scanTargetAreaThreat({
@@ -25824,10 +24418,7 @@ class App extends Component {
             }
           }
 
-          console.log(
-            "found speedUp gear in the field. retrieve! @",
-            plyr.ai.retrieving.point
-          );
+          console.log("found speedUp gear in the field. retrieve! @", plyr.ai.retrieving.point);
         } else {
           console.log(
             "no spped up gear found in the field",
@@ -25846,14 +24437,10 @@ class App extends Component {
       if (plyr.items.ammo === 0) {
         console.log("my crossbow out of ammo");
         let inTheField = fieldItemScan.find(
-          (elem) =>
-            elem.type === "crossbow" || elem.name.substr(0, 4) === "ammo"
+          (elem) => elem.type === "crossbow" || elem.name.substr(0, 4) === "ammo"
         );
         if (inTheField) {
-          if (
-            inTheField.effect.split("+")[1] !== 0 &&
-            inTheField.effect.split("+")[1] !== "0"
-          ) {
+          if (inTheField.effect.split("+")[1] !== 0 && inTheField.effect.split("+")[1] !== "0") {
             let targetSafeData2 = this.scanTargetAreaThreat({
               player: plyr.number,
               point: {
@@ -25902,9 +24489,7 @@ class App extends Component {
 
                 plyr.ai.targetAcquired = false;
               } else {
-                console.log(
-                  "nothing else in inventory. find other in the field1"
-                );
+                console.log("nothing else in inventory. find other in the field1");
                 plyr.ai.upgradeWeapon = true;
               }
             }
@@ -25921,9 +24506,7 @@ class App extends Component {
 
               plyr.ai.targetAcquired = false;
             } else {
-              console.log(
-                "nothing else in inventory. find other in the field2"
-              );
+              console.log("nothing else in inventory. find other in the field2");
               plyr.ai.upgradeWeapon = true;
             }
           }
@@ -25943,10 +24526,7 @@ class App extends Component {
             console.log("nothing else in inventory. find other in the field3");
             plyr.ai.upgradeWeapon = true;
 
-            if (
-              plyr.ai.organizing.weaponPriorityIndex ===
-              weaponUpgradePriority.length - 1
-            ) {
+            if (plyr.ai.organizing.weaponPriorityIndex === weaponUpgradePriority.length - 1) {
               console.log(
                 "no ammo for bow or alternative weapons to upgrade to. Switch to unarmed"
               );
@@ -25962,11 +24542,7 @@ class App extends Component {
     }
 
     // INJURED OR SLOW!
-    if (
-      plyr.hp === 1 &&
-      plyr.ai.mission !== "retrieve" &&
-      plyr.ai.mission !== "retrieve"
-    ) {
+    if (plyr.hp === 1 && plyr.ai.mission !== "retrieve" && plyr.ai.mission !== "retrieve") {
       console.log("injured. check for heal item");
 
       let itemToRetrieve = undefined;
@@ -26012,21 +24588,14 @@ class App extends Component {
             });
           }
 
-          console.log(
-            "found hpup item in the field. retrieve @ ",
-            itemToRetrieve.location
-          );
+          console.log("found hpup item in the field. retrieve @ ", itemToRetrieve.location);
         } else {
           console.log("no heal item/gear found.");
         }
       }
     }
 
-    if (
-      plyr.speed.move < 0.1 &&
-      plyr.ai.mission !== "retrieve" &&
-      plyr.ai.mission !== "retrieve"
-    ) {
+    if (plyr.speed.move < 0.1 && plyr.ai.mission !== "retrieve" && plyr.ai.mission !== "retrieve") {
       console.log("slow. check for speed up item");
 
       let itemToRetrieve = undefined;
@@ -26117,10 +24686,7 @@ class App extends Component {
 
           this.players[plyr.number - 1].ai.organizing.dropped.state = false;
 
-          console.log(
-            "standing over dropped gear",
-            plyr.ai.organizing.dropped.state
-          );
+          console.log("standing over dropped gear", plyr.ai.organizing.dropped.state);
         } else {
           console.log("retrieve dropped gear");
 
@@ -26207,10 +24773,7 @@ class App extends Component {
 
           this.players[plyr.number - 1].ai.organizing.dropped.state = false;
 
-          console.log(
-            "standing over dropped gear",
-            plyr.ai.organizing.dropped.state
-          );
+          console.log("standing over dropped gear", plyr.ai.organizing.dropped.state);
         } else {
           if (plyr.items.weapons.length > 1) {
             console.log("switch to something else from inventory");
@@ -26401,19 +24964,12 @@ class App extends Component {
           if (plyr.currentWeapon.type === "crossbow") {
             let range = plyr.ai.pathfindingRanges.crossbow + 2;
 
-            if (
-              plyr.currentPosition.cell.number.x ===
-              plyr2.currentPosition.cell.number.x
-            ) {
+            if (plyr.currentPosition.cell.number.x === plyr2.currentPosition.cell.number.x) {
               if (
-                (plyr2.currentPosition.cell.number.y <
-                  plyr.currentPosition.cell.number.y + range &&
-                  plyr2.currentPosition.cell.number.y >
-                    plyr.currentPosition.cell.number.y) ||
-                (plyr2.currentPosition.cell.number.y >
-                  plyr.currentPosition.cell.number.y - range &&
-                  plyr2.currentPosition.cell.number.y <
-                    plyr.currentPosition.cell.number.y)
+                (plyr2.currentPosition.cell.number.y < plyr.currentPosition.cell.number.y + range &&
+                  plyr2.currentPosition.cell.number.y > plyr.currentPosition.cell.number.y) ||
+                (plyr2.currentPosition.cell.number.y > plyr.currentPosition.cell.number.y - range &&
+                  plyr2.currentPosition.cell.number.y < plyr.currentPosition.cell.number.y)
               ) {
                 let clearToShoot = this.aiBoltPathCheck(plyr);
                 if (
@@ -26471,19 +25027,12 @@ class App extends Component {
               }
             }
 
-            if (
-              plyr.currentPosition.cell.number.y ===
-              plyr2.currentPosition.cell.number.y
-            ) {
+            if (plyr.currentPosition.cell.number.y === plyr2.currentPosition.cell.number.y) {
               if (
-                (plyr2.currentPosition.cell.number.x <
-                  plyr.currentPosition.cell.number.x + range &&
-                  plyr2.currentPosition.cell.number.x >
-                    plyr.currentPosition.cell.number.x) ||
-                (plyr2.currentPosition.cell.number.x >
-                  plyr.currentPosition.cell.number.x - range &&
-                  plyr2.currentPosition.cell.number.x <
-                    plyr.currentPosition.cell.number.x)
+                (plyr2.currentPosition.cell.number.x < plyr.currentPosition.cell.number.x + range &&
+                  plyr2.currentPosition.cell.number.x > plyr.currentPosition.cell.number.x) ||
+                (plyr2.currentPosition.cell.number.x > plyr.currentPosition.cell.number.x - range &&
+                  plyr2.currentPosition.cell.number.x < plyr.currentPosition.cell.number.x)
               ) {
                 let clearToShoot = this.aiBoltPathCheck(plyr);
                 if (
@@ -26549,10 +25098,7 @@ class App extends Component {
             //   range = 3;
             // }
 
-            if (
-              plyr.currentPosition.cell.number.x ===
-              plyr2.currentPosition.cell.number.x
-            ) {
+            if (plyr.currentPosition.cell.number.x === plyr2.currentPosition.cell.number.x) {
               if (plyr.ai.safeRange === true) {
                 if (
                   plyr.currentPosition.cell.number.y ===
@@ -26625,8 +25171,7 @@ class App extends Component {
                 if (
                   plyr.currentPosition.cell.number.y ===
                     plyr2.currentPosition.cell.number.y + range ||
-                  plyr.currentPosition.cell.number.y ===
-                    plyr2.currentPosition.cell.number.y - range
+                  plyr.currentPosition.cell.number.y === plyr2.currentPosition.cell.number.y - range
                 ) {
                   let clearToShoot = this.aiBoltPathCheck(plyr);
                   if (
@@ -26684,10 +25229,7 @@ class App extends Component {
               }
             }
 
-            if (
-              plyr.currentPosition.cell.number.y ===
-              plyr2.currentPosition.cell.number.y
-            ) {
+            if (plyr.currentPosition.cell.number.y === plyr2.currentPosition.cell.number.y) {
               if (plyr.ai.safeRange === true) {
                 if (
                   plyr.currentPosition.cell.number.x ===
@@ -26758,14 +25300,10 @@ class App extends Component {
                 }
               } else {
                 if (
-                  plyr.currentPosition.cell.number.x ===
-                    plyr2.currentPosition.cell.number.x + 1 ||
-                  plyr.currentPosition.cell.number.x ===
-                    plyr2.currentPosition.cell.number.x - 1 ||
-                  plyr.currentPosition.cell.number.x ===
-                    plyr2.currentPosition.cell.number.x + 2 ||
-                  plyr.currentPosition.cell.number.x ===
-                    plyr2.currentPosition.cell.number.x - 2
+                  plyr.currentPosition.cell.number.x === plyr2.currentPosition.cell.number.x + 1 ||
+                  plyr.currentPosition.cell.number.x === plyr2.currentPosition.cell.number.x - 1 ||
+                  plyr.currentPosition.cell.number.x === plyr2.currentPosition.cell.number.x + 2 ||
+                  plyr.currentPosition.cell.number.x === plyr2.currentPosition.cell.number.x - 2
                   // plyr.currentPosition.cell.number.x === plyr2.currentPosition.cell.number.x + range ||
                   // plyr.currentPosition.cell.number.x === plyr2.currentPosition.cell.number.x - range
                 ) {
@@ -26826,20 +25364,14 @@ class App extends Component {
             }
           }
 
-          if (
-            plyr.currentWeapon.type === "sword" ||
-            plyr.currentWeapon.type === ""
-          ) {
+          if (plyr.currentWeapon.type === "sword" || plyr.currentWeapon.type === "") {
             let range2 = 1;
             if (plyr.ai.safeRange === true) {
               // console.log('careful range finding');
               range2 = 2;
             }
 
-            if (
-              plyr.currentPosition.cell.number.x ===
-              plyr2.currentPosition.cell.number.x
-            ) {
+            if (plyr.currentPosition.cell.number.x === plyr2.currentPosition.cell.number.x) {
               if (plyr.ai.safeRange === true) {
                 if (
                   plyr.currentPosition.cell.number.y ===
@@ -26955,10 +25487,7 @@ class App extends Component {
               }
             }
 
-            if (
-              plyr.currentPosition.cell.number.y ===
-              plyr2.currentPosition.cell.number.y
-            ) {
+            if (plyr.currentPosition.cell.number.y === plyr2.currentPosition.cell.number.y) {
               if (plyr.ai.safeRange === true) {
                 if (
                   plyr.currentPosition.cell.number.x ===
@@ -27241,10 +25770,7 @@ class App extends Component {
             }
           }
         }
-        if (
-          plyr.ai.mode === "careful" &&
-          plyr.ai.retrieving.checkin === "enroute"
-        ) {
+        if (plyr.ai.mode === "careful" && plyr.ai.retrieving.checkin === "enroute") {
           console.log("was enroute, now retreating");
 
           if (!plyr.popups.find((x) => x.msg === "passiveMode")) {
@@ -27318,9 +25844,7 @@ class App extends Component {
 
         if (plyr.ai.retrieving.targetItem.type !== "item") {
           if (plyr.ai.retrieving.targetItem.type === "weapon") {
-            if (
-              plyr.currentWeapon.name === plyr.ai.retrieving.targetItem.name
-            ) {
+            if (plyr.currentWeapon.name === plyr.ai.retrieving.targetItem.name) {
               itemRetrieved = true;
             }
             for (const item of plyr.items.weapons) {
@@ -27396,11 +25920,7 @@ class App extends Component {
         let cell = { x: 0, y: 0 };
         let checkCell = false;
         let safeTarget = false;
-        while (
-          checkCell === false &&
-          safeTarget !== true &&
-          isSafeDistance !== true
-        ) {
+        while (checkCell === false && safeTarget !== true && isSafeDistance !== true) {
           cell.x = this.rnJesus(0, this.gridWidth);
           cell.y = this.rnJesus(0, this.gridWidth);
           checkCell = this.checkCell(cell);
@@ -27415,11 +25935,7 @@ class App extends Component {
           isSafeDistance = this.safeDistanceRetreat(plyr, cell);
         }
 
-        if (
-          checkCell === true &&
-          safeTarget === true &&
-          isSafeDistance !== true
-        ) {
+        if (checkCell === true && safeTarget === true && isSafeDistance !== true) {
           plyr.ai.retreating.point = cell;
           plyr.ai.retreating.safe = safeTarget;
           console.log("found a free, safe retreat location", cell);
@@ -27439,9 +25955,7 @@ class App extends Component {
         plyr.ai.retrieving.safe = targetSafeData.isSafe;
 
         if (targetSafeData.isSafe !== true) {
-          console.log(
-            "retreat target area is under threat. Find another target"
-          );
+          console.log("retreat target area is under threat. Find another target");
           plyr.ai.retreating.checkin = undefined;
           plyr.ai.retreating.safe = false;
         }
@@ -27549,10 +26063,7 @@ class App extends Component {
         aiPlayer.ai.targetAcquired = true;
         aiPlayer.ai.currentInstruction = 0;
       }
-      if (
-        aiPlayer.ai.targetSet === true &&
-        aiPlayer.ai.targetAcquired !== true
-      ) {
+      if (aiPlayer.ai.targetSet === true && aiPlayer.ai.targetAcquired !== true) {
         getPath = true;
         aiPlayer.ai.targetAcquired = true;
       } else if (getPath !== true) {
@@ -27610,10 +26121,8 @@ class App extends Component {
         }
 
         if (
-          aiPlayer.ai.patrolling.area[0].x ===
-            aiPlayer.currentPosition.cell.number.x &&
-          aiPlayer.ai.patrolling.area[0].y ===
-            aiPlayer.currentPosition.cell.number.y
+          aiPlayer.ai.patrolling.area[0].x === aiPlayer.currentPosition.cell.number.x &&
+          aiPlayer.ai.patrolling.area[0].y === aiPlayer.currentPosition.cell.number.y
         ) {
           aiPlayer.ai.patrolling.checkin = "arrived";
           // console.log('arrived @ patrol point');
@@ -27694,10 +26203,8 @@ class App extends Component {
       let engageTargetAction;
       // FACE TARGET!
       if (
-        targetPlayer.currentPosition.cell.number.x ===
-          aiPlayer.currentPosition.cell.number.x &&
-        targetPlayer.currentPosition.cell.number.y >
-          aiPlayer.currentPosition.cell.number.y
+        targetPlayer.currentPosition.cell.number.x === aiPlayer.currentPosition.cell.number.x &&
+        targetPlayer.currentPosition.cell.number.y > aiPlayer.currentPosition.cell.number.y
       ) {
         if (aiPlayer.direction !== "south") {
           aiPlayer.direction = "south";
@@ -27706,10 +26213,8 @@ class App extends Component {
         oppositeDir = "north";
       }
       if (
-        targetPlayer.currentPosition.cell.number.x ===
-          aiPlayer.currentPosition.cell.number.x &&
-        targetPlayer.currentPosition.cell.number.y <
-          aiPlayer.currentPosition.cell.number.y
+        targetPlayer.currentPosition.cell.number.x === aiPlayer.currentPosition.cell.number.x &&
+        targetPlayer.currentPosition.cell.number.y < aiPlayer.currentPosition.cell.number.y
       ) {
         if (aiPlayer.direction !== "north") {
           aiPlayer.direction = "north";
@@ -27718,10 +26223,8 @@ class App extends Component {
         oppositeDir = "south";
       }
       if (
-        targetPlayer.currentPosition.cell.number.x <
-          aiPlayer.currentPosition.cell.number.x &&
-        targetPlayer.currentPosition.cell.number.y ===
-          aiPlayer.currentPosition.cell.number.y
+        targetPlayer.currentPosition.cell.number.x < aiPlayer.currentPosition.cell.number.x &&
+        targetPlayer.currentPosition.cell.number.y === aiPlayer.currentPosition.cell.number.y
       ) {
         if (aiPlayer.direction !== "west") {
           aiPlayer.direction = "west";
@@ -27730,10 +26233,8 @@ class App extends Component {
         oppositeDir = "east";
       }
       if (
-        targetPlayer.currentPosition.cell.number.x >
-          aiPlayer.currentPosition.cell.number.x &&
-        targetPlayer.currentPosition.cell.number.y ===
-          aiPlayer.currentPosition.cell.number.y
+        targetPlayer.currentPosition.cell.number.x > aiPlayer.currentPosition.cell.number.x &&
+        targetPlayer.currentPosition.cell.number.y === aiPlayer.currentPosition.cell.number.y
       ) {
         if (aiPlayer.direction !== "east") {
           aiPlayer.direction = "east";
@@ -27787,11 +26288,7 @@ class App extends Component {
             aiPlayer.currentPosition.cell.number.y ===
               targetPlayer.currentPosition.cell.number.y + 1
           ) {
-            console.log(
-              "plyr",
-              aiPlayer.number,
-              " engaging w/ crossbow but too close for comfort"
-            );
+            console.log("plyr", aiPlayer.number, " engaging w/ crossbow but too close for comfort");
             aiPlayer.ai.retreating.state = false;
             aiPlayer.ai.retreating.checkin = undefined;
             aiPlayer.ai.mission = "retreat";
@@ -27838,10 +26335,7 @@ class App extends Component {
           aiPlayer.ai.engaging.targetAction = "";
         }
 
-        if (
-          aiPlayer.ai.engaging.targetAction !== engageTargetAction &&
-          deflecting !== true
-        ) {
+        if (aiPlayer.ai.engaging.targetAction !== engageTargetAction && deflecting !== true) {
           // console.log('target status has changed. switch up the approach');
 
           aiPlayer.ai.instructions = instructions3;
@@ -27933,10 +26427,7 @@ class App extends Component {
         }
 
         // ENGAGED TARGET IS DEFENDING!
-        if (
-          targetPlayer.defendDecay.count >
-          targetPlayer.defendDecay.limit - 10
-        ) {
+        if (targetPlayer.defendDecay.count > targetPlayer.defendDecay.limit - 10) {
           console.log(
             "ai #",
             aiPlayer.number,
@@ -28073,64 +26564,40 @@ class App extends Component {
 
               switch (aiPlayer.direction) {
                 case "north":
-                  if (
-                    aiPosCell3.edge.state === true &&
-                    aiPosCell3.edge.side === "east"
-                  ) {
+                  if (aiPosCell3.edge.state === true && aiPosCell3.edge.side === "east") {
                     flankDir3 = "west";
                   }
-                  if (
-                    aiPosCell3.edge.state === true &&
-                    aiPosCell3.edge.side === "west"
-                  ) {
+                  if (aiPosCell3.edge.state === true && aiPosCell3.edge.side === "west") {
                     flankDir3 = "east";
                   } else {
                     flankDir3 = "west";
                   }
                   break;
                 case "south":
-                  if (
-                    aiPosCell3.edge.state === true &&
-                    aiPosCell3.edge.side === "east"
-                  ) {
+                  if (aiPosCell3.edge.state === true && aiPosCell3.edge.side === "east") {
                     flankDir3 = "west";
                   }
-                  if (
-                    aiPosCell3.edge.state === true &&
-                    aiPosCell3.edge.side === "west"
-                  ) {
+                  if (aiPosCell3.edge.state === true && aiPosCell3.edge.side === "west") {
                     flankDir3 = "east";
                   } else {
                     flankDir3 = "west";
                   }
                   break;
                 case "east":
-                  if (
-                    aiPosCell3.edge.state === true &&
-                    aiPosCell3.edge.side === "north"
-                  ) {
+                  if (aiPosCell3.edge.state === true && aiPosCell3.edge.side === "north") {
                     flankDir3 = "south";
                   }
-                  if (
-                    aiPosCell3.edge.state === true &&
-                    aiPosCell3.edge.side === "south"
-                  ) {
+                  if (aiPosCell3.edge.state === true && aiPosCell3.edge.side === "south") {
                     flankDir3 = "north";
                   } else {
                     flankDir3 = "south";
                   }
                   break;
                 case "west":
-                  if (
-                    aiPosCell3.edge.state === true &&
-                    aiPosCell3.edge.side === "north"
-                  ) {
+                  if (aiPosCell3.edge.state === true && aiPosCell3.edge.side === "north") {
                     flankDir3 = "south";
                   }
-                  if (
-                    aiPosCell3.edge.state === true &&
-                    aiPosCell3.edge.side === "south"
-                  ) {
+                  if (aiPosCell3.edge.state === true && aiPosCell3.edge.side === "south") {
                     flankDir3 = "north";
                   } else {
                     flankDir3 = "south";
@@ -28181,8 +26648,7 @@ class App extends Component {
               for (const cell2 of cellsToConsider2) {
                 let freeCell2 = true;
                 let cellRef2 = this.gridInfo.find(
-                  (elem) =>
-                    elem.number.x === cell2.x && elem.number.y === cell2.y
+                  (elem) => elem.number.x === cell2.x && elem.number.y === cell2.y
                 );
                 if (cellRef2) {
                   let terrainInfo4 = cellRef2.levelData.length - 1;
@@ -28197,8 +26663,7 @@ class App extends Component {
                   }
                   for (const plyr6 of this.players) {
                     if (
-                      plyr6.currentPosition.cell.number.x ===
-                        cellRef2.number.x &&
+                      plyr6.currentPosition.cell.number.x === cellRef2.number.x &&
                       plyr6.currentPosition.cell.number.y === cellRef2.number.y
                     ) {
                       freeCell2 = false;
@@ -28263,10 +26728,7 @@ class App extends Component {
           aiPlayer.ai.engaging.targetAction = "";
         }
 
-        if (
-          aiPlayer.ai.engaging.targetAction !== engageTargetAction &&
-          deflecting !== true
-        ) {
+        if (aiPlayer.ai.engaging.targetAction !== engageTargetAction && deflecting !== true) {
           // console.log('target status has changed. switch up the approach');
 
           aiPlayer.ai.instructions = instructions2;
@@ -28466,64 +26928,40 @@ class App extends Component {
 
               switch (aiPlayer.direction) {
                 case "north":
-                  if (
-                    aiPosCell2.edge.state === true &&
-                    aiPosCell2.edge.side === "east"
-                  ) {
+                  if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === "east") {
                     flankDir2 = "west";
                   }
-                  if (
-                    aiPosCell2.edge.state === true &&
-                    aiPosCell2.edge.side === "west"
-                  ) {
+                  if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === "west") {
                     flankDir2 = "east";
                   } else {
                     flankDir2 = "west";
                   }
                   break;
                 case "south":
-                  if (
-                    aiPosCell2.edge.state === true &&
-                    aiPosCell2.edge.side === "east"
-                  ) {
+                  if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === "east") {
                     flankDir2 = "west";
                   }
-                  if (
-                    aiPosCell2.edge.state === true &&
-                    aiPosCell2.edge.side === "west"
-                  ) {
+                  if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === "west") {
                     flankDir2 = "east";
                   } else {
                     flankDir2 = "west";
                   }
                   break;
                 case "east":
-                  if (
-                    aiPosCell2.edge.state === true &&
-                    aiPosCell2.edge.side === "north"
-                  ) {
+                  if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === "north") {
                     flankDir2 = "south";
                   }
-                  if (
-                    aiPosCell2.edge.state === true &&
-                    aiPosCell2.edge.side === "south"
-                  ) {
+                  if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === "south") {
                     flankDir2 = "north";
                   } else {
                     flankDir2 = "south";
                   }
                   break;
                 case "west":
-                  if (
-                    aiPosCell2.edge.state === true &&
-                    aiPosCell2.edge.side === "north"
-                  ) {
+                  if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === "north") {
                     flankDir2 = "south";
                   }
-                  if (
-                    aiPosCell2.edge.state === true &&
-                    aiPosCell2.edge.side === "south"
-                  ) {
+                  if (aiPosCell2.edge.state === true && aiPosCell2.edge.side === "south") {
                     flankDir2 = "north";
                   } else {
                     flankDir2 = "south";
@@ -28589,8 +27027,7 @@ class App extends Component {
                   }
                   for (const plyr5 of this.players) {
                     if (
-                      plyr5.currentPosition.cell.number.x ===
-                        cellRef.number.x &&
+                      plyr5.currentPosition.cell.number.x === cellRef.number.x &&
                       plyr5.currentPosition.cell.number.y === cellRef.number.y
                     ) {
                       freeCell = false;
@@ -28650,10 +27087,7 @@ class App extends Component {
         }
 
         // target status has changed. switch up the approach
-        if (
-          aiPlayer.ai.engaging.targetAction !== engageTargetAction &&
-          deflecting !== true
-        ) {
+        if (aiPlayer.ai.engaging.targetAction !== engageTargetAction && deflecting !== true) {
           // if (aiPlayer.ai.engaging.targetAction !== engageTargetAction ) {
 
           // console.log('target status has changed. switch up the approach');
@@ -28864,64 +27298,40 @@ class App extends Component {
 
               switch (aiPlayer.direction) {
                 case "north":
-                  if (
-                    aiPosCell3.edge.state === true &&
-                    aiPosCell3.edge.side === "east"
-                  ) {
+                  if (aiPosCell3.edge.state === true && aiPosCell3.edge.side === "east") {
                     flankDir3 = "west";
                   }
-                  if (
-                    aiPosCell3.edge.state === true &&
-                    aiPosCell3.edge.side === "west"
-                  ) {
+                  if (aiPosCell3.edge.state === true && aiPosCell3.edge.side === "west") {
                     flankDir3 = "east";
                   } else {
                     flankDir3 = "west";
                   }
                   break;
                 case "south":
-                  if (
-                    aiPosCell3.edge.state === true &&
-                    aiPosCell3.edge.side === "east"
-                  ) {
+                  if (aiPosCell3.edge.state === true && aiPosCell3.edge.side === "east") {
                     flankDir3 = "west";
                   }
-                  if (
-                    aiPosCell3.edge.state === true &&
-                    aiPosCell3.edge.side === "west"
-                  ) {
+                  if (aiPosCell3.edge.state === true && aiPosCell3.edge.side === "west") {
                     flankDir3 = "east";
                   } else {
                     flankDir3 = "west";
                   }
                   break;
                 case "east":
-                  if (
-                    aiPosCell3.edge.state === true &&
-                    aiPosCell3.edge.side === "north"
-                  ) {
+                  if (aiPosCell3.edge.state === true && aiPosCell3.edge.side === "north") {
                     flankDir3 = "south";
                   }
-                  if (
-                    aiPosCell3.edge.state === true &&
-                    aiPosCell3.edge.side === "south"
-                  ) {
+                  if (aiPosCell3.edge.state === true && aiPosCell3.edge.side === "south") {
                     flankDir3 = "north";
                   } else {
                     flankDir3 = "south";
                   }
                   break;
                 case "west":
-                  if (
-                    aiPosCell3.edge.state === true &&
-                    aiPosCell3.edge.side === "north"
-                  ) {
+                  if (aiPosCell3.edge.state === true && aiPosCell3.edge.side === "north") {
                     flankDir3 = "south";
                   }
-                  if (
-                    aiPosCell3.edge.state === true &&
-                    aiPosCell3.edge.side === "south"
-                  ) {
+                  if (aiPosCell3.edge.state === true && aiPosCell3.edge.side === "south") {
                     flankDir3 = "north";
                   } else {
                     flankDir3 = "south";
@@ -28972,8 +27382,7 @@ class App extends Component {
               for (const cell3 of cellsToConsider3) {
                 let freeCell3 = true;
                 let cellRef3 = this.gridInfo.find(
-                  (elem) =>
-                    elem.number.x === cell3.x && elem.number.y === cell3.y
+                  (elem) => elem.number.x === cell3.x && elem.number.y === cell3.y
                 );
                 if (cellRef3) {
                   let terrainInfo5 = cellRef3.levelData.length - 1;
@@ -28988,8 +27397,7 @@ class App extends Component {
                   }
                   for (const plyr7 of this.players) {
                     if (
-                      plyr7.currentPosition.cell.number.x ===
-                        cellRef3.number.x &&
+                      plyr7.currentPosition.cell.number.x === cellRef3.number.x &&
                       plyr7.currentPosition.cell.number.y === cellRef3.number.y
                     ) {
                       freeCell3 = false;
@@ -29048,10 +27456,7 @@ class App extends Component {
           aiPlayer.ai.engaging.targetAction = "";
         }
 
-        if (
-          aiPlayer.ai.engaging.targetAction !== engageTargetAction &&
-          deflecting !== true
-        ) {
+        if (aiPlayer.ai.engaging.targetAction !== engageTargetAction && deflecting !== true) {
           // console.log('target status has changed. switch up the approach');
 
           aiPlayer.ai.instructions = instructions4;
@@ -29090,10 +27495,7 @@ class App extends Component {
 
       // SET OUT TO DEFEND POINT
       if (!aiPlayer.ai.defending.checkin) {
-        console.log(
-          "start out to defend location",
-          aiPlayer.ai.defending.area[0]
-        );
+        console.log("start out to defend location", aiPlayer.ai.defending.area[0]);
         aiPlayer.ai.defending.checkin = "enroute";
 
         if (!aiPlayer.popups.find((x) => x.msg === "missionEnroute")) {
@@ -29184,10 +27586,8 @@ class App extends Component {
         }
 
         if (
-          aiPlayer.ai.defending.area[1].x ===
-            aiPlayer.currentPosition.cell.number.x &&
-          aiPlayer.ai.defending.area[1].y ===
-            aiPlayer.currentPosition.cell.number.y
+          aiPlayer.ai.defending.area[1].x === aiPlayer.currentPosition.cell.number.x &&
+          aiPlayer.ai.defending.area[1].y === aiPlayer.currentPosition.cell.number.y
         ) {
           aiPlayer.ai.defending.checkin = "checkedIn";
           aiPlayer.ai.instructions = [];
@@ -29199,10 +27599,7 @@ class App extends Component {
       }
 
       // ARRIVED AT DEFEND POINT
-      if (
-        aiPlayer.ai.defending.checkin === "checkedIn" &&
-        aiPlayer.ai.instructions.length === 0
-      ) {
+      if (aiPlayer.ai.defending.checkin === "checkedIn" && aiPlayer.ai.instructions.length === 0) {
         // console.log('defend post checkedIn');
         let instructions = [];
         switch (aiPlayer.direction) {
@@ -29279,10 +27676,7 @@ class App extends Component {
 
     if (aiPlayer.ai.mission === "retrieve") {
       // SET OUT
-      if (
-        aiPlayer.ai.retrieving.state !== true &&
-        aiPlayer.ai.retrieving.safe === true
-      ) {
+      if (aiPlayer.ai.retrieving.state !== true && aiPlayer.ai.retrieving.safe === true) {
         // console.log('retrive mission start: target item ',aiPlayer.ai.retrieving.targetItem.name,targetPlayer,aiPlayer.ai.retrieving);
         aiPlayer.ai.retrieving.state = true;
         aiPlayer.ai.retrieving.checkin = "enroute";
@@ -29320,10 +27714,8 @@ class App extends Component {
           }
 
           if (
-            aiPlayer.currentPosition.cell.number.x ===
-              aiPlayer.ai.retrieving.point.x &&
-            aiPlayer.currentPosition.cell.number.y ===
-              aiPlayer.ai.retrieving.point.y
+            aiPlayer.currentPosition.cell.number.x === aiPlayer.ai.retrieving.point.x &&
+            aiPlayer.currentPosition.cell.number.y === aiPlayer.ai.retrieving.point.y
           ) {
             console.log("arrived at retrieval location");
             aiPlayer.ai.retrieving.checkin = "complete";
@@ -29335,10 +27727,7 @@ class App extends Component {
 
     if (aiPlayer.ai.mission === "retreat") {
       // SET OUT
-      if (
-        aiPlayer.ai.retreating.state !== true &&
-        aiPlayer.ai.retreating.safe === true
-      ) {
+      if (aiPlayer.ai.retreating.state !== true && aiPlayer.ai.retreating.safe === true) {
         // console.log('start retreating to',aiPlayer.ai.retreating.point);
         aiPlayer.ai.retreating.state = true;
         aiPlayer.ai.retreating.checkin = "enroute";
@@ -29362,10 +27751,8 @@ class App extends Component {
         if (aiPlayer.ai.retreating.checkin === "enroute") {
           // console.log('enroute to retreat point @',aiPlayer.ai.retreating.point,'instructions',aiPlayer.ai.instructions,aiPlayer.ai.currentInstruction);
           if (
-            aiPlayer.currentPosition.cell.number.x ===
-              aiPlayer.ai.retreating.point.x &&
-            aiPlayer.currentPosition.cell.number.y ===
-              aiPlayer.ai.retreating.point.y
+            aiPlayer.currentPosition.cell.number.x === aiPlayer.ai.retreating.point.x &&
+            aiPlayer.currentPosition.cell.number.y === aiPlayer.ai.retreating.point.y
           ) {
             // console.log('arrived at retreat location');
             aiPlayer.ai.instructions.push({
@@ -29437,23 +27824,12 @@ class App extends Component {
 
       // AVOID PATHS THAT GO CLOSE TO ENEMY PLAYERS IF ALIVE
       for (const plyr of this.players) {
-        if (
-          plyr.ai.state !== true &&
-          plyr.dead.state !== true &&
-          plyr.falling.state !== true
-        ) {
-          console.log(
-            aiPlayer.ai.mission,
-            " careful pathfinding. enemy is plyr #",
-            plyr.number
-          );
+        if (plyr.ai.state !== true && plyr.dead.state !== true && plyr.falling.state !== true) {
+          console.log(aiPlayer.ai.mission, " careful pathfinding. enemy is plyr #", plyr.number);
           let rng;
           let span;
 
-          if (
-            plyr.currentWeapon.type === "sword" ||
-            plyr.currentWeapon.name === ""
-          ) {
+          if (plyr.currentWeapon.type === "sword" || plyr.currentWeapon.name === "") {
             rng = 1;
           } else {
             rng = 2;
@@ -29469,8 +27845,7 @@ class App extends Component {
               case 1:
                 cornerCell = this.gridInfo.find(
                   (elem) =>
-                    elem.number.x ===
-                      plyr.currentPosition.cell.number.x + rng &&
+                    elem.number.x === plyr.currentPosition.cell.number.x + rng &&
                     elem.number.y === plyr.currentPosition.cell.number.y + rng
                 );
                 whichCorner = "southEast";
@@ -29478,8 +27853,7 @@ class App extends Component {
               case 2:
                 cornerCell = this.gridInfo.find(
                   (elem) =>
-                    elem.number.x ===
-                      plyr.currentPosition.cell.number.x - rng &&
+                    elem.number.x === plyr.currentPosition.cell.number.x - rng &&
                     elem.number.y === plyr.currentPosition.cell.number.y - rng
                 );
                 whichCorner = "northWest";
@@ -29487,8 +27861,7 @@ class App extends Component {
               case 3:
                 cornerCell = this.gridInfo.find(
                   (elem) =>
-                    elem.number.x ===
-                      plyr.currentPosition.cell.number.x - rng &&
+                    elem.number.x === plyr.currentPosition.cell.number.x - rng &&
                     elem.number.y === plyr.currentPosition.cell.number.y + rng
                 );
                 whichCorner = "southWest";
@@ -29496,8 +27869,7 @@ class App extends Component {
               case 4:
                 cornerCell = this.gridInfo.find(
                   (elem) =>
-                    elem.number.x ===
-                      plyr.currentPosition.cell.number.x + rng &&
+                    elem.number.x === plyr.currentPosition.cell.number.x + rng &&
                     elem.number.y === plyr.currentPosition.cell.number.y - rng
                 );
                 whichCorner = "northEast";
@@ -29637,21 +28009,20 @@ class App extends Component {
       }
 
       // FIND PATH!
-      this.players[aiPlayer.number - 1].ai.easyStarPath =
-        this.easyStar.findPath(
-          aiPos.x,
-          aiPos.y,
-          targetPos.x,
-          targetPos.y,
-          function (path) {
-            if (path === null) {
-              cancelPath = true;
-              console.log("Path was not found...for player", aiPlayer.number);
-            } else {
-              pathSet = path;
-            }
+      this.players[aiPlayer.number - 1].ai.easyStarPath = this.easyStar.findPath(
+        aiPos.x,
+        aiPos.y,
+        targetPos.x,
+        targetPos.y,
+        function (path) {
+          if (path === null) {
+            cancelPath = true;
+            console.log("Path was not found...for player", aiPlayer.number);
+          } else {
+            pathSet = path;
           }
-        );
+        }
+      );
 
       this.easyStar.setIterationsPerCalculation(4000);
       this.easyStar.calculate();
@@ -29682,9 +28053,7 @@ class App extends Component {
 
         if (aiPlayer.ai.mission === "pursue") {
           aiPos = aiPlayer.currentPosition.cell.number;
-          targetPos =
-            this.players[aiPlayer.ai.targetPlayer.number - 1].currentPosition
-              .cell.number;
+          targetPos = this.players[aiPlayer.ai.targetPlayer.number - 1].currentPosition.cell.number;
           console.log("pursuit target ", targetPos);
 
           if (aiPlayer.ai.safeRange === true) {
@@ -29720,9 +28089,7 @@ class App extends Component {
                 );
 
                 let pursuitTargetRef = this.gridInfo.find(
-                  (elem) =>
-                    elem.number.x === rangeElem.x &&
-                    elem.number.y === rangeElem.y
+                  (elem) => elem.number.x === rangeElem.x && elem.number.y === rangeElem.y
                 );
 
                 if (!pursuitTargetRef) {
@@ -29735,10 +28102,7 @@ class App extends Component {
 
                   let dirToFire;
                   let diff = 0;
-                  if (
-                    rangeElem.x === targetPos.x &&
-                    rangeElem.y > targetPos.y
-                  ) {
+                  if (rangeElem.x === targetPos.x && rangeElem.y > targetPos.y) {
                     dirToFire = "north";
                     diff = rangeElem.y - targetPos.y;
                     for (var i = 0; i < diff; i++) {
@@ -29749,10 +28113,7 @@ class App extends Component {
                       // this.cellsToHighlight.push({x:rangeElem.x, y: rangeElem.y - i})
                     }
                   }
-                  if (
-                    rangeElem.x > targetPos.x &&
-                    rangeElem.y === targetPos.y
-                  ) {
+                  if (rangeElem.x > targetPos.x && rangeElem.y === targetPos.y) {
                     dirToFire = "west";
                     diff = rangeElem.x - targetPos.x;
                     for (var i = 0; i < diff; i++) {
@@ -29763,10 +28124,7 @@ class App extends Component {
                       // this.cellsToHighlight.push({x:rangeElem.x - i, y: rangeElem.y})
                     }
                   }
-                  if (
-                    rangeElem.x === targetPos.x &&
-                    rangeElem.y < targetPos.y
-                  ) {
+                  if (rangeElem.x === targetPos.x && rangeElem.y < targetPos.y) {
                     dirToFire = "south";
                     diff = targetPos.y - rangeElem.y;
                     for (var i = 0; i < diff; i++) {
@@ -29777,10 +28135,7 @@ class App extends Component {
                       // this.cellsToHighlight.push({x:rangeElem.x, y: rangeElem.y + i})
                     }
                   }
-                  if (
-                    rangeElem.x < targetPos.x &&
-                    rangeElem.y === targetPos.y
-                  ) {
+                  if (rangeElem.x < targetPos.x && rangeElem.y === targetPos.y) {
                     dirToFire = "east";
                     diff = targetPos.x - rangeElem.x;
                     for (var i = 0; i < diff; i++) {
@@ -29846,9 +28201,7 @@ class App extends Component {
                   // IS FIRE POSITION FREE?
                   let rngElCellFree = true;
                   let cellRef3 = this.gridInfo.find(
-                    (elema) =>
-                      elema.number.x === rangeElem.x &&
-                      elema.number.y === rangeElem.y
+                    (elema) => elema.number.x === rangeElem.x && elema.number.y === rangeElem.y
                   );
                   if (cellRef3) {
                     if (
@@ -29870,9 +28223,7 @@ class App extends Component {
                     let obstructions = [];
                     for (const cellx of rangeElemCells2) {
                       let cellRef4 = this.gridInfo.find(
-                        (elemb) =>
-                          elemb.number.x === cellx.x &&
-                          elemb.number.y === cellx.y
+                        (elemb) => elemb.number.x === cellx.x && elemb.number.y === cellx.y
                       );
 
                       if (
@@ -30038,9 +28389,7 @@ class App extends Component {
                 );
 
                 let pursuitTargetRef = this.gridInfo.find(
-                  (elem) =>
-                    elem.number.x === rangeElem.x &&
-                    elem.number.y === rangeElem.y
+                  (elem) => elem.number.x === rangeElem.x && elem.number.y === rangeElem.y
                 );
 
                 if (!pursuitTargetRef) {
@@ -30050,10 +28399,7 @@ class App extends Component {
 
                   let dirToFire;
                   let diff = 0;
-                  if (
-                    rangeElem.x === targetPos.x &&
-                    rangeElem.y > targetPos.y
-                  ) {
+                  if (rangeElem.x === targetPos.x && rangeElem.y > targetPos.y) {
                     dirToFire = "north";
                     diff = rangeElem.y - targetPos.y;
                     for (var i = 0; i < diff; i++) {
@@ -30064,10 +28410,7 @@ class App extends Component {
                       // this.cellsToHighlight.push({x:rangeElem.x, y: rangeElem.y - i})
                     }
                   }
-                  if (
-                    rangeElem.x > targetPos.x &&
-                    rangeElem.y === targetPos.y
-                  ) {
+                  if (rangeElem.x > targetPos.x && rangeElem.y === targetPos.y) {
                     dirToFire = "west";
                     diff = rangeElem.x - targetPos.x;
                     for (var i = 0; i < diff; i++) {
@@ -30078,10 +28421,7 @@ class App extends Component {
                       // this.cellsToHighlight.push({x:rangeElem.x - i, y: rangeElem.y})
                     }
                   }
-                  if (
-                    rangeElem.x === targetPos.x &&
-                    rangeElem.y < targetPos.y
-                  ) {
+                  if (rangeElem.x === targetPos.x && rangeElem.y < targetPos.y) {
                     dirToFire = "south";
                     diff = targetPos.y - rangeElem.y;
                     for (var i = 0; i < diff; i++) {
@@ -30092,10 +28432,7 @@ class App extends Component {
                       // this.cellsToHighlight.push({x:rangeElem.x, y: rangeElem.y + i})
                     }
                   }
-                  if (
-                    rangeElem.x < targetPos.x &&
-                    rangeElem.y === targetPos.y
-                  ) {
+                  if (rangeElem.x < targetPos.x && rangeElem.y === targetPos.y) {
                     dirToFire = "east";
                     diff = targetPos.x - rangeElem.x;
                     for (var i = 0; i < diff; i++) {
@@ -30112,9 +28449,7 @@ class App extends Component {
                   // IS attack POSITION FREE?
                   let rngElCellFree = true;
                   let cellRef3 = this.gridInfo.find(
-                    (elema) =>
-                      elema.number.x === rangeElem.x &&
-                      elema.number.y === rangeElem.y
+                    (elema) => elema.number.x === rangeElem.x && elema.number.y === rangeElem.y
                   );
                   if (cellRef3) {
                     if (
@@ -30136,9 +28471,7 @@ class App extends Component {
                     let obstructions = [];
                     for (const cellx of rangeElemCells2) {
                       let cellRef4 = this.gridInfo.find(
-                        (elemb) =>
-                          elemb.number.x === cellx.x &&
-                          elemb.number.y === cellx.y
+                        (elemb) => elemb.number.x === cellx.x && elemb.number.y === cellx.y
                       );
 
                       if (
@@ -30177,9 +28510,7 @@ class App extends Component {
                 targetPos = freeSpaces[0];
                 // console.log('found path to safe spear range',targetPos);
               } else {
-                console.log(
-                  "No free or unobstructed firing positions at this distance for spear"
-                );
+                console.log("No free or unobstructed firing positions at this distance for spear");
                 if (aiPlayer.ai.pathfindingRanges.spear > 1) {
                   aiPlayer.ai.pathfindingRanges.spear--;
                 }
@@ -30187,10 +28518,7 @@ class App extends Component {
                 aiPlayer.ai.targetAcquired = false;
               }
             }
-            if (
-              aiPlayer.currentWeapon.type === "sword" ||
-              aiPlayer.currentWeapon.name === ""
-            ) {
+            if (aiPlayer.currentWeapon.type === "sword" || aiPlayer.currentWeapon.name === "") {
               candidateTargets = [
                 { x: targetPos.x - 2, y: targetPos.y },
                 { x: targetPos.x + 2, y: targetPos.y },
@@ -30204,9 +28532,7 @@ class App extends Component {
                 );
 
                 let pursuitTargetRef = this.gridInfo.find(
-                  (elem) =>
-                    elem.number.x === rangeElem.x &&
-                    elem.number.y === rangeElem.y
+                  (elem) => elem.number.x === rangeElem.x && elem.number.y === rangeElem.y
                 );
 
                 if (!pursuitTargetRef) {
@@ -30239,9 +28565,7 @@ class App extends Component {
                         rngElCellFree = false;
                       }
                       let cellRef3 = this.gridInfo.find(
-                        (elema) =>
-                          elema.number.x === rngElCell.x &&
-                          elema.number.y === rngElCell.y
+                        (elema) => elema.number.x === rngElCell.x && elema.number.y === rngElCell.y
                       );
                       if (cellRef3) {
                         if (
@@ -30323,10 +28647,7 @@ class App extends Component {
         }
 
         // AVOID PATHS THAT GO CLOSE TO ENEMY PLAYERS
-        if (
-          aiPlayer.ai.mission === "retreat" ||
-          aiPlayer.ai.mission === "retrieve"
-        ) {
+        if (aiPlayer.ai.mission === "retreat" || aiPlayer.ai.mission === "retrieve") {
           for (const plyr of this.players) {
             if (plyr.ai.state !== true) {
               console.log(
@@ -30337,10 +28658,7 @@ class App extends Component {
               let rng;
               let span;
 
-              if (
-                plyr.currentWeapon.type === "sword" ||
-                plyr.currentWeapon.name === ""
-              ) {
+              if (plyr.currentWeapon.type === "sword" || plyr.currentWeapon.name === "") {
                 rng = 1;
               } else {
                 rng = 2;
@@ -30356,40 +28674,32 @@ class App extends Component {
                   case 1:
                     cornerCell = this.gridInfo.find(
                       (elem) =>
-                        elem.number.x ===
-                          plyr.currentPosition.cell.number.x + rng &&
-                        elem.number.y ===
-                          plyr.currentPosition.cell.number.y + rng
+                        elem.number.x === plyr.currentPosition.cell.number.x + rng &&
+                        elem.number.y === plyr.currentPosition.cell.number.y + rng
                     );
                     whichCorner = "southEast";
                     break;
                   case 2:
                     cornerCell = this.gridInfo.find(
                       (elem) =>
-                        elem.number.x ===
-                          plyr.currentPosition.cell.number.x - rng &&
-                        elem.number.y ===
-                          plyr.currentPosition.cell.number.y - rng
+                        elem.number.x === plyr.currentPosition.cell.number.x - rng &&
+                        elem.number.y === plyr.currentPosition.cell.number.y - rng
                     );
                     whichCorner = "northWest";
                     break;
                   case 3:
                     cornerCell = this.gridInfo.find(
                       (elem) =>
-                        elem.number.x ===
-                          plyr.currentPosition.cell.number.x - rng &&
-                        elem.number.y ===
-                          plyr.currentPosition.cell.number.y + rng
+                        elem.number.x === plyr.currentPosition.cell.number.x - rng &&
+                        elem.number.y === plyr.currentPosition.cell.number.y + rng
                     );
                     whichCorner = "southWest";
                     break;
                   case 4:
                     cornerCell = this.gridInfo.find(
                       (elem) =>
-                        elem.number.x ===
-                          plyr.currentPosition.cell.number.x + rng &&
-                        elem.number.y ===
-                          plyr.currentPosition.cell.number.y - rng
+                        elem.number.x === plyr.currentPosition.cell.number.x + rng &&
+                        elem.number.y === plyr.currentPosition.cell.number.y - rng
                     );
                     whichCorner = "northEast";
                     break;
@@ -30509,10 +28819,7 @@ class App extends Component {
             }
 
             for (const nerf of nerfItemPositions) {
-              this.easyStar.avoidAdditionalPoint(
-                nerf.location.x,
-                nerf.location.y
-              );
+              this.easyStar.avoidAdditionalPoint(nerf.location.x, nerf.location.y);
             }
           }
         }
@@ -30535,21 +28842,20 @@ class App extends Component {
         }
 
         // FIND PATH!
-        this.players[aiPlayer.number - 1].ai.easyStarPath =
-          this.easyStar.findPath(
-            aiPos.x,
-            aiPos.y,
-            targetPos.x,
-            targetPos.y,
-            function (path) {
-              if (path === null) {
-                cancelPath = true;
-                console.log("Path was not found...for player", aiPlayer.number);
-              } else {
-                pathSet = path;
-              }
+        this.players[aiPlayer.number - 1].ai.easyStarPath = this.easyStar.findPath(
+          aiPos.x,
+          aiPos.y,
+          targetPos.x,
+          targetPos.y,
+          function (path) {
+            if (path === null) {
+              cancelPath = true;
+              console.log("Path was not found...for player", aiPlayer.number);
+            } else {
+              pathSet = path;
             }
-          );
+          }
+        );
 
         this.easyStar.setIterationsPerCalculation(4000);
         this.easyStar.calculate();
@@ -30748,8 +29054,7 @@ class App extends Component {
       let nextPathStepCell = undefined;
       if (nextPathStep) {
         nextPathStepCell = this.gridInfo.find(
-          (elem) =>
-            elem.number.x === nextPathStep.x && elem.number.y === nextPathStep.y
+          (elem) => elem.number.x === nextPathStep.x && elem.number.y === nextPathStep.y
         );
       }
 
@@ -30833,9 +29138,7 @@ class App extends Component {
               } else {
                 if (currentInstruction.count < currentInstruction.limit) {
                   currentInstruction.count++;
-                } else if (
-                  currentInstruction.count >= currentInstruction.limit
-                ) {
+                } else if (currentInstruction.count >= currentInstruction.limit) {
                   plyr.ai.currentInstruction++;
                 }
               }
@@ -30886,9 +29189,7 @@ class App extends Component {
               } else {
                 if (currentInstruction.count < currentInstruction.limit) {
                   currentInstruction.count++;
-                } else if (
-                  currentInstruction.count >= currentInstruction.limit
-                ) {
+                } else if (currentInstruction.count >= currentInstruction.limit) {
                   plyr.ai.currentInstruction++;
                 }
               }
@@ -30936,9 +29237,7 @@ class App extends Component {
               } else {
                 if (currentInstruction.count < currentInstruction.limit) {
                   currentInstruction.count++;
-                } else if (
-                  currentInstruction.count >= currentInstruction.limit
-                ) {
+                } else if (currentInstruction.count >= currentInstruction.limit) {
                   plyr.ai.currentInstruction++;
                 }
               }
@@ -30986,9 +29285,7 @@ class App extends Component {
               } else {
                 if (currentInstruction.count < currentInstruction.limit) {
                   currentInstruction.count++;
-                } else if (
-                  currentInstruction.count >= currentInstruction.limit
-                ) {
+                } else if (currentInstruction.count >= currentInstruction.limit) {
                   plyr.ai.currentInstruction++;
                 }
               }
@@ -31037,9 +29334,7 @@ class App extends Component {
               } else {
                 if (currentInstruction.count < currentInstruction.limit) {
                   currentInstruction.count++;
-                } else if (
-                  currentInstruction.count >= currentInstruction.limit
-                ) {
+                } else if (currentInstruction.count >= currentInstruction.limit) {
                   plyr.ai.currentInstruction++;
                 }
               }
@@ -31088,9 +29383,7 @@ class App extends Component {
               } else {
                 if (currentInstruction.count < currentInstruction.limit) {
                   currentInstruction.count++;
-                } else if (
-                  currentInstruction.count >= currentInstruction.limit
-                ) {
+                } else if (currentInstruction.count >= currentInstruction.limit) {
                   plyr.ai.currentInstruction++;
                 }
               }
@@ -31139,9 +29432,7 @@ class App extends Component {
               } else {
                 if (currentInstruction.count < currentInstruction.limit) {
                   currentInstruction.count++;
-                } else if (
-                  currentInstruction.count >= currentInstruction.limit
-                ) {
+                } else if (currentInstruction.count >= currentInstruction.limit) {
                   plyr.ai.currentInstruction++;
                 }
               }
@@ -31190,9 +29481,7 @@ class App extends Component {
               } else {
                 if (currentInstruction.count < currentInstruction.limit) {
                   currentInstruction.count++;
-                } else if (
-                  currentInstruction.count >= currentInstruction.limit
-                ) {
+                } else if (currentInstruction.count >= currentInstruction.limit) {
                   plyr.ai.currentInstruction++;
                 }
               }
@@ -31342,10 +29631,7 @@ class App extends Component {
           plyr.ai.engaging.targetAction = "";
         }
       }
-      if (
-        plyr.ai.mission === "engage" &&
-        plyr.currentWeapon.type === "crossbow"
-      ) {
+      if (plyr.ai.mission === "engage" && plyr.currentWeapon.type === "crossbow") {
         if (plyr.ai.currentInstruction === plyr.ai.instructions.length - 1) {
           if (plyr.ai.engaging.state === true) {
             plyr.ai.engaging.state = false;
@@ -31397,9 +29683,7 @@ class App extends Component {
 
     let pathArray = [];
 
-    for (const [key, value] of Object.entries(
-      this["levelData" + this.gridWidth]
-    )) {
+    for (const [key, value] of Object.entries(this["levelData" + this.gridWidth])) {
       let row = [];
       for (const elem3 of value) {
         // let terrainInfo2 = elem3.length-1;
@@ -31521,30 +29805,19 @@ class App extends Component {
         }
 
         this.stepper.lastTime =
-          this.stepper.currentTime -
-          (this.stepper.deltaTime % this.stepper.interval);
+          this.stepper.currentTime - (this.stepper.deltaTime % this.stepper.interval);
       }
     }
 
     requestAnimationFrame(this.gameLoop);
   };
-  playerUpdate = (
-    player,
-    canvas,
-    context,
-    canvas2,
-    context2,
-    canvas3,
-    context3
-  ) => {
+  playerUpdate = (player, canvas, context, canvas2, context2, canvas3, context3) => {
     // console.log('updating player',player.number,this.currentPlayer);
 
     let keyPressedDirection;
     if (player.ai.state === true && player.dead.state === true) {
     } else {
-      for (const [key, value] of Object.entries(
-        this.keyPressed[player.number - 1]
-      )) {
+      for (const [key, value] of Object.entries(this.keyPressed[player.number - 1])) {
         // console.log(`${key}: ${value} ....${player.number}`);
 
         if (
@@ -31669,9 +29942,7 @@ class App extends Component {
     if (this.bloodSacrificeEvent.state === true) {
       if (this.bloodSacrificeEvent.count < this.bloodSacrificeEvent.limit) {
         this.bloodSacrificeEvent.count++;
-      } else if (
-        this.bloodSacrificeEvent.count >= this.bloodSacrificeEvent.limit
-      ) {
+      } else if (this.bloodSacrificeEvent.count >= this.bloodSacrificeEvent.limit) {
         if (this.cellToVoid.state !== true) {
           this.bloodSacrificeEvent.state = false;
           this.openVoid = false;
@@ -31694,11 +29965,7 @@ class App extends Component {
     // STAMINA!!
     if (player.stamina.current < player.stamina.max) {
       player.stamina.current += 0.05;
-      player.stamina.current = +(
-        Math.round(player.stamina.current + "e+" + 3) +
-        "e-" +
-        3
-      );
+      player.stamina.current = +(Math.round(player.stamina.current + "e+" + 3) + "e-" + 3);
 
       if (player.stamina.current >= player.stamina.max) {
         player.stamina.current = player.stamina.max;
@@ -31751,11 +30018,7 @@ class App extends Component {
       // AI RETREAT ON LOW STAMINA
       if (player.stamina.current <= 4) {
         if (player.ai.state === true) {
-          console.log(
-            "ai player",
-            player.number,
-            " almost out of stamina. Retreat"
-          );
+          console.log("ai player", player.number, " almost out of stamina. Retreat");
           player.ai.mission = "retreat";
 
           if (!player.popups.find((x) => x.msg === "missionRetreat")) {
@@ -31829,9 +30092,7 @@ class App extends Component {
           }
         }
         if (player.success.deflected.type === "outOfStamina") {
-          if (
-            !player.popups.find((x) => x.msg === player.success.deflected.type)
-          ) {
+          if (!player.popups.find((x) => x.msg === player.success.deflected.type)) {
             player.popups.push({
               state: false,
               count: 0,
@@ -31969,10 +30230,8 @@ class App extends Component {
         let plyrPresent = false;
         for (const plyr of this.players) {
           if (
-            plyr.currentPosition.cell.number.x ===
-              this.mouseOverCell.cell.number.x &&
-            plyr.currentPosition.cell.number.y ===
-              this.mouseOverCell.cell.number.y
+            plyr.currentPosition.cell.number.x === this.mouseOverCell.cell.number.x &&
+            plyr.currentPosition.cell.number.y === this.mouseOverCell.cell.number.y
           ) {
             this.clicked.player = plyr;
             plyrPresent = true;
@@ -31986,14 +30245,10 @@ class App extends Component {
     }
     // SWITCH OFF ATER TIME IF MOUSE MOVED OUT OF GRID
     if (this.mouseOverCellSwitchOff.state === true) {
-      if (
-        this.mouseOverCellSwitchOff.count < this.mouseOverCellSwitchOff.limit
-      ) {
+      if (this.mouseOverCellSwitchOff.count < this.mouseOverCellSwitchOff.limit) {
         this.mouseOverCellSwitchOff.count++;
       }
-      if (
-        this.mouseOverCellSwitchOff.count >= this.mouseOverCellSwitchOff.limit
-      ) {
+      if (this.mouseOverCellSwitchOff.count >= this.mouseOverCellSwitchOff.limit) {
         this.mouseOverCellSwitchOff = {
           state: false,
           count: 0,
@@ -32285,12 +30540,7 @@ class App extends Component {
                 this.checkDestination(player, false);
 
                 if (refCell1.obstacle.state === true) {
-                  this.obstaclePlayerOverlap(
-                    "player",
-                    refCell2,
-                    player,
-                    refCell1.obstacle
-                  );
+                  this.obstaclePlayerOverlap("player", refCell2, player, refCell1.obstacle);
                 }
               }
               break;
@@ -32334,10 +30584,7 @@ class App extends Component {
               let blockType = "";
 
               if (refCell2.barrier.state === true) {
-                if (
-                  refCell2.barrier.position ===
-                  this.getOppositeDirection(player.direction)
-                ) {
+                if (refCell2.barrier.position === this.getOppositeDirection(player.direction)) {
                   blocked = true;
                   blockType = "cell2";
                 }
@@ -32403,10 +30650,8 @@ class App extends Component {
                 if (
                   plyr.number !== player.number &&
                   plyr.moving.state !== true &&
-                  plyr.currentPosition.cell.number.x ===
-                    player.target.cell2.number.x &&
-                  plyr.currentPosition.cell.number.y ===
-                    player.target.cell2.number.y
+                  plyr.currentPosition.cell.number.x === player.target.cell2.number.x &&
+                  plyr.currentPosition.cell.number.y === player.target.cell2.number.y
                 ) {
                   blocked = true;
                   blockType = "player";
@@ -32455,12 +30700,7 @@ class App extends Component {
                 }
 
                 if (refCell2.obstacle.state === true) {
-                  this.obstaclePlayerOverlap(
-                    "player",
-                    refCell2,
-                    player,
-                    refCell2.obstacle
-                  );
+                  this.obstaclePlayerOverlap("player", refCell2, player, refCell2.obstacle);
                 }
 
                 this.checkDestination(player, false);
@@ -32481,10 +30721,8 @@ class App extends Component {
         for (const plyr4 of this.players) {
           if (
             player.number !== plyr4.number &&
-            player.currentPosition.cell.number.x ===
-              plyr4.currentPosition.cell.number.x &&
-            player.currentPosition.cell.number.y ===
-              plyr4.currentPosition.cell.number.y &&
+            player.currentPosition.cell.number.x === plyr4.currentPosition.cell.number.x &&
+            player.currentPosition.cell.number.y === plyr4.currentPosition.cell.number.y &&
             player.pushBack.state !== true &&
             plyr4.pushBack.state !== true
           ) {
@@ -32509,10 +30747,7 @@ class App extends Component {
               let playerAPushDir2 = this.getOppositeDirection(plyr4.direction);
               let playerBPushDir2 = this.getOppositeDirection(player.direction);
 
-              if (
-                player.flanking.state === true ||
-                player.action === "flanking"
-              ) {
+              if (player.flanking.state === true || player.action === "flanking") {
                 player.flanking = {
                   checking: false,
                   direction: "",
@@ -32523,10 +30758,7 @@ class App extends Component {
                 };
                 player.action = "idle";
               }
-              if (
-                plyr4.flanking.state === true ||
-                plyr4.action === "flanking"
-              ) {
+              if (plyr4.flanking.state === true || plyr4.action === "flanking") {
                 plyr4.flanking = {
                   checking: false,
                   direction: "",
@@ -32642,10 +30874,7 @@ class App extends Component {
         }
 
         // PRE PULL FEINT
-        if (
-          this.keyPressed[player.number - 1].pull === false &&
-          player.prePull.state === true
-        ) {
+        if (this.keyPressed[player.number - 1].pull === false && player.prePull.state === true) {
           console.log("player was pre pulling. reset");
           player.prePull = {
             state: false,
@@ -32693,8 +30922,7 @@ class App extends Component {
               limit: player.attacking.limit,
             };
             player.attackStrength = 0;
-            player.stamina.current +=
-              this.staminaCostRef.attack[atkType][blunt].pre;
+            player.stamina.current += this.staminaCostRef.attack[atkType][blunt].pre;
 
             if (
               player.elasticCounter.state === true &&
@@ -32740,8 +30968,7 @@ class App extends Component {
         // DODGE RELEASE/FEINT
         if (
           player.dodging.countState === true &&
-          player.dodging.count <=
-            player.dodging.peak.start - player.crits.dodge &&
+          player.dodging.count <= player.dodging.peak.start - player.crits.dodge &&
           this.keyPressed[player.number - 1].dodge !== true &&
           player.flanking.state !== true
         ) {
@@ -32758,10 +30985,7 @@ class App extends Component {
               end: player.dodging.peak.end,
             },
           };
-          if (
-            player.elasticCounter.state === true &&
-            player.elasticCounter.type === "dodging"
-          ) {
+          if (player.elasticCounter.state === true && player.elasticCounter.type === "dodging") {
             player.elasticCounter.state = false;
           }
 
@@ -32816,8 +31040,7 @@ class App extends Component {
           let stamAtkType = player.currentWeapon.type;
 
           if (player.currentWeapon.type === "") {
-            this.players[player.number - 1].attacking.limit =
-              this.attackAnimRef.limit.unarmed;
+            this.players[player.number - 1].attacking.limit = this.attackAnimRef.limit.unarmed;
             attackPeak = this.attackAnimRef.peak.unarmed;
             stamAtkType = "unarmed";
           }
@@ -32917,10 +31140,7 @@ class App extends Component {
                   limit: 8,
                 });
               }
-              if (
-                player.currentWeapon.type === "sword" ||
-                player.currentWeapon.type === ""
-              ) {
+              if (player.currentWeapon.type === "sword" || player.currentWeapon.type === "") {
                 // console.log('sword/unarmed melee target',player.target);
 
                 this.cellsUnderPreAttack.push({
@@ -32965,9 +31185,7 @@ class App extends Component {
 
             if (player.attacking.count > 2) {
               if (!player.popups.find((x) => x.msg === "attacking")) {
-                let limit =
-                  this.attackAnimRef.limit[stamAtkType] -
-                  player.attacking.count;
+                let limit = this.attackAnimRef.limit[stamAtkType] - player.attacking.count;
                 if (limit === 0) {
                   limit = 5;
                 }
@@ -32997,13 +31215,8 @@ class App extends Component {
             // console.log('attack peak',player.attacking.count,'plyr',player.number);
 
             // WEAPON STAMINA COST!!
-            if (
-              player.stamina.current -
-                this.staminaCostRef.attack[stamAtkType][blunt].peak >=
-              0
-            ) {
-              player.stamina.current -=
-                this.staminaCostRef.attack[stamAtkType][blunt].peak;
+            if (player.stamina.current - this.staminaCostRef.attack[stamAtkType][blunt].peak >= 0) {
+              player.stamina.current -= this.staminaCostRef.attack[stamAtkType][blunt].peak;
               player.attackPeak = true;
 
               let melee = true;
@@ -33121,10 +31334,7 @@ class App extends Component {
                 }
               }
 
-              if (
-                player.currentWeapon.type === "crossbow" &&
-                player.bluntAttack === true
-              ) {
+              if (player.currentWeapon.type === "crossbow" && player.bluntAttack === true) {
                 melee = true;
               }
 
@@ -33210,10 +31420,7 @@ class App extends Component {
           let defendPeak = this.defendAnimRef.peak[defendType];
           player.defending.limit = this.defendAnimRef.limit[defendType];
 
-          if (
-            player.defending.count < defendPeak &&
-            player.defendDecay.state !== true
-          ) {
+          if (player.defending.count < defendPeak && player.defendDecay.state !== true) {
             player.defending.count++;
             player.action = "defending";
             player.defendPeak = false;
@@ -33232,10 +31439,7 @@ class App extends Component {
           }
 
           // PEAK, START DECAY
-          else if (
-            player.defending.count >= defendPeak &&
-            player.defendDecay.state !== true
-          ) {
+          else if (player.defending.count >= defendPeak && player.defendDecay.state !== true) {
             // console.log('peak defend player',player.number);
 
             if (player.stamina.current - this.staminaCostRef.defend.peak >= 0) {
@@ -33246,8 +31450,7 @@ class App extends Component {
                 limit: player.defending.limit,
               };
               player.defendPeak = true;
-              player.stamina.current =
-                player.stamina.current - this.staminaCostRef.defend.peak;
+              player.stamina.current = player.stamina.current - this.staminaCostRef.defend.peak;
               player.defendDecay = {
                 state: true,
                 count: 0,
@@ -33415,8 +31618,7 @@ class App extends Component {
         }
         if (
           player.dodging.countState === true &&
-          player.dodging.count <=
-            player.dodging.peak.start - player.crits.dodge &&
+          player.dodging.count <= player.dodging.peak.start - player.crits.dodge &&
           this.keyPressed[player.number - 1].dodge === true
         ) {
           dodgeCondition = true;
@@ -33444,8 +31646,7 @@ class App extends Component {
           // HAVE STAMIN FOR DODGE
           if (player.dodging.count === 0) {
             if (player.stamina.current - this.staminaCostRef.dodge.peak >= 0) {
-              player.stamina.current =
-                player.stamina.current - this.staminaCostRef.dodge.peak;
+              player.stamina.current = player.stamina.current - this.staminaCostRef.dodge.peak;
               player.dodging.count++;
               player.action = "dodging";
 
@@ -33518,10 +31719,7 @@ class App extends Component {
               };
             }
           }
-          if (
-            player.dodging.count >= 1 &&
-            player.dodging.count < player.dodging.limit
-          ) {
+          if (player.dodging.count >= 1 && player.dodging.count < player.dodging.limit) {
             player.dodging.count++;
             player.action = "dodging";
             // console.log('dodge count',player.dodging.count);
@@ -33589,10 +31787,7 @@ class App extends Component {
         }
 
         // RESET MOVE SPEED POST PUSHBACK
-        if (
-          player.pushBack.state !== true &&
-          player.pushBack.prePushBackMoveSpeed !== 0
-        ) {
+        if (player.pushBack.state !== true && player.pushBack.prePushBackMoveSpeed !== 0) {
           player.speed.move = player.player.pushBack.prePushBackMoveSpeed;
           player.player.pushBack.prePushBackMoveSpeed = 0;
         }
@@ -33613,10 +31808,7 @@ class App extends Component {
           if (player.halfPushBack.countUp.state === true) {
             player.action = "deflected";
 
-            if (
-              player.halfPushBack.countUp.count <
-              player.halfPushBack.countUp.limit
-            ) {
+            if (player.halfPushBack.countUp.count < player.halfPushBack.countUp.limit) {
               if (player.halfPushBack.countUp.count === 1) {
                 // console.log('player 1/2 pushback start');
               }
@@ -33625,10 +31817,7 @@ class App extends Component {
               // console.log('player 1/2 pushback count up',player.halfPushBack.countUp.count);
             }
 
-            if (
-              player.halfPushBack.countUp.count >=
-              player.halfPushBack.countUp.limit
-            ) {
+            if (player.halfPushBack.countUp.count >= player.halfPushBack.countUp.limit) {
               player.halfPushBack.countUp = {
                 state: false,
                 count: 0,
@@ -33641,18 +31830,12 @@ class App extends Component {
           }
 
           if (player.halfPushBack.countDown.state === true) {
-            if (
-              player.halfPushBack.countDown.count <
-              player.halfPushBack.countDown.limit
-            ) {
+            if (player.halfPushBack.countDown.count < player.halfPushBack.countDown.limit) {
               player.halfPushBack.countDown.count++;
               // console.log('player 1/2 pushback count down',player.halfPushBack.countDown.count);
             }
 
-            if (
-              player.halfPushBack.countDown.count >=
-              player.halfPushBack.countDown.limit
-            ) {
+            if (player.halfPushBack.countDown.count >= player.halfPushBack.countDown.limit) {
               player.halfPushBack.countDown = {
                 state: false,
                 count: 0,
@@ -33668,10 +31851,7 @@ class App extends Component {
         }
 
         // ELASTIC COUNTER
-        if (
-          player.elasticCounter.state === true &&
-          player.elasticCounter.type !== "deflected"
-        ) {
+        if (player.elasticCounter.state === true && player.elasticCounter.type !== "deflected") {
           player.action = player.elasticCounter.type;
 
           // IF PAUSE IS START, COUNT PAUSE 1ST
@@ -33697,10 +31877,7 @@ class App extends Component {
 
           // COUNT UP
           if (player.elasticCounter.countUp.state === true) {
-            if (
-              player.elasticCounter.countUp.count <
-              player.elasticCounter.countUp.limit
-            ) {
+            if (player.elasticCounter.countUp.count < player.elasticCounter.countUp.limit) {
               if (player.elasticCounter.countUp.count === 0) {
                 // console.log('elastic count up start');
               }
@@ -33710,10 +31887,7 @@ class App extends Component {
             }
 
             // FINISH COUNT UP
-            if (
-              player.elasticCounter.countUp.count >=
-              player.elasticCounter.countUp.limit
-            ) {
+            if (player.elasticCounter.countUp.count >= player.elasticCounter.countUp.limit) {
               // RESET COUNT UP
               player.elasticCounter.countUp = {
                 state: false,
@@ -33745,10 +31919,7 @@ class App extends Component {
             // console.log('pause count. type: ',player.elasticCounter.pause.type);
 
             // COUNT PAUSE
-            if (
-              player.elasticCounter.pause.count <
-              player.elasticCounter.pause.limit
-            ) {
+            if (player.elasticCounter.pause.count < player.elasticCounter.pause.limit) {
               if (player.elasticCounter.pause.count === 0) {
                 // console.log('pause count start');
               }
@@ -33758,10 +31929,7 @@ class App extends Component {
             }
 
             // FINISH PAUSE
-            if (
-              player.elasticCounter.pause.count >=
-              player.elasticCounter.pause.limit
-            ) {
+            if (player.elasticCounter.pause.count >= player.elasticCounter.pause.limit) {
               // console.log('pause count finished');
 
               // IF PAUSE IS START, COUNT UP
@@ -33791,10 +31959,7 @@ class App extends Component {
           // COUNT DOWN
           if (player.elasticCounter.countDown.state === true) {
             // COUNT DOWN
-            if (
-              player.elasticCounter.countDown.count <
-              player.elasticCounter.countDown.limit
-            ) {
+            if (player.elasticCounter.countDown.count < player.elasticCounter.countDown.limit) {
               if (player.elasticCounter.countDown.count === 1) {
                 // console.log('elastic count down start',player.elasticCounter.countDown.limit);
               }
@@ -33804,10 +31969,7 @@ class App extends Component {
             }
 
             // FINISH COUNT DOWN
-            if (
-              player.elasticCounter.countDown.count >=
-              player.elasticCounter.countDown.limit
-            ) {
+            if (player.elasticCounter.countDown.count >= player.elasticCounter.countDown.limit) {
               player.elasticCounter.countDown = {
                 state: false,
                 count: 0,
@@ -33879,11 +32041,7 @@ class App extends Component {
               player.items.weaponIndex = newIndex;
               player.currentWeapon = player.items.weapons[newIndex];
 
-              if (
-                !player.popups.find(
-                  (x) => x.msg === player.items.weapons[newIndex].type
-                )
-              ) {
+              if (!player.popups.find((x) => x.msg === player.items.weapons[newIndex].type)) {
                 player.popups.push({
                   state: false,
                   count: 0,
@@ -33901,18 +32059,13 @@ class App extends Component {
               this.keyPressed[player.number - 1].cycleWeapon === true &&
               player.items.weapons.length === 1
             ) {
-              if (
-                player.currentWeapon.type === "crossbow" &&
-                player.items.ammo === 0
-              ) {
+              if (player.currentWeapon.type === "crossbow" && player.items.ammo === 0) {
                 player.currentWeapon = {
                   name: "",
                   type: "",
                   effect: "",
                 };
-                console.log(
-                  "only have empty crossbow left, switching to unarmed"
-                );
+                console.log("only have empty crossbow left, switching to unarmed");
               } else {
                 player.currentWeapon = player.items.weapons[0];
                 // console.log('nothing to cycle through');
@@ -33992,9 +32145,7 @@ class App extends Component {
                   }
                   break;
                 case "speedUp":
-                  let currentSpd1 = player.speed.range.indexOf(
-                    player.speed.move
-                  );
+                  let currentSpd1 = player.speed.range.indexOf(player.speed.move);
                   if (player.speed.move > 0.05) {
                     // console.log('armor cycle debuff speed',player.speed.move);
                     player.speed.move = player.speed.range[currentSpd1 - 1];
@@ -34019,9 +32170,7 @@ class App extends Component {
                   }
                   break;
                 case "speedUp":
-                  let currentSpd2 = player.speed.range.indexOf(
-                    player.speed.move
-                  );
+                  let currentSpd2 = player.speed.range.indexOf(player.speed.move);
                   if (player.speed.move < 0.2) {
                     // console.log('armor cycle buff speed',player.speed.move);
                     player.speed.move = player.speed.range[currentSpd2 + 1];
@@ -34042,9 +32191,7 @@ class App extends Component {
 
               if (
                 player.items.armor[newIndex].type !== "" &&
-                !player.popups.find(
-                  (x) => x.msg === player.items.armor[newIndex].type
-                )
+                !player.popups.find((x) => x.msg === player.items.armor[newIndex].type)
               ) {
                 player.popups.push({
                   state: false,
@@ -34171,22 +32318,13 @@ class App extends Component {
             },
           };
 
-          if (
-            player.elasticCounter.state === true &&
-            player.elasticCounter.type === "dodging"
-          ) {
+          if (player.elasticCounter.state === true && player.elasticCounter.type === "dodging") {
             player.elasticCounter.state = false;
           }
 
-          if (
-            this.players[player.number - 1].popups.find(
-              (x) => x.msg === "dodging"
-            )
-          ) {
+          if (this.players[player.number - 1].popups.find((x) => x.msg === "dodging")) {
             this.players[player.number - 1].popups.splice(
-              this.players[player.number - 1].popups.findIndex(
-                (x) => x.msg === "dodging"
-              ),
+              this.players[player.number - 1].popups.findIndex((x) => x.msg === "dodging"),
               1
             );
           }
@@ -34207,12 +32345,8 @@ class App extends Component {
               player.moving.step
             );
 
-            player.direction = this.getOppositeDirection(
-              player.flanking.direction
-            );
-            player.turning.toDirection = this.getOppositeDirection(
-              player.flanking.direction
-            );
+            player.direction = this.getOppositeDirection(player.flanking.direction);
+            player.turning.toDirection = this.getOppositeDirection(player.flanking.direction);
 
             player.flanking = {
               checking: false,
@@ -34292,15 +32426,9 @@ class App extends Component {
                 });
               }
 
-              if (
-                this.players[player.number - 1].popups.find(
-                  (x) => x.msg === "dodging"
-                )
-              ) {
+              if (this.players[player.number - 1].popups.find((x) => x.msg === "dodging")) {
                 this.players[player.number - 1].popups.splice(
-                  this.players[player.number - 1].popups.findIndex(
-                    (x) => x.msg === "dodging"
-                  ),
+                  this.players[player.number - 1].popups.findIndex((x) => x.msg === "dodging"),
                   1
                 );
               }
@@ -34342,10 +32470,7 @@ class App extends Component {
           }
         }
         // START
-        if (
-          this.keyPressed[player.number - 1].dodge === true &&
-          player.flanking.state !== true
-        ) {
+        if (this.keyPressed[player.number - 1].dodge === true && player.flanking.state !== true) {
           if (
             this.keyPressed[player.number - 1].north === true ||
             this.keyPressed[player.number - 1].south === true ||
@@ -34367,46 +32492,30 @@ class App extends Component {
             };
             player.action = "idle";
 
-            if (
-              player.dodging.countState === true ||
-              player.dodging.state === true
-            ) {
-              this.players[player.number - 1].stamina.current +=
-                this.staminaCostRef.dodge.pre;
+            if (player.dodging.countState === true || player.dodging.state === true) {
+              this.players[player.number - 1].stamina.current += this.staminaCostRef.dodge.pre;
             }
 
             if (keyPressedDirection !== player.direction) {
               let canFlank = false;
               switch (player.direction) {
                 case "north":
-                  if (
-                    keyPressedDirection === "east" ||
-                    keyPressedDirection === "west"
-                  ) {
+                  if (keyPressedDirection === "east" || keyPressedDirection === "west") {
                     canFlank = true;
                   }
                   break;
                 case "south":
-                  if (
-                    keyPressedDirection === "east" ||
-                    keyPressedDirection === "west"
-                  ) {
+                  if (keyPressedDirection === "east" || keyPressedDirection === "west") {
                     canFlank = true;
                   }
                   break;
                 case "west":
-                  if (
-                    keyPressedDirection === "north" ||
-                    keyPressedDirection === "south"
-                  ) {
+                  if (keyPressedDirection === "north" || keyPressedDirection === "south") {
                     canFlank = true;
                   }
                   break;
                 case "east":
-                  if (
-                    keyPressedDirection === "north" ||
-                    keyPressedDirection === "south"
-                  ) {
+                  if (keyPressedDirection === "north" || keyPressedDirection === "south") {
                     canFlank = true;
                   }
                   break;
@@ -34416,10 +32525,8 @@ class App extends Component {
                 if (player.stamina.current - this.staminaCostRef.flank >= 0) {
                   // console.log('flanking step',keyPressedDirection,player.direction);
                   this.players[player.number - 1].flanking.checking = true;
-                  this.players[player.number - 1].flanking.direction =
-                    keyPressedDirection;
-                  this.players[player.number - 1].flanking.preFlankDirection =
-                    player.direction;
+                  this.players[player.number - 1].flanking.direction = keyPressedDirection;
+                  this.players[player.number - 1].flanking.preFlankDirection = player.direction;
 
                   let target = this.getTarget(player);
 
@@ -34428,15 +32535,11 @@ class App extends Component {
                       elem2.number.x === player.currentPosition.cell.number.x &&
                       elem2.number.y === player.currentPosition.cell.number.y
                   );
-                  let myCellBlock = this.checkMyCellBarrier(
-                    keyPressedDirection,
-                    myCell
-                  );
+                  let myCellBlock = this.checkMyCellBarrier(keyPressedDirection, myCell);
 
                   // if (target.cell1.free === true) {
                   if (target.cell1.free === true && myCellBlock !== true) {
-                    player.stamina.current =
-                      player.stamina.current - this.staminaCostRef.flank;
+                    player.stamina.current = player.stamina.current - this.staminaCostRef.flank;
                     // console.log('flank stam check1. cost',this.staminaCostRef.flank,'stam',player.stamina.current);
 
                     // console.log('flanking step 0 plyr dir: ',player.direction,' pre-flank dir: ',player.flanking.preFlankDirection,' flank dir: ',player.flanking.direction,"current position: ",player.currentPosition.cell.number,' strafing: ',player.strafing.state,' move step: ',player.moving.step);
@@ -34444,8 +32547,7 @@ class App extends Component {
                     this.players[player.number - 1].flanking.checking = false;
                     this.players[player.number - 1].flanking.state = true;
                     this.players[player.number - 1].flanking.step = 1;
-                    this.players[player.number - 1].flanking.target1 =
-                      target.cell1.number;
+                    this.players[player.number - 1].flanking.target1 = target.cell1.number;
                     // console.log('this.players[player.number-1].flanking.target1',this.players[player.number-1].flanking.target1);
                     // player.action = 'moving';
 
@@ -34486,10 +32588,8 @@ class App extends Component {
 
                     if (
                       this.mouseOverCell.state === true &&
-                      this.mouseOverCell.cell.number.x ===
-                        player.currentPosition.cell.number.x &&
-                      this.mouseOverCell.cell.number.y ===
-                        player.currentPosition.cell.number.y
+                      this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
+                      this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
                     ) {
                       this.clicked.player = undefined;
                     }
@@ -34501,8 +32601,7 @@ class App extends Component {
                     this.players[player.number - 1].flanking.checking = false;
                     this.players[player.number - 1].flanking.state = false;
                     this.players[player.number - 1].flanking.direction = "";
-                    this.players[player.number - 1].flanking.preFlankDirection =
-                      "";
+                    this.players[player.number - 1].flanking.preFlankDirection = "";
 
                     if (!player.popups.find((x) => x.msg === "noFlanking")) {
                       player.popups.push({
@@ -34546,10 +32645,8 @@ class App extends Component {
         for (const plyr of this.players) {
           if (plyr.prePush.state === true) {
             if (
-              plyr.target.cell1.number.x ===
-                player.currentPosition.cell.number.x &&
-              plyr.target.cell1.number.y ===
-                player.currentPosition.cell.number.y
+              plyr.target.cell1.number.x === player.currentPosition.cell.number.x &&
+              plyr.target.cell1.number.y === player.currentPosition.cell.number.y
             ) {
               // console.log('player is being pre pushed by plyr',plyr.number);
               plyrPullPushed = true;
@@ -34558,10 +32655,8 @@ class App extends Component {
           }
           if (plyr.prePull.state === true) {
             if (
-              plyr.target.cell1.number.x ===
-                player.currentPosition.cell.number.x &&
-              plyr.target.cell1.number.y ===
-                player.currentPosition.cell.number.y
+              plyr.target.cell1.number.x === player.currentPosition.cell.number.x &&
+              plyr.target.cell1.number.y === player.currentPosition.cell.number.y
             ) {
               // console.log('player is being pre pulled by plyr',plyr.number);
               plyrPullPushed = true;
@@ -34607,10 +32702,7 @@ class App extends Component {
 
             if (player.newMoveDelay.state !== true) {
               // MOVE IF DIRECTION ALIGNS & NOT STRAFING!!
-              if (
-                keyPressedDirection === player.direction &&
-                player.strafing.state === false
-              ) {
+              if (keyPressedDirection === player.direction && player.strafing.state === false) {
                 let target = this.getTarget(player);
 
                 if (
@@ -34624,10 +32716,7 @@ class App extends Component {
                       y: -30,
                     };
                   } else if (player.turning.delayCount === 0) {
-                    if (
-                      player.stamina.current - this.staminaCostRef.move >=
-                      0
-                    ) {
+                    if (player.stamina.current - this.staminaCostRef.move >= 0) {
                       player.stamina.current -= this.staminaCostRef.move;
 
                       player.action = "moving";
@@ -34652,10 +32741,8 @@ class App extends Component {
 
                       if (
                         this.mouseOverCell.state === true &&
-                        this.mouseOverCell.cell.number.x ===
-                          player.currentPosition.cell.number.x &&
-                        this.mouseOverCell.cell.number.y ===
-                          player.currentPosition.cell.number.y
+                        this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
+                        this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
                       ) {
                         this.clicked.player = undefined;
                       }
@@ -34672,16 +32759,10 @@ class App extends Component {
                 }
 
                 if (target.cell1.free !== true && target.myCellBlock !== true) {
-                  if (
-                    target.cell1.occupant.type === "obstacle" &&
-                    player.pushing.state !== true
-                  ) {
+                  if (target.cell1.occupant.type === "obstacle" && player.pushing.state !== true) {
                     this.preObstaclePushCheck(player, target);
                   }
-                  if (
-                    target.cell1.occupant.type === "player" &&
-                    player.pushing.state !== true
-                  ) {
+                  if (target.cell1.occupant.type === "player" && player.pushing.state !== true) {
                     this.prePlayerPushCheck(player, target);
                   }
                   if (player.pushing.state === true) {
@@ -34689,10 +32770,7 @@ class App extends Component {
                   }
                 }
 
-                if (
-                  player.target.cell1.void === true &&
-                  target.myCellBlock !== true
-                ) {
+                if (player.target.cell1.void === true && target.myCellBlock !== true) {
                   // console.log('target is VOID!!',target.cell1.center.x,target.cell1.center.y);
 
                   if (player.stamina.current - this.staminaCostRef.move >= 0) {
@@ -34716,10 +32794,8 @@ class App extends Component {
 
                     if (
                       this.mouseOverCell.state === true &&
-                      this.mouseOverCell.cell.number.x ===
-                        player.currentPosition.cell.number.x &&
-                      this.mouseOverCell.cell.number.y ===
-                        player.currentPosition.cell.number.y
+                      this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
+                      this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
                     ) {
                       this.clicked.player = undefined;
                     }
@@ -34764,18 +32840,12 @@ class App extends Component {
 
             if (player.newMoveDelay.state !== true) {
               // MOVE WHILE STRAFING!!
-              if (
-                keyPressedDirection !== player.direction &&
-                player.strafing.state === true
-              ) {
+              if (keyPressedDirection !== player.direction && player.strafing.state === true) {
                 player.strafing.direction = keyPressedDirection;
                 let target = this.getTarget(player);
 
                 if (target.cell1.free === true && target.myCellBlock !== true) {
-                  if (
-                    player.stamina.current - this.staminaCostRef.strafe >=
-                    0
-                  ) {
+                  if (player.stamina.current - this.staminaCostRef.strafe >= 0) {
                     player.stamina.current -= this.staminaCostRef.strafe;
                     this.moveSpeed = player.speed.move;
 
@@ -34802,10 +32872,8 @@ class App extends Component {
 
                     if (
                       this.mouseOverCell.state === true &&
-                      this.mouseOverCell.cell.number.x ===
-                        player.currentPosition.cell.number.x &&
-                      this.mouseOverCell.cell.number.y ===
-                        player.currentPosition.cell.number.y
+                      this.mouseOverCell.cell.number.x === player.currentPosition.cell.number.x &&
+                      this.mouseOverCell.cell.number.y === player.currentPosition.cell.number.y
                     ) {
                       this.clicked.player = undefined;
                     }
@@ -34820,10 +32888,7 @@ class App extends Component {
                   }
                 }
 
-                if (
-                  target.cell1.free === false ||
-                  target.myCellBlock === true
-                ) {
+                if (target.cell1.free === false || target.myCellBlock === true) {
                   // console.log('here',player.direction);
                 }
               }
@@ -34893,18 +32958,12 @@ class App extends Component {
                       if (cell1.barrier.position === player.direction) {
                         cell1BarrierFar = true;
                       }
-                      if (
-                        cell1.barrier.position ===
-                        this.getOppositeDirection(player.direction)
-                      ) {
+                      if (cell1.barrier.position === this.getOppositeDirection(player.direction)) {
                         cell1BarrierNear = true;
                       }
                     }
                     if (cell2.barrier.state === true) {
-                      if (
-                        cell2.barrier.position ===
-                        this.getOppositeDirection(player.direction)
-                      ) {
+                      if (cell2.barrier.position === this.getOppositeDirection(player.direction)) {
                         cell2Barrier = true;
                       }
                     }
@@ -34918,18 +32977,10 @@ class App extends Component {
                     ) {
                       // console.log('no obstacles at jump destination');
 
-                      if (
-                        cell2.void.state !== true &&
-                        cell2.terrain.type !== "deep"
-                      ) {
-                        if (
-                          player.stamina.current - this.staminaCostRef.jump >=
-                          0
-                        ) {
+                      if (cell2.void.state !== true && cell2.terrain.type !== "deep") {
+                        if (player.stamina.current - this.staminaCostRef.jump >= 0) {
                           // console.log('can jump',player.stamina.current);
-                          this.players[
-                            player.number - 1
-                          ].jumping.checking = false;
+                          this.players[player.number - 1].jumping.checking = false;
                           this.players[player.number - 1].jumping.state = true;
                           player.action = "jumping";
                           player.stamina.current =
@@ -34962,9 +33013,7 @@ class App extends Component {
                           }
                         } else {
                           // this.getTarget(player);
-                          this.players[
-                            player.number - 1
-                          ].jumping.checking = false;
+                          this.players[player.number - 1].jumping.checking = false;
                           player.action = "idle";
                           player.stamina.current = 0;
                           player.statusDisplay = {
@@ -34976,9 +33025,7 @@ class App extends Component {
                         }
                       } else {
                         // console.log('can only jump over voids or deep water cell 2');
-                        this.players[
-                          player.number - 1
-                        ].jumping.checking = false;
+                        this.players[player.number - 1].jumping.checking = false;
                         alarmedPopup = true;
                       }
                     } else {
@@ -34993,9 +33040,7 @@ class App extends Component {
                       //   console.log("can't jump! obstacle in cell2");
                       // }
                       if (myCellBlocked === true) {
-                        console.log(
-                          "can't jump! barrier in player cell blocking"
-                        );
+                        console.log("can't jump! barrier in player cell blocking");
                       }
                       if (cell1BarrierNear === true) {
                         console.log("can't jump! barrier cell 1 blocking");
@@ -35016,11 +33061,7 @@ class App extends Component {
                 }
 
                 if (alarmedPopup === true) {
-                  if (
-                    !this.players[player.number - 1].popups.find(
-                      (x) => x.msg === "alarmed"
-                    )
-                  ) {
+                  if (!this.players[player.number - 1].popups.find((x) => x.msg === "alarmed")) {
                     this.players[player.number - 1].popups.push({
                       state: false,
                       count: 0,
@@ -35055,10 +33096,7 @@ class App extends Component {
             this.keyPressed[player.number - 1].defend === true
           ) {
             // ALREADY ATTACKING/DEFENDING!!
-            if (
-              player.attacking.state === true ||
-              player.defending.state === true
-            ) {
+            if (player.attacking.state === true || player.defending.state === true) {
               if (this.keyPressed[player.number - 1].attack === true) {
                 // console.log('already attacking');
               }
@@ -35126,9 +33164,7 @@ class App extends Component {
                       1
                     );
                   }
-                  let popup2 = player.popups.find(
-                    (x) => x.msg === "dodgeStart"
-                  );
+                  let popup2 = player.popups.find((x) => x.msg === "dodgeStart");
                   if (popup2) {
                     player.popups.splice(
                       player.popups.findIndex((x) => x.msg === "dodgeStart"),
@@ -35165,10 +33201,7 @@ class App extends Component {
                   breakPulledPushed = true;
                 }
 
-                if (
-                  player.defending.count === 0 &&
-                  player.defendDecay.state !== true
-                ) {
+                if (player.defending.count === 0 && player.defendDecay.state !== true) {
                   player.defending = {
                     state: true,
                     count: 1,
@@ -35197,10 +33230,7 @@ class App extends Component {
           if (this.keyPressed[player.number - 1].pull === true) {
             this.getTarget(player);
 
-            if (
-              player.target.cell1.occupant.type === "obstacle" &&
-              player.pulling.state !== true
-            ) {
+            if (player.target.cell1.occupant.type === "obstacle" && player.pulling.state !== true) {
               // console.log('pulling obstacle trigger north',player.prePull.state,player.prePull.count);
               this.preObstaclePullCheck(
                 player,
@@ -35208,10 +33238,7 @@ class App extends Component {
                 this.getOppositeDirection(player.direction)
               );
             }
-            if (
-              player.target.cell1.occupant.type === "player" &&
-              player.pulling.state !== true
-            ) {
+            if (player.target.cell1.occupant.type === "player" && player.pulling.state !== true) {
               // console.log('pulling player trigger north',player.prePull.state,player.prePull.count);
               this.prePlayerPullCheck(
                 player,
@@ -35227,10 +33254,7 @@ class App extends Component {
             this.keyPressed[player.number - 1].attack !== true &&
             this.keyPressed[player.number - 1].defend !== true
           ) {
-            if (
-              player.dodging.state !== true &&
-              player.dodging.countState !== true
-            ) {
+            if (player.dodging.state !== true && player.dodging.countState !== true) {
               // console.log('start dodge wind up');
               player.dodging.countState = true;
 
@@ -35271,20 +33295,12 @@ class App extends Component {
 
           let shouldDeflect = this.rnJesus(1, player.crits.guardBreak);
           if (shouldDeflect === 1) {
-            this.setDeflection(
-              this.players[plyrPullPushedPlyr - 1],
-              "bluntAttacked",
-              false
-            );
+            this.setDeflection(this.players[plyrPullPushedPlyr - 1], "bluntAttacked", false);
           }
 
           // POPUPS
           if (this.players[plyrPullPushedPlyr - 1].prePush.state === true) {
-            if (
-              !this.players[plyrPullPushedPlyr - 1].popups.find(
-                (x) => x.msg === "noPush"
-              )
-            ) {
+            if (!this.players[plyrPullPushedPlyr - 1].popups.find((x) => x.msg === "noPush")) {
               this.players[plyrPullPushedPlyr - 1].popups.push({
                 state: false,
                 count: 0,
@@ -35296,37 +33312,21 @@ class App extends Component {
               });
             }
 
-            if (
-              this.players[plyrPullPushedPlyr - 1].popups.find(
-                (x) => x.msg === "prePush"
-              )
-            ) {
+            if (this.players[plyrPullPushedPlyr - 1].popups.find((x) => x.msg === "prePush")) {
               this.players[plyrPullPushedPlyr - 1].popups.splice(
-                this.players[plyrPullPushedPlyr - 1].popups.findIndex(
-                  (x) => x.msg === "prePush"
-                ),
+                this.players[plyrPullPushedPlyr - 1].popups.findIndex((x) => x.msg === "prePush"),
                 1
               );
             }
-            if (
-              this.players[plyrPullPushedPlyr - 1].popups.find(
-                (x) => x.msg === "noPush"
-              )
-            ) {
+            if (this.players[plyrPullPushedPlyr - 1].popups.find((x) => x.msg === "noPush")) {
               this.players[plyrPullPushedPlyr - 1].popups.splice(
-                this.players[plyrPullPushedPlyr - 1].popups.findIndex(
-                  (x) => x.msg === "canPush"
-                ),
+                this.players[plyrPullPushedPlyr - 1].popups.findIndex((x) => x.msg === "canPush"),
                 1
               );
             }
           }
           if (this.players[plyrPullPushedPlyr - 1].prePull.state === true) {
-            if (
-              !this.players[plyrPullPushedPlyr - 1].popups.find(
-                (x) => x.msg === "noPull"
-              )
-            ) {
+            if (!this.players[plyrPullPushedPlyr - 1].popups.find((x) => x.msg === "noPull")) {
               this.players[plyrPullPushedPlyr - 1].popups.push({
                 state: false,
                 count: 0,
@@ -35338,27 +33338,15 @@ class App extends Component {
               });
             }
 
-            if (
-              this.players[plyrPullPushedPlyr - 1].popups.find(
-                (x) => x.msg === "prePull"
-              )
-            ) {
+            if (this.players[plyrPullPushedPlyr - 1].popups.find((x) => x.msg === "prePull")) {
               this.players[plyrPullPushedPlyr - 1].popups.splice(
-                this.players[plyrPullPushedPlyr - 1].popups.findIndex(
-                  (x) => x.msg === "prePull"
-                ),
+                this.players[plyrPullPushedPlyr - 1].popups.findIndex((x) => x.msg === "prePull"),
                 1
               );
             }
-            if (
-              this.players[plyrPullPushedPlyr - 1].popups.find(
-                (x) => x.msg === "canPull"
-              )
-            ) {
+            if (this.players[plyrPullPushedPlyr - 1].popups.find((x) => x.msg === "canPull")) {
               this.players[plyrPullPushedPlyr - 1].popups.splice(
-                this.players[plyrPullPushedPlyr - 1].popups.findIndex(
-                  (x) => x.msg === "canPull"
-                ),
+                this.players[plyrPullPushedPlyr - 1].popups.findIndex((x) => x.msg === "canPull"),
                 1
               );
             }
@@ -35391,33 +33379,19 @@ class App extends Component {
             puller: undefined,
           };
 
-          if (
-            this.players[plyrPullPushedPlyr - 1].newPushPullDelay.state !== true
-          ) {
+          if (this.players[plyrPullPushedPlyr - 1].newPushPullDelay.state !== true) {
             this.players[plyrPullPushedPlyr - 1].newPushPullDelay.state = true;
           }
 
-          if (
-            this.players[plyrPullPushedPlyr - 1].popups.find(
-              (x) => x.msg === "prePush"
-            )
-          ) {
+          if (this.players[plyrPullPushedPlyr - 1].popups.find((x) => x.msg === "prePush")) {
             this.players[plyrPullPushedPlyr - 1].popups.splice(
-              this.players[plyrPullPushedPlyr - 1].popups.findIndex(
-                (x) => x.msg === "prePush"
-              ),
+              this.players[plyrPullPushedPlyr - 1].popups.findIndex((x) => x.msg === "prePush"),
               1
             );
           }
-          if (
-            this.players[plyrPullPushedPlyr - 1].popups.find(
-              (x) => x.msg === "prePull"
-            )
-          ) {
+          if (this.players[plyrPullPushedPlyr - 1].popups.find((x) => x.msg === "prePull")) {
             this.players[plyrPullPushedPlyr - 1].popups.splice(
-              this.players[plyrPullPushedPlyr - 1].popups.findIndex(
-                (x) => x.msg === "prePull"
-              ),
+              this.players[plyrPullPushedPlyr - 1].popups.findIndex((x) => x.msg === "prePull"),
               1
             );
           }
@@ -35426,15 +33400,9 @@ class App extends Component {
 
       // DISPLAY ATTACK AND DEFENSE SUCCESS!
       if (player.success.attackSuccess.state === true) {
-        if (
-          player.success.attackSuccess.count <
-          player.success.attackSuccess.limit
-        ) {
+        if (player.success.attackSuccess.count < player.success.attackSuccess.limit) {
           player.success.attackSuccess.count++;
-        } else if (
-          player.success.attackSuccess.count >=
-          player.success.attackSuccess.limit
-        ) {
+        } else if (player.success.attackSuccess.count >= player.success.attackSuccess.limit) {
           player.success.attackSuccess = {
             state: false,
             count: 0,
@@ -35443,15 +33411,9 @@ class App extends Component {
         }
       }
       if (player.success.defendSuccess.state === true) {
-        if (
-          player.success.defendSuccess.count <
-          player.success.defendSuccess.limit
-        ) {
+        if (player.success.defendSuccess.count < player.success.defendSuccess.limit) {
           player.success.defendSuccess.count++;
-        } else if (
-          player.success.defendSuccess.count >=
-          player.success.defendSuccess.limit
-        ) {
+        } else if (player.success.defendSuccess.count >= player.success.defendSuccess.limit) {
           player.success.defendSuccess = {
             state: false,
             count: 0,
@@ -35464,10 +33426,7 @@ class App extends Component {
     }
 
     // DEFLECTION ELASTIC COUNTER
-    if (
-      player.elasticCounter.state === true &&
-      player.elasticCounter.type === "deflected"
-    ) {
+    if (player.elasticCounter.state === true && player.elasticCounter.type === "deflected") {
       player.action = player.elasticCounter.type;
 
       // IF PAUSE IS START, COUNT PAUSE 1ST
@@ -35492,10 +33451,7 @@ class App extends Component {
 
       // COUNT UP
       if (player.elasticCounter.countUp.state === true) {
-        if (
-          player.elasticCounter.countUp.count <
-          player.elasticCounter.countUp.limit + 1
-        ) {
+        if (player.elasticCounter.countUp.count < player.elasticCounter.countUp.limit + 1) {
           if (player.elasticCounter.countUp.count === 0) {
             // console.log('elastic count up start');
           }
@@ -35505,10 +33461,7 @@ class App extends Component {
         }
 
         // FINISH COUNT UP
-        if (
-          player.elasticCounter.countUp.count >=
-          player.elasticCounter.countUp.limit + 1
-        ) {
+        if (player.elasticCounter.countUp.count >= player.elasticCounter.countUp.limit + 1) {
           // RESET COUNT UP
           player.elasticCounter.countUp = {
             state: false,
@@ -35540,10 +33493,7 @@ class App extends Component {
         // console.log('pause count. type: ',player.elasticCounter.pause.type);
 
         // COUNT PAUSE
-        if (
-          player.elasticCounter.pause.count <
-          player.elasticCounter.pause.limit + 1
-        ) {
+        if (player.elasticCounter.pause.count < player.elasticCounter.pause.limit + 1) {
           if (player.elasticCounter.pause.count === 0) {
             // console.log('pause count start');
           }
@@ -35553,10 +33503,7 @@ class App extends Component {
         }
 
         // FINISH PAUSE
-        if (
-          player.elasticCounter.pause.count >=
-          player.elasticCounter.pause.limit + 1
-        ) {
+        if (player.elasticCounter.pause.count >= player.elasticCounter.pause.limit + 1) {
           // console.log('pause count finished');
 
           // IF PAUSE IS START, COUNT UP
@@ -35587,10 +33534,7 @@ class App extends Component {
       // COUNT DOWN
       if (player.elasticCounter.countDown.state === true) {
         // COUNT DOWN
-        if (
-          player.elasticCounter.countDown.count <
-          player.elasticCounter.countDown.limit + 1
-        ) {
+        if (player.elasticCounter.countDown.count < player.elasticCounter.countDown.limit + 1) {
           if (player.elasticCounter.countDown.count === 1) {
             // console.log('elastic count down start');
           }
@@ -35600,10 +33544,7 @@ class App extends Component {
         }
 
         // FINISH COUNT DOWN
-        if (
-          player.elasticCounter.countDown.count >=
-          player.elasticCounter.countDown.limit + 1
-        ) {
+        if (player.elasticCounter.countDown.count >= player.elasticCounter.countDown.limit + 1) {
           player.elasticCounter.countDown = {
             state: false,
             count: 0,
@@ -35720,10 +33661,7 @@ class App extends Component {
                   x.number.y === cell.obstacle.moving.destination.number.y
               );
 
-              if (
-                destCellRef.void.state === true ||
-                destCellRef.terrain.type === "deep"
-              ) {
+              if (destCellRef.void.state === true || destCellRef.terrain.type === "deep") {
                 destCellRef.obstacle = {
                   state: true,
                   name: cell2.obstacle.name,
@@ -35778,15 +33716,10 @@ class App extends Component {
                   },
                 };
 
-                destCellRef.obstacle.moving.nextPosition.x -=
-                  this.floorImageWidth / 2;
-                destCellRef.obstacle.moving.nextPosition.y -=
-                  this.floorImageHeight / 2;
+                destCellRef.obstacle.moving.nextPosition.x -= this.floorImageWidth / 2;
+                destCellRef.obstacle.moving.nextPosition.y -= this.floorImageHeight / 2;
               }
-              if (
-                destCellRef.void.state !== true &&
-                destCellRef.terrain.type !== "deep"
-              ) {
+              if (destCellRef.void.state !== true && destCellRef.terrain.type !== "deep") {
                 destCellRef.obstacle = {
                   state: true,
                   name: cell2.obstacle.name,
@@ -35918,12 +33851,7 @@ class App extends Component {
                   plyr.currentPosition.cell.number.x === destCellRef.number.x &&
                   plyr.currentPosition.cell.number.y === destCellRef.number.y
                 ) {
-                  this.obstaclePlayerOverlap(
-                    "obstacle",
-                    destCellRef,
-                    plyr,
-                    destCellRef.obstacle
-                  );
+                  this.obstaclePlayerOverlap("obstacle", destCellRef, plyr, destCellRef.obstacle);
                 }
               }
 
@@ -36024,22 +33952,13 @@ class App extends Component {
       }
 
       // step falling.count
-      if (
-        cell.obstacle.state === true &&
-        cell.obstacle.moving.falling.state === true
-      ) {
+      if (cell.obstacle.state === true && cell.obstacle.moving.falling.state === true) {
         // console.log('falling obstacle');
-        if (
-          cell.obstacle.moving.falling.count <
-          cell.obstacle.moving.falling.limit
-        ) {
+        if (cell.obstacle.moving.falling.count < cell.obstacle.moving.falling.limit) {
           cell.obstacle.moving.falling.count++;
           // console.log('obstacle falling in bounds a count',cell.obstacle.moving.falling.count,'position',cell.obstacle.moving.nextPosition);
         }
-        if (
-          cell.obstacle.moving.falling.count >=
-          cell.obstacle.moving.falling.limit
-        ) {
+        if (cell.obstacle.moving.falling.count >= cell.obstacle.moving.falling.limit) {
           let cell2 = cell;
           let levelData = cell2.levelData.split("_");
           levelData[1] = "*";
@@ -36135,10 +34054,7 @@ class App extends Component {
     for (const halfPushBackObstacle of this.halfPushBackObstacles) {
       if (halfPushBackObstacle.state === true) {
         if (halfPushBackObstacle.countUp.state === true) {
-          if (
-            halfPushBackObstacle.countUp.count <
-            halfPushBackObstacle.countUp.limit
-          ) {
+          if (halfPushBackObstacle.countUp.count < halfPushBackObstacle.countUp.limit) {
             if (halfPushBackObstacle.countUp.count === 1) {
               // console.log('obstacle 1/2 pushback start');
             }
@@ -36147,10 +34063,7 @@ class App extends Component {
             // console.log('obstacle 1/2 pushback count up',halfPushBackObstacle.countUp.count);
           }
 
-          if (
-            halfPushBackObstacle.countUp.count >=
-            halfPushBackObstacle.countUp.limit
-          ) {
+          if (halfPushBackObstacle.countUp.count >= halfPushBackObstacle.countUp.limit) {
             halfPushBackObstacle.countUp = {
               state: false,
               count: 0,
@@ -36164,18 +34077,12 @@ class App extends Component {
         }
 
         if (halfPushBackObstacle.countDown.state === true) {
-          if (
-            halfPushBackObstacle.countDown.count <
-            halfPushBackObstacle.countDown.limit
-          ) {
+          if (halfPushBackObstacle.countDown.count < halfPushBackObstacle.countDown.limit) {
             halfPushBackObstacle.countDown.count++;
             // console.log('obstacle 1/2 pushback count down',halfPushBackObstacle.countDown.count);
           }
 
-          if (
-            halfPushBackObstacle.countDown.count >=
-            halfPushBackObstacle.countDown.limit
-          ) {
+          if (halfPushBackObstacle.countDown.count >= halfPushBackObstacle.countDown.limit) {
             halfPushBackObstacle.countDown = {
               state: false,
               count: 0,
@@ -36313,9 +34220,7 @@ class App extends Component {
         }
       }
 
-      let currentPopupCount = player.popups.filter(
-        (x) => x.state === true
-      ).length;
+      let currentPopupCount = player.popups.filter((x) => x.state === true).length;
       for (const popup2 of player.popups) {
         if (currentPopupCount < 8) {
           let indx = player.popups.findIndex((x) => x === popup2);
@@ -36348,9 +34253,7 @@ class App extends Component {
         }
       }
 
-      let currentPopupCount = this.cellPopups.filter(
-        (x) => x.state === true
-      ).length;
+      let currentPopupCount = this.cellPopups.filter((x) => x.state === true).length;
       for (const popup2 of this.cellPopups) {
         if (currentPopupCount < 8) {
           let indx = this.cellPopups.findIndex((x) => x === popup2);
@@ -36368,7 +34271,7 @@ class App extends Component {
     // CAMERA
 
     if (this.time === 100 && player.number === 1) {
-      this.setAutoCamera("test", player);
+      // this.setAutoCamera("test", player);
       // this.setAutoCamera('attackFocus',player);
       // this.setAutoCamera('attackFocusBreak',player);
       // this.setAutoCamera('playerSpawnFocus',player);
@@ -36473,10 +34376,7 @@ class App extends Component {
         canStart = false;
       }
       if (this.camera.customView.state === false) {
-        if (
-          this.camera.zoom.x - 1 > this.zoomThresh ||
-          this.camera.zoom.x - 1 < this.zoomThresh
-        ) {
+        if (this.camera.zoom.x - 1 > this.zoomThresh || this.camera.zoom.x - 1 < this.zoomThresh) {
           canStart = false;
         }
         // if ((this.camera.zoom.x-1) > (this.zoomThresh+.01) || (this.camera.zoom.x-1) < (this.zoomThresh-.01)) {
@@ -36541,18 +34441,12 @@ class App extends Component {
       }
     }
     //INDICATOR COUNTER
-    if (
-      this.camera.limits.state.zoom === true ||
-      this.camera.limits.state.pan === true
-    ) {
+    if (this.camera.limits.state.zoom === true || this.camera.limits.state.pan === true) {
       if (this.camera.limits.state.count < this.camera.limits.state.limit) {
         this.camera.limits.state.count++;
       }
     }
-    if (
-      this.camera.limits.state.zoom === true ||
-      this.camera.limits.state.pan === true
-    ) {
+    if (this.camera.limits.state.zoom === true || this.camera.limits.state.pan === true) {
       if (this.camera.limits.state.count >= this.camera.limits.state.limit) {
         this.camera.limits.state.count = 0;
         this.camera.limits.state.zoom = false;
@@ -36560,10 +34454,7 @@ class App extends Component {
       }
     }
     //INPUT MODE CONTROLS
-    if (
-      this.camera.state === true &&
-      this.camera.instructionType === "default"
-    ) {
+    if (this.camera.state === true && this.camera.instructionType === "default") {
       let setFocus = false;
       let setZoomPan = false;
       let findFocusCell = false;
@@ -36593,14 +34484,12 @@ class App extends Component {
       }
       if (this.keyPressed[player.number - 1].dodge === true) {
         if (
-          this.camera.customView.keyPressCount.start <
-          this.camera.customView.keyPressCount.limit
+          this.camera.customView.keyPressCount.start < this.camera.customView.keyPressCount.limit
         ) {
           this.camera.customView.keyPressCount.start++;
         }
         if (
-          this.camera.customView.keyPressCount.start >=
-          this.camera.customView.keyPressCount.limit
+          this.camera.customView.keyPressCount.start >= this.camera.customView.keyPressCount.limit
         ) {
           this.camera.customView.keyPressCount.start = 0;
           this.toggleCameraCustomView();
@@ -36895,8 +34784,7 @@ class App extends Component {
         ) {
           // console.log('step through auto camera pre instructions',this.camera.preInstructions);
 
-          let preInstruction =
-            this.camera.preInstructions[this.camera.currentPreInstruction];
+          let preInstruction = this.camera.preInstructions[this.camera.currentPreInstruction];
           // let indx = this.camera.preInstructions.indexOf(preInstruction)
           let focusCell = {
             x: undefined,
@@ -36916,22 +34804,12 @@ class App extends Component {
                 focusCell.x = parseInt(preInstruction.split("_")[1]);
                 focusCell.y = parseInt(preInstruction.split("_")[2]);
 
-                this.findFocusCell(
-                  "cellToPan",
-                  "moveTo",
-                  focusCell,
-                  canvas,
-                  context,
-                  speed
-                );
+                this.findFocusCell("cellToPan", "moveTo", focusCell, canvas, context, speed);
               }
               break;
             case "zoom":
               if (preInstruction.split("_")[1] === "outToInit") {
-                let zoomSteps = (
-                  (this.camera.zoom.x - 1 - this.zoomThresh) /
-                  0.02
-                ).toFixed(0);
+                let zoomSteps = ((this.camera.zoom.x - 1 - this.zoomThresh) / 0.02).toFixed(0);
                 zoomSteps = parseInt(zoomSteps);
                 if (zoomSteps === 0) {
                   zoomSteps = 1;
@@ -36953,10 +34831,7 @@ class App extends Component {
                 });
               }
               if (preInstruction.split("_")[1] === "inToInit") {
-                let zoomSteps = (
-                  (this.zoomThresh - (this.camera.zoom.x - 1)) /
-                  0.02
-                ).toFixed(0);
+                let zoomSteps = ((this.zoomThresh - (this.camera.zoom.x - 1)) / 0.02).toFixed(0);
                 zoomSteps = parseInt(zoomSteps);
                 if (zoomSteps === 0) {
                   zoomSteps = 1;
@@ -37024,10 +34899,7 @@ class App extends Component {
               break;
           }
 
-          if (
-            this.camera.currentPreInstruction ===
-            this.camera.preInstructions.length - 1
-          ) {
+          if (this.camera.currentPreInstruction === this.camera.preInstructions.length - 1) {
             // console.log('this is the last preInstruction. Empty array');
             this.camera.preInstructions = [];
             this.camera.currentPreInstruction = 0;
@@ -37036,13 +34908,13 @@ class App extends Component {
             this.camera.currentPreInstruction++;
           }
 
-          // console.log('auto camera: pre instruction parsed: ',this.camera.instructions);
+          console.log("auto camera: pre instruction parsed: ", this.camera.instructions);
         }
 
         // PARSED INSTRUCTIONS!
         let secondaryAction = false;
-        let currentInstruction =
-          this.camera.instructions[this.camera.currentInstruction];
+        let tertiaryAction = false;
+        let currentInstruction = this.camera.instructions[this.camera.currentInstruction];
         if (
           this.camera.instructions.length > 0 &&
           this.camera.currentInstruction < this.camera.instructions.length
@@ -37050,49 +34922,35 @@ class App extends Component {
           // console.log(this.camera.zoom.x-1,'auto camera: stepping through all instructions... current',this.camera.currentInstruction,this.camera.instructions[this.camera.currentInstruction]);
 
           if (this.camera.instructions[this.camera.currentInstruction]) {
-            if (
-              this.camera.instructions[this.camera.currentInstruction]
-                .action !== ""
-            ) {
+            if (this.camera.instructions[this.camera.currentInstruction].action !== "") {
               if (
                 this.camera.instructions[this.camera.currentInstruction].count <
                 this.camera.instructions[this.camera.currentInstruction].limit
               ) {
-                if (
-                  this.camera.instructions[this.camera.currentInstruction]
-                    .action === "wait"
-                ) {
+                if (this.camera.instructions[this.camera.currentInstruction].action === "wait") {
                   // waiting/ do nothing
                   // console.log('waiting',this.camera.instructions[this.camera.currentInstruction].count);
-                  this.camera.instructions[this.camera.currentInstruction]
-                    .count++;
+                  this.camera.instructions[this.camera.currentInstruction].count++;
                 } else {
-                  if (
-                    this.camera.instructions[this.camera.currentInstruction]
-                      .speed === "fast"
-                  ) {
+                  if (this.camera.instructions[this.camera.currentInstruction].speed === "fast") {
                     for (
                       var i = 0;
-                      i <
-                      this.camera.instructions[this.camera.currentInstruction]
-                        .limit;
+                      i < this.camera.instructions[this.camera.currentInstruction].limit;
                       i++
                     ) {
                       if (
-                        this.camera.instructions[
-                          this.camera.currentInstruction
-                        ].action.split("_")[0] === "zoom"
+                        this.camera.instructions[this.camera.currentInstruction].action.split(
+                          "_"
+                        )[0] === "zoom"
                       ) {
                         // console.log('fast zooming ',this.camera.instructions[this.camera.currentInstruction].action.split("_")[1],' primary. coount:  ',this.camera.instructions[this.camera.currentInstruction].count);
                         switch (
-                          this.camera.instructions[
-                            this.camera.currentInstruction
-                          ].action.split("_")[1]
+                          this.camera.instructions[this.camera.currentInstruction].action.split(
+                            "_"
+                          )[1]
                         ) {
                           case "in":
-                            if (
-                              this.camera.zoom.x >= this.camera.limits.zoom.max
-                            ) {
+                            if (this.camera.zoom.x >= this.camera.limits.zoom.max) {
                               this.camera.limits.state.zoom = true;
                               // console.log('auto cam zoom in limit fast',this.camera.zoom.x,'/',this.camera.limits.zoom.max,this.camera.instructions[this.camera.currentInstruction].count);
                             } else {
@@ -37103,9 +34961,7 @@ class App extends Component {
                             }
                             break;
                           case "out":
-                            if (
-                              this.camera.zoom.x <= this.camera.limits.zoom.min
-                            ) {
+                            if (this.camera.zoom.x <= this.camera.limits.zoom.min) {
                               this.camera.limits.state.zoom = true;
                               // console.log('auto cam zoom in limit fast ',this.camera.zoom.x,'/',this.camera.limits.zoom.min,this.camera.instructions[this.camera.currentInstruction].count);
                             } else {
@@ -37131,81 +34987,184 @@ class App extends Component {
                         this.camera.mode = "zoom";
                         this.setZoomPan(canvas);
                         // this.setCameraFocus('input',canvas, context, canvas2, context2);
-                        this.findFocusCell(
-                          "panToCell",
-                          "",
-                          {},
-                          canvas,
-                          context
-                        );
+                        this.findFocusCell("panToCell", "", {}, canvas, context);
+
+                        if (
+                          this.camera.instructions[this.camera.currentInstruction].action2 !== "" &&
+                          this.camera.instructions[this.camera.currentInstruction].count2 <
+                            this.camera.instructions[this.camera.currentInstruction].limit2
+                        ) {
+                          secondaryAction = true;
+                          if (
+                            this.camera.instructions[this.camera.currentInstruction].action2.split(
+                              "_"
+                            )[0] === "zoom"
+                          ) {
+                            switch (
+                              this.camera.instructions[
+                                this.camera.currentInstruction
+                              ].action2.split("_")[1]
+                            ) {
+                              case "in":
+                                if (this.camera.zoom.x >= this.camera.limits.zoom.max) {
+                                  this.camera.limits.state.zoom = true;
+                                  // console.log('auto cam zoom in limit fast',this.camera.zoom.x,'/',this.camera.limits.zoom.max,this.camera.instructions[this.camera.currentInstruction].count2);
+                                } else {
+                                  this.camera.zoom.x += 0.02;
+                                  this.camera.zoom.y += 0.02;
+                                  this.camera.zoomDirection = "in";
+                                  // console.log('auto cam zooming in fast ',this.camera.instructions[this.camera.currentInstruction].count2);
+                                }
+                                break;
+                              case "out":
+                                if (this.camera.zoom.x <= this.camera.limits.zoom.min) {
+                                  this.camera.limits.state.zoom = true;
+                                  // console.log('auto cam zoom in limit fast ',this.camera.zoom.x,'/',this.camera.limits.zoom.min,this.camera.instructions[this.camera.currentInstruction].count);
+                                } else {
+                                  this.camera.zoom.x -= 0.02;
+                                  this.camera.zoom.y -= 0.02;
+                                  this.camera.zoomDirection = "out";
+                                  // console.log('auto cam zooming out fast ',this.camera.instructions[this.camera.currentInstruction].count);
+                                }
+                                break;
+                            }
+
+                            this.camera.mode = "zoom";
+                            this.setZoomPan(canvas);
+                            this.findFocusCell("panToCell", "", {}, canvas, context);
+                          }
+                          if (
+                            this.camera.instructions[this.camera.currentInstruction].action2.split(
+                              "_"
+                            )[0] === "pan"
+                          ) {
+                            // if primary action is also pan,
+                            //   execute in folowing for loop
+                            //   else excute normally
+                            //   do same for other secondary pans
+
+                            // for tertiary action (check for secondary pan action to determine if execute in for loop) do the same as secondary making sure to change action number
+
+                            for (let index = 0; index < 2; index++) {
+                              // console.log('slow panning ',this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1],' secondary. count: ',this.camera.instructions[this.camera.currentInstruction].count2);
+
+                              switch (
+                                this.camera.instructions[
+                                  this.camera.currentInstruction
+                                ].action2.split("_")[1]
+                              ) {
+                                case "north":
+                                  if (this.camera.pan.y >= this.camera.limits.pan.y.max) {
+                                    // console.log('auto cam pan limit north fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.max,this.camera.instructions[this.camera.currentInstruction].count);
+                                    this.camera.limits.state.pan = true;
+                                  } else {
+                                    this.camera.pan.y += 1;
+                                    this.camera.adjustedPan.y += 1 * this.camera.zoom.x;
+                                    this.camera.panDirection = "north";
+                                    // console.log('auto cam panning north fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                                  }
+                                  break;
+                                case "south":
+                                  if (this.camera.pan.y <= this.camera.limits.pan.y.min) {
+                                    // console.log('auto cam pan limit south fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.min,this.camera.instructions[this.camera.currentInstruction].count);
+                                    this.camera.limits.state.pan = true;
+                                  } else {
+                                    this.camera.pan.y -= 1;
+                                    this.camera.adjustedPan.y -= 1 * this.camera.zoom.x;
+                                    this.camera.panDirection = "south";
+                                    // console.log('auto cam panning south fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                                  }
+                                  break;
+                                case "east":
+                                  if (this.camera.pan.x <= this.camera.limits.pan.x.min) {
+                                    // console.log('auto cam pan limit east fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.min,this.camera.instructions[this.camera.currentInstruction].count);
+                                    this.camera.limits.state.pan = true;
+                                  } else {
+                                    this.camera.pan.x -= 1;
+                                    this.camera.adjustedPan.x -= 1 * this.camera.zoom.x;
+                                    this.camera.panDirection = "east";
+                                    // console.log('auto cam panning east fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                                  }
+                                  break;
+                                case "west":
+                                  if (
+                                    this.keyPressed[player.number - 1].west === true &&
+                                    this.camera.pan.x >= this.camera.limits.pan.x.max
+                                  ) {
+                                    // console.log('auto cam pan limit west fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.max,this.camera.instructions[this.camera.currentInstruction].count);
+                                    this.camera.limits.state.pan = true;
+                                  } else {
+                                    this.camera.pan.x += 1;
+                                    this.camera.adjustedPan.x += 1 * this.camera.zoom.x;
+                                    this.camera.panDirection = "west";
+                                    // console.log('auto cam panning west fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                                  }
+                                  break;
+                              }
+
+                              this.camera.mode = "pan";
+                              this.setZoomPan(canvas);
+                              this.findFocusCell("panToCell", "", {}, canvas, context);
+                            }
+                          }
+                        }
                       }
 
                       if (
-                        this.camera.instructions[
-                          this.camera.currentInstruction
-                        ].action.split("_")[0] === "pan"
+                        this.camera.instructions[this.camera.currentInstruction].action.split(
+                          "_"
+                        )[0] === "pan"
                       ) {
                         // console.log('fast panning ',this.camera.instructions[this.camera.currentInstruction].action.split("_")[1],' primary. count: ',this.camera.instructions[this.camera.currentInstruction].count);
 
                         switch (
-                          this.camera.instructions[
-                            this.camera.currentInstruction
-                          ].action.split("_")[1]
+                          this.camera.instructions[this.camera.currentInstruction].action.split(
+                            "_"
+                          )[1]
                         ) {
                           case "north":
-                            if (
-                              this.camera.pan.y >= this.camera.limits.pan.y.max
-                            ) {
+                            if (this.camera.pan.y >= this.camera.limits.pan.y.max) {
                               // console.log('auto cam pan limit north fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.max,this.camera.instructions[this.camera.currentInstruction].count);
                               this.camera.limits.state.pan = true;
                             } else {
                               this.camera.pan.y += 1;
-                              this.camera.adjustedPan.y +=
-                                1 * this.camera.zoom.x;
+                              this.camera.adjustedPan.y += 1 * this.camera.zoom.x;
                               this.camera.panDirection = "north";
                               // console.log('auto cam panning north fast ',this.camera.instructions[this.camera.currentInstruction].count)
                             }
                             break;
                           case "south":
-                            if (
-                              this.camera.pan.y <= this.camera.limits.pan.y.min
-                            ) {
+                            if (this.camera.pan.y <= this.camera.limits.pan.y.min) {
                               // console.log('auto cam pan limit south fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.min,this.camera.instructions[this.camera.currentInstruction].count);
                               this.camera.limits.state.pan = true;
                             } else {
                               this.camera.pan.y -= 1;
-                              this.camera.adjustedPan.y -=
-                                1 * this.camera.zoom.x;
+                              this.camera.adjustedPan.y -= 1 * this.camera.zoom.x;
                               this.camera.panDirection = "south";
                               // console.log('auto cam panning south fast ',this.camera.instructions[this.camera.currentInstruction].count)
                             }
                             break;
                           case "east":
-                            if (
-                              this.camera.pan.x <= this.camera.limits.pan.x.min
-                            ) {
+                            if (this.camera.pan.x <= this.camera.limits.pan.x.min) {
                               // console.log('auto cam pan limit east fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.min,this.camera.instructions[this.camera.currentInstruction].count);
                               this.camera.limits.state.pan = true;
                             } else {
                               this.camera.pan.x -= 1;
-                              this.camera.adjustedPan.x -=
-                                1 * this.camera.zoom.x;
+                              this.camera.adjustedPan.x -= 1 * this.camera.zoom.x;
                               this.camera.panDirection = "east";
                               // console.log('auto cam panning east fast ',this.camera.instructions[this.camera.currentInstruction].count)
                             }
                             break;
                           case "west":
                             if (
-                              this.keyPressed[player.number - 1].west ===
-                                true &&
+                              this.keyPressed[player.number - 1].west === true &&
                               this.camera.pan.x >= this.camera.limits.pan.x.max
                             ) {
                               // console.log('auto cam pan limit west fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.max,this.camera.instructions[this.camera.currentInstruction].count);
                               this.camera.limits.state.pan = true;
                             } else {
                               this.camera.pan.x += 1;
-                              this.camera.adjustedPan.x +=
-                                1 * this.camera.zoom.x;
+                              this.camera.adjustedPan.x += 1 * this.camera.zoom.x;
                               this.camera.panDirection = "west";
                               // console.log('auto cam panning west fast ',this.camera.instructions[this.camera.currentInstruction].count)
                             }
@@ -37215,141 +35174,145 @@ class App extends Component {
                         this.camera.mode = "pan";
                         this.setZoomPan(canvas);
                         // this.setCameraFocus('input',canvas, context, canvas2, context2);
-                        this.findFocusCell(
-                          "panToCell",
-                          "",
-                          {},
-                          canvas,
-                          context
-                        );
-                      }
+                        this.findFocusCell("panToCell", "", {}, canvas, context);
 
-                      if (
-                        this.camera.instructions[this.camera.currentInstruction]
-                          .action2 !== "" &&
-                        this.camera.instructions[this.camera.currentInstruction]
-                          .count2 <
-                          this.camera.instructions[
-                            this.camera.currentInstruction
-                          ].limit2
-                      ) {
-                        for (let index = 0; index < 2; index++) {
-                          // console.log('fast panning ',this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1],' secondary. count: ',this.camera.instructions[this.camera.currentInstruction].count2);
+                        if (
+                          this.camera.instructions[this.camera.currentInstruction].action2 !== "" &&
+                          this.camera.instructions[this.camera.currentInstruction].count2 <
+                            this.camera.instructions[this.camera.currentInstruction].limit2
+                        ) {
                           secondaryAction = true;
-                          switch (
-                            this.camera.instructions[
-                              this.camera.currentInstruction
-                            ].action2.split("_")[1]
+                          if (
+                            this.camera.instructions[this.camera.currentInstruction].action2.split(
+                              "_"
+                            )[0] === "zoom"
                           ) {
-                            case "north":
-                              if (
-                                this.camera.pan.y >=
-                                this.camera.limits.pan.y.max
-                              ) {
-                                // console.log('auto cam pan limit north fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.max,this.camera.instructions[this.camera.currentInstruction].count);
-                                this.camera.limits.state.pan = true;
-                              } else {
-                                this.camera.pan.y += 1;
-                                this.camera.adjustedPan.y +=
-                                  1 * this.camera.zoom.x;
-                                this.camera.panDirection = "north";
-                                // console.log('auto cam panning north fast ',this.camera.instructions[this.camera.currentInstruction].count)
-                              }
-                              break;
-                            case "south":
-                              if (
-                                this.camera.pan.y <=
-                                this.camera.limits.pan.y.min
-                              ) {
-                                console.log(
-                                  "auto cam pan limit south fast ",
-                                  this.camera.pan.y,
-                                  "/",
-                                  this.camera.limits.pan.y.min,
-                                  this.camera.instructions[
-                                    this.camera.currentInstruction
-                                  ].count
-                                );
-                                this.camera.limits.state.pan = true;
-                              } else {
-                                this.camera.pan.y -= 1;
-                                this.camera.adjustedPan.y -=
-                                  1 * this.camera.zoom.x;
-                                this.camera.panDirection = "south";
-                                // console.log('auto cam panning south fast ',this.camera.instructions[this.camera.currentInstruction].count)
-                              }
-                              break;
-                            case "east":
-                              if (
-                                this.camera.pan.x <=
-                                this.camera.limits.pan.x.min
-                              ) {
-                                // console.log('auto cam pan limit east fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.min,this.camera.instructions[this.camera.currentInstruction].count);
-                                this.camera.limits.state.pan = true;
-                              } else {
-                                this.camera.pan.x -= 1;
-                                this.camera.adjustedPan.x -=
-                                  1 * this.camera.zoom.x;
-                                this.camera.panDirection = "east";
-                                // console.log('auto cam panning east fast ',this.camera.instructions[this.camera.currentInstruction].count)
-                              }
-                              break;
-                            case "west":
-                              if (
-                                this.keyPressed[player.number - 1].west ===
-                                  true &&
-                                this.camera.pan.x >=
-                                  this.camera.limits.pan.x.max
-                              ) {
-                                // console.log('auto cam pan limit west fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.max,this.camera.instructions[this.camera.currentInstruction].count);
-                                this.camera.limits.state.pan = true;
-                              } else {
-                                this.camera.pan.x += 1;
-                                this.camera.adjustedPan.x +=
-                                  1 * this.camera.zoom.x;
-                                this.camera.panDirection = "west";
-                                // console.log('auto cam panning west fast ',this.camera.instructions[this.camera.currentInstruction].count)
-                              }
-                              break;
-                          }
+                            switch (
+                              this.camera.instructions[
+                                this.camera.currentInstruction
+                              ].action2.split("_")[1]
+                            ) {
+                              case "in":
+                                if (this.camera.zoom.x >= this.camera.limits.zoom.max) {
+                                  this.camera.limits.state.zoom = true;
+                                  // console.log('auto cam zoom in limit fast',this.camera.zoom.x,'/',this.camera.limits.zoom.max,this.camera.instructions[this.camera.currentInstruction].count2);
+                                } else {
+                                  this.camera.zoom.x += 0.02;
+                                  this.camera.zoom.y += 0.02;
+                                  this.camera.zoomDirection = "in";
+                                  // console.log('auto cam zooming in fast ',this.camera.instructions[this.camera.currentInstruction].count2);
+                                }
+                                break;
+                              case "out":
+                                if (this.camera.zoom.x <= this.camera.limits.zoom.min) {
+                                  this.camera.limits.state.zoom = true;
+                                  // console.log('auto cam zoom in limit fast ',this.camera.zoom.x,'/',this.camera.limits.zoom.min,this.camera.instructions[this.camera.currentInstruction].count);
+                                } else {
+                                  this.camera.zoom.x -= 0.02;
+                                  this.camera.zoom.y -= 0.02;
+                                  this.camera.zoomDirection = "out";
+                                  // console.log('auto cam zooming out fast ',this.camera.instructions[this.camera.currentInstruction].count);
+                                }
+                                break;
+                            }
 
-                          this.camera.mode = "pan";
-                          this.setZoomPan(canvas);
-                          // this.setCameraFocus('input',canvas, context, canvas2, context2);
-                          this.findFocusCell(
-                            "panToCell",
-                            "",
-                            {},
-                            canvas,
-                            context
-                          );
+                            this.camera.mode = "zoom";
+                            this.setZoomPan(canvas);
+                            this.findFocusCell("panToCell", "", {}, canvas, context);
+                          }
+                          if (
+                            this.camera.instructions[this.camera.currentInstruction].action2.split(
+                              "_"
+                            )[0] === "pan"
+                          ) {
+                            for (let index = 0; index < 2; index++) {
+                              // console.log('slow panning ',this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1],' secondary. count: ',this.camera.instructions[this.camera.currentInstruction].count2);
+
+                              switch (
+                                this.camera.instructions[
+                                  this.camera.currentInstruction
+                                ].action2.split("_")[1]
+                              ) {
+                                case "north":
+                                  if (this.camera.pan.y >= this.camera.limits.pan.y.max) {
+                                    // console.log('auto cam pan limit north fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.max,this.camera.instructions[this.camera.currentInstruction].count);
+                                    this.camera.limits.state.pan = true;
+                                  } else {
+                                    this.camera.pan.y += 1;
+                                    this.camera.adjustedPan.y += 1 * this.camera.zoom.x;
+                                    this.camera.panDirection = "north";
+                                    // console.log('auto cam panning north fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                                  }
+                                  break;
+                                case "south":
+                                  if (this.camera.pan.y <= this.camera.limits.pan.y.min) {
+                                    // console.log('auto cam pan limit south fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.min,this.camera.instructions[this.camera.currentInstruction].count);
+                                    this.camera.limits.state.pan = true;
+                                  } else {
+                                    this.camera.pan.y -= 1;
+                                    this.camera.adjustedPan.y -= 1 * this.camera.zoom.x;
+                                    this.camera.panDirection = "south";
+                                    // console.log('auto cam panning south fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                                  }
+                                  break;
+                                case "east":
+                                  if (this.camera.pan.x <= this.camera.limits.pan.x.min) {
+                                    // console.log('auto cam pan limit east fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.min,this.camera.instructions[this.camera.currentInstruction].count);
+                                    this.camera.limits.state.pan = true;
+                                  } else {
+                                    this.camera.pan.x -= 1;
+                                    this.camera.adjustedPan.x -= 1 * this.camera.zoom.x;
+                                    this.camera.panDirection = "east";
+                                    // console.log('auto cam panning east fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                                  }
+                                  break;
+                                case "west":
+                                  if (
+                                    this.keyPressed[player.number - 1].west === true &&
+                                    this.camera.pan.x >= this.camera.limits.pan.x.max
+                                  ) {
+                                    // console.log('auto cam pan limit west fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.max,this.camera.instructions[this.camera.currentInstruction].count);
+                                    this.camera.limits.state.pan = true;
+                                  } else {
+                                    this.camera.pan.x += 1;
+                                    this.camera.adjustedPan.x += 1 * this.camera.zoom.x;
+                                    this.camera.panDirection = "west";
+                                    // console.log('auto cam panning west fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                                  }
+                                  break;
+                              }
+
+                              this.camera.mode = "pan";
+                              this.setZoomPan(canvas);
+                              this.findFocusCell("panToCell", "", {}, canvas, context);
+                            }
+                          }
                         }
                       }
 
-                      this.camera.instructions[this.camera.currentInstruction]
-                        .count++;
+                      this.camera.instructions[this.camera.currentInstruction].count++;
                       // console.log('1a');
                       if (secondaryAction === true) {
-                        this.camera.instructions[this.camera.currentInstruction]
-                          .count2++;
+                        this.camera.instructions[this.camera.currentInstruction].count2++;
+                      }
+                      if (tertiaryAction === true) {
+                        this.camera.instructions[this.camera.currentInstruction].count3++;
                       }
                     }
                   } else {
                     if (
-                      this.camera.instructions[
-                        this.camera.currentInstruction
-                      ].action.split("_")[0] === "zoom"
+                      this.camera.instructions[this.camera.currentInstruction].action.split(
+                        "_"
+                      )[0] === "zoom"
                     ) {
                       // console.log('slow zooming ',this.camera.instructions[this.camera.currentInstruction].action.split("_")[1],' primary. count: ',this.camera.instructions[this.camera.currentInstruction].count);
                       switch (
-                        this.camera.instructions[
-                          this.camera.currentInstruction
-                        ].action.split("_")[1]
+                        this.camera.instructions[this.camera.currentInstruction].action.split(
+                          "_"
+                        )[1]
                       ) {
                         case "in":
-                          if (
-                            this.camera.zoom.x >= this.camera.limits.zoom.max
-                          ) {
+                          if (this.camera.zoom.x >= this.camera.limits.zoom.max) {
                             this.camera.limits.state.zoom = true;
                             // console.log('auto cam zoom in limit fast',this.camera.zoom.x,'/',this.camera.limits.zoom.max,this.camera.instructions[this.camera.currentInstruction].count);
                           } else {
@@ -37360,9 +35323,7 @@ class App extends Component {
                           }
                           break;
                         case "out":
-                          if (
-                            this.camera.zoom.x <= this.camera.limits.zoom.min
-                          ) {
+                          if (this.camera.zoom.x <= this.camera.limits.zoom.min) {
                             this.camera.limits.state.zoom = true;
                             // console.log('auto cam zoom in limit fast ',this.camera.zoom.x,'/',this.camera.limits.zoom.min,this.camera.instructions[this.camera.currentInstruction].count);
                           } else {
@@ -37388,24 +35349,135 @@ class App extends Component {
                       this.setZoomPan(canvas);
                       // this.setCameraFocus('input',canvas, context, canvas2, context2);
                       this.findFocusCell("panToCell", "", {}, canvas, context);
+
+                      if (
+                        this.camera.instructions[this.camera.currentInstruction].action2 !== "" &&
+                        this.camera.instructions[this.camera.currentInstruction].count2 <
+                          this.camera.instructions[this.camera.currentInstruction].limit2
+                      ) {
+                        secondaryAction = true;
+                        if (
+                          this.camera.instructions[this.camera.currentInstruction].action2.split(
+                            "_"
+                          )[0] === "zoom"
+                        ) {
+                          switch (
+                            this.camera.instructions[this.camera.currentInstruction].action2.split(
+                              "_"
+                            )[1]
+                          ) {
+                            case "in":
+                              if (this.camera.zoom.x >= this.camera.limits.zoom.max) {
+                                this.camera.limits.state.zoom = true;
+                                // console.log('auto cam zoom in limit fast',this.camera.zoom.x,'/',this.camera.limits.zoom.max,this.camera.instructions[this.camera.currentInstruction].count2);
+                              } else {
+                                this.camera.zoom.x += 0.02;
+                                this.camera.zoom.y += 0.02;
+                                this.camera.zoomDirection = "in";
+                                // console.log('auto cam zooming in fast ',this.camera.instructions[this.camera.currentInstruction].count2);
+                              }
+                              break;
+                            case "out":
+                              if (this.camera.zoom.x <= this.camera.limits.zoom.min) {
+                                this.camera.limits.state.zoom = true;
+                                // console.log('auto cam zoom in limit fast ',this.camera.zoom.x,'/',this.camera.limits.zoom.min,this.camera.instructions[this.camera.currentInstruction].count);
+                              } else {
+                                this.camera.zoom.x -= 0.02;
+                                this.camera.zoom.y -= 0.02;
+                                this.camera.zoomDirection = "out";
+                                // console.log('auto cam zooming out fast ',this.camera.instructions[this.camera.currentInstruction].count);
+                              }
+                              break;
+                          }
+
+                          this.camera.mode = "zoom";
+                          this.setZoomPan(canvas);
+                          this.findFocusCell("panToCell", "", {}, canvas, context);
+                        }
+                        if (
+                          this.camera.instructions[this.camera.currentInstruction].action2.split(
+                            "_"
+                          )[0] === "pan"
+                        ) {
+                          for (let index = 0; index < 2; index++) {
+                            // console.log('slow panning ',this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1],' secondary. count: ',this.camera.instructions[this.camera.currentInstruction].count2);
+
+                            switch (
+                              this.camera.instructions[
+                                this.camera.currentInstruction
+                              ].action2.split("_")[1]
+                            ) {
+                              case "north":
+                                if (this.camera.pan.y >= this.camera.limits.pan.y.max) {
+                                  // console.log('auto cam pan limit north fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.max,this.camera.instructions[this.camera.currentInstruction].count);
+                                  this.camera.limits.state.pan = true;
+                                } else {
+                                  this.camera.pan.y += 1;
+                                  this.camera.adjustedPan.y += 1 * this.camera.zoom.x;
+                                  this.camera.panDirection = "north";
+                                  // console.log('auto cam panning north fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                                }
+                                break;
+                              case "south":
+                                if (this.camera.pan.y <= this.camera.limits.pan.y.min) {
+                                  // console.log('auto cam pan limit south fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.min,this.camera.instructions[this.camera.currentInstruction].count);
+                                  this.camera.limits.state.pan = true;
+                                } else {
+                                  this.camera.pan.y -= 1;
+                                  this.camera.adjustedPan.y -= 1 * this.camera.zoom.x;
+                                  this.camera.panDirection = "south";
+                                  // console.log('auto cam panning south fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                                }
+                                break;
+                              case "east":
+                                if (this.camera.pan.x <= this.camera.limits.pan.x.min) {
+                                  // console.log('auto cam pan limit east fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.min,this.camera.instructions[this.camera.currentInstruction].count);
+                                  this.camera.limits.state.pan = true;
+                                } else {
+                                  this.camera.pan.x -= 1;
+                                  this.camera.adjustedPan.x -= 1 * this.camera.zoom.x;
+                                  this.camera.panDirection = "east";
+                                  // console.log('auto cam panning east fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                                }
+                                break;
+                              case "west":
+                                if (
+                                  this.keyPressed[player.number - 1].west === true &&
+                                  this.camera.pan.x >= this.camera.limits.pan.x.max
+                                ) {
+                                  // console.log('auto cam pan limit west fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.max,this.camera.instructions[this.camera.currentInstruction].count);
+                                  this.camera.limits.state.pan = true;
+                                } else {
+                                  this.camera.pan.x += 1;
+                                  this.camera.adjustedPan.x += 1 * this.camera.zoom.x;
+                                  this.camera.panDirection = "west";
+                                  // console.log('auto cam panning west fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                                }
+                                break;
+                            }
+
+                            this.camera.mode = "pan";
+                            this.setZoomPan(canvas);
+                            this.findFocusCell("panToCell", "", {}, canvas, context);
+                          }
+                        }
+                      }
                     }
 
                     if (
-                      this.camera.instructions[
-                        this.camera.currentInstruction
-                      ].action.split("_")[0] === "pan"
+                      this.camera.instructions[this.camera.currentInstruction].action.split(
+                        "_"
+                      )[0] === "pan"
                     ) {
                       // console.log('slow panning ',this.camera.instructions[this.camera.currentInstruction].action.split("_")[1],' primary. count: ',this.camera.instructions[this.camera.currentInstruction].count);
 
                       switch (
-                        this.camera.instructions[
-                          this.camera.currentInstruction
-                        ].action.split("_")[1]
+                        this.camera.instructions[this.camera.currentInstruction].action.split(
+                          "_"
+                        )[1]
                       ) {
                         case "north":
-                          if (
-                            this.camera.pan.y >= this.camera.limits.pan.y.max
-                          ) {
+                          if (this.camera.pan.y >= this.camera.limits.pan.y.max) {
                             // console.log('auto cam pan limit north fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.max,this.camera.instructions[this.camera.currentInstruction].count);
                             this.camera.limits.state.pan = true;
                           } else {
@@ -37416,9 +35488,7 @@ class App extends Component {
                           }
                           break;
                         case "south":
-                          if (
-                            this.camera.pan.y <= this.camera.limits.pan.y.min
-                          ) {
+                          if (this.camera.pan.y <= this.camera.limits.pan.y.min) {
                             // console.log('auto cam pan limit south fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.min,this.camera.instructions[this.camera.currentInstruction].count);
                             this.camera.limits.state.pan = true;
                           } else {
@@ -37429,9 +35499,7 @@ class App extends Component {
                           }
                           break;
                         case "east":
-                          if (
-                            this.camera.pan.x <= this.camera.limits.pan.x.min
-                          ) {
+                          if (this.camera.pan.x <= this.camera.limits.pan.x.min) {
                             // console.log('auto cam pan limit east fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.min,this.camera.instructions[this.camera.currentInstruction].count);
                             this.camera.limits.state.pan = true;
                           } else {
@@ -37463,106 +35531,126 @@ class App extends Component {
                       this.findFocusCell("panToCell", "", {}, canvas, context);
 
                       if (
-                        this.camera.instructions[this.camera.currentInstruction]
-                          .action2 !== "" &&
-                        this.camera.instructions[this.camera.currentInstruction]
-                          .count2 <
-                          this.camera.instructions[
-                            this.camera.currentInstruction
-                          ].limit2
+                        this.camera.instructions[this.camera.currentInstruction].action2 !== "" &&
+                        this.camera.instructions[this.camera.currentInstruction].count2 <
+                          this.camera.instructions[this.camera.currentInstruction].limit2
                       ) {
-                        for (let index = 0; index < 2; index++) {
-                          // console.log('slow panning ',this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1],' secondary. count: ',this.camera.instructions[this.camera.currentInstruction].count2);
-                          secondaryAction = true;
+                        secondaryAction = true;
+                        if (
+                          this.camera.instructions[this.camera.currentInstruction].action2.split(
+                            "_"
+                          )[0] === "zoom"
+                        ) {
                           switch (
-                            this.camera.instructions[
-                              this.camera.currentInstruction
-                            ].action2.split("_")[1]
+                            this.camera.instructions[this.camera.currentInstruction].action2.split(
+                              "_"
+                            )[1]
                           ) {
-                            case "north":
-                              if (
-                                this.camera.pan.y >=
-                                this.camera.limits.pan.y.max
-                              ) {
-                                // console.log('auto cam pan limit north fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.max,this.camera.instructions[this.camera.currentInstruction].count);
-                                this.camera.limits.state.pan = true;
+                            case "in":
+                              if (this.camera.zoom.x >= this.camera.limits.zoom.max) {
+                                this.camera.limits.state.zoom = true;
+                                // console.log('auto cam zoom in limit fast',this.camera.zoom.x,'/',this.camera.limits.zoom.max,this.camera.instructions[this.camera.currentInstruction].count2);
                               } else {
-                                this.camera.pan.y += 1;
-                                this.camera.adjustedPan.y +=
-                                  1 * this.camera.zoom.x;
-                                this.camera.panDirection = "north";
-                                // console.log('auto cam panning north fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                                this.camera.zoom.x += 0.02;
+                                this.camera.zoom.y += 0.02;
+                                this.camera.zoomDirection = "in";
+                                // console.log('auto cam zooming in fast ',this.camera.instructions[this.camera.currentInstruction].count2);
                               }
                               break;
-                            case "south":
-                              if (
-                                this.camera.pan.y <=
-                                this.camera.limits.pan.y.min
-                              ) {
-                                // console.log('auto cam pan limit south fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.min,this.camera.instructions[this.camera.currentInstruction].count);
-                                this.camera.limits.state.pan = true;
+                            case "out":
+                              if (this.camera.zoom.x <= this.camera.limits.zoom.min) {
+                                this.camera.limits.state.zoom = true;
+                                // console.log('auto cam zoom in limit fast ',this.camera.zoom.x,'/',this.camera.limits.zoom.min,this.camera.instructions[this.camera.currentInstruction].count);
                               } else {
-                                this.camera.pan.y -= 1;
-                                this.camera.adjustedPan.y -=
-                                  1 * this.camera.zoom.x;
-                                this.camera.panDirection = "south";
-                                // console.log('auto cam panning south fast ',this.camera.instructions[this.camera.currentInstruction].count)
-                              }
-                              break;
-                            case "east":
-                              if (
-                                this.camera.pan.x <=
-                                this.camera.limits.pan.x.min
-                              ) {
-                                // console.log('auto cam pan limit east fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.min,this.camera.instructions[this.camera.currentInstruction].count);
-                                this.camera.limits.state.pan = true;
-                              } else {
-                                this.camera.pan.x -= 1;
-                                this.camera.adjustedPan.x -=
-                                  1 * this.camera.zoom.x;
-                                this.camera.panDirection = "east";
-                                // console.log('auto cam panning east fast ',this.camera.instructions[this.camera.currentInstruction].count)
-                              }
-                              break;
-                            case "west":
-                              if (
-                                this.keyPressed[player.number - 1].west ===
-                                  true &&
-                                this.camera.pan.x >=
-                                  this.camera.limits.pan.x.max
-                              ) {
-                                // console.log('auto cam pan limit west fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.max,this.camera.instructions[this.camera.currentInstruction].count);
-                                this.camera.limits.state.pan = true;
-                              } else {
-                                this.camera.pan.x += 1;
-                                this.camera.adjustedPan.x +=
-                                  1 * this.camera.zoom.x;
-                                this.camera.panDirection = "west";
-                                // console.log('auto cam panning west fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                                this.camera.zoom.x -= 0.02;
+                                this.camera.zoom.y -= 0.02;
+                                this.camera.zoomDirection = "out";
+                                // console.log('auto cam zooming out fast ',this.camera.instructions[this.camera.currentInstruction].count);
                               }
                               break;
                           }
 
-                          this.camera.mode = "pan";
+                          this.camera.mode = "zoom";
                           this.setZoomPan(canvas);
-                          // this.setCameraFocus('input',canvas, context, canvas2, context2);
-                          this.findFocusCell(
-                            "panToCell",
-                            "",
-                            {},
-                            canvas,
-                            context
-                          );
+                          this.findFocusCell("panToCell", "", {}, canvas, context);
+                        }
+                        if (
+                          this.camera.instructions[this.camera.currentInstruction].action2.split(
+                            "_"
+                          )[0] === "pan"
+                        ) {
+                          for (let index = 0; index < 2; index++) {
+                            // console.log('slow panning ',this.camera.instructions[this.camera.currentInstruction].action2.split("_")[1],' secondary. count: ',this.camera.instructions[this.camera.currentInstruction].count2);
+
+                            switch (
+                              this.camera.instructions[
+                                this.camera.currentInstruction
+                              ].action2.split("_")[1]
+                            ) {
+                              case "north":
+                                if (this.camera.pan.y >= this.camera.limits.pan.y.max) {
+                                  // console.log('auto cam pan limit north fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.max,this.camera.instructions[this.camera.currentInstruction].count);
+                                  this.camera.limits.state.pan = true;
+                                } else {
+                                  this.camera.pan.y += 1;
+                                  this.camera.adjustedPan.y += 1 * this.camera.zoom.x;
+                                  this.camera.panDirection = "north";
+                                  // console.log('auto cam panning north fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                                }
+                                break;
+                              case "south":
+                                if (this.camera.pan.y <= this.camera.limits.pan.y.min) {
+                                  // console.log('auto cam pan limit south fast ',this.camera.pan.y,'/',this.camera.limits.pan.y.min,this.camera.instructions[this.camera.currentInstruction].count);
+                                  this.camera.limits.state.pan = true;
+                                } else {
+                                  this.camera.pan.y -= 1;
+                                  this.camera.adjustedPan.y -= 1 * this.camera.zoom.x;
+                                  this.camera.panDirection = "south";
+                                  // console.log('auto cam panning south fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                                }
+                                break;
+                              case "east":
+                                if (this.camera.pan.x <= this.camera.limits.pan.x.min) {
+                                  // console.log('auto cam pan limit east fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.min,this.camera.instructions[this.camera.currentInstruction].count);
+                                  this.camera.limits.state.pan = true;
+                                } else {
+                                  this.camera.pan.x -= 1;
+                                  this.camera.adjustedPan.x -= 1 * this.camera.zoom.x;
+                                  this.camera.panDirection = "east";
+                                  // console.log('auto cam panning east fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                                }
+                                break;
+                              case "west":
+                                if (
+                                  this.keyPressed[player.number - 1].west === true &&
+                                  this.camera.pan.x >= this.camera.limits.pan.x.max
+                                ) {
+                                  // console.log('auto cam pan limit west fast ',this.camera.pan.x,'/',this.camera.limits.pan.x.max,this.camera.instructions[this.camera.currentInstruction].count);
+                                  this.camera.limits.state.pan = true;
+                                } else {
+                                  this.camera.pan.x += 1;
+                                  this.camera.adjustedPan.x += 1 * this.camera.zoom.x;
+                                  this.camera.panDirection = "west";
+                                  // console.log('auto cam panning west fast ',this.camera.instructions[this.camera.currentInstruction].count)
+                                }
+                                break;
+                            }
+
+                            this.camera.mode = "pan";
+                            this.setZoomPan(canvas);
+                            this.findFocusCell("panToCell", "", {}, canvas, context);
+                          }
                         }
                       }
                     }
 
-                    this.camera.instructions[this.camera.currentInstruction]
-                      .count++;
+                    this.camera.instructions[this.camera.currentInstruction].count++;
                     // console.log('1b');
                     if (secondaryAction === true) {
-                      this.camera.instructions[this.camera.currentInstruction]
-                        .count2++;
+                      this.camera.instructions[this.camera.currentInstruction].count2++;
+                    }
+                    if (tertiaryAction === true) {
+                      this.camera.instructions[this.camera.currentInstruction].count3++;
                     }
                   }
                 }
@@ -37580,13 +35668,11 @@ class App extends Component {
                   // }
                 } else {
                   if (
-                    this.camera.instructions[this.camera.currentInstruction]
-                      .count >=
-                    this.camera.instructions[this.camera.currentInstruction]
-                      .limit
+                    this.camera.instructions[this.camera.currentInstruction].count >=
+                    this.camera.instructions[this.camera.currentInstruction].limit
                   ) {
                     this.camera.currentInstruction++;
-                    // console.log('finished primary instruction only');
+                    console.log("finished primary instruction only");
                   }
                 }
               }
@@ -37594,9 +35680,7 @@ class App extends Component {
           }
 
           // FINISHED CAMERA INSTRUCTIONS
-          if (
-            this.camera.currentInstruction >= this.camera.instructions.length
-          ) {
+          if (this.camera.currentInstruction >= this.camera.instructions.length) {
             // console.log('finished camera instructions');
             this.camera.instructions = [];
             this.camera.currentInstruction = 0;
@@ -37616,10 +35700,7 @@ class App extends Component {
 
     // MENU
 
-    if (
-      player.ai.state !== true &&
-      this.keyPressed[player.number - 1].playerMenu === true
-    ) {
+    if (player.ai.state !== true && this.keyPressed[player.number - 1].playerMenu === true) {
       // toggle the menu here
     }
 
@@ -37631,11 +35712,7 @@ class App extends Component {
         // console.log('kill bolt',bolt.currentPosition.number, this.players[bolt.owner-1].currentPosition.cell.number,this.projectiles);
       }
 
-      if (
-        bolt.type === "bolt" &&
-        bolt.moving.state === true &&
-        bolt.kill !== true
-      ) {
+      if (bolt.type === "bolt" && bolt.moving.state === true && bolt.kill !== true) {
         // console.log('traking projectile');
 
         let index = this.projectiles.findIndex((blt) => blt.id === bolt.id);
@@ -37647,10 +35724,7 @@ class App extends Component {
 
         // CHECK WHICH CELL BOLT IS AT
         for (const cell of bolt.target.path) {
-          let point = [
-            bolt.currentPosition.center.x,
-            bolt.currentPosition.center.y,
-          ];
+          let point = [bolt.currentPosition.center.x, bolt.currentPosition.center.y];
           let polygon = [];
           for (const vertex of cell.vertices) {
             let vertexPoint = [vertex.x - 10, vertex.y - 5];
@@ -37663,16 +35737,13 @@ class App extends Component {
             bolt.currentPosition.number = cell.number;
 
             let infoCell = this.gridInfo.find(
-              (x) =>
-                x.number.x === cell.number.x && x.number.y === cell.number.y
+              (x) => x.number.x === cell.number.x && x.number.y === cell.number.y
             );
 
             // PATH HIGHLIGHT
             if (
-              cell.number.x ===
-                this.players[bolt.owner - 1].currentPosition.cell.number.x &&
-              cell.number.y ===
-                this.players[bolt.owner - 1].currentPosition.cell.number.y
+              cell.number.x === this.players[bolt.owner - 1].currentPosition.cell.number.x &&
+              cell.number.y === this.players[bolt.owner - 1].currentPosition.cell.number.y
             ) {
             } else {
               this.cellsUnderAttack.push({
@@ -37688,10 +35759,7 @@ class App extends Component {
             if (infoCell.elevation.number === bolt.elevation) {
               let fwdBarrier = false;
 
-              if (
-                infoCell.barrier.state === true &&
-                infoCell.barrier.height >= 1
-              ) {
+              if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
                 // if (infoCell.barrier.position === bolt.direction) {
                 //   fwdBarrier = true;
                 // }
@@ -37730,10 +35798,7 @@ class App extends Component {
 
                 // CHECK FOR OBSTACLE &  REAR BARRIER COLLISION
 
-                if (
-                  infoCell.obstacle.state === true &&
-                  infoCell.obstacle.height >= 1
-                ) {
+                if (infoCell.obstacle.state === true && infoCell.obstacle.height >= 1) {
                   this.attackCellContents(
                     "bolt",
                     this.players[bolt.owner - 1],
@@ -37742,10 +35807,7 @@ class App extends Component {
                     undefined,
                     bolt
                   );
-                } else if (
-                  infoCell.barrier.state === true &&
-                  infoCell.barrier.height >= 1
-                ) {
+                } else if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
                   this.attackCellContents(
                     "bolt",
                     this.players[bolt.owner - 1],
@@ -37757,10 +35819,7 @@ class App extends Component {
                 }
               } else {
                 // HANDLE FWD BARRIER BOLT COLLISION
-                if (
-                  infoCell.barrier.state === true &&
-                  infoCell.barrier.height >= 1
-                ) {
+                if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
                   this.attackCellContents(
                     "bolt",
                     this.players[bolt.owner - 1],
@@ -37804,11 +35863,7 @@ class App extends Component {
         }
       }
 
-      if (
-        bolt.type === "arc" &&
-        bolt.moving.state === true &&
-        bolt.kill !== true
-      ) {
+      if (bolt.type === "arc" && bolt.moving.state === true && bolt.kill !== true) {
       }
     }
 
@@ -37908,9 +35963,7 @@ class App extends Component {
 
         let floor;
         let drawFloor = true;
-        let gridInfoCell = this.gridInfo.find(
-          (elem) => elem.number.x === x && elem.number.y === y
-        );
+        let gridInfoCell = this.gridInfo.find((elem) => elem.number.x === x && elem.number.y === y);
         gridInfoCell.center = center;
         gridInfoCell.drawCenter = center;
         floor = this.floorImgs[gridInfoCell.terrain.name];
@@ -37922,11 +35975,7 @@ class App extends Component {
           floor = this.floorImgs.void3;
         }
         //BLINKER!!
-        if (
-          this.cellToVoid.state === true &&
-          this.cellToVoid.x === x &&
-          this.cellToVoid.y === y
-        ) {
+        if (this.cellToVoid.state === true && this.cellToVoid.x === x && this.cellToVoid.y === y) {
           if (this.cellToVoid.count === 1) {
             if (
               !this.cellPopups.find(
@@ -37947,8 +35996,7 @@ class App extends Component {
                 img: "",
                 cell: this.gridInfo.find(
                   (x) =>
-                    x.number.x === gridInfoCell.number.x &&
-                    x.number.y === gridInfoCell.number.y
+                    x.number.x === gridInfoCell.number.x && x.number.y === gridInfoCell.number.y
                 ),
               });
             }
@@ -38033,11 +36081,7 @@ class App extends Component {
 
         // RUBBLE
         if (gridInfoCell.rubble === true) {
-          context.drawImage(
-            this.floorImgs.rubble,
-            iso.x - offset.x,
-            iso.y - offset.y
-          );
+          context.drawImage(this.floorImgs.rubble, iso.x - offset.x, iso.y - offset.y);
         }
 
         // CELL COORD LABEL
@@ -38066,10 +36110,7 @@ class App extends Component {
         // TARGET HIGHLIGHT!!
         let floorHighlight;
         for (const plyr3 of this.players) {
-          if (
-            x === plyr3.target.cell1.number.x &&
-            y === plyr3.target.cell1.number.y
-          ) {
+          if (x === plyr3.target.cell1.number.x && y === plyr3.target.cell1.number.y) {
             if (
               plyr3.ai.state !== true &&
               plyr3.dead.state !== true &&
@@ -38228,11 +36269,7 @@ class App extends Component {
         //POPUPS
         // CELL HIGHLIGHT
         for (const popup of this.cellPopups) {
-          if (
-            popup.state === true &&
-            x === popup.cell.number.x &&
-            y === popup.cell.number.y
-          ) {
+          if (popup.state === true && x === popup.cell.number.x && y === popup.cell.number.y) {
             context.lineWidth = 5;
             context.beginPath();
             for (const vertex of vertices) {
@@ -38253,9 +36290,7 @@ class App extends Component {
               // console.log('drawing a popup');
               let popupDrawCoords;
               if (popup.position === "" || !popup.position) {
-                let currentPopups = this.cellPopups.filter(
-                  (x) => x.state === true
-                );
+                let currentPopups = this.cellPopups.filter((x) => x.state === true);
                 let currentPopupsThisCell = this.cellPopups.filter(
                   (x) =>
                     x.state === true &&
@@ -38275,8 +36310,7 @@ class App extends Component {
 
                 if (popup.color === "") {
                   popup.color = this.cellColorRef.find(
-                    (x) =>
-                      x.x === popup.cell.number.x && x.y === popup.cell.number.y
+                    (x) => x.x === popup.cell.number.x && x.y === popup.cell.number.y
                   ).color;
                 }
 
@@ -38294,9 +36328,7 @@ class App extends Component {
                 for (const plyr2 of this.players) {
                   if (plyr2.ai.state !== true) {
                     let myPos = popup.cell.number;
-                    let invalidPos =
-                      this.players[plyr2.number - 1].currentPosition.cell
-                        .number;
+                    let invalidPos = this.players[plyr2.number - 1].currentPosition.cell.number;
                     // let invalidPositions = [invalidPos];
 
                     // GET DIRECTION OF PLAYER CELL RELATIVE TO ME
@@ -38317,11 +36349,7 @@ class App extends Component {
                           y: undefined,
                         };
 
-                        invalidPos2 = this.getCellFromDirection(
-                          1,
-                          invalidPos,
-                          pop.position
-                        );
+                        invalidPos2 = this.getCellFromDirection(1, invalidPos, pop.position);
 
                         // let dir = undefined;
 
@@ -38353,11 +36381,7 @@ class App extends Component {
                       y: undefined,
                     };
 
-                    invalidPos2 = this.getCellFromDirection(
-                      1,
-                      cellPos,
-                      popup2.position
-                    );
+                    invalidPos2 = this.getCellFromDirection(1, cellPos, popup2.position);
 
                     dir = this.getDirectionFromCells(myPos, invalidPos2);
 
@@ -38397,8 +36421,7 @@ class App extends Component {
                 // context.fillStyle = 'black';
                 // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
                 // console.log('popup.msg',popup.msg,popup.img);
-                let centerPopupOffset =
-                  (this.popupSize - this.popupImgSize) / 2;
+                let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
                 context.drawImage(
                   popup.img,
                   popupDrawCoords.origin.x + centerPopupOffset,
@@ -38421,9 +36444,7 @@ class App extends Component {
                 for (const plyr2 of this.players) {
                   if (plyr2.ai.state !== true) {
                     let myPos = popup.cell.number;
-                    let invalidPos =
-                      this.players[plyr2.number - 1].currentPosition.cell
-                        .number;
+                    let invalidPos = this.players[plyr2.number - 1].currentPosition.cell.number;
 
                     // invalidpostions2 push plyr2 position
                     // for player popups
@@ -38441,11 +36462,7 @@ class App extends Component {
                           y: undefined,
                         };
 
-                        invalidPos2 = this.getCellFromDirection(
-                          1,
-                          invalidPos,
-                          pop.position
-                        );
+                        invalidPos2 = this.getCellFromDirection(1, invalidPos, pop.position);
 
                         dir = this.getDirectionFromCells(myPos, invalidPos2);
 
@@ -38471,11 +36488,7 @@ class App extends Component {
                       y: undefined,
                     };
 
-                    invalidPos2 = this.getCellFromDirection(
-                      1,
-                      cellPos,
-                      popup2.position
-                    );
+                    invalidPos2 = this.getCellFromDirection(1, cellPos, popup2.position);
 
                     dir = this.getDirectionFromCells(myPos, invalidPos2);
 
@@ -38527,8 +36540,7 @@ class App extends Component {
                   // context.fillStyle = 'black';
                   // context.fillText(""+popup.type+"", popupDrawCoords.origin.x+10, popupDrawCoords.origin.y+5);
                   // console.log('popup.msg',popup.msg);
-                  let centerPopupOffset =
-                    (this.popupSize - this.popupImgSize) / 2;
+                  let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
                   context.drawImage(
                     popup.img,
                     popupDrawCoords.origin.x + centerPopupOffset,
@@ -38556,17 +36568,9 @@ class App extends Component {
           );
           console.log("-- moving state --", plyr.moving.state);
           console.log("-- moving step --", plyr.moving.step);
-          console.log(
-            "-- target --",
-            plyr.target.cell1.number.x,
-            plyr.target.cell1.number.y
-          );
+          console.log("-- target --", plyr.target.cell1.number.x, plyr.target.cell1.number.y);
           console.log("-- direction --", plyr.direction);
-          console.log(
-            "-- origin --",
-            plyr.moving.origin.number.x,
-            plyr.moving.origin.number.y
-          );
+          console.log("-- origin --", plyr.moving.origin.number.x, plyr.moving.origin.number.y);
           console.log("-- action --", plyr.action);
         }
         for (const plyr of this.players) {
@@ -38582,10 +36586,7 @@ class App extends Component {
 
           let finalAnimIndex;
 
-          if (
-            plyr.attacking.state === true &&
-            plyr.success.deflected.state !== true
-          ) {
+          if (plyr.attacking.state === true && plyr.success.deflected.state !== true) {
             plyr.action = "attacking";
           }
 
@@ -38764,9 +36765,7 @@ class App extends Component {
                 moveSpeed = plyr.pulled.moveSpeed;
               }
               let rangeIndex = plyr.speed.range.indexOf(moveSpeed);
-              let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(
-                plyr.moving.step
-              );
+              let moveAnimIndex = this.moveStepRef[rangeIndex].indexOf(plyr.moving.step);
               finalAnimIndex = moveAnimIndex;
               // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
               if (plyr.target.cell1.void == true) {
@@ -38775,18 +36774,14 @@ class App extends Component {
               break;
             case "jumping":
               let rangeIndex4 = plyr.speed.range.indexOf(0.1);
-              let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(
-                plyr.moving.step
-              );
+              let moveAnimIndex4 = this.moveStepRef[rangeIndex4].indexOf(plyr.moving.step);
               finalAnimIndex = moveAnimIndex4;
               // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
               break;
             case "strafe moving":
               if (plyr.pushBack.state === true) {
                 let rangeIndex3 = plyr.speed.range.indexOf(plyr.speed.move);
-                let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(
-                  plyr.moving.step
-                );
+                let moveAnimIndex3 = this.moveStepRef[rangeIndex3].indexOf(plyr.moving.step);
                 finalAnimIndex = moveAnimIndex3;
                 // console.log('anim testing pushback spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
               } else {
@@ -38804,18 +36799,14 @@ class App extends Component {
                   moveSpeed = plyr.pulled.moveSpeed;
                 }
                 let rangeIndex2 = plyr.speed.range.indexOf(moveSpeed);
-                let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(
-                  plyr.moving.step
-                );
+                let moveAnimIndex2 = this.moveStepRef[rangeIndex2].indexOf(plyr.moving.step);
                 finalAnimIndex = moveAnimIndex2;
                 // console.log('anim testing strafe mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number);
               }
               break;
             case "flanking":
               let rangeIndex6 = plyr.speed.range.indexOf(0.2);
-              let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(
-                plyr.moving.step
-              );
+              let moveAnimIndex6 = this.moveStepRef[rangeIndex6].indexOf(plyr.moving.step);
               finalAnimIndex = moveAnimIndex6;
               // console.log('flanking step',plyr.flanking.step,'step',plyr.moving.step);
               // console.log('anim testing mv spd',plyr.speed.move,'step',plyr.moving.step,'plyr',plyr.number,'index',finalAnimIndex);
@@ -38824,10 +36815,7 @@ class App extends Component {
               // let animIndex = plyr.attacking.count -1;
               let animIndex;
 
-              if (
-                plyr.elasticCounter.state === true &&
-                plyr.elasticCounter.type === "attacking"
-              ) {
+              if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === "attacking") {
                 if (plyr.elasticCounter.countUp.state === true) {
                   animIndex = plyr.elasticCounter.countUp.count - 1;
                 }
@@ -38840,8 +36828,7 @@ class App extends Component {
                       // animIndex5 = 10;
                       // animIndex5 = (plyr.elasticCounter.pause.count-mod)
                     } else {
-                      let mod =
-                        Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
+                      let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
                       animIndex = plyr.elasticCounter.pause.count - mod - 1;
                     }
                   }
@@ -38903,10 +36890,7 @@ class App extends Component {
             case "deflected":
               let animIndex5 = plyr.success.deflected.count - 1;
 
-              if (
-                plyr.elasticCounter.state === true &&
-                plyr.elasticCounter.type === "deflected"
-              ) {
+              if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === "deflected") {
                 if (plyr.elasticCounter.countUp.state === true) {
                   animIndex5 = plyr.elasticCounter.countUp.count - 1;
                 }
@@ -38919,8 +36903,7 @@ class App extends Component {
                       // animIndex5 = 10;
                       // animIndex5 = (plyr.elasticCounter.pause.count-mod)
                     } else {
-                      let mod =
-                        Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
+                      let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
                       animIndex5 = plyr.elasticCounter.pause.count - mod - 1;
                     }
                   }
@@ -38943,10 +36926,7 @@ class App extends Component {
             case "dodging":
               let animIndex7 = plyr.dodging.count - 1;
 
-              if (
-                plyr.elasticCounter.state === true &&
-                plyr.elasticCounter.type === "dodging"
-              ) {
+              if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === "dodging") {
                 if (plyr.elasticCounter.countUp.state === true) {
                   // animIndex7 = plyr.elasticCounter.countUp.count-1;
 
@@ -38958,8 +36938,7 @@ class App extends Component {
                       // animIndex5 = 10;
                       // animIndex5 = (plyr.elasticCounter.pause.count-mod)
                     } else {
-                      let mod =
-                        Math.floor(plyr.elasticCounter.countUp.count / 10) * 10;
+                      let mod = Math.floor(plyr.elasticCounter.countUp.count / 10) * 10;
                       animIndex7 = plyr.elasticCounter.countUp.count - mod - 1;
                     }
                   }
@@ -38973,8 +36952,7 @@ class App extends Component {
                       // animIndex5 = 10;
                       // animIndex5 = (plyr.elasticCounter.pause.count-mod)
                     } else {
-                      let mod =
-                        Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
+                      let mod = Math.floor(plyr.elasticCounter.pause.count / 10) * 10;
                       animIndex7 = plyr.elasticCounter.pause.count - mod - 1;
                     }
                   }
@@ -38990,11 +36968,8 @@ class App extends Component {
                       // animIndex5 = 10;
                       // animIndex5 = (plyr.elasticCounter.pause.count-mod)
                     } else {
-                      let mod =
-                        Math.floor(plyr.elasticCounter.countDown.count / 10) *
-                        10;
-                      animIndex7 =
-                        plyr.elasticCounter.countDown.count - mod - 1;
+                      let mod = Math.floor(plyr.elasticCounter.countDown.count / 10) * 10;
+                      animIndex7 = plyr.elasticCounter.countDown.count - mod - 1;
                     }
                   }
                 }
@@ -39009,79 +36984,61 @@ class App extends Component {
           if (plyr.ai.state === false) {
             switch (plyr.action) {
               case "idle":
-                updatedPlayerImg =
-                  this.playerImgs[plyr.number - 1].idle[weapon];
+                updatedPlayerImg = this.playerImgs[plyr.number - 1].idle[weapon];
                 break;
               case "moving":
                 if (plyr.pushing.state === true) {
-                  updatedPlayerImg =
-                    this.playerImgs[plyr.number - 1].pushing[weapon];
+                  updatedPlayerImg = this.playerImgs[plyr.number - 1].pushing[weapon];
                 }
                 if (plyr.pulled.state === true) {
-                  updatedPlayerImg =
-                    this.playerImgs[plyr.number - 1].pulled[weapon];
+                  updatedPlayerImg = this.playerImgs[plyr.number - 1].pulled[weapon];
                 }
                 if (plyr.pushed.state === true) {
-                  updatedPlayerImg =
-                    this.playerImgs[plyr.number - 1].pushed[weapon];
+                  updatedPlayerImg = this.playerImgs[plyr.number - 1].pushed[weapon];
                 } else {
-                  updatedPlayerImg =
-                    this.playerImgs[plyr.number - 1].walking[weapon];
+                  updatedPlayerImg = this.playerImgs[plyr.number - 1].walking[weapon];
                 }
 
                 break;
               case "jumping":
-                updatedPlayerImg =
-                  this.playerImgs[plyr.number - 1].jumping[weapon];
+                updatedPlayerImg = this.playerImgs[plyr.number - 1].jumping[weapon];
                 break;
               case "flanking":
-                updatedPlayerImg =
-                  this.playerImgs[plyr.number - 1].flanking[weapon];
+                updatedPlayerImg = this.playerImgs[plyr.number - 1].flanking[weapon];
                 break;
               case "strafe moving":
                 if (plyr.pushBack.state === true) {
-                  updatedPlayerImg =
-                    this.playerImgs[plyr.number - 1].pushBack[weapon];
+                  updatedPlayerImg = this.playerImgs[plyr.number - 1].pushBack[weapon];
                 }
                 if (plyr.pulling.state === true) {
-                  updatedPlayerImg =
-                    this.playerImgs[plyr.number - 1].pulling[weapon];
+                  updatedPlayerImg = this.playerImgs[plyr.number - 1].pulling[weapon];
                 }
                 if (plyr.pulled.state === true) {
-                  updatedPlayerImg =
-                    this.playerImgs[plyr.number - 1].pulled[weapon];
+                  updatedPlayerImg = this.playerImgs[plyr.number - 1].pulled[weapon];
                 }
                 if (plyr.pushed.state === true) {
-                  updatedPlayerImg =
-                    this.playerImgs[plyr.number - 1].pushed[weapon];
+                  updatedPlayerImg = this.playerImgs[plyr.number - 1].pushed[weapon];
                 } else {
-                  updatedPlayerImg =
-                    this.playerImgs[plyr.number - 1].strafing[weapon];
+                  updatedPlayerImg = this.playerImgs[plyr.number - 1].strafing[weapon];
                 }
                 break;
               case "falling":
-                updatedPlayerImg =
-                  this.playerImgs[plyr.number - 1].falling[weapon];
+                updatedPlayerImg = this.playerImgs[plyr.number - 1].falling[weapon];
                 break;
               case "attacking":
-                updatedPlayerImg =
-                  this.playerImgs[plyr.number - 1].attacking[weapon];
+                updatedPlayerImg = this.playerImgs[plyr.number - 1].attacking[weapon];
                 break;
               case "defending":
-                updatedPlayerImg =
-                  this.playerImgs[plyr.number - 1].defending[weapon];
+                updatedPlayerImg = this.playerImgs[plyr.number - 1].defending[weapon];
                 break;
               case "deflected":
-                updatedPlayerImg =
-                  this.playerImgs[plyr.number - 1].deflected[weapon];
+                updatedPlayerImg = this.playerImgs[plyr.number - 1].deflected[weapon];
                 break;
               case "dodging":
-                updatedPlayerImg =
-                  this.playerImgs[plyr.number - 1].dodging[weapon];
+                updatedPlayerImg = this.playerImgs[plyr.number - 1].dodging[weapon];
                 break;
               case "dead":
-                updatedPlayerImg =
-                  this.playerImgs[plyr.number - 1].idle[weapon];
+                updatedPlayerImg = this.playerImgs[plyr.number - 1].idle[weapon];
                 break;
             }
           }
@@ -39099,69 +37056,53 @@ class App extends Component {
                 break;
               case "moving":
                 if (plyr.pushing.state === true) {
-                  updatedPlayerImg =
-                    this.playerImgs[plyrImgIndex].pushing[weapon];
+                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pushing[weapon];
                 }
                 if (plyr.pulled.state === true) {
-                  updatedPlayerImg =
-                    this.playerImgs[plyrImgIndex].pulled[weapon];
+                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pulled[weapon];
                 }
                 if (plyr.pushed.state === true) {
-                  updatedPlayerImg =
-                    this.playerImgs[plyrImgIndex].pushed[weapon];
+                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pushed[weapon];
                 } else {
-                  updatedPlayerImg =
-                    this.playerImgs[plyrImgIndex].walking[weapon];
+                  updatedPlayerImg = this.playerImgs[plyrImgIndex].walking[weapon];
                 }
                 break;
               case "jumping":
-                updatedPlayerImg =
-                  this.playerImgs[plyrImgIndex].jumping[weapon];
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].jumping[weapon];
                 break;
               case "flanking":
-                updatedPlayerImg =
-                  this.playerImgs[plyrImgIndex].flanking[weapon];
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].flanking[weapon];
                 break;
               case "strafe moving":
                 if (plyr.pushBack.state === true) {
-                  updatedPlayerImg =
-                    this.playerImgs[plyrImgIndex].pushBack[weapon];
+                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pushBack[weapon];
                 }
                 if (plyr.pulling.state === true) {
-                  updatedPlayerImg =
-                    this.playerImgs[plyrImgIndex].pulling[weapon];
+                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pulling[weapon];
                 }
                 if (plyr.pulled.state === true) {
-                  updatedPlayerImg =
-                    this.playerImgs[plyrImgIndex].pulled[weapon];
+                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pulled[weapon];
                 }
                 if (plyr.pushed.state === true) {
-                  updatedPlayerImg =
-                    this.playerImgs[plyrImgIndex].pushed[weapon];
+                  updatedPlayerImg = this.playerImgs[plyrImgIndex].pushed[weapon];
                 } else {
-                  updatedPlayerImg =
-                    this.playerImgs[plyrImgIndex].strafing[weapon];
+                  updatedPlayerImg = this.playerImgs[plyrImgIndex].strafing[weapon];
                 }
                 break;
               case "falling":
-                updatedPlayerImg =
-                  this.playerImgs[plyrImgIndex].falling[weapon];
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].falling[weapon];
                 break;
               case "attacking":
-                updatedPlayerImg =
-                  this.playerImgs[plyrImgIndex].attacking[weapon];
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].attacking[weapon];
                 break;
               case "defending":
-                updatedPlayerImg =
-                  this.playerImgs[plyrImgIndex].defending[weapon];
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].defending[weapon];
                 break;
               case "deflected":
-                updatedPlayerImg =
-                  this.playerImgs[plyrImgIndex].deflected[weapon];
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].deflected[weapon];
                 break;
               case "dodging":
-                updatedPlayerImg =
-                  this.playerImgs[plyrImgIndex].dodging[weapon];
+                updatedPlayerImg = this.playerImgs[plyrImgIndex].dodging[weapon];
                 break;
               case "dead":
                 updatedPlayerImg = this.playerImgs[plyrImgIndex].idle[weapon];
@@ -39219,13 +37160,7 @@ class App extends Component {
             context.strokeStyle = "white";
             context.lineWidth = 2;
             context.beginPath();
-            context.roundRect(
-              origin2.x,
-              origin2.y,
-              width2 + 2,
-              this.playerDrawHeight * 1.5,
-              2
-            );
+            context.roundRect(origin2.x, origin2.y, width2 + 2, this.playerDrawHeight * 1.5, 2);
             // context.roundRect(origin2.x,origin2.y, width2, height2, 2);
             // context.roundRect(origin2.x,origin2.y, this.playerDrawWidth, this.playerDrawHeight*1.5, 2);
             // context.roundRect(origin2.x,origin2.y, this.playerDrawWidth+2, this.floorImageHeight*1.5, 2);
@@ -39262,10 +37197,7 @@ class App extends Component {
               direction = plyr.strafing.direction;
             }
             if (direction === "north") {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
 
                 if (plyr.jumping.state === true) {
@@ -39298,10 +37230,7 @@ class App extends Component {
               }
             }
             if (direction === "west") {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
 
                 if (plyr.jumping.state === true) {
@@ -39353,10 +37282,7 @@ class App extends Component {
             //   }
             // }
             if (direction === "east") {
-              if (
-                x === plyr.moving.origin.number.x + 1 &&
-                y === plyr.moving.origin.number.y
-              ) {
+              if (x === plyr.moving.origin.number.x + 1 && y === plyr.moving.origin.number.y) {
                 // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
                 // console.log('here',x,y);
                 if (plyr.jumping.state === true) {
@@ -39389,10 +37315,7 @@ class App extends Component {
               }
             }
             if (direction === "south") {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y + 1
-              ) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y + 1) {
                 // console.log('ff',plyr.action ,finalAnimIndex,'plyr #', player.number);
                 if (plyr.jumping.state === true) {
                   context.drawImage(
@@ -39436,20 +37359,9 @@ class App extends Component {
             plyr.elasticCounter.state !== true &&
             plyr.action !== "attacking"
           ) {
-            if (
-              plyr.halfPushBack.state === true &&
-              plyr.success.deflected.state !== true
-            ) {
-              let finalCoords = this.calcElasticCountCoords(
-                "halfPushBack",
-                "player",
-                plyr
-              ).coords;
-              let drawCell = this.calcElasticCountCoords(
-                "halfPushBack",
-                "player",
-                plyr
-              ).drawCell;
+            if (plyr.halfPushBack.state === true && plyr.success.deflected.state !== true) {
+              let finalCoords = this.calcElasticCountCoords("halfPushBack", "player", plyr).coords;
+              let drawCell = this.calcElasticCountCoords("halfPushBack", "player", plyr).drawCell;
 
               // if (x === drawCell.x && y === drawCell.y) {
               //
@@ -39604,10 +37516,7 @@ class App extends Component {
               plyr.moving.origin.number.y !== 0 &&
               plyr.moving.origin.number.y !== this.gridWidth
             ) {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y + 1
-              ) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y + 1) {
                 context.drawImage(
                   updatedPlayerImg,
                   sx,
@@ -39627,10 +37536,7 @@ class App extends Component {
               plyr.moving.origin.number.x === this.gridWidth &&
               plyr.moving.origin.number.y === 0
             ) {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 context.drawImage(
                   updatedPlayerImg,
                   sx,
@@ -39650,10 +37556,7 @@ class App extends Component {
               plyr.moving.origin.number.x === this.gridWidth &&
               plyr.moving.origin.number.y === this.gridWidthd
             ) {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 context.drawImage(
                   updatedPlayerImg,
                   sx,
@@ -39673,10 +37576,7 @@ class App extends Component {
               plyr.moving.origin.number.x === 0 &&
               plyr.moving.origin.number.y === this.gridWidthd
             ) {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 context.drawImage(
                   updatedPlayerImg,
                   sx,
@@ -39692,14 +37592,8 @@ class App extends Component {
                 // context.fillRect(point.x, point.y,5,5);
               }
             }
-            if (
-              plyr.moving.origin.number.x === 0 &&
-              plyr.moving.origin.number.y === 0
-            ) {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
+            if (plyr.moving.origin.number.x === 0 && plyr.moving.origin.number.y === 0) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 context.drawImage(
                   updatedPlayerImg,
                   sx,
@@ -39715,10 +37609,7 @@ class App extends Component {
                 // context.fillRect(point.x, point.y,5,5);
               }
             } else {
-              if (
-                x === plyr.moving.origin.number.x + 1 &&
-                y === plyr.moving.origin.number.y
-              ) {
+              if (x === plyr.moving.origin.number.x + 1 && y === plyr.moving.origin.number.y) {
                 context.drawImage(
                   updatedPlayerImg,
                   sx,
@@ -39743,20 +37634,9 @@ class App extends Component {
             plyr.ghost.state !== true &&
             plyr.dodging.state !== true
           ) {
-            if (
-              plyr.elasticCounter.state === true &&
-              plyr.elasticCounter.type === "attacking"
-            ) {
-              let finalCoords = this.calcElasticCountCoords(
-                "attacking",
-                "player",
-                plyr
-              ).coords;
-              let drawCell = this.calcElasticCountCoords(
-                "attacking",
-                "player",
-                plyr
-              ).drawCell;
+            if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === "attacking") {
+              let finalCoords = this.calcElasticCountCoords("attacking", "player", plyr).coords;
+              let drawCell = this.calcElasticCountCoords("attacking", "player", plyr).drawCell;
 
               // test logging
               if (x === this.gridWidth && y === this.gridWidth) {
@@ -39912,10 +37792,7 @@ class App extends Component {
             let jumpYCalc = 10 - this.moveStepRef[1].indexOf(plyr.moving.step);
 
             if (plyr.direction === "north") {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 context.drawImage(
                   updatedPlayerImg,
                   sx,
@@ -39930,10 +37807,7 @@ class App extends Component {
               }
             }
             if (plyr.direction === "west") {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 context.drawImage(
                   updatedPlayerImg,
                   sx,
@@ -39948,10 +37822,7 @@ class App extends Component {
               }
             }
             if (plyr.direction === "east") {
-              if (
-                x === plyr.target.cell2.number.x &&
-                y === plyr.target.cell2.number.y
-              ) {
+              if (x === plyr.target.cell2.number.x && y === plyr.target.cell2.number.y) {
                 context.drawImage(
                   updatedPlayerImg,
                   sx,
@@ -39966,10 +37837,7 @@ class App extends Component {
               }
             }
             if (plyr.direction === "south") {
-              if (
-                x === plyr.target.cell2.number.x &&
-                y === plyr.target.cell2.number.y
-              ) {
+              if (x === plyr.target.cell2.number.x && y === plyr.target.cell2.number.y) {
                 context.drawImage(
                   updatedPlayerImg,
                   sx,
@@ -39994,10 +37862,7 @@ class App extends Component {
               plyr.strafing.direction === "northWest" ||
               plyr.strafing.direction === "west"
             ) {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 context.drawImage(
                   updatedPlayerImg,
@@ -40013,14 +37878,8 @@ class App extends Component {
                 // playerDrawLog(x,y,plyr)
               }
             }
-            if (
-              plyr.strafing.direction === "east" ||
-              plyr.direction === "east"
-            ) {
-              if (
-                x === plyr.moving.origin.number.x + 1 &&
-                y === plyr.moving.origin.number.y
-              ) {
+            if (plyr.strafing.direction === "east" || plyr.direction === "east") {
+              if (x === plyr.moving.origin.number.x + 1 && y === plyr.moving.origin.number.y) {
                 // if (x === plyr.target.cell1.number.x && y === plyr.target.cell1.number.y) {
                 // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 context.drawImage(
@@ -40037,14 +37896,8 @@ class App extends Component {
                 // playerDrawLog(x,y)
               }
             }
-            if (
-              plyr.strafing.direction === "south" ||
-              plyr.direction === "south"
-            ) {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y + 1
-              ) {
+            if (plyr.strafing.direction === "south" || plyr.direction === "south") {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y + 1) {
                 // if (x === plyr.moving.destination.number.x && y === plyr.moving.destination.number.y) {
                 // if (x === plyr.target.cell1.number.x && y === plyr.target.cell1.number.y) {
                 // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
@@ -40063,10 +37916,7 @@ class App extends Component {
               }
             }
             if (plyr.strafing.direction === "northEast") {
-              if (
-                x === plyr.moving.origin.number.x + 1 &&
-                y === plyr.moving.origin.number.y
-              ) {
+              if (x === plyr.moving.origin.number.x + 1 && y === plyr.moving.origin.number.y) {
                 // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 context.drawImage(
                   updatedPlayerImg,
@@ -40083,10 +37933,7 @@ class App extends Component {
               }
             }
             if (plyr.strafing.direction === "southWest") {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y + 1
-              ) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y + 1) {
                 // context.drawImage(updatedPlayerImg, point.x-25, point.y-25, 55,55);
                 context.drawImage(
                   updatedPlayerImg,
@@ -40106,10 +37953,7 @@ class App extends Component {
           if (plyr.flanking.state === true && plyr.falling.state !== true) {
             if (plyr.flanking.step === 1) {
               if (plyr.flanking.direction === "north") {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y
-                ) {
+                if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                   // console.log('draw flank north',);
                   context.drawImage(
                     updatedPlayerImg,
@@ -40126,10 +37970,7 @@ class App extends Component {
               }
 
               if (plyr.flanking.direction === "west") {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y
-                ) {
+                if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                   // console.log('draw flank west',);
                   context.drawImage(
                     updatedPlayerImg,
@@ -40146,10 +37987,7 @@ class App extends Component {
               }
 
               if (plyr.flanking.direction === "east") {
-                if (
-                  x === plyr.moving.origin.number.x + 1 &&
-                  y === plyr.moving.origin.number.y
-                ) {
+                if (x === plyr.moving.origin.number.x + 1 && y === plyr.moving.origin.number.y) {
                   // console.log('draw flank east',);
                   context.drawImage(
                     updatedPlayerImg,
@@ -40166,10 +38004,7 @@ class App extends Component {
               }
 
               if (plyr.flanking.direction === "south") {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y + 1
-                ) {
+                if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y + 1) {
                   // console.log('draw flank south',);
                   context.drawImage(
                     updatedPlayerImg,
@@ -40188,10 +38023,7 @@ class App extends Component {
 
             if (plyr.flanking.step === 2) {
               if (plyr.direction === "north") {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y
-                ) {
+                if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                   context.drawImage(
                     updatedPlayerImg,
                     sx,
@@ -40207,10 +38039,7 @@ class App extends Component {
               }
 
               if (plyr.direction === "west") {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y
-                ) {
+                if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                   context.drawImage(
                     updatedPlayerImg,
                     sx,
@@ -40226,10 +38055,7 @@ class App extends Component {
               }
 
               if (plyr.direction === "east") {
-                if (
-                  x === plyr.moving.origin.number.x + 1 &&
-                  y === plyr.moving.origin.number.y
-                ) {
+                if (x === plyr.moving.origin.number.x + 1 && y === plyr.moving.origin.number.y) {
                   context.drawImage(
                     updatedPlayerImg,
                     sx,
@@ -40245,10 +38071,7 @@ class App extends Component {
               }
 
               if (plyr.direction === "south") {
-                if (
-                  x === plyr.moving.origin.number.x &&
-                  y === plyr.moving.origin.number.y + 1
-                ) {
+                if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y + 1) {
                   context.drawImage(
                     updatedPlayerImg,
                     sx,
@@ -40265,10 +38088,7 @@ class App extends Component {
             }
           }
           if (plyr.falling.state === true) {
-            if (
-              x === plyr.target.cell1.number.x &&
-              y === plyr.target.cell1.number.y
-            ) {
+            if (x === plyr.target.cell1.number.x && y === plyr.target.cell1.number.y) {
               context.drawImage(
                 updatedPlayerImg,
                 sx,
@@ -40289,10 +38109,7 @@ class App extends Component {
               plyr.target.cell1.number.x > this.gridWidth ||
               plyr.target.cell1.number.y > this.gridWidth
             ) {
-              if (
-                x === plyr.moving.origin.number.x &&
-                y === plyr.moving.origin.number.y
-              ) {
+              if (x === plyr.moving.origin.number.x && y === plyr.moving.origin.number.y) {
                 context.drawImage(
                   updatedPlayerImg,
                   sx,
@@ -40309,20 +38126,9 @@ class App extends Component {
             }
           }
           if (plyr.success.deflected.state === true) {
-            if (
-              plyr.elasticCounter.state === true &&
-              plyr.elasticCounter.type === "deflected"
-            ) {
-              let finalCoords = this.calcElasticCountCoords(
-                "deflected",
-                "player",
-                plyr
-              ).coords;
-              let drawCell = this.calcElasticCountCoords(
-                "deflected",
-                "player",
-                plyr
-              ).drawCell;
+            if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === "deflected") {
+              let finalCoords = this.calcElasticCountCoords("deflected", "player", plyr).coords;
+              let drawCell = this.calcElasticCountCoords("deflected", "player", plyr).drawCell;
 
               if (
                 !this.gridInfo.find(
@@ -40441,24 +38247,10 @@ class App extends Component {
               // console.log('deflected elastic counter overflow?',plyr.success.deflected.count);
             }
           }
-          if (
-            plyr.action === "dodging" &&
-            plyr.success.deflected.state !== true
-          ) {
-            if (
-              plyr.elasticCounter.state === true &&
-              plyr.elasticCounter.type === "dodging"
-            ) {
-              let finalCoords = this.calcElasticCountCoords(
-                "dodging",
-                "player",
-                plyr
-              ).coords;
-              let drawCell = this.calcElasticCountCoords(
-                "dodging",
-                "player",
-                plyr
-              ).drawCell;
+          if (plyr.action === "dodging" && plyr.success.deflected.state !== true) {
+            if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === "dodging") {
+              let finalCoords = this.calcElasticCountCoords("dodging", "player", plyr).coords;
+              let drawCell = this.calcElasticCountCoords("dodging", "player", plyr).drawCell;
 
               // test logging
               if (x === this.gridWidth && y === this.gridWidth) {
@@ -40590,10 +38382,7 @@ class App extends Component {
 
           // RESPAWN
           if (plyr.respawn === true) {
-            if (
-              x === plyr.startPosition.cell.number.x &&
-              y === plyr.startPosition.cell.number.y
-            ) {
+            if (x === plyr.startPosition.cell.number.x && y === plyr.startPosition.cell.number.y) {
               // console.log('respawning... confirm dead player',plyr.dead.state,x,y);
 
               let canRespawn = false;
@@ -40608,10 +38397,8 @@ class App extends Component {
 
               for (const plyrx of this.players) {
                 if (
-                  plyrx.currentPosition.cell.number.x ===
-                    plyr.startPosition.cell.number.x &&
-                  plyrx.currentPosition.cell.number.y ===
-                    plyr.startPosition.cell.number.y
+                  plyrx.currentPosition.cell.number.x === plyr.startPosition.cell.number.x &&
+                  plyrx.currentPosition.cell.number.y === plyr.startPosition.cell.number.y
                 ) {
                   positionOccupied = true;
                 }
@@ -40628,19 +38415,14 @@ class App extends Component {
                 respawnCellNo = this.getRandomFreeCell();
                 respawnPosCellRef = this.gridInfo.find(
                   (x) =>
-                    x.number.x === respawnCellNo.number.x &&
-                    x.number.y === respawnCellNo.number.y
+                    x.number.x === respawnCellNo.number.x && x.number.y === respawnCellNo.number.y
                 );
 
                 if (respawnCellNo) {
                   canRespawn = true;
                 } else {
-                  console.log(
-                    "no cells for respawn. Unlikely but true. Reassign obstacle cell"
-                  );
-                  if (
-                    this.gridInfo.filter((x) => x.obstacle.state === true)[0]
-                  ) {
+                  console.log("no cells for respawn. Unlikely but true. Reassign obstacle cell");
+                  if (this.gridInfo.filter((x) => x.obstacle.state === true)[0]) {
                     this.gridInfo.filter(
                       (x) => x.obstacle.state === true
                     )[0].obstacle.state = false;
@@ -40653,9 +38435,8 @@ class App extends Component {
                       .filter((x) => x.obstacle.state === true)[0]
                       .levelData.split("_");
                     oldLvlData[1] = "*";
-                    this.gridInfo.filter(
-                      (x) => x.obstacle.state === true
-                    )[0].levelData = oldLvlData.join("_");
+                    this.gridInfo.filter((x) => x.obstacle.state === true)[0].levelData =
+                      oldLvlData.join("_");
                     canRespawn = true;
                   } else {
                     console.log(
@@ -40663,9 +38444,7 @@ class App extends Component {
                     );
 
                     if (this.gridInfo.filter((x) => x.void.state === true)[0]) {
-                      this.gridInfo.filter(
-                        (x) => x.void.state === true
-                      )[0].void.state = false;
+                      this.gridInfo.filter((x) => x.void.state === true)[0].void.state = false;
                       respawnPosCellRef = this.gridInfo.find(
                         (x) =>
                           x.number.x === respawnCellNo.number.x &&
@@ -40675,9 +38454,8 @@ class App extends Component {
                         .filter((x) => x.void.state === true)[0]
                         .levelData.split("_");
                       oldLvlData[3] = "a";
-                      this.gridInfo.filter(
-                        (x) => x.void.state === true
-                      )[0].levelData = oldLvlData.join("_");
+                      this.gridInfo.filter((x) => x.void.state === true)[0].levelData =
+                        oldLvlData.join("_");
                       canRespawn = true;
                     }
                   }
@@ -40783,8 +38561,7 @@ class App extends Component {
 
           // PLAYER POPUPS
           if (x === this.gridWidth && y === this.gridWidth) {
-            let popupBorderColor =
-              this.playerColourRef["player" + plyr.number + ""];
+            let popupBorderColor = this.playerColourRef["player" + plyr.number + ""];
 
             if (plyr.dead.state !== true && plyr.popups.length > 0) {
               for (const popup of plyr.popups) {
@@ -40792,9 +38569,7 @@ class App extends Component {
                   // console.log('drawing a popup');
                   let popupDrawCoords;
                   if (popup.position === "" || !popup.position) {
-                    let currentPopups = plyr.popups.filter(
-                      (x) => x.state === true
-                    );
+                    let currentPopups = plyr.popups.filter((x) => x.state === true);
                     // let positions = ['north','east','south','west','northEast','southEast','southWest']
                     let positions = [
                       "north",
@@ -40831,14 +38606,9 @@ class App extends Component {
 
                     // CHECK OTHER PLAYER'S POSITION AND THE POPUPS POSITION
                     for (const plyr2 of this.players) {
-                      if (
-                        plyr2.ai.state !== true &&
-                        plyr2.number !== plyr.number
-                      ) {
+                      if (plyr2.ai.state !== true && plyr2.number !== plyr.number) {
                         let myPos = plyr.currentPosition.cell.number;
-                        let invalidPos =
-                          this.players[plyr2.number - 1].currentPosition.cell
-                            .number;
+                        let invalidPos = this.players[plyr2.number - 1].currentPosition.cell.number;
 
                         dir = undefined;
                         // let invalidPositions = [invalidPos];
@@ -40862,16 +38632,9 @@ class App extends Component {
                               y: undefined,
                             };
 
-                            invalidPos2 = this.getCellFromDirection(
-                              1,
-                              invalidPos,
-                              pop.position
-                            );
+                            invalidPos2 = this.getCellFromDirection(1, invalidPos, pop.position);
 
-                            dir = this.getDirectionFromCells(
-                              myPos,
-                              invalidPos2
-                            );
+                            dir = this.getDirectionFromCells(myPos, invalidPos2);
 
                             if (dir && positions.includes(dir) === true) {
                               positions.splice(positions.indexOf(dir), 1);
@@ -40895,11 +38658,7 @@ class App extends Component {
                           y: undefined,
                         };
 
-                        invalidPos2 = this.getCellFromDirection(
-                          1,
-                          cellPos,
-                          popup2.position
-                        );
+                        invalidPos2 = this.getCellFromDirection(1, cellPos, popup2.position);
 
                         dir = this.getDirectionFromCells(myPos, invalidPos2);
 
@@ -40980,8 +38739,7 @@ class App extends Component {
                       popupDrawCoords.anchor.y,
                       popupBorderColor
                     );
-                    let centerPopupOffset =
-                      (this.popupSize - this.popupImgSize) / 2;
+                    let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
 
                     if (showProgress === true && popupProgress === true) {
                       let perc = this.playerPopupProgressCalc(plyr, popup);
@@ -41006,14 +38764,11 @@ class App extends Component {
                       context.fillText(
                         popup.msg.split("_")[1],
                         popupDrawCoords.origin.x +
-                          (this.popupSize -
-                            popup.msg.split("_")[1].length * 7) /
-                            2,
+                          (this.popupSize - popup.msg.split("_")[1].length * 7) / 2,
                         popupDrawCoords.origin.y + 15
                       );
 
-                      centerPopupOffset =
-                        (this.popupSize - this.popupImgSize * 0.75) / 2;
+                      centerPopupOffset = (this.popupSize - this.popupImgSize * 0.75) / 2;
                       context.drawImage(
                         popup.img,
                         popupDrawCoords.origin.x + centerPopupOffset,
@@ -41034,20 +38789,13 @@ class App extends Component {
                     let dir = undefined;
                     let dirs = [];
 
-                    let currentPopups = this.cellPopups.filter(
-                      (x) => x.state === true
-                    );
+                    let currentPopups = this.cellPopups.filter((x) => x.state === true);
 
                     // HAVE ANY OTHER PLAYERS OR OTHER PLAYERS' POPUPS MOVED TO INVALID POSITIONS SINCE POPUP'S 1ST DRAW
                     for (const plyr2 of this.players) {
-                      if (
-                        plyr2.ai.state !== true &&
-                        plyr2.number !== plyr.number
-                      ) {
+                      if (plyr2.ai.state !== true && plyr2.number !== plyr.number) {
                         let myPos = plyr.currentPosition.cell.number;
-                        let invalidPos =
-                          this.players[plyr2.number - 1].currentPosition.cell
-                            .number;
+                        let invalidPos = this.players[plyr2.number - 1].currentPosition.cell.number;
 
                         dir = this.getDirectionFromCells(myPos, invalidPos);
 
@@ -41063,11 +38811,7 @@ class App extends Component {
                             y: undefined,
                           };
 
-                          invalidPos2 = this.getCellFromDirection(
-                            1,
-                            invalidPos,
-                            pop.position
-                          );
+                          invalidPos2 = this.getCellFromDirection(1, invalidPos, pop.position);
 
                           dir = this.getDirectionFromCells(myPos, invalidPos2);
 
@@ -41095,11 +38839,7 @@ class App extends Component {
                         y: undefined,
                       };
 
-                      invalidPos2 = this.getCellFromDirection(
-                        1,
-                        cellPos,
-                        popup2.position
-                      );
+                      invalidPos2 = this.getCellFromDirection(1, cellPos, popup2.position);
 
                       dir = this.getDirectionFromCells(myPos, invalidPos2);
 
@@ -41112,11 +38852,8 @@ class App extends Component {
                     // console.log('dirs',dirs,'popup.position',popup.position);
                     // if (popup.position === dir ) {
                     if (dirs.find((x) => x === popup.position)) {
-                      plyr.popups.find((x) => x.msg === popup.msg).position =
-                        "";
-                      plyr.popups.find(
-                        (x) => x.msg === popup.msg
-                      ).state = false;
+                      plyr.popups.find((x) => x.msg === popup.msg).position = "";
+                      plyr.popups.find((x) => x.msg === popup.msg).state = false;
                       // console.log("A new invalid direction === popup's position. reconsidering...",popup.msg);
                     } else {
                       let popupProgress = false;
@@ -41155,8 +38892,7 @@ class App extends Component {
                           popup.msg.split("_")[0] === "hpDown"
                         ) {
                           writeValue = true;
-                          popup.img =
-                            this.popupImageRef[popup.msg.split("_")[0]];
+                          popup.img = this.popupImageRef[popup.msg.split("_")[0]];
                         }
                       }
 
@@ -41176,8 +38912,7 @@ class App extends Component {
                         popupDrawCoords.anchor.y,
                         popupBorderColor
                       );
-                      let centerPopupOffset =
-                        (this.popupSize - this.popupImgSize) / 2;
+                      let centerPopupOffset = (this.popupSize - this.popupImgSize) / 2;
 
                       if (showProgress === true && popupProgress === true) {
                         let perc = this.playerPopupProgressCalc(plyr, popup);
@@ -41202,14 +38937,11 @@ class App extends Component {
                         context.fillText(
                           popup.msg.split("_")[1],
                           popupDrawCoords.origin.x +
-                            (this.popupSize -
-                              popup.msg.split("_")[1].length * 7) /
-                              2,
+                            (this.popupSize - popup.msg.split("_")[1].length * 7) / 2,
                           popupDrawCoords.origin.y + 15
                         );
 
-                        centerPopupOffset =
-                          (this.popupSize - this.popupImgSize * 0.75) / 2;
+                        centerPopupOffset = (this.popupSize - this.popupImgSize * 0.75) / 2;
                         context.drawImage(
                           popup.img,
                           popupDrawCoords.origin.x + centerPopupOffset,
@@ -41258,10 +38990,7 @@ class App extends Component {
         for (const obstacle of this.obstaclesOutOfBoundsFall) {
           // here!! draw at origin cell x/y
           // if (x === 0 && y === 0) {
-          if (
-            x === obstacle.moving.origin.number.x &&
-            y === obstacle.moving.origin.number.y
-          ) {
+          if (x === obstacle.moving.origin.number.x && y === obstacle.moving.origin.number.y) {
             // console.log('obstacle falling out of bounds b count',obstacle.moving.origin.center,'position',obstacle.moving.nextPosition);
             let obstacleImg = this.obstacleImgs[obstacle.type];
             context.drawImage(
@@ -41320,11 +39049,7 @@ class App extends Component {
             let obstacleImg = this.obstacleImgs[gridInfoCell.obstacle.type];
 
             if (gridInfoCell.obstacle.moving.state !== true) {
-              context.drawImage(
-                obstacleImg,
-                iso.x - offset.x,
-                iso.y - obstacleImg.height
-              );
+              context.drawImage(obstacleImg, iso.x - offset.x, iso.y - obstacleImg.height);
             } else {
               // console.log('x/y',x,y);
               // context.drawImage(obstacleImg, gridInfoCell.obstacle.moving.nextPosition.x-offset.x, gridInfoCell.obstacle.moving.nextPosition.y- Math.ceil(obstacleImg.height/2));
@@ -41334,10 +39059,7 @@ class App extends Component {
 
         // MOVING
         for (const cell of this.gridInfo) {
-          if (
-            cell.obstacle.state === true &&
-            cell.obstacle.moving.state === true
-          ) {
+          if (cell.obstacle.state === true && cell.obstacle.moving.state === true) {
             let drawHere = {
               x: cell.obstacle.moving.origin.number.x,
               y: cell.obstacle.moving.origin.number.y,
@@ -41385,8 +39107,7 @@ class App extends Component {
               context.drawImage(
                 obstacleImg,
                 cell.obstacle.moving.nextPosition.x - offset.x,
-                cell.obstacle.moving.nextPosition.y -
-                  Math.ceil(obstacleImg.height / 2, 30, 30)
+                cell.obstacle.moving.nextPosition.y - Math.ceil(obstacleImg.height / 2, 30, 30)
               );
             }
 
@@ -41429,13 +39150,8 @@ class App extends Component {
             ) {
               if (obs.state === true) {
                 if (obs.countUp.state === true) {
-                  let obstacleImg =
-                    this.obstacleImgs[gridInfoCell.obstacle.type];
-                  if (
-                    obs.countUp.count === 1 &&
-                    !obs.coords.x &&
-                    !obs.coords.y
-                  ) {
+                  let obstacleImg = this.obstacleImgs[gridInfoCell.obstacle.type];
+                  if (obs.countUp.count === 1 && !obs.coords.x && !obs.coords.y) {
                     obs.coords = {
                       x: iso.x - offset.x,
                       y: iso.y - obstacleImg.height,
@@ -41465,17 +39181,11 @@ class App extends Component {
             if (cell.count % 3 === 0) {
               if (cell.type === "obstacle" && cell.cell.obstacle.type) {
                 let obstacleImg = this.obstacleImgs[cell.cell.obstacle.type];
-                context.drawImage(
-                  obstacleImg,
-                  iso.x - offset.x,
-                  iso.y - obstacleImg.height
-                );
+                context.drawImage(obstacleImg, iso.x - offset.x, iso.y - obstacleImg.height);
               }
               if (cell.type === "barrier" && cell.cell.barrier.type) {
                 let barrierImg =
-                  this.barrierImgs[cell.cell.barrier.type][
-                    cell.cell.barrier.position
-                  ];
+                  this.barrierImgs[cell.cell.barrier.type][cell.cell.barrier.position];
                 context.drawImage(
                   barrierImg,
                   iso.x - offset.x,
@@ -41489,10 +39199,7 @@ class App extends Component {
         }
         for (const cell of this.obstacleItemsToDrop) {
           // console.log('obstacleItemsToDrop',cell);
-          if (
-            gridInfoCell.number.x === cell.target.x &&
-            gridInfoCell.number.y === cell.target.y
-          ) {
+          if (gridInfoCell.number.x === cell.target.x && gridInfoCell.number.y === cell.target.y) {
             if (cell.count % 3 === 0) {
               let itemImg;
               if (cell.item.type === "item") {
@@ -41507,10 +39214,7 @@ class App extends Component {
         }
 
         // STATIONARY BARRIERS
-        if (
-          gridInfoCell.barrier.state === true &&
-          gridInfoCell.void.state !== true
-        ) {
+        if (gridInfoCell.barrier.state === true && gridInfoCell.void.state !== true) {
           let hide = false;
 
           if (this.obstacleBarrierToDestroy.length > 0) {
@@ -41528,9 +39232,7 @@ class App extends Component {
 
           if (hide !== true) {
             let barrierImg =
-              this.barrierImgs[gridInfoCell.barrier.type][
-                gridInfoCell.barrier.position
-              ];
+              this.barrierImgs[gridInfoCell.barrier.type][gridInfoCell.barrier.position];
             context.drawImage(
               barrierImg,
               iso.x - offset.x,
@@ -41543,10 +39245,7 @@ class App extends Component {
 
         // PROJECTILES
         for (const bolt of this.projectiles) {
-          if (
-            bolt.currentPosition.number.x === x &&
-            bolt.currentPosition.number.y === y
-          ) {
+          if (bolt.currentPosition.number.x === x && bolt.currentPosition.number.y === y) {
             let boltImg;
             switch (bolt.direction) {
               case "north":
@@ -41582,13 +39281,7 @@ class App extends Component {
           // console.log('Camera centered');
           context.fillStyle = "yellow";
           context.beginPath();
-          context.arc(
-            this.camera.focus.x,
-            this.camera.focus.y,
-            10,
-            0,
-            2 * Math.PI
-          );
+          context.arc(this.camera.focus.x, this.camera.focus.y, 10, 0, 2 * Math.PI);
           // context.arc(this.camera.zoomFocusPan.x, this.camera.zoomFocusPan.y, 10, 0, 2 * Math.PI);
           context.fill();
         }
@@ -41799,9 +39492,7 @@ class App extends Component {
             { x: center2.x, y: center2.y - this.tileWidth / 4 },
             { x: center2.x - this.tileWidth / 2, y: center2.y },
           ],
-          side: Math.sqrt(
-            (this.tileWidth / 2 / 2) ^ (2 + this.tileWidth / 2) ^ 2
-          ),
+          side: Math.sqrt((this.tileWidth / 2 / 2) ^ (2 + this.tileWidth / 2) ^ 2),
           levelData: "",
           edge: {
             state: false,
@@ -41918,13 +39609,11 @@ class App extends Component {
     for (const elem of allCells) {
       // APPLY LEVEL DATA TO GRID INFO CELLS!
       let levelData2Row = "row" + elem.number.x;
-      let elemLevelData =
-        this["levelData" + this.gridWidth][levelData2Row][elem.number.y];
+      let elemLevelData = this["levelData" + this.gridWidth][levelData2Row][elem.number.y];
 
       if (
         (elemLevelData.split("_")[1] !== "*" &&
-          this.terrainLevelDataRef[elemLevelData.split("_")[3]].type ===
-            "deep") ||
+          this.terrainLevelDataRef[elemLevelData.split("_")[3]].type === "deep") ||
         (elemLevelData.split("_")[1] !== "*" &&
           this.terrainLevelDataRef[elemLevelData.split("_")[3]].type === "void")
       ) {
@@ -41944,9 +39633,7 @@ class App extends Component {
       elem.elevation.number = parseInt(elem.levelData.split("_")[4].charAt(0));
       if (elem.levelData.split("_")[4].charAt(1) !== "*") {
         elem.elevation.type =
-          this.elevationTypeLevelDataRef[
-            elem.levelData.split("_")[4].charAt(1)
-          ];
+          this.elevationTypeLevelDataRef[elem.levelData.split("_")[4].charAt(1)];
       }
 
       if (elem.levelData.split("_")[4].charAt(1) !== "*") {
@@ -41991,8 +39678,7 @@ class App extends Component {
 
       // BARRIER
       if (elem.levelData.split("_")[0] !== "**") {
-        elem.barrier =
-          this.barrierLevelDataRef[elem.levelData.split("_")[0].charAt(0)];
+        elem.barrier = this.barrierLevelDataRef[elem.levelData.split("_")[0].charAt(0)];
 
         switch (elem.levelData.split("_")[0].charAt(1)) {
           case "n":
@@ -42080,14 +39766,10 @@ class App extends Component {
     for (const elem2 of this.settingsGridInfo) {
       // SET LEVEL DATA!
       let levelData2Row = "row" + elem2.number.x;
-      let elemLevelData =
-        this["levelData" + this.settingsGridWidth][levelData2Row][
-          elem2.number.y
-        ];
+      let elemLevelData = this["levelData" + this.settingsGridWidth][levelData2Row][elem2.number.y];
       if (
         (elemLevelData.split("_")[1] !== "*" &&
-          this.terrainLevelDataRef[elemLevelData.split("_")[3]].type ===
-            "deep") ||
+          this.terrainLevelDataRef[elemLevelData.split("_")[3]].type === "deep") ||
         (elemLevelData.split("_")[1] !== "*" &&
           this.terrainLevelDataRef[elemLevelData.split("_")[3]].type === "void")
       ) {
@@ -42102,14 +39784,10 @@ class App extends Component {
       }
 
       // ELEVATION NUMBER
-      elem2.elevation.number = parseInt(
-        elem2.levelData.split("_")[4].charAt(0)
-      );
+      elem2.elevation.number = parseInt(elem2.levelData.split("_")[4].charAt(0));
       if (elem2.levelData.split("_")[4].charAt(1) !== "*") {
         elem2.elevation.type =
-          this.elevationTypeLevelDataRef[
-            elem2.levelData.split("_")[4].charAt(1)
-          ];
+          this.elevationTypeLevelDataRef[elem2.levelData.split("_")[4].charAt(1)];
       }
 
       // ELEVATION POSITION
@@ -42149,14 +39827,12 @@ class App extends Component {
 
       // OBSTACLE
       if (elem2.levelData.split("_")[1] !== "*") {
-        elem2.obstacle =
-          this.obstacleLevelDataRef[elem2.levelData.split("_")[1]];
+        elem2.obstacle = this.obstacleLevelDataRef[elem2.levelData.split("_")[1]];
       }
 
       // BARRIER
       if (elem2.levelData.split("_")[0] !== "**") {
-        elem2.barrier =
-          this.barrierLevelDataRef[elem2.levelData.split("_")[0].charAt(0)];
+        elem2.barrier = this.barrierLevelDataRef[elem2.levelData.split("_")[0].charAt(0)];
 
         switch (elem2.levelData.split("_")[0].charAt(1)) {
           case "n":
@@ -43002,13 +40678,11 @@ class App extends Component {
     for (const cell of preCellColorRef) {
       let colorCheckPass = false;
       while (colorCheckPass === false) {
-        let randomColor = `rgb(${this.rnJesus(0, 255)},${this.rnJesus(
+        let randomColor = `rgb(${this.rnJesus(0, 255)},${this.rnJesus(0, 255)},${this.rnJesus(
           0,
           255
-        )},${this.rnJesus(0, 255)})`;
-        let colorsInUse = preCellColorRef
-          .filter((x) => x.color !== "")
-          .map((y) => y === y.color);
+        )})`;
+        let colorsInUse = preCellColorRef.filter((x) => x.color !== "").map((y) => y === y.color);
         if (colorsInUse.find((x) => x === randomColor)) {
           colorCheckPass = false;
         } else {
@@ -43037,9 +40711,7 @@ class App extends Component {
           y: iso.y - offset.y / 2 - this.cellCenterOffsetY,
         };
 
-        let cell = this.gridInfo.find(
-          (elem) => elem.number.x === x && elem.number.y === y
-        );
+        let cell = this.gridInfo.find((elem) => elem.number.x === x && elem.number.y === y);
         let cellLevelData = this.gridInfo.find(
           (elem) => elem.number.x === x && elem.number.y === y
         ).levelData;
@@ -43065,9 +40737,7 @@ class App extends Component {
         context.fillRect(center.x, center.y, 5, 5);
 
         // INITIAL ITEM DISTRIBUTION!!
-        let cell2 = this.gridInfo.find(
-          (elem) => elem.number.x === x && elem.number.y === y
-        );
+        let cell2 = this.gridInfo.find((elem) => elem.number.x === x && elem.number.y === y);
         if (cell2.item.name !== "") {
           // console.log('found cell with item');
           if (cell2.item.initDrawn === false) {
@@ -43271,8 +40941,7 @@ class App extends Component {
 
         // OBSTACLES & BARRIERS
         if (cell.barrier.state === true && cell.void.state !== true) {
-          let barrierImg =
-            this.barrierImgs[cell.barrier.type][cell.barrier.position];
+          let barrierImg = this.barrierImgs[cell.barrier.type][cell.barrier.position];
           context.drawImage(
             barrierImg,
             iso.x - offset.x,
@@ -43284,11 +40953,7 @@ class App extends Component {
 
         if (cell.obstacle.state === true && cell.void.state !== true) {
           let obstacleImg = this.obstacleImgs[cell.obstacle.type];
-          context.drawImage(
-            obstacleImg,
-            iso.x - offset.x,
-            iso.y - obstacleImg.height
-          );
+          context.drawImage(obstacleImg, iso.x - offset.x, iso.y - obstacleImg.height);
         }
 
         this.init = false;
@@ -43343,10 +41008,7 @@ class App extends Component {
             )}
             // SETTINGS BOX
             <div className="settingsSwitch">
-              <a
-                href="javascript:"
-                className="setSwitchLink"
-                onClick={this.openSettings}>
+              <a href="javascript:" className="setSwitchLink" onClick={this.openSettings}>
                 <OverlayTrigger
                   placement={"top"}
                   overlay={
@@ -43356,11 +41018,7 @@ class App extends Component {
                       </Popover.Body>
                     </Popover>
                   }>
-                  <FontAwesomeIcon
-                    icon={faCogs}
-                    size="sm"
-                    className="setSwitchIcon"
-                  />
+                  <FontAwesomeIcon icon={faCogs} size="sm" className="setSwitchIcon" />
                 </OverlayTrigger>
               </a>
               {this.aiPlayers[0] && (
@@ -43378,20 +41036,13 @@ class App extends Component {
                         </Popover.Body>
                       </Popover>
                     }>
-                    <FontAwesomeIcon
-                      icon={faRobot}
-                      size="sm"
-                      className="setSwitchIcon"
-                    />
+                    <FontAwesomeIcon icon={faRobot} size="sm" className="setSwitchIcon" />
                   </OverlayTrigger>
                 </a>
               )}
               {!this.aiPlayers[0] && (
                 // {!this.updateSettingsFormAiDataData.random &&(
-                <a
-                  href="javascript:"
-                  className="setSwitchLink"
-                  onClick={this.toggleAiDisplay}>
+                <a href="javascript:" className="setSwitchLink" onClick={this.toggleAiDisplay}>
                   <OverlayTrigger
                     placement={"top"}
                     overlay={
@@ -43401,19 +41052,12 @@ class App extends Component {
                         </Popover.Body>
                       </Popover>
                     }>
-                    <FontAwesomeIcon
-                      icon={faRobot}
-                      size="sm"
-                      className="setSwitchIcon"
-                    />
+                    <FontAwesomeIcon icon={faRobot} size="sm" className="setSwitchIcon" />
                   </OverlayTrigger>
                 </a>
               )}
               {this.camera.state === false && (
-                <a
-                  href="javascript:"
-                  className="setSwitchLink"
-                  onClick={this.menuToggleCamera}>
+                <a href="javascript:" className="setSwitchLink" onClick={this.menuToggleCamera}>
                   <OverlayTrigger
                     placement={"top"}
                     overlay={
@@ -43423,19 +41067,13 @@ class App extends Component {
                             <strong>Toggle Camera Sub-menu</strong>
                           )}
                           {this.camera.customView.state === true && (
-                            <strong>
-                              Toggle Camera Sub-menu (Custom View is set)
-                            </strong>
+                            <strong>Toggle Camera Sub-menu (Custom View is set)</strong>
                           )}
                         </Popover.Body>
                       </Popover>
                     }>
                     <div className="icon-container">
-                      <FontAwesomeIcon
-                        icon={faVideo}
-                        size="sm"
-                        className="setSwitchIcon"
-                      />
+                      <FontAwesomeIcon icon={faVideo} size="sm" className="setSwitchIcon" />
                       {this.camera.customView.state === true && (
                         <FontAwesomeIcon
                           icon={faCheckSquare}
@@ -43460,11 +41098,7 @@ class App extends Component {
                       </Popover.Body>
                     </Popover>
                   }>
-                  <FontAwesomeIcon
-                    icon={faUndo}
-                    size="sm"
-                    className="setSwitchIcon"
-                  />
+                  <FontAwesomeIcon icon={faUndo} size="sm" className="setSwitchIcon" />
                 </OverlayTrigger>
               </a>
             </div>
@@ -43488,17 +41122,11 @@ class App extends Component {
                   overlay={
                     <Popover id={`popover-positioned-${"top"}`}>
                       <Popover.Body>
-                        <strong>
-                          Click or mouse over a cell to get more info
-                        </strong>
+                        <strong>Click or mouse over a cell to get more info</strong>
                       </Popover.Body>
                     </Popover>
                   }>
-                  <FontAwesomeIcon
-                    icon={faChessBoard}
-                    size="sm"
-                    className="setSwitchIcon"
-                  />
+                  <FontAwesomeIcon icon={faChessBoard} size="sm" className="setSwitchIcon" />
                 </OverlayTrigger>
               </div>
             )}
@@ -43555,32 +41183,17 @@ class App extends Component {
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 -0.5 30 30"
             shapeRendering="crispEdges">
-            <metadata>
-              Made with Pixels to Svg https://codepen.io/shshaw/pen/XbxvNj
-            </metadata>
+            <metadata>Made with Pixels to Svg https://codepen.io/shshaw/pen/XbxvNj</metadata>
             <path
               id="border"
               stroke="yellow"
               strokeWidth="5px"
               d="M4 0h21M2 1h26M1 2h2M27 2h2M1 3h1M28 3h1M1 4h1M28 4h2M0 5h2M28 5h2M0 6h2M28 6h2M0 7h2M28 7h2M0 8h2M28 8h2M0 9h2M28 9h2M0 10h2M28 10h2M0 11h2M28 11h2M0 12h2M28 12h2M0 13h2M28 13h2M0 14h2M28 14h2M0 15h2M28 15h2M0 16h2M28 16h2M0 17h2M28 17h2M0 18h2M28 18h2M0 19h2M28 19h2M0 20h2M28 20h2M0 21h2M28 21h2M0 22h2M28 22h2M0 23h2M28 23h2M0 24h2M28 24h2M0 25h2M28 25h1M1 26h1M28 26h1M1 27h2M27 27h2M2 28h26M5 29h21"
             />
-            <rect
-              id="rect"
-              x="1"
-              y="1"
-              rx="5"
-              ry="5"
-              width="95%"
-              height="0%"
-              fill="url(#grad)"
-            />
+            <rect id="rect" x="1" y="1" rx="5" ry="5" width="95%" height="0%" fill="url(#grad)" />
             <defs>
               <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop
-                  offset="0%"
-                  stopColor={this.popupProgressSvgGradColor1}
-                  stopOpacity="100%"
-                />
+                <stop offset="0%" stopColor={this.popupProgressSvgGradColor1} stopOpacity="100%" />
                 <stop
                   offset="100%"
                   stopColor={this.popupProgressSvgGradColor2}
@@ -43599,111 +41212,21 @@ class App extends Component {
             alt="logo"
           />
 
-          <img
-            src={floorGrass}
-            className="hidden"
-            ref="floorGrass"
-            alt="logo"
-            id="floor1"
-          />
-          <img
-            src={floorDirt}
-            className="hidden"
-            ref="floorDirt"
-            alt="logo"
-            id="floor2"
-          />
-          <img
-            src={floorIce}
-            className="hidden"
-            ref="floorIce"
-            alt="logo"
-            id="floor2"
-          />
-          <img
-            src={floorStone}
-            className="hidden"
-            ref="floorStone"
-            alt="logo"
-            id="floor2"
-          />
-          <img
-            src={floorSand}
-            className="hidden"
-            ref="floorSand"
-            alt="logo"
-            id="floor2"
-          />
-          <img
-            src={floorMud}
-            className="hidden"
-            ref="floorMud"
-            alt="logo"
-            id="floor2"
-          />
-          <img
-            src={floorPond}
-            className="hidden"
-            ref="floorPond"
-            alt="logo"
-            id="floor2"
-          />
-          <img
-            src={floorRiver}
-            className="hidden"
-            ref="floorRiver"
-            alt="logo"
-            id="floor2"
-          />
-          <img
-            src={floorBramble}
-            className="hidden"
-            ref="floorBramble"
-            alt="logo"
-            id="floor2"
-          />
-          <img
-            src={floorLava}
-            className="hidden"
-            ref="floorLava"
-            alt="logo"
-            id="floor2"
-          />
-          <img
-            src={floorAttack}
-            className="hidden"
-            ref="floorAttack"
-            alt="logo"
-            id="floor3"
-          />
-          <img
-            src={floorAttack2}
-            className="hidden"
-            ref="floorAttack2"
-            alt="logo"
-            id="floor3"
-          />
-          <img
-            src={floorVoid}
-            className="hidden"
-            ref="floorVoid"
-            alt="logo"
-            id="floor4"
-          />
-          <img
-            src={floorVoid2}
-            className="hidden"
-            ref="floorVoid2"
-            alt="logo"
-            id="floor4"
-          />
-          <img
-            src={floorVoid3}
-            className="hidden"
-            ref="floorVoid3"
-            alt="logo"
-            id="floor4"
-          />
+          <img src={floorGrass} className="hidden" ref="floorGrass" alt="logo" id="floor1" />
+          <img src={floorDirt} className="hidden" ref="floorDirt" alt="logo" id="floor2" />
+          <img src={floorIce} className="hidden" ref="floorIce" alt="logo" id="floor2" />
+          <img src={floorStone} className="hidden" ref="floorStone" alt="logo" id="floor2" />
+          <img src={floorSand} className="hidden" ref="floorSand" alt="logo" id="floor2" />
+          <img src={floorMud} className="hidden" ref="floorMud" alt="logo" id="floor2" />
+          <img src={floorPond} className="hidden" ref="floorPond" alt="logo" id="floor2" />
+          <img src={floorRiver} className="hidden" ref="floorRiver" alt="logo" id="floor2" />
+          <img src={floorBramble} className="hidden" ref="floorBramble" alt="logo" id="floor2" />
+          <img src={floorLava} className="hidden" ref="floorLava" alt="logo" id="floor2" />
+          <img src={floorAttack} className="hidden" ref="floorAttack" alt="logo" id="floor3" />
+          <img src={floorAttack2} className="hidden" ref="floorAttack2" alt="logo" id="floor3" />
+          <img src={floorVoid} className="hidden" ref="floorVoid" alt="logo" id="floor4" />
+          <img src={floorVoid2} className="hidden" ref="floorVoid2" alt="logo" id="floor4" />
+          <img src={floorVoid3} className="hidden" ref="floorVoid3" alt="logo" id="floor4" />
           <img
             src={floorHighlight}
             className="hidden"
@@ -43711,141 +41234,27 @@ class App extends Component {
             alt="logo"
             id="floor4"
           />
-          <img
-            src={floorRubble}
-            className="hidden"
-            ref="floorRubble"
-            alt="logo"
-            id="floor4"
-          />
+          <img src={floorRubble} className="hidden" ref="floorRubble" alt="logo" id="floor4" />
           <img src={wall} className="hidden" ref="wall" id="wall" alt="logo" />
-          <img
-            src={wall2}
-            className="hidden"
-            ref="wall2"
-            id="wall2"
-            alt="logo"
-          />
-          <img
-            src={wall3}
-            className="hidden"
-            ref="wall3"
-            id="wall3"
-            alt="logo"
-          />
+          <img src={wall2} className="hidden" ref="wall2" id="wall2" alt="logo" />
+          <img src={wall3} className="hidden" ref="wall3" id="wall3" alt="logo" />
 
-          <img
-            src={obstacleAHalf}
-            className="hidden"
-            ref="obstacleAHalf"
-            id="wall3"
-            alt="logo"
-          />
-          <img
-            src={obstacleAFull}
-            className="hidden"
-            ref="obstacleAFull"
-            id="wall3"
-            alt="logo"
-          />
-          <img
-            src={obstacleBHalf}
-            className="hidden"
-            ref="obstacleBHalf"
-            id="wall3"
-            alt="logo"
-          />
-          <img
-            src={obstacleBFull}
-            className="hidden"
-            ref="obstacleBFull"
-            id="wall3"
-            alt="logo"
-          />
-          <img
-            src={obstacleCHalf}
-            className="hidden"
-            ref="obstacleCHalf"
-            id="wall3"
-            alt="logo"
-          />
-          <img
-            src={obstacleCFull}
-            className="hidden"
-            ref="obstacleCFull"
-            id="wall3"
-            alt="logo"
-          />
-          <img
-            src={obstacleDHalf}
-            className="hidden"
-            ref="obstacleDHalf"
-            id="wall3"
-            alt="logo"
-          />
-          <img
-            src={obstacleDFull}
-            className="hidden"
-            ref="obstacleDFull"
-            id="wall3"
-            alt="logo"
-          />
-          <img
-            src={obstacleEHalf}
-            className="hidden"
-            ref="obstacleEHalf"
-            id="wall3"
-            alt="logo"
-          />
-          <img
-            src={obstacleEFull}
-            className="hidden"
-            ref="obstacleEFull"
-            id="wall3"
-            alt="logo"
-          />
-          <img
-            src={obstacleCrate}
-            className="hidden"
-            ref="obstacleCrate"
-            id="wall3"
-            alt="logo"
-          />
-          <img
-            src={obstacleBarrel}
-            className="hidden"
-            ref="obstacleBarrel"
-            id="wall3"
-            alt="logo"
-          />
-          <img
-            src={barrierANorth}
-            className="hidden"
-            ref="barrierANorth"
-            id="wall3"
-            alt="logo"
-          />
-          <img
-            src={barrierASouth}
-            className="hidden"
-            ref="barrierASouth"
-            id="wall3"
-            alt="logo"
-          />
-          <img
-            src={barrierAEast}
-            className="hidden"
-            ref="barrierAEast"
-            id="wall3"
-            alt="logo"
-          />
-          <img
-            src={barrierAWest}
-            className="hidden"
-            ref="barrierAWest"
-            id="wall3"
-            alt="logo"
-          />
+          <img src={obstacleAHalf} className="hidden" ref="obstacleAHalf" id="wall3" alt="logo" />
+          <img src={obstacleAFull} className="hidden" ref="obstacleAFull" id="wall3" alt="logo" />
+          <img src={obstacleBHalf} className="hidden" ref="obstacleBHalf" id="wall3" alt="logo" />
+          <img src={obstacleBFull} className="hidden" ref="obstacleBFull" id="wall3" alt="logo" />
+          <img src={obstacleCHalf} className="hidden" ref="obstacleCHalf" id="wall3" alt="logo" />
+          <img src={obstacleCFull} className="hidden" ref="obstacleCFull" id="wall3" alt="logo" />
+          <img src={obstacleDHalf} className="hidden" ref="obstacleDHalf" id="wall3" alt="logo" />
+          <img src={obstacleDFull} className="hidden" ref="obstacleDFull" id="wall3" alt="logo" />
+          <img src={obstacleEHalf} className="hidden" ref="obstacleEHalf" id="wall3" alt="logo" />
+          <img src={obstacleEFull} className="hidden" ref="obstacleEFull" id="wall3" alt="logo" />
+          <img src={obstacleCrate} className="hidden" ref="obstacleCrate" id="wall3" alt="logo" />
+          <img src={obstacleBarrel} className="hidden" ref="obstacleBarrel" id="wall3" alt="logo" />
+          <img src={barrierANorth} className="hidden" ref="barrierANorth" id="wall3" alt="logo" />
+          <img src={barrierASouth} className="hidden" ref="barrierASouth" id="wall3" alt="logo" />
+          <img src={barrierAEast} className="hidden" ref="barrierAEast" id="wall3" alt="logo" />
+          <img src={barrierAWest} className="hidden" ref="barrierAWest" id="wall3" alt="logo" />
 
           <img
             src={attack1Indicate}
@@ -44602,13 +42011,7 @@ class App extends Component {
             id="itemSpear"
             alt="logo"
           />
-          <img
-            src={bow}
-            className="hidden playerImgs"
-            ref="itemBow"
-            id="itemBow"
-            alt="logo"
-          />
+          <img src={bow} className="hidden playerImgs" ref="itemBow" id="itemBow" alt="logo" />
           <img
             src={crossbow}
             className="hidden playerImgs"
@@ -44644,13 +42047,7 @@ class App extends Component {
             id="itemBoltWest"
             alt="logo"
           />
-          <img
-            src={ammo}
-            className="hidden playerImgs"
-            ref="itemAmmo"
-            id="itemAmmo"
-            alt="logo"
-          />
+          <img src={ammo} className="hidden playerImgs" ref="itemAmmo" id="itemAmmo" alt="logo" />
           <img
             src={mail1}
             className="hidden playerImgs"
@@ -44700,13 +42097,7 @@ class App extends Component {
             id="itemHelmet1"
             alt="logo"
           />
-          <img
-            src={hpUp}
-            className="hidden playerImgs"
-            ref="itemHpUp"
-            id="itemHpUp"
-            alt="logo"
-          />
+          <img src={hpUp} className="hidden playerImgs" ref="itemHpUp" id="itemHpUp" alt="logo" />
           <img
             src={hpDown}
             className="hidden playerImgs"

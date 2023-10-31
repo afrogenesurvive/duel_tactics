@@ -1,15 +1,9 @@
-import React, {useState} from 'react';
-
-
+import React, { useState } from "react";
 
 const Helper = (props) => {
-
-    // const init = () => {
-    //     console.log('helper function init',props)
-    // }
-
-
-}
-
+  // const init = () => {
+  //     console.log('helper function init',props)
+  // }
+};
 
 export default Helper;
