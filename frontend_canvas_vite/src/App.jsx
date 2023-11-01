@@ -5942,8 +5942,6 @@ class App extends Component {
             }
           }
 
-          console.log("finalArray", finalArray, inputSubType);
-
           // for (const elem of finalArray) {
           //   if (elem === "zoom") {
           //     this.camera.instructions.push({
@@ -6053,6 +6051,7 @@ class App extends Component {
           //   }
           // }
 
+          console.log("finalArray", finalArray);
           // make sure no single zoom instruction count exceeds 25
 
           let indx3 = 0;
@@ -6740,8 +6739,8 @@ class App extends Component {
     switch (args) {
       case "test":
         this.camera.preInstructions.push(
-          "zoom_in_" + 5 + "",
-          // "moveTo_" + 9 + "_" + 4 + "_fast"
+          "zoom_in_" + 10 + ""
+          // "moveTo_" + 4 + "_" + 2 + "_fast"
           // "zoom_in_" + 10 + ""
 
           // "moveTo_" + 1 + "_" + 8 + "_fast",
@@ -6761,9 +6760,9 @@ class App extends Component {
           // "moveTo_" + 3 + "_" + 6 + "_slow",
           // "waitFor_20",
           // "moveTo_" + 6 + "_" + 6 + "_slow"
-          // // 'zoom_in_'+10+'',
+          // "zoom_in_" + 5 + ""
           // "zoom_outToInit"
-          "move&&zoom_in_" + 1 + "_" + 5 + "_fast_" + 10
+          // "move&&zoom_in_" + 1 + "_" + 5 + "_fast_" + 10
         );
 
         break;
@@ -34421,7 +34420,7 @@ class App extends Component {
     // CAMERA
 
     if (this.time === 100 && player.number === 1) {
-      this.setAutoCamera("test", player);
+      // this.setAutoCamera("test", player);
       // this.setAutoCamera('attackFocus',player);
       // this.setAutoCamera('attackFocusBreak',player);
       // this.setAutoCamera('playerSpawnFocus',player);
@@ -35266,7 +35265,7 @@ class App extends Component {
                             this.camera.instructions[this.camera.currentInstruction].count3 <
                               this.camera.instructions[this.camera.currentInstruction].limit3
                           ) {
-                            tertiaryActionAction = true;
+                            tertiaryAction = true;
                             if (
                               this.camera.instructions[
                                 this.camera.currentInstruction
@@ -35382,7 +35381,7 @@ class App extends Component {
                             this.camera.instructions[this.camera.currentInstruction].count3 <
                               this.camera.instructions[this.camera.currentInstruction].limit3
                           ) {
-                            tertiaryActionAction = true;
+                            tertiaryAction = true;
                             if (
                               this.camera.instructions[
                                 this.camera.currentInstruction
@@ -35507,7 +35506,7 @@ class App extends Component {
                           this.camera.instructions[this.camera.currentInstruction].count3 <
                             this.camera.instructions[this.camera.currentInstruction].limit3
                         ) {
-                          tertiaryActionAction = true;
+                          tertiaryAction = true;
                           if (
                             this.camera.instructions[this.camera.currentInstruction].action3.split(
                               "_"
@@ -35622,7 +35621,7 @@ class App extends Component {
                           this.camera.instructions[this.camera.currentInstruction].count3 <
                             this.camera.instructions[this.camera.currentInstruction].limit3
                         ) {
-                          tertiaryActionAction = true;
+                          tertiaryAction = true;
                           if (
                             this.camera.instructions[this.camera.currentInstruction].action3.split(
                               "_"
