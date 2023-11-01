@@ -6052,7 +6052,6 @@ class App extends Component {
           // }
 
           console.log("finalArray", finalArray);
-          // make sure no single zoom instruction count exceeds 25
 
           let indx3 = 0;
           let limit = 0;
@@ -6311,7 +6310,7 @@ class App extends Component {
           }
         }
 
-        console.log("instructionsA", this.camera.instructions);
+        // console.log("instructionsA", this.camera.instructions);
         if (this.camera.instructions.length > 0 || sameCell === true) {
           this.autoCamPanWaitingForPath = false;
         }
@@ -6739,7 +6738,7 @@ class App extends Component {
     switch (args) {
       case "test":
         this.camera.preInstructions.push(
-          "zoom_in_" + 10 + ""
+          "zoom_in_" + 3 + "",
           // "moveTo_" + 4 + "_" + 2 + "_fast"
           // "zoom_in_" + 10 + ""
 
@@ -6762,7 +6761,7 @@ class App extends Component {
           // "moveTo_" + 6 + "_" + 6 + "_slow"
           // "zoom_in_" + 5 + ""
           // "zoom_outToInit"
-          // "move&&zoom_in_" + 1 + "_" + 5 + "_fast_" + 10
+          "move&&zoom_in_" + 1 + "_" + 5 + "_slow_" + 5
         );
 
         break;
@@ -6834,10 +6833,15 @@ class App extends Component {
 
               // console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
 
+              // !!!!!!!!
+              // find the overall height in cell (eg 1-6) and width in cells (x-y) of path cells
+              // find the cell at centre of height & width ranges
+
               let intermediateCell = {
-                x: parsedPreInstructions[Math.ceil(parsedPreInstructions.length / 2)].x,
-                y: parsedPreInstructions[Math.ceil(parsedPreInstructions.length / 2)].y,
+                x: parsedPreInstructions[Math.floor(parsedPreInstructions.length / 2)].x,
+                y: parsedPreInstructions[Math.floor(parsedPreInstructions.length / 2)].y,
               };
+              console.log("intermediateCell", intermediateCell, parsedPreInstructions);
 
               this.camera.preInstructions.push(
                 "moveTo_" + intermediateCell.x + "_" + intermediateCell.y + "_fast"
@@ -35172,13 +35176,6 @@ class App extends Component {
           // console.log(this.camera.zoom.x-1,'auto camera: stepping through all instructions... current',this.camera.currentInstruction,this.camera.instructions[this.camera.currentInstruction]);
 
           if (this.camera.instructions[this.camera.currentInstruction]) {
-            // console.log(
-            //   "stepping through all instructions: total ",
-            //   this.camera.instructions.length,
-            //   " current:",
-            //   this.camera.currentInstruction,
-            //   this.camera.instructions[this.camera.currentInstruction]
-            // );
             if (this.camera.instructions[this.camera.currentInstruction].action !== "") {
               if (
                 this.camera.instructions[this.camera.currentInstruction].count <
@@ -35695,7 +35692,7 @@ class App extends Component {
                     this.camera.instructions[this.camera.currentInstruction].limit
                   ) {
                     this.camera.currentInstruction++;
-                    console.log("finished primary instruction only");
+                    // console.log("finished primary instruction only");
                   }
                 }
               }
@@ -35707,11 +35704,6 @@ class App extends Component {
             this.camera.instructions = [];
             this.camera.currentInstruction = 0;
             this.settingAutoCamera = false;
-            console.log(
-              "finished camera instructions",
-              this.camera.instructions,
-              this.autoCamPanWaitingForPath
-            );
           }
         }
       }
