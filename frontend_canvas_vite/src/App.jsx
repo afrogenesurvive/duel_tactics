@@ -5895,7 +5895,8 @@ class App extends Component {
         let b = 100;
 
         const setMoveAndZoom = () => {
-          let zoomCount = parseInt(inputSubType.split("_")[1]);
+          let zoomCount = parseInt(inputSubType.split("_")[2]);
+          let zoomDirection = inputSubType.split("_")[1];
           let panCount = preInstructions.length;
           let incr = 0;
           let remainder = 0;
@@ -5903,6 +5904,8 @@ class App extends Component {
 
           let finalArray = [];
           let indx2 = 0;
+          // zoomCount = 10;
+          // panCount = 3;
 
           if (zoomCount > panCount) {
             greater = "zoom";
@@ -5938,6 +5941,8 @@ class App extends Component {
               }
             }
           }
+
+          console.log("finalArray", finalArray, inputSubType);
 
           // for (const elem of finalArray) {
           //   if (elem === "zoom") {
@@ -6050,32 +6055,162 @@ class App extends Component {
 
           // make sure no single zoom instruction count exceeds 25
 
-          // let indx3 = 0;
-          // let limit = 0;
-          // for each of preinstructions length
-          //   let finalInstruction;a
-          //   set finalinstuction based on direction
-          //   if zoomCount > 0
-          //     if greater === pan
-          //       limit = zoomCount
-          //       if indx3 < limit
-          //         if action2 is blank
-          //           set zoom finalinstrcution at action2 with limit = 1
-          //         else
-          //           set zoom finalinstrcution at action3 with limit = 1
-          //         indx3++
-          //     if greater === zoom
-          //       limit = panCount
-          //       if indx3 < limit
-          //         if action2 is blank
-          //           set zoom finalinstrcution at action2 with limit = incr
-          //         else
-          //           set zoom finalinstrcution at action3 with limit = incr
-          //         indx3++
-          //     push finalinsturction to camera instructions
+          let indx3 = 0;
+          let limit = 0;
+          let setCombinedInstruction = (args) => {
+            let result = args;
 
-          // after loop if greater === zoom % remiander > 0
-          //   final pan instruction action2/3 (check which is 'zoom') limit += remainder
+            if (zoomCount > 0) {
+              if (greater === "pan") {
+                limit = zoomCount;
+                if (indx3 < limit) {
+                  if (result.action2 === "") {
+                    result.action2 = "zoom_" + zoomDirection + "";
+                    result.limit2 = 1;
+                  } else {
+                    result.action3 = "zoom_" + zoomDirection + "";
+                    result.count3 = 0;
+                    result.limit3 = 1;
+                  }
+                  indx3++;
+                }
+                if (indx3 >= limit) {
+                  indx3 = 0;
+                }
+              }
+              if (greater === "zoom") {
+                limit = panCount;
+                if (indx3 < limit) {
+                  if (result.action2 === "") {
+                    result.action2 = "zoom_" + zoomDirection + "";
+                    result.limit2 = incr;
+                  } else {
+                    result.action3 = "zoom_" + zoomDirection + "";
+                    result.count3 = 0;
+                    result.limit3 = incr;
+                  }
+                  indx3++;
+                }
+                if (indx3 >= limit) {
+                  indx3 = 0;
+                }
+              }
+            }
+            return result;
+          };
+
+          for (const preInstruction of preInstructions) {
+            let completeInstruction = {};
+            switch (preInstruction) {
+              case "north":
+                completeInstruction = setCombinedInstruction({
+                  action: "pan_north",
+                  action2: "",
+                  count: 0,
+                  count2: 0,
+                  limit: a,
+                  limit2: 0,
+                  speed: speed,
+                });
+                break;
+              case "northEast":
+                completeInstruction = setCombinedInstruction({
+                  action: "pan_north",
+                  action2: "pan_east",
+                  count: 0,
+                  count2: 0,
+                  limit: a / 2,
+                  limit2: b / 2,
+                  speed: speed,
+                });
+                break;
+              case "east":
+                completeInstruction = setCombinedInstruction({
+                  action: "pan_east",
+                  action2: "",
+                  count: 0,
+                  count2: 0,
+                  limit: b,
+                  limit2: 0,
+                  speed: speed,
+                });
+                break;
+              case "southEast":
+                completeInstruction = setCombinedInstruction({
+                  action: "pan_south",
+                  action2: "pan_east",
+                  count: 0,
+                  count2: 0,
+                  limit: a / 2,
+                  limit2: b / 2,
+                  speed: speed,
+                });
+                break;
+              case "south":
+                this.camera.instructions.push({
+                  action: "pan_south",
+                  action2: "",
+                  count: 0,
+                  count2: 0,
+                  limit: a,
+                  limit2: 0,
+                  speed: speed,
+                });
+                break;
+              case "southWest":
+                completeInstruction = setCombinedInstruction({
+                  action: "pan_south",
+                  action2: "pan_west",
+                  count: 0,
+                  count2: 0,
+                  limit: a / 2,
+                  limit2: b / 2,
+                  speed: speed,
+                });
+                break;
+              case "west":
+                completeInstruction = setCombinedInstruction({
+                  action: "pan_west",
+                  action2: "",
+                  count: 0,
+                  count2: 0,
+                  limit: b,
+                  limit2: 0,
+                  speed: speed,
+                });
+                break;
+              case "northWest":
+                completeInstruction = setCombinedInstruction({
+                  action: "pan_north",
+                  action2: "pan_west",
+                  count: 0,
+                  count2: 0,
+                  limit: a / 2,
+                  limit2: b / 2,
+                  speed: speed,
+                });
+                break;
+              default:
+                break;
+            }
+            this.camera.instructions.push(completeInstruction);
+          }
+
+          if (greater === "zoom" && remainder > 0) {
+            if (
+              this.camera.instructions[this.camera.instructions.length - 1].action2.split(
+                "_"
+              )[0] === "zoom"
+            ) {
+              this.camera.instructions[this.camera.instructions.length - 1].limit2 += remainder;
+            } else if (
+              this.camera.instructions[this.camera.instructions.length - 1].action3.split(
+                "_"
+              )[0] === "zoom"
+            ) {
+              this.camera.instructions[this.camera.instructions.length - 1].limit3 += remainder;
+            }
+          }
         };
 
         if (inputSubType.split("_")[0] === "move&&zoom") {
@@ -6177,7 +6312,7 @@ class App extends Component {
           }
         }
 
-        // console.log("instructionsA", this.camera.instructions);
+        console.log("instructionsA", this.camera.instructions);
         if (this.camera.instructions.length > 0 || sameCell === true) {
           this.autoCamPanWaitingForPath = false;
         }
@@ -6628,7 +6763,7 @@ class App extends Component {
           // "moveTo_" + 6 + "_" + 6 + "_slow"
           // // 'zoom_in_'+10+'',
           // "zoom_outToInit"
-          "move&&zoom_" + 1 + "_" + 5 + "_fast_" + 10
+          "move&&zoom_in_" + 1 + "_" + 5 + "_fast_" + 10
         );
 
         break;
@@ -34895,15 +35030,15 @@ class App extends Component {
 
               break;
             case "move&&zoom":
-              speed = preInstruction.split("_")[3];
+              speed = preInstruction.split("_")[4];
               if (this.autoCamPanWaitingForPath !== true) {
                 this.autoCamPanWaitingForPath = true;
-                focusCell.x = parseInt(preInstruction.split("_")[1]);
-                focusCell.y = parseInt(preInstruction.split("_")[2]);
+                focusCell.x = parseInt(preInstruction.split("_")[2]);
+                focusCell.y = parseInt(preInstruction.split("_")[3]);
 
                 this.findFocusCell(
                   "cellToPan",
-                  "move&&zoom_" + preInstruction.split("_")[4],
+                  "move&&zoom_" + preInstruction.split("_")[1] + "_" + preInstruction.split("_")[5],
                   focusCell,
                   canvas,
                   context,
