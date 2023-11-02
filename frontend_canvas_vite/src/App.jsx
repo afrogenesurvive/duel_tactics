@@ -6834,7 +6834,6 @@ class App extends Component {
               // console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
 
               let intermediateCell = this.getIntermediateCellByArea(parsedPreInstructions);
-              console.log("intermediateCell", intermediateCell);
               // {
               //   x: parsedPreInstructions[Math.floor(parsedPreInstructions.length / 2)].x,
               //   y: parsedPreInstructions[Math.floor(parsedPreInstructions.length / 2)].y,
@@ -6847,6 +6846,7 @@ class App extends Component {
 
               getZoom("ranged");
             }
+            console.log("attack focus preInstructions", this.camera.preInstructions);
           };
         }
 
@@ -7438,6 +7438,13 @@ class App extends Component {
       yValues.push(elem.y);
     }
 
+    // instead
+    // intermediate cell should be
+    //   vertical midpoint cell is y value between player 1's and player 2's y
+    //   horizontal midpoint cell is x value between player 1's and player 2's X
+    //   base calc on isomentric vertical/horizontal number postion
+    //     run a few scenarios on paper to get the proper calc
+
     let largestX = xValues[0];
     let smallestX = xValues[0];
     let largestY = yValues[0];
@@ -7459,6 +7466,13 @@ class App extends Component {
     }
     let verticalMidpoint = Math.floor((largestY - smallestY) / 2);
     let horizontalMidpoint = Math.floor((largestX - smallestX) / 2);
+
+    console.log("pathCoords", pathCoords);
+    console.log(`
+      highest: x ${largestX}, y: ${largestY}, 
+      lowest: x ${smallestX}, y: ${smallestY}, 
+      midpoint: x ${verticalMidpoint}, y: ${horizontalMidpoint}
+    `);
 
     return {
       x: horizontalMidpoint,
