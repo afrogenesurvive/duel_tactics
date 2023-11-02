@@ -6833,15 +6833,12 @@ class App extends Component {
 
               // console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
 
-              // !!!!!!!!
-              // find the overall height in cell (eg 1-6) and width in cells (x-y) of path cells
-              // find the cell at centre of height & width ranges
-
-              let intermediateCell = {
-                x: parsedPreInstructions[Math.floor(parsedPreInstructions.length / 2)].x,
-                y: parsedPreInstructions[Math.floor(parsedPreInstructions.length / 2)].y,
-              };
-              console.log("intermediateCell", intermediateCell, parsedPreInstructions);
+              let intermediateCell = this.getIntermediateCellByArea(parsedPreInstructions);
+              console.log("intermediateCell", intermediateCell);
+              // {
+              //   x: parsedPreInstructions[Math.floor(parsedPreInstructions.length / 2)].x,
+              //   y: parsedPreInstructions[Math.floor(parsedPreInstructions.length / 2)].y,
+              // };
 
               this.camera.preInstructions.push(
                 "moveTo_" + intermediateCell.x + "_" + intermediateCell.y + "_fast"
@@ -6928,10 +6925,11 @@ class App extends Component {
 
               // console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
 
-              let intermediateCell = {
-                x: parsedPreInstructions[Math.ceil(parsedPreInstructions.length / 2)].x,
-                y: parsedPreInstructions[Math.ceil(parsedPreInstructions.length / 2)].y,
-              };
+              let intermediateCell = this.getIntermediateCellByArea(parsedPreInstructions);
+              // {
+              //   x: parsedPreInstructions[Math.ceil(parsedPreInstructions.length / 2)].x,
+              //   y: parsedPreInstructions[Math.ceil(parsedPreInstructions.length / 2)].y,
+              // };
 
               this.camera.preInstructions.push(
                 "moveTo_" + intermediateCell.x + "_" + intermediateCell.y + "_fast"
@@ -7431,6 +7429,41 @@ class App extends Component {
         },
       };
     }
+  };
+  getIntermediateCellByArea = (pathCoords) => {
+    let xValues = [];
+    let yValues = [];
+    for (const elem of pathCoords) {
+      xValues.push(elem.x);
+      yValues.push(elem.y);
+    }
+
+    let largestX = xValues[0];
+    let smallestX = xValues[0];
+    let largestY = yValues[0];
+    let smallestY = yValues[0];
+
+    for (let i = 1; i < xValues.length; i++) {
+      if (xValues[i] > largestX) {
+        largestX = xValues[i];
+      }
+      if (xValues[i] < smallestX) {
+        smallestX = xValues[i];
+      }
+      if (yValues[i] > largestY) {
+        largestY = yValues[i];
+      }
+      if (yValues[i] < smallestY) {
+        smallestY = yValues[i];
+      }
+    }
+    let verticalMidpoint = Math.floor((largestY - smallestY) / 2);
+    let horizontalMidpoint = Math.floor((largestX - smallestX) / 2);
+
+    return {
+      x: horizontalMidpoint,
+      y: verticalMidpoint,
+    };
   };
 
   lineCrementer = (player) => {
