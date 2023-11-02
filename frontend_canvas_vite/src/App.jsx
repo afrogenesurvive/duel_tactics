@@ -7184,15 +7184,15 @@ class App extends Component {
           this.camera.panDirection = "south";
         }
 
-        console.log(
-          "increment2 ",
-          increment,
-          "zoom",
-          zoom - 1,
-          "pan x,y",
-          this.camera.pan.x,
-          this.camera.pan.y
-        );
+        // console.log(
+        //   "increment2 ",
+        //   increment,
+        //   "zoom",
+        //   zoom - 1,
+        //   "pan x,y",
+        //   this.camera.pan.x,
+        //   this.camera.pan.y
+        // );
         this.camera.zoomFocusPan.x = (canvas.width / 2) * (1 - zoom) + 1 + this.camera.pan.x * zoom;
         this.camera.zoomFocusPan.y =
           (canvas.height / 2) * (1 - zoom) + 1 + this.camera.pan.y * zoom;
@@ -7444,6 +7444,22 @@ class App extends Component {
     //   horizontal midpoint cell is x value between player 1's and player 2's X
     //   base calc on isomentric vertical/horizontal number postion
     //     run a few scenarios on paper to get the proper calc
+
+    // OR
+
+    // cal dist btween plry 1 x and plyr 2 x
+    // cal dist btween plry 1 x and plyr 2 x
+    //   4,4 -> 5,3 or 4,4 -> 3,5 = 2 dist
+    //   4,4 -> 3,3 or 4,4 -> 5,5 = 1 dist
+    //   4,4 to 4,3/4,5/3,4/5,4 etc = 1 dist
+    //   set x & y distances
+    //   use distances to cal inter cell from plyr 1 position
+    //     run a few scenarios on paper to get the proper calc
+
+    // 1-
+    //   plyr 1 - x1, y5
+    //   plyr 2 - x9, y0
+    //   mid x =
 
     let largestX = xValues[0];
     let smallestX = xValues[0];
