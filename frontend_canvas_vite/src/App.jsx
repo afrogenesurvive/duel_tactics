@@ -6051,7 +6051,7 @@ class App extends Component {
           //   }
           // }
 
-          console.log("finalArray", finalArray);
+          // console.log("finalArray", finalArray);
 
           let indx3 = 0;
           let limit = 0;
@@ -6682,6 +6682,7 @@ class App extends Component {
       if (args2 === "melee") {
         // thresh = .5;
         thresh = 0.35;
+        // thresh = this.zoomThresh;
 
         if (this.camera.zoom.x - 1 < thresh) {
           zoomSteps2 = ((thresh - (this.camera.zoom.x - 1)) / 0.02).toFixed(0);
@@ -6708,6 +6709,7 @@ class App extends Component {
       if (args2 === "ranged") {
         // thresh = .35;
         thresh = 0.15;
+        // thresh = this.zoomThresh;
 
         if (this.camera.zoom.x - 1 < thresh) {
           zoomSteps2 = ((thresh - (this.camera.zoom.x - 1)) / 0.02).toFixed(0);
@@ -6738,7 +6740,7 @@ class App extends Component {
     switch (args) {
       case "test":
         this.camera.preInstructions.push(
-          "zoom_in_" + 3 + "",
+          "zoom_in_" + 1 + "",
           // "moveTo_" + 4 + "_" + 2 + "_fast"
           // "zoom_in_" + 10 + ""
 
@@ -6761,7 +6763,8 @@ class App extends Component {
           // "moveTo_" + 6 + "_" + 6 + "_slow"
           // "zoom_in_" + 5 + ""
           // "zoom_outToInit"
-          "move&&zoom_in_" + 1 + "_" + 5 + "_slow_" + 5
+          // "move&&zoom_in_" + 1 + "_" + 5 + "_slow_" + 5
+          "move&&zoom_in_" + 5 + "_" + 1 + "_fast_" + 8
         );
 
         break;
@@ -6834,10 +6837,6 @@ class App extends Component {
               // console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
 
               let intermediateCell = this.getIntermediateCellByArea(parsedPreInstructions);
-              // {
-              //   x: parsedPreInstructions[Math.floor(parsedPreInstructions.length / 2)].x,
-              //   y: parsedPreInstructions[Math.floor(parsedPreInstructions.length / 2)].y,
-              // };
 
               this.camera.preInstructions.push(
                 "moveTo_" + intermediateCell.x + "_" + intermediateCell.y + "_fast"
@@ -6846,7 +6845,9 @@ class App extends Component {
 
               getZoom("ranged");
             }
-            console.log("attack focus preInstructions", this.camera.preInstructions);
+
+            console.log("this.camera.preInstructions", this.camera.preInstructions);
+            // this.camera.preInstructions = ["zoom_in_1", "moveTo_5_3_fast", "zoom_in_8"];
           };
         }
 
@@ -6926,10 +6927,6 @@ class App extends Component {
               // console.log('preInstructions',parsedPreInstructions,parsedPreInstructions[(parsedPreInstructions.length/2).toFixed(0)]);
 
               let intermediateCell = this.getIntermediateCellByArea(parsedPreInstructions);
-              // {
-              //   x: parsedPreInstructions[Math.ceil(parsedPreInstructions.length / 2)].x,
-              //   y: parsedPreInstructions[Math.ceil(parsedPreInstructions.length / 2)].y,
-              // };
 
               this.camera.preInstructions.push(
                 "moveTo_" + intermediateCell.x + "_" + intermediateCell.y + "_fast"
@@ -7431,68 +7428,40 @@ class App extends Component {
     }
   };
   getIntermediateCellByArea = (pathCoords) => {
-    let xValues = [];
-    let yValues = [];
-    for (const elem of pathCoords) {
-      xValues.push(elem.x);
-      yValues.push(elem.y);
-    }
-
-    // instead
-    // intermediate cell should be
-    //   vertical midpoint cell is y value between player 1's and player 2's y
-    //   horizontal midpoint cell is x value between player 1's and player 2's X
-    //   base calc on isomentric vertical/horizontal number postion
-    //     run a few scenarios on paper to get the proper calc
-
-    // OR
-
-    // cal dist btween plry 1 x and plyr 2 x
-    // cal dist btween plry 1 x and plyr 2 x
-    //   4,4 -> 5,3 or 4,4 -> 3,5 = 2 dist
-    //   4,4 -> 3,3 or 4,4 -> 5,5 = 1 dist
-    //   4,4 to 4,3/4,5/3,4/5,4 etc = 1 dist
-    //   set x & y distances
-    //   use distances to cal inter cell from plyr 1 position
-    //     run a few scenarios on paper to get the proper calc
-
-    // 1-
-    //   plyr 1 - x1, y5
-    //   plyr 2 - x9, y0
-    //   mid x =
-
-    let largestX = xValues[0];
-    let smallestX = xValues[0];
-    let largestY = yValues[0];
-    let smallestY = yValues[0];
-
-    for (let i = 1; i < xValues.length; i++) {
-      if (xValues[i] > largestX) {
-        largestX = xValues[i];
-      }
-      if (xValues[i] < smallestX) {
-        smallestX = xValues[i];
-      }
-      if (yValues[i] > largestY) {
-        largestY = yValues[i];
-      }
-      if (yValues[i] < smallestY) {
-        smallestY = yValues[i];
-      }
-    }
-    let verticalMidpoint = Math.floor((largestY - smallestY) / 2);
-    let horizontalMidpoint = Math.floor((largestX - smallestX) / 2);
-
-    console.log("pathCoords", pathCoords);
-    console.log(`
-      highest: x ${largestX}, y: ${largestY}, 
-      lowest: x ${smallestX}, y: ${smallestY}, 
-      midpoint: x ${verticalMidpoint}, y: ${horizontalMidpoint}
-    `);
+    let playerOneCell = pathCoords[0];
+    let playerTwoCell = pathCoords[pathCoords.length - 1];
+    let xPath = {
+      start: playerOneCell,
+      end: {
+        x: playerTwoCell.x,
+        y: playerOneCell.y,
+      },
+    };
+    let xMidpoint = {
+      // x: Math.floor((Math.abs(xPath.start.x - xPath.end.x) + 1) / 2),
+      x: Math.floor((xPath.start.x + xPath.end.x) / 2),
+      y: xPath.start.y,
+    };
+    let yPath = {
+      start: playerOneCell,
+      end: {
+        x: playerOneCell.x,
+        y: playerTwoCell.y,
+      },
+    };
+    let yMidpoint = {
+      x: yPath.start.x,
+      // y: Math.floor((Math.abs(yPath.start.y - yPath.end.y) + 1) / 2),
+      y: Math.floor((yPath.start.y + yPath.end.y) / 2),
+    };
+    let finalCell = {
+      x: xMidpoint.x,
+      y: yMidpoint.y,
+    };
 
     return {
-      x: horizontalMidpoint,
-      y: verticalMidpoint,
+      x: finalCell.x,
+      y: finalCell.y,
     };
   };
 
