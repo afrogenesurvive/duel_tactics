@@ -6591,10 +6591,6 @@ class App extends Component {
       weaponType = "ranged";
     }
 
-    let zoomAdjustCalc = (args) => {
-      return args * 0.5;
-    };
-
     let parsedPreInstructions = [];
 
     let getPath = () => {
@@ -6736,7 +6732,6 @@ class App extends Component {
       // console.log('zoomSteps2',zoomSteps2);
     };
 
-    let zoomAdjust = 0;
     switch (args) {
       case "test":
         this.camera.preInstructions.push(
@@ -6891,7 +6886,6 @@ class App extends Component {
 
           this.camera.preInstructions.push("waitFor_50");
 
-          zoomAdjust = Math.ceil((0.35 - (this.camera.zoom.x - 1)) * 10 * 5);
           this.camera.preInstructions.push("zoom_outToInit");
         }
 
@@ -6937,7 +6931,6 @@ class App extends Component {
 
             this.camera.preInstructions.push("waitFor_50");
 
-            zoomAdjust = Math.ceil((0.35 - (this.camera.zoom.x - 1)) * 10 * 5);
             this.camera.preInstructions.push("zoom_outToInit");
           };
         }
@@ -6962,7 +6955,6 @@ class App extends Component {
 
         this.camera.preInstructions.push("waitFor_50");
 
-        zoomAdjust = Math.ceil((0.35 - (this.camera.zoom.x - 1)) * 10 * 5);
         this.camera.preInstructions.push("zoom_outToInit");
 
         // console.log('aiSpawnFocus this.camera.preInstructions',this.camera.preInstructions);
