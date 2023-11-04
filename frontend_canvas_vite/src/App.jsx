@@ -527,7 +527,7 @@ class App extends Component {
         "**_*_1.1_a_0a*",
         "**_*_1.2_a_0a*",
         "**_*_1.3_a_0a*",
-        "**_*_1.4_a_0a*",
+        "**_h_1.4_a_0a*",
         "**_*_1.5_a_0a*",
         "**_*_1.6_a_0a*",
         "**_*_1.7_a_0a*",
@@ -549,11 +549,11 @@ class App extends Component {
       row3: [
         "**_c_3.0_a_0a*",
         "**_*_3.1_a_0a*",
-        "**_h_3.2_a_0a*",
-        "**_*_3.3_a_0a*",
-        "**_h_3.4_a_0a*",
+        "**_*_3.2_a_0a*",
+        "**_h_3.3_a_0a*",
+        "**_*_3.4_a_0a*",
         "**_*_3.5_a_0a*",
-        "**_h_3.6_a_0a*",
+        "**_*_3.6_a_0a*",
         "**_*_3.7_a_0a*",
         "**_*_3.8_a_0a*",
         "**_a_3.9_a_0a*",
@@ -561,11 +561,11 @@ class App extends Component {
       row4: [
         "**_*_4.0_a_0a*",
         "**_*_4.1_a_0a*",
-        "**_*_4.2_f_0a*",
-        "**_c_4.3_f_0a*",
-        "**_*_4.4_a_0a*",
-        "**_*_4.5_a_0a*",
-        "**_*_4.6_g_0a*",
+        "cs_*_4.2_f_0a*",
+        "**_*_4.3_f_0a*",
+        "**_h_4.4_a_0a*",
+        "**_h_4.5_a_0a*",
+        "**_h_4.6_g_0a*",
         "**_*_4.7_a_0a*",
         "**_*_4.8_a_0a*",
         "**_*_4.9_a_0a*",
@@ -6840,9 +6840,6 @@ class App extends Component {
 
               getZoom("ranged");
             }
-
-            console.log("this.camera.preInstructions", this.camera.preInstructions);
-            // this.camera.preInstructions = ["zoom_in_1", "moveTo_5_3_fast", "zoom_in_8"];
           };
         }
 
@@ -6972,8 +6969,6 @@ class App extends Component {
     if (this.camera.preInstructions.length === 0 && this.autoCamPanWaitingForPath !== true) {
       this.settingAutoCamera = false;
     }
-
-    // console.log('AutoCameraSet',args,this.camera.preInstructions,this.camera.currentPreInstruction,this.camera.zoom.x-1);
   };
   setCameraFocus = (focusType, canvas, context, canvas2, context2) => {
     console.log("setting camera focus", "zoom", this.camera.zoom.x, "pan", this.camera.pan);
@@ -13021,7 +13016,8 @@ class App extends Component {
     }
 
     if (object === "obstacle") {
-      if (this.halfPushBackObstacles.find((x) => x.state !== true && x.myCellNo !== data.number)) {
+      // if (this.halfPushBackObstacles.find((x) => x.state !== true && x.myCellNo !== data.number)) {
+      if (!this.halfPushBackObstacles.find((x) => x.state === true && x.myCellNo === data.number)) {
         this.halfPushBackObstacles.push({
           state: true,
           myCellNo: data.number,
@@ -13047,10 +13043,11 @@ class App extends Component {
       } else {
         console.log("obsatcle already being 1/2 pushed back!!");
       }
+      // console.log("this.halfPushBackObstacles", this.halfPushBackObstacles);
     }
   };
   handleHalfPushBackResult = (type, data) => {
-    // console.log('handleHalfPushBackResult',type,data);
+    // console.log("handleHalfPushBackResult", type, data);
 
     let direction = "";
     let impactor = type;
@@ -13818,6 +13815,9 @@ class App extends Component {
       let targetFree = true;
       if (targetCellRef.barrier.state === true && targetCellRef.barrier.position === direction) {
         targetFree = false;
+        if (this.halfPushBackChaining === true) {
+          this.startHalfPushBack("obstacle", "barrier", direction, targetCellRef);
+        }
       }
       if (destCellRef) {
         if (
@@ -13825,6 +13825,9 @@ class App extends Component {
           destCellRef.barrier.position === this.getOppositeDirection(direction)
         ) {
           targetFree = false;
+          if (this.halfPushBackChaining === true) {
+            this.startHalfPushBack("obstacle", "barrier", direction, targetCellRef);
+          }
         }
 
         if (destCellRef.obstacle.state === true) {
@@ -13849,7 +13852,6 @@ class App extends Component {
           }
         }
       }
-
       if (targetFree === true) {
         if (targetCellRef.obstacle.moving.state !== true) {
           if (destCellRef) {
@@ -19333,6 +19335,8 @@ class App extends Component {
     let pushStrengthPlayer = 0;
     let movePlayer = true;
     let impactDirection = "";
+    // pushStrengthPlayer += 15;
+
     if (type === "hitPush" || type.split("_")[0] === "hitPushBolt") {
       movePlayer = false;
       pushStrengthPlayer += 1;
@@ -19376,7 +19380,6 @@ class App extends Component {
       }
       pushStrengthPlayer += player.crits.pushBack - 3;
       pushStrengthPlayer += player.crits.guardBreak - 2;
-      // pushStrengthPlayer += 5;
 
       let preMoveSpeed = Math.ceil(pushStrengthPlayer / pushStrengthThreshold);
       let moveSpeed = 0;
@@ -31759,18 +31762,6 @@ class App extends Component {
             player.newPushPullDelay.state = true;
           }
         }
-        // key release prepull check??
-        // if (player.prePull.state === true && this.keyPressed[player.number-1][player.prePush.direction] !== true) {
-        //   console.log('mid prePull but key released. reset prePull');
-        //   player.prePull = {
-        //     state: false,
-        //     count: 0,
-        //     limit: player.prePull.limit,
-        //     targetCell: undefined,
-        //     direction: "",
-        //     puller: undefined,
-        //   }
-        // }
 
         // PULL CHECK
         if (player.postPull.state === true) {
@@ -34233,11 +34224,11 @@ class App extends Component {
         if (halfPushBackObstacle.countUp.state === true) {
           if (halfPushBackObstacle.countUp.count < halfPushBackObstacle.countUp.limit) {
             if (halfPushBackObstacle.countUp.count === 1) {
-              // console.log('obstacle 1/2 pushback start');
+              // console.log("obstacle 1/2 pushback start", halfPushBackObstacle.myCellNo);
             }
 
             halfPushBackObstacle.countUp.count++;
-            // console.log('obstacle 1/2 pushback count up',halfPushBackObstacle.countUp.count);
+            // console.log("obstacle 1/2 pushback count up", halfPushBackObstacle.countUp.count);
           }
 
           if (halfPushBackObstacle.countUp.count >= halfPushBackObstacle.countUp.limit) {
@@ -34266,7 +34257,7 @@ class App extends Component {
               limit: halfPushBackObstacle.countDown.limit,
             };
 
-            // console.log('obstacle 1/2 pushback end');
+            // console.log("obstacle 1/2 pushback end");
             this.handleHalfPushBackResult("obstacle", halfPushBackObstacle);
             halfPushBackObstacle.state = false;
           }
