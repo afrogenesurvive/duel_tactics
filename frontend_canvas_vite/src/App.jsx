@@ -9416,6 +9416,9 @@ class App extends Component {
     }
     return oppositeDirection;
   };
+  projectileCreator = (type, player, projectiles) => {
+    // return player and boltw
+  };
   aiBoltPathCheck = (aiPlayer) => {
     // console.log('aiPlayer.ai.targetPlayer',aiPlayer.ai.targetPlayer);
     let rangeElemCells2 = [];
@@ -22040,10 +22043,19 @@ class App extends Component {
     }
   };
   killPlayer = (player) => {
-    // console.log('killing player',player);
+    // console.log("killing player", player);
 
     player.ghost.state = true;
-    player.ghost.position.cell = player.currentPosition.cell;
+    player.ghost.position.cell = {
+      number: {
+        x: player.currentPosition.cell.number.x,
+        y: player.currentPosition.cell.number.y,
+      },
+      center: {
+        x: player.currentPosition.cell.center.x,
+        y: player.currentPosition.cell.center.y,
+      },
+    };
     player.currentPosition.cell.number = { x: undefined, y: undefined };
     player.action = "idle";
     player.direction = "north";
@@ -22185,21 +22197,21 @@ class App extends Component {
       count: 1,
       limit: player.dead.limit,
     };
-    player.ghost = {
-      state: false,
-      position: {
-        cell: {
-          number: {
-            x: 0,
-            y: 0,
-          },
-          center: {
-            x: 0,
-            y: 0,
-          },
-        },
-      },
-    };
+    // player.ghost = {
+    //   state: false,
+    //   position: {
+    //     cell: {
+    //       number: {
+    //         x: 0,
+    //         y: 0,
+    //       },
+    //       center: {
+    //         x: 0,
+    //         y: 0,
+    //       },
+    //     },
+    //   },
+    // };
     player.respawn = false;
     player.speed = {
       move: 0.1,
@@ -30042,6 +30054,7 @@ class App extends Component {
 
     let nextPosition;
 
+    // DYING
     if (player.dead.state === true) {
       if (player.dead.count > 0 && player.dead.count < player.dead.limit + 1) {
         player.dead.count++;
@@ -31404,6 +31417,7 @@ class App extends Component {
               player.attackPeak = true;
 
               let melee = true;
+
               // CREATE NEW PROJECTILE
               if (
                 player.currentWeapon.type === "crossbow" &&
@@ -31482,13 +31496,6 @@ class App extends Component {
                     img: "",
                   });
                 }
-
-                // STAMINA COST!!
-
-                // this.players[player.number-1].stamina.current = this.players[player.number-1].stamina.current - this.staminaCostRef.attack.crossbow;
-                // console.log('start projectile',boltx.currentPosition.number, this.players[boltx.owner-1].currentPosition.cell.number,this.projectiles);
-
-                // this.boltCrementer(bolt)
               }
               // NO PROJECTILE AMMO
               if (
@@ -36655,6 +36662,7 @@ class App extends Component {
             plyr.action = "attacking";
           }
 
+          // SET ANIMATION INDEX USED FOR SPRITE SHEET STEPPING BASED ON ACTION
           // FOR TESTING BY CALLING ONLY @ 1 CELL
           if (
             plyr.currentPosition.cell.number.x === x &&
@@ -36902,6 +36910,7 @@ class App extends Component {
           }
           // FOR TESTING BY CALLING ONLY @ 1 CELL
 
+          // REAL DEAL
           switch (plyr.action) {
             case "moving":
               let moveSpeed = plyr.speed.move;
@@ -37325,7 +37334,7 @@ class App extends Component {
 
           //PLAYER DEPTH SORTING!!
 
-          // MOVING & MID STRAFE KEY RELEASE
+          // IN-GRID MOVING & MID STRAFE KEY RELEASE
           if (
             plyr.target.cell1.void === false &&
             plyr.moving.state === true &&
@@ -37423,21 +37432,21 @@ class App extends Component {
                     this.playerDrawHeight
                   );
                 }
-                playerDrawLog(
-                  x,
-                  y,
-                  plyr,
-                  finalAnimIndex,
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  point.x - this.playerDrawWidth / 2,
-                  point.y - this.playerDrawHeight / 2,
-                  this.playerDrawWidth,
-                  this.playerDrawHeight
-                );
+                // playerDrawLog(
+                //   x,
+                //   y,
+                //   plyr,
+                //   finalAnimIndex,
+                //   updatedPlayerImg,
+                //   sx,
+                //   sy,
+                //   sWidth,
+                //   sHeight,
+                //   point.x - this.playerDrawWidth / 2,
+                //   point.y - this.playerDrawHeight / 2,
+                //   this.playerDrawWidth,
+                //   this.playerDrawHeight
+                // );
               }
             }
             if (direction === "south") {
@@ -37467,21 +37476,21 @@ class App extends Component {
                     this.playerDrawHeight
                   );
                 }
-                playerDrawLog(
-                  x,
-                  y,
-                  plyr,
-                  finalAnimIndex,
-                  updatedPlayerImg,
-                  sx,
-                  sy,
-                  sWidth,
-                  sHeight,
-                  point.x - this.playerDrawWidth / 2,
-                  point.y - this.playerDrawHeight / 2,
-                  this.playerDrawWidth,
-                  this.playerDrawHeight
-                );
+                // playerDrawLog(
+                //   x,
+                //   y,
+                //   plyr,
+                //   finalAnimIndex,
+                //   updatedPlayerImg,
+                //   sx,
+                //   sy,
+                //   sWidth,
+                //   sHeight,
+                //   point.x - this.playerDrawWidth / 2,
+                //   point.y - this.playerDrawHeight / 2,
+                //   this.playerDrawWidth,
+                //   this.playerDrawHeight
+                // );
               }
             }
 
@@ -37765,7 +37774,7 @@ class App extends Component {
             }
           }
 
-          // if (plyr.attacking.state === true) {
+          // ATTACKING
           if (
             (plyr.attacking.state === true || plyr.action === "attacking") &&
             plyr.moving.state === false &&
@@ -37990,6 +37999,7 @@ class App extends Component {
               }
             }
           }
+          // STRAFE MOVEMENT
           if (
             plyr.strafing.state === true &&
             plyr.falling.state !== true &&
@@ -38159,6 +38169,7 @@ class App extends Component {
               }
             }
           }
+          // FLANKING
           if (plyr.flanking.state === true && plyr.falling.state !== true) {
             if (plyr.flanking.step === 1) {
               if (plyr.flanking.direction === "north") {
@@ -38296,6 +38307,7 @@ class App extends Component {
               }
             }
           }
+          // FALLING
           if (plyr.falling.state === true) {
             // IN BOUNDS
             if (x === plyr.target.cell1.number.x && y === plyr.target.cell1.number.y) {
@@ -38364,6 +38376,7 @@ class App extends Component {
               }
             }
           }
+          // DEFLECTED
           if (plyr.success.deflected.state === true) {
             if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === "deflected") {
               let finalCoords = this.calcElasticCountCoords("deflected", "player", plyr).coords;
@@ -38486,6 +38499,7 @@ class App extends Component {
               // console.log('deflected elastic counter overflow?',plyr.success.deflected.count);
             }
           }
+          // DODGING
           if (plyr.action === "dodging" && plyr.success.deflected.state !== true) {
             if (plyr.elasticCounter.state === true && plyr.elasticCounter.type === "dodging") {
               let finalCoords = this.calcElasticCountCoords("dodging", "player", plyr).coords;
@@ -38787,7 +38801,13 @@ class App extends Component {
               x === plyr.ghost.position.cell.number.x &&
               y === plyr.ghost.position.cell.number.y
             ) {
-              // console.log('player ',plyr.number,'ghost @',plyr.ghost.position.cell.number,plyr.ghost.position.cell.center);
+              // console.log(
+              //   "player ",
+              //   plyr.number,
+              //   "ghost @",
+              //   plyr.ghost.position.cell.number,
+              //   plyr.ghost.position.cell.center
+              // );
               context.drawImage(
                 this.indicatorImgs.ghost,
                 plyr.ghost.position.cell.center.x - 20,
