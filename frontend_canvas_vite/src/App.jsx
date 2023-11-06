@@ -769,7 +769,25 @@ class App extends Component {
     this.obstacleLevelDataRef = {
       a: {
         id: 0,
-        traps: [],
+        trap: {
+          state: false,
+          target: {
+            number: {},
+            center: {},
+          },
+          timer: {
+            state: false,
+            count: 0,
+            limit: 5,
+          },
+          trigger: {
+            type: "player",
+          },
+          action: "attack",
+          itemNameRef: "crossbow1",
+          item: {},
+          ammo: 0,
+        },
         state: true,
         name: "chest1",
         type: "chest",
@@ -831,7 +849,25 @@ class App extends Component {
       },
       b: {
         id: 0,
-        traps: [],
+        trap: {
+          state: false,
+          target: {
+            number: {},
+            center: {},
+          },
+          timer: {
+            state: false,
+            count: 0,
+            limit: 5,
+          },
+          trigger: {
+            type: "player",
+          },
+          action: "attack",
+          itemNameRef: "sword1",
+          item: {},
+          ammo: 0,
+        },
         state: true,
         name: "table1",
         type: "table",
@@ -900,7 +936,25 @@ class App extends Component {
       },
       c: {
         id: 0,
-        traps: [],
+        trap: {
+          state: false,
+          target: {
+            number: {},
+            center: {},
+          },
+          timer: {
+            state: false,
+            count: 0,
+            limit: 5,
+          },
+          trigger: {
+            type: "player",
+          },
+          action: "attack",
+          itemNameRef: "crossbow1",
+          item: {},
+          ammo: 0,
+        },
         state: true,
         name: "closet1",
         type: "barrel",
@@ -975,7 +1029,25 @@ class App extends Component {
       },
       d: {
         id: 0,
-        traps: [],
+        trap: {
+          state: false,
+          target: {
+            number: {},
+            center: {},
+          },
+          timer: {
+            state: false,
+            count: 0,
+            limit: 5,
+          },
+          trigger: {
+            type: "player",
+          },
+          action: "attack",
+          itemNameRef: "crossbow1",
+          item: {},
+          ammo: 0,
+        },
         state: true,
         name: "chair1",
         type: "chair",
@@ -1037,7 +1109,25 @@ class App extends Component {
       },
       e: {
         id: 0,
-        traps: [],
+        trap: {
+          state: false,
+          target: {
+            number: {},
+            center: {},
+          },
+          timer: {
+            state: false,
+            count: 0,
+            limit: 5,
+          },
+          trigger: {
+            type: "player",
+          },
+          action: "attack",
+          itemNameRef: "crossbow1",
+          item: {},
+          ammo: 0,
+        },
         state: true,
         name: "shelf1",
         type: "shelf",
@@ -1099,7 +1189,25 @@ class App extends Component {
       },
       f: {
         id: 0,
-        traps: [],
+        trap: {
+          state: false,
+          target: {
+            number: {},
+            center: {},
+          },
+          timer: {
+            state: false,
+            count: 0,
+            limit: 5,
+          },
+          trigger: {
+            type: "player",
+          },
+          action: "attack",
+          itemNameRef: "crossbow1",
+          item: {},
+          ammo: 0,
+        },
         state: true,
         name: "counter1",
         type: "counter",
@@ -1161,7 +1269,25 @@ class App extends Component {
       },
       g: {
         id: 0,
-        traps: [],
+        trap: {
+          state: false,
+          target: {
+            number: {},
+            center: {},
+          },
+          timer: {
+            state: false,
+            count: 0,
+            limit: 5,
+          },
+          trigger: {
+            type: "player",
+          },
+          action: "attack",
+          itemNameRef: "crossbow1",
+          item: {},
+          ammo: 0,
+        },
         state: true,
         name: "smallBox1",
         type: "smallBox",
@@ -1223,7 +1349,25 @@ class App extends Component {
       },
       h: {
         id: 0,
-        traps: [],
+        trap: {
+          state: true,
+          target: {
+            number: {},
+            center: {},
+          },
+          timer: {
+            state: false,
+            count: 0,
+            limit: 5,
+          },
+          trigger: {
+            type: "player",
+          },
+          action: "attack",
+          itemNameRef: "crossbow1",
+          item: {},
+          ammo: 0,
+        },
         state: true,
         name: "largeBox1",
         type: "largeBox",
@@ -1285,7 +1429,25 @@ class App extends Component {
       },
       i: {
         id: 0,
-        traps: [],
+        trap: {
+          state: false,
+          target: {
+            number: {},
+            center: {},
+          },
+          timer: {
+            state: false,
+            count: 0,
+            limit: 5,
+          },
+          trigger: {
+            type: "player",
+          },
+          action: "attack",
+          itemNameRef: "crossbow1",
+          item: {},
+          ammo: 0,
+        },
         state: true,
         name: "closet2",
         type: "barrel",
@@ -1386,7 +1548,25 @@ class App extends Component {
     this.barrierLevelDataRef = {
       a: {
         id: 0,
-        traps: [],
+        trap: {
+          state: false,
+          target: {
+            number: {},
+            center: {},
+          },
+          timer: {
+            state: false,
+            count: 0,
+            limit: 5,
+          },
+          trigger: {
+            type: "player",
+          },
+          action: "attack",
+          itemNameRef: "crossbow1",
+          item: {},
+          ammo: 0,
+        },
         state: true,
         name: "wall1",
         type: "wall",
@@ -1405,7 +1585,25 @@ class App extends Component {
       },
       b: {
         id: 0,
-        traps: [],
+        trap: {
+          state: false,
+          target: {
+            number: {},
+            center: {},
+          },
+          timer: {
+            state: false,
+            count: 0,
+            limit: 5,
+          },
+          trigger: {
+            type: "player",
+          },
+          action: "attack",
+          itemNameRef: "crossbow1",
+          item: {},
+          ammo: 0,
+        },
         state: true,
         name: "door1",
         type: "door",
@@ -1424,7 +1622,25 @@ class App extends Component {
       },
       c: {
         id: 0,
-        traps: [],
+        trap: {
+          state: true,
+          target: {
+            number: {},
+            center: {},
+          },
+          timer: {
+            state: false,
+            count: 0,
+            limit: 5,
+          },
+          trigger: {
+            type: "player",
+          },
+          action: "attack",
+          itemNameRef: "crossbow1",
+          item: {},
+          ammo: 0,
+        },
         state: true,
         name: "balcony1",
         type: "balcony",
@@ -9517,35 +9733,30 @@ class App extends Component {
         }
       }
 
+      let refCell;
+      let direction = "";
       if (ownerType === "obstacle") {
-        // position is obstacle.moving.origin
-        // corresponding grid info cell is one with ostacle id matching
-
-        // if bolt owner is obstacle or barrier, then direction is based on entity location and trap target
-        let entit;
-        let origin = owner.currentPosition.cell;
-        let currentPosition = owner.currentPosition.cell;
+        refCell = this.gridInfo.find((x) => (x.obstacle.id = owner.id));
+        let origin = {
+          number: refCell.number,
+          center: refCell.center,
+        };
         let nextPosition = owner.currentPosition.cell.center;
-        let elevation = this.gridInfo.find(
-          (elem) =>
-            elem.number.x === owner.currentPosition.cell.number.x &&
-            elem.number.y === owner.currentPosition.cell.number.y
-        ).elevation.number;
-
+        direction = this.getDirectionFromCells(origin.number, owner.trap.target.number);
         projectile = {
           id: "000" + this.projectiles.length + "",
           type: projectileType,
-          owner: owner.number,
-          ownerType: "player",
+          owner: owner.id,
+          ownerType: "obstacle",
           origin: origin,
-          direction: owner.direction,
+          direction: direction,
           moving: {
             state: false,
             step: 0,
             course: "",
             origin: {
-              number: currentPosition.number,
-              center: currentPosition.center,
+              number: origin.number,
+              center: origin.center,
             },
             destination: {
               x: 0,
@@ -9553,8 +9764,8 @@ class App extends Component {
             },
           },
           currentPosition: {
-            number: currentPosition.number,
-            center: currentPosition.center,
+            number: origin.number,
+            center: origin.center,
           },
           nextPosition: {
             x: nextPosition.x,
@@ -9570,17 +9781,68 @@ class App extends Component {
             void: false,
           },
           speed: this.projectileSpeed,
-          elevation: elevation,
+          elevation: refCell.elevation.number,
           kill: false,
         };
 
-        owner.items.ammo--;
-        owner.currentWeapon.effect = "ammo+0";
+        // owner.items.ammo--;
+        // owner.currentWeapon.effect = "ammo+0";
+        // remove trap ammo and set weapon effect
       }
 
       if (ownerType === "barrier") {
-        // location is equal to location of grid info cell with barrier
-        // if bolt owner is obstacle or barrier, then direction is based on entity location and trap target
+        refCell = this.gridInfo.find((x) => (x.barrier.id = owner.id));
+        let origin = {
+          number: refCell.number,
+          center: refCell.center,
+        };
+        let nextPosition = owner.currentPosition.cell.center;
+        direction = this.getDirectionFromCells(origin.number, owner.trap.target.number);
+        projectile = {
+          id: "000" + this.projectiles.length + "",
+          type: projectileType,
+          owner: owner.id,
+          ownerType: "barrier",
+          origin: origin,
+          direction: direction,
+          moving: {
+            state: false,
+            step: 0,
+            course: "",
+            origin: {
+              number: origin.number,
+              center: origin.center,
+            },
+            destination: {
+              x: 0,
+              y: 0,
+            },
+          },
+          currentPosition: {
+            number: origin.number,
+            center: origin.center,
+          },
+          nextPosition: {
+            x: nextPosition.x,
+            y: nextPosition.y,
+          },
+          target: {
+            path: [],
+            free: true,
+            occupant: {
+              type: "",
+              player: "",
+            },
+            void: false,
+          },
+          speed: this.projectileSpeed,
+          elevation: refCell.elevation.number,
+          kill: false,
+        };
+
+        // owner.items.ammo--;
+        // owner.currentWeapon.effect = "ammo+0";
+        // remove trap ammo and set weapon effect
       }
     }
 
@@ -39774,7 +40036,7 @@ class App extends Component {
           },
           obstacle: {
             id: 0,
-            traps: [],
+            trap: {},
             state: false,
             name: "",
             type: "",
@@ -39830,7 +40092,7 @@ class App extends Component {
           },
           barrier: {
             id: 0,
-            traps: [],
+            trap: {},
             state: false,
             name: "",
             type: "",
@@ -39909,7 +40171,7 @@ class App extends Component {
           },
           obstacle: {
             id: 0,
-            traps: [],
+            trap: {},
             state: false,
             name: "",
             type: "",
@@ -39965,7 +40227,7 @@ class App extends Component {
           },
           barrier: {
             id: 0,
-            traps: [],
+            trap: {},
             state: false,
             name: "",
             type: "",
@@ -40068,11 +40330,16 @@ class App extends Component {
       let tempOrigin;
       // OBSTACLE
       if (elem.levelData.split("_")[1] !== "*") {
-        tempOrigin = elem.obstacle.moving.origin;
         elem.obstacle = this.obstacleLevelDataRef[elem.levelData.split("_")[1]];
         elem.obstacle.id = obstacleCount;
         obstacleCount++;
-        elem.obstacle.moving.origin = tempOrigin;
+        elem.obstacle.moving.origin = {
+          number: elem.number,
+          center: elem.center,
+        };
+        elem.obstacle.trap.item = this.itemList.find(
+          (x) => (x.name = elem.obstacle.trap.itemNameRef)
+        );
       }
 
       // BARRIER
@@ -40080,6 +40347,9 @@ class App extends Component {
         elem.barrier = this.barrierLevelDataRef[elem.levelData.split("_")[0].charAt(0)];
         elem.barrier.id = barrierCount;
         barrierCount++;
+        elem.barrier.trap.item = this.itemList.find(
+          (x) => (x.name = elem.barrier.trap.itemNameRef)
+        );
         switch (elem.levelData.split("_")[0].charAt(1)) {
           case "n":
             elem.barrier = {
@@ -40229,18 +40499,26 @@ class App extends Component {
 
       // OBSTACLE
       if (elem2.levelData.split("_")[1] !== "*") {
-        tempOrigin = elem.obstacle.moving.origin;
         elem2.obstacle = this.obstacleLevelDataRef[elem2.levelData.split("_")[1]];
         elem2.obstacle.id = obstacleCount;
         obstacleCount++;
-        elem.obstacle.moving.origin = tempOrigin;
+        elem2.obstacle.moving.origin = {
+          number: elem2.number,
+          center: elem2.center,
+        };
+        elem2.obstacle.trap.item = this.itemList.find(
+          (x) => (x.name = elem2.obstacle.trap.itemNameRef)
+        );
       }
 
       // BARRIER
       if (elem2.levelData.split("_")[0] !== "**") {
         elem2.barrier = this.barrierLevelDataRef[elem2.levelData.split("_")[0].charAt(0)];
-        elem.barrier.id = barrierCount;
+        elem2.barrier.id = barrierCount;
         barrierCount++;
+        elem2.barrier.trap.item = this.itemList.find(
+          (x) => (x.name = elem2.barrier.trap.itemNameRef)
+        );
         switch (elem2.levelData.split("_")[0].charAt(1)) {
           case "n":
             elem2.barrier = {
