@@ -768,6 +768,8 @@ class App extends Component {
     // OBSTACLES HAVE MAX 5 ITEMS
     this.obstacleLevelDataRef = {
       a: {
+        id: 0,
+        traps: [],
         state: true,
         name: "chest1",
         type: "chest",
@@ -828,6 +830,8 @@ class App extends Component {
         },
       },
       b: {
+        id: 0,
+        traps: [],
         state: true,
         name: "table1",
         type: "table",
@@ -895,6 +899,8 @@ class App extends Component {
         },
       },
       c: {
+        id: 0,
+        traps: [],
         state: true,
         name: "closet1",
         type: "barrel",
@@ -968,6 +974,8 @@ class App extends Component {
         },
       },
       d: {
+        id: 0,
+        traps: [],
         state: true,
         name: "chair1",
         type: "chair",
@@ -1028,6 +1036,8 @@ class App extends Component {
         },
       },
       e: {
+        id: 0,
+        traps: [],
         state: true,
         name: "shelf1",
         type: "shelf",
@@ -1088,6 +1098,8 @@ class App extends Component {
         },
       },
       f: {
+        id: 0,
+        traps: [],
         state: true,
         name: "counter1",
         type: "counter",
@@ -1148,6 +1160,8 @@ class App extends Component {
         },
       },
       g: {
+        id: 0,
+        traps: [],
         state: true,
         name: "smallBox1",
         type: "smallBox",
@@ -1208,6 +1222,8 @@ class App extends Component {
         },
       },
       h: {
+        id: 0,
+        traps: [],
         state: true,
         name: "largeBox1",
         type: "largeBox",
@@ -1268,6 +1284,8 @@ class App extends Component {
         },
       },
       i: {
+        id: 0,
+        traps: [],
         state: true,
         name: "closet2",
         type: "barrel",
@@ -1367,6 +1385,8 @@ class App extends Component {
     };
     this.barrierLevelDataRef = {
       a: {
+        id: 0,
+        traps: [],
         state: true,
         name: "wall1",
         type: "wall",
@@ -1384,6 +1404,8 @@ class App extends Component {
         height: 1,
       },
       b: {
+        id: 0,
+        traps: [],
         state: true,
         name: "door1",
         type: "door",
@@ -1401,6 +1423,8 @@ class App extends Component {
         height: 1,
       },
       c: {
+        id: 0,
+        traps: [],
         state: true,
         name: "balcony1",
         type: "balcony",
@@ -9420,18 +9444,19 @@ class App extends Component {
     // add something special as bolt onwerType (either 'god' or an obstacle or barrier that it comes from), owner for non player is obstacle/barrier id
     // other projectile type is "arc"
 
-    let origin = owner.currentPosition.cell;
-    let currentPosition = owner.currentPosition.cell;
-    let nextPosition = owner.currentPosition.cell.center;
-    let elevation = this.gridInfo.find(
-      (elem) =>
-        elem.number.x === owner.currentPosition.cell.number.x &&
-        elem.number.y === owner.currentPosition.cell.number.y
-    ).elevation.number;
     let projectile;
 
     if (projectileType === "bolt") {
       if (ownerType === "player") {
+        let origin = owner.currentPosition.cell;
+        let currentPosition = owner.currentPosition.cell;
+        let nextPosition = owner.currentPosition.cell.center;
+        let elevation = this.gridInfo.find(
+          (elem) =>
+            elem.number.x === owner.currentPosition.cell.number.x &&
+            elem.number.y === owner.currentPosition.cell.number.y
+        ).elevation.number;
+
         projectile = {
           id: "000" + this.projectiles.length + "",
           type: projectileType,
@@ -9492,7 +9517,71 @@ class App extends Component {
         }
       }
 
-      // if bolt owner is obstacle or barrier, then direction is based on entity location and trap target
+      if (ownerType === "obstacle") {
+        // position is obstacle.moving.origin
+        // corresponding grid info cell is one with ostacle id matching
+
+        // if bolt owner is obstacle or barrier, then direction is based on entity location and trap target
+        let entit;
+        let origin = owner.currentPosition.cell;
+        let currentPosition = owner.currentPosition.cell;
+        let nextPosition = owner.currentPosition.cell.center;
+        let elevation = this.gridInfo.find(
+          (elem) =>
+            elem.number.x === owner.currentPosition.cell.number.x &&
+            elem.number.y === owner.currentPosition.cell.number.y
+        ).elevation.number;
+
+        projectile = {
+          id: "000" + this.projectiles.length + "",
+          type: projectileType,
+          owner: owner.number,
+          ownerType: "player",
+          origin: origin,
+          direction: owner.direction,
+          moving: {
+            state: false,
+            step: 0,
+            course: "",
+            origin: {
+              number: currentPosition.number,
+              center: currentPosition.center,
+            },
+            destination: {
+              x: 0,
+              y: 0,
+            },
+          },
+          currentPosition: {
+            number: currentPosition.number,
+            center: currentPosition.center,
+          },
+          nextPosition: {
+            x: nextPosition.x,
+            y: nextPosition.y,
+          },
+          target: {
+            path: [],
+            free: true,
+            occupant: {
+              type: "",
+              player: "",
+            },
+            void: false,
+          },
+          speed: this.projectileSpeed,
+          elevation: elevation,
+          kill: false,
+        };
+
+        owner.items.ammo--;
+        owner.currentWeapon.effect = "ammo+0";
+      }
+
+      if (ownerType === "barrier") {
+        // location is equal to location of grid info cell with barrier
+        // if bolt owner is obstacle or barrier, then direction is based on entity location and trap target
+      }
     }
 
     return {
@@ -12122,8 +12211,6 @@ class App extends Component {
         x = bolt;
       }
     }
-
-    
   };
   setDeflection = (player, type, pushBack) => {
     // this.deflectedLengthRef = {
@@ -39686,6 +39773,8 @@ class App extends Component {
             state: false,
           },
           obstacle: {
+            id: 0,
+            traps: [],
             state: false,
             name: "",
             type: "",
@@ -39707,14 +39796,8 @@ class App extends Component {
               state: false,
               step: 0,
               origin: {
-                number: {
-                  x: undefined,
-                  y: undefined,
-                },
-                center: {
-                  x: undefined,
-                  y: undefined,
-                },
+                number: { x: x, y: y },
+                center: { x: center.x, y: center.y },
               },
               destination: {
                 number: {
@@ -39746,6 +39829,8 @@ class App extends Component {
             },
           },
           barrier: {
+            id: 0,
+            traps: [],
             state: false,
             name: "",
             type: "",
@@ -39823,6 +39908,8 @@ class App extends Component {
             state: false,
           },
           obstacle: {
+            id: 0,
+            traps: [],
             state: false,
             name: "",
             type: "",
@@ -39844,14 +39931,8 @@ class App extends Component {
               state: false,
               step: 0,
               origin: {
-                number: {
-                  x: undefined,
-                  y: undefined,
-                },
-                center: {
-                  x: undefined,
-                  y: undefined,
-                },
+                number: { x: x, y: y },
+                center: { x: center2.x, y: center2.y },
               },
               destination: {
                 number: {
@@ -39883,6 +39964,8 @@ class App extends Component {
             },
           },
           barrier: {
+            id: 0,
+            traps: [],
             state: false,
             name: "",
             type: "",
@@ -39915,6 +39998,8 @@ class App extends Component {
   processLevelData = (allCells) => {
     // console.log('processing level data','grid width',this.gridWidth);
 
+    let obstacleCount = 0;
+    let barrierCount = 0;
     for (const elem of allCells) {
       // APPLY LEVEL DATA TO GRID INFO CELLS!
       let levelData2Row = "row" + elem.number.x;
@@ -39983,12 +40068,15 @@ class App extends Component {
       // OBSTACLE
       if (elem.levelData.split("_")[1] !== "*") {
         elem.obstacle = this.obstacleLevelDataRef[elem.levelData.split("_")[1]];
+        elem.obstacle.id = obstacleCount;
+        obstacleCount++;
       }
 
       // BARRIER
       if (elem.levelData.split("_")[0] !== "**") {
         elem.barrier = this.barrierLevelDataRef[elem.levelData.split("_")[0].charAt(0)];
-
+        elem.barrier.id = barrierCount;
+        barrierCount++;
         switch (elem.levelData.split("_")[0].charAt(1)) {
           case "n":
             elem.barrier = {
@@ -40072,6 +40160,8 @@ class App extends Component {
       }
     }
 
+    obstacleCount = 0;
+    barrierCount = 0;
     for (const elem2 of this.settingsGridInfo) {
       // SET LEVEL DATA!
       let levelData2Row = "row" + elem2.number.x;
@@ -40137,12 +40227,15 @@ class App extends Component {
       // OBSTACLE
       if (elem2.levelData.split("_")[1] !== "*") {
         elem2.obstacle = this.obstacleLevelDataRef[elem2.levelData.split("_")[1]];
+        elem2.obstacle.id = obstacleCount;
+        obstacleCount++;
       }
 
       // BARRIER
       if (elem2.levelData.split("_")[0] !== "**") {
         elem2.barrier = this.barrierLevelDataRef[elem2.levelData.split("_")[0].charAt(0)];
-
+        elem.barrier.id = barrierCount;
+        barrierCount++;
         switch (elem2.levelData.split("_")[0].charAt(1)) {
           case "n":
             elem2.barrier = {
