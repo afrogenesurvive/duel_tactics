@@ -11823,7 +11823,7 @@ class App extends Component {
       // BOLT TARGET NOT DODGING
       // BACK ATTACK
       if (player.direction === bolt.direction) {
-        this.handleProjectileDamage(bolt, player);
+        this.handleProjectileDamage(bolt, "player", "player", player);
         this.setDeflection(player, "attacked", false);
       }
 
@@ -11858,7 +11858,7 @@ class App extends Component {
 
           // OR BE INJURED
           else {
-            this.handleProjectileDamage(bolt, player);
+            this.handleProjectileDamage(bolt, "player", "player", player);
             this.setDeflection(player, "attacked", false);
           }
         }
@@ -11866,7 +11866,7 @@ class App extends Component {
         // UNARMED DEFENSE = DAMAGE. OFF-PEAK HAS CHANCE TO PUSHBACK OR DAMAGE + PB
         if (playerDefending === true) {
           if (weapon === "unarmed") {
-            this.handleProjectileDamage(bolt, player);
+            this.handleProjectileDamage(bolt, "player", "player", player);
             this.setDeflection(player, "attacked", false);
           } else {
             if (player.defendPeak === true) {
@@ -11928,7 +11928,7 @@ class App extends Component {
 
               // CHANCE TO BE DAMAGED, DEFLECT || DEFLECT + PUSHBACK
               if (this.rnJesus(0, player.crits.guardBreak) === 1) {
-                this.handleProjectileDamage(bolt, player);
+                this.handleProjectileDamage(bolt, "player", "player", player);
 
                 if (this.rnJesus(1, player.crits.pushBack) === 1) {
                   this.setDeflection(player, "attacked", true);
@@ -11942,13 +11942,13 @@ class App extends Component {
 
         //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE
         if (playerDefending !== true && player.attackPeak !== true) {
-          this.handleProjectileDamage(bolt, player);
+          this.handleProjectileDamage(bolt, "player", "player", player);
           this.setDeflection(player, "attacked", false);
         }
 
         // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
         if (player.attackPeak === true && weapon === "unarmed") {
-          this.handleProjectileDamage(bolt, player);
+          this.handleProjectileDamage(bolt, "player", "player", player);
           this.setDeflection(player, "attacked", false);
         }
       }
@@ -12036,7 +12036,7 @@ class App extends Component {
                   });
                 }
               } else {
-                this.handleProjectileDamage(bolt, player);
+                this.handleProjectileDamage(bolt, "player", "player", player);
                 this.setDeflection(player, "attacked", false);
               }
             }
@@ -12103,13 +12103,13 @@ class App extends Component {
 
         //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE
         if (playerDefending !== true && player.attackPeak !== true) {
-          this.handleProjectileDamage(bolt, player);
+          this.handleProjectileDamage(bolt, "player", "player", player);
           this.setDeflection(player, "attacked", false);
         }
 
         // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
         if (player.attackPeak === true && weapon === "unarmed") {
-          this.handleProjectileDamage(bolt, player);
+          this.handleProjectileDamage(bolt, "player", "player", player);
           this.setDeflection(player, "attacked", false);
         }
       }
@@ -12312,137 +12312,141 @@ class App extends Component {
     this.players[player.number - 1] = player;
     this.players[targetPlayer.number - 1] = targetPlayer;
   };
-  handleProjectileDamage = (bolt, player) => {
-    let boltOwner = this.players[bolt.owner - 1];
-    let damage = 0;
-    let doubleHitChance = boltOwner.crits.doubleHit;
-    let singleHitChance = boltOwner.crits.singleHit;
+  handleProjectileDamage = (bolt, ownerType, targetType, target) => {
+    if (ownerType === "player") {
+      if (targetType === "player") {
+        let boltOwner = this.players[bolt.owner - 1];
+        let damage = 0;
+        let doubleHitChance = boltOwner.crits.doubleHit;
+        let singleHitChance = boltOwner.crits.singleHit;
 
-    if (player.currentArmor.name !== "") {
-      // console.log('opponent armour found');
-      switch (player.currentArmor.effect) {
-        case "dblhit-5":
-          doubleHitChance = boltOwner.crits.doubleHit + 5;
-          break;
-        case "dblhit-10":
-          doubleHitChance = boltOwner.crits.doubleHit + 10;
-          break;
-        case "dblhit-15":
-          doubleHitChance = boltOwner.crits.doubleHit + 15;
-          break;
-        // case 'dblhit-30' :
-        //   doubleHitChance = player.crits.doubleHit+30;
-        // break;
-        case "snghit-5":
-          singleHitChance = boltOwner.crits.singleHit + 5;
-          break;
-        case "snghit-10":
-          singleHitChance = boltOwner.crits.singleHit + 10;
-          break;
-      }
-    }
-
-    let doubleHit = this.rnJesus(1, doubleHitChance);
-    let singleHit = this.rnJesus(1, singleHitChance);
-
-    // BACK ATTACK
-    if (player.direction === bolt.direction) {
-      damage = 2;
-    }
-
-    if (singleHit === 1) {
-      damage = 1;
-    }
-    if (doubleHit === 1) {
-      damage = 2;
-    }
-    boltOwner.success.attackSuccess = {
-      state: true,
-      count: 1,
-      limit: boltOwner.success.attackSuccess.limit,
-    };
-    if (!player.popups.find((x) => x.msg.split("_")[0] === "hpDown")) {
-      player.popups.push({
-        state: false,
-        count: 0,
-        limit: 30,
-        type: "",
-        position: "",
-        msg: "hpDown_" + "-" + damage + "",
-        img: "",
-      });
-    }
-    player.hp -= damage;
-    if (player.hp === 1) {
-      player.attackStrength = 1;
-
-      // ADJUST TARGET MOVE SPEED
-      let currentMoveSpeedIndx = player.speed.range.indexOf(player.speed.move);
-      if (currentMoveSpeedIndx > 0) {
-        player.speed.move = player.speed.range[currentMoveSpeedIndx - 1];
-      }
-      // player.speed.move = .05;
-    }
-
-    if (player.hp > 0) {
-      this.attackedCancel(player);
-    }
-
-    // KILL OPPONENT!
-    else {
-      this.killPlayer(player);
-      this.placeItems({
-        init: false,
-        item: this.itemList[this.rnJesus(0, this.itemList.length - 1)].name,
-      });
-      boltOwner.points++;
-      this.pointChecker(boltOwner);
-
-      if (boltOwner.ai.state === true && boltOwner.ai.mode === "aggressive") {
-        console.log(
-          "check for evidence of retrieval here and resume retrieve if so",
-          boltOwner.ai.retrieving,
-          boltOwner.ai.mission
-        );
-
-        if (boltOwner.ai.retrieving.checkin) {
-          boltOwner.ai.mission = "retrieve";
-
-          if (!boltOwner.popups.find((x) => x.msg === "missionRetrieve")) {
-            boltOwner.popups.push({
-              state: false,
-              count: 0,
-              limit: 30,
-              type: "",
-              position: "",
-              msg: "missionRetrieve",
-              img: "",
-            });
+        if (target.currentArmor.name !== "") {
+          // console.log('opponent armour found');
+          switch (target.currentArmor.effect) {
+            case "dblhit-5":
+              doubleHitChance = boltOwner.crits.doubleHit + 5;
+              break;
+            case "dblhit-10":
+              doubleHitChance = boltOwner.crits.doubleHit + 10;
+              break;
+            case "dblhit-15":
+              doubleHitChance = boltOwner.crits.doubleHit + 15;
+              break;
+            // case 'dblhit-30' :
+            //   doubleHitChance = target.crits.doubleHit+30;
+            // break;
+            case "snghit-5":
+              singleHitChance = boltOwner.crits.singleHit + 5;
+              break;
+            case "snghit-10":
+              singleHitChance = boltOwner.crits.singleHit + 10;
+              break;
           }
-
-          let targetSafeData = this.scanTargetAreaThreat({
-            player: boltOwner.number,
-            point: {
-              x: boltOwner.ai.retrieving.point.x,
-              y: boltOwner.ai.retrieving.point.y,
-            },
-            range: 3,
-          });
-
-          boltOwner.ai.retrieving.safe = targetSafeData.isSafe;
         }
+
+        let doubleHit = this.rnJesus(1, doubleHitChance);
+        let singleHit = this.rnJesus(1, singleHitChance);
+
+        // BACK ATTACK
+        if (target.direction === bolt.direction) {
+          damage = 2;
+        }
+
+        if (singleHit === 1) {
+          damage = 1;
+        }
+        if (doubleHit === 1) {
+          damage = 2;
+        }
+        boltOwner.success.attackSuccess = {
+          state: true,
+          count: 1,
+          limit: boltOwner.success.attackSuccess.limit,
+        };
+        if (!target.popups.find((x) => x.msg.split("_")[0] === "hpDown")) {
+          target.popups.push({
+            state: false,
+            count: 0,
+            limit: 30,
+            type: "",
+            position: "",
+            msg: "hpDown_" + "-" + damage + "",
+            img: "",
+          });
+        }
+        target.hp -= damage;
+        if (target.hp === 1) {
+          target.attackStrength = 1;
+
+          // ADJUST TARGET MOVE SPEED
+          let currentMoveSpeedIndx = target.speed.range.indexOf(target.speed.move);
+          if (currentMoveSpeedIndx > 0) {
+            target.speed.move = target.speed.range[currentMoveSpeedIndx - 1];
+          }
+          // target.speed.move = .05;
+        }
+
+        if (target.hp > 0) {
+          this.attackedCancel(target);
+        }
+
+        // KILL OPPONENT!
+        else {
+          this.killPlayer(target);
+          this.placeItems({
+            init: false,
+            item: this.itemList[this.rnJesus(0, this.itemList.length - 1)].name,
+          });
+          boltOwner.points++;
+          this.pointChecker(boltOwner);
+
+          if (boltOwner.ai.state === true && boltOwner.ai.mode === "aggressive") {
+            console.log(
+              "check for evidence of retrieval here and resume retrieve if so",
+              boltOwner.ai.retrieving,
+              boltOwner.ai.mission
+            );
+
+            if (boltOwner.ai.retrieving.checkin) {
+              boltOwner.ai.mission = "retrieve";
+
+              if (!boltOwner.popups.find((x) => x.msg === "missionRetrieve")) {
+                boltOwner.popups.push({
+                  state: false,
+                  count: 0,
+                  limit: 30,
+                  type: "",
+                  position: "",
+                  msg: "missionRetrieve",
+                  img: "",
+                });
+              }
+
+              let targetSafeData = this.scanTargetAreaThreat({
+                player: boltOwner.number,
+                point: {
+                  x: boltOwner.ai.retrieving.point.x,
+                  y: boltOwner.ai.retrieving.point.y,
+                },
+                range: 3,
+              });
+
+              boltOwner.ai.retrieving.safe = targetSafeData.isSafe;
+            }
+          }
+        }
+
+        if (bolt.kill !== true) {
+          bolt.kill = true;
+        }
+
+        this.players[target.number - 1] = target;
+        this.players[boltOwner.number - 1] = boltOwner;
+        // this.projectiles.find(x => x.id === bolt.id) = bolt;
+        let x = this.projectiles.find((x) => x.id === bolt.id);
+        x = bolt;
       }
     }
-
-    if (bolt.kill !== true) {
-      bolt.kill = true;
-    }
-
-    this.players[player.number - 1] = player;
-    this.players[boltOwner.number - 1] = boltOwner;
-    // this.projectiles.find(x => x.id === bolt.id) = bolt;
-    let x = this.projectiles.find((x) => x.id === bolt.id);
-    x = bolt;
   };
   handleMiscPlayerDamage = (player, type) => {
     this.attackedCancel(this.players[player.number - 1]);
