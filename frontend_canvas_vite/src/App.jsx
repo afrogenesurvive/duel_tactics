@@ -1356,6 +1356,7 @@ class App extends Component {
             center: {},
           },
           timer: {
+            enabled: true,
             state: false,
             count: 0,
             limit: 5,
@@ -19777,6 +19778,78 @@ class App extends Component {
     this.players[player.number - 1] = player;
     return pickUp;
   };
+  obstacleBarrierTrapChecker = (locationCell,ownerType,entity) => {
+
+    
+    // if trap state is true and trigger is player
+      // check players for current postion @ trap target
+      //   if present check for timer enabled
+      //     if timer enabled count timer
+      //       if timer is up
+      //         check action
+      //         action can be attack or item
+      //           if action is attack
+      //             // check for crossbow & use projectile creator 
+
+      //     if timer is not enabled
+      //       check action and do as above
+
+        
+
+      //     // **add handle action sub function
+      //       check ammo if crossbow
+      //         if no ammo, finish trap execute witht he following
+          
+      //     once trap action is executed
+      //       call finishtrap sub function
+      //         if trap persistent is false,
+      //           set trap state to false
+
+
+    // trap: {
+    //   state: true,
+    //   target: {
+    //     number: {},
+    //     center: {},
+    //   },
+    //   timer: {
+    //     state: false,
+    //     count: 0,
+    //     limit: 5,
+    //   },
+    //   trigger: {
+    //     type: "player",
+    //   },
+    //   action: "attack",
+    //   itemNameRef: "crossbow1",
+    //   item: {},
+    //   ammo: 0,
+    // },
+
+
+    
+
+  }
+  trapInitSet = (type,data) => {
+
+    // data is cellInfo
+    // type is obstacle or barrier
+    elem2.obstacle.trap.item = this.itemList.find(
+      (x) => (x.name = elem2.obstacle.trap.itemNameRef)
+    );
+
+      
+    // if trap target is not already set
+    // if trap direction is "" do the following
+    // count trough cells around locationCell (using clac from obstacle item drop)
+    //   and if cell terrain is player walkable set trap target w/ cell location
+
+    // if trap direction is set, uset target based on that
+
+    // if trap state is false do nothing
+
+      // return trap
+  }
 
   preObstaclePushCheck = (player, target) => {
     // console.log('pre push check');
@@ -34817,6 +34890,14 @@ class App extends Component {
 
     // ITEMS FALLING/SINKING
 
+
+    // CHECK TRAPS
+    check all gridInfo cells for obstacle and barrier w/ true state 
+    // call obstacleBarrier trap checker and pass obstacle/barrier and cell
+      
+
+      
+
     // STATUS DISPLAY STEPPER!!
     if (
       player.statusDisplay.state === true &&
@@ -40463,9 +40544,7 @@ class App extends Component {
           number: elem.number,
           center: elem.center,
         };
-        elem.obstacle.trap.item = this.itemList.find(
-          (x) => (x.name = elem.obstacle.trap.itemNameRef)
-        );
+        elem.obstacle.trap = this.trapInitSet('obstacle',elem);
       }
 
       // BARRIER
@@ -40473,9 +40552,7 @@ class App extends Component {
         elem.barrier = this.barrierLevelDataRef[elem.levelData.split("_")[0].charAt(0)];
         elem.barrier.id = barrierCount;
         barrierCount++;
-        elem.barrier.trap.item = this.itemList.find(
-          (x) => (x.name = elem.barrier.trap.itemNameRef)
-        );
+        elem.barrier.trap = this.trapInitSet('barrier',elem);
         switch (elem.levelData.split("_")[0].charAt(1)) {
           case "n":
             elem.barrier = {
@@ -40632,9 +40709,7 @@ class App extends Component {
           number: elem2.number,
           center: elem2.center,
         };
-        elem2.obstacle.trap.item = this.itemList.find(
-          (x) => (x.name = elem2.obstacle.trap.itemNameRef)
-        );
+        elem2.obstacle.trap = this.trapInitSet('obstacle',elem2);
       }
 
       // BARRIER
@@ -40642,9 +40717,7 @@ class App extends Component {
         elem2.barrier = this.barrierLevelDataRef[elem2.levelData.split("_")[0].charAt(0)];
         elem2.barrier.id = barrierCount;
         barrierCount++;
-        elem2.barrier.trap.item = this.itemList.find(
-          (x) => (x.name = elem2.barrier.trap.itemNameRef)
-        );
+        elem2.barrier.trap = this.trapInitSet('barrier',elem2);
         switch (elem2.levelData.split("_")[0].charAt(1)) {
           case "n":
             elem2.barrier = {
