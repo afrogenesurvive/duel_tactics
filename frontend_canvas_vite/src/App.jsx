@@ -10604,6 +10604,8 @@ class App extends Component {
         let hp = targetCell.obstacle.hp - damage;
 
         targetCell.obstacle = {
+          id: targetCell.obstacle.id,
+          trap: targetCell.obstacle.trap,
           state: targetCell.obstacle.state,
           name: targetCell.obstacle.name,
           type: targetCell.obstacle.type,
@@ -10639,6 +10641,8 @@ class App extends Component {
           // targetCell.terrain.type = 'hazard';
 
           targetCell.obstacle = {
+            id: targetCell.obstacle.id,
+            trap: targetCell.obstacle.trap,
             state: false,
             name: targetCell.obstacle.name,
             type: targetCell.obstacle.type,
@@ -10677,6 +10681,8 @@ class App extends Component {
           }
 
           targetCell.obstacle = {
+            id: targetCell.obstacle.id,
+            trap: targetCell.obstacle.trap,
             state: false,
             name: targetCell.obstacle.name,
             type: targetCell.obstacle.type,
@@ -15159,6 +15165,8 @@ class App extends Component {
                         let hp = myCell.barrier.hp - damage;
 
                         myCell.barrier = {
+                          id: myCell.barrier.id,
+                          trap: myCell.barrier.trap,
                           state: myCell.barrier.state,
                           name: myCell.barrier.name,
                           type: myCell.barrier.type,
@@ -15191,6 +15199,8 @@ class App extends Component {
                           // myCell.terrain.type = 'hazard';
 
                           myCell.barrier = {
+                            id: myCell.barrier.id,
+                            trap: myCell.barrier.trap,
                             state: false,
                             name: myCell.barrier.name,
                             type: myCell.barrier.type,
@@ -15223,6 +15233,8 @@ class App extends Component {
                           // console.log('no rubble. Just remove barrier');
 
                           myCell.barrier = {
+                            id: myCell.barrier.id,
+                            trap: myCell.barrier.trap,
                             state: false,
                             name: myCell.barrier.name,
                             type: myCell.barrier.type,
@@ -15383,6 +15395,8 @@ class App extends Component {
                       let hp = targetCell.barrier.hp - damage;
 
                       targetCell.barrier = {
+                        id: targetCell.barrier.id,
+                        trap: targetCell.barrier.trap,
                         state: targetCell.barrier.state,
                         name: targetCell.barrier.name,
                         type: targetCell.barrier.type,
@@ -15415,6 +15429,8 @@ class App extends Component {
                         // targetCell.terrain.type = 'hazard';
 
                         targetCell.barrier = {
+                          id: targetCell.barrier.id,
+                          trap: targetCell.barrier.trap,
                           state: false,
                           name: targetCell.barrier.name,
                           type: targetCell.barrier.type,
@@ -15447,6 +15463,8 @@ class App extends Component {
                         // console.log('no rubble. Just remove barrier');
 
                         targetCell.barrier = {
+                          id: targetCell.barrier.id,
+                          trap: targetCell.barrier.trap,
                           state: false,
                           name: targetCell.barrier.name,
                           type: targetCell.barrier.type,
@@ -15601,6 +15619,8 @@ class App extends Component {
                         let hp = targetCell.obstacle.hp - damage;
 
                         targetCell.obstacle = {
+                          id: targetCell.obstacle.id,
+                          trap: targetCell.obstacle.trap,
                           state: targetCell.obstacle.state,
                           name: targetCell.obstacle.name,
                           type: targetCell.obstacle.type,
@@ -15639,6 +15659,8 @@ class App extends Component {
                           // targetCell.terrain.type = 'hazard';
 
                           targetCell.obstacle = {
+                            id: targetCell.obstacle.id,
+                            trap: targetCell.obstacle.trap,
                             state: false,
                             name: targetCell.obstacle.name,
                             type: targetCell.obstacle.type,
@@ -15678,6 +15700,8 @@ class App extends Component {
                           // this.gridInfo.find(elem => elem.number.x === player.target.cell1.number.x && elem.number.y === player.target.cell1.number.y ).obstacle =
 
                           targetCell.obstacle = {
+                            id: targetCell.obstacle.id,
+                            trap: targetCell.obstacle.trap,
                             state: false,
                             name: targetCell.obstacle.name,
                             type: targetCell.obstacle.type,
@@ -15914,6 +15938,8 @@ class App extends Component {
                         let hp = myCell.barrier.hp - damage;
 
                         myCell.barrier = {
+                          id: myCell.barrier.id,
+                          trap: myCell.barrier.trap,
                           state: myCell.barrier.state,
                           name: myCell.barrier.name,
                           type: myCell.barrier.type,
@@ -15945,6 +15971,8 @@ class App extends Component {
                           myCell.rubble = true;
                           // myCell.terrain.type = 'hazard';
                           myCell.barrier = {
+                            id: myCell.barrier.id,
+                            trap: myCell.barrier.trap,
                             state: false,
                             name: myCell.barrier.name,
                             type: myCell.barrier.type,
@@ -15977,6 +16005,8 @@ class App extends Component {
                           // console.log('no rubble. Just remove barrier');
 
                           myCell.barrier = {
+                            id: myCell.barrier.id,
+                            trap: myCell.barrier.trap,
                             state: false,
                             name: myCell.barrier.name,
                             type: myCell.barrier.type,
@@ -16137,6 +16167,8 @@ class App extends Component {
                       let hp = targetCell.barrier.hp - damage;
 
                       targetCell.barrier = {
+                        id: targetCell.barrier.id,
+                        trap: targetCell.barrier.trap,
                         state: targetCell.barrier.state,
                         name: targetCell.barrier.name,
                         type: targetCell.barrier.type,
@@ -16168,6 +16200,8 @@ class App extends Component {
                         targetCell.rubble = true;
                         // targetCell2.terrain.type = 'hazard';
                         targetCell.barrier = {
+                          id: targetCell.barrier.id,
+                          trap: targetCell.barrier.trap,
                           state: false,
                           name: targetCell.barrier.name,
                           type: targetCell.barrier.type,
@@ -16200,6 +16234,8 @@ class App extends Component {
                         // console.log('no rubble. Just remove barrier');
 
                         targetCell.barrier = {
+                          id: targetCell.barrier.id,
+                          trap: targetCell.barrier.trap,
                           state: false,
                           name: targetCell.barrier.name,
                           type: targetCell.barrier.type,
@@ -16356,6 +16392,8 @@ class App extends Component {
                       if (targetCell.obstacle.hp - damage > 0) {
                         let hp = targetCell.obstacle.hp - damage;
                         targetCell.obstacle = {
+                          id: targetCell.obstacle.id,
+                          trap: targetCell.obstacle.trap,
                           state: targetCell.obstacle.state,
                           name: targetCell.obstacle.name,
                           type: targetCell.obstacle.type,
@@ -16394,6 +16432,8 @@ class App extends Component {
                           // targetCell2.terrain.type = 'hazard';
 
                           targetCell.obstacle = {
+                            id: targetCell.obstacle.id,
+                            trap: targetCell.obstacle.trap,
                             state: false,
                             name: targetCell.obstacle.name,
                             type: targetCell.obstacle.type,
@@ -16432,6 +16472,8 @@ class App extends Component {
                           }
 
                           targetCell.obstacle = {
+                            id: targetCell.obstacle.id,
+                            trap: targetCell.obstacle.trap,
                             state: false,
                             name: targetCell.obstacle.name,
                             type: targetCell.obstacle.type,
@@ -16662,6 +16704,8 @@ class App extends Component {
                           if (targetCell.barrier.hp - damage > 0) {
                             let hp = targetCell.barrier.hp - damage;
                             targetCell.barrier = {
+                              id: targetCell.barrier.id,
+                              trap: targetCell.barrier.trap,
                               state: targetCell.barrier.state,
                               name: targetCell.barrier.name,
                               type: targetCell.barrier.type,
@@ -16693,6 +16737,8 @@ class App extends Component {
                               targetCell.rubble = true;
                               // targetCell2.terrain.type = 'hazard';
                               targetCell.barrier = {
+                                id: targetCell.barrier.id,
+                                trap: targetCell.barrier.trap,
                                 state: false,
                                 name: targetCell.barrier.name,
                                 type: targetCell.barrier.type,
@@ -16724,6 +16770,8 @@ class App extends Component {
                             } else {
                               // console.log('no rubble. Just remove barrier');
                               targetCell.barrier = {
+                                id: targetCell.barrier.id,
+                                trap: targetCell.barrier.trap,
                                 state: false,
                                 name: targetCell.barrier.name,
                                 type: targetCell.barrier.type,
@@ -16862,6 +16910,8 @@ class App extends Component {
                         let hp = myCell.barrier.hp - damage;
 
                         myCell.barrier = {
+                          id: myCell.barrier.id,
+                          trap: myCell.barrier.trap,
                           state: myCell.barrier.state,
                           name: myCell.barrier.name,
                           type: myCell.barrier.type,
@@ -16893,6 +16943,8 @@ class App extends Component {
                           myCell.rubble = true;
                           // myCell.terrain.type = 'hazard';
                           myCell.barrier = {
+                            id: myCell.barrier.id,
+                            trap: myCell.barrier.trap,
                             state: false,
                             name: myCell.barrier.name,
                             type: myCell.barrier.type,
@@ -16925,6 +16977,8 @@ class App extends Component {
                           // console.log('no rubble. Just remove barrier');
 
                           myCell.barrier = {
+                            id: myCell.barrier.id,
+                            trap: myCell.barrier.trap,
                             state: false,
                             name: myCell.barrier.name,
                             type: myCell.barrier.type,
@@ -17084,6 +17138,8 @@ class App extends Component {
                       if (targetCell2.barrier.hp - damage > 0) {
                         let hp = targetCell2.barrier.hp - damage;
                         targetCell2.barrier = {
+                          id: targetCell2.barrier.id,
+                          trap: targetCell2.barrier.trap,
                           state: targetCell2.barrier.state,
                           name: targetCell2.barrier.name,
                           type: targetCell2.barrier.type,
@@ -17115,6 +17171,8 @@ class App extends Component {
                           targetCell2.rubble = true;
                           // targetCell2.terrain.type = 'hazard';
                           targetCell2.barrier = {
+                            id: targetCell2.barrier.id,
+                            trap: targetCell2.barrier.trap,
                             state: false,
                             name: targetCell2.barrier.name,
                             type: targetCell2.barrier.type,
@@ -17146,6 +17204,8 @@ class App extends Component {
                         } else {
                           // console.log('no rubble. Just remove barrier');
                           targetCell2.barrier = {
+                            id: targetCell2.barrier.id,
+                            trap: targetCell2.barrier.trap,
                             state: false,
                             name: targetCell2.barrier.name,
                             type: targetCell2.barrier.type,
@@ -17304,6 +17364,8 @@ class App extends Component {
                         if (targetCell2.obstacle.hp - damage > 0) {
                           let hp = targetCell2.obstacle.hp - damage;
                           targetCell2.obstacle = {
+                            id: targetCell2.obstacle.id,
+                            trap: targetCell2.obstacle.trap,
                             state: targetCell2.obstacle.state,
                             name: targetCell2.obstacle.name,
                             type: targetCell2.obstacle.type,
@@ -17341,6 +17403,8 @@ class App extends Component {
                             targetCell2.rubble = true;
                             // targetCell2.terrain.type = 'hazard';
                             targetCell2.obstacle = {
+                              id: targetCell2.obstacle.id,
+                              trap: targetCell2.obstacle.trap,
                               state: false,
                               name: targetCell2.obstacle.name,
                               type: targetCell2.obstacle.type,
@@ -17378,6 +17442,8 @@ class App extends Component {
                               itemsToDrop = targetCell2.obstacle.items;
                             }
                             targetCell2.obstacle = {
+                              id: targetCell2.obstacle.id,
+                              trap: targetCell2.obstacle.trap,
                               state: false,
                               name: targetCell2.obstacle.name,
                               type: targetCell2.obstacle.type,
@@ -17624,6 +17690,8 @@ class App extends Component {
                   let hp = myCell.barrier.hp - damage;
 
                   myCell.barrier = {
+                    id: myCell.barrier.id,
+                    trap: myCell.barrier.trap,
                     state: myCell.barrier.state,
                     name: myCell.barrier.name,
                     type: myCell.barrier.type,
@@ -17656,6 +17724,8 @@ class App extends Component {
                     // targetCell.terrain.type = 'hazard';
 
                     myCell.barrier = {
+                      id: myCell.barrier.id,
+                      trap: myCell.barrier.trap,
                       state: false,
                       name: myCell.barrier.name,
                       type: myCell.barrier.type,
@@ -17688,6 +17758,8 @@ class App extends Component {
                     // console.log('no rubble. Just remove barrier');
 
                     myCell.barrier = {
+                      id: myCell.barrier.id,
+                      trap: myCell.barrier.trap,
                       state: false,
                       name: myCell.barrier.name,
                       type: myCell.barrier.type,
@@ -17869,6 +17941,8 @@ class App extends Component {
                 let hp = targetCell.barrier.hp - damage;
 
                 targetCell.barrier = {
+                  id: targetCell.barrier.id,
+                  trap: targetCell.barrier.trap,
                   state: targetCell.barrier.state,
                   name: targetCell.barrier.name,
                   type: targetCell.barrier.type,
@@ -17901,6 +17975,8 @@ class App extends Component {
                   // targetCell.terrain.type = 'hazard';
 
                   targetCell.barrier = {
+                    id: targetCell.barrier.id,
+                    trap: targetCell.barrier.trap,
                     state: false,
                     name: targetCell.barrier.name,
                     type: targetCell.barrier.type,
@@ -17932,6 +18008,8 @@ class App extends Component {
                 } else {
                   // console.log('no rubble. Just remove barrier');
                   targetCell.barrier = {
+                    id: targetCell.barrier.id,
+                    trap: targetCell.barrier.trap,
                     state: false,
                     name: targetCell.barrier.name,
                     type: targetCell.barrier.type,
@@ -18048,6 +18126,8 @@ class App extends Component {
                   let hp = targetCell.obstacle.hp - damage;
 
                   targetCell.obstacle = {
+                    id: targetCell.obstacle.id,
+                    trap: targetCell.obstacle.trap,
                     state: targetCell.obstacle.state,
                     name: targetCell.obstacle.name,
                     type: targetCell.obstacle.type,
@@ -18087,6 +18167,8 @@ class App extends Component {
                     // targetCell.terrain.type = 'hazard';
 
                     targetCell.obstacle = {
+                      id: targetCell.obstacle.id,
+                      trap: targetCell.obstacle.trap,
                       state: false,
                       name: targetCell.obstacle.name,
                       type: targetCell.obstacle.type,
@@ -18125,6 +18207,8 @@ class App extends Component {
                     }
 
                     targetCell.obstacle = {
+                      id: targetCell.obstacle.id,
+                      trap: targetCell.obstacle.trap,
                       state: false,
                       name: targetCell.obstacle.name,
                       type: targetCell.obstacle.type,
@@ -18261,6 +18345,8 @@ class App extends Component {
 
                     let hp = targetCell.barrier.hp - damage;
                     targetCell.barrier = {
+                      id: targetCell.barrier.id,
+                      trap: targetCell.barrier.trap,
                       state: targetCell.barrier.state,
                       name: targetCell.barrier.name,
                       type: targetCell.barrier.type,
@@ -18292,6 +18378,8 @@ class App extends Component {
                       targetCell.rubble = true;
                       // targetCell.terrain.type = 'hazard';
                       targetCell.barrier = {
+                        id: targetCell.barrier.id,
+                        trap: targetCell.barrier.trap,
                         state: false,
                         name: targetCell.barrier.name,
                         type: targetCell.barrier.type,
@@ -18324,6 +18412,8 @@ class App extends Component {
                       // console.log('no rubble. Just remove barrier');
                       // this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier =
                       targetCell.barrier = {
+                        id: targetCell.barrier.id,
+                        trap: targetCell.barrier.trap,
                         state: false,
                         name: targetCell.barrier.name,
                         type: targetCell.barrier.type,
@@ -18492,6 +18582,8 @@ class App extends Component {
               if (targetCell.barrier.hp - damage > 0) {
                 let hp = targetCell.barrier.hp - damage;
                 targetCell.barrier = {
+                  id: targetCell.barrier.id,
+                  trap: targetCell.barrier.trap,
                   state: targetCell.barrier.state,
                   name: targetCell.barrier.name,
                   type: targetCell.barrier.type,
@@ -18523,6 +18615,8 @@ class App extends Component {
                   targetCell.rubble = true;
                   // targetCell.terrain.type = 'hazard';
                   targetCell.barrier = {
+                    id: targetCell.barrier.id,
+                    trap: targetCell.barrier.trap,
                     state: false,
                     name: targetCell.barrier.name,
                     type: targetCell.barrier.type,
@@ -18554,6 +18648,8 @@ class App extends Component {
                 } else {
                   // console.log('no rubble. Just remove barrier');
                   targetCell.barrier = {
+                    id: targetCell.barrier.id,
+                    trap: targetCell.barrier.trap,
                     state: false,
                     name: targetCell.barrier.name,
                     type: targetCell.barrier.type,
@@ -18668,6 +18764,8 @@ class App extends Component {
                 if (targetCell.obstacle.hp - damage > 0) {
                   let hp = targetCell.obstacle.hp - damage;
                   targetCell.obstacle = {
+                    id: targetCell.obstacle.id,
+                    trap: targetCell.obstacle.trap,
                     state: targetCell.obstacle.state,
                     name: targetCell.obstacle.name,
                     type: targetCell.obstacle.type,
@@ -18704,6 +18802,8 @@ class App extends Component {
                     targetCell.rubble = true;
                     // targetCell.terrain.type = 'hazard';
                     targetCell.obstacle = {
+                      id: targetCell.obstacle.id,
+                      trap: targetCell.obstacle.trap,
                       state: false,
                       name: targetCell.obstacle.name,
                       type: targetCell.obstacle.type,
@@ -18742,6 +18842,8 @@ class App extends Component {
                     }
 
                     targetCell.obstacle = {
+                      id: targetCell.obstacle.id,
+                      trap: targetCell.obstacle.trap,
                       state: false,
                       name: targetCell.obstacle.name,
                       type: targetCell.obstacle.type,
@@ -18872,6 +18974,8 @@ class App extends Component {
                   if (targetCell.barrier.hp - damage > 0) {
                     let hp = targetCell.barrier.hp - damage;
                     targetCell.barrier = {
+                      id: targetCell.barrier.id,
+                      trap: targetCell.barrier.trap,
                       state: targetCell.barrier.state,
                       name: targetCell.barrier.name,
                       type: targetCell.barrier.type,
@@ -18904,6 +19008,8 @@ class App extends Component {
                       // targetCell.terrain.type = 'hazard';
 
                       targetCell.barrier = {
+                        id: targetCell.barrier.id,
+                        trap: targetCell.barrier.trap,
                         state: false,
                         name: targetCell.barrier.name,
                         type: targetCell.barrier.type,
@@ -18936,6 +19042,8 @@ class App extends Component {
                       // console.log('no rubble. Just remove barrier');
 
                       targetCell.barrier = {
+                        id: targetCell.barrier.id,
+                        trap: targetCell.barrier.trap,
                         state: false,
                         name: targetCell.barrier.name,
                         type: targetCell.barrier.type,
@@ -20014,6 +20122,8 @@ class App extends Component {
         });
 
         obstacleCell.obstacle = {
+          id: obstacleCell.obstacle.id,
+          trap: obstacleCell.obstacle.trap,
           state: obstacleCell.obstacle.state,
           name: obstacleCell.obstacle.name,
           type: obstacleCell.obstacle.type,
@@ -20149,6 +20259,8 @@ class App extends Component {
         let obstacleCrementObj = this.obstacleMoveCrementer(obstacleCell, destCellRef);
 
         obstacleCell.obstacle = {
+          id: obstacleCell.obstacle.id,
+          trap: obstacleCell.obstacle.trap,
           state: obstacleCell.obstacle.state,
           name: obstacleCell.obstacle.name,
           type: obstacleCell.obstacle.type,
@@ -21162,6 +21274,8 @@ class App extends Component {
         });
 
         obstacleCell.obstacle = {
+          id: obstacleCell.obstacle.id,
+          trap: obstacleCell.obstacle.trap,
           state: obstacleCell.obstacle.state,
           name: obstacleCell.obstacle.name,
           type: obstacleCell.obstacle.type,
@@ -21303,6 +21417,8 @@ class App extends Component {
         let obstacleCrementObj = this.obstacleMoveCrementer(obstacleCell, playerCellRef);
 
         obstacleCell.obstacle = {
+          id: obstacleCell.obstacle.id,
+          trap: obstacleCell.obstacle.trap,
           state: obstacleCell.obstacle.state,
           name: obstacleCell.obstacle.name,
           type: obstacleCell.obstacle.type,
@@ -34238,6 +34354,8 @@ class App extends Component {
               if (destCellRef.void.state === true || destCellRef.terrain.type === "deep") {
                 destCellRef.obstacle = {
                   state: true,
+                  id: cell2.obstacle.id,
+                  trap: cell2.obstacle.trap,
                   name: cell2.obstacle.name,
                   type: cell2.obstacle.type,
                   hp: cell2.obstacle.hp,
@@ -34295,6 +34413,8 @@ class App extends Component {
               }
               if (destCellRef.void.state !== true && destCellRef.terrain.type !== "deep") {
                 destCellRef.obstacle = {
+                  id: cell2.obstacle.id,
+                  trap: cell2.obstacle.trap,
                   state: true,
                   name: cell2.obstacle.name,
                   type: cell2.obstacle.type,
@@ -34342,6 +34462,8 @@ class App extends Component {
               destCellRef.levelData = cell2.levelData;
 
               originCellRef.obstacle = {
+                id: "",
+                trap: {},
                 state: false,
                 name: "",
                 type: "",
@@ -34454,6 +34576,8 @@ class App extends Component {
               );
 
               originCellRef.obstacle = {
+                id: 0,
+                trap: {},
                 state: false,
                 name: "",
                 type: "",
@@ -34538,6 +34662,8 @@ class App extends Component {
           levelData[1] = "*";
           cell.levelData = levelData.join("_");
           cell.obstacle = {
+            id: 0,
+            trap: {},
             state: false,
             name: "",
             type: "",
