@@ -9416,8 +9416,89 @@ class App extends Component {
     }
     return oppositeDirection;
   };
-  projectileCreator = (type, player, projectiles) => {
-    // return player and boltw
+  projectileCreator = (ownerType, owner, projectileType) => {
+    // add something special as bolt onwer (either 'god' or an obstacle or barrier that it comes from)
+    // other projectile type is "arc"
+
+    let origin = owner.currentPosition.cell;
+    let currentPosition = owner.currentPosition.cell;
+    let nextPosition = owner.currentPosition.cell.center;
+    let elevation = this.gridInfo.find(
+      (elem) =>
+        elem.number.x === owner.currentPosition.cell.number.x &&
+        elem.number.y === owner.currentPosition.cell.number.y
+    ).elevation.number;
+    let projectile;
+
+    if (projectileType === "bolt") {
+      if (ownerType === "player") {
+        projectile = {
+          id: "000" + this.projectiles.length + "",
+          type: projectileType,
+          owner: owner.number,
+          ownerType: "player",
+          origin: origin,
+          direction: owner.direction,
+          moving: {
+            state: false,
+            step: 0,
+            course: "",
+            origin: {
+              number: currentPosition.number,
+              center: currentPosition.center,
+            },
+            destination: {
+              x: 0,
+              y: 0,
+            },
+          },
+          currentPosition: {
+            number: currentPosition.number,
+            center: currentPosition.center,
+          },
+          nextPosition: {
+            x: nextPosition.x,
+            y: nextPosition.y,
+          },
+          target: {
+            path: [],
+            free: true,
+            occupant: {
+              type: "",
+              player: "",
+            },
+            void: false,
+          },
+          speed: this.projectileSpeed,
+          elevation: elevation,
+          kill: false,
+        };
+
+        owner.items.ammo--;
+        owner.currentWeapon.effect = "ammo+0";
+
+        if (!owner.popups.find((x) => x.msg === "attacking")) {
+          owner.popups.push({
+            state: false,
+            count: 0,
+            limit:
+              this.attackAnimRef.limit[owner.currentWeapon.type] -
+              this.attackAnimRef.peak[owner.currentWeapon.type],
+            type: "",
+            position: "",
+            msg: "attacking",
+            img: "",
+          });
+        }
+      }
+
+      // if bolt owner is obstacle or barrier, then direction is based on entity location and trap target
+    }
+
+    return {
+      owner: owner,
+      projectile: projectile,
+    };
   };
   aiBoltPathCheck = (aiPlayer) => {
     // console.log('aiPlayer.ai.targetPlayer',aiPlayer.ai.targetPlayer);
@@ -31426,76 +31507,13 @@ class App extends Component {
               ) {
                 // console.log('firing crossbow');
                 melee = false;
-                let plyrX = player;
-                let origin = plyrX.currentPosition.cell;
-                let currentPosition = plyrX.currentPosition.cell;
-                let nextPosition = plyrX.currentPosition.cell.center;
-                let elevation = this.gridInfo.find(
-                  (elem) =>
-                    elem.number.x === player.currentPosition.cell.number.x &&
-                    elem.number.y === player.currentPosition.cell.number.y
-                ).elevation.number;
 
-                let projectileId = this.projectiles.length;
-                let boltx = {
-                  id: "000" + projectileId + "",
-                  type: "bolt",
-                  owner: plyrX.number,
-                  origin: origin,
-                  direction: plyrX.direction,
-                  moving: {
-                    state: false,
-                    step: 0,
-                    course: "",
-                    origin: {
-                      number: currentPosition.number,
-                      center: currentPosition.center,
-                    },
-                    destination: {
-                      x: 0,
-                      y: 0,
-                    },
-                  },
-                  currentPosition: {
-                    number: currentPosition.number,
-                    center: currentPosition.center,
-                  },
-                  nextPosition: {
-                    x: nextPosition.x,
-                    y: nextPosition.y,
-                  },
-                  target: {
-                    path: [],
-                    free: true,
-                    occupant: {
-                      type: "",
-                      player: "",
-                    },
-                    void: false,
-                  },
-                  speed: this.projectileSpeed,
-                  elevation: elevation,
-                  kill: false,
-                };
-                this.projectiles.push(boltx);
-                player.items.ammo--;
-                player.currentWeapon.effect = "ammo+0";
+                let projectileResult = this.projectileCreator("player", player, "bolt");
+                player = projectileResult.owner;
 
-                this.getBoltTarget(boltx);
+                this.projectiles.push(projectileResult.projectile);
 
-                if (!player.popups.find((x) => x.msg === "attacking")) {
-                  player.popups.push({
-                    state: false,
-                    count: 0,
-                    limit:
-                      this.attackAnimRef.limit[player.currentWeapon.type] -
-                      this.attackAnimRef.peak[player.currentWeapon.type],
-                    type: "",
-                    position: "",
-                    msg: "attacking",
-                    img: "",
-                  });
-                }
+                this.getBoltTarget(projectileResult.projectile);
               }
               // NO PROJECTILE AMMO
               if (
@@ -35786,10 +35804,7 @@ class App extends Component {
             );
 
             // PATH HIGHLIGHT
-            if (
-              cell.number.x === this.players[bolt.owner - 1].currentPosition.cell.number.x &&
-              cell.number.y === this.players[bolt.owner - 1].currentPosition.cell.number.y
-            ) {
+            if (cell.number.x === bolt.origin.number.x && cell.number.y === bolt.origin.number.y) {
             } else {
               this.cellsUnderAttack.push({
                 number: {
