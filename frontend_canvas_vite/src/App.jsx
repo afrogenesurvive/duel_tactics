@@ -771,6 +771,9 @@ class App extends Component {
         id: 0,
         trap: {
           state: false,
+          persistent: false,
+          remaining: 5,
+          direction: "",
           target: {
             number: {},
             center: {},
@@ -851,6 +854,9 @@ class App extends Component {
         id: 0,
         trap: {
           state: false,
+          persistent: false,
+          remaining: 5,
+          direction: "",
           target: {
             number: {},
             center: {},
@@ -938,6 +944,9 @@ class App extends Component {
         id: 0,
         trap: {
           state: false,
+          persistent: false,
+          remaining: 0,
+          direction: "",
           target: {
             number: {},
             center: {},
@@ -1031,6 +1040,9 @@ class App extends Component {
         id: 0,
         trap: {
           state: false,
+          persistent: false,
+          remaining: 0,
+          direction: "",
           target: {
             number: {},
             center: {},
@@ -1111,6 +1123,9 @@ class App extends Component {
         id: 0,
         trap: {
           state: false,
+          persistent: false,
+          remaining: 0,
+          direction: "",
           target: {
             number: {},
             center: {},
@@ -1191,6 +1206,9 @@ class App extends Component {
         id: 0,
         trap: {
           state: false,
+          persistent: false,
+          remaining: 0,
+          direction: "",
           target: {
             number: {},
             center: {},
@@ -1271,6 +1289,9 @@ class App extends Component {
         id: 0,
         trap: {
           state: false,
+          persistent: false,
+          remaining: 0,
+          direction: "",
           target: {
             number: {},
             center: {},
@@ -1351,6 +1372,9 @@ class App extends Component {
         id: 0,
         trap: {
           state: true,
+          persistent: false,
+          remaining: 5,
+          direction: "",
           target: {
             number: {},
             center: {},
@@ -1432,6 +1456,9 @@ class App extends Component {
         id: 0,
         trap: {
           state: false,
+          persistent: false,
+          remaining: 0,
+          direction: "",
           target: {
             number: {},
             center: {},
@@ -1551,6 +1578,9 @@ class App extends Component {
         id: 0,
         trap: {
           state: false,
+          persistent: false,
+          remaining: 0,
+          direction: "",
           target: {
             number: {},
             center: {},
@@ -1588,6 +1618,9 @@ class App extends Component {
         id: 0,
         trap: {
           state: false,
+          persistent: false,
+          remaining: 0,
+          direction: "",
           target: {
             number: {},
             center: {},
@@ -1625,6 +1658,9 @@ class App extends Component {
         id: 0,
         trap: {
           state: true,
+          persistent: false,
+          remaining: 0,
+          direction: "",
           target: {
             number: {},
             center: {},
@@ -19778,34 +19814,29 @@ class App extends Component {
     this.players[player.number - 1] = player;
     return pickUp;
   };
-  obstacleBarrierTrapChecker = (locationCell,ownerType,entity) => {
-
-    
+  obstacleBarrierTrapChecker = (locationCell, ownerType) => {
+    // trap = locationCell obstacle/barrier trap
     // if trap state is true and trigger is player
-      // check players for current postion @ trap target
-      //   if present check for timer enabled
-      //     if timer enabled count timer
-      //       if timer is up
-      //         check action
-      //         action can be attack or item
-      //           if action is attack
-      //             // check for crossbow & use projectile creator 
-
-      //     if timer is not enabled
-      //       check action and do as above
-
-        
-
-      //     // **add handle action sub function
-      //       check ammo if crossbow
-      //         if no ammo, finish trap execute witht he following
-          
-      //     once trap action is executed
-      //       call finishtrap sub function
-      //         if trap persistent is false,
-      //           set trap state to false
-
-
+    // check players for current postion @ trap target
+    //   if present check for timer enabled
+    //     if timer enabled count timer
+    //       if timer is up
+    //         check action
+    //         action can be attack or item
+    //           if action is attack
+    //             // check for crossbow & use projectile creator
+    //     if timer is not enabled
+    //       check action and do as above
+    //     // **add handle action sub function
+    //       check ammo if crossbow
+    //         if no ammo, finish trap execute witht he following
+    //     once trap action is executed
+    //       call finishtrap sub function
+    //         if trap persistent is false,
+    // if false, & trap remaining > 0
+    //   remainging--
+    // if remaining = 0
+    //   trap state false
     // trap: {
     //   state: true,
     //   target: {
@@ -19825,31 +19856,22 @@ class App extends Component {
     //   item: {},
     //   ammo: 0,
     // },
-
-
-    
-
-  }
-  trapInitSet = (type,data) => {
-
+    // return Cell
+  };
+  obstacleBarrierTrapInitSet = (type, data) => {
     // data is cellInfo
     // type is obstacle or barrier
-    elem2.obstacle.trap.item = this.itemList.find(
-      (x) => (x.name = elem2.obstacle.trap.itemNameRef)
-    );
-
-      
+    // elem2.obstacle.trap.item = this.itemList.find(
+    //   (x) => (x.name = elem2.obstacle.trap.itemNameRef)
+    // );
     // if trap target is not already set
     // if trap direction is "" do the following
     // count trough cells around locationCell (using clac from obstacle item drop)
     //   and if cell terrain is player walkable set trap target w/ cell location
-
     // if trap direction is set, uset target based on that
-
     // if trap state is false do nothing
-
-      // return trap
-  }
+    // return trap
+  };
 
   preObstaclePushCheck = (player, target) => {
     // console.log('pre push check');
@@ -34340,6 +34362,7 @@ class App extends Component {
 
     // OBSTACLE
     // MOVING & FALLING
+    // CHECK OBSTACLE/BARRIER TRAPS AND UPDATE CELL BARRIER/OBSTACLE
     for (const cell of this.gridInfo) {
       if (
         cell.obstacle.state === true &&
@@ -34799,6 +34822,18 @@ class App extends Component {
           // console.log('obstacle falling in bounds over');
         }
       }
+
+      // CHECK OBSTACLE/BARRIER TRAPS AND UPDATE CELL BARRIER/OBSTACLE
+      if (cell.obstacle.state === true) {
+        if (cell.obstacle.trap.state === true) {
+          cell = this.obstacleBarrierTrapChecker(cell, "obstacle");
+        }
+      }
+      if (cell.barrier.state === true) {
+        if (cell.barrier.trap.state === true) {
+          cell = this.obstacleBarrierTrapChecker(cell, "barrier");
+        }
+      }
     }
     for (const elem of this.obstaclesOutOfBoundsFall) {
       if (elem.moving.falling.count < elem.moving.falling.limit) {
@@ -34889,14 +34924,6 @@ class App extends Component {
     }
 
     // ITEMS FALLING/SINKING
-
-
-    // CHECK TRAPS
-    check all gridInfo cells for obstacle and barrier w/ true state 
-    // call obstacleBarrier trap checker and pass obstacle/barrier and cell
-      
-
-      
 
     // STATUS DISPLAY STEPPER!!
     if (
@@ -40544,7 +40571,7 @@ class App extends Component {
           number: elem.number,
           center: elem.center,
         };
-        elem.obstacle.trap = this.trapInitSet('obstacle',elem);
+        elem.obstacle.trap = this.obstacleBarrierTrapInitSet("obstacle", elem);
       }
 
       // BARRIER
@@ -40552,7 +40579,7 @@ class App extends Component {
         elem.barrier = this.barrierLevelDataRef[elem.levelData.split("_")[0].charAt(0)];
         elem.barrier.id = barrierCount;
         barrierCount++;
-        elem.barrier.trap = this.trapInitSet('barrier',elem);
+        elem.barrier.trap = this.obstacleBarrierTrapInitSet("barrier", elem);
         switch (elem.levelData.split("_")[0].charAt(1)) {
           case "n":
             elem.barrier = {
@@ -40709,7 +40736,7 @@ class App extends Component {
           number: elem2.number,
           center: elem2.center,
         };
-        elem2.obstacle.trap = this.trapInitSet('obstacle',elem2);
+        elem2.obstacle.trap = this.obstacleBarrierTrapInitSet("obstacle", elem2);
       }
 
       // BARRIER
@@ -40717,7 +40744,7 @@ class App extends Component {
         elem2.barrier = this.barrierLevelDataRef[elem2.levelData.split("_")[0].charAt(0)];
         elem2.barrier.id = barrierCount;
         barrierCount++;
-        elem2.barrier.trap = this.trapInitSet('barrier',elem2);
+        elem2.barrier.trap = this.obstacleBarrierTrapInitSet("barrier", elem2);
         switch (elem2.levelData.split("_")[0].charAt(1)) {
           case "n":
             elem2.barrier = {
