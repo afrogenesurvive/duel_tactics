@@ -3072,6 +3072,8 @@ class App extends Component {
           state: false,
         },
         obstacle: {
+          id: 0,
+          trap: {},
           state: false,
           name: "",
           type: "",
@@ -3132,6 +3134,8 @@ class App extends Component {
           },
         },
         barrier: {
+          id: 0,
+          trap: {},
           state: false,
           name: "",
           type: "",
@@ -3218,6 +3222,8 @@ class App extends Component {
         state: false,
       },
       obstacle: {
+        id: 0,
+        trap: {},
         state: false,
         name: "",
         type: "",
@@ -3278,6 +3284,8 @@ class App extends Component {
         },
       },
       barrier: {
+        id: 0,
+        trap: {},
         state: false,
         name: "",
         type: "",
@@ -4599,6 +4607,8 @@ class App extends Component {
           state: false,
         },
         obstacle: {
+          id: 0,
+          trap: {},
           state: false,
           name: "",
           type: "",
@@ -4659,6 +4669,8 @@ class App extends Component {
           },
         },
         barrier: {
+          id: 0,
+          trap: {},
           state: false,
           name: "",
           type: "",
@@ -6689,6 +6701,8 @@ class App extends Component {
             state: false,
           },
           obstacle: {
+            id: 0,
+            trap: {},
             state: false,
             name: "",
             type: "",
@@ -6749,6 +6763,8 @@ class App extends Component {
             },
           },
           barrier: {
+            id: 0,
+            trap: {},
             state: false,
             name: "",
             type: "",
