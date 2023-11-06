@@ -774,10 +774,7 @@ class App extends Component {
           persistent: false,
           remaining: 5,
           direction: "",
-          target: {
-            number: {},
-            center: {},
-          },
+          target: {},
           timer: {
             state: false,
             count: 0,
@@ -857,10 +854,7 @@ class App extends Component {
           persistent: false,
           remaining: 5,
           direction: "",
-          target: {
-            number: {},
-            center: {},
-          },
+          target: {},
           timer: {
             state: false,
             count: 0,
@@ -947,10 +941,7 @@ class App extends Component {
           persistent: false,
           remaining: 0,
           direction: "",
-          target: {
-            number: {},
-            center: {},
-          },
+          target: {},
           timer: {
             state: false,
             count: 0,
@@ -1043,10 +1034,7 @@ class App extends Component {
           persistent: false,
           remaining: 0,
           direction: "",
-          target: {
-            number: {},
-            center: {},
-          },
+          target: {},
           timer: {
             state: false,
             count: 0,
@@ -1126,10 +1114,7 @@ class App extends Component {
           persistent: false,
           remaining: 0,
           direction: "",
-          target: {
-            number: {},
-            center: {},
-          },
+          target: {},
           timer: {
             state: false,
             count: 0,
@@ -1209,10 +1194,7 @@ class App extends Component {
           persistent: false,
           remaining: 0,
           direction: "",
-          target: {
-            number: {},
-            center: {},
-          },
+          target: {},
           timer: {
             state: false,
             count: 0,
@@ -1292,10 +1274,7 @@ class App extends Component {
           persistent: false,
           remaining: 0,
           direction: "",
-          target: {
-            number: {},
-            center: {},
-          },
+          target: {},
           timer: {
             state: false,
             count: 0,
@@ -1375,10 +1354,7 @@ class App extends Component {
           persistent: false,
           remaining: 5,
           direction: "",
-          target: {
-            number: {},
-            center: {},
-          },
+          target: {},
           timer: {
             enabled: true,
             state: false,
@@ -1459,10 +1435,7 @@ class App extends Component {
           persistent: false,
           remaining: 0,
           direction: "",
-          target: {
-            number: {},
-            center: {},
-          },
+          target: {},
           timer: {
             state: false,
             count: 0,
@@ -1581,10 +1554,7 @@ class App extends Component {
           persistent: false,
           remaining: 0,
           direction: "",
-          target: {
-            number: {},
-            center: {},
-          },
+          target: {},
           timer: {
             state: false,
             count: 0,
@@ -1621,10 +1591,7 @@ class App extends Component {
           persistent: false,
           remaining: 0,
           direction: "",
-          target: {
-            number: {},
-            center: {},
-          },
+          target: {},
           timer: {
             state: false,
             count: 0,
@@ -1661,10 +1628,7 @@ class App extends Component {
           persistent: false,
           remaining: 0,
           direction: "",
-          target: {
-            number: {},
-            center: {},
-          },
+          target: {},
           timer: {
             state: false,
             count: 0,
@@ -9671,6 +9635,148 @@ class App extends Component {
 
     return cellNumber;
   };
+  getSurroundingCells = (originCellNo, count, option, items, rubble) => {
+    // option can be 'all' free' or 'walkable'
+    let availibleCells = [];
+
+    let baseDirs = ["south", "west", "north", "east"];
+    let multiple = 1;
+    let baseDirIndx = 0;
+    let refPos = {
+      x: originCellNo.x,
+      y: originCellNo.y,
+    };
+    let cellToCheck = {
+      x: undefined,
+      y: undefined,
+    };
+    let instructions = [];
+    let instructionRef = {
+      north: {
+        x: 0,
+        y: -1,
+      },
+      south: {
+        x: 0,
+        y: 1,
+      },
+      east: {
+        x: 1,
+        y: 0,
+      },
+      west: {
+        x: -1,
+        y: 0,
+      },
+    };
+    let stepsA = 0;
+    let stepsB = 0;
+
+    while (availibleCells.length < count) {
+      for (let i = 0; i < multiple; i++) {
+        instructions.push(baseDirs[baseDirIndx]);
+        // console.log('set instructions baseDirIndx',baseDirIndx,'multiple',multiple,'baseDir',baseDirs[baseDirIndx]);
+      }
+      // console.log('item drop instructions',instructions);
+
+      for (const instruct of instructions) {
+        cellToCheck = {
+          x: refPos.x + instructionRef[instruct].x,
+          y: refPos.y + instructionRef[instruct].y,
+        };
+        // console.log('ctc instruct ',instruct,instructionRef[instruct],'cell to check',cellToCheck,'steps',stepsA,stepsB);
+
+        let ctcRef = this.gridInfo.find(
+          (x) => x.number.x === cellToCheck.x && x.number.y === cellToCheck.y
+        );
+
+        let cellFree = true;
+
+        // if (
+        //   ctcRef.number.x < 0 ||
+        //   ctcRef.number.x > this.gridWidth-1 ||
+        //   ctcRef.number.y < 0 ||
+        //   ctcRef.number.y > this.gridWidth-1
+        // ) {
+        //   cellFree = false;
+        // }
+        if (ctcRef) {
+          if (items === true) {
+            if (ctcRef.item.name !== "") {
+              cellFree = false;
+            }
+          }
+          if (rubble === true) {
+            if (ctcRef.rubble === true) {
+              cellFree = false;
+            }
+          }
+          if (option === "walkable") {
+            if (
+              ctcRef.obstacle.state === true ||
+              ctcRef.void.state === true ||
+              ctcRef.terrain.type === "deep" ||
+              ctcRef.terrain.name === "lava"
+            ) {
+              cellFree = false;
+            }
+          }
+
+          if (option === "free" || option === "walkable") {
+            for (const plyr of this.players) {
+              if (
+                plyr.currentPosition.cell.number.x === ctcRef.number.x &&
+                plyr.currentPosition.cell.number.y === ctcRef.number.y
+              ) {
+                cellFree = false;
+              }
+            }
+          }
+        } else {
+          cellFree = false;
+        }
+
+        if (cellFree === true) {
+          count--;
+          availibleCells.push(cellToCheck);
+          // console.log('cell free',cellToCheck,'item count1',itemCount,'item count2',itemCount2,'availibleCells',availibleCells.length,'steps',stepsA,stepsB);
+          // console.log('availibleCells',availibleCells.length,availibleCells);
+        } else {
+          // console.log('cell not free',cellToCheck,'availibleCells',availibleCells.length,'steps',stepsA,stepsB);
+          // console.log('availibleCells',availibleCells.length,availibleCells);
+        }
+        refPos = {
+          x: cellToCheck.x,
+          y: cellToCheck.y,
+        };
+        stepsA++;
+        stepsB++;
+
+        if (availibleCells.length === count) {
+          break;
+        }
+      }
+
+      instructions = [];
+
+      // if (steps%2 === 0) {
+      //   stepsA = 0;
+      //   multiple++;
+      // }
+      if (stepsB === multiple * 2) {
+        multiple++;
+        stepsB = 0;
+      }
+      if (baseDirIndx >= 3) {
+        // console.log('a');
+        baseDirIndx = 0;
+      } else {
+        baseDirIndx++;
+      }
+    }
+
+    return availibleCells;
+  };
   checkForwardBarrier = (direction, cell) => {
     let fwdBarrier = false;
     if (cell.barrier.state === true) {
@@ -11373,6 +11479,83 @@ class App extends Component {
         }
       }
     }
+  };
+  obstacleBarrierTrapChecker = (locationCell, ownerType) => {
+    // trap = locationCell obstacle/barrier trap
+    // if trap state is true and trigger is player
+    // check players for current postion @ trap target
+    //   if present check for timer enabled
+    //     if timer enabled count timer
+    //       if timer is up
+    //         check action
+    //         action can be attack or item
+    //           if action is attack
+    //             // check for crossbow & use projectile creator
+    //     if timer is not enabled
+    //       check action and do as above
+    //     // **add handle action sub function
+    //       check ammo if crossbow
+    //         if no ammo, finish trap execute witht he following
+    //     once trap action is executed
+    //       call finishtrap sub function
+    //         if trap persistent is false,
+    // if false, & trap remaining > 0
+    //   remainging--
+    // if remaining = 0
+    //   trap state false
+    // trap: {
+    //   state: true,
+    //   target: {
+    //     number: {},
+    //     center: {},
+    //   },
+    //   timer: {
+    //     state: false,
+    //     count: 0,
+    //     limit: 5,
+    //   },
+    //   trigger: {
+    //     type: "player",
+    //   },
+    //   action: "attack",
+    //   itemNameRef: "crossbow1",
+    //   item: {},
+    //   ammo: 0,
+    // },
+    // return Cell
+  };
+  obstacleBarrierTrapInitSet = (type, data) => {
+    let trap = data[type].trap;
+
+    trap.item = this.itemList.find((x) => x.name === trap.itemNameRef);
+    let availibleCells = [];
+
+    if (trap.state === true) {
+      if (!trap.target.x) {
+        if (trap.direction === "") {
+          availibleCells = this.getSurroundingCells(data.number, 5, "walkable", false, false);
+          if (availibleCells.length > 0) {
+            trap.target = availibleCells[0];
+            console.log("trap target set", trap);
+          } else {
+            trap.state = false;
+            console.log(`${type} trap disables because there is no appropriate target cell`);
+          }
+        } else {
+          let cell = this.getCellFromDirection(1, data.number, trap.direction);
+          if (!this.gridInfo.find((x) => cell.x === x.number.x && cell.y === x.number.y)) {
+            trap.state = false;
+            console.log(`${type} trap disables because there is no appropriate target cell`);
+          } else {
+            trap.target = this.getCellFromDirection(1, data.number, trap.direction);
+            console.log("trap target set", trap);
+          }
+        }
+      } else {
+        console.log("this traps target is already set", trap.target, data.number);
+      }
+    }
+    return trap;
   };
 
   meleeAttackPeak = (player) => {
@@ -19829,64 +20012,6 @@ class App extends Component {
 
     this.players[player.number - 1] = player;
     return pickUp;
-  };
-  obstacleBarrierTrapChecker = (locationCell, ownerType) => {
-    // trap = locationCell obstacle/barrier trap
-    // if trap state is true and trigger is player
-    // check players for current postion @ trap target
-    //   if present check for timer enabled
-    //     if timer enabled count timer
-    //       if timer is up
-    //         check action
-    //         action can be attack or item
-    //           if action is attack
-    //             // check for crossbow & use projectile creator
-    //     if timer is not enabled
-    //       check action and do as above
-    //     // **add handle action sub function
-    //       check ammo if crossbow
-    //         if no ammo, finish trap execute witht he following
-    //     once trap action is executed
-    //       call finishtrap sub function
-    //         if trap persistent is false,
-    // if false, & trap remaining > 0
-    //   remainging--
-    // if remaining = 0
-    //   trap state false
-    // trap: {
-    //   state: true,
-    //   target: {
-    //     number: {},
-    //     center: {},
-    //   },
-    //   timer: {
-    //     state: false,
-    //     count: 0,
-    //     limit: 5,
-    //   },
-    //   trigger: {
-    //     type: "player",
-    //   },
-    //   action: "attack",
-    //   itemNameRef: "crossbow1",
-    //   item: {},
-    //   ammo: 0,
-    // },
-    // return Cell
-  };
-  obstacleBarrierTrapInitSet = (type, data) => {
-    // data is cellInfo
-    // type is obstacle or barrier
-    // elem2.obstacle.trap.item = this.itemList.find(
-    //   (x) => (x.name = elem2.obstacle.trap.itemNameRef)
-    // );
-    // if trap target is not already set
-    // if trap direction is "" do the following
-    // count trough cells around locationCell (using clac from obstacle item drop)
-    //   and if cell terrain is player walkable set trap target w/ cell location
-    // if trap direction is set, uset target based on that
-    // if trap state is false do nothing
-    // return trap
   };
 
   preObstaclePushCheck = (player, target) => {
