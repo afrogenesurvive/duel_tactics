@@ -40065,11 +40065,14 @@ class App extends Component {
         }
       }
 
+      let tempOrigin;
       // OBSTACLE
       if (elem.levelData.split("_")[1] !== "*") {
+        tempOrigin = elem.obstacle.moving.origin;
         elem.obstacle = this.obstacleLevelDataRef[elem.levelData.split("_")[1]];
         elem.obstacle.id = obstacleCount;
         obstacleCount++;
+        elem.obstacle.moving.origin = tempOrigin;
       }
 
       // BARRIER
@@ -40226,9 +40229,11 @@ class App extends Component {
 
       // OBSTACLE
       if (elem2.levelData.split("_")[1] !== "*") {
+        tempOrigin = elem.obstacle.moving.origin;
         elem2.obstacle = this.obstacleLevelDataRef[elem2.levelData.split("_")[1]];
         elem2.obstacle.id = obstacleCount;
         obstacleCount++;
+        elem.obstacle.moving.origin = tempOrigin;
       }
 
       // BARRIER
