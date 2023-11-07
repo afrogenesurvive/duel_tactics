@@ -1624,7 +1624,7 @@ class App extends Component {
       c: {
         id: 0,
         trap: {
-          state: true,
+          state: false,
           persistent: false,
           remaining: 0,
           direction: "",
@@ -4473,7 +4473,7 @@ class App extends Component {
             };
           }
         } else {
-          console.log("heeere!", this.cellInfoMouseOver);
+          // console.log("heeere!", this.cellInfoMouseOver);
           this.cellInfoMouseOver = false;
 
           this.showCellInfoBox = true;
@@ -11528,15 +11528,18 @@ class App extends Component {
     let trap = data[type].trap;
 
     trap.item = this.itemList.find((x) => x.name === trap.itemNameRef);
+    if (trap.item.effect.split("+")[0] === "ammo") {
+      trap.ammo = parseInt(trap.item.effect.split("+")[1]);
+    }
     let availibleCells = [];
 
     if (trap.state === true) {
-      if (!trap.target.x) {
+      if (!trap.target.x || trap.target.x === undefined) {
         if (trap.direction === "") {
           availibleCells = this.getSurroundingCells(data.number, 5, "walkable", false, false);
           if (availibleCells.length > 0) {
             trap.target = availibleCells[0];
-            console.log("trap target set", trap);
+            // console.log("trap target set", trap, data.number, type);
           } else {
             trap.state = false;
             console.log(`${type} trap disables because there is no appropriate target cell`);
@@ -11548,13 +11551,23 @@ class App extends Component {
             console.log(`${type} trap disables because there is no appropriate target cell`);
           } else {
             trap.target = this.getCellFromDirection(1, data.number, trap.direction);
-            console.log("trap target set", trap);
+            // console.log("trap target set", trap, data.number, type);
           }
         }
       } else {
-        console.log("this traps target is already set", trap.target, data.number);
+        if (trap.target.x) {
+          console.log("this traps target is already set", trap.target, data.number, type);
+        }
       }
     }
+    // console.log(
+    //   "obstacleBarrierTrapInitSet",
+    //   type,
+    //   trap.target,
+    //   data.number,
+    //   !trap.target.x,
+    //   trap.target.x === undefined
+    // );
     return trap;
   };
 
@@ -34504,7 +34517,7 @@ class App extends Component {
     // OBSTACLE
     // MOVING & FALLING
     // CHECK OBSTACLE/BARRIER TRAPS AND UPDATE CELL BARRIER/OBSTACLE
-    for (const cell of this.gridInfo) {
+    for (let cell of this.gridInfo) {
       if (
         cell.obstacle.state === true &&
         cell.obstacle.moving.state === true &&
@@ -34966,13 +34979,13 @@ class App extends Component {
 
       // CHECK OBSTACLE/BARRIER TRAPS AND UPDATE CELL BARRIER/OBSTACLE
       if (cell.obstacle.state === true) {
-        if (cell.obstacle.trap.state === true) {
-          cell = this.obstacleBarrierTrapChecker(cell, "obstacle");
+        if (cell.obstacle.trap?.state === true) {
+          // cell = this.obstacleBarrierTrapChecker(cell, "obstacle");
         }
       }
       if (cell.barrier.state === true) {
-        if (cell.barrier.trap.state === true) {
-          cell = this.obstacleBarrierTrapChecker(cell, "barrier");
+        if (cell.barrier.trap?.state === true) {
+          // cell = this.obstacleBarrierTrapChecker(cell, "barrier");
         }
       }
     }
@@ -35228,6 +35241,9 @@ class App extends Component {
       // this.setAutoCamera('pushbackPan',player);
       // this.setAutoCamera('followBolt',player);
       // console.log('xxx');
+      // for (let x of this.gridInfo) {
+      //   console.log("beeep", x.barrier);
+      // }
     }
 
     if (this.setInitZoom.state === true) {
@@ -40702,7 +40718,6 @@ class App extends Component {
         }
       }
 
-      let tempOrigin;
       // OBSTACLE
       if (elem.levelData.split("_")[1] !== "*") {
         elem.obstacle = this.obstacleLevelDataRef[elem.levelData.split("_")[1]];
