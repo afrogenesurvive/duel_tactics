@@ -11523,6 +11523,7 @@ class App extends Component {
     let trap = locationCell[ownerType].trap;
 
     const executeTrapAction = () => {
+      console.log("executeTrapAction");
       if (trap.action === "attack" && trap.item.type === "weapon") {
         if (trap.item.subType === "crossbow") {
           if (trap.ammo > 0) {
@@ -11623,46 +11624,8 @@ class App extends Component {
         }
       }
     }
-    // trap = locationCell obstacle/barrier trap
-    // if trap state is true and trigger is player
-    // check players for current postion @ trap target
-    //   if present check for timer enabled
-    //     if timer enabled count timer
-    //       if timer is up
-    //         check action
-    //         action can be attack or item
-    //           if action is attack
-    //             // check for crossbow & use projectile creator
-    //     if timer is not enabled
-    //       check action and do as above
-    //     // **add handle action sub function
-    //
-    // if false, & trap remaining > 0
-    //   remainging--
-    // if remaining = 0
-    //   trap state false
-
-    // trap: {
-    //   state: false,
-    //   persistent: false,
-    //   remaining: 5,
-    //   direction: "",
-    //   target: {},
-    //   timer: {
-    //     state: false,
-    //     count: 0,
-    //     limit: 5,
-    //   },
-    //   trigger: {
-    //     type: "player",
-    //   },
-    //   action: "attack",
-    //   itemNameRef: "crossbow1",
-    //   item: {},
-    //   ammo: 0,
-    // },
-    // cell[ownerType].trap = trap
-    // return Cell
+    cell[ownerType].trap = trap;
+    return Cell;
   };
   obstacleBarrierTrapInitSet = (type, data) => {
     let trap = data[type].trap;
@@ -11675,6 +11638,7 @@ class App extends Component {
     let availibleCells = [];
 
     if (trap.state === true) {
+      console.log("boom");
       if (!trap.target.x || trap.target.x === undefined) {
         if (trap.direction === "") {
           availibleCells = this.getSurroundingCells(data.number, 5, "walkable", false, false);
@@ -11683,33 +11647,39 @@ class App extends Component {
             // console.log("trap target set", trap, data.number, type);
           } else {
             trap.state = false;
-            console.log(`${type} trap disables because there is no appropriate target cell`);
+            console.log(
+              `${type} trap disables because there is no appropriate target cell`,
+              data.number
+            );
           }
         } else {
           let cell = this.getCellFromDirection(1, data.number, trap.direction);
           if (!this.gridInfo.find((x) => cell.x === x.number.x && cell.y === x.number.y)) {
             trap.state = false;
-            console.log(`${type} trap disables because there is no appropriate target cell`);
+            console.log(
+              `${type} trap disables because there is no appropriate target cell`,
+              data.number
+            );
           } else {
             trap.target = this.getCellFromDirection(1, data.number, trap.direction);
-            // console.log("trap target set", trap, data.number, type);
+            console.log("trap target set", trap, data.number, type);
           }
         }
       } else {
         if (trap.target.x) {
-          // console.log("this traps target is already set", trap.target, data.number, type);
+          console.log("this traps target is already set", trap.target, data.number, type);
         }
       }
     }
-    // console.log(
-    //   "obstacleBarrierTrapInitSet",
-    //   type,
-    //   trap.target,
-    //   data.number,
-    //   !trap.target.x,
-    //   trap.target.x === undefined,
-    //   trap.state
-    // );
+    console.log(
+      "obstacleBarrierTrapInitSet",
+      type,
+      trap.target,
+      data.number,
+      // !trap.target.x,
+      // trap.target.x === undefined,
+      trap.state
+    );
     return trap;
   };
 
@@ -35122,12 +35092,12 @@ class App extends Component {
       // CHECK OBSTACLE/BARRIER TRAPS AND UPDATE CELL BARRIER/OBSTACLE
       if (cell.obstacle.state === true) {
         if (cell.obstacle.trap?.state === true) {
-          // cell = this.obstacleBarrierTrapChecker(cell, "obstacle");
+          cell = this.obstacleBarrierTrapChecker(cell, "obstacle");
         }
       }
       if (cell.barrier.state === true) {
         if (cell.barrier.trap?.state === true) {
-          // cell = this.obstacleBarrierTrapChecker(cell, "barrier");
+          cell = this.obstacleBarrierTrapChecker(cell, "barrier");
         }
       }
     }

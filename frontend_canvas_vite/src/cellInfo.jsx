@@ -146,6 +146,32 @@ const CellInfo = (props) => {
                       <li>
                         <p>Destruct: {props.clicked.cell.obstacle.destructible.state.toString()}</p>
                       </li>
+                      {props.clicked.cell.obstacle.trap.state.toString()}
+                      {props.clicked.cell.obstacle.trap.state === true && (
+                        <ul className="popoverList">
+                          <li>
+                            <p>Trap: </p>
+                          </li>
+                          <li>
+                            <p>
+                              Target: {props.clicked.cell.obstacle.trap.target.x},
+                              {props.clicked.cell.obstacle.trap.target.y}
+                            </p>
+                          </li>
+                          <li>
+                            <p>Trigger: {props.clicked.cell.obstacle.trap.trigger.type}</p>
+                          </li>
+                          <li>
+                            <p>Action: {props.clicked.cell.obstacle.trap.action}</p>
+                          </li>
+                          <li>
+                            <p>
+                              Item: {props.clicked.cell.obstacle.trap.item.name} (
+                              {props.clicked.cell.obstacle.trap.ammo})
+                            </p>
+                          </li>
+                        </ul>
+                      )}
                     </ul>
                   </Popover.Body>
                 </Popover>
@@ -182,6 +208,31 @@ const CellInfo = (props) => {
                       <li>
                         <p>Destruct: {props.clicked.cell.barrier.destructible.state.toString()}</p>
                       </li>
+                      {props.clicked.cell.barrier.trap.state === true && (
+                        <ul className="popoverList">
+                          <li>
+                            <p>Trap: </p>
+                          </li>
+                          <li>
+                            <p>
+                              Target: {props.clicked.cell.barrier.trap.target.x},
+                              {props.clicked.cell.barrier.trap.target.y}
+                            </p>
+                          </li>
+                          <li>
+                            <p>Trigger: {props.clicked.cell.barrier.trap.trigger.type}</p>
+                          </li>
+                          <li>
+                            <p>Action: {props.clicked.cell.barrier.trap.action}</p>
+                          </li>
+                          <li>
+                            <p>
+                              Item: {props.clicked.cell.barrier.trap.item.name} (
+                              {props.clicked.cell.barrier.trap.ammo})
+                            </p>
+                          </li>
+                        </ul>
+                      )}
                     </ul>
                   </Popover.Body>
                 </Popover>
