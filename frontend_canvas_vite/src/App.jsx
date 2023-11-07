@@ -776,6 +776,7 @@ class App extends Component {
           direction: "",
           target: {},
           timer: {
+            enabled: false,
             state: false,
             count: 0,
             limit: 5,
@@ -856,6 +857,7 @@ class App extends Component {
           direction: "",
           target: {},
           timer: {
+            enabled: false,
             state: false,
             count: 0,
             limit: 5,
@@ -943,6 +945,7 @@ class App extends Component {
           direction: "",
           target: {},
           timer: {
+            enabled: false,
             state: false,
             count: 0,
             limit: 5,
@@ -1036,6 +1039,7 @@ class App extends Component {
           direction: "",
           target: {},
           timer: {
+            enabled: false,
             state: false,
             count: 0,
             limit: 5,
@@ -1116,6 +1120,7 @@ class App extends Component {
           direction: "",
           target: {},
           timer: {
+            enabled: false,
             state: false,
             count: 0,
             limit: 5,
@@ -1196,6 +1201,7 @@ class App extends Component {
           direction: "",
           target: {},
           timer: {
+            enabled: false,
             state: false,
             count: 0,
             limit: 5,
@@ -1276,6 +1282,7 @@ class App extends Component {
           direction: "",
           target: {},
           timer: {
+            enabled: false,
             state: false,
             count: 0,
             limit: 5,
@@ -1353,7 +1360,7 @@ class App extends Component {
           state: true,
           persistent: false,
           remaining: 5,
-          direction: "",
+          direction: "west",
           target: {},
           timer: {
             enabled: true,
@@ -1437,6 +1444,7 @@ class App extends Component {
           direction: "",
           target: {},
           timer: {
+            enabled: false,
             state: false,
             count: 0,
             limit: 5,
@@ -1556,6 +1564,7 @@ class App extends Component {
           direction: "",
           target: {},
           timer: {
+            enabled: false,
             state: false,
             count: 0,
             limit: 5,
@@ -1593,6 +1602,7 @@ class App extends Component {
           direction: "",
           target: {},
           timer: {
+            enabled: false,
             state: false,
             count: 0,
             limit: 5,
@@ -1630,6 +1640,7 @@ class App extends Component {
           direction: "",
           target: {},
           timer: {
+            enabled: false,
             state: false,
             count: 0,
             limit: 5,
@@ -9943,10 +9954,6 @@ class App extends Component {
           elevation: refCell.elevation.number,
           kill: false,
         };
-
-        // owner.items.ammo--;
-        // owner.currentWeapon.effect = "ammo+0";
-        // remove trap ammo and set weapon effect
       }
 
       if (ownerType === "barrier") {
@@ -10756,6 +10763,38 @@ class App extends Component {
       }
     }
 
+    if (targetCell.obstacle.trap.state === true) {
+      if (!targetCell.obstacle.trap.target.x || targetCell.obstacle.trap.target.x === undefined) {
+        if (targetCell.obstacle.trap.direction === "") {
+          availibleCells = this.getSurroundingCells(targetCell.number, 5, "walkable", false, false);
+          if (availibleCells.length > 0) {
+            targetCell.obstacle.trap.target = availibleCells[0];
+            console.log("trap target reset after moving trap");
+          } else {
+            targetCell.obstacle.trap.state = false;
+            console.log(`Obstacle trap disables because there is no appropriate target cell`);
+          }
+        } else {
+          let cell = this.getCellFromDirection(
+            1,
+            targetCell.number,
+            targetCell.obstacle.trap.direction
+          );
+          if (!this.gridInfo.find((x) => cell.x === x.number.x && cell.y === x.number.y)) {
+            targetCell.obstacle.trap.state = false;
+            console.log(`Obstacle trap disables because there is no appropriate target cell`);
+          } else {
+            targetCell.obstacle.trap.target = this.getCellFromDirection(
+              1,
+              targetCell.number,
+              targetCell.obstacle.trap.direction
+            );
+            console.log("trap target reset after moving");
+          }
+        }
+      }
+    }
+
     // DAMAGE/DESTROY OBSTACLE?
     if (targetCell.obstacle.destructible.state === true && damage > 0) {
       // WEAPON CHECK
@@ -11481,6 +11520,109 @@ class App extends Component {
     }
   };
   obstacleBarrierTrapChecker = (locationCell, ownerType) => {
+    let trap = locationCell[ownerType].trap;
+
+    const executeTrapAction = () => {
+      if (trap.action === "attack" && trap.item.type === "weapon") {
+        if (trap.item.subType === "crossbow") {
+          if (trap.ammo > 0) {
+            trap.ammo--;
+            let result = this.projectileCreator(ownerType, trap, "bolt");
+            this.projectiles.push(result.projectile);
+            this.getBoltTarget(result.projectile);
+            trap = result.owner;
+          } else {
+            console.log("This trap is meant to fire a projectile but has no ammo. Do nothing");
+          }
+        }
+        if (trap.item.subType === "sword") {
+          // call meleeattack parse?
+        }
+        if (trap.item.subType === "spear") {
+          // call meleeattack parse?
+        }
+      }
+    };
+    const higlightCell = () => {
+      if (
+        !this.cellsToHighlight2.find(
+          (x) => x.number.x === locationCell.number.x && x.number.y === locationCell.number.y
+        )
+      ) {
+        this.cellsToHighlight2.push({
+          number: {
+            x: locationCell.number.x,
+            y: locationCell.number.y,
+          },
+          count: 0,
+          limit: 10,
+        });
+      }
+    };
+    if (trap.state === true && trap.trigger === "player") {
+      for (const plyr of this.players) {
+        if (plyr.ai.state !== true || plyr.team === this.players[0].team) {
+          if (
+            plyr.currentPosition.cell.number.x === trap.target.x &&
+            plyr.currentPosition.cell.number.y === trap.target.y
+          ) {
+            if (trap.persitent) {
+              if (trap.timer.enabled) {
+                if (trap.timer.state === false) {
+                  trap.timer.state = true;
+                }
+                if (trap.timer.state === true) {
+                  if (trap.timer.count < trap.timer.limit) {
+                    trap.timer.count++;
+                    higlightCell();
+                    console.log("counting down to trap fire", trap.timer.count);
+                  }
+                  if (trap.timer.count >= trap.timer.limit) {
+                    trap.timer.count = 0;
+                    trap.timer.state = false;
+                    executeTrapAction();
+                  }
+                }
+              }
+              if (!trap.timer.enabled) {
+                executeTrapAction();
+                higlightCell();
+              }
+            }
+            if (!trap.persistent) {
+              if (trap.remaining <= 0) {
+                trap.state = false;
+                console.log(`This ${ownerType} trap is not persistent and has no fires remaining`);
+              }
+              if (trap.remaining > 0) {
+                trap.remaining--;
+                if (trap.timer.enabled) {
+                  if (trap.timer.state === false) {
+                    trap.timer.state = true;
+                  }
+                  if (trap.timer.state === true) {
+                    if (trap.timer.count < trap.timer.limit) {
+                      trap.timer.count++;
+                      higlightCell();
+                      console.log("counting down to trap fire", trap.timer.count);
+                    }
+                    if (trap.timer.count >= trap.timer.limit) {
+                      trap.timer.count = 0;
+                      trap.timer.state = false;
+                      executeTrapAction();
+                    }
+                  }
+                }
+                if (!trap.timer.enabled) {
+                  executeTrapAction();
+                  higlightCell();
+                }
+              }
+            }
+          }
+        }
+      }
+    }
     // trap = locationCell obstacle/barrier trap
     // if trap state is true and trigger is player
     // check players for current postion @ trap target
@@ -11494,21 +11636,18 @@ class App extends Component {
     //     if timer is not enabled
     //       check action and do as above
     //     // **add handle action sub function
-    //       check ammo if crossbow
-    //         if no ammo, finish trap execute witht he following
-    //     once trap action is executed
-    //       call finishtrap sub function
-    //         if trap persistent is false,
+    //
     // if false, & trap remaining > 0
     //   remainging--
     // if remaining = 0
     //   trap state false
+
     // trap: {
-    //   state: true,
-    //   target: {
-    //     number: {},
-    //     center: {},
-    //   },
+    //   state: false,
+    //   persistent: false,
+    //   remaining: 5,
+    //   direction: "",
+    //   target: {},
     //   timer: {
     //     state: false,
     //     count: 0,
@@ -11522,6 +11661,7 @@ class App extends Component {
     //   item: {},
     //   ammo: 0,
     // },
+    // cell[ownerType].trap = trap
     // return Cell
   };
   obstacleBarrierTrapInitSet = (type, data) => {
@@ -11530,6 +11670,7 @@ class App extends Component {
     trap.item = this.itemList.find((x) => x.name === trap.itemNameRef);
     if (trap.item.effect.split("+")[0] === "ammo") {
       trap.ammo = parseInt(trap.item.effect.split("+")[1]);
+      trap.item.effect = "ammo+0";
     }
     let availibleCells = [];
 
@@ -11556,7 +11697,7 @@ class App extends Component {
         }
       } else {
         if (trap.target.x) {
-          console.log("this traps target is already set", trap.target, data.number, type);
+          // console.log("this traps target is already set", trap.target, data.number, type);
         }
       }
     }
@@ -11566,7 +11707,8 @@ class App extends Component {
     //   trap.target,
     //   data.number,
     //   !trap.target.x,
-    //   trap.target.x === undefined
+    //   trap.target.x === undefined,
+    //   trap.state
     // );
     return trap;
   };
