@@ -9906,13 +9906,13 @@ class App extends Component {
       let refCell;
       let direction = "";
       if (ownerType === "obstacle") {
-        refCell = this.gridInfo.find((x) => (x.obstacle.id = owner.id));
+        refCell = this.gridInfo.find((x) => x.obstacle.id === owner.id);
         let origin = {
           number: refCell.number,
           center: refCell.center,
         };
-        let nextPosition = owner.currentPosition.cell.center;
-        direction = this.getDirectionFromCells(origin.number, owner.trap.target.number);
+        let nextPosition = refCell.center;
+        direction = this.getDirectionFromCells(origin.number, owner.trap.target);
         projectile = {
           id: "000" + this.projectiles.length + "",
           type: projectileType,
@@ -9957,13 +9957,13 @@ class App extends Component {
       }
 
       if (ownerType === "barrier") {
-        refCell = this.gridInfo.find((x) => (x.barrier.id = owner.id));
+        refCell = this.gridInfo.find((x) => x.barrier.id === owner.id);
         let origin = {
           number: refCell.number,
           center: refCell.center,
         };
-        let nextPosition = owner.currentPosition.cell.center;
-        direction = this.getDirectionFromCells(origin.number, owner.trap.target.number);
+        let nextPosition = refCell.center;
+        direction = this.getDirectionFromCells(origin.number, owner.trap.target);
         projectile = {
           id: "000" + this.projectiles.length + "",
           type: projectileType,
@@ -11521,17 +11521,17 @@ class App extends Component {
   };
   obstacleBarrierTrapChecker = (locationCell, ownerType) => {
     let trap = locationCell[ownerType].trap;
-
+    // console.log("obstacleBarrierTrapChecker", trap.trigger);
     const executeTrapAction = () => {
       console.log("executeTrapAction");
       if (trap.action === "attack" && trap.item.type === "weapon") {
         if (trap.item.subType === "crossbow") {
           if (trap.ammo > 0) {
             trap.ammo--;
-            let result = this.projectileCreator(ownerType, trap, "bolt");
+            let result = this.projectileCreator(ownerType, locationCell[ownerType], "bolt");
             this.projectiles.push(result.projectile);
             this.getBoltTarget(result.projectile);
-            trap = result.owner;
+            trap = result.owner.trap;
           } else {
             console.log("This trap is meant to fire a projectile but has no ammo. Do nothing");
           }
@@ -11560,7 +11560,7 @@ class App extends Component {
         });
       }
     };
-    if (trap.state === true && trap.trigger === "player") {
+    if (trap.state === true && trap.trigger.type === "player") {
       for (const plyr of this.players) {
         if (plyr.ai.state !== true || plyr.team === this.players[0].team) {
           if (
@@ -11624,13 +11624,21 @@ class App extends Component {
         }
       }
     }
-    cell[ownerType].trap = trap;
-    return Cell;
+    locationCell[ownerType].trap = trap;
+    return locationCell;
   };
-  obstacleBarrierTrapInitSet = (type, data) => {
+  obstacleBarrierTrapInitSet = (superType, type, data) => {
     let trap = data[type].trap;
 
-    trap.item = this.itemList.find((x) => x.name === trap.itemNameRef);
+    let item = this.itemList.find((x) => x.name === trap.itemNameRef);
+    trap.item = {
+      name: item.name,
+      amount: item.amount,
+      total: item.total,
+      type: item.type,
+      subType: item.subType,
+      effect: item.effect,
+    };
     if (trap.item.effect.split("+")[0] === "ammo") {
       trap.ammo = parseInt(trap.item.effect.split("+")[1]);
       trap.item.effect = "ammo+0";
@@ -11638,48 +11646,38 @@ class App extends Component {
     let availibleCells = [];
 
     if (trap.state === true) {
-      console.log("boom");
       if (!trap.target.x || trap.target.x === undefined) {
         if (trap.direction === "") {
           availibleCells = this.getSurroundingCells(data.number, 5, "walkable", false, false);
           if (availibleCells.length > 0) {
             trap.target = availibleCells[0];
-            // console.log("trap target set", trap, data.number, type);
+            // console.log("trap target set", data.number, trap.target, trap.ammo);
           } else {
             trap.state = false;
-            console.log(
-              `${type} trap disables because there is no appropriate target cell`,
-              data.number
-            );
+            // console.log(
+            //   `${type} trap disabled because there is no appropriate target cell`,
+            //   data.number
+            // );
           }
         } else {
           let cell = this.getCellFromDirection(1, data.number, trap.direction);
           if (!this.gridInfo.find((x) => cell.x === x.number.x && cell.y === x.number.y)) {
             trap.state = false;
-            console.log(
-              `${type} trap disables because there is no appropriate target cell`,
-              data.number
-            );
+            // console.log(
+            //   `${type} trap disabled because there is no appropriate target cell`,
+            //   data.number
+            // );
           } else {
             trap.target = this.getCellFromDirection(1, data.number, trap.direction);
-            console.log("trap target set", trap, data.number, type);
+            // console.log("trap target set", data.number, trap.target, trap.ammo);
           }
         }
       } else {
         if (trap.target.x) {
-          console.log("this traps target is already set", trap.target, data.number, type);
+          // console.log("this traps target is already set", trap.target, data.number, type);
         }
       }
     }
-    console.log(
-      "obstacleBarrierTrapInitSet",
-      type,
-      trap.target,
-      data.number,
-      // !trap.target.x,
-      // trap.target.x === undefined,
-      trap.state
-    );
     return trap;
   };
 
@@ -40765,7 +40763,10 @@ class App extends Component {
 
     let obstacleCount = 0;
     let barrierCount = 0;
-    for (const elem of allCells) {
+    // let temp;
+    let trap;
+    let barrierDir;
+    for (let elem of allCells) {
       // APPLY LEVEL DATA TO GRID INFO CELLS!
       let levelData2Row = "row" + elem.number.x;
       let elemLevelData = this["levelData" + this.gridWidth][levelData2Row][elem.number.y];
@@ -40832,25 +40833,31 @@ class App extends Component {
 
       // OBSTACLE
       if (elem.levelData.split("_")[1] !== "*") {
-        elem.obstacle = this.obstacleLevelDataRef[elem.levelData.split("_")[1]];
+        elem.obstacle = JSON.parse(
+          JSON.stringify(this.obstacleLevelDataRef[elem.levelData.split("_")[1]])
+        );
         elem.obstacle.id = obstacleCount;
-        obstacleCount++;
         elem.obstacle.moving.origin = {
           number: elem.number,
           center: elem.center,
         };
-        elem.obstacle.trap = this.obstacleBarrierTrapInitSet("obstacle", elem);
+        elem.obstacle.trap = this.obstacleBarrierTrapInitSet("main", "obstacle", elem);
+        obstacleCount++;
       }
 
       // BARRIER
       if (elem.levelData.split("_")[0] !== "**") {
-        elem.barrier = this.barrierLevelDataRef[elem.levelData.split("_")[0].charAt(0)];
+        elem.barrier = JSON.parse(
+          JSON.stringify(this.barrierLevelDataRef[elem.levelData.split("_")[0].charAt(0)])
+        );
         elem.barrier.id = barrierCount;
+        elem.barrier.trap = this.obstacleBarrierTrapInitSet("main", "barrier", elem);
         barrierCount++;
-        elem.barrier.trap = this.obstacleBarrierTrapInitSet("barrier", elem);
         switch (elem.levelData.split("_")[0].charAt(1)) {
           case "n":
             elem.barrier = {
+              id: elem.barrier.id,
+              trap: elem.barrier.trap,
               state: elem.barrier.state,
               name: elem.barrier.name,
               type: elem.barrier.type,
@@ -40863,6 +40870,8 @@ class App extends Component {
             break;
           case "s":
             elem.barrier = {
+              id: elem.barrier.id,
+              trap: elem.barrier.trap,
               state: elem.barrier.state,
               name: elem.barrier.name,
               type: elem.barrier.type,
@@ -40875,6 +40884,8 @@ class App extends Component {
             break;
           case "e":
             elem.barrier = {
+              id: elem.barrier.id,
+              trap: elem.barrier.trap,
               state: elem.barrier.state,
               name: elem.barrier.name,
               type: elem.barrier.type,
@@ -40887,6 +40898,8 @@ class App extends Component {
             break;
           case "w":
             elem.barrier = {
+              id: elem.barrier.id,
+              trap: elem.barrier.trap,
               state: elem.barrier.state,
               name: elem.barrier.name,
               type: elem.barrier.type,
@@ -40997,25 +41010,31 @@ class App extends Component {
 
       // OBSTACLE
       if (elem2.levelData.split("_")[1] !== "*") {
-        elem2.obstacle = this.obstacleLevelDataRef[elem2.levelData.split("_")[1]];
+        elem2.obstacle = JSON.parse(
+          JSON.stringify(this.obstacleLevelDataRef[elem2.levelData.split("_")[1]])
+        );
         elem2.obstacle.id = obstacleCount;
-        obstacleCount++;
         elem2.obstacle.moving.origin = {
           number: elem2.number,
           center: elem2.center,
         };
-        elem2.obstacle.trap = this.obstacleBarrierTrapInitSet("obstacle", elem2);
+        elem2.obstacle.trap = this.obstacleBarrierTrapInitSet("main", "obstacle", elem2);
+        obstacleCount++;
       }
 
       // BARRIER
       if (elem2.levelData.split("_")[0] !== "**") {
-        elem2.barrier = this.barrierLevelDataRef[elem2.levelData.split("_")[0].charAt(0)];
+        elem2.barrier = JSON.parse(
+          JSON.stringify(this.barrierLevelDataRef[elem2.levelData.split("_")[0].charAt(0)])
+        );
         elem2.barrier.id = barrierCount;
+        elem2.barrier.trap = this.obstacleBarrierTrapInitSet("main", "barrier", elem2);
         barrierCount++;
-        elem2.barrier.trap = this.obstacleBarrierTrapInitSet("barrier", elem2);
         switch (elem2.levelData.split("_")[0].charAt(1)) {
           case "n":
             elem2.barrier = {
+              id: elem2.barrier.id,
+              trap: elem2.barrier.trap,
               state: elem2.barrier.state,
               name: elem2.barrier.name,
               type: elem2.barrier.type,
@@ -41028,6 +41047,8 @@ class App extends Component {
             break;
           case "s":
             elem2.barrier = {
+              id: elem2.barrier.id,
+              trap: elem2.barrier.trap,
               state: elem2.barrier.state,
               name: elem2.barrier.name,
               type: elem2.barrier.type,
@@ -41040,6 +41061,8 @@ class App extends Component {
             break;
           case "e":
             elem2.barrier = {
+              id: elem2.barrier.id,
+              trap: elem2.barrier.trap,
               state: elem2.barrier.state,
               name: elem2.barrier.name,
               type: elem2.barrier.type,
@@ -41052,6 +41075,8 @@ class App extends Component {
             break;
           case "w":
             elem2.barrier = {
+              id: elem2.barrier.id,
+              trap: elem2.barrier.trap,
               state: elem2.barrier.state,
               name: elem2.barrier.name,
               type: elem2.barrier.type,
@@ -41063,10 +41088,11 @@ class App extends Component {
             };
             break;
           default:
+            break;
         }
       }
 
-      // console.log('oo2',elem.levelData,elem.number,elem.terrain);
+      // console.log('oo2',elem2.levelData,elem2.number,elem2.terrain);
 
       // SET EDGES!
       if (elem2.number.x === 0) {
