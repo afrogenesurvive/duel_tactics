@@ -11547,13 +11547,13 @@ class App extends Component {
     const higlightCell = () => {
       if (
         !this.cellsToHighlight2.find(
-          (x) => x.number.x === locationCell.number.x && x.number.y === locationCell.number.y
+          (x) => x.number.x === trap.traget.x && x.number.y === trap.traget.y
         )
       ) {
         this.cellsToHighlight2.push({
           number: {
-            x: locationCell.number.x,
-            y: locationCell.number.y,
+            x: trap.traget.x,
+            y: trap.traget.y,
           },
           count: 0,
           limit: 10,
@@ -36733,6 +36733,16 @@ class App extends Component {
                       plyr.number !== bolt.owner
                     ) {
                       this.projectileAttackParse(bolt, "player", "player", plyr);
+                    }
+                  }
+                }
+                if (bolt.ownerType === "obstacle" || bolt.ownerType === "barrier") {
+                  for (const plyr of this.players) {
+                    if (
+                      plyr.currentPosition.cell.number.x === cell.number.x &&
+                      plyr.currentPosition.cell.number.y === cell.number.y
+                    ) {
+                      this.projectileAttackParse(bolt, bolt.ownerType, "player", plyr);
                     }
                   }
                 }
