@@ -10752,7 +10752,7 @@ class App extends Component {
       // }
       let availibleCells = [];
       if (targetCell.obstacle.trap.direction === "") {
-        availibleCells = this.getSurroundingCells(targetCell.number, 15, "walkable", false, false);
+        availibleCells = this.getSurroundingCells(targetCell.number, 20, "walkable", false, false);
         if (availibleCells.length > 0) {
           if (targetCell.obstacle.trap.item.subType === "crossbow") {
             targetCell.obstacle.trap.target = availibleCells
@@ -10760,7 +10760,12 @@ class App extends Component {
               .reverse()
               .find((x) => x.x === targetCell.number.x || x.y === targetCell.number.y);
           } else {
-            targetCell.obstacle.trap.target = availibleCells[0];
+            if (argetCell.obstacle.trap.item.subType === "spear") {
+              argetCell.obstacle.trap.target = availibleCells[1];
+            }
+            if (argetCell.obstacle.trap.item.subType === "sword") {
+              argetCell.obstacle.trap.target = availibleCells[0];
+            }
           }
           console.log("trap target reset after moving trap");
         } else {
@@ -11651,14 +11656,14 @@ class App extends Component {
     };
     if (trap.item.effect.split("+")[0] === "ammo") {
       trap.ammo = parseInt(trap.item.effect.split("+")[1]);
-      trap.item.effect = "ammo+0";
+      // trap.item.effect = "ammo+0";
     }
     let availibleCells = [];
 
     if (trap.state === true) {
       if (!trap.target.x || trap.target.x === undefined) {
         if (trap.direction === "") {
-          availibleCells = this.getSurroundingCells(data.number, 15, "walkable", false, false);
+          availibleCells = this.getSurroundingCells(data.number, 20, "walkable", false, false);
           if (availibleCells.length > 0) {
             if (trap.item.subType === "crossbow") {
               trap.target = availibleCells
@@ -11666,8 +11671,14 @@ class App extends Component {
                 .reverse()
                 .find((x) => x.x === data.number.x || x.y === data.number.y);
             } else {
-              trap.target = availibleCells[0];
+              if (trap.item.subType === "spear") {
+                trap.target = availibleCells[1];
+              }
+              if (trap.item.subType === "sword") {
+                trap.target = availibleCells[0];
+              }
             }
+            // console.log("availibleCells", data.number, availibleCells, trap.target);
             // console.log("trap target set", data.number, trap.target, trap.ammo);
           } else {
             trap.state = false;
@@ -15610,12 +15621,35 @@ class App extends Component {
     }
   };
   attackCellContents = (type, ownerType, owner, targetCell, targetCell2, myCell, bolt) => {
-    console.log("3");
     let damage;
-    const handleObstacleDamage = (calcedDamage) => {
+    let weaponCheck;
+    let ownerWeaponName;
+    let ownerWeaponType;
+    let ownerDirection;
+    const handleObstacleDamage = (calcedDamage, range) => {
+      if (range === 1) {
+      } else {
+        // use target cell2
+      }
       if (targetCell.obstacle.destructible.state === true) {
         // WEAPON CHECK
-        if (targetCell.obstacle.destructible.weapons.find((x) => x === "bolt")) {
+        if (ownerType === "player") {
+          ownerWeaponName = owner.currentWeapon.name;
+        } else {
+          ownerWeaponName = owner.trap.itemNameRef;
+        }
+        if (type === "bolt" || type === "flyOverBolt") {
+          if (targetCell.barrier.destructible.weapons.find((x) => x === "bolt")) {
+            weaponCheck = true;
+          }
+        }
+        if (
+          type === "melee" &&
+          targetCell.barrier.destructible.weapons.find((x) => x === ownerWeaponName)
+        ) {
+          weaponCheck = true;
+        }
+        if (weaponCheck === true) {
           // DAMAGE, DON'T DESTROY FWD OBSTACLE
           if (targetCell.obstacle.hp - calcedDamage > 0) {
             let hp = targetCell.obstacle.hp - calcedDamage;
@@ -15652,7 +15686,11 @@ class App extends Component {
           // DESTROY OBSTACLE W/ OR W/O RUBBLE
           else if (targetCell.obstacle.hp - calcedDamage <= 0) {
             let itemsToDrop = [];
-            if (targetCell.obstacle.destructible.leaveRubble === true) {
+            if (
+              targetCell.obstacle.destructible.leaveRubble === true &&
+              targetCell.terrain.type !== "void" &&
+              targetCell.terrain.type !== "deep"
+            ) {
               // console.log('leave rubble on ',targetCell.number,'removing obstacle');
               if (targetCell.obstacle.items[0]) {
                 itemsToDrop = targetCell.obstacle.items;
@@ -15677,23 +15715,25 @@ class App extends Component {
                 moving: targetCell.obstacle.moving,
               };
 
-              this.players[owner.number - 1].statusDisplay = {
-                state: true,
-                status: "Destroyed " + targetCell.obstacle.name + "!",
-                count: 1,
-                limit: this.players[owner.number - 1].statusDisplay.limit,
-              };
+              if (ownerType === "player") {
+                this.players[owner.number - 1].statusDisplay = {
+                  state: true,
+                  status: "Destroyed " + targetCell.obstacle.name + "!",
+                  count: 1,
+                  limit: this.players[owner.number - 1].statusDisplay.limit,
+                };
 
-              if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                owner.popups.push({
-                  state: false,
-                  count: 0,
-                  limit: 30,
-                  type: "",
-                  position: "",
-                  msg: "destroyedItem",
-                  img: "",
-                });
+                if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
+                  owner.popups.push({
+                    state: false,
+                    count: 0,
+                    limit: 30,
+                    type: "",
+                    position: "",
+                    msg: "destroyedItem",
+                    img: "",
+                  });
+                }
               }
             } else {
               // console.log('no rubble. Just remove obstacle');
@@ -15717,23 +15757,25 @@ class App extends Component {
                 moving: targetCell.obstacle.moving,
               };
 
-              this.players[owner.number - 1].statusDisplay = {
-                state: true,
-                status: "Destroyed " + targetCell.obstacle.name + "!",
-                count: 1,
-                limit: this.players[owner.number - 1].statusDisplay.limit,
-              };
+              if (ownerType === "player") {
+                this.players[owner.number - 1].statusDisplay = {
+                  state: true,
+                  status: "Destroyed " + targetCell.obstacle.name + "!",
+                  count: 1,
+                  limit: this.players[owner.number - 1].statusDisplay.limit,
+                };
 
-              if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                owner.popups.push({
-                  state: false,
-                  count: 0,
-                  limit: 30,
-                  type: "",
-                  position: "",
-                  msg: "destroyedItem",
-                  img: "",
-                });
+                if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
+                  owner.popups.push({
+                    state: false,
+                    count: 0,
+                    limit: 30,
+                    type: "",
+                    position: "",
+                    msg: "destroyedItem",
+                    img: "",
+                  });
+                }
               }
             }
 
@@ -15785,6 +15827,27 @@ class App extends Component {
           }
           this.canPushObstacle(owner, targetCell, `hitPushBolt_${bolt.direction}`);
           // this.canPushObstacle(owner,targetCell,'hitPushBolt_'+bolt.direction);
+          if (type === "melee" && ownerType === "player") {
+            let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
+
+            if (shouldDeflect === 1) {
+              if (this.rnJesus(1, owner.crits.pushBack) === 1) {
+                this.setDeflection(owner, "defended", true);
+              } else {
+                this.setDeflection(owner, "defended", false);
+              }
+
+              if (owner.currentWeapon.name === "") {
+                console.log("this barrier is stronger than your fist. Take damage?");
+                let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
+                if (takeDamage === 1) {
+                  this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
+                }
+              }
+            } else {
+              this.pushBack(owner, this.getOppositeDirection(owner.direction));
+            }
+          }
         }
       }
 
@@ -15814,2935 +15877,209 @@ class App extends Component {
           });
         }
         this.canPushObstacle(owner, targetCell, `hitPushBolt_${bolt.direction}`);
-      }
 
-      // bolt.kill = true;
-      this.projectiles.find((blt) => blt.id === bolt.id).kill = true;
-    };
-    const handleBarrierDamage = (barrierType, calcedDamage) => {
-      if (targetCell.barrier.destructible.state === true) {
-        // WEAPON CHECK
-        if (targetCell.barrier.destructible.weapons.find((x) => x === "bolt")) {
-          // DAMAGE, DON'T DESTROY FWD BARRIER
-          if (targetCell.barrier.hp - calcedDamage > 0) {
-            // this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier.hp -= calcedDamage;
+        if (type === "melee" && ownerType === "player") {
+          let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
 
-            let hp = targetCell.barrier.hp - calcedDamage;
-
-            targetCell.barrier = {
-              id: targetCell.barrier.id,
-              trap: targetCell.barrier.trap,
-              state: targetCell.barrier.state,
-              name: targetCell.barrier.name,
-              type: targetCell.barrier.type,
-              hp: hp,
-              destructible: targetCell.barrier.destructible,
-              locked: targetCell.barrier.locked,
-              position: targetCell.barrier.position,
-              height: targetCell.barrier.height,
-            };
-
-            this.obstacleBarrierToDestroy.push({
-              type: "barrier",
-              action: "damage",
-              count: 0,
-              limit: 30,
-              complete: false,
-              cell: targetCell,
-            });
-          }
-
-          // DESTROY FWD BARRIER W/ OR W/O RUBBLE
-          else if (targetCell.barrier.hp - calcedDamage <= 0) {
-            if (
-              targetCell.barrier.destructible.leaveRubble === true &&
-              targetCell.obstacle.state !== true &&
-              targetCell.item.name === ""
-            ) {
-              // console.log('leave rubble on ',targetCell.number,'removing barrier');
-              targetCell.rubble = true;
-              // targetCell.terrain.type = 'hazard';
-
-              targetCell.barrier = {
-                id: targetCell.barrier.id,
-                trap: targetCell.barrier.trap,
-                state: false,
-                name: targetCell.barrier.name,
-                type: targetCell.barrier.type,
-                hp: 0,
-                destructible: targetCell.barrier.destructible,
-                locked: targetCell.barrier.locked,
-                position: targetCell.barrier.position,
-                height: targetCell.barrier.height,
-              };
-
-              this.players[owner.number - 1].statusDisplay = {
-                state: true,
-                status: "Destroyed " + targetCell.barrier.name + "!",
-                count: 1,
-                limit: this.players[owner.number - 1].statusDisplay.limit,
-              };
-
-              if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                owner.popups.push({
-                  state: false,
-                  count: 0,
-                  limit: 30,
-                  type: "",
-                  position: "",
-                  msg: "destroyedItem",
-                  img: "",
-                });
-              }
+          if (shouldDeflect === 1) {
+            if (this.rnJesus(1, owner.crits.pushBack) === 1) {
+              this.setDeflection(owner, "defended", true);
             } else {
-              // console.log('no rubble. Just remove barrier');
-              targetCell.barrier = {
-                id: targetCell.barrier.id,
-                trap: targetCell.barrier.trap,
-                state: false,
-                name: targetCell.barrier.name,
-                type: targetCell.barrier.type,
-                hp: 0,
-                destructible: targetCell.barrier.destructible,
-                locked: targetCell.barrier.locked,
-                position: targetCell.barrier.position,
-                height: targetCell.barrier.height,
-              };
-
-              this.players[owner.number - 1].statusDisplay = {
-                state: true,
-                status: "Destroyed " + targetCell.barrier.name + "!",
-                count: 1,
-                limit: this.players[owner.number - 1].statusDisplay.limit,
-              };
-
-              if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                owner.popups.push({
-                  state: false,
-                  count: 0,
-                  limit: 30,
-                  type: "",
-                  position: "",
-                  msg: "destroyedItem",
-                  img: "",
-                });
-              }
+              this.setDeflection(owner, "defended", false);
             }
 
-            this.obstacleBarrierToDestroy.push({
-              type: "barrier",
-              action: "destroy",
-              count: 0,
-              limit: 30,
-              complete: false,
-              cell: targetCell,
-            });
-          }
-        }
-
-        // WEAPON NO GOOD
-        else {
-          console.log(
-            "your current weapon cannot destroy this, you need ",
-            targetCell.obstacle.weapons,
-            ". Deflect player?"
-          );
-          if (
-            !this.cellPopups.find(
-              (x) =>
-                x.msg === "unbreakable" &&
-                x.cell.number.x === targetCell.number.x &&
-                x.cell.number.y === targetCell.number.y
-            )
-          ) {
-            this.cellPopups.push({
-              state: false,
-              count: 0,
-              limit: 35,
-              type: "",
-              position: "",
-              msg: "unbreakable",
-              color: "",
-              img: "",
-              cell: this.gridInfo.find(
-                (x) => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
-              ),
-            });
+            if (owner.currentWeapon.name === "") {
+              console.log("this barrier is stronger than your fist. Take damage?");
+              let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
+              if (takeDamage === 1) {
+                this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
+              }
+            }
+          } else {
+            this.pushBack(owner, this.getOppositeDirection(owner.direction));
           }
         }
       }
 
-      // INDESTRUCTIBLE FWD BARRIER
-      else {
-        // console.log('attacking invurnerable barrier w/ bolt');
-        if (
-          !this.cellPopups.find(
-            (x) =>
-              x.msg === "unbreakable" &&
-              x.cell.number.x === targetCell.number.x &&
-              x.cell.number.y === targetCell.number.y
-          )
-        ) {
-          this.cellPopups.push({
-            state: false,
-            count: 0,
-            limit: 35,
-            type: "",
-            position: "",
-            msg: "unbreakable",
-            color: "",
-            img: "",
-            cell: this.gridInfo.find(
-              (x) => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
-            ),
-          });
-        }
+      if (type === "bolt" || type === "flyOverBolt") {
+        this.projectiles.find((blt) => blt.id === bolt.id).kill = true;
       }
-
-      // bolt.kill = true;
-      this.projectiles.find((blt) => blt.id === bolt.id).kill = true;
     };
-    if (type === "melee") {
-      if (ownerType === "player") {
-        let doubleHitChance = owner.crits.doubleHit;
-        let singleHitChance = owner.crits.singleHit;
-        let doubleHit = this.rnJesus(1, doubleHitChance);
-        let singleHit = this.rnJesus(1, singleHitChance);
-
-        if (doubleHit === 1) {
-          damage = 2;
-        } else {
-          damage = 1;
-        }
-        let shouldDamage = 0;
-        if (owner.bluntAttack === true) {
-          shouldDamage = this.rnJesus(1, owner.crits.guardBreak);
-          if ((shouldDamage = 1)) {
-            damage = 1;
+    const handleBarrierDamage = (barrierType, calcedDamage, range) => {
+      if (barrierType === "myCellBarrier") {
+        if (myCell.barrier.destructible.state === true) {
+          // WEAPON CHECK
+          if (ownerType === "player") {
+            ownerWeaponName = owner.currentWeapon.name;
           } else {
-            damage = 0;
+            ownerWeaponName = owner.trap.itemNameRef;
           }
-        }
-        if (owner.currentWeapon.name === "") {
-          shouldDamage = this.rnJesus(1, owner.crits.guardBreak + 3);
-          if ((shouldDamage = 1)) {
-            damage = 1;
-          } else {
-            damage = 0;
-          }
-        }
-
-        // AT ELEVATION
-        if (targetCell) {
-          if (targetCell.elevation.number < myCell.elevation.number + 1) {
-            let checkSpearTarget = false;
-            // set this false if first target obstacles or barrier industructible or not destroyed
-
-            if (owner.currentWeapon.type !== "spear") {
-              // MY CELL BARRIER?
-              let myCellBarrier = false;
-              if (myCell.barrier.state === true) {
-                if (myCell.barrier.position === owner.direction) {
-                  myCellBarrier = true;
-                  if (myCell.barrier.destructible.state === true) {
-                    // WEAPON CHECK
-                    if (
-                      myCell.barrier.destructible.weapons.find(
-                        (x) => x === owner.currentWeapon.name
-                      )
-                    ) {
-                      if (myCell.barrier.hp - damage > 0) {
-                        let hp = myCell.barrier.hp - damage;
-
-                        myCell.barrier = {
-                          id: myCell.barrier.id,
-                          trap: myCell.barrier.trap,
-                          state: myCell.barrier.state,
-                          name: myCell.barrier.name,
-                          type: myCell.barrier.type,
-                          hp: hp,
-                          destructible: myCell.barrier.destructible,
-                          locked: myCell.barrier.locked,
-                          position: myCell.barrier.position,
-                          height: myCell.barrier.height,
-                        };
-
-                        this.obstacleBarrierToDestroy.push({
-                          type: "barrier",
-                          action: "damage",
-                          count: 0,
-                          limit: 30,
-                          complete: false,
-                          cell: myCell,
-                        });
-                      }
-
-                      // DESTROY FWD BARRIER W/ OR W/O RUBBLE
-                      else if (myCell.barrier.hp - damage <= 0) {
-                        if (
-                          myCell.barrier.destructible.leaveRubble === true &&
-                          myCell.obstacle.state !== true &&
-                          myCell.item.name === ""
-                        ) {
-                          // console.log('leave rubble on ',myCell.number,'removing barrier');
-                          myCell.rubble = true;
-                          // myCell.terrain.type = 'hazard';
-
-                          myCell.barrier = {
-                            id: myCell.barrier.id,
-                            trap: myCell.barrier.trap,
-                            state: false,
-                            name: myCell.barrier.name,
-                            type: myCell.barrier.type,
-                            hp: 0,
-                            destructible: myCell.barrier.destructible,
-                            locked: myCell.barrier.locked,
-                            position: myCell.barrier.position,
-                            height: myCell.barrier.height,
-                          };
-
-                          this.players[owner.number - 1].statusDisplay = {
-                            state: true,
-                            status: "Destroyed " + myCell.barrier.name + "!",
-                            count: 1,
-                            limit: this.players[owner.number - 1].statusDisplay.limit,
-                          };
-
-                          if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                            owner.popups.push({
-                              state: false,
-                              count: 0,
-                              limit: 30,
-                              type: "",
-                              position: "",
-                              msg: "destroyedItem",
-                              img: "",
-                            });
-                          }
-                        } else {
-                          // console.log('no rubble. Just remove barrier');
-
-                          myCell.barrier = {
-                            id: myCell.barrier.id,
-                            trap: myCell.barrier.trap,
-                            state: false,
-                            name: myCell.barrier.name,
-                            type: myCell.barrier.type,
-                            hp: 0,
-                            destructible: myCell.barrier.destructible,
-                            locked: myCell.barrier.locked,
-                            position: myCell.barrier.position,
-                            height: myCell.barrier.height,
-                          };
-
-                          this.players[owner.number - 1].statusDisplay = {
-                            state: true,
-                            status: "Destroyed " + myCell.barrier.name + "!",
-                            count: 1,
-                            limit: this.players[owner.number - 1].statusDisplay.limit,
-                          };
-
-                          if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                            owner.popups.push({
-                              state: false,
-                              count: 0,
-                              limit: 30,
-                              type: "",
-                              position: "",
-                              msg: "destroyedItem",
-                              img: "",
-                            });
-                          }
-                        }
-
-                        this.obstacleBarrierToDestroy.push({
-                          type: "barrier",
-                          action: "destroy",
-                          count: 0,
-                          limit: 30,
-                          complete: false,
-                          cell: myCell,
-                        });
-                      }
-                    }
-
-                    // WEAPON NO GOOD. DEFLECT
-                    else {
-                      console.log(
-                        "your current weapon cannot destroy this, you need ",
-                        myCell.barrier.destructible.weapons,
-                        ". Deflect player?"
-                      );
-                      let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
-
-                      if (shouldDeflect === 1) {
-                        if (this.rnJesus(1, owner.crits.pushBack) === 1) {
-                          this.setDeflection(owner, "defended", true);
-                        } else {
-                          this.setDeflection(owner, "defended", false);
-                        }
-
-                        if (owner.currentWeapon.name === "") {
-                          console.log("this barrier is stronger than your fist. Take damage?");
-                          let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
-                          if (takeDamage === 1) {
-                            this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
-                          }
-                        }
-                      } else {
-                        this.pushBack(owner, this.getOppositeDirection(owner.direction));
-                      }
-
-                      if (
-                        !this.cellPopups.find(
-                          (x) =>
-                            x.msg === "unbreakable" &&
-                            x.cell.number.x === myCell.number.x &&
-                            x.cell.number.y === myCell.number.y
-                        )
-                      ) {
-                        this.cellPopups.push({
-                          state: false,
-                          count: 0,
-                          limit: 35,
-                          type: "",
-                          position: "",
-                          msg: "unbreakable",
-                          color: "",
-                          img: "",
-                          cell: this.gridInfo.find(
-                            (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y
-                          ),
-                        });
-                      }
-                    }
-                  }
-
-                  // INDESTRUCTIBLE MY CELL BARRIER
-                  else {
-                    // console.log('attacking invurnerable barrier, deflect player?');
-                    let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
-
-                    if (shouldDeflect === 1) {
-                      if (this.rnJesus(1, owner.crits.pushBack) === 1) {
-                        this.setDeflection(owner, "defended", true);
-                      } else {
-                        this.setDeflection(owner, "defended", false);
-                      }
-
-                      if (owner.currentWeapon.name === "") {
-                        console.log("this barrier is stronger than your fist. Take damage?");
-                        let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
-                        if (takeDamage === 1) {
-                          this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
-                        }
-                      }
-                    } else {
-                      this.pushBack(owner, this.getOppositeDirection(owner.direction));
-                    }
-
-                    if (
-                      !this.cellPopups.find(
-                        (x) =>
-                          x.msg === "unbreakable" &&
-                          x.cell.number.x === myCell.number.x &&
-                          x.cell.number.y === myCell.number.y
-                      )
-                    ) {
-                      this.cellPopups.push({
-                        state: false,
-                        count: 0,
-                        limit: 35,
-                        type: "",
-                        position: "",
-                        msg: "unbreakable",
-                        color: "",
-                        img: "",
-                        cell: this.gridInfo.find(
-                          (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y
-                        ),
-                      });
-                    }
-                  }
-                }
-              }
-
-              // FWD BARRIER?
-              let fwdBarrier = false;
-              if (targetCell.barrier.state === true) {
-                fwdBarrier = this.checkForwardBarrier(owner.direction, targetCell);
-              }
-
-              if (fwdBarrier === true) {
-                if (targetCell.barrier.destructible.state === true) {
-                  // WEAPON CHECK
-                  if (
-                    targetCell.barrier.destructible.weapons.find(
-                      (x) => x === owner.currentWeapon.name
-                    )
-                  ) {
-                    if (targetCell.barrier.hp - damage > 0) {
-                      let hp = targetCell.barrier.hp - damage;
-
-                      targetCell.barrier = {
-                        id: targetCell.barrier.id,
-                        trap: targetCell.barrier.trap,
-                        state: targetCell.barrier.state,
-                        name: targetCell.barrier.name,
-                        type: targetCell.barrier.type,
-                        hp: hp,
-                        destructible: targetCell.barrier.destructible,
-                        locked: targetCell.barrier.locked,
-                        position: targetCell.barrier.position,
-                        height: targetCell.barrier.height,
-                      };
-
-                      this.obstacleBarrierToDestroy.push({
-                        type: "barrier",
-                        action: "damage",
-                        count: 0,
-                        limit: 30,
-                        complete: false,
-                        cell: targetCell,
-                      });
-                    }
-
-                    // DESTROY FWD BARRIER W/ OR W/O RUBBLE
-                    else if (targetCell.barrier.hp - damage <= 0) {
-                      if (
-                        targetCell.barrier.destructible.leaveRubble === true &&
-                        targetCell.obstacle.state !== true &&
-                        targetCell.item.name === ""
-                      ) {
-                        // console.log('leave rubble on ',targetCell.number,'removing barrier');
-                        targetCell.rubble = true;
-                        // targetCell.terrain.type = 'hazard';
-
-                        targetCell.barrier = {
-                          id: targetCell.barrier.id,
-                          trap: targetCell.barrier.trap,
-                          state: false,
-                          name: targetCell.barrier.name,
-                          type: targetCell.barrier.type,
-                          hp: 0,
-                          destructible: targetCell.barrier.destructible,
-                          locked: targetCell.barrier.locked,
-                          position: targetCell.barrier.position,
-                          height: targetCell.barrier.height,
-                        };
-
-                        this.players[owner.number - 1].statusDisplay = {
-                          state: true,
-                          status: "Destroyed " + targetCell.barrier.name + "!",
-                          count: 1,
-                          limit: this.players[owner.number - 1].statusDisplay.limit,
-                        };
-
-                        if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                          owner.popups.push({
-                            state: false,
-                            count: 0,
-                            limit: 30,
-                            type: "",
-                            position: "",
-                            msg: "destroyedItem",
-                            img: "",
-                          });
-                        }
-                      } else {
-                        // console.log('no rubble. Just remove barrier');
-
-                        targetCell.barrier = {
-                          id: targetCell.barrier.id,
-                          trap: targetCell.barrier.trap,
-                          state: false,
-                          name: targetCell.barrier.name,
-                          type: targetCell.barrier.type,
-                          hp: 0,
-                          destructible: targetCell.barrier.destructible,
-                          locked: targetCell.barrier.locked,
-                          position: targetCell.barrier.position,
-                          height: targetCell.barrier.height,
-                        };
-
-                        this.players[owner.number - 1].statusDisplay = {
-                          state: true,
-                          status: "Destroyed " + targetCell.barrier.name + "!",
-                          count: 1,
-                          limit: this.players[owner.number - 1].statusDisplay.limit,
-                        };
-
-                        if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                          owner.popups.push({
-                            state: false,
-                            count: 0,
-                            limit: 30,
-                            type: "",
-                            position: "",
-                            msg: "destroyedItem",
-                            img: "",
-                          });
-                        }
-                      }
-
-                      this.obstacleBarrierToDestroy.push({
-                        type: "barrier",
-                        action: "destroy",
-                        count: 0,
-                        limit: 30,
-                        complete: false,
-                        cell: targetCell,
-                      });
-                    }
-                  }
-
-                  // WEAPON NO GOOD. DEFLECT
-                  else {
-                    console.log(
-                      "your current weapon cannot destroy this, you need ",
-                      targetCell.barrier.destructible.weapons,
-                      ". Deflect player?"
-                    );
-                    let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
-                    if (shouldDeflect === 1) {
-                      this.attackedCancel(this.players[owner.number - 1]);
-
-                      this.setDeflection(owner, "defended", false);
-
-                      if (owner.currentWeapon.name === "") {
-                        console.log("this barrier is stronger than your fist. Take damage?");
-                        let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
-                        if (takeDamage === 1) {
-                          this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
-                        }
-                      }
-                    }
-                    if (this.rnJesus(1, owner.crits.pushBack) === 1) {
-                      this.pushBack(owner, this.getOppositeDirection(owner.direction));
-                    }
-                    if (
-                      !this.cellPopups.find(
-                        (x) =>
-                          x.msg === "unbreakable" &&
-                          x.cell.number.x === targetCell.number.x &&
-                          x.cell.number.y === targetCell.number.y
-                      )
-                    ) {
-                      this.cellPopups.push({
-                        state: false,
-                        count: 0,
-                        limit: 35,
-                        type: "",
-                        position: "",
-                        msg: "unbreakable",
-                        color: "",
-                        img: "",
-                        cell: this.gridInfo.find(
-                          (x) =>
-                            x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
-                        ),
-                      });
-                    }
-                  }
-                }
-
-                // INDESTRUCTIBLE FWD BARRIER
-                else {
-                  // console.log('attacking invurnerable barrier, deflect player?');
-                  let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
-                  if (shouldDeflect === 1) {
-                    if (this.rnJesus(1, owner.crits.pushBack) === 1) {
-                      this.setDeflection(owner, "defended", true);
-                    } else {
-                      this.setDeflection(owner, "defended", false);
-                    }
-
-                    if (owner.currentWeapon.name === "") {
-                      console.log("this barrier is stronger than your fist. Take damage?");
-                      let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
-                      if (takeDamage === 1) {
-                        this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
-                      }
-                    }
-                  } else {
-                    this.pushBack(owner, this.getOppositeDirection(owner.direction));
-                  }
-
-                  if (
-                    !this.cellPopups.find(
-                      (x) =>
-                        x.msg === "unbreakable" &&
-                        x.cell.number.x === targetCell.number.x &&
-                        x.cell.number.y === targetCell.number.y
-                    )
-                  ) {
-                    this.cellPopups.push({
-                      state: false,
-                      count: 0,
-                      limit: 35,
-                      type: "",
-                      position: "",
-                      msg: "unbreakable",
-                      color: "",
-                      img: "",
-                      cell: this.gridInfo.find(
-                        (x) =>
-                          x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
-                      ),
-                    });
-                  }
-                }
-              }
-
-              // NO FWD BARRIER. OBSTACLE, REAR  BARRIER (SPEAR)?
-              else if (fwdBarrier !== true && myCellBarrier !== true) {
-                if (targetCell.obstacle.state === true) {
-                  // damage = 1;
-                  if (targetCell.obstacle.destructible.state === true) {
-                    // WEAPON CHECK
-                    if (
-                      targetCell.obstacle.destructible.weapons.find(
-                        (x) => x === owner.currentWeapon.name
-                      )
-                    ) {
-                      if (targetCell.obstacle.hp - damage > 0) {
-                        let hp = targetCell.obstacle.hp - damage;
-
-                        targetCell.obstacle = {
-                          id: targetCell.obstacle.id,
-                          trap: targetCell.obstacle.trap,
-                          state: targetCell.obstacle.state,
-                          name: targetCell.obstacle.name,
-                          type: targetCell.obstacle.type,
-                          hp: hp,
-                          destructible: targetCell.obstacle.destructible,
-                          locked: targetCell.obstacle.locked,
-                          weight: targetCell.obstacle.weight,
-                          height: targetCell.obstacle.height,
-                          items: targetCell.obstacle.items,
-                          effects: targetCell.obstacle.effects,
-                          moving: targetCell.obstacle.moving,
-                        };
-
-                        this.obstacleBarrierToDestroy.push({
-                          type: "obstacle",
-                          action: "damage",
-                          count: 0,
-                          limit: 30,
-                          complete: false,
-                          cell: targetCell,
-                        });
-
-                        this.canPushObstacle(owner, targetCell, "hitPush");
-                      }
-
-                      // DESTROY OBSTACLE W/ OR W/O RUBBLE
-                      else if (targetCell.obstacle.hp - damage <= 0) {
-                        let itemsToDrop = [];
-                        if (targetCell.obstacle.destructible.leaveRubble === true) {
-                          // console.log('leave rubble on ',targetCell.number,'removing obstacle');
-
-                          if (targetCell.obstacle.items[0]) {
-                            itemsToDrop = targetCell.obstacle.items;
-                          }
-                          targetCell.rubble = true;
-                          // targetCell.terrain.type = 'hazard';
-
-                          targetCell.obstacle = {
-                            id: targetCell.obstacle.id,
-                            trap: targetCell.obstacle.trap,
-                            state: false,
-                            name: targetCell.obstacle.name,
-                            type: targetCell.obstacle.type,
-                            hp: 0,
-                            destructible: targetCell.obstacle.destructible,
-                            locked: targetCell.obstacle.locked,
-                            weight: targetCell.obstacle.weight,
-                            height: targetCell.obstacle.height,
-                            items: targetCell.obstacle.items,
-                            effects: targetCell.obstacle.effects,
-                            moving: targetCell.obstacle.moving,
-                          };
-
-                          this.players[owner.number - 1].statusDisplay = {
-                            state: true,
-                            status: "Destroyed " + targetCell.obstacle.name + "!",
-                            count: 1,
-                            limit: this.players[owner.number - 1].statusDisplay.limit,
-                          };
-
-                          if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                            owner.popups.push({
-                              state: false,
-                              count: 0,
-                              limit: 30,
-                              type: "",
-                              position: "",
-                              msg: "destroyedItem",
-                              img: "",
-                            });
-                          }
-                        } else {
-                          // console.log('no rubble. Just remove obstacle');
-                          if (targetCell.obstacle.items[0]) {
-                            itemsToDrop = targetCell.obstacle.items;
-                          }
-                          // this.gridInfo.find(elem => elem.number.x === player.target.cell1.number.x && elem.number.y === player.target.cell1.number.y ).obstacle =
-
-                          targetCell.obstacle = {
-                            id: targetCell.obstacle.id,
-                            trap: targetCell.obstacle.trap,
-                            state: false,
-                            name: targetCell.obstacle.name,
-                            type: targetCell.obstacle.type,
-                            hp: 0,
-                            destructible: targetCell.obstacle.destructible,
-                            locked: targetCell.obstacle.locked,
-                            weight: targetCell.obstacle.weight,
-                            height: targetCell.obstacle.height,
-                            items: targetCell.obstacle.items,
-                            effects: targetCell.obstacle.effects,
-                            moving: targetCell.obstacle.moving,
-                          };
-
-                          this.players[owner.number - 1].statusDisplay = {
-                            state: true,
-                            status: "Destroyed " + targetCell.obstacle.name + "!",
-                            count: 1,
-                            limit: this.players[owner.number - 1].statusDisplay.limit,
-                          };
-
-                          if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                            owner.popups.push({
-                              state: false,
-                              count: 0,
-                              limit: 30,
-                              type: "",
-                              position: "",
-                              msg: "destroyedItem",
-                              img: "",
-                            });
-                          }
-                        }
-
-                        // DROP OBSTACLE ITEMS?
-                        if (itemsToDrop[0]) {
-                          // console.log('dropping obstacle items melee',itemsToDrop);
-                          this.obstacleItemDrop(targetCell, owner);
-                        }
-                        this.obstacleBarrierToDestroy.push({
-                          type: "obstacle",
-                          action: "destroy",
-                          count: 0,
-                          limit: 30,
-                          complete: false,
-                          cell: targetCell,
-                        });
-                      }
-                    }
-
-                    // WEAPON NO GOOD. DEFLECT
-                    else {
-                      console.log(
-                        "your current weapon cannot destroy this, you need ",
-                        targetCell.obstacle.destructible.weapons,
-                        ". Deflect player?"
-                      );
-                      let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
-
-                      if (shouldDeflect === 1) {
-                        if (this.rnJesus(1, owner.crits.pushBack) === 1) {
-                          this.setDeflection(owner, "defended", true);
-                        } else {
-                          this.setDeflection(owner, "defended", false);
-                        }
-
-                        if (owner.currentWeapon.name === "") {
-                          console.log("this obstacle is stronger than your fist. Take damage?");
-                          let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
-                          if (takeDamage === 1) {
-                            this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
-                          }
-                        }
-                      } else {
-                        this.pushBack(owner, this.getOppositeDirection(owner.direction));
-                      }
-                      if (this.rnJesus(1, 1, owner.crits.pushBack === 1)) {
-                        this.canPushObstacle(owner, targetCell, "hitPush");
-                      }
-
-                      if (
-                        !this.cellPopups.find(
-                          (x) =>
-                            x.msg === "unbreakable" &&
-                            x.cell.number.x === targetCell.number.x &&
-                            x.cell.number.y === targetCell.number.y
-                        )
-                      ) {
-                        this.cellPopups.push({
-                          state: false,
-                          count: 0,
-                          limit: 35,
-                          type: "",
-                          position: "",
-                          msg: "unbreakable",
-                          color: "",
-                          img: "",
-                          cell: this.gridInfo.find(
-                            (x) =>
-                              x.number.x === targetCell.number.x &&
-                              x.number.y === targetCell.number.y
-                          ),
-                        });
-                      }
-
-                      // this.setDeflection(player,'defended',true);
-                    }
-                  }
-
-                  // INDESTRUCTIBLE OBSTACLE
-                  else {
-                    // console.log('attacking invurnerable obstacle, deflect player?');
-
-                    let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
-
-                    if (shouldDeflect === 1) {
-                      if (this.rnJesus(1, owner.crits.pushBack) === 1) {
-                        this.setDeflection(owner, "defended", true);
-                      } else {
-                        this.setDeflection(owner, "defended", false);
-                      }
-
-                      if (owner.currentWeapon.name === "") {
-                        console.log("this obstacle is stronger than your fist. Take damage?");
-                        let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
-                        if (takeDamage === 1) {
-                          this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
-                        }
-                      }
-                    } else {
-                      this.pushBack(owner, this.getOppositeDirection(owner.direction));
-                    }
-                    if (this.rnJesus(1, 1, owner.crits.pushBack === 1)) {
-                      this.canPushObstacle(owner, targetCell, "hitPush");
-                    }
-
-                    if (
-                      !this.cellPopups.find(
-                        (x) =>
-                          x.msg === "unbreakable" &&
-                          x.cell.number.x === targetCell.number.x &&
-                          x.cell.number.y === targetCell.number.y
-                      )
-                    ) {
-                      this.cellPopups.push({
-                        state: false,
-                        count: 0,
-                        limit: 35,
-                        type: "",
-                        position: "",
-                        msg: "unbreakable",
-                        color: "",
-                        img: "",
-                        cell: this.gridInfo.find(
-                          (x) =>
-                            x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
-                        ),
-                      });
-                    }
-
-                    // this.setDeflection(player,'defended',false);
-                  }
-                } else {
-                  // NO OBSTACLE. ITEM ON GROUND? DESTROY
-                  if (
-                    targetCell &&
-                    targetCell.item.name !== "" &&
-                    damage > 0 &&
-                    owner.currentWeapon.name !== ""
-                  ) {
-                    this.players[owner.number - 1].statusDisplay = {
-                      state: true,
-                      status: "Destroyed " + targetCell.item.name + "!",
-                      count: 1,
-                      limit: this.players[owner.number - 1].statusDisplay.limit,
-                    };
-
-                    if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                      owner.popups.push({
-                        state: false,
-                        count: 0,
-                        limit: 30,
-                        type: "",
-                        position: "",
-                        msg: "destroyedItem",
-                        img: "",
-                      });
-                    }
-
-                    this.gridInfo.find(
-                      (elem) =>
-                        elem.number.x === owner.target.cell1.number.x &&
-                        elem.number.y === owner.target.cell1.number.y
-                    ).item = {
-                      name: "",
-                      type: "",
-                      subType: "",
-                      effect: "",
-                      initDrawn: false,
-                    };
-                  }
-
-                  if ((targetCell.rubble === true) & (damage > 0)) {
-                    // console.log('damage/clear rubble');
-                    this.gridInfo.find(
-                      (elem) =>
-                        elem.number.x === owner.target.cell1.number.x &&
-                        elem.number.y === owner.target.cell1.number.y
-                    ).rubble = false;
-                  }
-
-                  // NO OBSTACLE. ITEM OR RUBBLE. DESTROY REAR BARRIER
-
-                  // else {
-                  //   // do nothing
-                  // }
-                }
-              }
-            }
-
-            // CHECK 1ST CELL, TARGET 1
-            if (owner.currentWeapon.type === "spear") {
-              let myCellBarrier = false;
-              if (myCell.barrier.state === true) {
-                if (myCell.barrier.position === owner.direction) {
-                  myCellBarrier = true;
-                  if (myCell.barrier.destructible.state === true) {
-                    // WEAPON CHECK
-                    if (
-                      myCell.barrier.destructible.weapons.find(
-                        (x) => x === owner.currentWeapon.name
-                      )
-                    ) {
-                      if (myCell.barrier.hp - damage > 0) {
-                        let hp = myCell.barrier.hp - damage;
-
-                        myCell.barrier = {
-                          id: myCell.barrier.id,
-                          trap: myCell.barrier.trap,
-                          state: myCell.barrier.state,
-                          name: myCell.barrier.name,
-                          type: myCell.barrier.type,
-                          hp: hp,
-                          destructible: myCell.barrier.destructible,
-                          locked: myCell.barrier.locked,
-                          position: myCell.barrier.position,
-                          height: myCell.barrier.height,
-                        };
-
-                        this.obstacleBarrierToDestroy.push({
-                          type: "barrier",
-                          action: "damage",
-                          count: 0,
-                          limit: 30,
-                          complete: false,
-                          cell: myCell,
-                        });
-                      }
-
-                      // DESTROY FWD BARRIER W/ OR W/O RUBBLE
-                      else if (myCell.barrier.hp - damage <= 0) {
-                        if (
-                          myCell.barrier.destructible.leaveRubble === true &&
-                          myCell.obstacle.state !== true &&
-                          myCell.item.name === ""
-                        ) {
-                          // console.log('leave rubble on ',myCell.number,'removing barrier');
-                          myCell.rubble = true;
-                          // myCell.terrain.type = 'hazard';
-                          myCell.barrier = {
-                            id: myCell.barrier.id,
-                            trap: myCell.barrier.trap,
-                            state: false,
-                            name: myCell.barrier.name,
-                            type: myCell.barrier.type,
-                            hp: 0,
-                            destructible: myCell.barrier.destructible,
-                            locked: myCell.barrier.locked,
-                            position: myCell.barrier.position,
-                            height: myCell.barrier.height,
-                          };
-
-                          this.players[owner.number - 1].statusDisplay = {
-                            state: true,
-                            status: "Destroyed " + myCell.barrier.name + "!",
-                            count: 1,
-                            limit: this.players[owner.number - 1].statusDisplay.limit,
-                          };
-
-                          if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                            owner.popups.push({
-                              state: false,
-                              count: 0,
-                              limit: 30,
-                              type: "",
-                              position: "",
-                              msg: "destroyedItem",
-                              img: "",
-                            });
-                          }
-                        } else {
-                          // console.log('no rubble. Just remove barrier');
-
-                          myCell.barrier = {
-                            id: myCell.barrier.id,
-                            trap: myCell.barrier.trap,
-                            state: false,
-                            name: myCell.barrier.name,
-                            type: myCell.barrier.type,
-                            hp: 0,
-                            destructible: myCell.barrier.destructible,
-                            locked: myCell.barrier.locked,
-                            position: myCell.barrier.position,
-                            height: myCell.barrier.height,
-                          };
-
-                          this.players[owner.number - 1].statusDisplay = {
-                            state: true,
-                            status: "Destroyed " + myCell.barrier.name + "!",
-                            count: 1,
-                            limit: this.players[owner.number - 1].statusDisplay.limit,
-                          };
-
-                          if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                            owner.popups.push({
-                              state: false,
-                              count: 0,
-                              limit: 30,
-                              type: "",
-                              position: "",
-                              msg: "destroyedItem",
-                              img: "",
-                            });
-                          }
-                        }
-
-                        this.obstacleBarrierToDestroy.push({
-                          type: "barrier",
-                          action: "destroy",
-                          count: 0,
-                          limit: 30,
-                          complete: false,
-                          cell: myCell,
-                        });
-                      }
-                    }
-
-                    // WEAPON NO GOOD. DEFLECT
-                    else {
-                      console.log(
-                        "your current weapon cannot destroy this, you need ",
-                        myCell.barrier.destructible.weapons,
-                        ". Deflect player?"
-                      );
-                      let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
-                      if (shouldDeflect === 1) {
-                        if (this.rnJesus(1, owner.crits.pushBack) === 1) {
-                          this.setDeflection(owner, "defended", true);
-                        } else {
-                          this.setDeflection(owner, "defended", false);
-                        }
-
-                        if (owner.currentWeapon.name === "") {
-                          console.log("this barrier is stronger than your fist. Take damage?");
-                          let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
-                          if (takeDamage === 1) {
-                            this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
-                          }
-                        }
-                      } else {
-                        this.pushBack(owner, this.getOppositeDirection(owner.direction));
-                      }
-
-                      if (
-                        !this.cellPopups.find(
-                          (x) =>
-                            x.msg === "unbreakable" &&
-                            x.cell.number.x === myCell.number.x &&
-                            x.cell.number.y === myCell.number.y
-                        )
-                      ) {
-                        this.cellPopups.push({
-                          state: false,
-                          count: 0,
-                          limit: 35,
-                          type: "",
-                          position: "",
-                          msg: "unbreakable",
-                          color: "",
-                          img: "",
-                          cell: this.gridInfo.find(
-                            (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y
-                          ),
-                        });
-                      }
-                    }
-                  }
-
-                  // INDESTRUCTIBLE MY CELL BARRIER
-                  else {
-                    // console.log('attacking invurnerable barrier, deflect player?');
-                    let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
-                    if (shouldDeflect === 1) {
-                      if (this.rnJesus(1, owner.crits.pushBack) === 1) {
-                        this.setDeflection(owner, "defended", true);
-                      } else {
-                        this.setDeflection(owner, "defended", false);
-                      }
-
-                      if (owner.currentWeapon.name === "") {
-                        console.log("this barrier is stronger than your fist. Take damage?");
-                        let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
-                        if (takeDamage === 1) {
-                          this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
-                        }
-                      }
-                    } else {
-                      this.pushBack(owner, this.getOppositeDirection(owner.direction));
-                    }
-
-                    if (
-                      !this.cellPopups.find(
-                        (x) =>
-                          x.msg === "unbreakable" &&
-                          x.cell.number.x === myCell.number.x &&
-                          x.cell.number.y === myCell.number.y
-                      )
-                    ) {
-                      this.cellPopups.push({
-                        state: false,
-                        count: 0,
-                        limit: 35,
-                        type: "",
-                        position: "",
-                        msg: "unbreakable",
-                        color: "",
-                        img: "",
-                        cell: this.gridInfo.find(
-                          (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y
-                        ),
-                      });
-                    }
-                  }
-                }
-              }
-
-              // FWD BARRIER?
-              let fwdBarrier = false;
-              if (targetCell.barrier.state === true) {
-                fwdBarrier = this.checkForwardBarrier(owner.direction, targetCell);
-              }
-
-              if (myCellBarrier !== true && fwdBarrier === true) {
-                if (targetCell.barrier.destructible.state === true) {
-                  // WEAPON CHECK
-                  if (
-                    targetCell.barrier.destructible.weapons.find(
-                      (x) => x === owner.currentWeapon.name
-                    )
-                  ) {
-                    if (targetCell.barrier.hp - damage > 0) {
-                      // this.gridInfo.find(elem => elem.number.x === player.target.cell1.number.x && elem.number.y === player.target.cell1.number.y ).barrier.hp -= damage;
-
-                      let hp = targetCell.barrier.hp - damage;
-
-                      targetCell.barrier = {
-                        id: targetCell.barrier.id,
-                        trap: targetCell.barrier.trap,
-                        state: targetCell.barrier.state,
-                        name: targetCell.barrier.name,
-                        type: targetCell.barrier.type,
-                        hp: hp,
-                        destructible: targetCell.barrier.destructible,
-                        locked: targetCell.barrier.locked,
-                        position: targetCell.barrier.position,
-                        height: targetCell.barrier.height,
-                      };
-
-                      this.obstacleBarrierToDestroy.push({
-                        type: "barrier",
-                        action: "damage",
-                        count: 0,
-                        limit: 30,
-                        complete: false,
-                        cell: targetCell,
-                      });
-                    }
-
-                    // DESTROY FWD BARRIER W/ OR W/O RUBBLE
-                    else if (targetCell.barrier.hp - damage <= 0) {
-                      if (
-                        targetCell.barrier.destructible.leaveRubble === true &&
-                        targetCell.obstacle.state !== true &&
-                        targetCell.item.name === ""
-                      ) {
-                        // console.log('leave rubble on ',targetCell2.number,'removing barrier');
-                        targetCell.rubble = true;
-                        // targetCell2.terrain.type = 'hazard';
-                        targetCell.barrier = {
-                          id: targetCell.barrier.id,
-                          trap: targetCell.barrier.trap,
-                          state: false,
-                          name: targetCell.barrier.name,
-                          type: targetCell.barrier.type,
-                          hp: 0,
-                          destructible: targetCell.barrier.destructible,
-                          locked: targetCell.barrier.locked,
-                          position: targetCell.barrier.position,
-                          height: targetCell.barrier.height,
-                        };
-
-                        this.players[owner.number - 1].statusDisplay = {
-                          state: true,
-                          status: "Destroyed " + targetCell.barrier.name + "!",
-                          count: 1,
-                          limit: this.players[owner.number - 1].statusDisplay.limit,
-                        };
-
-                        if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                          owner.popups.push({
-                            state: false,
-                            count: 0,
-                            limit: 30,
-                            type: "",
-                            position: "",
-                            msg: "destroyedItem",
-                            img: "",
-                          });
-                        }
-                      } else {
-                        // console.log('no rubble. Just remove barrier');
-
-                        targetCell.barrier = {
-                          id: targetCell.barrier.id,
-                          trap: targetCell.barrier.trap,
-                          state: false,
-                          name: targetCell.barrier.name,
-                          type: targetCell.barrier.type,
-                          hp: 0,
-                          destructible: targetCell.barrier.destructible,
-                          locked: targetCell.barrier.locked,
-                          position: targetCell.barrier.position,
-                          height: targetCell.barrier.height,
-                        };
-
-                        this.players[owner.number - 1].statusDisplay = {
-                          state: true,
-                          status: "Destroyed " + targetCell.barrier.name + "!",
-                          count: 1,
-                          limit: this.players[owner.number - 1].statusDisplay.limit,
-                        };
-
-                        if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                          owner.popups.push({
-                            state: false,
-                            count: 0,
-                            limit: 30,
-                            type: "",
-                            position: "",
-                            msg: "destroyedItem",
-                            img: "",
-                          });
-                        }
-                      }
-
-                      this.obstacleBarrierToDestroy.push({
-                        type: "barrier",
-                        action: "destroy",
-                        count: 0,
-                        limit: 30,
-                        complete: false,
-                        cell: targetCell,
-                      });
-                    }
-                  }
-
-                  // WEAPON NO GOOD. DEFLECT
-                  else {
-                    console.log(
-                      "your current weapon cannot destroy this, you need ",
-                      targetCell2.barrier.destructible.weapons,
-                      ". Deflect player?"
-                    );
-                    let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
-
-                    if (shouldDeflect === 1) {
-                      if (this.rnJesus(1, owner.crits.pushBack) === 1) {
-                        this.setDeflection(owner, "defended", true);
-                      } else {
-                        this.setDeflection(owner, "defended", false);
-                      }
-
-                      if (player.currentWeapon.name === "") {
-                        console.log("this barrier is stronger than your fist. Take damage?");
-                        let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
-                        if (takeDamage === 1) {
-                          this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
-                        }
-                      }
-                    } else {
-                      this.pushBack(owner, this.getOppositeDirection(owner.direction));
-                    }
-
-                    if (
-                      !this.cellPopups.find(
-                        (x) =>
-                          x.msg === "unbreakable" &&
-                          x.cell.number.x === targetCell2.number.x &&
-                          x.cell.number.y === targetCell2.number.y
-                      )
-                    ) {
-                      this.cellPopups.push({
-                        state: false,
-                        count: 0,
-                        limit: 35,
-                        type: "",
-                        position: "",
-                        msg: "unbreakable",
-                        color: "",
-                        img: "",
-                        cell: this.gridInfo.find(
-                          (x) =>
-                            x.number.x === targetCell2.number.x &&
-                            x.number.y === targetCell2.number.y
-                        ),
-                      });
-                    }
-                  }
-                }
-
-                // INDESTRUCTIBLE FWD BARRIER
-                else {
-                  // console.log('attacking invurnerable barrier, deflect player?');
-                  let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
-                  if (shouldDeflect === 1) {
-                    if (this.rnJesus(1, owner.crits.pushBack) === 1) {
-                      this.setDeflection(owner, "defended", true);
-                    } else {
-                      this.setDeflection(owner, "defended", false);
-                    }
-
-                    if (owner.currentWeapon.name === "") {
-                      console.log("this barrier is stronger than your fist. Take damage?");
-                      let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
-                      if (takeDamage === 1) {
-                        this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
-                      }
-                    }
-                  } else {
-                    this.pushBack(owner, this.getOppositeDirection(owner.direction));
-                  }
-
-                  if (
-                    !this.cellPopups.find(
-                      (x) =>
-                        x.msg === "unbreakable" &&
-                        x.cell.number.x === targetCell2.number.x &&
-                        x.cell.number.y === targetCell2.number.y
-                    )
-                  ) {
-                    this.cellPopups.push({
-                      state: false,
-                      count: 0,
-                      limit: 35,
-                      type: "",
-                      position: "",
-                      msg: "unbreakable",
-                      color: "",
-                      img: "",
-                      cell: this.gridInfo.find(
-                        (x) =>
-                          x.number.x === targetCell2.number.x && x.number.y === targetCell2.number.y
-                      ),
-                    });
-                  }
-                }
-              }
-
-              // NO FWD BARRIER. OBSTACLE, REAR  BARRIER (SPEAR)?
-              else if (myCellBarrier !== true && fwdBarrier !== true) {
-                if (targetCell.obstacle.state === true) {
-                  if (targetCell.obstacle.destructible.state === true) {
-                    // WEAPON CHECK
-                    if (
-                      targetCell.obstacle.destructible.weapons.find(
-                        (x) => x === owner.currentWeapon.name
-                      )
-                    ) {
-                      if (targetCell.obstacle.hp - damage > 0) {
-                        let hp = targetCell.obstacle.hp - damage;
-                        targetCell.obstacle = {
-                          id: targetCell.obstacle.id,
-                          trap: targetCell.obstacle.trap,
-                          state: targetCell.obstacle.state,
-                          name: targetCell.obstacle.name,
-                          type: targetCell.obstacle.type,
-                          hp: hp,
-                          destructible: targetCell.obstacle.destructible,
-                          locked: targetCell.obstacle.locked,
-                          weight: targetCell.obstacle.weight,
-                          height: targetCell.obstacle.height,
-                          items: targetCell.obstacle.items,
-                          effects: targetCell.obstacle.effects,
-                          moving: targetCell.obstacle.moving,
-                        };
-
-                        this.obstacleBarrierToDestroy.push({
-                          type: "obstacle",
-                          action: "damage",
-                          count: 0,
-                          limit: 30,
-                          complete: false,
-                          cell: targetCell,
-                        });
-
-                        this.canPushObstacle(owner, targetCell, "hitPush");
-                      }
-
-                      // DESTROY OBSTACLE W/ OR W/O RUBBLE
-                      else if (targetCell.obstacle.hp - damage <= 0) {
-                        let itemsToDrop = [];
-                        if (targetCell.obstacle.destructible.leaveRubble === true) {
-                          // console.log('leave rubble on ',targetCell2.number,'removing obstacle');
-
-                          if (targetCell.obstacle.items[0]) {
-                            itemsToDrop = targetCell.obstacle.items;
-                          }
-                          targetCell.rubble = true;
-                          // targetCell2.terrain.type = 'hazard';
-
-                          targetCell.obstacle = {
-                            id: targetCell.obstacle.id,
-                            trap: targetCell.obstacle.trap,
-                            state: false,
-                            name: targetCell.obstacle.name,
-                            type: targetCell.obstacle.type,
-                            hp: 0,
-                            destructible: targetCell.obstacle.destructible,
-                            locked: targetCell.obstacle.locked,
-                            weight: targetCell.obstacle.weight,
-                            height: targetCell.obstacle.height,
-                            items: targetCell.obstacle.items,
-                            effects: targetCell.obstacle.effects,
-                            moving: targetCell.obstacle.moving,
-                          };
-
-                          this.players[owner.number - 1].statusDisplay = {
-                            state: true,
-                            status: "Destroyed " + targetCell.obstacle.name + "!",
-                            count: 1,
-                            limit: this.players[owner.number - 1].statusDisplay.limit,
-                          };
-
-                          if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                            owner.popups.push({
-                              state: false,
-                              count: 0,
-                              limit: 30,
-                              type: "",
-                              position: "",
-                              msg: "destroyedItem",
-                              img: "",
-                            });
-                          }
-                        } else {
-                          // console.log('no rubble. Just remove obstacle');
-                          if (targetCell.obstacle.items[0]) {
-                            itemsToDrop = targetCell.obstacle.items;
-                          }
-
-                          targetCell.obstacle = {
-                            id: targetCell.obstacle.id,
-                            trap: targetCell.obstacle.trap,
-                            state: false,
-                            name: targetCell.obstacle.name,
-                            type: targetCell.obstacle.type,
-                            hp: 0,
-                            destructible: targetCell.obstacle.destructible,
-                            locked: targetCell.obstacle.locked,
-                            weight: targetCell.obstacle.weight,
-                            height: targetCell.obstacle.height,
-                            items: targetCell.obstacle.items,
-                            effects: targetCell.obstacle.effects,
-                            moving: targetCell.obstacle.moving,
-                          };
-
-                          this.players[owner.number - 1].statusDisplay = {
-                            state: true,
-                            status: "Destroyed " + targetCell.obstacle.name + "!",
-                            count: 1,
-                            limit: this.players[owner.number - 1].statusDisplay.limit,
-                          };
-
-                          if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                            owner.popups.push({
-                              state: false,
-                              count: 0,
-                              limit: 30,
-                              type: "",
-                              position: "",
-                              msg: "destroyedItem",
-                              img: "",
-                            });
-                          }
-                        }
-
-                        // DROP OBSTACLE ITEMS?
-                        if (itemsToDrop[0]) {
-                          // console.log('dropping obstacle items melee',itemsToDrop);
-
-                          this.obstacleItemDrop(targetCell, owner);
-                        }
-
-                        this.obstacleBarrierToDestroy.push({
-                          type: "obstacle",
-                          action: "destroy",
-                          count: 0,
-                          limit: 30,
-                          complete: false,
-                          cell: targetCell,
-                        });
-                      }
-                    }
-
-                    // WEAPON NO GOOD. DEFLECT
-                    else {
-                      console.log(
-                        "your current weapon cannot destroy this, you need ",
-                        targetCell.obstacle.destructible.weapons,
-                        ". Deflect player?"
-                      );
-                      let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
-
-                      if (shouldDeflect === 1) {
-                        if (this.rnJesus(1, owner.crits.pushBack) === 1) {
-                          this.setDeflection(owner, "defended", true);
-                        } else {
-                          this.setDeflection(owner, "defended", false);
-                        }
-
-                        if (owner.currentWeapon.name === "") {
-                          console.log("this obstacle is stronger than your fist. Take damage?");
-                          let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
-                          if (takeDamage === 1) {
-                            this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
-                          }
-                        }
-                      } else {
-                        this.pushBack(owner, this.getOppositeDirection(owner.direction));
-                      }
-
-                      if (
-                        !this.cellPopups.find(
-                          (x) =>
-                            x.msg === "unbreakable" &&
-                            x.cell.number.x === targetCell.number.x &&
-                            x.cell.number.y === targetCell.number.y
-                        )
-                      ) {
-                        this.cellPopups.push({
-                          state: false,
-                          count: 0,
-                          limit: 35,
-                          type: "",
-                          position: "",
-                          msg: "unbreakable",
-                          color: "",
-                          img: "",
-                          cell: this.gridInfo.find(
-                            (x) =>
-                              x.number.x === targetCell.number.x &&
-                              x.number.y === targetCell.number.y
-                          ),
-                        });
-                      }
-                    }
-                  }
-
-                  // INDESTRUCTIBLE OBSTACLE
-                  else {
-                    // console.log('attacking invurnerable obstacle, deflect player?');
-                    let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
-
-                    if (shouldDeflect === 1) {
-                      if (this.rnJesus(1, owner.crits.pushBack) === 1) {
-                        this.setDeflection(owner, "defended", true);
-                      } else {
-                        this.setDeflection(owner, "defended", false);
-                      }
-
-                      if (owner.currentWeapon.name === "") {
-                        console.log("this obstacle is stronger than your fist. Take damage?");
-                        let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
-                        if (takeDamage === 1) {
-                          this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
-                        }
-                      }
-                    } else {
-                      this.pushBack(owner, this.getOppositeDirection(owner.direction));
-                    }
-                    if (this.rnJesus(1, 1, owner.crits.pushBack === 1)) {
-                      this.canPushObstacle(owner, targetCell, "hitPush");
-                    }
-
-                    if (
-                      !this.cellPopups.find(
-                        (x) =>
-                          x.msg === "unbreakable" &&
-                          x.cell.number.x === targetCell.number.x &&
-                          x.cell.number.y === targetCell.number.y
-                      )
-                    ) {
-                      this.cellPopups.push({
-                        state: false,
-                        count: 0,
-                        limit: 35,
-                        type: "",
-                        position: "",
-                        msg: "unbreakable",
-                        color: "",
-                        img: "",
-                        cell: this.gridInfo.find(
-                          (x) =>
-                            x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
-                        ),
-                      });
-                    }
-
-                    // this.setDeflection(player,'defended',false);
-                  }
-                } else {
-                  // NO OBSTACLE. ITEM ON GROUND? DESTROY
-                  if (
-                    targetCell &&
-                    targetCell.item.name !== "" &&
-                    damage > 0 &&
-                    owner.currentWeapon.name !== ""
-                  ) {
-                    this.players[owner.number - 1].statusDisplay = {
-                      state: true,
-                      status: "Destroyed " + targetCell.item.name + "!",
-                      count: 1,
-                      limit: this.players[owner.number - 1].statusDisplay.limit,
-                    };
-
-                    if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                      owner.popups.push({
-                        state: false,
-                        count: 0,
-                        limit: 30,
-                        type: "",
-                        position: "",
-                        msg: "destroyedItem",
-                        img: "",
-                      });
-                    }
-
-                    this.gridInfo.find(
-                      (elem) =>
-                        elem.number.x === targetCell.number.x &&
-                        elem.number.y === targetCell.number.y
-                    ).item = {
-                      name: "",
-                      type: "",
-                      subType: "",
-                      effect: "",
-                      initDrawn: false,
-                    };
-                  }
-
-                  if ((targetCell.rubble === true) & (damage > 0)) {
-                    // console.log('damage/clear rubble @ ',targetCell2.number);
-                    this.gridInfo.find(
-                      (elem) =>
-                        elem.number.x === targetCell.number.x &&
-                        elem.number.y === targetCell.number.y
-                    ).rubble = false;
-                  }
-
-                  // NO OBSTACLE. ITEM OR RUBBLE. DESTROY REAR BARRIER
-
-                  if (
-                    owner.currentWeapon.type === "spear" &&
-                    targetCell.item.name === "" &&
-                    targetCell.rubble !== true
-                  ) {
-                    let rearBarrier = false;
-                    if (targetCell.barrier.state === true) {
-                      if (owner.direction === targetCell.barrier.position) {
-                        rearBarrier = true;
-                      }
-                    }
-                    if (rearBarrier === true) {
-                      if (targetCell.barrier.destructible.state === true) {
-                        // WEAPON CHECK
-                        if (
-                          targetCell.barrier.destructible.weapons.find(
-                            (x) => x === owner.currentWeapon.name
-                          )
-                        ) {
-                          if (targetCell.barrier.hp - damage > 0) {
-                            let hp = targetCell.barrier.hp - damage;
-                            targetCell.barrier = {
-                              id: targetCell.barrier.id,
-                              trap: targetCell.barrier.trap,
-                              state: targetCell.barrier.state,
-                              name: targetCell.barrier.name,
-                              type: targetCell.barrier.type,
-                              hp: hp,
-                              destructible: targetCell.barrier.destructible,
-                              locked: targetCell.barrier.locked,
-                              position: targetCell.barrier.position,
-                              height: targetCell.barrier.height,
-                            };
-
-                            this.obstacleBarrierToDestroy.push({
-                              type: "barrier",
-                              action: "damage",
-                              count: 0,
-                              limit: 30,
-                              complete: false,
-                              cell: targetCell,
-                            });
-                          }
-
-                          // DESTROY FWD BARRIER W/ OR W/O RUBBLE
-                          else if (targetCell.barrier.hp - damage <= 0) {
-                            if (
-                              targetCell.barrier.destructible.leaveRubble === true &&
-                              targetCell.obstacle.state !== true &&
-                              targetCell.item.name === ""
-                            ) {
-                              // console.log('leave rubble on ',targetCell2.number,'removing barrier');
-                              targetCell.rubble = true;
-                              // targetCell2.terrain.type = 'hazard';
-                              targetCell.barrier = {
-                                id: targetCell.barrier.id,
-                                trap: targetCell.barrier.trap,
-                                state: false,
-                                name: targetCell.barrier.name,
-                                type: targetCell.barrier.type,
-                                hp: 0,
-                                destructible: targetCell.barrier.destructible,
-                                locked: targetCell.barrier.locked,
-                                position: targetCell.barrier.position,
-                                height: targetCell.barrier.height,
-                              };
-
-                              this.players[owner.number - 1].statusDisplay = {
-                                state: true,
-                                status: "Destroyed " + targetCell.barrier.name + "!",
-                                count: 1,
-                                limit: this.players[owner.number - 1].statusDisplay.limit,
-                              };
-
-                              if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                                owner.popups.push({
-                                  state: false,
-                                  count: 0,
-                                  limit: 30,
-                                  type: "",
-                                  position: "",
-                                  msg: "destroyedItem",
-                                  img: "",
-                                });
-                              }
-                            } else {
-                              // console.log('no rubble. Just remove barrier');
-                              targetCell.barrier = {
-                                id: targetCell.barrier.id,
-                                trap: targetCell.barrier.trap,
-                                state: false,
-                                name: targetCell.barrier.name,
-                                type: targetCell.barrier.type,
-                                hp: 0,
-                                destructible: targetCell.barrier.destructible,
-                                locked: targetCell.barrier.locked,
-                                position: targetCell.barrier.position,
-                                height: targetCell.barrier.height,
-                              };
-
-                              this.players[owner.number - 1].statusDisplay = {
-                                state: true,
-                                status: "Destroyed " + targetCell.barrier.name + "!",
-                                count: 1,
-                                limit: this.players[owner.number - 1].statusDisplay.limit,
-                              };
-
-                              if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                                owner.popups.push({
-                                  state: false,
-                                  count: 0,
-                                  limit: 30,
-                                  type: "",
-                                  position: "",
-                                  msg: "destroyedItem",
-                                  img: "",
-                                });
-                              }
-                            }
-
-                            this.obstacleBarrierToDestroy.push({
-                              type: "barrier",
-                              action: "destroy",
-                              count: 0,
-                              limit: 30,
-                              complete: false,
-                              cell: targetCell,
-                            });
-                          }
-                        }
-
-                        // WEAPON NO GOOD. DEFLECT
-                        else {
-                          console.log(
-                            "your current weapon cannot destroy this, you need ",
-                            targetCell.barrier.destructible.weapons,
-                            ". Deflect player?"
-                          );
-                          if (
-                            !this.cellPopups.find(
-                              (x) =>
-                                x.msg === "unbreakable" &&
-                                x.cell.number.x === targetCell.number.x &&
-                                x.cell.number.y === targetCell2.number.y
-                            )
-                          ) {
-                            this.cellPopups.push({
-                              state: false,
-                              count: 0,
-                              limit: 35,
-                              type: "",
-                              position: "",
-                              msg: "unbreakable",
-                              color: "",
-                              img: "",
-                              cell: this.gridInfo.find(
-                                (x) =>
-                                  x.number.x === targetCell.number.x &&
-                                  x.number.y === targetCell.number.y
-                              ),
-                            });
-                          }
-                        }
-                      }
-
-                      // INDESTRUCTIBLE FWD BARRIER
-                      else {
-                        // console.log('attacking invurnerable barrier');
-                        if (
-                          !this.cellPopups.find(
-                            (x) =>
-                              x.msg === "unbreakable" &&
-                              x.cell.number.x === targetCell.number.x &&
-                              x.cell.number.y === targetCell.number.y
-                          )
-                        ) {
-                          this.cellPopups.push({
-                            state: false,
-                            count: 0,
-                            limit: 35,
-                            type: "",
-                            position: "",
-                            msg: "unbreakable",
-                            color: "",
-                            img: "",
-                            cell: this.gridInfo.find(
-                              (x) =>
-                                x.number.x === targetCell.number.x &&
-                                x.number.y === targetCell.number.y
-                            ),
-                          });
-                        }
-                      }
-                    } else {
-                      // console.log('spear target one no obstructions, atk spear target 2');
-                      checkSpearTarget = true;
-                    }
-                  }
-                  // else {
-                  //   // do nothing
-                  // }
-                }
-              }
-            }
-
-            // CHECK 2ND CELL TARGET 2
-            if (owner.currentWeapon.type === "spear" && checkSpearTarget === true) {
-              let targetCell2 = this.gridInfo.find(
-                (elem) =>
-                  elem.number.x === owner.target.cell2.number.x &&
-                  elem.number.y === owner.target.cell2.number.y
-              );
-
-              let myCellBarrier = false;
-              if (myCell.barrier.state === true) {
-                if (myCell.barrier.position === owner.direction) {
-                  myCellBarrier = true;
-                  if (myCell.barrier.destructible.state === true) {
-                    // WEAPON CHECK
-                    if (
-                      myCell.barrier.destructible.weapons.find(
-                        (x) => x === owner.currentWeapon.name
-                      )
-                    ) {
-                      if (myCell.barrier.hp - damage > 0) {
-                        let hp = myCell.barrier.hp - damage;
-
-                        myCell.barrier = {
-                          id: myCell.barrier.id,
-                          trap: myCell.barrier.trap,
-                          state: myCell.barrier.state,
-                          name: myCell.barrier.name,
-                          type: myCell.barrier.type,
-                          hp: hp,
-                          destructible: myCell.barrier.destructible,
-                          locked: myCell.barrier.locked,
-                          position: myCell.barrier.position,
-                          height: myCell.barrier.height,
-                        };
-
-                        this.obstacleBarrierToDestroy.push({
-                          type: "barrier",
-                          action: "damage",
-                          count: 0,
-                          limit: 30,
-                          complete: false,
-                          cell: myCell,
-                        });
-                      }
-
-                      // DESTROY FWD BARRIER W/ OR W/O RUBBLE
-                      else if (myCell.barrier.hp - damage <= 0) {
-                        if (
-                          myCell.barrier.destructible.leaveRubble === true &&
-                          myCell.obstacle.state !== true &&
-                          myCell.item.name === ""
-                        ) {
-                          // console.log('leave rubble on ',myCell.number,'removing barrier');
-                          myCell.rubble = true;
-                          // myCell.terrain.type = 'hazard';
-                          myCell.barrier = {
-                            id: myCell.barrier.id,
-                            trap: myCell.barrier.trap,
-                            state: false,
-                            name: myCell.barrier.name,
-                            type: myCell.barrier.type,
-                            hp: 0,
-                            destructible: myCell.barrier.destructible,
-                            locked: myCell.barrier.locked,
-                            position: myCell.barrier.position,
-                            height: myCell.barrier.height,
-                          };
-
-                          this.players[owner.number - 1].statusDisplay = {
-                            state: true,
-                            status: "Destroyed " + myCell.barrier.name + "!",
-                            count: 1,
-                            limit: this.players[owner.number - 1].statusDisplay.limit,
-                          };
-
-                          if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                            owner.popups.push({
-                              state: false,
-                              count: 0,
-                              limit: 30,
-                              type: "",
-                              position: "",
-                              msg: "destroyedItem",
-                              img: "",
-                            });
-                          }
-                        } else {
-                          // console.log('no rubble. Just remove barrier');
-
-                          myCell.barrier = {
-                            id: myCell.barrier.id,
-                            trap: myCell.barrier.trap,
-                            state: false,
-                            name: myCell.barrier.name,
-                            type: myCell.barrier.type,
-                            hp: 0,
-                            destructible: myCell.barrier.destructible,
-                            locked: myCell.barrier.locked,
-                            position: myCell.barrier.position,
-                            height: myCell.barrier.height,
-                          };
-
-                          this.players[owner.number - 1].statusDisplay = {
-                            state: true,
-                            status: "Destroyed " + myCell.barrier.name + "!",
-                            count: 1,
-                            limit: this.players[owner.number - 1].statusDisplay.limit,
-                          };
-
-                          if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                            owner.popups.push({
-                              state: false,
-                              count: 0,
-                              limit: 30,
-                              type: "",
-                              position: "",
-                              msg: "destroyedItem",
-                              img: "",
-                            });
-                          }
-                        }
-
-                        this.obstacleBarrierToDestroy.push({
-                          type: "barrier",
-                          action: "destroy",
-                          count: 0,
-                          limit: 30,
-                          complete: false,
-                          cell: myCell,
-                        });
-                      }
-                    }
-
-                    // WEAPON NO GOOD. DEFLECT
-                    else {
-                      console.log(
-                        "your current weapon cannot destroy this, you need ",
-                        myCell.barrier.destructible.weapons,
-                        ". Deflect player?"
-                      );
-                      let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
-
-                      if (shouldDeflect === 1) {
-                        if (this.rnJesus(1, owner.crits.pushBack) === 1) {
-                          this.setDeflection(owner, "defended", true);
-                        } else {
-                          this.setDeflection(owner, "defended", false);
-                        }
-
-                        if (owner.currentWeapon.name === "") {
-                          console.log("this barrier is stronger than your fist. Take damage?");
-                          let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
-                          if (takeDamage === 1) {
-                            this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
-                          }
-                        }
-                      } else {
-                        this.pushBack(owner, this.getOppositeDirection(owner.direction));
-                      }
-
-                      if (
-                        !this.cellPopups.find(
-                          (x) =>
-                            x.msg === "unbreakable" &&
-                            x.cell.number.x === myCell.number.x &&
-                            x.cell.number.y === myCell.number.y
-                        )
-                      ) {
-                        this.cellPopups.push({
-                          state: false,
-                          count: 0,
-                          limit: 35,
-                          type: "",
-                          position: "",
-                          msg: "unbreakable",
-                          color: "",
-                          img: "",
-                          cell: this.gridInfo.find(
-                            (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y
-                          ),
-                        });
-                      }
-                    }
-                  }
-
-                  // INDESTRUCTIBLE MY CELL BARRIER
-                  else {
-                    // console.log('attacking invurnerable barrier, deflect player?');
-                    let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
-
-                    if (shouldDeflect === 1) {
-                      if (this.rnJesus(1, owner.crits.pushBack) === 1) {
-                        this.setDeflection(owner, "defended", true);
-                      } else {
-                        this.setDeflection(owner, "defended", false);
-                      }
-
-                      if (owner.currentWeapon.name === "") {
-                        console.log("this barrier is stronger than your fist. Take damage?");
-                        let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
-                        if (takeDamage === 1) {
-                          this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
-                        }
-                      }
-                    } else {
-                      this.pushBack(owner, this.getOppositeDirection(owner.direction));
-                    }
-
-                    if (
-                      !this.cellPopups.find(
-                        (x) =>
-                          x.msg === "unbreakable" &&
-                          x.cell.number.x === myCell.number.x &&
-                          x.cell.number.y === myCell.number.y
-                      )
-                    ) {
-                      this.cellPopups.push({
-                        state: false,
-                        count: 0,
-                        limit: 35,
-                        type: "",
-                        position: "",
-                        msg: "unbreakable",
-                        color: "",
-                        img: "",
-                        cell: this.gridInfo.find(
-                          (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y
-                        ),
-                      });
-                    }
-                  }
-                }
-              }
-
-              if (targetCell2) {
-                let fwdBarrier = false;
-                if (targetCell2.barrier.state === true) {
-                  fwdBarrier = this.checkForwardBarrier(owner.direction, targetCell2);
-                }
-
-                if (fwdBarrier === true) {
-                  if (targetCell2.barrier.destructible.state === true) {
-                    // WEAPON CHECK
-                    if (
-                      targetCell2.barrier.destructible.weapons.find(
-                        (x) => x === owner.currentWeapon.name
-                      )
-                    ) {
-                      if (targetCell2.barrier.hp - damage > 0) {
-                        let hp = targetCell2.barrier.hp - damage;
-                        targetCell2.barrier = {
-                          id: targetCell2.barrier.id,
-                          trap: targetCell2.barrier.trap,
-                          state: targetCell2.barrier.state,
-                          name: targetCell2.barrier.name,
-                          type: targetCell2.barrier.type,
-                          hp: hp,
-                          destructible: targetCell2.barrier.destructible,
-                          locked: targetCell2.barrier.locked,
-                          position: targetCell2.barrier.position,
-                          height: targetCell2.barrier.height,
-                        };
-
-                        this.obstacleBarrierToDestroy.push({
-                          type: "barrier",
-                          action: "damage",
-                          count: 0,
-                          limit: 30,
-                          complete: false,
-                          cell: targetCell2,
-                        });
-                      }
-
-                      // DESTROY FWD BARRIER W/ OR W/O RUBBLE
-                      else if (targetCell2.barrier.hp - damage <= 0) {
-                        if (
-                          targetCell2.barrier.destructible.leaveRubble === true &&
-                          targetCell2.obstacle.state !== true &&
-                          targetCell2.item.name === ""
-                        ) {
-                          // console.log('leave rubble on ',targetCell2.number,'removing barrier');
-                          targetCell2.rubble = true;
-                          // targetCell2.terrain.type = 'hazard';
-                          targetCell2.barrier = {
-                            id: targetCell2.barrier.id,
-                            trap: targetCell2.barrier.trap,
-                            state: false,
-                            name: targetCell2.barrier.name,
-                            type: targetCell2.barrier.type,
-                            hp: 0,
-                            destructible: targetCell2.barrier.destructible,
-                            locked: targetCell2.barrier.locked,
-                            position: targetCell2.barrier.position,
-                            height: targetCell2.barrier.height,
-                          };
-
-                          this.players[owner.number - 1].statusDisplay = {
-                            state: true,
-                            status: "Destroyed " + targetCell2.barrier.name + "!",
-                            count: 1,
-                            limit: this.players[owner.number - 1].statusDisplay.limit,
-                          };
-
-                          if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                            owner.popups.push({
-                              state: false,
-                              count: 0,
-                              limit: 30,
-                              type: "",
-                              position: "",
-                              msg: "destroyedItem",
-                              img: "",
-                            });
-                          }
-                        } else {
-                          // console.log('no rubble. Just remove barrier');
-                          targetCell2.barrier = {
-                            id: targetCell2.barrier.id,
-                            trap: targetCell2.barrier.trap,
-                            state: false,
-                            name: targetCell2.barrier.name,
-                            type: targetCell2.barrier.type,
-                            hp: 0,
-                            destructible: targetCell2.barrier.destructible,
-                            locked: targetCell2.barrier.locked,
-                            position: targetCell2.barrier.position,
-                            height: targetCell2.barrier.height,
-                          };
-
-                          this.players[owner.number - 1].statusDisplay = {
-                            state: true,
-                            status: "Destroyed " + targetCell2.barrier.name + "!",
-                            count: 1,
-                            limit: this.players[owner.number - 1].statusDisplay.limit,
-                          };
-
-                          if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                            owner.popups.push({
-                              state: false,
-                              count: 0,
-                              limit: 30,
-                              type: "",
-                              position: "",
-                              msg: "destroyedItem",
-                              img: "",
-                            });
-                          }
-                        }
-
-                        this.obstacleBarrierToDestroy.push({
-                          type: "barrier",
-                          action: "destroy",
-                          count: 0,
-                          limit: 30,
-                          complete: false,
-                          cell: targetCell2,
-                        });
-                      }
-                    }
-
-                    // WEAPON NO GOOD. DEFLECT
-                    else {
-                      console.log(
-                        "your current weapon cannot destroy this, you need ",
-                        targetCell2.barrier.destructible.weapons,
-                        ". Deflect player?"
-                      );
-                      let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
-
-                      if (shouldDeflect === 1) {
-                        if (this.rnJesus(1, owner.crits.pushBack) === 1) {
-                          this.setDeflection(owner, "defended", true);
-                        } else {
-                          this.setDeflection(owner, "defended", false);
-                        }
-
-                        if (owner.currentWeapon.name === "") {
-                          console.log("this barrier is stronger than your fist. Take damage?");
-                          let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
-                          if (takeDamage === 1) {
-                            this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
-                          }
-                        }
-                      } else {
-                        this.pushBack(owner, this.getOppositeDirection(owner.direction));
-                      }
-
-                      if (
-                        !this.cellPopups.find(
-                          (x) =>
-                            x.msg === "unbreakable" &&
-                            x.cell.number.x === targetCell2.number.x &&
-                            x.cell.number.y === targetCell2.number.y
-                        )
-                      ) {
-                        this.cellPopups.push({
-                          state: false,
-                          count: 0,
-                          limit: 35,
-                          type: "",
-                          position: "",
-                          msg: "unbreakable",
-                          color: "",
-                          img: "",
-                          cell: this.gridInfo.find(
-                            (x) =>
-                              x.number.x === targetCell2.number.x &&
-                              x.number.y === targetCell2.number.y
-                          ),
-                        });
-                      }
-                    }
-                  }
-
-                  // INDESTRUCTIBLE FWD BARRIER
-                  else {
-                    // console.log('attacking invurnerable barrier, deflect player?');
-                    let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
-
-                    if (shouldDeflect === 1) {
-                      if (this.rnJesus(1, owner.crits.pushBack) === 1) {
-                        this.setDeflection(owner, "defended", true);
-                      } else {
-                        this.setDeflection(owner, "defended", false);
-                      }
-
-                      if (owner.currentWeapon.name === "") {
-                        console.log("this barrier is stronger than your fist. Take damage?");
-                        let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
-                        if (takeDamage === 1) {
-                          this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
-                        }
-                      }
-                    } else {
-                      this.pushBack(owner, this.getOppositeDirection(owner.direction));
-                    }
-
-                    if (
-                      !this.cellPopups.find(
-                        (x) =>
-                          x.msg === "unbreakable" &&
-                          x.cell.number.x === targetCell2.number.x &&
-                          x.cell.number.y === targetCell2.number.y
-                      )
-                    ) {
-                      this.cellPopups.push({
-                        state: false,
-                        count: 0,
-                        limit: 35,
-                        type: "",
-                        position: "",
-                        msg: "unbreakable",
-                        color: "",
-                        img: "",
-                        cell: this.gridInfo.find(
-                          (x) =>
-                            x.number.x === targetCell2.number.x &&
-                            x.number.y === targetCell2.number.y
-                        ),
-                      });
-                    }
-                  }
-                }
-
-                // NO FWD BARRIER. OBSTACLE?
-                else if (myCellBarrier !== true && fwdBarrier !== true) {
-                  if (targetCell2.obstacle.state === true) {
-                    if (targetCell2.obstacle.destructible.state === true) {
-                      // WEAPON CHECK
-                      if (
-                        targetCell2.obstacle.destructible.weapons.find(
-                          (x) => x === owner.currentWeapon.name
-                        )
-                      ) {
-                        if (targetCell2.obstacle.hp - damage > 0) {
-                          let hp = targetCell2.obstacle.hp - damage;
-                          targetCell2.obstacle = {
-                            id: targetCell2.obstacle.id,
-                            trap: targetCell2.obstacle.trap,
-                            state: targetCell2.obstacle.state,
-                            name: targetCell2.obstacle.name,
-                            type: targetCell2.obstacle.type,
-                            hp: hp,
-                            destructible: targetCell2.obstacle.destructible,
-                            locked: targetCell2.obstacle.locked,
-                            weight: targetCell2.obstacle.weight,
-                            height: targetCell2.obstacle.height,
-                            items: targetCell2.obstacle.items,
-                            effects: targetCell2.obstacle.effects,
-                            moving: targetCell2.obstacle.moving,
-                          };
-
-                          this.obstacleBarrierToDestroy.push({
-                            type: "obstacle",
-                            action: "damage",
-                            count: 0,
-                            limit: 30,
-                            complete: false,
-                            cell: targetCell2,
-                          });
-
-                          this.canPushObstacle(owner, targetCell2, "hitPush");
-                        }
-
-                        // DESTROY OBSTACLE W/ OR W/O RUBBLE
-                        else if (targetCell2.obstacle.hp - damage <= 0) {
-                          let itemsToDrop = [];
-                          if (targetCell2.obstacle.destructible.leaveRubble === true) {
-                            // console.log('leave rubble on ',targetCell2.number,'removing obstacle');
-
-                            if (targetCell2.obstacle.items[0]) {
-                              itemsToDrop = targetCell2.obstacle.items;
-                            }
-                            targetCell2.rubble = true;
-                            // targetCell2.terrain.type = 'hazard';
-                            targetCell2.obstacle = {
-                              id: targetCell2.obstacle.id,
-                              trap: targetCell2.obstacle.trap,
-                              state: false,
-                              name: targetCell2.obstacle.name,
-                              type: targetCell2.obstacle.type,
-                              hp: 0,
-                              destructible: targetCell2.obstacle.destructible,
-                              locked: targetCell2.obstacle.locked,
-                              weight: targetCell2.obstacle.weight,
-                              height: targetCell2.obstacle.height,
-                              items: targetCell2.obstacle.items,
-                              effects: targetCell2.obstacle.effects,
-                              moving: targetCell2.obstacle.moving,
-                            };
-
-                            this.players[owner.number - 1].statusDisplay = {
-                              state: true,
-                              status: "Destroyed " + targetCell2.obstacle.name + "!",
-                              count: 1,
-                              limit: this.players[owner.number - 1].statusDisplay.limit,
-                            };
-
-                            if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                              owner.popups.push({
-                                state: false,
-                                count: 0,
-                                limit: 30,
-                                type: "",
-                                position: "",
-                                msg: "destroyedItem",
-                                img: "",
-                              });
-                            }
-                          } else {
-                            // console.log('no rubble. Just remove obstacle');
-                            if (targetCell2.obstacle.items[0]) {
-                              itemsToDrop = targetCell2.obstacle.items;
-                            }
-                            targetCell2.obstacle = {
-                              id: targetCell2.obstacle.id,
-                              trap: targetCell2.obstacle.trap,
-                              state: false,
-                              name: targetCell2.obstacle.name,
-                              type: targetCell2.obstacle.type,
-                              hp: 0,
-                              destructible: targetCell2.obstacle.destructible,
-                              locked: targetCell2.obstacle.locked,
-                              weight: targetCell2.obstacle.weight,
-                              height: targetCell2.obstacle.height,
-                              items: targetCell2.obstacle.items,
-                              effects: targetCell2.obstacle.effects,
-                              moving: targetCell2.obstacle.moving,
-                            };
-
-                            this.players[owner.number - 1].statusDisplay = {
-                              state: true,
-                              status: "Destroyed " + targetCell2.obstacle.name + "!",
-                              count: 1,
-                              limit: this.players[owner.number - 1].statusDisplay.limit,
-                            };
-
-                            if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                              owner.popups.push({
-                                state: false,
-                                count: 0,
-                                limit: 30,
-                                type: "",
-                                position: "",
-                                msg: "destroyedItem",
-                                img: "",
-                              });
-                            }
-                          }
-
-                          // DROP OBSTACLE ITEMS?
-                          if (itemsToDrop[0]) {
-                            // console.log('dropping obstacle items melee',itemsToDrop);
-
-                            this.obstacleItemDrop(targetCell2, owner);
-                          }
-
-                          this.obstacleBarrierToDestroy.push({
-                            type: "obstacle",
-                            action: "destroy",
-                            count: 0,
-                            limit: 30,
-                            complete: false,
-                            cell: targetCell2,
-                          });
-                        }
-                      }
-
-                      // WEAPON NO GOOD. DEFLECT
-                      else {
-                        console.log(
-                          "your current weapon cannot destroy this, you need ",
-                          targetCell2.obstacle.destructible.weapons,
-                          ". Deflect player?"
-                        );
-                        let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
-
-                        if (shouldDeflect === 1) {
-                          if (this.rnJesus(1, owner.crits.pushBack) === 1) {
-                            this.setDeflection(owner, "defended", true);
-                          } else {
-                            this.setDeflection(owner, "defended", false);
-                          }
-
-                          if (owner.currentWeapon.name === "") {
-                            console.log("this obstacle is stronger than your fist. Take damage?");
-                            let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
-                            if (takeDamage === 1) {
-                              this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
-                            }
-                          }
-                        } else {
-                          this.pushBack(owner, this.getOppositeDirection(owner.direction));
-                        }
-
-                        if (
-                          !this.cellPopups.find(
-                            (x) =>
-                              x.msg === "unbreakable" &&
-                              x.cell.number.x === targetCell2.number.x &&
-                              x.cell.number.y === targetCell2.number.y
-                          )
-                        ) {
-                          this.cellPopups.push({
-                            state: false,
-                            count: 0,
-                            limit: 35,
-                            type: "",
-                            position: "",
-                            msg: "unbreakable",
-                            color: "",
-                            img: "",
-                            cell: this.gridInfo.find(
-                              (x) =>
-                                x.number.x === targetCell2.number.x &&
-                                x.number.y === targetCell2.number.y
-                            ),
-                          });
-                        }
-                      }
-                    }
-
-                    // INDESTRUCTIBLE OBSTACLE
-                    else {
-                      // console.log('attacking invurnerable obstacle, deflect player?');
-
-                      let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
-
-                      if (shouldDeflect === 1) {
-                        if (this.rnJesus(1, owner.crits.pushBack) === 1) {
-                          this.setDeflection(owner, "defended", true);
-                        } else {
-                          this.setDeflection(owner, "defended", false);
-                        }
-
-                        if (owner.currentWeapon.name === "") {
-                          console.log("this obstacle is stronger than your fist. Take damage?");
-                          let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
-                          if (takeDamage === 1) {
-                            this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
-                          }
-                        }
-                      } else {
-                        this.pushBack(owner, this.getOppositeDirection(owner.direction));
-                      }
-                      if (this.rnJesus(1, 1, owner.crits.pushBack === 1)) {
-                        this.canPushObstacle(owner, targetCell2, "hitPush");
-                      }
-
-                      if (
-                        !this.cellPopups.find(
-                          (x) =>
-                            x.msg === "unbreakable" &&
-                            x.cell.number.x === targetCell2.number.x &&
-                            x.cell.number.y === targetCell2.number.y
-                        )
-                      ) {
-                        this.cellPopups.push({
-                          state: false,
-                          count: 0,
-                          limit: 35,
-                          type: "",
-                          position: "",
-                          msg: "unbreakable",
-                          color: "",
-                          img: "",
-                          cell: this.gridInfo.find(
-                            (x) =>
-                              x.number.x === targetCell2.number.x &&
-                              x.number.y === targetCell2.number.y
-                          ),
-                        });
-                      }
-
-                      // this.setDeflection(player,'defended',false);
-                    }
-                  } else {
-                    // NO OBSTACLE. ITEM ON GROUND? DESTROY
-                    if (
-                      targetCell2 &&
-                      targetCell2.item.name !== "" &&
-                      damage > 0 &&
-                      owner.currentWeapon.name !== ""
-                    ) {
-                      this.players[owner.number - 1].statusDisplay = {
-                        state: true,
-                        status: "Destroyed " + targetCell2.item.name + "!",
-                        count: 1,
-                        limit: this.players[owner.number - 1].statusDisplay.limit,
-                      };
-
-                      if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                        owner.popups.push({
-                          state: false,
-                          count: 0,
-                          limit: 30,
-                          type: "",
-                          position: "",
-                          msg: "destroyedItem",
-                          img: "",
-                        });
-                      }
-
-                      this.gridInfo.find(
-                        (elem) =>
-                          elem.number.x === owner.target.cell2.number.x &&
-                          elem.number.y === owner.target.cell2.number.y
-                      ).item = {
-                        name: "",
-                        type: "",
-                        subType: "",
-                        effect: "",
-                        initDrawn: false,
-                      };
-                    }
-
-                    if ((targetCell2.rubble === true) & (damage > 0)) {
-                      // console.log('damage/clear rubble');
-                      this.gridInfo.find(
-                        (elem) =>
-                          elem.number.x === owner.target.cell2.number.x &&
-                          elem.number.y === owner.target.cell2.number.y
-                      ).rubble = false;
-                    }
-
-                    // NO OBSTACLE. DESTROY REAR BARRIER
-
-                    if (!owner.popups.find((x) => x.msg === "missedAttack2")) {
-                      owner.popups.push({
-                        state: false,
-                        count: 0,
-                        limit:
-                          this.attackAnimRef.limit[player.currentWeapon.type] -
-                          this.attackAnimRef.peak[player.currentWeapon.type],
-                        type: "",
-                        position: "",
-                        msg: "missedAttack2",
-                        img: "",
-                      });
-                    }
-
-                    // else {
-                    //   // do nothing
-                    // }
-                  }
-                }
-              }
+          if (type === "bolt" || type === "flyOverBolt") {
+            if (myCell.barrier.destructible.weapons.find((x) => x === "bolt")) {
+              weaponCheck = true;
             }
           }
-          if (targetCell.elevation.number > myCell.elevation.number) {
-            console.log("target is above your elevation");
+          if (
+            type === "melee" &&
+            myCell.barrier.destructible.weapons.find((x) => x === ownerWeaponName)
+          ) {
+            weaponCheck = true;
           }
-        }
+          if (weaponCheck === true) {
+            // DAMAGE, DON'T DESTROY FWD BARRIER
+            if (myCell.barrier.hp - calcedDamage > 0) {
+              // this.gridInfo.find(elem => elem.number.x === myCell.number.x && elem.number.y === myCell.number.y ).barrier.hp -= calcedDamage;
 
-        if (!targetCell) {
-          if (myCell.barrier.state === true && myCell.barrier.position === owner.direction) {
-            if (myCell.barrier.destructible.state === true) {
-              // WEAPON CHECK
-              if (myCell.barrier.destructible.weapons.find((x) => x === owner.currentWeapon.name)) {
-                if (myCell.barrier.hp - damage > 0) {
-                  let hp = myCell.barrier.hp - damage;
+              let hp = myCell.barrier.hp - calcedDamage;
 
-                  myCell.barrier = {
-                    id: myCell.barrier.id,
-                    trap: myCell.barrier.trap,
-                    state: myCell.barrier.state,
-                    name: myCell.barrier.name,
-                    type: myCell.barrier.type,
-                    hp: hp,
-                    destructible: myCell.barrier.destructible,
-                    locked: myCell.barrier.locked,
-                    position: myCell.barrier.position,
-                    height: myCell.barrier.height,
+              myCell.barrier = {
+                id: myCell.barrier.id,
+                trap: myCell.barrier.trap,
+                state: myCell.barrier.state,
+                name: myCell.barrier.name,
+                type: myCell.barrier.type,
+                hp: hp,
+                destructible: myCell.barrier.destructible,
+                locked: myCell.barrier.locked,
+                position: myCell.barrier.position,
+                height: myCell.barrier.height,
+              };
+
+              this.obstacleBarrierToDestroy.push({
+                type: "barrier",
+                action: "damage",
+                count: 0,
+                limit: 30,
+                complete: false,
+                cell: myCell,
+              });
+            }
+
+            // DESTROY FWD BARRIER W/ OR W/O RUBBLE
+            else if (myCell.barrier.hp - calcedDamage <= 0) {
+              if (
+                myCell.barrier.destructible.leaveRubble === true &&
+                myCell.obstacle.state !== true &&
+                myCell.item.name === "" &&
+                myCell.terrain.type !== "void" &&
+                myCell.terrain.type !== "deep"
+              ) {
+                // console.log("leave rubble on ", myCell.number, "removing barrier");
+                myCell.rubble = true;
+                // myCell.terrain.type = 'hazard';
+
+                myCell.barrier = {
+                  id: myCell.barrier.id,
+                  trap: myCell.barrier.trap,
+                  state: false,
+                  name: myCell.barrier.name,
+                  type: myCell.barrier.type,
+                  hp: 0,
+                  destructible: myCell.barrier.destructible,
+                  locked: myCell.barrier.locked,
+                  position: myCell.barrier.position,
+                  height: myCell.barrier.height,
+                };
+
+                if (ownerType === "player") {
+                  this.players[owner.number - 1].statusDisplay = {
+                    state: true,
+                    status: "Destroyed " + myCell.barrier.name + "!",
+                    count: 1,
+                    limit: this.players[owner.number - 1].statusDisplay.limit,
                   };
 
-                  this.obstacleBarrierToDestroy.push({
-                    type: "barrier",
-                    action: "damage",
-                    count: 0,
-                    limit: 30,
-                    complete: false,
-                    cell: myCell,
-                  });
-                }
-
-                // DESTROY FWD BARRIER W/ OR W/O RUBBLE
-                else if (myCell.barrier.hp - damage <= 0) {
-                  if (
-                    myCell.barrier.destructible.leaveRubble === true &&
-                    myCell.obstacle.state !== true &&
-                    myCell.item.name === ""
-                  ) {
-                    // console.log('leave rubble on ',targetCell.number,'removing barrier');
-                    myCell.rubble = true;
-                    // targetCell.terrain.type = 'hazard';
-
-                    myCell.barrier = {
-                      id: myCell.barrier.id,
-                      trap: myCell.barrier.trap,
+                  if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
+                    owner.popups.push({
                       state: false,
-                      name: myCell.barrier.name,
-                      type: myCell.barrier.type,
-                      hp: 0,
-                      destructible: myCell.barrier.destructible,
-                      locked: myCell.barrier.locked,
-                      position: myCell.barrier.position,
-                      height: myCell.barrier.height,
-                    };
-
-                    this.players[owner.number - 1].statusDisplay = {
-                      state: true,
-                      status: "Destroyed " + myCell.barrier.name + "!",
-                      count: 1,
-                      limit: this.players[owner.number - 1].statusDisplay.limit,
-                    };
-
-                    if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                      owner.popups.push({
-                        state: false,
-                        count: 0,
-                        limit: 30,
-                        type: "",
-                        position: "",
-                        msg: "destroyedItem",
-                        img: "",
-                      });
-                    }
-                  } else {
-                    // console.log('no rubble. Just remove barrier');
-
-                    myCell.barrier = {
-                      id: myCell.barrier.id,
-                      trap: myCell.barrier.trap,
-                      state: false,
-                      name: myCell.barrier.name,
-                      type: myCell.barrier.type,
-                      hp: 0,
-                      destructible: myCell.barrier.destructible,
-                      locked: myCell.barrier.locked,
-                      position: myCell.barrier.position,
-                      height: myCell.barrier.height,
-                    };
-
-                    this.players[owner.number - 1].statusDisplay = {
-                      state: true,
-                      status: "Destroyed " + myCell.barrier.name + "!",
-                      count: 1,
-                      limit: this.players[owner.number - 1].statusDisplay.limit,
-                    };
-
-                    if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
-                      owner.popups.push({
-                        state: false,
-                        count: 0,
-                        limit: 30,
-                        type: "",
-                        position: "",
-                        msg: "destroyedItem",
-                        img: "",
-                      });
-                    }
+                      count: 0,
+                      limit: 30,
+                      type: "",
+                      position: "",
+                      msg: "destroyedItem",
+                      img: "",
+                    });
                   }
+                }
+              } else {
+                // console.log('no rubble. Just remove barrier');
+                myCell.barrier = {
+                  id: myCell.barrier.id,
+                  trap: myCell.barrier.trap,
+                  state: false,
+                  name: myCell.barrier.name,
+                  type: myCell.barrier.type,
+                  hp: 0,
+                  destructible: myCell.barrier.destructible,
+                  locked: myCell.barrier.locked,
+                  position: myCell.barrier.position,
+                  height: myCell.barrier.height,
+                };
 
-                  this.obstacleBarrierToDestroy.push({
-                    type: "barrier",
-                    action: "destroy",
-                    count: 0,
-                    limit: 30,
-                    complete: false,
-                    cell: myCell,
-                  });
+                if (ownerType === "player") {
+                  this.players[owner.number - 1].statusDisplay = {
+                    state: true,
+                    status: "Destroyed " + myCell.barrier.name + "!",
+                    count: 1,
+                    limit: this.players[owner.number - 1].statusDisplay.limit,
+                  };
+
+                  if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
+                    owner.popups.push({
+                      state: false,
+                      count: 0,
+                      limit: 30,
+                      type: "",
+                      position: "",
+                      msg: "destroyedItem",
+                      img: "",
+                    });
+                  }
                 }
               }
 
-              // WEAPON NO GOOD. DEFLECT
-              else {
-                console.log(
-                  "your current weapon cannot destroy this, you need ",
-                  myCell.barrier.destructible.weapons,
-                  ". Deflect player?"
-                );
-                let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
-                if (shouldDeflect === 1) {
-                  this.attackedCancel(this.players[owner.number - 1]);
+              this.obstacleBarrierToDestroy.push({
+                type: "barrier",
+                action: "destroy",
+                count: 0,
+                limit: 30,
+                complete: false,
+                cell: myCell,
+              });
+            }
+          }
 
-                  this.setDeflection(owner, "defended", false);
-
-                  if (owner.currentWeapon.name === "") {
-                    console.log("this barrier is stronger than your fist. Take damage?");
-                    let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
-                    if (takeDamage === 1) {
-                      this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
-                    }
-                  }
-                }
-                if (this.rnJesus(1, owner.crits.pushBack) === 1) {
-                  this.pushBack(owner, this.getOppositeDirection(owner.direction));
-                }
-                if (
-                  !this.cellPopups.find(
-                    (x) =>
-                      x.msg === "unbreakable" &&
-                      x.cell.number.x === myCell.number.x &&
-                      x.cell.number.y === myCell.number.y
-                  )
-                ) {
-                  this.cellPopups.push({
-                    state: false,
-                    count: 0,
-                    limit: 35,
-                    type: "",
-                    position: "",
-                    msg: "unbreakable",
-                    color: "",
-                    img: "",
-                    cell: this.gridInfo.find(
-                      (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y
-                    ),
-                  });
-                }
-              }
+          // WEAPON NO GOOD
+          else {
+            console.log(
+              "your current weapon cannot destroy this, you need ",
+              myCell.obstacle.weapons,
+              ". Deflect player?"
+            );
+            if (
+              !this.cellPopups.find(
+                (x) =>
+                  x.msg === "unbreakable" &&
+                  x.cell.number.x === myCell.number.x &&
+                  x.cell.number.y === myCell.number.y
+              )
+            ) {
+              this.cellPopups.push({
+                state: false,
+                count: 0,
+                limit: 35,
+                type: "",
+                position: "",
+                msg: "unbreakable",
+                color: "",
+                img: "",
+                cell: this.gridInfo.find(
+                  (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y
+                ),
+              });
             }
 
-            // INDESTRUCTIBLE FWD BARRIER
-            else {
-              // console.log('attacking invurnerable barrier, deflect player?');
+            if (type === "melee" && ownerType === "player") {
               let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
 
               if (shouldDeflect === 1) {
@@ -18762,13 +16099,215 @@ class App extends Component {
               } else {
                 this.pushBack(owner, this.getOppositeDirection(owner.direction));
               }
+            }
+          }
+        }
 
+        // INDESTRUCTIBLE FWD BARRIER
+        else {
+          // console.log('attacking invurnerable barrier w/ bolt');
+          if (
+            !this.cellPopups.find(
+              (x) =>
+                x.msg === "unbreakable" &&
+                x.cell.number.x === myCell.number.x &&
+                x.cell.number.y === myCell.number.y
+            )
+          ) {
+            this.cellPopups.push({
+              state: false,
+              count: 0,
+              limit: 35,
+              type: "",
+              position: "",
+              msg: "unbreakable",
+              color: "",
+              img: "",
+              cell: this.gridInfo.find(
+                (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y
+              ),
+            });
+          }
+
+          if (type === "melee" && ownerType === "player") {
+            let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
+
+            if (shouldDeflect === 1) {
+              if (this.rnJesus(1, owner.crits.pushBack) === 1) {
+                this.setDeflection(owner, "defended", true);
+              } else {
+                this.setDeflection(owner, "defended", false);
+              }
+
+              if (owner.currentWeapon.name === "") {
+                console.log("this barrier is stronger than your fist. Take damage?");
+                let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
+                if (takeDamage === 1) {
+                  this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
+                }
+              }
+            } else {
+              this.pushBack(owner, this.getOppositeDirection(owner.direction));
+            }
+          }
+        }
+      } else {
+        if (range === 1) {
+          if (targetCell.barrier.destructible.state === true) {
+            // WEAPON CHECK
+            if (ownerType === "player") {
+              ownerWeaponName = owner.currentWeapon.name;
+            } else {
+              ownerWeaponName = owner.trap.itemNameRef;
+            }
+            if (type === "bolt" || type === "flyOverBolt") {
+              if (targetCell.barrier.destructible.weapons.find((x) => x === "bolt")) {
+                weaponCheck = true;
+              }
+            }
+            if (
+              type === "melee" &&
+              targetCell.barrier.destructible.weapons.find((x) => x === ownerWeaponName)
+            ) {
+              weaponCheck = true;
+            }
+            if (weaponCheck === true) {
+              // DAMAGE, DON'T DESTROY FWD BARRIER
+              if (targetCell.barrier.hp - calcedDamage > 0) {
+                // this.gridInfo.find(elem => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y ).barrier.hp -= calcedDamage;
+
+                let hp = targetCell.barrier.hp - calcedDamage;
+
+                targetCell.barrier = {
+                  id: targetCell.barrier.id,
+                  trap: targetCell.barrier.trap,
+                  state: targetCell.barrier.state,
+                  name: targetCell.barrier.name,
+                  type: targetCell.barrier.type,
+                  hp: hp,
+                  destructible: targetCell.barrier.destructible,
+                  locked: targetCell.barrier.locked,
+                  position: targetCell.barrier.position,
+                  height: targetCell.barrier.height,
+                };
+
+                this.obstacleBarrierToDestroy.push({
+                  type: "barrier",
+                  action: "damage",
+                  count: 0,
+                  limit: 30,
+                  complete: false,
+                  cell: targetCell,
+                });
+              }
+
+              // DESTROY FWD BARRIER W/ OR W/O RUBBLE
+              else if (targetCell.barrier.hp - calcedDamage <= 0) {
+                if (
+                  targetCell.barrier.destructible.leaveRubble === true &&
+                  targetCell.obstacle.state !== true &&
+                  targetCell.item.name === "" &&
+                  targetCell.terrain.type !== "void" &&
+                  targetCell.terrain.type !== "deep"
+                ) {
+                  // console.log("leave rubble on ", targetCell.number, "removing barrier");
+                  targetCell.rubble = true;
+                  // targetCell.terrain.type = 'hazard';
+
+                  targetCell.barrier = {
+                    id: targetCell.barrier.id,
+                    trap: targetCell.barrier.trap,
+                    state: false,
+                    name: targetCell.barrier.name,
+                    type: targetCell.barrier.type,
+                    hp: 0,
+                    destructible: targetCell.barrier.destructible,
+                    locked: targetCell.barrier.locked,
+                    position: targetCell.barrier.position,
+                    height: targetCell.barrier.height,
+                  };
+
+                  if (ownerType === "player") {
+                    this.players[owner.number - 1].statusDisplay = {
+                      state: true,
+                      status: "Destroyed " + targetCell.barrier.name + "!",
+                      count: 1,
+                      limit: this.players[owner.number - 1].statusDisplay.limit,
+                    };
+
+                    if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
+                      owner.popups.push({
+                        state: false,
+                        count: 0,
+                        limit: 30,
+                        type: "",
+                        position: "",
+                        msg: "destroyedItem",
+                        img: "",
+                      });
+                    }
+                  }
+                } else {
+                  // console.log('no rubble. Just remove barrier');
+                  targetCell.barrier = {
+                    id: targetCell.barrier.id,
+                    trap: targetCell.barrier.trap,
+                    state: false,
+                    name: targetCell.barrier.name,
+                    type: targetCell.barrier.type,
+                    hp: 0,
+                    destructible: targetCell.barrier.destructible,
+                    locked: targetCell.barrier.locked,
+                    position: targetCell.barrier.position,
+                    height: targetCell.barrier.height,
+                  };
+
+                  if (ownerType === "player") {
+                    this.players[owner.number - 1].statusDisplay = {
+                      state: true,
+                      status: "Destroyed " + targetCell.barrier.name + "!",
+                      count: 1,
+                      limit: this.players[owner.number - 1].statusDisplay.limit,
+                    };
+
+                    if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
+                      owner.popups.push({
+                        state: false,
+                        count: 0,
+                        limit: 30,
+                        type: "",
+                        position: "",
+                        msg: "destroyedItem",
+                        img: "",
+                      });
+                    }
+                  }
+                }
+
+                this.obstacleBarrierToDestroy.push({
+                  type: "barrier",
+                  action: "destroy",
+                  count: 0,
+                  limit: 30,
+                  complete: false,
+                  cell: targetCell,
+                });
+              }
+            }
+
+            // WEAPON NO GOOD
+            else {
+              console.log(
+                "your current weapon cannot destroy this, you need ",
+                targetCell.obstacle.weapons,
+                ". Deflect player?"
+              );
               if (
                 !this.cellPopups.find(
                   (x) =>
                     x.msg === "unbreakable" &&
-                    x.cell.number.x === myCell.number.x &&
-                    x.cell.number.y === myCell.number.y
+                    x.cell.number.x === targetCell.number.x &&
+                    x.cell.number.y === targetCell.number.y
                 )
               ) {
                 this.cellPopups.push({
@@ -18781,11 +16320,645 @@ class App extends Component {
                   color: "",
                   img: "",
                   cell: this.gridInfo.find(
-                    (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y
+                    (x) => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
                   ),
                 });
               }
+
+              if (type === "melee" && ownerType === "player") {
+                let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
+
+                if (shouldDeflect === 1) {
+                  if (this.rnJesus(1, owner.crits.pushBack) === 1) {
+                    this.setDeflection(owner, "defended", true);
+                  } else {
+                    this.setDeflection(owner, "defended", false);
+                  }
+
+                  if (owner.currentWeapon.name === "") {
+                    console.log("this barrier is stronger than your fist. Take damage?");
+                    let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
+                    if (takeDamage === 1) {
+                      this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
+                    }
+                  }
+                } else {
+                  this.pushBack(owner, this.getOppositeDirection(owner.direction));
+                }
+              }
             }
+          }
+
+          // INDESTRUCTIBLE FWD BARRIER
+          else {
+            // console.log('attacking invurnerable barrier w/ bolt');
+            if (
+              !this.cellPopups.find(
+                (x) =>
+                  x.msg === "unbreakable" &&
+                  x.cell.number.x === targetCell.number.x &&
+                  x.cell.number.y === targetCell.number.y
+              )
+            ) {
+              this.cellPopups.push({
+                state: false,
+                count: 0,
+                limit: 35,
+                type: "",
+                position: "",
+                msg: "unbreakable",
+                color: "",
+                img: "",
+                cell: this.gridInfo.find(
+                  (x) => x.number.x === targetCell.number.x && x.number.y === targetCell.number.y
+                ),
+              });
+            }
+
+            if (type === "melee" && ownerType === "player") {
+              let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
+
+              if (shouldDeflect === 1) {
+                if (this.rnJesus(1, owner.crits.pushBack) === 1) {
+                  this.setDeflection(owner, "defended", true);
+                } else {
+                  this.setDeflection(owner, "defended", false);
+                }
+
+                if (owner.currentWeapon.name === "") {
+                  console.log("this barrier is stronger than your fist. Take damage?");
+                  let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
+                  if (takeDamage === 1) {
+                    this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
+                  }
+                }
+              } else {
+                this.pushBack(owner, this.getOppositeDirection(owner.direction));
+              }
+            }
+          }
+        } else {
+          if (targetCell2.barrier.destructible.state === true) {
+            // WEAPON CHECK
+            if (ownerType === "player") {
+              ownerWeaponName = owner.currentWeapon.name;
+            } else {
+              ownerWeaponName = owner.trap.itemNameRef;
+            }
+            if (type === "bolt" || type === "flyOverBolt") {
+              if (targetCell2.barrier.destructible.weapons.find((x) => x === "bolt")) {
+                weaponCheck = true;
+              }
+            }
+            if (
+              type === "melee" &&
+              targetCell2.barrier.destructible.weapons.find((x) => x === ownerWeaponName)
+            ) {
+              weaponCheck = true;
+            }
+            if (weaponCheck === true) {
+              // DAMAGE, DON'T DESTROY FWD BARRIER
+              if (targetCell2.barrier.hp - calcedDamage > 0) {
+                // this.gridInfo.find(elem => elem.number.x === targetCell2.number.x && elem.number.y === targetCell2.number.y ).barrier.hp -= calcedDamage;
+
+                let hp = targetCell2.barrier.hp - calcedDamage;
+
+                targetCell2.barrier = {
+                  id: targetCell2.barrier.id,
+                  trap: targetCell2.barrier.trap,
+                  state: targetCell2.barrier.state,
+                  name: targetCell2.barrier.name,
+                  type: targetCell2.barrier.type,
+                  hp: hp,
+                  destructible: targetCell2.barrier.destructible,
+                  locked: targetCell2.barrier.locked,
+                  position: targetCell2.barrier.position,
+                  height: targetCell2.barrier.height,
+                };
+
+                this.obstacleBarrierToDestroy.push({
+                  type: "barrier",
+                  action: "damage",
+                  count: 0,
+                  limit: 30,
+                  complete: false,
+                  cell: targetCell2,
+                });
+              }
+
+              // DESTROY FWD BARRIER W/ OR W/O RUBBLE
+              else if (targetCell2.barrier.hp - calcedDamage <= 0) {
+                if (
+                  targetCell2.barrier.destructible.leaveRubble === true &&
+                  targetCell2.obstacle.state !== true &&
+                  targetCell2.item.name === "" &&
+                  targetCell2.terrain.type !== "void" &&
+                  targetCell2.terrain.type !== "deep"
+                ) {
+                  // console.log("leave rubble on ", targetCell2.number, "removing barrier");
+                  targetCell2.rubble = true;
+                  // targetCell2.terrain.type = 'hazard';
+
+                  targetCell2.barrier = {
+                    id: targetCell2.barrier.id,
+                    trap: targetCell2.barrier.trap,
+                    state: false,
+                    name: targetCell2.barrier.name,
+                    type: targetCell2.barrier.type,
+                    hp: 0,
+                    destructible: targetCell2.barrier.destructible,
+                    locked: targetCell2.barrier.locked,
+                    position: targetCell2.barrier.position,
+                    height: targetCell2.barrier.height,
+                  };
+
+                  if (ownerType === "player") {
+                    this.players[owner.number - 1].statusDisplay = {
+                      state: true,
+                      status: "Destroyed " + targetCell2.barrier.name + "!",
+                      count: 1,
+                      limit: this.players[owner.number - 1].statusDisplay.limit,
+                    };
+
+                    if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
+                      owner.popups.push({
+                        state: false,
+                        count: 0,
+                        limit: 30,
+                        type: "",
+                        position: "",
+                        msg: "destroyedItem",
+                        img: "",
+                      });
+                    }
+                  }
+                } else {
+                  // console.log('no rubble. Just remove barrier');
+                  targetCell2.barrier = {
+                    id: targetCell2.barrier.id,
+                    trap: targetCell2.barrier.trap,
+                    state: false,
+                    name: targetCell2.barrier.name,
+                    type: targetCell2.barrier.type,
+                    hp: 0,
+                    destructible: targetCell2.barrier.destructible,
+                    locked: targetCell2.barrier.locked,
+                    position: targetCell2.barrier.position,
+                    height: targetCell2.barrier.height,
+                  };
+
+                  if (ownerType === "player") {
+                    this.players[owner.number - 1].statusDisplay = {
+                      state: true,
+                      status: "Destroyed " + targetCell2.barrier.name + "!",
+                      count: 1,
+                      limit: this.players[owner.number - 1].statusDisplay.limit,
+                    };
+
+                    if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
+                      owner.popups.push({
+                        state: false,
+                        count: 0,
+                        limit: 30,
+                        type: "",
+                        position: "",
+                        msg: "destroyedItem",
+                        img: "",
+                      });
+                    }
+                  }
+                }
+
+                this.obstacleBarrierToDestroy.push({
+                  type: "barrier",
+                  action: "destroy",
+                  count: 0,
+                  limit: 30,
+                  complete: false,
+                  cell: targetCell2,
+                });
+              }
+            }
+
+            // WEAPON NO GOOD
+            else {
+              console.log(
+                "your current weapon cannot destroy this, you need ",
+                targetCell2.obstacle.weapons,
+                ". Deflect player?"
+              );
+              if (
+                !this.cellPopups.find(
+                  (x) =>
+                    x.msg === "unbreakable" &&
+                    x.cell.number.x === targetCell2.number.x &&
+                    x.cell.number.y === targetCell2.number.y
+                )
+              ) {
+                this.cellPopups.push({
+                  state: false,
+                  count: 0,
+                  limit: 35,
+                  type: "",
+                  position: "",
+                  msg: "unbreakable",
+                  color: "",
+                  img: "",
+                  cell: this.gridInfo.find(
+                    (x) =>
+                      x.number.x === targetCell2.number.x && x.number.y === targetCell2.number.y
+                  ),
+                });
+              }
+
+              if (type === "melee" && ownerType === "player") {
+                let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
+
+                if (shouldDeflect === 1) {
+                  if (this.rnJesus(1, owner.crits.pushBack) === 1) {
+                    this.setDeflection(owner, "defended", true);
+                  } else {
+                    this.setDeflection(owner, "defended", false);
+                  }
+
+                  if (owner.currentWeapon.name === "") {
+                    console.log("this barrier is stronger than your fist. Take damage?");
+                    let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
+                    if (takeDamage === 1) {
+                      this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
+                    }
+                  }
+                } else {
+                  this.pushBack(owner, this.getOppositeDirection(owner.direction));
+                }
+              }
+            }
+          }
+
+          // INDESTRUCTIBLE FWD BARRIER
+          else {
+            // console.log('attacking invurnerable barrier w/ bolt');
+            if (
+              !this.cellPopups.find(
+                (x) =>
+                  x.msg === "unbreakable" &&
+                  x.cell.number.x === targetCell2.number.x &&
+                  x.cell.number.y === targetCell2.number.y
+              )
+            ) {
+              this.cellPopups.push({
+                state: false,
+                count: 0,
+                limit: 35,
+                type: "",
+                position: "",
+                msg: "unbreakable",
+                color: "",
+                img: "",
+                cell: this.gridInfo.find(
+                  (x) => x.number.x === targetCell2.number.x && x.number.y === targetCell2.number.y
+                ),
+              });
+            }
+
+            if (type === "melee" && ownerType === "player") {
+              let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
+
+              if (shouldDeflect === 1) {
+                if (this.rnJesus(1, owner.crits.pushBack) === 1) {
+                  this.setDeflection(owner, "defended", true);
+                } else {
+                  this.setDeflection(owner, "defended", false);
+                }
+
+                if (owner.currentWeapon.name === "") {
+                  console.log("this barrier is stronger than your fist. Take damage?");
+                  let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
+                  if (takeDamage === 1) {
+                    this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
+                  }
+                }
+              } else {
+                this.pushBack(owner, this.getOppositeDirection(owner.direction));
+              }
+            }
+          }
+        }
+      }
+
+      // bolt.kill = true;
+      if (type === "bolt" || type === "flyOverBolt") {
+        this.projectiles.find((blt) => blt.id === bolt.id).kill = true;
+      }
+    };
+    const handleNonObstacleBarrierDamage = (calcedDamage, range) => {
+      if (ownerType === "player") {
+        ownerWeaponName = owner.currentWeapon.name;
+      } else {
+        ownerWeaponName = owner.trap.itemNameRef;
+      }
+      if (range === 1) {
+        if (
+          targetCell &&
+          targetCell.item.name !== "" &&
+          calcedDamage > 0 &&
+          ownerWeaponName !== ""
+        ) {
+          if (ownerType === "player") {
+            this.players[owner.number - 1].statusDisplay = {
+              state: true,
+              status: "Destroyed " + targetCell.item.name + "!",
+              count: 1,
+              limit: this.players[owner.number - 1].statusDisplay.limit,
+            };
+
+            if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
+              owner.popups.push({
+                state: false,
+                count: 0,
+                limit: 30,
+                type: "",
+                position: "",
+                msg: "destroyedItem",
+                img: "",
+              });
+            }
+          }
+
+          this.gridInfo.find(
+            (elem) => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y
+          ).item = {
+            name: "",
+            type: "",
+            subType: "",
+            effect: "",
+            initDrawn: false,
+          };
+        }
+
+        if ((targetCell.rubble === true) & (calcedDamage > 0)) {
+          // console.log('damage/clear rubble @ ',targetCell2.number);
+          this.gridInfo.find(
+            (elem) => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y
+          ).rubble = false;
+        }
+      } else {
+        if (
+          targetCell2 &&
+          targetCell2.item.name !== "" &&
+          calcedDamage > 0 &&
+          ownerWeaponName !== ""
+        ) {
+          if (ownerType === "player") {
+            this.players[owner.number - 1].statusDisplay = {
+              state: true,
+              status: "Destroyed " + targetCell2.item.name + "!",
+              count: 1,
+              limit: this.players[owner.number - 1].statusDisplay.limit,
+            };
+
+            if (!owner.popups.find((x) => x.msg === "destroyedItem")) {
+              owner.popups.push({
+                state: false,
+                count: 0,
+                limit: 30,
+                type: "",
+                position: "",
+                msg: "destroyedItem",
+                img: "",
+              });
+            }
+          }
+
+          this.gridInfo.find(
+            (elem) =>
+              elem.number.x === targetCell2.number.x && elem.number.y === targetCell2.number.y
+          ).item = {
+            name: "",
+            type: "",
+            subType: "",
+            effect: "",
+            initDrawn: false,
+          };
+        }
+
+        if ((targetCell2.rubble === true) & (calcedDamage > 0)) {
+          // console.log('damage/clear rubble @ ',targetCell2.number);
+          this.gridInfo.find(
+            (elem) =>
+              elem.number.x === targetCell2.number.x && elem.number.y === targetCell2.number.y
+          ).rubble = false;
+        }
+      }
+    };
+    if (type === "melee") {
+      let doubleHitChance;
+      let singleHitChance;
+      if (ownerType === "player") {
+        if (ownerType === "player") {
+          ownerWeaponType = owner.currentWeapon.type;
+          doubleHitChance = owner.crits.doubleHit;
+          singleHitChance = owner.crits.singleHit;
+          ownerDirection = owner.direction;
+        } else {
+          ownerWeaponType = owner.trap.item.subType;
+          doubleHitChance = 2;
+          singleHitChance = 1;
+          ownerDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
+        }
+
+        l;
+        let doubleHit = this.rnJesus(1, doubleHitChance);
+        let singleHit = this.rnJesus(1, singleHitChance);
+
+        if (doubleHit === 1) {
+          damage = 2;
+        } else {
+          damage = 1;
+        }
+        let shouldDamage = 0;
+        if (ownerType === "player") {
+          if (owner.bluntAttack === true) {
+            shouldDamage = this.rnJesus(1, owner.crits.guardBreak);
+            if ((shouldDamage = 1)) {
+              damage = 1;
+            } else {
+              damage = 0;
+            }
+          }
+          if (owner.currentWeapon.name === "") {
+            shouldDamage = this.rnJesus(1, owner.crits.guardBreak + 3);
+            if ((shouldDamage = 1)) {
+              damage = 1;
+            } else {
+              damage = 0;
+            }
+          }
+        }
+
+        // AT ELEVATION
+        if (targetCell) {
+          if (targetCell.elevation.number < myCell.elevation.number + 1) {
+            let checkSpearTarget = false;
+            // set this false if first target obstacles or barrier industructible or not destroyed
+
+            // SWORD/ RANGE === 1 ATTACK
+            if (ownerWeaponType !== "spear") {
+              // MY CELL BARRIER?
+              let myCellBarrier = false;
+              if (myCell.barrier.state === true) {
+                if (myCell.barrier.position === ownerDirection) {
+                  myCellBarrier = true;
+
+                  handleBarrierDamage("myCellBarrier", damage, 0);
+                }
+              }
+
+              // FWD BARRIER?
+              let fwdBarrier = false;
+              if (targetCell.barrier.state === true) {
+                fwdBarrier = this.checkForwardBarrier(ownerDirection, targetCell);
+              }
+
+              if (fwdBarrier === true) {
+                handleBarrierDamage("fwdBarrier", damage, 1);
+              }
+
+              // NO FWD BARRIER. OBSTACLE, REAR  BARRIER (SPEAR)?
+              else if (fwdBarrier !== true && myCellBarrier !== true) {
+                if (targetCell.obstacle.state === true) {
+                  handleObstacleDamage(damage, 1);
+                }
+              }
+            }
+
+            // CHECK 1ST CELL, SPEAR TARGET 1
+            if (ownerWeaponType === "spear") {
+              let myCellBarrier = false;
+              if (myCell.barrier.state === true) {
+                if (myCell.barrier.position === ownerDirection) {
+                  myCellBarrier = true;
+                  handleBarrierDamage("myCellBarrier", damage, 0);
+                }
+              }
+
+              // FWD BARRIER?
+              let fwdBarrier = false;
+              if (targetCell.barrier.state === true) {
+                fwdBarrier = this.checkForwardBarrier(ownerDirection, targetCell);
+              }
+
+              if (myCellBarrier !== true && fwdBarrier === true) {
+                handleBarrierDamage("fwdBarrier", damage, 1);
+              }
+
+              // NO FWD BARRIER. OBSTACLE, REAR  BARRIER (SPEAR)?
+              else if (myCellBarrier !== true && fwdBarrier !== true) {
+                if (targetCell.obstacle.state === true) {
+                  handleObstacleDamage(damage, 1);
+                } else {
+                  // NO OBSTACLE. ITEM ON GROUND? DESTROY
+
+                  handleNonObstacleBarrierDamage(damage, 1);
+
+                  // NO OBSTACLE. ITEM OR RUBBLE. DESTROY REAR BARRIER
+
+                  if (
+                    ownerWeaponType === "spear" &&
+                    targetCell.item.name === "" &&
+                    targetCell.rubble !== true
+                  ) {
+                    let rearBarrier = false;
+                    if (targetCell.barrier.state === true) {
+                      if (owner.direction === targetCell.barrier.position) {
+                        rearBarrier = true;
+                      }
+                    }
+                    if (rearBarrier === true) {
+                      handleBarrierDamage("rearBarrier", damage, 1);
+                    } else {
+                      // console.log('spear target one no obstructions, atk spear target 2');
+                      checkSpearTarget = true;
+                    }
+                  }
+                  // else {
+                  //   // do nothing
+                  // }
+                }
+              }
+            }
+
+            // CHECK 2ND CELL SPEAR TARGET 2
+            if (ownerWeaponType === "spear" && checkSpearTarget === true) {
+              let targetCell2;
+              if (ownerType === "player") {
+                targetCell2 = this.gridInfo.find(
+                  (elem) =>
+                    elem.number.x === owner.target.cell2.number.x &&
+                    elem.number.y === owner.target.cell2.number.y
+                );
+              } else {
+                targetCell2 = this.gridInfo.find(
+                  (elem) =>
+                    elem.number.x === owner.trap.target.x && elem.number.y === owner.trap.target.y
+                );
+              }
+
+              let myCellBarrier = false;
+              if (myCell.barrier.state === true) {
+                if (myCell.barrier.position === ownerDirection) {
+                  myCellBarrier = true;
+                  handleBarrierDamage("myCellBarrier", damage, 0);
+                }
+              }
+
+              if (targetCell2) {
+                let fwdBarrier = false;
+                if (targetCell2.barrier.state === true) {
+                  fwdBarrier = this.checkForwardBarrier(ownerDirection, targetCell2);
+                }
+
+                if (fwdBarrier === true) {
+                  handleBarrierDamage("fwdBarrier", damage, 2);
+                }
+
+                // NO FWD BARRIER. OBSTACLE?
+                else if (myCellBarrier !== true && fwdBarrier !== true) {
+                  if (targetCell2.obstacle.state === true) {
+                    handleObstacleDamage(damage, 2);
+                  } else {
+                    // NO OBSTACLE. ITEM ON GROUND? DESTROY
+                    handleNonObstacleBarrierDamage(damage, 2);
+
+                    // NO OBSTACLE. DESTROY REAR BARRIER
+                    if (ownerType === "player") {
+                      if (!owner.popups.find((x) => x.msg === "missedAttack2")) {
+                        owner.popups.push({
+                          state: false,
+                          count: 0,
+                          limit:
+                            this.attackAnimRef.limit[player.currentWeapon.type] -
+                            this.attackAnimRef.peak[player.currentWeapon.type],
+                          type: "",
+                          position: "",
+                          msg: "missedAttack2",
+                          img: "",
+                        });
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          if (targetCell.elevation.number > myCell.elevation.number) {
+            console.log("target is above your elevation");
+          }
+        }
+
+        if (!targetCell) {
+          if (myCell.barrier.state === true && myCell.barrier.position === ownerDirection) {
+            handleBarrierDamage("myCellBarrier", damage, 0);
           }
         }
       }
@@ -36107,7 +34280,7 @@ class App extends Component {
           }
           let pip = pointInPolygon(point, polygon);
           if (pip === true) {
-            console.log("bolt passing through cell", cell.number);
+            // console.log("bolt passing through cell", cell.number);
             bolt.currentPosition.number = cell.number;
 
             let infoCell = this.gridInfo.find(
@@ -36145,12 +34318,10 @@ class App extends Component {
               }
 
               if (bolt.target.path.length === 1) {
-                console.log("2");
                 if (
                   infoCell.barrier.state === true &&
                   infoCell.barrier.position === bolt.direction
                 ) {
-                  console.log("1");
                   this.attackCellContents(
                     "bolt",
                     bolt.ownerType,
@@ -36192,7 +34363,6 @@ class App extends Component {
                 // CHECK FOR OBSTACLE &  REAR BARRIER COLLISION
 
                 if (infoCell.obstacle.state === true && infoCell.obstacle.height >= 1) {
-                  console.log("4");
                   if (bolt.ownerType === "obstacle" && infoCell.obstacle.id !== boltOwner.id) {
                     this.attackCellContents(
                       "bolt",
@@ -36216,7 +34386,6 @@ class App extends Component {
                     );
                   }
                 } else if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
-                  console.log("5");
                   this.attackCellContents(
                     "bolt",
                     bolt.ownerType,
