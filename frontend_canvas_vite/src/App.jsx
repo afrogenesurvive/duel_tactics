@@ -10737,8 +10737,9 @@ class App extends Component {
           availibleCells = this.getSurroundingCells(targetCell.number, 5, "walkable", false, false);
           if (availibleCells.length > 0) {
             if (targetCell.obstacle.trap.item.subType === "crossbow") {
-              targetCell.obstacle.trap.target =
-                availibleCells[Math.ceil(availibleCells.length / 2)];
+              targetCell.obstacle.trap.target = availibleCells.find(
+                (x) => x.x === targetCell.number.x || x.y === targetCell.number.y
+              );
             } else {
               targetCell.obstacle.trap.target = availibleCells[0];
             }
@@ -11524,13 +11525,13 @@ class App extends Component {
     const higlightCell = () => {
       if (
         !this.cellsToHighlight2.find(
-          (x) => x.number.x === trap.traget.x && x.number.y === trap.traget.y
+          (x) => x.number.x === trap.target.x && x.number.y === trap.target.y
         )
       ) {
         this.cellsToHighlight2.push({
           number: {
-            x: trap.traget.x,
-            y: trap.traget.y,
+            x: trap.target.x,
+            y: trap.target.y,
           },
           count: 0,
           limit: 10,
@@ -11628,17 +11629,19 @@ class App extends Component {
           availibleCells = this.getSurroundingCells(data.number, 5, "walkable", false, false);
           if (availibleCells.length > 0) {
             if (trap.item.subType === "crossbow") {
-              trap.target = availibleCells[Math.ceil(availibleCells.length / 2)];
+              trap.target = availibleCells.find(
+                (x) => x.x === data.number.x || x.y === data.number.y
+              );
             } else {
               trap.target = availibleCells[0];
             }
             // console.log("trap target set", data.number, trap.target, trap.ammo);
           } else {
             trap.state = false;
-            // console.log(
-            //   `${type} trap disabled because there is no appropriate target cell`,
-            //   data.number
-            // );
+            console.log(
+              `${type} trap disabled because there is no appropriate target cell`,
+              data.number
+            );
           }
         } else {
           let cell;
@@ -11653,10 +11656,10 @@ class App extends Component {
           }
           if (!this.gridInfo.find((x) => cell.x === x.number.x && cell.y === x.number.y)) {
             trap.state = false;
-            // console.log(
-            //   `${type} trap disabled because there is no appropriate target cell`,
-            //   data.number
-            // );
+            console.log(
+              `${type} trap disabled because there is no appropriate target cell`,
+              data.number
+            );
           } else {
             trap.target = cell;
             // console.log("trap target set", data.number, trap.target, trap.ammo);
@@ -11913,7 +11916,15 @@ class App extends Component {
           elem.number.y === player.currentPosition.cell.number.y
       );
 
-      this.attackCellContents("melee", player, targetCell, targetCell2, myCell, undefined);
+      this.attackCellContents(
+        "melee",
+        "player",
+        player,
+        targetCell,
+        targetCell2,
+        myCell,
+        undefined
+      );
     }
 
     this.players[player.number - 1] = player;
@@ -12044,7 +12055,15 @@ class App extends Component {
           elem.number.y === player.currentPosition.cell.number.y
       );
 
-      this.attackCellContents("melee", player, targetCell, targetCell2, myCell, undefined);
+      this.attackCellContents(
+        "melee",
+        "player",
+        player,
+        targetCell,
+        targetCell2,
+        myCell,
+        undefined
+      );
     }
 
     // TARGET IS A PLAYER
