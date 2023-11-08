@@ -1360,7 +1360,7 @@ class App extends Component {
           state: true,
           persistent: false,
           remaining: 5,
-          direction: "west",
+          direction: "",
           target: {},
           timer: {
             enabled: true,
@@ -9535,10 +9535,10 @@ class App extends Component {
       direction = "northEast";
     }
     if (direction === "") {
-      if (cell1Number.x === cell1Number.x && cell1Number.y < cell2Number.y) {
+      if (cell1Number.x === cell2Number.x && cell1Number.y > cell2Number.y) {
         direction = "north";
       }
-      if (cell1Number.x === cell2Number.x && cell1Number.y > cell2Number.y) {
+      if (cell1Number.x === cell2Number.x && cell1Number.y < cell2Number.y) {
         direction = "south";
       }
       if (cell1Number.x > cell2Number.x && cell2Number.y === cell1Number.y) {
@@ -9694,6 +9694,7 @@ class App extends Component {
         //   cellFree = false;
         // }
         if (ctcRef) {
+          // console.log("ab", cellToCheck, ctcRef.obstacle.state);
           if (items === true) {
             if (ctcRef.item.name !== "") {
               cellFree = false;
@@ -9732,6 +9733,7 @@ class App extends Component {
         if (cellFree === true) {
           count--;
           availibleCells.push(cellToCheck);
+          // console.log("xy", cellToCheck);
           // console.log('cell free',cellToCheck,'item count1',itemCount,'item count2',itemCount2,'availibleCells',availibleCells.length,'steps',stepsA,stepsB);
           // console.log('availibleCells',availibleCells.length,availibleCells);
         } else {
@@ -10748,12 +10750,19 @@ class App extends Component {
     if (targetCell.obstacle.trap.state === true) {
       if (!targetCell.obstacle.trap.target.x || targetCell.obstacle.trap.target.x === undefined) {
         if (targetCell.obstacle.trap.direction === "") {
-          availibleCells = this.getSurroundingCells(targetCell.number, 5, "walkable", false, false);
+          availibleCells = this.getSurroundingCells(
+            targetCell.number,
+            15,
+            "walkable",
+            false,
+            false
+          );
           if (availibleCells.length > 0) {
             if (targetCell.obstacle.trap.item.subType === "crossbow") {
-              targetCell.obstacle.trap.target = availibleCells.find(
-                (x) => x.x === targetCell.number.x || x.y === targetCell.number.y
-              );
+              targetCell.obstacle.trap.target = availibleCells
+                .slice()
+                .reverse()
+                .find((x) => x.x === targetCell.number.x || x.y === targetCell.number.y);
             } else {
               targetCell.obstacle.trap.target = availibleCells[0];
             }
@@ -11640,12 +11649,13 @@ class App extends Component {
     if (trap.state === true) {
       if (!trap.target.x || trap.target.x === undefined) {
         if (trap.direction === "") {
-          availibleCells = this.getSurroundingCells(data.number, 5, "walkable", false, false);
+          availibleCells = this.getSurroundingCells(data.number, 15, "walkable", false, false);
           if (availibleCells.length > 0) {
             if (trap.item.subType === "crossbow") {
-              trap.target = availibleCells.find(
-                (x) => x.x === data.number.x || x.y === data.number.y
-              );
+              trap.target = availibleCells
+                .slice()
+                .reverse()
+                .find((x) => x.x === data.number.x || x.y === data.number.y);
             } else {
               trap.target = availibleCells[0];
             }
@@ -35377,6 +35387,10 @@ class App extends Component {
       // for (let x of this.gridInfo) {
       //   console.log("beeep", x.barrier);
       // }
+      // console.log(
+      //   "testing",
+      //   this.getSurroundingCells({ x: 0, y: 4 }, 18, "walkable", false, false)
+      // );
     }
 
     if (this.setInitZoom.state === true) {
@@ -40460,7 +40474,7 @@ class App extends Component {
                 boltImg = this.boltImgs[bolt.direction];
                 break;
             }
-            console.log("dd", boltImg, bolt.direction);
+            // console.log("dd", boltImg, bolt.direction);
 
             // context2.fillStyle = "black";
             // context2.fillRect(bolt.currentPosition.center.x, bolt.currentPosition.center.y,10,5);
