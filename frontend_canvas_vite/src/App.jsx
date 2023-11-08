@@ -9534,6 +9534,20 @@ class App extends Component {
     if (cell2Number.x === cell1Number.x + 1 && cell2Number.y === cell1Number.y - 1) {
       direction = "northEast";
     }
+    if (direction === "") {
+      if (cell1Number.x === cell1Number.x && cell1Number.y < cell2Number.y) {
+        direction = "north";
+      }
+      if (cell1Number.x === cell2Number.x && cell1Number.y > cell2Number.y) {
+        direction = "south";
+      }
+      if (cell1Number.x > cell2Number.x && cell2Number.y === cell1Number.y) {
+        direction = "west";
+      }
+      if (cell1Number.x < cell2Number.x && cell1Number.y === cell2Number.y) {
+        direction = "east";
+      }
+    }
 
     return direction;
   };
@@ -36690,6 +36704,13 @@ class App extends Component {
               (x) => x.number.x === cell.number.x && x.number.y === cell.number.y
             );
 
+            let boltOwner;
+            if (bolt.ownerType === "player") {
+              boltOwner = this.players[bolt.owner - 1];
+            } else {
+              boltOwner = infoCell[bolt.ownerType];
+            }
+
             // PATH HIGHLIGHT
             if (cell.number.x === bolt.origin.number.x && cell.number.y === bolt.origin.number.y) {
             } else {
@@ -36720,8 +36741,8 @@ class App extends Component {
                 ) {
                   this.attackCellContents(
                     "bolt",
-                    "player",
-                    this.players[bolt.owner - 1],
+                    bolt.ownerType,
+                    boltOwner,
                     infoCell,
                     undefined,
                     undefined,
@@ -36761,8 +36782,8 @@ class App extends Component {
                 if (infoCell.obstacle.state === true && infoCell.obstacle.height >= 1) {
                   this.attackCellContents(
                     "bolt",
-                    "player",
-                    this.players[bolt.owner - 1],
+                    bolt.ownerType,
+                    boltOwner,
                     infoCell,
                     undefined,
                     undefined,
@@ -36771,8 +36792,8 @@ class App extends Component {
                 } else if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
                   this.attackCellContents(
                     "bolt",
-                    "player",
-                    this.players[bolt.owner - 1],
+                    bolt.ownerType,
+                    boltOwner,
                     infoCell,
                     undefined,
                     undefined,
@@ -36784,8 +36805,8 @@ class App extends Component {
                 if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
                   this.attackCellContents(
                     "bolt",
-                    "player",
-                    this.players[bolt.owner - 1],
+                    bolt.ownerType,
+                    boltOwner,
                     infoCell,
                     undefined,
                     undefined,
@@ -36799,8 +36820,8 @@ class App extends Component {
 
                 this.attackCellContents(
                   "flyOverBolt",
-                  "player",
-                  this.players[bolt.owner - 1],
+                  bolt.ownerType,
+                  boltOwner,
                   infoCell,
                   undefined,
                   undefined,
@@ -40439,7 +40460,7 @@ class App extends Component {
                 boltImg = this.boltImgs[bolt.direction];
                 break;
             }
-            // console.log('dd',boltImg,bolt.direction);
+            console.log("dd", boltImg, bolt.direction);
 
             // context2.fillStyle = "black";
             // context2.fillRect(bolt.currentPosition.center.x, bolt.currentPosition.center.y,10,5);
