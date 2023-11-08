@@ -12529,7 +12529,7 @@ class App extends Component {
     // this.players[targetPlayerRef.number-1] = targetPlayerRef;
   };
   projectileAttackParse = (bolt, ownerType, targetType, target) => {
-    // console.log('projectileAttackParse');
+    // console.log("projectileAttackParse");
 
     if (targetType === "player") {
       let weapon = target.currentWeapon.type;
@@ -15610,6 +15610,7 @@ class App extends Component {
     }
   };
   attackCellContents = (type, ownerType, owner, targetCell, targetCell2, myCell, bolt) => {
+    console.log("3");
     let damage;
     const handleObstacleDamage = (calcedDamage) => {
       if (targetCell.obstacle.destructible.state === true) {
@@ -36086,7 +36087,7 @@ class App extends Component {
       }
 
       if (bolt.type === "bolt" && bolt.moving.state === true && bolt.kill !== true) {
-        console.log("traking projectile");
+        // console.log("traking projectile");
 
         let index = this.projectiles.findIndex((blt) => blt.id === bolt.id);
         bolt.currentPosition.center = bolt.nextPosition;
@@ -36106,7 +36107,7 @@ class App extends Component {
           }
           let pip = pointInPolygon(point, polygon);
           if (pip === true) {
-            // console.log('bolt passing through cell',cell.number);
+            console.log("bolt passing through cell", cell.number);
             bolt.currentPosition.number = cell.number;
 
             let infoCell = this.gridInfo.find(
@@ -36144,10 +36145,12 @@ class App extends Component {
               }
 
               if (bolt.target.path.length === 1) {
+                console.log("2");
                 if (
                   infoCell.barrier.state === true &&
                   infoCell.barrier.position === bolt.direction
                 ) {
+                  console.log("1");
                   this.attackCellContents(
                     "bolt",
                     bolt.ownerType,
@@ -36189,16 +36192,31 @@ class App extends Component {
                 // CHECK FOR OBSTACLE &  REAR BARRIER COLLISION
 
                 if (infoCell.obstacle.state === true && infoCell.obstacle.height >= 1) {
-                  this.attackCellContents(
-                    "bolt",
-                    bolt.ownerType,
-                    boltOwner,
-                    infoCell,
-                    undefined,
-                    undefined,
-                    bolt
-                  );
+                  console.log("4");
+                  if (bolt.ownerType === "obstacle" && infoCell.obstacle.id !== boltOwner.id) {
+                    this.attackCellContents(
+                      "bolt",
+                      bolt.ownerType,
+                      boltOwner,
+                      infoCell,
+                      undefined,
+                      undefined,
+                      bolt
+                    );
+                  }
+                  if (bolt.ownerType === "player") {
+                    this.attackCellContents(
+                      "bolt",
+                      bolt.ownerType,
+                      boltOwner,
+                      infoCell,
+                      undefined,
+                      undefined,
+                      bolt
+                    );
+                  }
                 } else if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
+                  console.log("5");
                   this.attackCellContents(
                     "bolt",
                     bolt.ownerType,
@@ -36212,6 +36230,7 @@ class App extends Component {
               } else {
                 // HANDLE FWD BARRIER BOLT COLLISION
                 if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
+                  console.log("6");
                   this.attackCellContents(
                     "bolt",
                     bolt.ownerType,
