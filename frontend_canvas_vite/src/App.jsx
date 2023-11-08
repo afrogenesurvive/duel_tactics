@@ -12524,192 +12524,70 @@ class App extends Component {
   projectileAttackParse = (bolt, ownerType, targetType, target) => {
     // console.log('projectileAttackParse');
 
-    if (ownerType === "player") {
-      if (targetType === "player") {
-        let weapon = target.currentWeapon.type;
+    if (targetType === "player") {
+      let weapon = target.currentWeapon.type;
 
-        // ATTACK STAM UNARMED CHECK & AND POPUPS SET
-        let playerAttackStamType;
+      // ATTACK STAM UNARMED CHECK & AND POPUPS SET
+      let playerAttackStamType;
 
-        if (target.currentWeapon.name !== "") {
-          playerAttackStamType = this.staminaCostRef.attack[target.currentWeapon.type].normal;
+      if (target.currentWeapon.name !== "") {
+        playerAttackStamType = this.staminaCostRef.attack[target.currentWeapon.type].normal;
+      }
+
+      if (target.bluntAttack === true && target.currentWeapon.name !== "") {
+        playerAttackStamType = this.staminaCostRef.attack[target.currentWeapon.type].blunt;
+      }
+      if (target.currentWeapon.name === "") {
+        playerAttackStamType = this.staminaCostRef.attack.unarmed.normal;
+        if (target.bluntAttack === true) {
+          playerAttackStamType = this.staminaCostRef.attack.unarmed.blunt;
+        }
+        weapon = "unarmed";
+      }
+
+      // IS TARGET DEFENDING?
+      let playerDefending = false;
+      let defendType = target.currentWeapon.type;
+      if (target.currentWeapon.name === "") {
+        defendType = "unarmed";
+      }
+      let defendPeak = this.defendAnimRef.peak[defendType];
+      if (target.defending.count === defendPeak || target.defendDecay.state === true) {
+        playerDefending = true;
+      }
+
+      this.cellsUnderAttack.push({
+        number: {
+          x: target.currentPosition.cell.number.x,
+          y: target.currentPosition.cell.number.y,
+        },
+        count: 1,
+        limit: 8,
+      });
+
+      //BOLT TARGET DODGING
+      if (target.dodging.state === true) {
+        console.log("player ", target.number, " just dodged a bolt from ", bolt.owner);
+        target.stamina.current += this.staminaCostRef.dodge.pre;
+      } else {
+        // BOLT NOT DODGED MUST HIT PLAYER
+        bolt.kill = true;
+        // BOLT TARGET NOT DODGING
+        // BACK ATTACK
+        if (target.direction === bolt.direction) {
+          this.handleProjectileDamage(bolt, ownerType, "player", target);
+          this.setDeflection(target, "attacked", false);
         }
 
-        if (target.bluntAttack === true && target.currentWeapon.name !== "") {
-          playerAttackStamType = this.staminaCostRef.attack[target.currentWeapon.type].blunt;
-        }
-        if (target.currentWeapon.name === "") {
-          playerAttackStamType = this.staminaCostRef.attack.unarmed.normal;
-          if (target.bluntAttack === true) {
-            playerAttackStamType = this.staminaCostRef.attack.unarmed.blunt;
-          }
-          weapon = "unarmed";
-        }
-
-        // IS TARGET DEFENDING?
-        let playerDefending = false;
-        let defendType = target.currentWeapon.type;
-        if (target.currentWeapon.name === "") {
-          defendType = "unarmed";
-        }
-        let defendPeak = this.defendAnimRef.peak[defendType];
-        if (target.defending.count === defendPeak || target.defendDecay.state === true) {
-          playerDefending = true;
-        }
-
-        this.cellsUnderAttack.push({
-          number: {
-            x: target.currentPosition.cell.number.x,
-            y: target.currentPosition.cell.number.y,
-          },
-          count: 1,
-          limit: 8,
-        });
-
-        //BOLT TARGET DODGING
-        if (target.dodging.state === true) {
-          console.log("player ", target.number, " just dodged a bolt from ", bolt.owner);
-          target.stamina.current += this.staminaCostRef.dodge.pre;
-        } else {
-          // BOLT NOT DODGED MUST HIT PLAYER
-          bolt.kill = true;
-          // BOLT TARGET NOT DODGING
-          // BACK ATTACK
-          if (target.direction === bolt.direction) {
-            this.handleProjectileDamage(bolt, "player", "player", target);
-            this.setDeflection(target, "attacked", false);
-          }
-
-          // SIDE ATTACK
-          if (
-            target.direction !== bolt.direction &&
-            target.direction !== this.getOppositeDirection(bolt.direction)
-          ) {
-            // PLAYER IS ATTACKING ARMED
-            if (target.attackPeak === true && weapon !== "unarmed") {
-              // CHANCE TO KILL BOLT & PUSHBACK
-              if (this.rnJesus(1, target.crits.pushBack) === 1) {
-                if (!target.popups.find((x) => x.msg === "boltKilled")) {
-                  target.popups.push({
-                    state: false,
-                    count: 0,
-                    limit: 30,
-                    type: "",
-                    position: "",
-                    msg: "boltKilled",
-                    img: "",
-                  });
-                }
-                this.pushBack(target, this.getOppositeDirection(target.direction));
-                target.success.attackSuccess = {
-                  state: true,
-                  count: 1,
-                  limit: target.success.attackSuccess.limit,
-                };
-                console.log("bolt attacked and killed: v2");
-              }
-
-              // OR BE INJURED
-              else {
-                this.handleProjectileDamage(bolt, "player", "player", target);
-                this.setDeflection(target, "attacked", false);
-              }
-            }
-
-            // UNARMED DEFENSE = DAMAGE. OFF-PEAK HAS CHANCE TO PUSHBACK OR DAMAGE + PB
-            if (playerDefending === true) {
-              if (weapon === "unarmed") {
-                this.handleProjectileDamage(bolt, "player", "player", target);
-                this.setDeflection(target, "attacked", false);
-              } else {
-                if (target.defendPeak === true) {
-                  target.stamina.current += this.staminaCostRef.defend.peak;
-                  target.success.defendSuccess = {
-                    state: true,
-                    count: 1,
-                    limit: target.success.defendSuccess.limit,
-                  };
-                  target.statusDisplay = {
-                    state: true,
-                    status: "Parry!",
-                    count: 1,
-                    limit: target.statusDisplay.limit,
-                  };
-                  if (!target.popups.find((x) => x.msg === "attackParried")) {
-                    target.popups.push({
-                      state: false,
-                      count: 0,
-                      limit: 30,
-                      type: "",
-                      position: "",
-                      msg: "attackParried",
-                      img: "",
-                    });
-                  }
-                }
-
-                // if (target.defendDecay.state === true && target.defendPeak !== true) {
-                if (target.defendPeak !== true) {
-                  // CHANCE FOR DEFEND SUCCESS
-                  if (this.rnJesus(0, target.crits.guardBreak) === 0) {
-                    target.success.defendSuccess = {
-                      state: true,
-                      count: 1,
-                      limit: target.success.defendSuccess.limit,
-                    };
-                    target.statusDisplay = {
-                      state: true,
-                      status: "Defend",
-                      count: 1,
-                      limit: target.statusDisplay.limit,
-                    };
-                    if (!target.popups.find((x) => x.msg === "defendSuccess")) {
-                      target.popups.push({
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: "",
-                        position: "",
-                        msg: "defendSuccess",
-                        img: "",
-                      });
-                    }
-                    if (this.rnJesus(1, target.crits.pushBack) === 1) {
-                      this.pushBack(target, this.getOppositeDirection(target.direction));
-                    }
-                  }
-
-                  // CHANCE TO BE DAMAGED, DEFLECT || DEFLECT + PUSHBACK
-                  if (this.rnJesus(0, target.crits.guardBreak) === 1) {
-                    this.handleProjectileDamage(bolt, "player", "player", target);
-
-                    if (this.rnJesus(1, target.crits.pushBack) === 1) {
-                      this.setDeflection(target, "attacked", true);
-                    } else {
-                      this.setDeflection(target, "attacked", false);
-                    }
-                  }
-                }
-              }
-            }
-
-            //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE
-            if (playerDefending !== true && target.attackPeak !== true) {
-              this.handleProjectileDamage(bolt, "player", "player", target);
-              this.setDeflection(target, "attacked", false);
-            }
-
-            // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
-            if (target.attackPeak === true && weapon === "unarmed") {
-              this.handleProjectileDamage(bolt, "player", "player", target);
-              this.setDeflection(target, "attacked", false);
-            }
-          }
-
-          // FRONTAL ATTACK
-          if (bolt.direction === this.getOppositeDirection(target.direction)) {
-            // PLAYER ARMED AND ATTACKING
-            if (target.attackPeak === true && weapon !== "unarmed") {
+        // SIDE ATTACK
+        if (
+          target.direction !== bolt.direction &&
+          target.direction !== this.getOppositeDirection(bolt.direction)
+        ) {
+          // PLAYER IS ATTACKING ARMED
+          if (target.attackPeak === true && weapon !== "unarmed") {
+            // CHANCE TO KILL BOLT & PUSHBACK
+            if (this.rnJesus(1, target.crits.pushBack) === 1) {
               if (!target.popups.find((x) => x.msg === "boltKilled")) {
                 target.popups.push({
                   state: false,
@@ -12721,110 +12599,58 @@ class App extends Component {
                   img: "",
                 });
               }
-              if (this.rnJesus(1, target.crits.pushBack) === 1) {
-                this.pushBack(target, this.getOppositeDirection(target.direction));
-              }
+              this.pushBack(target, this.getOppositeDirection(target.direction));
               target.success.attackSuccess = {
                 state: true,
                 count: 1,
                 limit: target.success.attackSuccess.limit,
               };
-              console.log("bolt attacked and killed: v3");
+              console.log("bolt attacked and killed: v2");
             }
 
-            // PLAYER DEFENDING
-            if (playerDefending === true) {
-              if (weapon === "unarmed") {
-                // UNARMED PEAK DEFEND, SUCCESS
-                if (target.defendPeak === true) {
-                  // target.stamina.current += this.staminaCostRef.defend.peak;
-                  target.success.defendSuccess = {
-                    state: true,
-                    count: 1,
-                    limit: target.success.defendSuccess.limit,
-                  };
-                  target.statusDisplay = {
-                    state: true,
-                    status: "Parry!",
-                    count: 1,
-                    limit: target.statusDisplay.limit,
-                  };
-                  if (!target.popups.find((x) => x.msg === "attackParried")) {
-                    target.popups.push({
-                      state: false,
-                      count: 0,
-                      limit: 30,
-                      type: "",
-                      position: "",
-                      msg: "attackParried",
-                      img: "",
-                    });
-                  }
-                }
+            // OR BE INJURED
+            else {
+              this.handleProjectileDamage(bolt, ownerType, "player", target);
+              this.setDeflection(target, "attacked", false);
+            }
+          }
 
-                // UNARMED OFF PEAK DEFEND, CHANCE TO DEFEND OR DAMAGE/DEFLECTED
-                // if (target.defendDecay.state === true && target.defendPeak !== true) {
-                if (target.defendPeak !== true) {
-                  if (this.rnJesus(0, 1) === 0) {
-                    target.success.defendSuccess = {
-                      state: true,
-                      count: 1,
-                      limit: target.success.defendSuccess.limit,
-                    };
-                    target.statusDisplay = {
-                      state: true,
-                      status: "Defend",
-                      count: 1,
-                      limit: target.statusDisplay.limit,
-                    };
-                    if (!target.popups.find((x) => x.msg === "defendSuccess")) {
-                      target.popups.push({
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: "",
-                        position: "",
-                        msg: "defendSuccess",
-                        img: "",
-                      });
-                    }
-                  } else {
-                    this.handleProjectileDamage(bolt, "player", "player", target);
-                    this.setDeflection(target, "attacked", false);
-                  }
+          // UNARMED DEFENSE = DAMAGE. OFF-PEAK HAS CHANCE TO PUSHBACK OR DAMAGE + PB
+          if (playerDefending === true) {
+            if (weapon === "unarmed") {
+              this.handleProjectileDamage(bolt, ownerType, "player", target);
+              this.setDeflection(target, "attacked", false);
+            } else {
+              if (target.defendPeak === true) {
+                target.stamina.current += this.staminaCostRef.defend.peak;
+                target.success.defendSuccess = {
+                  state: true,
+                  count: 1,
+                  limit: target.success.defendSuccess.limit,
+                };
+                target.statusDisplay = {
+                  state: true,
+                  status: "Parry!",
+                  count: 1,
+                  limit: target.statusDisplay.limit,
+                };
+                if (!target.popups.find((x) => x.msg === "attackParried")) {
+                  target.popups.push({
+                    state: false,
+                    count: 0,
+                    limit: 30,
+                    type: "",
+                    position: "",
+                    msg: "attackParried",
+                    img: "",
+                  });
                 }
               }
 
-              // PLAYER DEFENDING AND ARMED, GUARANTEED DEFEND W/ CHANCE TO PUSH BACK
-              else {
-                if (target.defendPeak === true) {
-                  target.stamina.current += this.staminaCostRef.defend.peak;
-                  target.success.defendSuccess = {
-                    state: true,
-                    count: 1,
-                    limit: target.success.defendSuccess.limit,
-                  };
-                  target.statusDisplay = {
-                    state: true,
-                    status: "Parry!",
-                    count: 1,
-                    limit: target.statusDisplay.limit,
-                  };
-                  if (!target.popups.find((x) => x.msg === "attackParried")) {
-                    target.popups.push({
-                      state: false,
-                      count: 0,
-                      limit: 30,
-                      type: "",
-                      position: "",
-                      msg: "attackParried",
-                      img: "",
-                    });
-                  }
-                }
-
-                // if (target.defendDecay.state === true && target.defendPeak !== true) {
-                if (target.defendPeak !== true) {
+              // if (target.defendDecay.state === true && target.defendPeak !== true) {
+              if (target.defendPeak !== true) {
+                // CHANCE FOR DEFEND SUCCESS
+                if (this.rnJesus(0, target.crits.guardBreak) === 0) {
                   target.success.defendSuccess = {
                     state: true,
                     count: 1,
@@ -12851,27 +12677,199 @@ class App extends Component {
                     this.pushBack(target, this.getOppositeDirection(target.direction));
                   }
                 }
+
+                // CHANCE TO BE DAMAGED, DEFLECT || DEFLECT + PUSHBACK
+                if (this.rnJesus(0, target.crits.guardBreak) === 1) {
+                  this.handleProjectileDamage(bolt, ownerType, "player", target);
+
+                  if (this.rnJesus(1, target.crits.pushBack) === 1) {
+                    this.setDeflection(target, "attacked", true);
+                  } else {
+                    this.setDeflection(target, "attacked", false);
+                  }
+                }
               }
             }
+          }
 
-            //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE
-            if (playerDefending !== true && target.attackPeak !== true) {
-              this.handleProjectileDamage(bolt, "player", "player", target);
-              this.setDeflection(target, "attacked", false);
-            }
+          //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE
+          if (playerDefending !== true && target.attackPeak !== true) {
+            this.handleProjectileDamage(bolt, ownerType, "player", target);
+            this.setDeflection(target, "attacked", false);
+          }
 
-            // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
-            if (target.attackPeak === true && weapon === "unarmed") {
-              this.handleProjectileDamage(bolt, "player", "player", target);
-              this.setDeflection(target, "attacked", false);
-            }
+          // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
+          if (target.attackPeak === true && weapon === "unarmed") {
+            this.handleProjectileDamage(bolt, ownerType, "player", target);
+            this.setDeflection(target, "attacked", false);
           }
         }
 
-        this.players[target.number - 1] = target;
-        let x = this.projectiles.find((x) => x.id === bolt.id);
-        x = bolt;
+        // FRONTAL ATTACK
+        if (bolt.direction === this.getOppositeDirection(target.direction)) {
+          // PLAYER ARMED AND ATTACKING
+          if (target.attackPeak === true && weapon !== "unarmed") {
+            if (!target.popups.find((x) => x.msg === "boltKilled")) {
+              target.popups.push({
+                state: false,
+                count: 0,
+                limit: 30,
+                type: "",
+                position: "",
+                msg: "boltKilled",
+                img: "",
+              });
+            }
+            if (this.rnJesus(1, target.crits.pushBack) === 1) {
+              this.pushBack(target, this.getOppositeDirection(target.direction));
+            }
+            target.success.attackSuccess = {
+              state: true,
+              count: 1,
+              limit: target.success.attackSuccess.limit,
+            };
+            console.log("bolt attacked and killed: v3");
+          }
+
+          // PLAYER DEFENDING
+          if (playerDefending === true) {
+            if (weapon === "unarmed") {
+              // UNARMED PEAK DEFEND, SUCCESS
+              if (target.defendPeak === true) {
+                // target.stamina.current += this.staminaCostRef.defend.peak;
+                target.success.defendSuccess = {
+                  state: true,
+                  count: 1,
+                  limit: target.success.defendSuccess.limit,
+                };
+                target.statusDisplay = {
+                  state: true,
+                  status: "Parry!",
+                  count: 1,
+                  limit: target.statusDisplay.limit,
+                };
+                if (!target.popups.find((x) => x.msg === "attackParried")) {
+                  target.popups.push({
+                    state: false,
+                    count: 0,
+                    limit: 30,
+                    type: "",
+                    position: "",
+                    msg: "attackParried",
+                    img: "",
+                  });
+                }
+              }
+
+              // UNARMED OFF PEAK DEFEND, CHANCE TO DEFEND OR DAMAGE/DEFLECTED
+              // if (target.defendDecay.state === true && target.defendPeak !== true) {
+              if (target.defendPeak !== true) {
+                if (this.rnJesus(0, 1) === 0) {
+                  target.success.defendSuccess = {
+                    state: true,
+                    count: 1,
+                    limit: target.success.defendSuccess.limit,
+                  };
+                  target.statusDisplay = {
+                    state: true,
+                    status: "Defend",
+                    count: 1,
+                    limit: target.statusDisplay.limit,
+                  };
+                  if (!target.popups.find((x) => x.msg === "defendSuccess")) {
+                    target.popups.push({
+                      state: false,
+                      count: 0,
+                      limit: 25,
+                      type: "",
+                      position: "",
+                      msg: "defendSuccess",
+                      img: "",
+                    });
+                  }
+                } else {
+                  this.handleProjectileDamage(bolt, ownerType, "player", target);
+                  this.setDeflection(target, "attacked", false);
+                }
+              }
+            }
+
+            // PLAYER DEFENDING AND ARMED, GUARANTEED DEFEND W/ CHANCE TO PUSH BACK
+            else {
+              if (target.defendPeak === true) {
+                target.stamina.current += this.staminaCostRef.defend.peak;
+                target.success.defendSuccess = {
+                  state: true,
+                  count: 1,
+                  limit: target.success.defendSuccess.limit,
+                };
+                target.statusDisplay = {
+                  state: true,
+                  status: "Parry!",
+                  count: 1,
+                  limit: target.statusDisplay.limit,
+                };
+                if (!target.popups.find((x) => x.msg === "attackParried")) {
+                  target.popups.push({
+                    state: false,
+                    count: 0,
+                    limit: 30,
+                    type: "",
+                    position: "",
+                    msg: "attackParried",
+                    img: "",
+                  });
+                }
+              }
+
+              // if (target.defendDecay.state === true && target.defendPeak !== true) {
+              if (target.defendPeak !== true) {
+                target.success.defendSuccess = {
+                  state: true,
+                  count: 1,
+                  limit: target.success.defendSuccess.limit,
+                };
+                target.statusDisplay = {
+                  state: true,
+                  status: "Defend",
+                  count: 1,
+                  limit: target.statusDisplay.limit,
+                };
+                if (!target.popups.find((x) => x.msg === "defendSuccess")) {
+                  target.popups.push({
+                    state: false,
+                    count: 0,
+                    limit: 25,
+                    type: "",
+                    position: "",
+                    msg: "defendSuccess",
+                    img: "",
+                  });
+                }
+                if (this.rnJesus(1, target.crits.pushBack) === 1) {
+                  this.pushBack(target, this.getOppositeDirection(target.direction));
+                }
+              }
+            }
+          }
+
+          //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE
+          if (playerDefending !== true && target.attackPeak !== true) {
+            this.handleProjectileDamage(bolt, ownerType, "player", target);
+            this.setDeflection(target, "attacked", false);
+          }
+
+          // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
+          if (target.attackPeak === true && weapon === "unarmed") {
+            this.handleProjectileDamage(bolt, ownerType, "player", target);
+            this.setDeflection(target, "attacked", false);
+          }
+        }
       }
+
+      this.players[target.number - 1] = target;
+      let x = this.projectiles.find((x) => x.id === bolt.id);
+      x = bolt;
     }
   };
   setDeflection = (player, type, pushBack) => {
@@ -13068,12 +13066,17 @@ class App extends Component {
     this.players[targetPlayer.number - 1] = targetPlayer;
   };
   handleProjectileDamage = (bolt, ownerType, targetType, target) => {
+    let boltOwner;
+    let damage;
+    let doubleHitChance;
+    let singleHitChance;
+
     if (ownerType === "player") {
       if (targetType === "player") {
-        let boltOwner = this.players[bolt.owner - 1];
-        let damage = 0;
-        let doubleHitChance = boltOwner.crits.doubleHit;
-        let singleHitChance = boltOwner.crits.singleHit;
+        boltOwner = this.players[bolt.owner - 1];
+        damage = 0;
+        doubleHitChance = boltOwner.crits.doubleHit;
+        singleHitChance = boltOwner.crits.singleHit;
 
         if (target.currentArmor.name !== "") {
           // console.log('opponent armour found');
@@ -13197,6 +13200,96 @@ class App extends Component {
 
         this.players[target.number - 1] = target;
         this.players[boltOwner.number - 1] = boltOwner;
+        // this.projectiles.find(x => x.id === bolt.id) = bolt;
+        let x = this.projectiles.find((x) => x.id === bolt.id);
+        x = bolt;
+      }
+    } else {
+      if (targetType === "player") {
+        // START HERE!!!
+        damage = 0;
+        doubleHitChance = 2;
+        singleHitChance = 1;
+
+        if (target.currentArmor.name !== "") {
+          // console.log('opponent armour found');
+          switch (target.currentArmor.effect) {
+            case "dblhit-5":
+              doubleHitChance += 5;
+              break;
+            case "dblhit-10":
+              doubleHitChance += 10;
+              break;
+            case "dblhit-15":
+              doubleHitChance += 15;
+              break;
+            // case 'dblhit-30' :
+            //   doubleHitChance = target.crits.doubleHit+30;
+            // break;
+            case "snghit-5":
+              singleHitChance += 5;
+              break;
+            case "snghit-10":
+              singleHitChance += 10;
+              break;
+          }
+        }
+
+        let doubleHit = this.rnJesus(1, doubleHitChance);
+        let singleHit = this.rnJesus(1, singleHitChance);
+
+        // BACK ATTACK
+        if (target.direction === bolt.direction) {
+          damage = 2;
+        }
+
+        if (singleHit === 1) {
+          damage = 1;
+        }
+        if (doubleHit === 1) {
+          damage = 2;
+        }
+        if (!target.popups.find((x) => x.msg.split("_")[0] === "hpDown")) {
+          target.popups.push({
+            state: false,
+            count: 0,
+            limit: 30,
+            type: "",
+            position: "",
+            msg: "hpDown_" + "-" + damage + "",
+            img: "",
+          });
+        }
+        target.hp -= damage;
+        if (target.hp === 1) {
+          target.attackStrength = 1;
+
+          // ADJUST TARGET MOVE SPEED
+          let currentMoveSpeedIndx = target.speed.range.indexOf(target.speed.move);
+          if (currentMoveSpeedIndx > 0) {
+            target.speed.move = target.speed.range[currentMoveSpeedIndx - 1];
+          }
+          // target.speed.move = .05;
+        }
+
+        if (target.hp > 0) {
+          this.attackedCancel(target);
+        }
+
+        // KILL OPPONENT!
+        else {
+          this.killPlayer(target);
+          this.placeItems({
+            init: false,
+            item: this.itemList[this.rnJesus(0, this.itemList.length - 1)].name,
+          });
+        }
+
+        if (bolt.kill !== true) {
+          bolt.kill = true;
+        }
+
+        this.players[target.number - 1] = target;
         // this.projectiles.find(x => x.id === bolt.id) = bolt;
         let x = this.projectiles.find((x) => x.id === bolt.id);
         x = bolt;
@@ -18915,6 +19008,8 @@ class App extends Component {
             }
           }
         }
+      } else {
+        //ALSO START HERE!!!
       }
     }
 
@@ -19543,6 +19638,8 @@ class App extends Component {
             }
           }
         }
+      } else {
+        // CONTINUE HERE!!
       }
     }
 
