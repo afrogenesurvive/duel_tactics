@@ -9585,60 +9585,28 @@ class App extends Component {
 
     switch (direction) {
       case "north":
-        if (range === 1) {
-          cellNumber = {
-            x: originCellNumber.x,
-            y: originCellNumber.y - 1,
-          };
-        }
-        if (range === 2) {
-          cellNumber = {
-            x: originCellNumber.x,
-            y: originCellNumber.y - 2,
-          };
-        }
+        cellNumber = {
+          x: originCellNumber.x,
+          y: originCellNumber.y - range,
+        };
         break;
       case "east":
-        if (range === 1) {
-          cellNumber = {
-            x: originCellNumber.x + 1,
-            y: originCellNumber.y,
-          };
-        }
-        if (range === 2) {
-          cellNumber = {
-            x: originCellNumber.x + 2,
-            y: originCellNumber.y,
-          };
-        }
+        cellNumber = {
+          x: originCellNumber.x + range,
+          y: originCellNumber.y,
+        };
         break;
       case "west":
-        if (range === 1) {
-          cellNumber = {
-            x: originCellNumber.x - 1,
-            y: originCellNumber.y,
-          };
-        }
-        if (range === 2) {
-          cellNumber = {
-            x: originCellNumber.x - 2,
-            y: originCellNumber.y,
-          };
-        }
+        cellNumber = {
+          x: originCellNumber.x - range,
+          y: originCellNumber.y,
+        };
         break;
       case "south":
-        if (range === 1) {
-          cellNumber = {
-            x: originCellNumber.x,
-            y: originCellNumber.y + 1,
-          };
-        }
-        if (range === 2) {
-          cellNumber = {
-            x: originCellNumber.x,
-            y: originCellNumber.y + 2,
-          };
-        }
+        cellNumber = {
+          x: originCellNumber.x,
+          y: originCellNumber.y + range,
+        };
         break;
       default:
         break;
@@ -10768,28 +10736,37 @@ class App extends Component {
         if (targetCell.obstacle.trap.direction === "") {
           availibleCells = this.getSurroundingCells(targetCell.number, 5, "walkable", false, false);
           if (availibleCells.length > 0) {
-            targetCell.obstacle.trap.target = availibleCells[0];
+            if (targetCell.obstacle.trap.item.subType === "crossbow") {
+              targetCell.obstacle.trap.target =
+                availibleCells[Math.ceil(availibleCells.length / 2)];
+            } else {
+              targetCell.obstacle.trap.target = availibleCells[0];
+            }
             console.log("trap target reset after moving trap");
           } else {
             targetCell.obstacle.trap.state = false;
             console.log(`Obstacle trap disables because there is no appropriate target cell`);
           }
         } else {
-          let cell = this.getCellFromDirection(
-            1,
-            targetCell.number,
-            targetCell.obstacle.trap.direction
-          );
+          let cell;
+          if (targetCell.obstacle.trap.item.subType === "crossbow") {
+            cell = this.getCellFromDirection(3, data.number, targetCell.obstacle.trap.direction);
+          }
+          if (targetCell.obstacle.trap.item.subType === "spear") {
+            cell = this.getCellFromDirection(2, data.number, targetCell.obstacle.trap.direction);
+          }
+          if (targetCell.obstacle.trap.item.subType === "sword") {
+            cell = this.getCellFromDirection(1, data.number, targetCell.obstacle.trap.direction);
+          }
           if (!this.gridInfo.find((x) => cell.x === x.number.x && cell.y === x.number.y)) {
             targetCell.obstacle.trap.state = false;
-            console.log(`Obstacle trap disables because there is no appropriate target cell`);
+            // console.log(
+            //   `obstacletrap disabled because there is no appropriate target cell`,
+            //   data.number
+            // );
           } else {
-            targetCell.obstacle.trap.target = this.getCellFromDirection(
-              1,
-              targetCell.number,
-              targetCell.obstacle.trap.direction
-            );
-            console.log("trap target reset after moving");
+            targetCell.obstacle.trap.target = cell;
+            // console.log("trap target set", data.number, targetCell.obstacle.trap.target, targetCell.obstacle.trap.ammo);
           }
         }
       }
@@ -11650,7 +11627,11 @@ class App extends Component {
         if (trap.direction === "") {
           availibleCells = this.getSurroundingCells(data.number, 5, "walkable", false, false);
           if (availibleCells.length > 0) {
-            trap.target = availibleCells[0];
+            if (trap.item.subType === "crossbow") {
+              trap.target = availibleCells[Math.ceil(availibleCells.length / 2)];
+            } else {
+              trap.target = availibleCells[0];
+            }
             // console.log("trap target set", data.number, trap.target, trap.ammo);
           } else {
             trap.state = false;
@@ -11660,7 +11641,16 @@ class App extends Component {
             // );
           }
         } else {
-          let cell = this.getCellFromDirection(1, data.number, trap.direction);
+          let cell;
+          if (trap.item.subType === "crossbow") {
+            cell = this.getCellFromDirection(3, data.number, trap.direction);
+          }
+          if (trap.item.subType === "spear") {
+            cell = this.getCellFromDirection(2, data.number, trap.direction);
+          }
+          if (trap.item.subType === "sword") {
+            cell = this.getCellFromDirection(1, data.number, trap.direction);
+          }
           if (!this.gridInfo.find((x) => cell.x === x.number.x && cell.y === x.number.y)) {
             trap.state = false;
             // console.log(
@@ -11668,7 +11658,7 @@ class App extends Component {
             //   data.number
             // );
           } else {
-            trap.target = this.getCellFromDirection(1, data.number, trap.direction);
+            trap.target = cell;
             // console.log("trap target set", data.number, trap.target, trap.ammo);
           }
         }
