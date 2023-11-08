@@ -1366,7 +1366,7 @@ class App extends Component {
             enabled: true,
             state: false,
             count: 0,
-            limit: 5,
+            limit: 15,
           },
           trigger: {
             type: "player",
@@ -11594,10 +11594,11 @@ class App extends Component {
             if (!trap.persistent) {
               if (trap.remaining <= 0) {
                 trap.state = false;
-                console.log(`This ${ownerType} trap is not persistent and has no fires remaining`);
+                console.log(
+                  `This ${ownerType} trap is not persistent and has no fires remaining. Disabling`
+                );
               }
               if (trap.remaining > 0) {
-                trap.remaining--;
                 if (trap.timer.enabled) {
                   if (trap.timer.state === false) {
                     trap.timer.state = true;
@@ -11612,6 +11613,7 @@ class App extends Component {
                       trap.timer.count = 0;
                       trap.timer.state = false;
                       executeTrapAction();
+                      trap.remaining--;
                     }
                   }
                 }

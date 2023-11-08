@@ -146,7 +146,6 @@ const CellInfo = (props) => {
                       <li>
                         <p>Destruct: {props.clicked.cell.obstacle.destructible.state.toString()}</p>
                       </li>
-                      {props.clicked.cell.obstacle.trap.state.toString()}
                       {props.clicked.cell.obstacle.trap.state === true && (
                         <ul className="popoverList">
                           <li>
@@ -170,6 +169,16 @@ const CellInfo = (props) => {
                               {props.clicked.cell.obstacle.trap.ammo})
                             </p>
                           </li>
+                          <li>
+                            <p>
+                              Persitent: {props.clicked.cell.obstacle.trap.persistent.toString()}
+                            </p>
+                          </li>
+                          {!props.clicked.cell.obstacle.trap.persistent && (
+                            <li>
+                              <p>Remaining: {props.clicked.cell.obstacle.trap.remaining}</p>
+                            </li>
+                          )}
                         </ul>
                       )}
                     </ul>
