@@ -11740,8 +11740,16 @@ class App extends Component {
           elem.number.x === owner.currentPosition.cell.number.x &&
           elem.number.y === owner.currentPosition.cell.number.y
       );
-      cell1Free = target.cell1.free;
-      cell2Free = target.cell2.free;
+      targetCell1 = this.gridInfo.find(
+        (x) =>
+          x.number.x === owner.target.cell1.number.x && x.number.y === owner.target.cell1.number.y
+      );
+      targetCell2 = this.gridInfo.find(
+        (x) =>
+          x.number.x === owner.target.cell2.number.x && x.number.y === owner.target.cell2.number.y
+      );
+      cell1Free = owner.target.cell1.free;
+      cell2Free = owner.target.cell2.free;
       myCellBlock = owner.target.myCellBlock;
       ownerDirection = owner.direction;
       ownerWeaponType = owner.currentWeapon.type;
@@ -11752,10 +11760,15 @@ class App extends Component {
       cell2Rubble = owner.target.cell2.occupant.type === "rubble";
     } else {
       myCell = this.gridInfo.find((x) => x[ownerType].id === owner.id);
+      ownerDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
+      let cell1 = this.getCellFromDirection(1, myCell.number, ownerDirection);
+      let cell2 = this.getCellFromDirection(2, myCell.number, ownerDirection);
+      targetCell1 = this.gridInfo.find((x) => x.number.x === cell1.x && x.number.y === cell1.y);
+      targetCell2 = this.gridInfo.find((x) => x.number.x === cell2.x && x.number.y === cell2.y);
       cell1Free = this.checkCell(targetCell1.number);
       cell2Free = this.checkCell(targetCell2.number);
       myCellBlock = this.checkMyCellBarrier(ownerDirection, myCell);
-      ownerDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
+
       ownerWeaponType = owner.trap.item.subType;
       ownerWeaponType = owner.trap.item.name;
       cell1Item = targetCell1.item.name !== "";
@@ -12006,510 +12019,391 @@ class App extends Component {
       this.players[owner.number - 1] = owner;
     }
   };
-  meleeAttackParse = (ownerType, player, cellNo) => {
+  meleeAttackParse = (ownerType, owner, cellNo) => {
     // console.log('meleeAttackParse',player.target['cell'+cellNo].occupant.type,this.players[player.target['cell'+cellNo].occupant.player-1]);
 
     let attackerRef = player;
     let targetPlayerRef = undefined;
-    let weapon = player.currentWeapon.type;
+
+    let targetCell1;
+    let targetCell2;
+    let myCell;
+    let ownerWeaponName;
+    let ownerWeaponType;
+    let ownerDirection;
+    let cell1Item;
+    let cell1Rubble;
+    let cell2Item;
+    let cell2Rubble;
 
     // ATTACK STAM UNARMED CHECK & AND POPUPS SET
     let playerAttackStamType;
-    if (player.currentWeapon.name !== "") {
-      playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].normal;
-    }
 
-    if (player.bluntAttack === true && player.currentWeapon.name !== "") {
-      playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].blunt;
-    }
-    if (player.currentWeapon.name === "") {
-      playerAttackStamType = this.staminaCostRef.attack.unarmed.normal;
-      if (player.bluntAttack === true) {
-        playerAttackStamType = this.staminaCostRef.attack.unarmed.blunt;
-      }
-      weapon = "unarmed";
-
-      if (player.bluntAttack === true) {
-        if (!player.popups.find((x) => x.msg === "attackingBlunt")) {
-          player.popups.push({
-            state: false,
-            count: 0,
-            limit: this.attackAnimRef.limit[weapon] - this.attackAnimRef.peak[weapon],
-            type: "",
-            position: "",
-            msg: "attackingBlunt",
-            img: "",
-          });
-        }
-      } else {
-        if (!player.popups.find((x) => x.msg === "attackingUnarmed")) {
-          player.popups.push({
-            state: false,
-            count: 0,
-            limit: this.attackAnimRef.limit.unarmed - this.attackAnimRef.peak.unarmed,
-            type: "",
-            position: "",
-            msg: "attackingUnarmed",
-            img: "",
-          });
-        }
-      }
-    } else {
-      if (player.bluntAttack === true) {
-        if (!player.popups.find((x) => x.msg === "attackingBlunt")) {
-          player.popups.push({
-            state: false,
-            count: 0,
-            limit: this.attackAnimRef.limit[weapon] - this.attackAnimRef.peak[weapon],
-            type: "",
-            position: "",
-            msg: "attackingBlunt",
-            img: "",
-          });
-        }
-      } else {
-        if (!player.popups.find((x) => x.msg === "attacking")) {
-          player.popups.push({
-            state: false,
-            count: 0,
-            limit:
-              this.attackAnimRef.limit[player.currentWeapon.type] -
-              this.attackAnimRef.peak[player.currentWeapon.type],
-            type: "",
-            position: "",
-            msg: "attacking",
-            img: "",
-          });
-        }
-      }
-    }
-
-    //TARGET IS PROJECTILE!!
-    if (this.isBoltInCell(player.target["cell" + cellNo].number) === true) {
-      this.projectiles.find(
+    if (ownerType === "player") {
+      myCell = this.gridInfo.find(
+        (elem) =>
+          elem.number.x === owner.currentPosition.cell.number.x &&
+          elem.number.y === owner.currentPosition.cell.number.y
+      );
+      targetCell1 = this.gridInfo.find(
         (x) =>
-          x.currentPosition.number.x === player.target["cell" + cellNo].number.x &&
-          x.currentPosition.number.y === player.target["cell" + cellNo].number.y
-      ).kill = true;
-
-      if (!player.popups.find((x) => x.msg === "boltKilled")) {
-        player.popups.push({
-          state: false,
-          count: 0,
-          limit: 30,
-          type: "",
-          position: "",
-          msg: "boltKilled",
-          img: "",
-        });
-      }
-      if (this.rnJesus(0, player.crits.pushBack)) {
-        this.pushBack(player, this.getOppositeDirection(player.direction));
-      }
-      console.log("bolt attacked and killed: v1");
+          x.number.x === owner.target.cell1.number.x && x.number.y === owner.target.cell1.number.y
+      );
+      targetCell2 = this.gridInfo.find(
+        (x) =>
+          x.number.x === owner.target.cell2.number.x && x.number.y === owner.target.cell2.number.y
+      );
+      ownerDirection = owner.direction;
+      ownerWeaponType = owner.currentWeapon.type;
+      ownerWeaponName = owner.currentWeapon.name;
+      cell1Item = owner.target.cell1.occupant.type === "item";
+      cell1Rubble = owner.target.cell1.occupant.type === "rubble";
+      cell2Item = owner.target.cell2.occupant.type === "item";
+      cell2Rubble = owner.target.cell2.occupant.type === "rubble";
+    } else {
+      myCell = this.gridInfo.find((x) => x[ownerType].id === owner.id);
+      ownerDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
+      let cell1 = this.getCellFromDirection(1, myCell.number, ownerDirection);
+      let cell2 = this.getCellFromDirection(2, myCell.number, ownerDirection);
+      targetCell1 = this.gridInfo.find((x) => x.number.x === cell1.x && x.number.y === cell1.y);
+      targetCell2 = this.gridInfo.find((x) => x.number.x === cell2.x && x.number.y === cell2.y);
+      ownerWeaponType = owner.trap.item.subType;
+      ownerWeaponType = owner.trap.item.name;
+      cell1Item = targetCell1.item.name !== "";
+      cell1Rubble = targetCell1.rubble === true;
+      cell2Item = targetCell2.item.name !== "";
+      cell2Rubble = targetCell2.rubble === true;
     }
 
-    // TARGET IS BARRIER/OBSTACLE/ITEM/RUBBLE
-    if (
-      player.target["cell" + cellNo].occupant.type === "item" ||
-      player.target["cell" + cellNo].occupant.type === "obstacle" ||
-      player.target["cell" + cellNo].occupant.type === "barrier" ||
-      player.target["cell" + cellNo].occupant.type === "rubble"
-    ) {
-      let targetCell = this.gridInfo.find(
-        (elem) =>
-          elem.number.x === player.target.cell1.number.x &&
-          elem.number.y === player.target.cell1.number.y
-      );
-      let targetCell2 = this.gridInfo.find(
-        (elem) =>
-          elem.number.x === player.target.cell2.number.x &&
-          elem.number.y === player.target.cell2.number.y
-      );
-      let myCell = this.gridInfo.find(
-        (elem) =>
-          elem.number.x === player.currentPosition.cell.number.x &&
-          elem.number.y === player.currentPosition.cell.number.y
-      );
+    if (ownerType === "player") {
+      if (ownerWeaponName !== "") {
+        playerAttackStamType = this.staminaCostRef.attack[ownerWeaponType].normal;
+      }
 
-      this.attackCellContents(
-        "melee",
-        "player",
-        player,
-        targetCell,
-        targetCell2,
-        myCell,
-        undefined
-      );
+      if (owner.bluntAttack === true && ownerWeaponName !== "") {
+        playerAttackStamType = this.staminaCostRef.attack[ownerWeaponType].blunt;
+      }
+      if (ownerWeaponName === "") {
+        playerAttackStamType = this.staminaCostRef.attack.unarmed.normal;
+        if (owner.bluntAttack === true) {
+          playerAttackStamType = this.staminaCostRef.attack.unarmed.blunt;
+        }
+        weapon = "unarmed";
+
+        if (owner.bluntAttack === true) {
+          if (!owner.popups.find((x) => x.msg === "attackingBlunt")) {
+            owner.popups.push({
+              state: false,
+              count: 0,
+              limit:
+                this.attackAnimRef.limit[ownerWeaponType] -
+                this.attackAnimRef.peak[ownerWeaponType],
+              type: "",
+              position: "",
+              msg: "attackingBlunt",
+              img: "",
+            });
+          }
+        } else {
+          if (!owner.popups.find((x) => x.msg === "attackingUnarmed")) {
+            owner.popups.push({
+              state: false,
+              count: 0,
+              limit: this.attackAnimRef.limit.unarmed - this.attackAnimRef.peak.unarmed,
+              type: "",
+              position: "",
+              msg: "attackingUnarmed",
+              img: "",
+            });
+          }
+        }
+      } else {
+        if (owner.bluntAttack === true) {
+          if (!owner.popups.find((x) => x.msg === "attackingBlunt")) {
+            owner.popups.push({
+              state: false,
+              count: 0,
+              limit:
+                this.attackAnimRef.limit[ownerWeaponType] -
+                this.attackAnimRef.peak[ownerWeaponType],
+              type: "",
+              position: "",
+              msg: "attackingBlunt",
+              img: "",
+            });
+          }
+        } else {
+          if (!owner.popups.find((x) => x.msg === "attacking")) {
+            owner.popups.push({
+              state: false,
+              count: 0,
+              limit:
+                this.attackAnimRef.limit[ownerWeaponType] -
+                this.attackAnimRef.peak[ownerWeaponType],
+              type: "",
+              position: "",
+              msg: "attacking",
+              img: "",
+            });
+          }
+        }
+      }
+    }
+
+    if (cellNo === 1) {
+      //TARGET IS PROJECTILE!!
+      if (this.isBoltInCell(targetCell1.number) === true) {
+        this.projectiles.find(
+          (x) =>
+            x.currentPosition.number.x === targetCell1.number.x &&
+            x.currentPosition.number.y === targetCell1.number.y
+        ).kill = true;
+
+        if (ownerType === "player") {
+          if (!owner.popups.find((x) => x.msg === "boltKilled")) {
+            owner.popups.push({
+              state: false,
+              count: 0,
+              limit: 30,
+              type: "",
+              position: "",
+              msg: "boltKilled",
+              img: "",
+            });
+          }
+          if (this.rnJesus(0, owner.crits.pushBack)) {
+            this.pushBack(owner, this.getOppositeDirection(owner.direction));
+          }
+        }
+
+        console.log("bolt attacked and killed: v1");
+      }
+
+      // TARGET IS BARRIER/OBSTACLE/ITEM/RUBBLE
+      if (
+        cell1Item === true ||
+        cell1Rubble === true ||
+        targetCell1.obstacle.state === true ||
+        targetCell1.barrier.state === true
+      ) {
+        this.attackCellContents(
+          "melee",
+          ownerType,
+          owner,
+          targetCell,
+          targetCell2,
+          myCell,
+          undefined
+        );
+      }
+    }
+    if (cellNo === 2) {
+      //TARGET IS PROJECTILE!!
+      if (this.isBoltInCell(targetCell2.number) === true) {
+        this.projectiles.find(
+          (x) =>
+            x.currentPosition.number.x === targetCell2.number.x &&
+            x.currentPosition.number.y === targetCell2.number.y
+        ).kill = true;
+
+        if (ownerType === "player") {
+          if (!owner.popups.find((x) => x.msg === "boltKilled")) {
+            owner.popups.push({
+              state: false,
+              count: 0,
+              limit: 30,
+              type: "",
+              position: "",
+              msg: "boltKilled",
+              img: "",
+            });
+          }
+          if (this.rnJesus(0, owner.crits.pushBack)) {
+            this.pushBack(owner, this.getOppositeDirection(owner.direction));
+          }
+        }
+
+        console.log("bolt attacked and killed: v1");
+      }
+
+      // TARGET IS BARRIER/OBSTACLE/ITEM/RUBBLE
+      if (
+        cell2Item === true ||
+        cell2Rubble === true ||
+        targetCell2.obstacle.state === true ||
+        targetCell2.barrier.state === true
+      ) {
+        this.attackCellContents(
+          "melee",
+          ownerType,
+          owner,
+          targetCell,
+          targetCell2,
+          myCell,
+          undefined
+        );
+      }
     }
 
     // TARGET IS A PLAYER
-    if (player.target["cell" + cellNo].occupant.type === "player") {
-      targetPlayerRef = this.players[player.target["cell" + cellNo].occupant.player - 1];
-
-      if (targetPlayerRef) {
-        // IS TARGET DEFENDING?
-        let targetDefending = false;
-        let defendType = targetPlayerRef.currentWeapon.type;
-        if (targetPlayerRef.currentWeapon.name === "") {
-          defendType = "unarmed";
-        }
-        let defendPeak = this.defendAnimRef.peak[defendType];
+    for (const plyr of this.players) {
+      if (cellNo === 1) {
         if (
-          targetPlayerRef.defending.count === defendPeak ||
-          targetPlayerRef.defendDecay.state === true
+          plyr.currentPosition.cell.number.x === targetCell1.number.x &&
+          plyr.currentPosition.cell.number.y === targetCell1.number.y
         ) {
-          targetDefending = true;
+          targetPlayerRef = plyr;
         }
+      }
+      if (cellNo === 2) {
+        if (
+          plyr.currentPosition.cell.number.x === targetCell2.number.x &&
+          plyr.currentPosition.cell.number.y === targetCell2.number.y
+        ) {
+          targetPlayerRef = plyr;
+        }
+      }
+    }
+    if (targetPlayerRef) {
+      // IS TARGET DEFENDING?
+      let targetDefending = false;
+      let defendType = targetPlayerRef.currentWeapon.type;
+      if (targetPlayerRef.currentWeapon.name === "") {
+        defendType = "unarmed";
+      }
+      let defendPeak = this.defendAnimRef.peak[defendType];
+      if (
+        targetPlayerRef.defending.count === defendPeak ||
+        targetPlayerRef.defendDecay.state === true
+      ) {
+        targetDefending = true;
+      }
 
-        let advantage = this.checkCombatAdvantage(player, targetPlayerRef);
+      let advantage = this.checkCombatAdvantage(player, targetPlayerRef);
 
-        // BACK ATTACK
-        if (player.direction === targetPlayerRef.direction) {
-          // TARGET DODGING BACK ATTACK
-          if (targetPlayerRef.dodging.state === true) {
-            console.log(
-              "player ",
-              player.number,
-              " just dodged player ",
-              targetPlayerRef.number,
-              " back attack"
-            );
+      // BACK ATTACK
+      if (ownerDirection === targetPlayerRef.direction) {
+        // TARGET DODGING BACK ATTACK
+        if (targetPlayerRef.dodging.state === true) {
+          console.log(
+            "player ",
+            player.number,
+            " just dodged player ",
+            targetPlayerRef.number,
+            " back attack"
+          );
 
-            player.stamina.current -= playerAttackStamType.pre;
-            targetPlayerRef.stamina.current += this.staminaCostRef.dodge.pre;
+          player.stamina.current -= playerAttackStamType.pre;
+          targetPlayerRef.stamina.current += this.staminaCostRef.dodge.pre;
 
-            if (!player.popups.find((x) => x.msg === "missedAttack2")) {
-              player.popups.push({
-                state: false,
-                count: 0,
-                limit: 30,
-                type: "",
-                position: "",
-                msg: "missedAttack2",
-                img: "",
-              });
-            }
-
-            if (player.bluntAttack === true) {
-              player.bluntAttack = false;
-            }
+          if (!player.popups.find((x) => x.msg === "missedAttack2")) {
+            player.popups.push({
+              state: false,
+              count: 0,
+              limit: 30,
+              type: "",
+              position: "",
+              msg: "missedAttack2",
+              img: "",
+            });
           }
 
-          //TARGET NOT DODGING. VULNERABLE TO BACK ATTACK
+          if (player.bluntAttack === true) {
+            player.bluntAttack = false;
+          }
+        }
+
+        //TARGET NOT DODGING. VULNERABLE TO BACK ATTACK
+        else {
+          if (player.bluntAttack === true) {
+            this.setDeflection(targetPlayerRef, "bluntAttacked", false);
+          } else {
+            this.handleMeleeDamage(player, targetPlayerRef);
+          }
+        }
+      }
+
+      // SIDE ATTACK
+      if (
+        targetPlayerRef.direction !== player.direction &&
+        targetPlayerRef.direction !== this.getOppositeDirection(player.direction)
+      ) {
+        // TARGET PLAYER IS DODGING
+        if (targetPlayerRef.dodging.state === true) {
+          console.log(
+            "player ",
+            player.number,
+            " just dodged player ",
+            targetPlayerRef.number,
+            " side attack"
+          );
+
+          player.stamina.current -= playerAttackStamType.pre;
+          targetPlayerRef.stamina.current += this.staminaCostRef.dodge.pre;
+
+          if (!player.popups.find((x) => x.msg === "missedAttack2")) {
+            player.popups.push({
+              state: false,
+              count: 0,
+              limit: 30,
+              type: "",
+              position: "",
+              msg: "missedAttack2",
+              img: "",
+            });
+          }
+
+          if (player.bluntAttack === true) {
+            player.bluntAttack = false;
+          }
+        }
+
+        // TARGET PLAYER DEFENDING
+        if (targetDefending === true) {
+          // BLUNT ATTACK IS MADE FOR BREAKING DEFENSE
+          if (player.bluntAttack === true) {
+            this.setDeflection(targetPlayerRef, "bluntAttacked", false);
+          }
+
+          // ATTACKER NON-BLUNT ATTACK
           else {
-            if (player.bluntAttack === true) {
-              this.setDeflection(targetPlayerRef, "bluntAttacked", false);
-            } else {
-              this.handleMeleeDamage(player, targetPlayerRef);
-            }
-          }
-        }
+            // DEFENDER ADVANTAGE
+            if (advantage === 2 || advantage === 0) {
+              // PEAK DEFEND/PARRY
+              if (targetPlayerRef.defendPeak === true) {
+                this.setDeflection(player, "defended", true);
 
-        // SIDE ATTACK
-        if (
-          targetPlayerRef.direction !== player.direction &&
-          targetPlayerRef.direction !== this.getOppositeDirection(player.direction)
-        ) {
-          // TARGET PLAYER IS DODGING
-          if (targetPlayerRef.dodging.state === true) {
-            console.log(
-              "player ",
-              player.number,
-              " just dodged player ",
-              targetPlayerRef.number,
-              " side attack"
-            );
-
-            player.stamina.current -= playerAttackStamType.pre;
-            targetPlayerRef.stamina.current += this.staminaCostRef.dodge.pre;
-
-            if (!player.popups.find((x) => x.msg === "missedAttack2")) {
-              player.popups.push({
-                state: false,
-                count: 0,
-                limit: 30,
-                type: "",
-                position: "",
-                msg: "missedAttack2",
-                img: "",
-              });
-            }
-
-            if (player.bluntAttack === true) {
-              player.bluntAttack = false;
-            }
-          }
-
-          // TARGET PLAYER DEFENDING
-          if (targetDefending === true) {
-            // BLUNT ATTACK IS MADE FOR BREAKING DEFENSE
-            if (player.bluntAttack === true) {
-              this.setDeflection(targetPlayerRef, "bluntAttacked", false);
-            }
-
-            // ATTACKER NON-BLUNT ATTACK
-            else {
-              // DEFENDER ADVANTAGE
-              if (advantage === 2 || advantage === 0) {
-                // PEAK DEFEND/PARRY
-                if (targetPlayerRef.defendPeak === true) {
-                  this.setDeflection(player, "defended", true);
-
-                  targetPlayerRef.stamina.current += this.staminaCostRef.defend.peak;
-                  targetPlayerRef.success.defendSuccess = {
-                    state: true,
-                    count: 1,
-                    limit: targetPlayerRef.success.defendSuccess.limit,
-                  };
-                  targetPlayerRef.statusDisplay = {
-                    state: true,
-                    status: "Parry!",
-                    count: 1,
-                    limit: targetPlayerRef.statusDisplay.limit,
-                  };
-                  if (!targetPlayerRef.popups.find((x) => x.msg === "attackParried")) {
-                    targetPlayerRef.popups.push({
-                      state: false,
-                      count: 0,
-                      limit: 30,
-                      type: "",
-                      position: "",
-                      msg: "attackParried",
-                      img: "",
-                    });
-                  }
-                }
-
-                // OFF PEAK DEFEND. DEFENSE NOT GUARANTEED
-                // if (targetPlayerRef.defendDecay.state === true && targetPlayerRef.defendPeak !== true) {
-                if (targetPlayerRef.defendPeak !== true) {
-                  // DEFEND SUCCESS
-                  if (this.rnJesus(1, targetPlayerRef.crits.guardBreak) === 1) {
-                    this.setDeflection(player, "defended", false);
-                    targetPlayerRef.success.defendSuccess = {
-                      state: true,
-                      count: 1,
-                      limit: targetPlayerRef.success.defendSuccess.limit,
-                    };
-                    targetPlayerRef.statusDisplay = {
-                      state: true,
-                      status: "Defend",
-                      count: 1,
-                      limit: targetPlayerRef.statusDisplay.limit,
-                    };
-                    if (!targetPlayerRef.popups.find((x) => x.msg === "defendSuccess")) {
-                      targetPlayerRef.popups.push({
-                        state: false,
-                        count: 0,
-                        limit: 25,
-                        type: "",
-                        position: "",
-                        msg: "defendSuccess",
-                        img: "",
-                      });
-                    }
-                  }
-
-                  // DEFEND FAILURE
-                  else {
-                    this.setDeflection(targetPlayerRef, "attacked", false);
-                    this.handleMeleeDamage(player, targetPlayerRef);
-                  }
-                }
-              }
-
-              // ATTACKER/PLAYER ADVANTAGE
-              else if (advantage === 1) {
-                this.handleMeleeDamage(player, targetPlayerRef);
-                this.setDeflection(targetPlayerRef, "attacked", false);
-                player.success.attackSuccess = {
+                targetPlayerRef.stamina.current += this.staminaCostRef.defend.peak;
+                targetPlayerRef.success.defendSuccess = {
                   state: true,
                   count: 1,
-                  limit: player.success.attackSuccess.limit,
+                  limit: targetPlayerRef.success.defendSuccess.limit,
                 };
-              }
-            }
-          }
-
-          // TARGET PLAYER NOT DODGING OR DEFENDING
-          else {
-            // PLAYER BLUNT ATK SUCCESS, TARGET DEFLECTED
-            if (player.bluntAttack === true) {
-              player.bluntAttack = false;
-              this.setDeflection(targetPlayerRef, "bluntAttacked", false);
-              player.success.attackSuccess = {
-                state: true,
-                count: 1,
-                limit: player.success.attackSuccess.limit,
-              };
-            }
-
-            // PLAYER ATK SUCCESS, TARGET DEFLECTED + DAMAGE
-            else {
-              this.handleMeleeDamage(player, targetPlayerRef);
-              this.setDeflection(targetPlayerRef, "attacked", false);
-              player.success.attackSuccess = {
-                state: true,
-                count: 1,
-                limit: player.success.attackSuccess.limit,
-              };
-            }
-          }
-        }
-
-        // TARGET & PLAYER ARE FACE TO FACE
-        if (player.direction === this.getOppositeDirection(targetPlayerRef.direction)) {
-          // TARGET DODGING
-          if (targetPlayerRef.dodging.state === true) {
-            console.log(
-              "player ",
-              player.number,
-              " just dodged player ",
-              targetPlayerRef.number,
-              " back attack"
-            );
-
-            player.stamina.current -= playerAttackStamType.pre;
-            targetPlayerRef.stamina.current += this.staminaCostRef.dodge.pre;
-
-            if (!player.popups.find((x) => x.msg === "missedAttack2")) {
-              player.popups.push({
-                state: false,
-                count: 0,
-                limit: 30,
-                type: "",
-                position: "",
-                msg: "missedAttack2",
-                img: "",
-              });
-            }
-
-            if (player.bluntAttack === true) {
-              player.bluntAttack = false;
-            }
-          }
-
-          // TARGET ALSO ATTACKING
-          if (targetPlayerRef.attackPeak === true) {
-            // EVENLY MATCHED. CLASHING
-            if (advantage === 0) {
-              player.clashing.state = true;
-              targetPlayerRef.clashing.state = true;
-
-              // PUSHBACK ATTACKER/PLAYER
-              if (this.rnJesus(0, 2) === 0) {
-                this.pushBack(player, this.getOppositeDirection(player.direction));
-              }
-              // PUSHBACK DEFENDER/TARGET
-              if (this.rnJesus(0, 2) === 1) {
-                this.pushBack(
-                  targetPlayerRef,
-                  this.getOppositeDirection(targetPlayerRef.direction)
-                );
-              }
-              // PUSHBACK BOTH PLAYERS
-              if (this.rnJesus(0, 2) === 2) {
-                this.pushBack(player, this.getOppositeDirection(player.direction));
-                this.pushBack(
-                  targetPlayerRef,
-                  this.getOppositeDirection(targetPlayerRef.direction)
-                );
-              }
-            }
-
-            // PLAYER ADVANTAGE
-            if (advantage === 1) {
-              this.handleMeleeDamage(player, targetPlayerRef);
-              this.setDeflection(targetPlayerRef, "attacked", false);
-              player.success.attackSuccess = {
-                state: true,
-                count: 1,
-                limit: player.success.attackSuccess.limit,
-              };
-            }
-
-            // TARGET ADVANTAGE
-            if (advantage === 2) {
-              this.handleMeleeDamage(targetPlayerRef, player);
-              this.setDeflection(player, "attacked", false);
-              targetPlayerRef.success.attackSuccess = {
-                state: true,
-                count: 1,
-                limit: targetPlayerRef.success.attackSuccess.limit,
-              };
-            }
-          }
-
-          // TARGET DEFENDING
-          if (targetDefending === true) {
-            // BLUNT ATTACK IS MADE FOR BREAKING DEFENSE
-            if (player.bluntAttack === true) {
-              this.setDeflection(targetPlayerRef, "attacked", false);
-              player.success.attackSuccess = {
-                state: true,
-                count: 1,
-                limit: player.success.attackSuccess.limit,
-              };
-            }
-
-            // ATTACKER NON-BLUNT ATTACK
-            else {
-              // TARGET ADVANTAGE/ EVENLY MATCHED
-              if (advantage === 0 || advantage === 2) {
-                console.log(
-                  "evenly matched. peak",
-                  targetPlayerRef.defendPeak,
-                  "defending",
-                  targetPlayerRef.defending,
-                  "decay",
-                  targetPlayerRef.defendDecay
-                );
-
-                // PEAK DEFEND
-                if (targetPlayerRef.defendPeak === true) {
-                  console.log("yyy");
-
-                  this.setDeflection(player, "parried", true);
-
-                  targetPlayerRef.stamina.current += this.staminaCostRef.defend.peak;
-                  targetPlayerRef.success.defendSuccess = {
-                    state: true,
-                    count: 1,
-                    limit: targetPlayerRef.success.defendSuccess.limit,
-                  };
-                  targetPlayerRef.statusDisplay = {
-                    state: true,
-                    status: "Parry!",
-                    count: 1,
-                    limit: targetPlayerRef.statusDisplay.limit,
-                  };
-                  if (!targetPlayerRef.popups.find((x) => x.msg === "attackParried")) {
-                    targetPlayerRef.popups.push({
-                      state: false,
-                      count: 0,
-                      limit: 30,
-                      type: "",
-                      position: "",
-                      msg: "attackParried",
-                      img: "",
-                    });
-                  }
+                targetPlayerRef.statusDisplay = {
+                  state: true,
+                  status: "Parry!",
+                  count: 1,
+                  limit: targetPlayerRef.statusDisplay.limit,
+                };
+                if (!targetPlayerRef.popups.find((x) => x.msg === "attackParried")) {
+                  targetPlayerRef.popups.push({
+                    state: false,
+                    count: 0,
+                    limit: 30,
+                    type: "",
+                    position: "",
+                    msg: "attackParried",
+                    img: "",
+                  });
                 }
+              }
 
-                // OFF PEAK DEFEND
-                if (targetPlayerRef.defendPeak !== true) {
-                  // if (targetPlayerRef.defendDecay.state === true && targetPlayerRef.defendPeak !== true) {
-
-                  // PUSHBACK AND/OR DEFLECT ATTACKER/PLAYER?
-                  if (this.rnJesus(1, player.crits.pushBack) === 1) {
-                    this.setDeflection(player, "defended", true);
-                  }
-                  // JUST DEFLECT
-                  else {
-                    this.setDeflection(player, "defended", false);
-                  }
-
+              // OFF PEAK DEFEND. DEFENSE NOT GUARANTEED
+              // if (targetPlayerRef.defendDecay.state === true && targetPlayerRef.defendPeak !== true) {
+              if (targetPlayerRef.defendPeak !== true) {
+                // DEFEND SUCCESS
+                if (this.rnJesus(1, targetPlayerRef.crits.guardBreak) === 1) {
+                  this.setDeflection(player, "defended", false);
                   targetPlayerRef.success.defendSuccess = {
                     state: true,
                     count: 1,
@@ -12533,28 +12427,43 @@ class App extends Component {
                     });
                   }
                 }
-              }
 
-              // PLAYER/ATTACKER ADVANTAGE
-              if (advantage === 1) {
-                console.log("aaa");
-                this.handleMeleeDamage(player, targetPlayerRef);
-                this.setDeflection(targetPlayerRef, "attacked", false);
-                player.success.attackSuccess = {
-                  state: true,
-                  count: 1,
-                  limit: player.success.attackSuccess.limit,
-                };
+                // DEFEND FAILURE
+                else {
+                  this.setDeflection(targetPlayerRef, "attacked", false);
+                  this.handleMeleeDamage(player, targetPlayerRef);
+                }
               }
             }
+
+            // ATTACKER/PLAYER ADVANTAGE
+            else if (advantage === 1) {
+              this.handleMeleeDamage(player, targetPlayerRef);
+              this.setDeflection(targetPlayerRef, "attacked", false);
+              player.success.attackSuccess = {
+                state: true,
+                count: 1,
+                limit: player.success.attackSuccess.limit,
+              };
+            }
+          }
+        }
+
+        // TARGET PLAYER NOT DODGING OR DEFENDING
+        else {
+          // PLAYER BLUNT ATK SUCCESS, TARGET DEFLECTED
+          if (player.bluntAttack === true) {
+            player.bluntAttack = false;
+            this.setDeflection(targetPlayerRef, "bluntAttacked", false);
+            player.success.attackSuccess = {
+              state: true,
+              count: 1,
+              limit: player.success.attackSuccess.limit,
+            };
           }
 
-          // TARGET NOT DEFENDING, DODGING OR ATTACKING, DAMAGE
-          if (
-            targetPlayerRef.dodging.state !== true &&
-            targetPlayerRef.attackPeak !== true &&
-            targetDefending !== true
-          ) {
+          // PLAYER ATK SUCCESS, TARGET DEFLECTED + DAMAGE
+          else {
             this.handleMeleeDamage(player, targetPlayerRef);
             this.setDeflection(targetPlayerRef, "attacked", false);
             player.success.attackSuccess = {
@@ -12564,13 +12473,215 @@ class App extends Component {
             };
           }
         }
-
-        this.players[targetPlayerRef.number - 1] = targetPlayerRef;
       }
+
+      // TARGET & PLAYER ARE FACE TO FACE
+      if (player.direction === this.getOppositeDirection(targetPlayerRef.direction)) {
+        // TARGET DODGING
+        if (targetPlayerRef.dodging.state === true) {
+          console.log(
+            "player ",
+            player.number,
+            " just dodged player ",
+            targetPlayerRef.number,
+            " back attack"
+          );
+
+          player.stamina.current -= playerAttackStamType.pre;
+          targetPlayerRef.stamina.current += this.staminaCostRef.dodge.pre;
+
+          if (!player.popups.find((x) => x.msg === "missedAttack2")) {
+            player.popups.push({
+              state: false,
+              count: 0,
+              limit: 30,
+              type: "",
+              position: "",
+              msg: "missedAttack2",
+              img: "",
+            });
+          }
+
+          if (player.bluntAttack === true) {
+            player.bluntAttack = false;
+          }
+        }
+
+        // TARGET ALSO ATTACKING
+        if (targetPlayerRef.attackPeak === true) {
+          // EVENLY MATCHED. CLASHING
+          if (advantage === 0) {
+            player.clashing.state = true;
+            targetPlayerRef.clashing.state = true;
+
+            // PUSHBACK ATTACKER/PLAYER
+            if (this.rnJesus(0, 2) === 0) {
+              this.pushBack(player, this.getOppositeDirection(player.direction));
+            }
+            // PUSHBACK DEFENDER/TARGET
+            if (this.rnJesus(0, 2) === 1) {
+              this.pushBack(targetPlayerRef, this.getOppositeDirection(targetPlayerRef.direction));
+            }
+            // PUSHBACK BOTH PLAYERS
+            if (this.rnJesus(0, 2) === 2) {
+              this.pushBack(player, this.getOppositeDirection(player.direction));
+              this.pushBack(targetPlayerRef, this.getOppositeDirection(targetPlayerRef.direction));
+            }
+          }
+
+          // PLAYER ADVANTAGE
+          if (advantage === 1) {
+            this.handleMeleeDamage(player, targetPlayerRef);
+            this.setDeflection(targetPlayerRef, "attacked", false);
+            player.success.attackSuccess = {
+              state: true,
+              count: 1,
+              limit: player.success.attackSuccess.limit,
+            };
+          }
+
+          // TARGET ADVANTAGE
+          if (advantage === 2) {
+            this.handleMeleeDamage(targetPlayerRef, player);
+            this.setDeflection(player, "attacked", false);
+            targetPlayerRef.success.attackSuccess = {
+              state: true,
+              count: 1,
+              limit: targetPlayerRef.success.attackSuccess.limit,
+            };
+          }
+        }
+
+        // TARGET DEFENDING
+        if (targetDefending === true) {
+          // BLUNT ATTACK IS MADE FOR BREAKING DEFENSE
+          if (player.bluntAttack === true) {
+            this.setDeflection(targetPlayerRef, "attacked", false);
+            player.success.attackSuccess = {
+              state: true,
+              count: 1,
+              limit: player.success.attackSuccess.limit,
+            };
+          }
+
+          // ATTACKER NON-BLUNT ATTACK
+          else {
+            // TARGET ADVANTAGE/ EVENLY MATCHED
+            if (advantage === 0 || advantage === 2) {
+              console.log(
+                "evenly matched. peak",
+                targetPlayerRef.defendPeak,
+                "defending",
+                targetPlayerRef.defending,
+                "decay",
+                targetPlayerRef.defendDecay
+              );
+
+              // PEAK DEFEND
+              if (targetPlayerRef.defendPeak === true) {
+                console.log("yyy");
+
+                this.setDeflection(player, "parried", true);
+
+                targetPlayerRef.stamina.current += this.staminaCostRef.defend.peak;
+                targetPlayerRef.success.defendSuccess = {
+                  state: true,
+                  count: 1,
+                  limit: targetPlayerRef.success.defendSuccess.limit,
+                };
+                targetPlayerRef.statusDisplay = {
+                  state: true,
+                  status: "Parry!",
+                  count: 1,
+                  limit: targetPlayerRef.statusDisplay.limit,
+                };
+                if (!targetPlayerRef.popups.find((x) => x.msg === "attackParried")) {
+                  targetPlayerRef.popups.push({
+                    state: false,
+                    count: 0,
+                    limit: 30,
+                    type: "",
+                    position: "",
+                    msg: "attackParried",
+                    img: "",
+                  });
+                }
+              }
+
+              // OFF PEAK DEFEND
+              if (targetPlayerRef.defendPeak !== true) {
+                // if (targetPlayerRef.defendDecay.state === true && targetPlayerRef.defendPeak !== true) {
+
+                // PUSHBACK AND/OR DEFLECT ATTACKER/PLAYER?
+                if (this.rnJesus(1, player.crits.pushBack) === 1) {
+                  this.setDeflection(player, "defended", true);
+                }
+                // JUST DEFLECT
+                else {
+                  this.setDeflection(player, "defended", false);
+                }
+
+                targetPlayerRef.success.defendSuccess = {
+                  state: true,
+                  count: 1,
+                  limit: targetPlayerRef.success.defendSuccess.limit,
+                };
+                targetPlayerRef.statusDisplay = {
+                  state: true,
+                  status: "Defend",
+                  count: 1,
+                  limit: targetPlayerRef.statusDisplay.limit,
+                };
+                if (!targetPlayerRef.popups.find((x) => x.msg === "defendSuccess")) {
+                  targetPlayerRef.popups.push({
+                    state: false,
+                    count: 0,
+                    limit: 25,
+                    type: "",
+                    position: "",
+                    msg: "defendSuccess",
+                    img: "",
+                  });
+                }
+              }
+            }
+
+            // PLAYER/ATTACKER ADVANTAGE
+            if (advantage === 1) {
+              console.log("aaa");
+              this.handleMeleeDamage(player, targetPlayerRef);
+              this.setDeflection(targetPlayerRef, "attacked", false);
+              player.success.attackSuccess = {
+                state: true,
+                count: 1,
+                limit: player.success.attackSuccess.limit,
+              };
+            }
+          }
+        }
+
+        // TARGET NOT DEFENDING, DODGING OR ATTACKING, DAMAGE
+        if (
+          targetPlayerRef.dodging.state !== true &&
+          targetPlayerRef.attackPeak !== true &&
+          targetDefending !== true
+        ) {
+          this.handleMeleeDamage(player, targetPlayerRef);
+          this.setDeflection(targetPlayerRef, "attacked", false);
+          player.success.attackSuccess = {
+            state: true,
+            count: 1,
+            limit: player.success.attackSuccess.limit,
+          };
+        }
+      }
+
+      this.players[targetPlayerRef.number - 1] = targetPlayerRef;
     }
 
-    this.players[player.number - 1] = player;
-    // this.players[targetPlayerRef.number-1] = targetPlayerRef;
+    if (ownerType === "player") {
+      this.players[owner.number - 1] = owner;
+    }
   };
   projectileAttackParse = (bolt, ownerType, targetType, target) => {
     // console.log("projectileAttackParse");
