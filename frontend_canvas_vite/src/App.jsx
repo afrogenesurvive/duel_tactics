@@ -11549,11 +11549,8 @@ class App extends Component {
             console.log("This trap is meant to fire a projectile but has no ammo. Do nothing");
           }
         }
-        if (trap.item.subType === "sword") {
-          // call meleeattack parse?
-        }
-        if (trap.item.subType === "spear") {
-          // call meleeattack parse?
+        if (trap.item.subType === "sword" || trap.item.subType === "spear") {
+          this.meleeAttackPeak(ownerType, locationCell[ownerType]);
         }
       }
     };
@@ -11718,42 +11715,88 @@ class App extends Component {
     return trap;
   };
 
-  meleeAttackPeak = (player) => {
-    // console.log('meleeAttackPeak',player.target.myCellBlock);
+  meleeAttackPeak = (ownerType, owner) => {
+    // console.log("meleeAttackPeak", owner.target);
 
-    if (player.target.myCellBlock !== true) {
-      let playerAttackStamType;
+    let myCellBlock;
+    let ownerWeaponName;
+    let ownerWeaponType;
+    let targetCell1;
+    let targetCell2;
+    let cell1Free;
+    let cell2Free;
+    let myCell;
+    let ownerDirection;
+    let cell1Item;
+    let cell1Rubble;
+    let cell2Item;
+    let cell2Rubble;
 
-      if (player.currentWeapon.name === "") {
-        playerAttackStamType = this.staminaCostRef.attack.unarmed.normal;
-        if (player.bluntAttack === true) {
-          playerAttackStamType = this.staminaCostRef.attack.unarmed.blunt;
+    let playerAttackStamType;
+
+    if (ownerType === "player") {
+      myCell = this.gridInfo.find(
+        (elem) =>
+          elem.number.x === owner.currentPosition.cell.number.x &&
+          elem.number.y === owner.currentPosition.cell.number.y
+      );
+      cell1Free = target.cell1.free;
+      cell2Free = target.cell2.free;
+      myCellBlock = owner.target.myCellBlock;
+      ownerDirection = owner.direction;
+      ownerWeaponType = owner.currentWeapon.type;
+      ownerWeaponName = owner.currentWeapon.name;
+      cell1Item = owner.target.cell1.occupant.type === "item";
+      cell1Rubble = owner.target.cell1.occupant.type === "rubble";
+      cell2Item = owner.target.cell2.occupant.type === "item";
+      cell2Rubble = owner.target.cell2.occupant.type === "rubble";
+    } else {
+      myCell = this.gridInfo.find((x) => x[ownerType].id === owner.id);
+      cell1Free = this.checkCell(targetCell1.number);
+      cell2Free = this.checkCell(targetCell2.number);
+      myCellBlock = this.checkMyCellBarrier(ownerDirection, myCell);
+      ownerDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
+      ownerWeaponType = owner.trap.item.subType;
+      ownerWeaponType = owner.trap.item.name;
+      cell1Item = targetCell1.item.name !== "";
+      cell1Rubble = targetCell1.rubble === true;
+      cell2Item = targetCell2.item.name !== "";
+      cell2Rubble = targetCell2.rubble === true;
+    }
+
+    if (myCellBlock !== true) {
+      let boltTarget1 = this.isBoltInCell(targetCell1.number);
+      let boltTarget2 = this.isBoltInCell(targetCell2.number);
+
+      if (ownerType === "player") {
+        if (owner.currentWeapon.name === "") {
+          playerAttackStamType = this.staminaCostRef.attack.unarmed.normal;
+          if (owner.bluntAttack === true) {
+            playerAttackStamType = this.staminaCostRef.attack.unarmed.blunt;
+          }
+        }
+        if (owner.bluntAttack === true && owner.currentWeapon.name !== "") {
+          playerAttackStamType = this.staminaCostRef.attack[owner.currentWeapon.type].blunt;
+        }
+        if (owner.currentWeapon.name !== "") {
+          playerAttackStamType = this.staminaCostRef.attack[owner.currentWeapon.type].normal;
         }
       }
-      if (player.bluntAttack === true && player.currentWeapon.name !== "") {
-        playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].blunt;
-      }
-      if (player.currentWeapon.name !== "") {
-        playerAttackStamType = this.staminaCostRef.attack[player.currentWeapon.type].normal;
-      }
 
-      let boltTarget1 = this.isBoltInCell(player.target.cell1.number);
-      let boltTarget2 = this.isBoltInCell(player.target.cell2.number);
-
-      if (player.currentWeapon.type === "spear") {
+      if (ownerWeaponType === "spear") {
         this.cellsUnderAttack.push(
           {
             number: {
-              x: player.target.cell1.number.x,
-              y: player.target.cell1.number.y,
+              x: targetCell1.number.x,
+              y: targetCell1.number.y,
             },
             count: 1,
             limit: 8,
           },
           {
             number: {
-              x: player.target.cell2.number.x,
-              y: player.target.cell2.number.y,
+              x: targetCell2.number.x,
+              y: targetCell2.number.y,
             },
             count: 1,
             limit: 8,
@@ -11762,40 +11805,77 @@ class App extends Component {
 
         // TARGET CELL 1 IS NOT FREE, ITEM, BOLT, RUBBLE, ATTACK CELL1
         if (
-          player.target.cell1.free !== true ||
-          player.target.cell1.occupant.type === "item" ||
-          player.target.cell1.occupant.type === "rubble" ||
+          cell1Free !== true ||
+          cell1Item === true ||
+          cell1Rubble === true ||
           boltTarget1 === true
         ) {
-          this.meleeAttackParse(player, 1);
+          this.meleeAttackParse(ownerType, owner, 1);
         }
 
         // TARGET CELL 1 IS FREE NOT ITEM, BOLT, RUBBLE
         if (
-          player.target.cell1.free === true &&
-          player.target.cell1.occupant.type !== "item" &&
-          player.target.cell1.occupant.type !== "rubble" &&
+          cell1Free === true &&
+          cell1Item !== true &&
+          cell1Rubble !== true &&
           boltTarget1 !== true
         ) {
           // TARGET CELL 2 IS NOT FREE HAS ITEM, BOLT, RUBBLE ATTACK
           if (
-            player.target.cell2.free !== true ||
-            player.target.cell2.occupant.type === "item" ||
-            player.target.cell2.occupant.type === "rubble" ||
+            cell2Free !== true ||
+            cell2Item === true ||
+            cell2Rubble === true ||
             boltTarget2 === true
           ) {
-            this.meleeAttackParse(player, 2);
+            this.meleeAttackParse(ownerType, owner, 2);
           }
 
           // TARGET CELL2 IS FREE AND NOT ITEM, BOLT, RUBBLE, MISS
           if (
-            player.target.cell2.free === true &&
-            player.target.cell2.occupant.type !== "item" &&
-            player.target.cell2.occupant.type !== "rubble" &&
+            cell2Free === true &&
+            cell2Item !== true &&
+            cell2Rubble !== true &&
             boltTarget2 !== true
           ) {
-            if (!player.popups.find((x) => x.msg === "missedAttack2")) {
-              player.popups.push({
+            if (ownerType === "player") {
+              if (!owner.popups.find((x) => x.msg === "missedAttack2")) {
+                owner.popups.push({
+                  state: false,
+                  count: 0,
+                  limit: 30,
+                  type: "",
+                  position: "",
+                  msg: "missedAttack2",
+                  img: "",
+                });
+              }
+
+              owner.stamina.current -= playerAttackStamType.pre;
+            }
+          }
+        }
+      }
+
+      if (ownerWeaponType === "sword") {
+        this.cellsUnderAttack.push({
+          number: {
+            x: targetCell1.number.x,
+            y: targetCell1.number.y,
+          },
+          count: 1,
+          limit: 8,
+        });
+
+        // TAGET CELL 1 IS FREE NO ITEM OR BOLT, MISS
+        if (
+          cell1Free === true &&
+          cell1Item !== true &&
+          cell1Rubble !== true &&
+          boltTarget1 !== true
+        ) {
+          if (ownerType === "player") {
+            if (!owner.popups.find((x) => x.msg === "missedAttack2")) {
+              owner.popups.push({
                 state: false,
                 count: 0,
                 limit: 30,
@@ -11805,118 +11885,44 @@ class App extends Component {
                 img: "",
               });
             }
-
-            player.stamina.current -= playerAttackStamType.pre;
+            owner.stamina.current -= playerAttackStamType.pre;
           }
-        }
-      }
-
-      if (player.currentWeapon.type === "sword") {
-        this.cellsUnderAttack.push({
-          number: {
-            x: player.target.cell1.number.x,
-            y: player.target.cell1.number.y,
-          },
-          count: 1,
-          limit: 8,
-        });
-
-        // TAGET CELL 1 IS FREE NO ITEM OR BOLT, MISS
-        if (
-          player.target.cell1.free === true &&
-          player.target.cell1.occupant.type !== "item" &&
-          player.target.cell1.occupant.type !== "rubble" &&
-          boltTarget1 !== true
-        ) {
-          if (!player.popups.find((x) => x.msg === "missedAttack2")) {
-            player.popups.push({
-              state: false,
-              count: 0,
-              limit: 30,
-              type: "",
-              position: "",
-              msg: "missedAttack2",
-              img: "",
-            });
-          }
-
-          player.stamina.current -= playerAttackStamType.pre;
         }
 
         // TARGET CELL 1 IS NOT FREE OR HAS BOLT OR ITEM, ATTACK
         if (
-          player.target.cell1.free !== true ||
-          player.target.cell1.occupant.type === "item" ||
-          player.target.cell1.occupant.type === "rubble" ||
+          cell1Free !== true ||
+          cell1Item === true ||
+          cell1Rubble === true ||
           boltTarget1 === true
         ) {
-          this.meleeAttackParse(player, 1);
+          this.meleeAttackParse(ownerType, owner, 1);
         }
       }
 
-      if (player.currentWeapon.name === "") {
-        this.cellsUnderAttack.push({
-          number: {
-            x: player.target.cell1.number.x,
-            y: player.target.cell1.number.y,
-          },
-          count: 1,
-          limit: 8,
-        });
-
-        // TAGET CELL 1 IS FREE NO ITEM OR BOLT, MISS
-        if (
-          player.target.cell1.free === true &&
-          player.target.cell1.occupant.type !== "item" &&
-          player.target.cell1.occupant.type !== "rubble" &&
-          boltTarget1 !== true
-        ) {
-          if (!player.popups.find((x) => x.msg === "missedAttack2")) {
-            player.popups.push({
-              state: false,
-              count: 0,
-              limit: 30,
-              type: "",
-              position: "",
-              msg: "missedAttack2",
-              img: "",
-            });
-          }
-
-          player.stamina.current -= playerAttackStamType.pre;
-        }
-
-        // TARGET CELL 1 IS NOT FREE OR HAS BOLT OR ITEM, ATTACK
-        if (
-          player.target.cell1.free !== true ||
-          player.target.cell1.occupant.type === "item" ||
-          player.target.cell1.occupant.type === "rubble" ||
-          boltTarget1 === true
-        ) {
-          this.meleeAttackParse(player, 1);
-        }
-      }
-
-      if (player.currentWeapon.type === "crossbow" || player.currentWeapon.type === "longbow") {
-        // CROSSBOW BLUNT ATTACK
-        if (player.bluntAttack === true) {
+      // UNARMED ATTACK
+      // CROSSBOW BLUNT ATTACK
+      if (ownerType === "player") {
+        // UNARMED ATTACK
+        if (owner.currentWeapon?.name === "") {
           this.cellsUnderAttack.push({
             number: {
-              x: player.target.cell1.number.x,
-              y: player.target.cell1.number.y,
+              x: owner.target.cell1.number.x,
+              y: owner.target.cell1.number.y,
             },
             count: 1,
             limit: 8,
           });
 
-          // TARGET CELL 1 FREE NO ITEM OR BOLT
+          // TAGET CELL 1 IS FREE NO ITEM OR BOLT, MISS
           if (
-            player.target.cell1.free === true &&
-            player.target.cell1.occupant.type !== "item" &&
+            cell1Free === true &&
+            cell1Item !== true &&
+            cell1Rubble !== true &&
             boltTarget1 !== true
           ) {
-            if (!player.popups.find((x) => x.msg === "missedAttack2")) {
-              player.popups.push({
+            if (!owner.popups.find((x) => x.msg === "missedAttack2")) {
+              owner.popups.push({
                 state: false,
                 count: 0,
                 limit: 30,
@@ -11927,16 +11933,58 @@ class App extends Component {
               });
             }
 
-            player.stamina.current -= playerAttackStamType.pre;
+            owner.stamina.current -= playerAttackStamType.pre;
           }
 
-          // TARGET CELL 1 NOT FREE, OR ITEM OR BOLT
+          // TARGET CELL 1 IS NOT FREE OR HAS BOLT OR ITEM, ATTACK
           if (
-            player.target.cell1.free !== true ||
-            player.target.cell1.occupant.type === "item" ||
+            cell1Free !== true ||
+            cell1Item === true ||
+            cell1Rubble === true ||
             boltTarget1 === true
           ) {
-            this.meleeAttackParse(player, 1);
+            this.meleeAttackParse(ownerType, owner, 1);
+          }
+        }
+
+        // CROSSBOW BLUNT ATTACK
+        if (owner.currentWeapon.type === "crossbow" || owner.currentWeapon.type === "longbow") {
+          // CROSSBOW BLUNT ATTACK
+          if (owner.bluntAttack === true) {
+            this.cellsUnderAttack.push({
+              number: {
+                x: owner.target.cell1.number.x,
+                y: owner.target.cell1.number.y,
+              },
+              count: 1,
+              limit: 8,
+            });
+
+            // TARGET CELL 1 FREE NO ITEM OR BOLT
+            if (cell1Free === true && cell1Item === true && boltTarget1 !== true) {
+              if (!owner.popups.find((x) => x.msg === "missedAttack2")) {
+                owner.popups.push({
+                  state: false,
+                  count: 0,
+                  limit: 30,
+                  type: "",
+                  position: "",
+                  msg: "missedAttack2",
+                  img: "",
+                });
+              }
+
+              owner.stamina.current -= playerAttackStamType.pre;
+            }
+
+            // TARGET CELL 1 NOT FREE, OR ITEM OR BOLT
+            if (
+              cell1Free !== true ||
+              player.target.cell1.occupant.type === "item" ||
+              boltTarget1 === true
+            ) {
+              this.meleeAttackParse(ownerType, owner, 1);
+            }
           }
         }
       }
@@ -11944,36 +11992,21 @@ class App extends Component {
 
     // ATTACK MY CELL BARRIER
     else {
-      let targetCell = this.gridInfo.find(
-        (elem) =>
-          elem.number.x === player.target.cell1.number.x &&
-          elem.number.y === player.target.cell1.number.y
-      );
-      let targetCell2 = this.gridInfo.find(
-        (elem) =>
-          elem.number.x === player.target.cell2.number.x &&
-          elem.number.y === player.target.cell2.number.y
-      );
-      let myCell = this.gridInfo.find(
-        (elem) =>
-          elem.number.x === player.currentPosition.cell.number.x &&
-          elem.number.y === player.currentPosition.cell.number.y
-      );
-
       this.attackCellContents(
         "melee",
-        "player",
-        player,
+        ownerType,
+        owner,
         targetCell,
         targetCell2,
         myCell,
         undefined
       );
     }
-
-    this.players[player.number - 1] = player;
+    if (ownerType === "player") {
+      this.players[owner.number - 1] = owner;
+    }
   };
-  meleeAttackParse = (player, cellNo) => {
+  meleeAttackParse = (ownerType, player, cellNo) => {
     // console.log('meleeAttackParse',player.target['cell'+cellNo].occupant.type,this.players[player.target['cell'+cellNo].occupant.player-1]);
 
     let attackerRef = player;
@@ -16755,211 +16788,209 @@ class App extends Component {
       let doubleHitChance;
       let singleHitChance;
       if (ownerType === "player") {
-        if (ownerType === "player") {
-          ownerWeaponType = owner.currentWeapon.type;
-          doubleHitChance = owner.crits.doubleHit;
-          singleHitChance = owner.crits.singleHit;
-          ownerDirection = owner.direction;
-        } else {
-          ownerWeaponType = owner.trap.item.subType;
-          doubleHitChance = 2;
-          singleHitChance = 1;
-          ownerDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
-        }
+        ownerWeaponType = owner.currentWeapon.type;
+        doubleHitChance = owner.crits.doubleHit;
+        singleHitChance = owner.crits.singleHit;
+        ownerDirection = owner.direction;
+      } else {
+        ownerWeaponType = owner.trap.item.subType;
+        doubleHitChance = 2;
+        singleHitChance = 1;
+        ownerDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
+      }
 
-        l;
-        let doubleHit = this.rnJesus(1, doubleHitChance);
-        let singleHit = this.rnJesus(1, singleHitChance);
+      l;
+      let doubleHit = this.rnJesus(1, doubleHitChance);
+      let singleHit = this.rnJesus(1, singleHitChance);
 
-        if (doubleHit === 1) {
-          damage = 2;
-        } else {
-          damage = 1;
-        }
-        let shouldDamage = 0;
-        if (ownerType === "player") {
-          if (owner.bluntAttack === true) {
-            shouldDamage = this.rnJesus(1, owner.crits.guardBreak);
-            if ((shouldDamage = 1)) {
-              damage = 1;
-            } else {
-              damage = 0;
-            }
-          }
-          if (owner.currentWeapon.name === "") {
-            shouldDamage = this.rnJesus(1, owner.crits.guardBreak + 3);
-            if ((shouldDamage = 1)) {
-              damage = 1;
-            } else {
-              damage = 0;
-            }
+      if (doubleHit === 1) {
+        damage = 2;
+      } else {
+        damage = 1;
+      }
+      let shouldDamage = 0;
+      if (ownerType === "player") {
+        if (owner.bluntAttack === true) {
+          shouldDamage = this.rnJesus(1, owner.crits.guardBreak);
+          if ((shouldDamage = 1)) {
+            damage = 1;
+          } else {
+            damage = 0;
           }
         }
+        if (owner.currentWeapon.name === "") {
+          shouldDamage = this.rnJesus(1, owner.crits.guardBreak + 3);
+          if ((shouldDamage = 1)) {
+            damage = 1;
+          } else {
+            damage = 0;
+          }
+        }
+      }
 
-        // AT ELEVATION
-        if (targetCell) {
-          if (targetCell.elevation.number < myCell.elevation.number + 1) {
-            let checkSpearTarget = false;
-            // set this false if first target obstacles or barrier industructible or not destroyed
+      // AT ELEVATION
+      if (targetCell) {
+        if (targetCell.elevation.number < myCell.elevation.number + 1) {
+          let checkSpearTarget = false;
+          // set this false if first target obstacles or barrier industructible or not destroyed
 
-            // SWORD/ RANGE === 1 ATTACK
-            if (ownerWeaponType !== "spear") {
-              // MY CELL BARRIER?
-              let myCellBarrier = false;
-              if (myCell.barrier.state === true) {
-                if (myCell.barrier.position === ownerDirection) {
-                  myCellBarrier = true;
+          // SWORD/ RANGE === 1 ATTACK
+          if (ownerWeaponType !== "spear") {
+            // MY CELL BARRIER?
+            let myCellBarrier = false;
+            if (myCell.barrier.state === true) {
+              if (myCell.barrier.position === ownerDirection) {
+                myCellBarrier = true;
 
-                  handleBarrierDamage("myCellBarrier", damage, 0);
-                }
+                handleBarrierDamage("myCellBarrier", damage, 0);
               }
+            }
 
-              // FWD BARRIER?
+            // FWD BARRIER?
+            let fwdBarrier = false;
+            if (targetCell.barrier.state === true) {
+              fwdBarrier = this.checkForwardBarrier(ownerDirection, targetCell);
+            }
+
+            if (fwdBarrier === true) {
+              handleBarrierDamage("fwdBarrier", damage, 1);
+            }
+
+            // NO FWD BARRIER. OBSTACLE, REAR  BARRIER (SPEAR)?
+            else if (fwdBarrier !== true && myCellBarrier !== true) {
+              if (targetCell.obstacle.state === true) {
+                handleObstacleDamage(damage, 1);
+              }
+            }
+          }
+
+          // CHECK 1ST CELL, SPEAR TARGET 1
+          if (ownerWeaponType === "spear") {
+            let myCellBarrier = false;
+            if (myCell.barrier.state === true) {
+              if (myCell.barrier.position === ownerDirection) {
+                myCellBarrier = true;
+                handleBarrierDamage("myCellBarrier", damage, 0);
+              }
+            }
+
+            // FWD BARRIER?
+            let fwdBarrier = false;
+            if (targetCell.barrier.state === true) {
+              fwdBarrier = this.checkForwardBarrier(ownerDirection, targetCell);
+            }
+
+            if (myCellBarrier !== true && fwdBarrier === true) {
+              handleBarrierDamage("fwdBarrier", damage, 1);
+            }
+
+            // NO FWD BARRIER. OBSTACLE, REAR  BARRIER (SPEAR)?
+            else if (myCellBarrier !== true && fwdBarrier !== true) {
+              if (targetCell.obstacle.state === true) {
+                handleObstacleDamage(damage, 1);
+              } else {
+                // NO OBSTACLE. ITEM ON GROUND? DESTROY
+
+                handleNonObstacleBarrierDamage(damage, 1);
+
+                // NO OBSTACLE. ITEM OR RUBBLE. DESTROY REAR BARRIER
+
+                if (
+                  ownerWeaponType === "spear" &&
+                  targetCell.item.name === "" &&
+                  targetCell.rubble !== true
+                ) {
+                  let rearBarrier = false;
+                  if (targetCell.barrier.state === true) {
+                    if (owner.direction === targetCell.barrier.position) {
+                      rearBarrier = true;
+                    }
+                  }
+                  if (rearBarrier === true) {
+                    handleBarrierDamage("rearBarrier", damage, 1);
+                  } else {
+                    // console.log('spear target one no obstructions, atk spear target 2');
+                    checkSpearTarget = true;
+                  }
+                }
+                // else {
+                //   // do nothing
+                // }
+              }
+            }
+          }
+
+          // CHECK 2ND CELL SPEAR TARGET 2
+          if (ownerWeaponType === "spear" && checkSpearTarget === true) {
+            let targetCell2;
+            if (ownerType === "player") {
+              targetCell2 = this.gridInfo.find(
+                (elem) =>
+                  elem.number.x === owner.target.cell2.number.x &&
+                  elem.number.y === owner.target.cell2.number.y
+              );
+            } else {
+              targetCell2 = this.gridInfo.find(
+                (elem) =>
+                  elem.number.x === owner.trap.target.x && elem.number.y === owner.trap.target.y
+              );
+            }
+
+            let myCellBarrier = false;
+            if (myCell.barrier.state === true) {
+              if (myCell.barrier.position === ownerDirection) {
+                myCellBarrier = true;
+                handleBarrierDamage("myCellBarrier", damage, 0);
+              }
+            }
+
+            if (targetCell2) {
               let fwdBarrier = false;
-              if (targetCell.barrier.state === true) {
-                fwdBarrier = this.checkForwardBarrier(ownerDirection, targetCell);
+              if (targetCell2.barrier.state === true) {
+                fwdBarrier = this.checkForwardBarrier(ownerDirection, targetCell2);
               }
 
               if (fwdBarrier === true) {
-                handleBarrierDamage("fwdBarrier", damage, 1);
+                handleBarrierDamage("fwdBarrier", damage, 2);
               }
 
-              // NO FWD BARRIER. OBSTACLE, REAR  BARRIER (SPEAR)?
-              else if (fwdBarrier !== true && myCellBarrier !== true) {
-                if (targetCell.obstacle.state === true) {
-                  handleObstacleDamage(damage, 1);
-                }
-              }
-            }
-
-            // CHECK 1ST CELL, SPEAR TARGET 1
-            if (ownerWeaponType === "spear") {
-              let myCellBarrier = false;
-              if (myCell.barrier.state === true) {
-                if (myCell.barrier.position === ownerDirection) {
-                  myCellBarrier = true;
-                  handleBarrierDamage("myCellBarrier", damage, 0);
-                }
-              }
-
-              // FWD BARRIER?
-              let fwdBarrier = false;
-              if (targetCell.barrier.state === true) {
-                fwdBarrier = this.checkForwardBarrier(ownerDirection, targetCell);
-              }
-
-              if (myCellBarrier !== true && fwdBarrier === true) {
-                handleBarrierDamage("fwdBarrier", damage, 1);
-              }
-
-              // NO FWD BARRIER. OBSTACLE, REAR  BARRIER (SPEAR)?
+              // NO FWD BARRIER. OBSTACLE?
               else if (myCellBarrier !== true && fwdBarrier !== true) {
-                if (targetCell.obstacle.state === true) {
-                  handleObstacleDamage(damage, 1);
+                if (targetCell2.obstacle.state === true) {
+                  handleObstacleDamage(damage, 2);
                 } else {
                   // NO OBSTACLE. ITEM ON GROUND? DESTROY
+                  handleNonObstacleBarrierDamage(damage, 2);
 
-                  handleNonObstacleBarrierDamage(damage, 1);
-
-                  // NO OBSTACLE. ITEM OR RUBBLE. DESTROY REAR BARRIER
-
-                  if (
-                    ownerWeaponType === "spear" &&
-                    targetCell.item.name === "" &&
-                    targetCell.rubble !== true
-                  ) {
-                    let rearBarrier = false;
-                    if (targetCell.barrier.state === true) {
-                      if (owner.direction === targetCell.barrier.position) {
-                        rearBarrier = true;
-                      }
-                    }
-                    if (rearBarrier === true) {
-                      handleBarrierDamage("rearBarrier", damage, 1);
-                    } else {
-                      // console.log('spear target one no obstructions, atk spear target 2');
-                      checkSpearTarget = true;
-                    }
-                  }
-                  // else {
-                  //   // do nothing
-                  // }
-                }
-              }
-            }
-
-            // CHECK 2ND CELL SPEAR TARGET 2
-            if (ownerWeaponType === "spear" && checkSpearTarget === true) {
-              let targetCell2;
-              if (ownerType === "player") {
-                targetCell2 = this.gridInfo.find(
-                  (elem) =>
-                    elem.number.x === owner.target.cell2.number.x &&
-                    elem.number.y === owner.target.cell2.number.y
-                );
-              } else {
-                targetCell2 = this.gridInfo.find(
-                  (elem) =>
-                    elem.number.x === owner.trap.target.x && elem.number.y === owner.trap.target.y
-                );
-              }
-
-              let myCellBarrier = false;
-              if (myCell.barrier.state === true) {
-                if (myCell.barrier.position === ownerDirection) {
-                  myCellBarrier = true;
-                  handleBarrierDamage("myCellBarrier", damage, 0);
-                }
-              }
-
-              if (targetCell2) {
-                let fwdBarrier = false;
-                if (targetCell2.barrier.state === true) {
-                  fwdBarrier = this.checkForwardBarrier(ownerDirection, targetCell2);
-                }
-
-                if (fwdBarrier === true) {
-                  handleBarrierDamage("fwdBarrier", damage, 2);
-                }
-
-                // NO FWD BARRIER. OBSTACLE?
-                else if (myCellBarrier !== true && fwdBarrier !== true) {
-                  if (targetCell2.obstacle.state === true) {
-                    handleObstacleDamage(damage, 2);
-                  } else {
-                    // NO OBSTACLE. ITEM ON GROUND? DESTROY
-                    handleNonObstacleBarrierDamage(damage, 2);
-
-                    // NO OBSTACLE. DESTROY REAR BARRIER
-                    if (ownerType === "player") {
-                      if (!owner.popups.find((x) => x.msg === "missedAttack2")) {
-                        owner.popups.push({
-                          state: false,
-                          count: 0,
-                          limit:
-                            this.attackAnimRef.limit[player.currentWeapon.type] -
-                            this.attackAnimRef.peak[player.currentWeapon.type],
-                          type: "",
-                          position: "",
-                          msg: "missedAttack2",
-                          img: "",
-                        });
-                      }
+                  // NO OBSTACLE. DESTROY REAR BARRIER
+                  if (ownerType === "player") {
+                    if (!owner.popups.find((x) => x.msg === "missedAttack2")) {
+                      owner.popups.push({
+                        state: false,
+                        count: 0,
+                        limit:
+                          this.attackAnimRef.limit[player.currentWeapon.type] -
+                          this.attackAnimRef.peak[player.currentWeapon.type],
+                        type: "",
+                        position: "",
+                        msg: "missedAttack2",
+                        img: "",
+                      });
                     }
                   }
                 }
               }
             }
-          }
-          if (targetCell.elevation.number > myCell.elevation.number) {
-            console.log("target is above your elevation");
           }
         }
+        if (targetCell.elevation.number > myCell.elevation.number) {
+          console.log("target is above your elevation");
+        }
+      }
 
-        if (!targetCell) {
-          if (myCell.barrier.state === true && myCell.barrier.position === ownerDirection) {
-            handleBarrierDamage("myCellBarrier", damage, 0);
-          }
+      if (!targetCell) {
+        if (myCell.barrier.state === true && myCell.barrier.position === ownerDirection) {
+          handleBarrierDamage("myCellBarrier", damage, 0);
         }
       }
     }
@@ -30001,7 +30032,7 @@ class App extends Component {
 
               if (melee === true) {
                 this.getTarget(player);
-                this.meleeAttackPeak(player);
+                this.meleeAttackPeak("player", player);
               }
             }
 
