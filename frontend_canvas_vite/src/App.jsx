@@ -13115,6 +13115,7 @@ class App extends Component {
       doubleHitChance = player.crits.doubleHit;
       singleHitChance = player.crits.singleHit;
     } else {
+      let myCell = this.gridInfo.find((x) => x[ownerType].id === owner.id);
       ownerDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
       ownerWeaponType = owner.trap.item.subType;
       ownerWeaponType = owner.trap.item.name;
@@ -18294,54 +18295,16 @@ class App extends Component {
     let pushStrengthPlayer = 0;
     let movePlayer = true;
     let impactDirection = "";
+    let preMoveSpeed;
+    let moveSpeed;
+    let staminaCheck;
+    let ownerId;
     // pushStrengthPlayer += 15;
 
-    if (type === "hitPush" || type.split("_")[0] === "hitPushBolt") {
-      movePlayer = false;
-      pushStrengthPlayer += 1;
-      // console.log('obstacle hit push');
-    }
+    const setSpeed = () => {
+      preMoveSpeed = Math.ceil(pushStrengthPlayer / pushStrengthThreshold);
 
-    if (type.split("_")[0] === "hitPushBolt") {
-      impactDirection = type.split("_")[1];
-      // console.log('impactDirection',type.split('_')[1]);
-    }
-    if (type === "hitPush") {
-      impactDirection = player.direction;
-    }
-    if (type === "") {
-      impactDirection = player.prePush.direction;
-    }
-
-    if (type === "jumpCollision") {
-      impactDirection = player.direction;
-      movePlayer = false;
-      pushStrengthPlayer += 30;
-    }
-
-    if (type.split("_")[0] === "overlap") {
-      impactDirection = type.split("_")[1];
-      movePlayer = false;
-      pushStrengthPlayer += 30;
-    }
-
-    let destCell = this.getCellFromDirection(1, obstacleCell.number, impactDirection);
-    let destCellRef = this.gridInfo.find(
-      (x) => x.number.x === destCell.x && x.number.y === destCell.y
-    );
-    let destCellOccupant = "";
-
-    if (player.stamina.current - this.staminaCostRef.push >= 0) {
-      player.stamina.current = player.stamina.current - this.staminaCostRef.push;
-
-      if (player.hp > 1) {
-        pushStrengthPlayer += player.hp - 1;
-      }
-      pushStrengthPlayer += player.crits.pushBack - 3;
-      pushStrengthPlayer += player.crits.guardBreak - 2;
-
-      let preMoveSpeed = Math.ceil(pushStrengthPlayer / pushStrengthThreshold);
-      let moveSpeed = 0;
+      moveSpeed = 0;
       if (preMoveSpeed <= 1) {
         moveSpeed = 0.05;
       }
@@ -18358,6 +18321,75 @@ class App extends Component {
       if (this.terrainMoveSpeedRef[obstacleCell.terrain.type]) {
         moveSpeed = this.terrainMoveSpeedRef[obstacleCell.terrain.type];
       }
+    };
+    const setPushStrength = () => {
+      if (ownerType === "player") {
+        if (owner.hp > 1) {
+          pushStrengthPlayer += owner.hp - 1;
+        }
+        pushStrengthPlayer += owner.crits.pushBack - 3;
+        pushStrengthPlayer += owner.crits.guardBreak - 2;
+      } else {
+        pushStrengthPlayer = 5;
+        pushStrengthPlayer += this.rnJesus(1, pushStrengthThreshold);
+      }
+      setSpeed();
+    };
+
+    if (type === "hitPush" || type.split("_")[0] === "hitPushBolt") {
+      movePlayer = false;
+      pushStrengthPlayer += 1;
+      // console.log('obstacle hit push');
+    }
+
+    if (type.split("_")[0] === "hitPushBolt") {
+      impactDirection = type.split("_")[1];
+      // console.log('impactDirection',type.split('_')[1]);
+    }
+    if (type === "hitPush") {
+      if (ownerType === "player") {
+        impactDirection = owner.direction;
+      } else {
+        let myCell = this.gridInfo.find((x) => x[ownerType].id === owner.id);
+        impactDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
+      }
+    }
+    if (type === "") {
+      impactDirection = owner.prePush.direction;
+    }
+
+    if (type === "jumpCollision") {
+      impactDirection = owner.direction;
+      movePlayer = false;
+      pushStrengthPlayer += 30;
+    }
+
+    if (type.split("_")[0] === "overlap") {
+      impactDirection = type.split("_")[1];
+      movePlayer = false;
+      pushStrengthPlayer += 30;
+    }
+
+    let destCell = this.getCellFromDirection(1, obstacleCell.number, impactDirection);
+    let destCellRef = this.gridInfo.find(
+      (x) => x.number.x === destCell.x && x.number.y === destCell.y
+    );
+    let destCellOccupant = "";
+
+    if (ownerType === "player") {
+      ownerId = owner.number;
+      if (owner.stamina.current - this.staminaCostRef.push >= 0) {
+        staminaCheck = true;
+      }
+      owner.stamina.current = owner.stamina.current - this.staminaCostRef.push;
+    } else {
+      ownerId = owner.id;
+      staminaCheck = true;
+    }
+
+    if (staminaCheck === true) {
+      setPushStrength();
+      // setSpeed();
 
       if (destCellRef) {
         if (destCellRef.obstacle.state === true) {
@@ -18476,29 +18508,31 @@ class App extends Component {
 
       // if(!destCellRef && pushStrengthPlayer >= pushStrengthThreshold ) {
       if (canPushStrength === true && canPushTargetFree === true && !destCellRef) {
-        if (!this.players[player.number - 1].popups.find((x) => x.msg === "canPush")) {
-          this.players[player.number - 1].popups.push({
-            state: false,
-            count: 0,
-            limit: 25,
-            type: "",
-            position: "",
-            msg: "canPush",
-            img: "",
-          });
-        }
+        if (ownerType === "player") {
+          if (!this.players[owner.number - 1].popups.find((x) => x.msg === "canPush")) {
+            this.players[owner.number - 1].popups.push({
+              state: false,
+              count: 0,
+              limit: 25,
+              type: "",
+              position: "",
+              msg: "canPush",
+              img: "",
+            });
+          }
 
-        if (this.players[player.number - 1].popups.find((x) => x.msg === "prePush")) {
-          this.players[player.number - 1].popups.splice(
-            this.players[player.number - 1].popups.findIndex((x) => x.msg === "prePush"),
-            1
-          );
-        }
-        if (this.players[player.number - 1].popups.find((x) => x.msg === "noPush")) {
-          this.players[player.number - 1].popups.splice(
-            this.players[player.number - 1].popups.findIndex((x) => x.msg === "noPush"),
-            1
-          );
+          if (this.players[owner.number - 1].popups.find((x) => x.msg === "prePush")) {
+            this.players[owner.number - 1].popups.splice(
+              this.players[owner.number - 1].popups.findIndex((x) => x.msg === "prePush"),
+              1
+            );
+          }
+          if (this.players[owner.number - 1].popups.find((x) => x.msg === "noPush")) {
+            this.players[owner.number - 1].popups.splice(
+              this.players[owner.number - 1].popups.findIndex((x) => x.msg === "noPush"),
+              1
+            );
+          }
         }
 
         let voidCenter = this.getVoidCenter(1, impactDirection, obstacleCell.center);
@@ -18539,86 +18573,57 @@ class App extends Component {
             moveSpeed: moveSpeed,
             pushable: true,
             pushed: true,
-            pusher: player.number,
+            pusher: ownerId,
             falling: obstacleCell.obstacle.moving.falling,
           },
         };
 
-        this.players[player.number - 1].prePush = {
-          state: false,
-          count: 0,
-          limit: player.prePush.limit,
-          targetCell: undefined,
-          direction: "",
-          pusher: undefined,
-        };
-
-        if (movePlayer === true) {
-          this.players[player.number - 1].pushing = {
-            state: true,
-            targetCell: obstacleCell,
-            moveSpeed: moveSpeed,
+        if (ownerType === "player") {
+          this.players[owner.number - 1].prePush = {
+            state: false,
+            count: 0,
+            limit: owner.prePush.limit,
+            targetCell: undefined,
+            direction: "",
+            pusher: undefined,
           };
 
-          if (player.turning.delayCount === 0) {
-            this.players[player.number - 1].action = "moving";
-            this.players[player.number - 1].moving = {
+          if (movePlayer === true) {
+            this.players[owner.number - 1].pushing = {
               state: true,
-              step: 0,
-              course: "",
-              origin: {
-                number: {
-                  x: player.currentPosition.cell.number.x,
-                  y: player.currentPosition.cell.number.y,
-                },
-                center: {
-                  x: player.currentPosition.cell.center,
-                  y: player.currentPosition.cell.center,
-                },
-              },
-              destination: obstacleCell.center,
+              targetCell: obstacleCell,
+              moveSpeed: moveSpeed,
             };
-            let nextPosition = this.lineCrementer(player);
-            player.nextPosition = nextPosition;
+
+            if (owner.turning.delayCount === 0) {
+              this.players[owner.number - 1].action = "moving";
+              this.players[owner.number - 1].moving = {
+                state: true,
+                step: 0,
+                course: "",
+                origin: {
+                  number: {
+                    x: owner.currentPosition.cell.number.x,
+                    y: owner.currentPosition.cell.number.y,
+                  },
+                  center: {
+                    x: owner.currentPosition.cell.center,
+                    y: owner.currentPosition.cell.center,
+                  },
+                },
+                destination: obstacleCell.center,
+              };
+              let nextPosition = this.lineCrementer(owner);
+              owner.nextPosition = nextPosition;
+            }
           }
         }
       }
 
-      // console.log('pushStrengthThreshold/Player',pushStrengthThreshold,pushStrengthPlayer);
-      if (!this.players[player.number - 1].popups.find((x) => x.msg === "canPush")) {
-        this.players[player.number - 1].popups.push({
-          state: false,
-          count: 0,
-          limit: 25,
-          type: "",
-          position: "",
-          msg: "canPush",
-          img: "",
-        });
-      }
-
-      if (this.players[player.number - 1].popups.find((x) => x.msg === "prePush")) {
-        this.players[player.number - 1].popups.splice(
-          this.players[player.number - 1].popups.findIndex((x) => x.msg === "prePush"),
-          1
-        );
-      }
-      if (this.players[player.number - 1].popups.find((x) => x.msg === "noPush")) {
-        this.players[player.number - 1].popups.splice(
-          this.players[player.number - 1].popups.findIndex((x) => x.msg === "noPush"),
-          1
-        );
-      }
-
-      if (canPushTargetFree !== true) {
-        // console.log('something is in the way of the obstacle to be pushed');
-        resetPush = true;
-      }
-
-      if (canPushStrength === true && canPushTargetFree === true && destCellRef) {
-        // console.log("ready to push");
-        if (!this.players[player.number - 1].popups.find((x) => x.msg === "canPush")) {
-          this.players[player.number - 1].popups.push({
+      if (ownerType === "player") {
+        // console.log('pushStrengthThreshold/Player',pushStrengthThreshold,pushStrengthPlayer);
+        if (!this.players[owner.number - 1].popups.find((x) => x.msg === "canPush")) {
+          this.players[owner.number - 1].popups.push({
             state: false,
             count: 0,
             limit: 25,
@@ -18629,15 +18634,50 @@ class App extends Component {
           });
         }
 
-        if (this.players[player.number - 1].popups.find((x) => x.msg === "prePush")) {
-          this.players[player.number - 1].popups.splice(
-            this.players[player.number - 1].popups.findIndex((x) => x.msg === "prePush"),
+        if (this.players[owner.number - 1].popups.find((x) => x.msg === "prePush")) {
+          this.players[owner.number - 1].popups.splice(
+            this.players[owner.number - 1].popups.findIndex((x) => x.msg === "prePush"),
             1
           );
         }
-        if (this.players[player.number - 1].popups.find((x) => x.msg === "noPush")) {
-          this.players[player.number - 1].popups.splice(
-            this.players[player.number - 1].popups.findIndex((x) => x.msg === "noPush"),
+        if (this.players[owner.number - 1].popups.find((x) => x.msg === "noPush")) {
+          this.players[owner.number - 1].popups.splice(
+            this.players[owner.number - 1].popups.findIndex((x) => x.msg === "noPush"),
+            1
+          );
+        }
+      }
+
+      if (canPushTargetFree !== true) {
+        // console.log('something is in the way of the obstacle to be pushed');
+        resetPush = true;
+      }
+
+      if (canPushStrength === true && canPushTargetFree === true && destCellRef) {
+        // console.log("ready to push");
+        if (ownerType === "player") {
+        }
+        if (!this.players[owner.number - 1].popups.find((x) => x.msg === "canPush")) {
+          this.players[owner.number - 1].popups.push({
+            state: false,
+            count: 0,
+            limit: 25,
+            type: "",
+            position: "",
+            msg: "canPush",
+            img: "",
+          });
+        }
+
+        if (this.players[owner.number - 1].popups.find((x) => x.msg === "prePush")) {
+          this.players[owner.number - 1].popups.splice(
+            this.players[owner.number - 1].popups.findIndex((x) => x.msg === "prePush"),
+            1
+          );
+        }
+        if (this.players[owner.number - 1].popups.find((x) => x.msg === "noPush")) {
+          this.players[owner.number - 1].popups.splice(
+            this.players[owner.number - 1].popups.findIndex((x) => x.msg === "noPush"),
             1
           );
         }
@@ -18673,64 +18713,66 @@ class App extends Component {
             moveSpeed: moveSpeed,
             pushable: true,
             pushed: true,
-            pusher: player.number,
+            pusher: ownerId,
             falling: obstacleCell.obstacle.moving.falling,
           },
         };
 
-        this.players[player.number - 1].prePush = {
-          state: false,
-          count: 0,
-          limit: player.prePush.limit,
-          targetCell: undefined,
-          direction: "",
-          pusher: undefined,
-        };
-
-        if (movePlayer === true) {
-          this.players[player.number - 1].pushing = {
-            state: true,
-            targetCell: obstacleCell,
-            moveSpeed: moveSpeed,
+        if (ownerType === "player") {
+          this.players[owner.number - 1].prePush = {
+            state: false,
+            count: 0,
+            limit: owner.prePush.limit,
+            targetCell: undefined,
+            direction: "",
+            pusher: undefined,
           };
 
-          if (player.turning.delayCount === 0) {
-            this.players[player.number - 1].action = "moving";
-            this.players[player.number - 1].moving = {
+          if (movePlayer === true) {
+            this.players[owner.number - 1].pushing = {
               state: true,
-              step: 0,
-              course: "",
-              origin: {
-                number: {
-                  x: player.currentPosition.cell.number.x,
-                  y: player.currentPosition.cell.number.y,
-                },
-                center: {
-                  x: player.currentPosition.cell.center,
-                  y: player.currentPosition.cell.center,
-                },
-              },
-              destination: obstacleCell.center,
+              targetCell: obstacleCell,
+              moveSpeed: moveSpeed,
             };
-            let nextPosition = this.lineCrementer(player);
-            player.nextPosition = nextPosition;
+
+            if (owner.turning.delayCount === 0) {
+              this.players[owner.number - 1].action = "moving";
+              this.players[owner.number - 1].moving = {
+                state: true,
+                step: 0,
+                course: "",
+                origin: {
+                  number: {
+                    x: owner.currentPosition.cell.number.x,
+                    y: owner.currentPosition.cell.number.y,
+                  },
+                  center: {
+                    x: owner.currentPosition.cell.center,
+                    y: owner.currentPosition.cell.center,
+                  },
+                },
+                destination: obstacleCell.center,
+              };
+              let nextPosition = this.lineCrementer(owner);
+              owner.nextPosition = nextPosition;
+            }
+          } else {
+            owner.action = "idle";
           }
-        } else {
-          player.action = "idle";
         }
       }
     } else {
-      player.stamina.current = 0;
+      owner.stamina.current = 0;
       resetPush = true;
-      player.statusDisplay = {
+      owner.statusDisplay = {
         state: true,
         status: "Out of Stamina",
         count: 1,
-        limit: player.statusDisplay.limit,
+        limit: owner.statusDisplay.limit,
       };
 
-      if (!player.popups.find((x) => x.msg === "outOfStamina")) {
-        player.popups.push({
+      if (!owner.popups.find((x) => x.msg === "outOfStamina")) {
+        owner.popups.push({
           state: false,
           count: 0,
           limit: 20,
@@ -18743,47 +18785,49 @@ class App extends Component {
     }
 
     if (resetPush === true) {
-      this.players[player.number - 1].prePush = {
-        state: false,
-        count: 0,
-        limit: player.prePush.limit,
-        targetCell: undefined,
-        direction: "",
-        pusher: undefined,
-      };
-      this.players[player.number - 1].pushing = {
-        state: false,
-        targetCell: undefined,
-        moveSpeed: 0,
-      };
-
-      if (this.players[player.number - 1].newPushPullDelay.state !== true) {
-        this.players[player.number - 1].newPushPullDelay.state = true;
-      }
-
-      if (!this.players[player.number - 1].popups.find((x) => x.msg === "noPush")) {
-        this.players[player.number - 1].popups.push({
+      if (ownerType === "player") {
+        this.players[owner.number - 1].prePush = {
           state: false,
           count: 0,
-          limit: 25,
-          type: "",
-          position: "",
-          msg: "noPush",
-          img: "",
-        });
-      }
+          limit: owner.prePush.limit,
+          targetCell: undefined,
+          direction: "",
+          pusher: undefined,
+        };
+        this.players[owner.number - 1].pushing = {
+          state: false,
+          targetCell: undefined,
+          moveSpeed: 0,
+        };
 
-      if (this.players[player.number - 1].popups.find((x) => x.msg === "prePush")) {
-        this.players[player.number - 1].popups.splice(
-          this.players[player.number - 1].popups.findIndex((x) => x.msg === "prePush"),
-          1
-        );
-      }
-      if (this.players[player.number - 1].popups.find((x) => x.msg === "noPush")) {
-        this.players[player.number - 1].popups.splice(
-          this.players[player.number - 1].popups.findIndex((x) => x.msg === "canPush"),
-          1
-        );
+        if (this.players[owner.number - 1].newPushPullDelay.state !== true) {
+          this.players[owner.number - 1].newPushPullDelay.state = true;
+        }
+
+        if (!this.players[owner.number - 1].popups.find((x) => x.msg === "noPush")) {
+          this.players[owner.number - 1].popups.push({
+            state: false,
+            count: 0,
+            limit: 25,
+            type: "",
+            position: "",
+            msg: "noPush",
+            img: "",
+          });
+        }
+
+        if (this.players[owner.number - 1].popups.find((x) => x.msg === "prePush")) {
+          this.players[owner.number - 1].popups.splice(
+            this.players[owner.number - 1].popups.findIndex((x) => x.msg === "prePush"),
+            1
+          );
+        }
+        if (this.players[owner.number - 1].popups.find((x) => x.msg === "noPush")) {
+          this.players[owner.number - 1].popups.splice(
+            this.players[owner.number - 1].popups.findIndex((x) => x.msg === "canPush"),
+            1
+          );
+        }
       }
 
       if (canPushTargetFree !== true && destCellOccupant !== "") {
