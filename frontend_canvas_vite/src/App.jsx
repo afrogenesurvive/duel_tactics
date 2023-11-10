@@ -512,22 +512,22 @@ class App extends Component {
     this.levelData9 = {
       row0: [
         "**_*_0.0_a_0a*",
-        "**_i_0.1_a_0a*",
+        "**_*_0.1_a_0a*",
         "**_*_0.2_a_0a*",
         "cw_*_0.3_a_0a*",
-        "cw_h_0.4_a_0a*",
-        "cw_*_0.5_a_0a*",
+        "**_*_0.4_a_0a*",
+        "**_*_0.5_a_0a*",
         "**_*_0.6_a_0a*",
-        "**_i_0.7_a_0a*",
+        "**_*_0.7_a_0a*",
         "**_*_0.8_h_0a*",
         "**_*_0.9_h_0a*",
       ],
       row1: [
         "**_*_1.0_a_0a*",
-        "**_*_1.1_a_0a*",
+        "cn_*_1.1_a_0a*",
         "**_*_1.2_a_0a*",
         "**_*_1.3_a_0a*",
-        "**_h_1.4_a_0a*",
+        "**_*_1.4_a_0a*",
         "**_*_1.5_a_0a*",
         "**_*_1.6_a_0a*",
         "**_*_1.7_a_0a*",
@@ -541,31 +541,31 @@ class App extends Component {
         "**_*_2.3_a_0a*",
         "**_*_2.4_a_0a*",
         "**_*_2.5_a_0a*",
-        "**_*_2.6_j_0a*",
+        "**_*_2.6_a_0a*",
         "**_*_2.7_a_0a*",
-        "**_*_2.8_a_0a*",
+        "cs_*_2.8_a_0a*",
         "**_*_2.9_a_0a*",
       ],
       row3: [
         "**_c_3.0_a_0a*",
         "**_*_3.1_a_0a*",
         "**_*_3.2_a_0a*",
-        "**_h_3.3_a_0a*",
+        "**_*_3.3_a_0a*",
         "**_*_3.4_a_0a*",
         "**_*_3.5_a_0a*",
         "**_*_3.6_a_0a*",
         "**_*_3.7_a_0a*",
         "**_*_3.8_a_0a*",
-        "**_a_3.9_a_0a*",
+        "**_*_3.9_a_0a*",
       ],
       row4: [
         "**_*_4.0_a_0a*",
         "**_*_4.1_a_0a*",
-        "cs_*_4.2_f_0a*",
+        "**_*_4.2_f_0a*",
         "**_*_4.3_f_0a*",
-        "**_h_4.4_a_0a*",
-        "**_h_4.5_a_0a*",
-        "**_h_4.6_g_0a*",
+        "**_*_4.4_a_0a*",
+        "**_*_4.5_a_0a*",
+        "**_*_4.6_g_0a*",
         "**_*_4.7_a_0a*",
         "**_*_4.8_a_0a*",
         "**_*_4.9_a_0a*",
@@ -575,7 +575,7 @@ class App extends Component {
         "**_*_5.1_a_0a*",
         "ce_*_5.2_a_0a*",
         "**_*_5.3_a_0a*",
-        "ce_h_5.4_a_0a*",
+        "**_*_5.4_a_0a*",
         "**_*_5.5_a_0a*",
         "**_*_5.6_a_0a*",
         "**_*_5.7_a_0a*",
@@ -586,7 +586,7 @@ class App extends Component {
         "**_*_6.0_b_0a*",
         "**_*_6.1_j_0a*",
         "cw_*_6.2_j_0a*",
-        "cw_*_6.3_j_0a*",
+        "**_*_6.3_j_0a*",
         "**_*_6.4_j_0a*",
         "**_*_6.5_j_0a*",
         "**_*_6.6_j_0a*",
@@ -1399,7 +1399,7 @@ class App extends Component {
       h: {
         id: 0,
         trap: {
-          state: true,
+          state: false,
           persistent: false,
           remaining: 5,
           direction: "",
@@ -1706,16 +1706,16 @@ class App extends Component {
       c: {
         id: 0,
         trap: {
-          state: false,
+          state: true,
           persistent: false,
-          remaining: 0,
+          remaining: 3,
           direction: "",
           target: {},
           timer: {
-            enabled: false,
+            enabled: true,
             state: false,
             count: 0,
-            limit: 5,
+            limit: 65,
           },
           trigger: {
             type: "player",
@@ -11653,7 +11653,8 @@ class App extends Component {
             if (trap.acting.count < trap.acting.peak) {
               console.log("trap is acting: windup", trap.acting.count);
               higlightCell();
-            } else {
+            }
+            if (trap.acting.count > trap.acting.peak) {
               console.log("trap is acting: cooldown", trap.acting.count);
             }
           }
@@ -11699,6 +11700,9 @@ class App extends Component {
               trap.timer.count++;
               higlightCell();
               console.log("persistent trap timer count up", trap.timer.count);
+              if (trap.timer.count === 1) {
+                console.log("trap has been triggered at ", trap.target);
+              }
             }
             if (trap.timer.count >= trap.timer.limit) {
               trap.timer.count = 0;
@@ -11710,6 +11714,7 @@ class App extends Component {
         if (!trap.timer.enabled) {
           executeTrapAction();
           higlightCell();
+          console.log("trap has been triggered at ", trap.target);
         }
       }
       if (!trap.persistent) {
@@ -11729,6 +11734,9 @@ class App extends Component {
                 trap.timer.count++;
                 higlightCell();
                 console.log("limited trap timer count up", trap.timer.count);
+                if (trap.timer.count === 1) {
+                  console.log("trap has been triggered at ", trap.target);
+                }
               }
               if (trap.timer.count >= trap.timer.limit) {
                 trap.timer.count = 0;
@@ -11741,39 +11749,60 @@ class App extends Component {
           if (!trap.timer.enabled) {
             executeTrapAction();
             higlightCell();
+            if (trap.timer.count === 1) {
+              console.log("trap has been triggered at ", trap.target);
+            }
           }
         }
       }
-    }
-    if (trap.state === true && trap.trigger.type === "player") {
+    };
+    if (trap.state === true) {
       if (trap.acting.state === true) {
         executeTrapAction();
       } else {
+        let triggered = false;
         for (const plyr of this.players) {
           if (plyr.ai.state !== true || plyr.team === this.players[0].team) {
             if (
               plyr.currentPosition.cell.number.x === trap.target.x &&
               plyr.currentPosition.cell.number.y === trap.target.y
             ) {
-              triggerTrap()
-              
-              console.log("trap has been triggered at ", trap.target, "by", plyr.number);
+              triggerTrap();
+              triggered = true;
+              // console.log("trap has been triggered at ", trap.target, "by", plyr.number);
             } else {
-              if (trap.timer.enabled && trap.timer.state === true) {
-                console.log("trap trigger disengaged at", trap.target, " reset timer");
-                trap.timer.count = 0;
-                trap.timer.state = false;
-              }
+              // if (trap.timer.enabled && trap.timer.state === true) {
+              //   console.log("trap trigger disengaged at", trap.target, " reset timer");
+              //   trap.timer.count = 0;
+              //   trap.timer.state = false;
+              // }
             }
           }
         }
-        for (const elem of this.gridInfo) {
-          if (elem.obstacle.state === true && elem.number.x === trap.target.x && elem.number.y === trap.target.y)) {
-            triggerTrap();
-            console.log("trap has been triggered at ", trap.target, "by obstacle w/ id", elem.obstacle.id);
+        if (trap.trigger.type !== "player") {
+          for (const elem of this.gridInfo) {
+            if (
+              elem.obstacle.state === true &&
+              elem.number.x === trap.target.x &&
+              elem.number.y === trap.target.y
+            ) {
+              triggerTrap();
+              triggered = true;
+              // console.log(
+              //   "trap has been triggered at ",
+              //   trap.target,
+              //   "by obstacle w/ id",
+              //   elem.obstacle.id
+              // );
+            }
           }
         }
-        
+
+        if (triggered === false && trap.timer.enabled && trap.timer.state === true) {
+          console.log("trap trigger disengaged at", trap.target, " reset timer");
+          trap.timer.count = 0;
+          trap.timer.state = false;
+        }
       }
     }
     locationCell[ownerType].trap = trap;
@@ -11798,14 +11827,13 @@ class App extends Component {
     if (trap.action === "attack" && trap.acting.limit === 0) {
       trap.acting.peak = this.obstacleBarrierTrapAttackAnimRef.peak[trap.item.subType];
       trap.acting.limit = this.obstacleBarrierTrapAttackAnimRef.limit[trap.item.subType];
-      console.log("setting attack trap windup & cooldown", trap.acting.peak, trap.acting.limit);
+      // console.log("setting attack trap windup & cooldown", trap.acting.peak, trap.acting.limit);
     }
 
     let availibleCells = [];
 
     if (trap.state === true) {
       if (!trap.target.x || trap.target.x === undefined) {
-
         if (type === "obsatcle") {
           if (trap.direction === "") {
             availibleCells = this.getSurroundingCells(data.number, 20, "walkable", false, false);
@@ -11824,7 +11852,7 @@ class App extends Component {
                 }
               }
               // console.log("availibleCells", data.number, availibleCells, trap.target);
-              console.log("obstacle trap target set", data.number, trap.target, trap.ammo);
+              // console.log("obstacle trap target set", data.number, trap.target, trap.ammo);
             } else {
               trap.state = false;
               console.log(
@@ -11851,7 +11879,7 @@ class App extends Component {
               );
             } else {
               trap.target = cell;
-              console.log("onstacle trap target set", data.number, trap.target, trap.ammo);
+              // console.log("onstacle trap target set", data.number, trap.target, trap.ammo);
             }
           }
         }
@@ -11859,9 +11887,8 @@ class App extends Component {
           let cell;
           let xDirection;
           if (trap.direction === "") {
-            xDirection = this.getOppositeDirection(data[type].position)
-          }
-          else {
+            xDirection = this.getOppositeDirection(data[type].position);
+          } else {
             xDirection = trap.direction;
           }
           if (trap.item.subType === "crossbow") {
@@ -11876,18 +11903,19 @@ class App extends Component {
           if (!this.gridInfo.find((x) => cell.x === x.number.x && cell.y === x.number.y)) {
             trap.state = false;
             console.log(
-              `${type} trap disabled because there is no appropriate target cell`,
-              data.number
+              `${type} trap disabled because there is no appropriate target cellx`,
+              data.number,
+              cell,
+              xDirection
             );
           } else {
             trap.target = cell;
-            console.log("barrier trap target set", data.number, trap.target, trap.ammo);
+            // console.log("barrier trap target set", data.number, trap.target, trap.ammo);
           }
         }
-        
       } else {
         if (trap.target.x) {
-          console.log("this traps target is already set", trap.target, data.number, type);
+          // console.log("this traps target is already set", trap.target, data.number, type);
         }
       }
     }
@@ -39141,8 +39169,6 @@ class App extends Component {
           JSON.stringify(this.barrierLevelDataRef[elem.levelData.split("_")[0].charAt(0)])
         );
         elem.barrier.id = barrierCount;
-        elem.barrier.trap = this.obstacleBarrierTrapInitSet("main", "barrier", elem);
-        barrierCount++;
         switch (elem.levelData.split("_")[0].charAt(1)) {
           case "n":
             elem.barrier = {
@@ -39203,6 +39229,8 @@ class App extends Component {
           default:
             break;
         }
+        elem.barrier.trap = this.obstacleBarrierTrapInitSet("main", "barrier", elem);
+        barrierCount++;
       }
 
       // console.log('oo2',elem.levelData,elem.number,elem.terrain);
@@ -39318,8 +39346,6 @@ class App extends Component {
           JSON.stringify(this.barrierLevelDataRef[elem2.levelData.split("_")[0].charAt(0)])
         );
         elem2.barrier.id = barrierCount;
-        elem2.barrier.trap = this.obstacleBarrierTrapInitSet("main", "barrier", elem2);
-        barrierCount++;
         switch (elem2.levelData.split("_")[0].charAt(1)) {
           case "n":
             elem2.barrier = {
@@ -39380,6 +39406,8 @@ class App extends Component {
           default:
             break;
         }
+        elem2.barrier.trap = this.obstacleBarrierTrapInitSet("main", "barrier", elem2);
+        barrierCount++;
       }
 
       // console.log('oo2',elem2.levelData,elem2.number,elem2.terrain);
