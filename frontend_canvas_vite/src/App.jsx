@@ -12035,6 +12035,9 @@ class App extends Component {
     let cell1Rubble;
     let cell2Item;
     let cell2Rubble;
+    let faceToFace;
+    let sideAttack;
+    let backAttack;
 
     // ATTACK STAM UNARMED CHECK & AND POPUPS SET
     let playerAttackStamType;
@@ -12183,24 +12186,30 @@ class App extends Component {
     };
     const executeAttack = () => {
       // PLAYER BLUNT ATK SUCCESS, TARGET DEFLECTED
-      if (player.bluntAttack === true) {
-        this.setDeflection(targetPlayerRef, "bluntAttacked", false);
-        player.success.attackSuccess = {
-          state: true,
-          count: 1,
-          limit: player.success.attackSuccess.limit,
-        };
-      }
-      // PLAYER ATK SUCCESS, TARGET DEFLECTED + DAMAGE
-      else {
-        this.handleMeleeDamage(player, targetPlayerRef);
+      if (ownerType === "player") {
+        if (owner.bluntAttack === true) {
+          this.setDeflection(targetPlayerRef, "bluntAttacked", false);
+          owner.success.attackSuccess = {
+            state: true,
+            count: 1,
+            limit: owner.success.attackSuccess.limit,
+          };
+        }
+        // PLAYER ATK SUCCESS, TARGET DEFLECTED + DAMAGE
+        else {
+          this.handleMeleeDamage(ownerType, owner, targetPlayerRef);
+
+          this.setDeflection(targetPlayerRef, "attacked", false);
+          owner.success.attackSuccess = {
+            state: true,
+            count: 1,
+            limit: owner.success.attackSuccess.limit,
+          };
+        }
+      } else {
+        this.handleMeleeDamage(ownerType, owner, targetPlayerRef);
 
         this.setDeflection(targetPlayerRef, "attacked", false);
-        player.success.attackSuccess = {
-          state: true,
-          count: 1,
-          limit: player.success.attackSuccess.limit,
-        };
       }
     };
     const handleTargetDodging = () => {
@@ -12212,43 +12221,114 @@ class App extends Component {
         " back attack"
       );
 
-      owner.stamina.current -= playerAttackStamType.pre;
-      targetPlayerRef.stamina.current += this.staminaCostRef.dodge.pre;
+      if (ownerType === "player") {
+        if (!owner.popups.find((x) => x.msg === "missedAttack2")) {
+          owner.popups.push({
+            state: false,
+            count: 0,
+            limit: 30,
+            type: "",
+            position: "",
+            msg: "missedAttack2",
+            img: "",
+          });
+        }
 
-      if (!owner.popups.find((x) => x.msg === "missedAttack2")) {
-        owner.popups.push({
-          state: false,
-          count: 0,
-          limit: 30,
-          type: "",
-          position: "",
-          msg: "missedAttack2",
-          img: "",
-        });
-      }
+        if (owner.bluntAttack === true) {
+          owner.bluntAttack = false;
+        }
 
-      if (owner.bluntAttack === true) {
-        owner.bluntAttack = false;
+        owner.stamina.current -= playerAttackStamType.pre;
+        targetPlayerRef.stamina.current += this.staminaCostRef.dodge.pre;
+      } else {
+        if (
+          !this.cellPopups.find(
+            (x) =>
+              x.msg === "missedAttack2" &&
+              x.cell.number.x === myCell.number.x &&
+              x.cell.number.y === myCell.number.y
+          )
+        ) {
+          this.cellPopups.push({
+            state: false,
+            count: 0,
+            limit: 35,
+            type: "",
+            position: "",
+            msg: "missedAttack2",
+            color: "",
+            img: "",
+            cell: this.gridInfo.find(
+              (x) => x.number.x === myCell.number.x && x.number.y === myCell.number.y
+            ),
+          });
+        }
       }
     };
     const handleTargetDefending = () => {
       // BLUNT ATTACK IS MADE FOR BREAKING DEFENSE
-      if (owner.bluntAttack === true) {
-        this.setDeflection(targetPlayerRef, "bluntAttacked", false);
-        owner.success.attackSuccess = {
-          state: true,
-          count: 1,
-          limit: owner.success.attackSuccess.limit,
-        };
+      if (ownerType === "player") {
+        if (owner.bluntAttack === true) {
+          this.setDeflection(targetPlayerRef, "bluntAttacked", false);
+          owner.success.attackSuccess = {
+            state: true,
+            count: 1,
+            limit: owner.success.attackSuccess.limit,
+          };
+        }
       }
 
       // ATTACKER NON-BLUNT ATTACK
       else {
         // DEFENDER ADVANTAGE/evenly matched
         if (advantage === 2 || advantage === 0) {
+          console.log(
+            "evenly matched. peak",
+            targetPlayerRef.defendPeak,
+            "defending",
+            targetPlayerRef.defending,
+            "decay",
+            targetPlayerRef.defendDecay
+          );
+
+          // SIDE ATTACK
           // PEAK DEFEND/PARRY
           if (targetPlayerRef.defendPeak === true) {
-            this.setDeflection(owner, "defended", true);
+            if (ownerType === "player") {
+              this.setDeflection(owner, "defended", true);
+            }
+
+            targetPlayerRef.stamina.current += this.staminaCostRef.defend.peak;
+            targetPlayerRef.success.defendSuccess = {
+              state: true,
+              count: 1,
+              limit: targetPlayerRef.success.defendSuccess.limit,
+            };
+            targetPlayerRef.statusDisplay = {
+              state: true,
+              status: "Parry!",
+              count: 1,
+              limit: targetPlayerRef.statusDisplay.limit,
+            };
+            if (!targetPlayerRef.popups.find((x) => x.msg === "attackParried")) {
+              targetPlayerRef.popups.push({
+                state: false,
+                count: 0,
+                limit: 30,
+                type: "",
+                position: "",
+                msg: "attackParried",
+                img: "",
+              });
+            }
+          }
+
+          // FACE TO FACE
+          // PEAK DEFEND/PARRY
+          if (targetPlayerRef.defendPeak === true) {
+            if (ownerType === "player") {
+              this.setDeflection(owner, "parried", true);
+            }
 
             targetPlayerRef.stamina.current += this.staminaCostRef.defend.peak;
             targetPlayerRef.success.defendSuccess = {
@@ -12280,7 +12360,23 @@ class App extends Component {
           if (targetPlayerRef.defendPeak !== true) {
             // DEFEND SUCCESS
             if (this.rnJesus(1, targetPlayerRef.crits.guardBreak) === 1) {
-              this.setDeflection(owner, "defended", false);
+              // PUSHBACK AND/OR DEFLECT ATTACKER/PLAYER?
+              if (ownerType === "player") {
+                if (this.rnJesus(1, owner.crits.pushBack) === 1) {
+                  this.setDeflection(owner, "defended", true);
+                }
+                // JUST DEFLECT
+                else {
+                  this.setDeflection(owner, "defended", false);
+                }
+              }
+              // PUSHBACK OBSTACLE
+              else {
+                if (ownerType === "obstacle") {
+                  this.canPushObstacle(owner, targetCell, `hitPushBolt_${bolt.direction}`);
+                }
+              }
+
               targetPlayerRef.success.defendSuccess = {
                 state: true,
                 count: 1,
@@ -12308,101 +12404,23 @@ class App extends Component {
             // DEFEND FAILURE
             else {
               this.setDeflection(targetPlayerRef, "attacked", false);
-              this.handleMeleeDamage(owner, targetPlayerRef);
-              // if owner in't player, call attackcell contents /w targetplayer
-            }
-          }
-        }
-
-        // TARGET ADVANTAGE/ EVENLY MATCHED
-        if (advantage === 0 || advantage === 2) {
-          console.log(
-            "evenly matched. peak",
-            targetPlayerRef.defendPeak,
-            "defending",
-            targetPlayerRef.defending,
-            "decay",
-            targetPlayerRef.defendDecay
-          );
-
-          // PEAK DEFEND
-          if (targetPlayerRef.defendPeak === true) {
-            console.log("yyy");
-
-            this.setDeflection(owner, "parried", true);
-
-            targetPlayerRef.stamina.current += this.staminaCostRef.defend.peak;
-            targetPlayerRef.success.defendSuccess = {
-              state: true,
-              count: 1,
-              limit: targetPlayerRef.success.defendSuccess.limit,
-            };
-            targetPlayerRef.statusDisplay = {
-              state: true,
-              status: "Parry!",
-              count: 1,
-              limit: targetPlayerRef.statusDisplay.limit,
-            };
-            if (!targetPlayerRef.popups.find((x) => x.msg === "attackParried")) {
-              targetPlayerRef.popups.push({
-                state: false,
-                count: 0,
-                limit: 30,
-                type: "",
-                position: "",
-                msg: "attackParried",
-                img: "",
-              });
-            }
-          }
-
-          // OFF PEAK DEFEND
-          if (targetPlayerRef.defendPeak !== true) {
-            // if (targetPlayerRef.defendDecay.state === true && targetPlayerRef.defendPeak !== true) {
-
-            // PUSHBACK AND/OR DEFLECT ATTACKER/PLAYER?
-            if (this.rnJesus(1, owner.crits.pushBack) === 1) {
-              this.setDeflection(owner, "defended", true);
-            }
-            // JUST DEFLECT
-            else {
-              this.setDeflection(owner, "defended", false);
-            }
-
-            targetPlayerRef.success.defendSuccess = {
-              state: true,
-              count: 1,
-              limit: targetPlayerRef.success.defendSuccess.limit,
-            };
-            targetPlayerRef.statusDisplay = {
-              state: true,
-              status: "Defend",
-              count: 1,
-              limit: targetPlayerRef.statusDisplay.limit,
-            };
-            if (!targetPlayerRef.popups.find((x) => x.msg === "defendSuccess")) {
-              targetPlayerRef.popups.push({
-                state: false,
-                count: 0,
-                limit: 25,
-                type: "",
-                position: "",
-                msg: "defendSuccess",
-                img: "",
-              });
+              this.handleMeleeDamage(ownerType, owner, targetPlayerRef);
             }
           }
         }
 
         // ATTACKER/PLAYER ADVANTAGE
         else if (advantage === 1) {
-          this.handleMeleeDamage(owner, targetPlayerRef);
+          this.handleMeleeDamage(ownerType, owner, targetPlayerRef);
           this.setDeflection(targetPlayerRef, "attacked", false);
-          owner.success.attackSuccess = {
-            state: true,
-            count: 1,
-            limit: owner.success.attackSuccess.limit,
-          };
+
+          if (ownerType === "player") {
+            owner.success.attackSuccess = {
+              state: true,
+              count: 1,
+              limit: owner.success.attackSuccess.limit,
+            };
+          }
         }
       }
     };
@@ -12410,13 +12428,19 @@ class App extends Component {
     const handleTargetAttacking = () => {
       // EVENLY MATCHED. CLASHING
       if (advantage === 0) {
-        owner.clashing.state = true;
         targetPlayerRef.clashing.state = true;
+
+        if (ownerType === "player") {
+          owner.clashing.state = true;
+        } else {
+        }
 
         // PUSHBACK ATTACKER/PLAYER
         if (this.rnJesus(0, 2) === 0) {
           this.pushBack(owner, this.getOppositeDirection(owner.direction));
-          // if owner in't player, call attackcell contents /w targetplayer
+          if (ownerType === "obstacle") {
+            this.canPushObstacle(owner, targetCell, `hitPushBolt_${bolt.direction}`);
+          }
         }
         // PUSHBACK DEFENDER/TARGET
         if (this.rnJesus(0, 2) === 1) {
@@ -12425,25 +12449,36 @@ class App extends Component {
         // PUSHBACK BOTH PLAYERS
         if (this.rnJesus(0, 2) === 2) {
           this.pushBack(owner, this.getOppositeDirection(owner.direction));
+          if (ownerType === "obstacle") {
+            this.canPushObstacle(owner, targetCell, `hitPushBolt_${bolt.direction}`);
+          }
           this.pushBack(targetPlayerRef, this.getOppositeDirection(targetPlayerRef.direction));
         }
       }
 
       // PLAYER ADVANTAGE
       if (advantage === 1) {
-        this.handleMeleeDamage(owner, targetPlayerRef);
+        if (ownerType === "player") {
+          owner.success.attackSuccess = {
+            state: true,
+            count: 1,
+            limit: owner.success.attackSuccess.limit,
+          };
+        }
+
+        this.handleMeleeDamage(ownerType, owner, targetPlayerRef);
         this.setDeflection(targetPlayerRef, "attacked", false);
-        owner.success.attackSuccess = {
-          state: true,
-          count: 1,
-          limit: owner.success.attackSuccess.limit,
-        };
       }
 
       // TARGET ADVANTAGE
       if (advantage === 2) {
-        this.handleMeleeDamage(targetPlayerRef, owner);
-        this.setDeflection(owner, "attacked", false);
+        if (ownerType === "player") {
+          this.handleMeleeDamage(targetPlayerRef, owner);
+          this.setDeflection(owner, "attacked", false);
+        } else {
+          // if owner in't player, call attackcell contents /w targetplayer
+        }
+
         targetPlayerRef.success.attackSuccess = {
           state: true,
           count: 1,
@@ -12573,6 +12608,7 @@ class App extends Component {
 
       // BACK ATTACK
       if (ownerDirection === targetPlayerRef.direction) {
+        backAttack = true;
         // TARGET DODGING BACK ATTACK
         if (targetPlayerRef.dodging.state === true) {
           handleTargetDodging();
@@ -12589,6 +12625,7 @@ class App extends Component {
         targetPlayerRef.direction !== ownerDirection &&
         targetPlayerRef.direction !== this.getOppositeDirection(ownerDirection)
       ) {
+        sideAttack = true;
         // TARGET PLAYER IS DODGING
         if (targetPlayerRef.dodging.state === true) {
           handleTargetDodging();
@@ -12607,6 +12644,7 @@ class App extends Component {
 
       // TARGET & PLAYER ARE FACE TO FACE
       if (ownerDirection === this.getOppositeDirection(targetPlayerRef.direction)) {
+        faceToFace = true;
         // TARGET DODGING
         if (targetPlayerRef.dodging.state === true) {
           handleTargetDodging();
@@ -15779,8 +15817,12 @@ class App extends Component {
               cell: targetCell,
             });
 
-            // this.canPushObstacle(owner,targetCell,'hitPushBolt_'+bolt.direction);
-            // this.canPushObstacle(owner,targetCell,`hitPushBolt_${bolt.direction}`);
+            if (type === "bolt" || type === "flyOverBolt") {
+              this.canPushObstacle(ownerType, owner, targetCell, `hitPushBolt_${bolt.direction}`);
+            }
+            if (type === "melee") {
+              this.canPushObstacle(ownerType, owner, targetCell, `hitPush`);
+            }
           }
 
           // DESTROY OBSTACLE W/ OR W/O RUBBLE
@@ -15925,8 +15967,15 @@ class App extends Component {
               ),
             });
           }
-          this.canPushObstacle(owner, targetCell, `hitPushBolt_${bolt.direction}`);
-          // this.canPushObstacle(owner,targetCell,'hitPushBolt_'+bolt.direction);
+
+          if (type === "bolt" || type === "flyOverBolt") {
+            this.canPushObstacle(ownerType, owner, targetCell, `hitPushBolt_${bolt.direction}`);
+          }
+          if (type === "melee") {
+            this.canPushObstacle(ownerType, owner, targetCell, `hitPush`);
+          }
+
+          // DEFLECT PLAYER
           if (type === "melee" && ownerType === "player") {
             let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
 
@@ -15976,7 +16025,12 @@ class App extends Component {
             ),
           });
         }
-        this.canPushObstacle(owner, targetCell, `hitPushBolt_${bolt.direction}`);
+        if (type === "bolt" || type === "flyOverBolt") {
+          this.canPushObstacle(ownerType, owner, targetCell, `hitPushBolt_${bolt.direction}`);
+        }
+        if (type === "melee") {
+          this.canPushObstacle(ownerType, owner, targetCell, `hitPush`);
+        }
 
         if (type === "melee" && ownerType === "player") {
           let shouldDeflect = this.rnJesus(1, owner.crits.guardBreak);
@@ -16751,6 +16805,7 @@ class App extends Component {
         this.projectiles.find((blt) => blt.id === bolt.id).kill = true;
       }
     };
+    // DESTROY ITEMS AND RUBBLE
     const handleNonObstacleBarrierDamage = (calcedDamage, range) => {
       if (ownerType === "player") {
         ownerWeaponName = owner.currentWeapon.name;
