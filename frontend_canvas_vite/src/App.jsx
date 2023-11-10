@@ -11626,38 +11626,41 @@ class App extends Component {
     let trap = locationCell[ownerType].trap;
     // console.log("obstacleBarrierTrapChecker", trap.trigger);
     const executeTrapAction = () => {
+      // console.log("executeTrapAction");
       if (trap.acting.state === true) {
+        // console.log("trap is acting");
         if (trap.action === "attack") {
           if (trap.acting.count === trap.acting.peak) {
-            console.log("executeTrapAction");
-            if (trap.action === "attack" && trap.item.type === "weapon") {
-              if (trap.item.subType === "crossbow") {
-                if (trap.ammo > 0) {
-                  trap.ammo--;
-                  let result = this.projectileCreator(ownerType, locationCell[ownerType], "bolt");
-                  this.projectiles.push(result.projectile);
-                  this.getBoltTarget(result.projectile);
-                  trap = result.owner.trap;
-                } else {
-                  console.log(
-                    "This trap is meant to fire a projectile but has no ammo. Do nothing"
-                  );
-                }
+            console.log("trap is acting: attack peak");
+
+            if (trap.item.subType === "crossbow") {
+              if (trap.ammo > 0) {
+                trap.ammo--;
+                let result = this.projectileCreator(ownerType, locationCell[ownerType], "bolt");
+                this.projectiles.push(result.projectile);
+                this.getBoltTarget(result.projectile);
+                trap = result.owner.trap;
+              } else {
+                console.log("This trap is meant to fire a projectile but has no ammo. Do nothing");
               }
-              if (trap.item.subType === "sword" || trap.item.subType === "spear") {
-                this.meleeAttackPeak(ownerType, locationCell[ownerType]);
-              }
+            }
+            if (trap.item.subType === "sword" || trap.item.subType === "spear") {
+              this.meleeAttackPeak(ownerType, locationCell[ownerType]);
             }
           }
           if (trap.acting.count < trap.acting.limit) {
             trap.acting.count++;
             if (trap.acting.count < trap.acting.peak) {
+              console.log("trap is acting: windup", trap.acting.count);
               higlightCell();
+            } else {
+              console.log("trap is acting: cooldown", trap.acting.count);
             }
           }
           if (trap.acting.count >= trap.acting.limit) {
             trap.acting.count = 0;
             trap.acting.state = false;
+            console.log("trap action complete");
           }
         } else {
           // apply non attack action here
@@ -11666,6 +11669,7 @@ class App extends Component {
         }
       } else {
         trap.acting.state = true;
+        console.log("trap was triggered but hasnt started its action. start");
       }
     };
     const higlightCell = () => {
@@ -11703,7 +11707,7 @@ class App extends Component {
                     if (trap.timer.count < trap.timer.limit) {
                       trap.timer.count++;
                       higlightCell();
-                      console.log("counting down to trap fire", trap.timer.count);
+                      console.log("persistent trap timer count up", trap.timer.count);
                     }
                     if (trap.timer.count >= trap.timer.limit) {
                       trap.timer.count = 0;
@@ -11733,7 +11737,7 @@ class App extends Component {
                       if (trap.timer.count < trap.timer.limit) {
                         trap.timer.count++;
                         higlightCell();
-                        console.log("counting down to trap fire", trap.timer.count);
+                        console.log("limited trap timer count up", trap.timer.count);
                       }
                       if (trap.timer.count >= trap.timer.limit) {
                         trap.timer.count = 0;
@@ -11748,6 +11752,13 @@ class App extends Component {
                     higlightCell();
                   }
                 }
+              }
+              console.log("trap has been triggered at ", trap.target);
+            } else {
+              if (trap.timer.enabled && trap.timer.state === true) {
+                console.log("trap trigger disengaged at", trap.target, " reset timer");
+                trap.timer.count = 0;
+                trap.timer.state = false;
               }
             }
           }
@@ -11776,6 +11787,7 @@ class App extends Component {
     if (trap.action === "attack" && trap.acting.limit === 0) {
       trap.acting.peak = this.obstacleBarrierTrapAttackAnimRef.peak[trap.item.subType];
       trap.acting.limit = this.obstacleBarrierTrapAttackAnimRef.limit[trap.item.subType];
+      console.log("setting attack trap windup & cooldown", trap.acting.peak, trap.acting.limit);
     }
 
     let availibleCells = [];
