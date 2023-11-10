@@ -12293,65 +12293,69 @@ class App extends Component {
 
           // SIDE ATTACK
           // PEAK DEFEND/PARRY
-          if (targetPlayerRef.defendPeak === true) {
-            if (ownerType === "player") {
-              this.setDeflection(owner, "defended", true);
-            }
+          if (sideAttack === true) {
+            if (targetPlayerRef.defendPeak === true) {
+              if (ownerType === "player") {
+                this.setDeflection(owner, "defended", true);
+              }
 
-            targetPlayerRef.stamina.current += this.staminaCostRef.defend.peak;
-            targetPlayerRef.success.defendSuccess = {
-              state: true,
-              count: 1,
-              limit: targetPlayerRef.success.defendSuccess.limit,
-            };
-            targetPlayerRef.statusDisplay = {
-              state: true,
-              status: "Parry!",
-              count: 1,
-              limit: targetPlayerRef.statusDisplay.limit,
-            };
-            if (!targetPlayerRef.popups.find((x) => x.msg === "attackParried")) {
-              targetPlayerRef.popups.push({
-                state: false,
-                count: 0,
-                limit: 30,
-                type: "",
-                position: "",
-                msg: "attackParried",
-                img: "",
-              });
+              targetPlayerRef.stamina.current += this.staminaCostRef.defend.peak;
+              targetPlayerRef.success.defendSuccess = {
+                state: true,
+                count: 1,
+                limit: targetPlayerRef.success.defendSuccess.limit,
+              };
+              targetPlayerRef.statusDisplay = {
+                state: true,
+                status: "Parry!",
+                count: 1,
+                limit: targetPlayerRef.statusDisplay.limit,
+              };
+              if (!targetPlayerRef.popups.find((x) => x.msg === "attackParried")) {
+                targetPlayerRef.popups.push({
+                  state: false,
+                  count: 0,
+                  limit: 30,
+                  type: "",
+                  position: "",
+                  msg: "attackParried",
+                  img: "",
+                });
+              }
             }
           }
 
           // FACE TO FACE
           // PEAK DEFEND/PARRY
-          if (targetPlayerRef.defendPeak === true) {
-            if (ownerType === "player") {
-              this.setDeflection(owner, "parried", true);
-            }
+          if (backAttack === true) {
+            if (targetPlayerRef.defendPeak === true) {
+              if (ownerType === "player") {
+                this.setDeflection(owner, "parried", true);
+              }
 
-            targetPlayerRef.stamina.current += this.staminaCostRef.defend.peak;
-            targetPlayerRef.success.defendSuccess = {
-              state: true,
-              count: 1,
-              limit: targetPlayerRef.success.defendSuccess.limit,
-            };
-            targetPlayerRef.statusDisplay = {
-              state: true,
-              status: "Parry!",
-              count: 1,
-              limit: targetPlayerRef.statusDisplay.limit,
-            };
-            if (!targetPlayerRef.popups.find((x) => x.msg === "attackParried")) {
-              targetPlayerRef.popups.push({
-                state: false,
-                count: 0,
-                limit: 30,
-                type: "",
-                position: "",
-                msg: "attackParried",
-                img: "",
-              });
+              targetPlayerRef.stamina.current += this.staminaCostRef.defend.peak;
+              targetPlayerRef.success.defendSuccess = {
+                state: true,
+                count: 1,
+                limit: targetPlayerRef.success.defendSuccess.limit,
+              };
+              targetPlayerRef.statusDisplay = {
+                state: true,
+                status: "Parry!",
+                count: 1,
+                limit: targetPlayerRef.statusDisplay.limit,
+              };
+              if (!targetPlayerRef.popups.find((x) => x.msg === "attackParried")) {
+                targetPlayerRef.popups.push({
+                  state: false,
+                  count: 0,
+                  limit: 30,
+                  type: "",
+                  position: "",
+                  msg: "attackParried",
+                  img: "",
+                });
+              }
             }
           }
 
@@ -12474,7 +12478,7 @@ class App extends Component {
       // TARGET ADVANTAGE
       if (advantage === 2) {
         if (ownerType === "player") {
-          this.handleMeleeDamage(targetPlayerRef, owner);
+          this.handleMeleeDamage("player", targetPlayerRef, owner);
           this.setDeflection(owner, "attacked", false);
         } else {
           this.attackCellContents(
@@ -13093,34 +13097,51 @@ class App extends Component {
       console.log("this.aiDeflectedCheck", this.aiDeflectedCheck);
     }
   };
-  handleMeleeDamage = (player, targetPlayer) => {
+  handleMeleeDamage = (ownerType, owner, targetPlayer) => {
     // console.log('handleMeleeDamage');
     // DAMAGE THE TARGET!!!
 
     let damage = 0;
-    let doubleHitChance = player.crits.doubleHit;
-    let singleHitChance = player.crits.singleHit;
+    let ownerWeaponName;
+    let ownerWeaponType;
+    let ownerDirection;
+    let doubleHitChance;
+    let singleHitChance;
+
+    if (ownerType === "player") {
+      ownerDirection = owner.direction;
+      ownerWeaponType = owner.currentWeapon.type;
+      ownerWeaponName = owner.currentWeapon.name;
+      doubleHitChance = player.crits.doubleHit;
+      singleHitChance = player.crits.singleHit;
+    } else {
+      ownerDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
+      ownerWeaponType = owner.trap.item.subType;
+      ownerWeaponType = owner.trap.item.name;
+      doubleHitChance = 2;
+      singleHitChance = 1;
+    }
 
     if (targetPlayer.currentArmor.name !== "") {
       // console.log('opponent armour found');
       switch (targetPlayer.currentArmor.effect) {
         case "dblhit-5":
-          doubleHitChance = player.crits.doubleHit + 5;
+          doubleHitChance += 5;
           break;
         case "dblhit-10":
-          doubleHitChance = player.crits.doubleHit + 10;
+          doubleHitChance += 10;
           break;
         case "dblhit-15":
-          doubleHitChance = player.crits.doubleHit + 15;
+          doubleHitChance += 15;
           break;
         // case 'dblhit-30' :
         //   doubleHitChance = player.crits.doubleHit+30;
         // break;
         case "snghit-5":
-          singleHitChance = player.crits.singleHit + 5;
+          singleHitChance += 5;
           break;
         case "snghit-10":
-          singleHitChance = player.crits.singleHit + 10;
+          singleHitChance += 10;
           break;
       }
     }
@@ -13129,10 +13150,11 @@ class App extends Component {
     let singleHit = this.rnJesus(1, singleHitChance);
 
     // BACK ATTACK
-    if (player.direction === targetPlayer.direction) {
+    if (ownerDirection === targetPlayer.direction) {
       damage = 2;
     }
-    if (player.currentWeapon.name === "") {
+
+    if (ownerWeaponName === "") {
       singleHit = 1;
       doubleHit = 0;
     }
@@ -13143,15 +13165,18 @@ class App extends Component {
     if (doubleHit === 1) {
       damage = 2;
     }
-    if (player.bluntAttack === true) {
-      damage = 0;
-    }
 
-    player.success.attackSuccess = {
-      state: true,
-      count: 1,
-      limit: player.success.attackSuccess.limit,
-    };
+    if (ownerType === "player") {
+      if (owner.bluntAttack === true) {
+        damage = 0;
+      }
+
+      owner.success.attackSuccess = {
+        state: true,
+        count: 1,
+        limit: owner.success.attackSuccess.limit,
+      };
+    }
 
     if (!targetPlayer.popups.find((x) => x.msg.split("_")[0] === "hpDown")) {
       targetPlayer.popups.push({
@@ -13188,46 +13213,52 @@ class App extends Component {
         init: false,
         item: this.itemList[this.rnJesus(0, this.itemList.length - 1)].name,
       });
-      player.points++;
-      this.pointChecker(player);
 
-      if (player.ai.state === true && player.ai.mode === "aggressive") {
-        console.log(
-          "check for evidence of retrieval here and resume retrieve if so",
-          player.ai.retrieving,
-          player.ai.mission
-        );
+      if (ownerType === "player") {
+        owner.points++;
+        this.pointChecker(owner);
 
-        if (player.ai.retrieving.checkin) {
-          player.ai.mission = "retrieve";
+        if (owner.ai.state === true && owner.ai.mode === "aggressive") {
+          console.log(
+            "check for evidence of retrieval here and resume retrieve if so",
+            owner.ai.retrieving,
+            owner.ai.mission
+          );
 
-          if (!player.popups.find((x) => x.msg === "missionRetrieve")) {
-            player.popups.push({
-              state: false,
-              count: 0,
-              limit: 30,
-              type: "",
-              position: "",
-              msg: "missionRetrieve",
-              img: "",
+          if (owner.ai.retrieving.checkin) {
+            owner.ai.mission = "retrieve";
+
+            if (!owner.popups.find((x) => x.msg === "missionRetrieve")) {
+              owner.popups.push({
+                state: false,
+                count: 0,
+                limit: 30,
+                type: "",
+                position: "",
+                msg: "missionRetrieve",
+                img: "",
+              });
+            }
+
+            let targetSafeData = this.scanTargetAreaThreat({
+              player: owner.number,
+              point: {
+                x: owner.ai.retrieving.point.x,
+                y: owner.ai.retrieving.point.y,
+              },
+              range: 3,
             });
+
+            owner.ai.retrieving.safe = targetSafeData.isSafe;
           }
-
-          let targetSafeData = this.scanTargetAreaThreat({
-            player: player.number,
-            point: {
-              x: player.ai.retrieving.point.x,
-              y: player.ai.retrieving.point.y,
-            },
-            range: 3,
-          });
-
-          player.ai.retrieving.safe = targetSafeData.isSafe;
         }
       }
     }
 
-    this.players[player.number - 1] = player;
+    if (ownerType === "player") {
+      this.players[owner.number - 1] = owner;
+    }
+
     this.players[targetPlayer.number - 1] = targetPlayer;
   };
   handleProjectileDamage = (bolt, ownerType, targetType, target) => {
@@ -18187,7 +18218,7 @@ class App extends Component {
               1
             );
           }
-          this.canPushObstacle(player, refCell, "");
+          this.canPushObstacle("player", player, refCell, "");
         } else {
           if (
             player.prePush.targetCell.number.x === refCell.number.x &&
@@ -18252,7 +18283,7 @@ class App extends Component {
     this.players[player.number - 1].prePush = player.prePush;
     this.players[player.number - 1].pushing = player.pushing;
   };
-  canPushObstacle = (player, obstacleCell, type) => {
+  canPushObstacle = (ownerType, owner, obstacleCell, type) => {
     // let pusherCellRef = this.gridInfo.find(x=> x.number.x === player.currentPosition.cell.number.x && x.number.y === player.currentPosition.cell.number.y);
     let resetPush = false;
     let thresholdMultiplier = this.rnJesus(1, 3);
