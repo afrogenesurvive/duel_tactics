@@ -785,6 +785,12 @@ class App extends Component {
             type: "player",
           },
           action: "attack",
+          acting: {
+            state: false,
+            count: 0,
+            peak: 0,
+            limit: 0,
+          },
           itemNameRef: "crossbow1",
           item: {},
           ammo: 0,
@@ -866,6 +872,12 @@ class App extends Component {
             type: "player",
           },
           action: "attack",
+          acting: {
+            state: false,
+            count: 0,
+            peak: 0,
+            limit: 0,
+          },
           itemNameRef: "sword1",
           item: {},
           ammo: 0,
@@ -954,6 +966,12 @@ class App extends Component {
             type: "player",
           },
           action: "attack",
+          acting: {
+            state: false,
+            count: 0,
+            peak: 0,
+            limit: 0,
+          },
           itemNameRef: "crossbow1",
           item: {},
           ammo: 0,
@@ -1048,6 +1066,12 @@ class App extends Component {
             type: "player",
           },
           action: "attack",
+          acting: {
+            state: false,
+            count: 0,
+            peak: 0,
+            limit: 0,
+          },
           itemNameRef: "crossbow1",
           item: {},
           ammo: 0,
@@ -1129,6 +1153,12 @@ class App extends Component {
             type: "player",
           },
           action: "attack",
+          acting: {
+            state: false,
+            count: 0,
+            peak: 0,
+            limit: 0,
+          },
           itemNameRef: "crossbow1",
           item: {},
           ammo: 0,
@@ -1210,6 +1240,12 @@ class App extends Component {
             type: "player",
           },
           action: "attack",
+          acting: {
+            state: false,
+            count: 0,
+            peak: 0,
+            limit: 0,
+          },
           itemNameRef: "crossbow1",
           item: {},
           ammo: 0,
@@ -1291,6 +1327,12 @@ class App extends Component {
             type: "player",
           },
           action: "attack",
+          acting: {
+            state: false,
+            count: 0,
+            peak: 0,
+            limit: 0,
+          },
           itemNameRef: "crossbow1",
           item: {},
           ammo: 0,
@@ -1372,6 +1414,18 @@ class App extends Component {
             type: "player",
           },
           action: "attack",
+          acting: {
+            state: false,
+            count: 0,
+            peak: 0,
+            limit: 0,
+          },
+          acting: {
+            state: false,
+            count: 0,
+            peak: 0,
+            limit: 0,
+          },
           itemNameRef: "crossbow1",
           item: {},
           ammo: 0,
@@ -1453,6 +1507,12 @@ class App extends Component {
             type: "player",
           },
           action: "attack",
+          acting: {
+            state: false,
+            count: 0,
+            peak: 0,
+            limit: 0,
+          },
           itemNameRef: "crossbow1",
           item: {},
           ammo: 0,
@@ -1573,6 +1633,12 @@ class App extends Component {
             type: "player",
           },
           action: "attack",
+          acting: {
+            state: false,
+            count: 0,
+            peak: 0,
+            limit: 0,
+          },
           itemNameRef: "crossbow1",
           item: {},
           ammo: 0,
@@ -1611,6 +1677,12 @@ class App extends Component {
             type: "player",
           },
           action: "attack",
+          acting: {
+            state: false,
+            count: 0,
+            peak: 0,
+            limit: 0,
+          },
           itemNameRef: "crossbow1",
           item: {},
           ammo: 0,
@@ -1649,6 +1721,12 @@ class App extends Component {
             type: "player",
           },
           action: "attack",
+          acting: {
+            state: false,
+            count: 0,
+            peak: 0,
+            limit: 0,
+          },
           itemNameRef: "crossbow1",
           item: {},
           ammo: 0,
@@ -3361,6 +3439,18 @@ class App extends Component {
       },
       peak: {
         unarmed: 10,
+        sword: 15,
+        spear: 20,
+        crossbow: 20,
+      },
+    };
+    this.obstacleBarrierTrapAttackAnimRef = {
+      limit: {
+        sword: 25,
+        spear: 30,
+        crossbow: 30,
+      },
+      peak: {
         sword: 15,
         spear: 20,
         crossbow: 20,
@@ -11536,22 +11626,46 @@ class App extends Component {
     let trap = locationCell[ownerType].trap;
     // console.log("obstacleBarrierTrapChecker", trap.trigger);
     const executeTrapAction = () => {
-      console.log("executeTrapAction");
-      if (trap.action === "attack" && trap.item.type === "weapon") {
-        if (trap.item.subType === "crossbow") {
-          if (trap.ammo > 0) {
-            trap.ammo--;
-            let result = this.projectileCreator(ownerType, locationCell[ownerType], "bolt");
-            this.projectiles.push(result.projectile);
-            this.getBoltTarget(result.projectile);
-            trap = result.owner.trap;
-          } else {
-            console.log("This trap is meant to fire a projectile but has no ammo. Do nothing");
+      if (trap.acting.state === true) {
+        if (trap.action === "attack") {
+          if (trap.acting.count === trap.acting.peak) {
+            console.log("executeTrapAction");
+            if (trap.action === "attack" && trap.item.type === "weapon") {
+              if (trap.item.subType === "crossbow") {
+                if (trap.ammo > 0) {
+                  trap.ammo--;
+                  let result = this.projectileCreator(ownerType, locationCell[ownerType], "bolt");
+                  this.projectiles.push(result.projectile);
+                  this.getBoltTarget(result.projectile);
+                  trap = result.owner.trap;
+                } else {
+                  console.log(
+                    "This trap is meant to fire a projectile but has no ammo. Do nothing"
+                  );
+                }
+              }
+              if (trap.item.subType === "sword" || trap.item.subType === "spear") {
+                this.meleeAttackPeak(ownerType, locationCell[ownerType]);
+              }
+            }
           }
+          if (trap.acting.count < trap.acting.limit) {
+            trap.acting.count++;
+            if (trap.acting.count < trap.acting.peak) {
+              higlightCell();
+            }
+          }
+          if (trap.acting.count >= trap.acting.limit) {
+            trap.acting.count = 0;
+            trap.acting.state = false;
+          }
+        } else {
+          // apply non attack action here
+          trap.acting.count = 0;
+          trap.acting.state = false;
         }
-        if (trap.item.subType === "sword" || trap.item.subType === "spear") {
-          this.meleeAttackPeak(ownerType, locationCell[ownerType]);
-        }
+      } else {
+        trap.acting.state = true;
       }
     };
     const higlightCell = () => {
@@ -11571,43 +11685,16 @@ class App extends Component {
       }
     };
     if (trap.state === true && trap.trigger.type === "player") {
-      for (const plyr of this.players) {
-        if (plyr.ai.state !== true || plyr.team === this.players[0].team) {
-          if (
-            plyr.currentPosition.cell.number.x === trap.target.x &&
-            plyr.currentPosition.cell.number.y === trap.target.y
-          ) {
-            if (trap.persitent) {
-              if (trap.timer.enabled) {
-                if (trap.timer.state === false) {
-                  trap.timer.state = true;
-                }
-                if (trap.timer.state === true) {
-                  if (trap.timer.count < trap.timer.limit) {
-                    trap.timer.count++;
-                    higlightCell();
-                    console.log("counting down to trap fire", trap.timer.count);
-                  }
-                  if (trap.timer.count >= trap.timer.limit) {
-                    trap.timer.count = 0;
-                    trap.timer.state = false;
-                    executeTrapAction();
-                  }
-                }
-              }
-              if (!trap.timer.enabled) {
-                executeTrapAction();
-                higlightCell();
-              }
-            }
-            if (!trap.persistent) {
-              if (trap.remaining <= 0) {
-                trap.state = false;
-                console.log(
-                  `This ${ownerType} trap is not persistent and has no fires remaining. Disabling`
-                );
-              }
-              if (trap.remaining > 0) {
+      if (trap.acting.state === true) {
+        executeTrapAction();
+      } else {
+        for (const plyr of this.players) {
+          if (plyr.ai.state !== true || plyr.team === this.players[0].team) {
+            if (
+              plyr.currentPosition.cell.number.x === trap.target.x &&
+              plyr.currentPosition.cell.number.y === trap.target.y
+            ) {
+              if (trap.persitent) {
                 if (trap.timer.enabled) {
                   if (trap.timer.state === false) {
                     trap.timer.state = true;
@@ -11622,13 +11709,44 @@ class App extends Component {
                       trap.timer.count = 0;
                       trap.timer.state = false;
                       executeTrapAction();
-                      trap.remaining--;
                     }
                   }
                 }
                 if (!trap.timer.enabled) {
                   executeTrapAction();
                   higlightCell();
+                }
+              }
+              if (!trap.persistent) {
+                if (trap.remaining <= 0) {
+                  trap.state = false;
+                  console.log(
+                    `This ${ownerType} trap is not persistent and has no fires remaining. Disabling`
+                  );
+                }
+                if (trap.remaining > 0) {
+                  if (trap.timer.enabled) {
+                    if (trap.timer.state === false) {
+                      trap.timer.state = true;
+                    }
+                    if (trap.timer.state === true) {
+                      if (trap.timer.count < trap.timer.limit) {
+                        trap.timer.count++;
+                        higlightCell();
+                        console.log("counting down to trap fire", trap.timer.count);
+                      }
+                      if (trap.timer.count >= trap.timer.limit) {
+                        trap.timer.count = 0;
+                        trap.timer.state = false;
+                        executeTrapAction();
+                        trap.remaining--;
+                      }
+                    }
+                  }
+                  if (!trap.timer.enabled) {
+                    executeTrapAction();
+                    higlightCell();
+                  }
                 }
               }
             }
@@ -11655,6 +11773,11 @@ class App extends Component {
       trap.ammo = parseInt(trap.item.effect.split("+")[1]);
       // trap.item.effect = "ammo+0";
     }
+    if (trap.action === "attack" && trap.acting.limit === 0) {
+      trap.acting.peak = this.obstacleBarrierTrapAttackAnimRef.peak[trap.item.subType];
+      trap.acting.limit = this.obstacleBarrierTrapAttackAnimRef.limit[trap.item.subType];
+    }
+
     let availibleCells = [];
 
     if (trap.state === true) {
