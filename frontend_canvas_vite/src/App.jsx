@@ -11688,6 +11688,63 @@ class App extends Component {
         });
       }
     };
+    const triggerTrap = () => {
+      if (trap.persitent) {
+        if (trap.timer.enabled) {
+          if (trap.timer.state === false) {
+            trap.timer.state = true;
+          }
+          if (trap.timer.state === true) {
+            if (trap.timer.count < trap.timer.limit) {
+              trap.timer.count++;
+              higlightCell();
+              console.log("persistent trap timer count up", trap.timer.count);
+            }
+            if (trap.timer.count >= trap.timer.limit) {
+              trap.timer.count = 0;
+              trap.timer.state = false;
+              executeTrapAction();
+            }
+          }
+        }
+        if (!trap.timer.enabled) {
+          executeTrapAction();
+          higlightCell();
+        }
+      }
+      if (!trap.persistent) {
+        if (trap.remaining <= 0) {
+          trap.state = false;
+          console.log(
+            `This ${ownerType} trap is not persistent and has no fires remaining. Disabling`
+          );
+        }
+        if (trap.remaining > 0) {
+          if (trap.timer.enabled) {
+            if (trap.timer.state === false) {
+              trap.timer.state = true;
+            }
+            if (trap.timer.state === true) {
+              if (trap.timer.count < trap.timer.limit) {
+                trap.timer.count++;
+                higlightCell();
+                console.log("limited trap timer count up", trap.timer.count);
+              }
+              if (trap.timer.count >= trap.timer.limit) {
+                trap.timer.count = 0;
+                trap.timer.state = false;
+                executeTrapAction();
+                trap.remaining--;
+              }
+            }
+          }
+          if (!trap.timer.enabled) {
+            executeTrapAction();
+            higlightCell();
+          }
+        }
+      }
+    }
     if (trap.state === true && trap.trigger.type === "player") {
       if (trap.acting.state === true) {
         executeTrapAction();
@@ -11698,62 +11755,9 @@ class App extends Component {
               plyr.currentPosition.cell.number.x === trap.target.x &&
               plyr.currentPosition.cell.number.y === trap.target.y
             ) {
-              if (trap.persitent) {
-                if (trap.timer.enabled) {
-                  if (trap.timer.state === false) {
-                    trap.timer.state = true;
-                  }
-                  if (trap.timer.state === true) {
-                    if (trap.timer.count < trap.timer.limit) {
-                      trap.timer.count++;
-                      higlightCell();
-                      console.log("persistent trap timer count up", trap.timer.count);
-                    }
-                    if (trap.timer.count >= trap.timer.limit) {
-                      trap.timer.count = 0;
-                      trap.timer.state = false;
-                      executeTrapAction();
-                    }
-                  }
-                }
-                if (!trap.timer.enabled) {
-                  executeTrapAction();
-                  higlightCell();
-                }
-              }
-              if (!trap.persistent) {
-                if (trap.remaining <= 0) {
-                  trap.state = false;
-                  console.log(
-                    `This ${ownerType} trap is not persistent and has no fires remaining. Disabling`
-                  );
-                }
-                if (trap.remaining > 0) {
-                  if (trap.timer.enabled) {
-                    if (trap.timer.state === false) {
-                      trap.timer.state = true;
-                    }
-                    if (trap.timer.state === true) {
-                      if (trap.timer.count < trap.timer.limit) {
-                        trap.timer.count++;
-                        higlightCell();
-                        console.log("limited trap timer count up", trap.timer.count);
-                      }
-                      if (trap.timer.count >= trap.timer.limit) {
-                        trap.timer.count = 0;
-                        trap.timer.state = false;
-                        executeTrapAction();
-                        trap.remaining--;
-                      }
-                    }
-                  }
-                  if (!trap.timer.enabled) {
-                    executeTrapAction();
-                    higlightCell();
-                  }
-                }
-              }
-              console.log("trap has been triggered at ", trap.target);
+              triggerTrap()
+              
+              console.log("trap has been triggered at ", trap.target, "by", plyr.number);
             } else {
               if (trap.timer.enabled && trap.timer.state === true) {
                 console.log("trap trigger disengaged at", trap.target, " reset timer");
@@ -11763,6 +11767,13 @@ class App extends Component {
             }
           }
         }
+        for (const elem of this.gridInfo) {
+          if (elem.obstacle.state === true && elem.number.x === trap.target.x && elem.number.y === trap.target.y)) {
+            triggerTrap();
+            console.log("trap has been triggered at ", trap.target, "by obstacle w/ id", elem.obstacle.id);
+          }
+        }
+        
       }
     }
     locationCell[ownerType].trap = trap;
