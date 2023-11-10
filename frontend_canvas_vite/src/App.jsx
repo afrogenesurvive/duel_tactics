@@ -11805,41 +11805,73 @@ class App extends Component {
 
     if (trap.state === true) {
       if (!trap.target.x || trap.target.x === undefined) {
-        if (trap.direction === "") {
-          availibleCells = this.getSurroundingCells(data.number, 20, "walkable", false, false);
-          if (availibleCells.length > 0) {
-            if (trap.item.subType === "crossbow") {
-              trap.target = availibleCells
-                .slice()
-                .reverse()
-                .find((x) => x.x === data.number.x || x.y === data.number.y);
+
+        if (type === "obsatcle") {
+          if (trap.direction === "") {
+            availibleCells = this.getSurroundingCells(data.number, 20, "walkable", false, false);
+            if (availibleCells.length > 0) {
+              if (trap.item.subType === "crossbow") {
+                trap.target = availibleCells
+                  .slice()
+                  .reverse()
+                  .find((x) => x.x === data.number.x || x.y === data.number.y);
+              } else {
+                if (trap.item.subType === "spear") {
+                  trap.target = availibleCells[1];
+                }
+                if (trap.item.subType === "sword") {
+                  trap.target = availibleCells[0];
+                }
+              }
+              // console.log("availibleCells", data.number, availibleCells, trap.target);
+              console.log("obstacle trap target set", data.number, trap.target, trap.ammo);
             } else {
-              if (trap.item.subType === "spear") {
-                trap.target = availibleCells[1];
-              }
-              if (trap.item.subType === "sword") {
-                trap.target = availibleCells[0];
-              }
+              trap.state = false;
+              console.log(
+                `${type} trap disabled because there is no appropriate target cell`,
+                data.number
+              );
             }
-            // console.log("availibleCells", data.number, availibleCells, trap.target);
-            // console.log("trap target set", data.number, trap.target, trap.ammo);
           } else {
-            trap.state = false;
-            console.log(
-              `${type} trap disabled because there is no appropriate target cell`,
-              data.number
-            );
+            let cell;
+            if (trap.item.subType === "crossbow") {
+              cell = this.getCellFromDirection(3, data.number, trap.direction);
+            }
+            if (trap.item.subType === "spear") {
+              cell = this.getCellFromDirection(2, data.number, trap.direction);
+            }
+            if (trap.item.subType === "sword") {
+              cell = this.getCellFromDirection(1, data.number, trap.direction);
+            }
+            if (!this.gridInfo.find((x) => cell.x === x.number.x && cell.y === x.number.y)) {
+              trap.state = false;
+              console.log(
+                `${type} trap disabled because there is no appropriate target cell`,
+                data.number
+              );
+            } else {
+              trap.target = cell;
+              console.log("onstacle trap target set", data.number, trap.target, trap.ammo);
+            }
           }
-        } else {
+        }
+        if (type === "barrier") {
           let cell;
+          let xDirection;
+          if (trap.direction === "") {
+            xDirection = this.getOppositeDirection(data[type].position)
+          }
+          else {
+            xDirection = trap.direction;
+          }
           if (trap.item.subType === "crossbow") {
-            cell = this.getCellFromDirection(3, data.number, trap.direction);
+            cell = this.getCellFromDirection(3, data.number, xDirection);
           }
           if (trap.item.subType === "spear") {
-            cell = this.getCellFromDirection(2, data.number, trap.direction);
+            cell = this.getCellFromDirection(2, data.number, xDirection);
           }
           if (trap.item.subType === "sword") {
-            cell = this.getCellFromDirection(1, data.number, trap.direction);
+            cell = this.getCellFromDirection(1, data.number, xDirection);
           }
           if (!this.gridInfo.find((x) => cell.x === x.number.x && cell.y === x.number.y)) {
             trap.state = false;
@@ -11849,12 +11881,13 @@ class App extends Component {
             );
           } else {
             trap.target = cell;
-            // console.log("trap target set", data.number, trap.target, trap.ammo);
+            console.log("barrier trap target set", data.number, trap.target, trap.ammo);
           }
         }
+        
       } else {
         if (trap.target.x) {
-          // console.log("this traps target is already set", trap.target, data.number, type);
+          console.log("this traps target is already set", trap.target, data.number, type);
         }
       }
     }
