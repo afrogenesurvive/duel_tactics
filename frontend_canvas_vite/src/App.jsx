@@ -12432,7 +12432,6 @@ class App extends Component {
 
         if (ownerType === "player") {
           owner.clashing.state = true;
-        } else {
         }
 
         // PUSHBACK ATTACKER/PLAYER
@@ -12478,7 +12477,15 @@ class App extends Component {
           this.handleMeleeDamage(targetPlayerRef, owner);
           this.setDeflection(owner, "attacked", false);
         } else {
-          // if owner in't player, call attackcell contents /w targetplayer
+          this.attackCellContents(
+            "melee",
+            "player",
+            targetPlayerRef,
+            targetCell,
+            targetCell2,
+            myCell,
+            undefined
+          );
         }
 
         targetPlayerRef.success.attackSuccess = {
