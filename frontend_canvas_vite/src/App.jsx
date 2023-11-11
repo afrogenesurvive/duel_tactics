@@ -12887,6 +12887,7 @@ class App extends Component {
     // console.log("projectileAttackParse");
 
     if (targetType === "player") {
+      let deflected = false;
       let weapon = target.currentWeapon.type;
 
       // ATTACK STAM UNARMED CHECK & AND POPUPS SET
@@ -12933,7 +12934,7 @@ class App extends Component {
         bolt.kill = true;
         // BOLT TARGET NOT DODGING
         // BACK ATTACK
-        if (target.direction === bolt.direction) {
+        if (target.direction === bolt.direction && deflected !== true) {
           console.log(
             "bolt hit plyr",
             target.number,
@@ -12944,12 +12945,14 @@ class App extends Component {
           );
           this.handleProjectileDamage(bolt, ownerType, "player", target);
           this.setDeflection(target, "attacked", false);
+          deflected = true;
         }
 
         // SIDE ATTACK
         if (
           target.direction !== bolt.direction &&
-          target.direction !== this.getOppositeDirection(bolt.direction)
+          target.direction !== this.getOppositeDirection(bolt.direction) &&
+          deflected !== true
         ) {
           // PLAYER IS ATTACKING ARMED
           if (target.attackPeak === true && weapon !== "unarmed") {
@@ -12994,6 +12997,7 @@ class App extends Component {
               );
               this.handleProjectileDamage(bolt, ownerType, "player", target);
               this.setDeflection(target, "attacked", false);
+              deflected = true;
             }
           }
 
@@ -13009,6 +13013,7 @@ class App extends Component {
             );
             this.handleProjectileDamage(bolt, ownerType, "player", target);
             this.setDeflection(target, "attacked", false);
+            deflected = true;
           }
 
           // PLAYER DEFENDING
@@ -13025,7 +13030,7 @@ class App extends Component {
               );
               this.handleProjectileDamage(bolt, ownerType, "player", target);
               this.setDeflection(target, "attacked", false);
-              playerDefending = false;
+              deflected = true;
             }
             // ARMED DEFENSE
             else {
@@ -13113,14 +13118,14 @@ class App extends Component {
                     bolt.owner,
                     "but they off-peak defended unsuccessfully. Damage, Deflect, Pushback?"
                   );
-                  this.handleProjectileDamage(bolt, ownerType, "player", target);
+                  // this.handleProjectileDamage(bolt, ownerType, "player", target);
 
                   if (this.rnJesus(1, target.crits.pushBack) === 1) {
                     this.setDeflection(target, "attacked", true);
                   } else {
                     this.setDeflection(target, "attacked", false);
                   }
-                  playerDefending = false;
+                  deflected = true;
                 }
               }
             }
@@ -13138,11 +13143,12 @@ class App extends Component {
             );
             this.handleProjectileDamage(bolt, ownerType, "player", target);
             this.setDeflection(target, "attacked", false);
+            deflected = true;
           }
         }
 
         // FRONTAL ATTACK
-        if (bolt.direction === this.getOppositeDirection(target.direction)) {
+        if (bolt.direction === this.getOppositeDirection(target.direction) && deflected !== true) {
           console.log("here", target.direction);
           // PLAYER ARMED AND ATTACKING
           if (target.attackPeak === true && weapon !== "unarmed") {
@@ -13226,7 +13232,7 @@ class App extends Component {
                 );
                 this.handleProjectileDamage(bolt, ownerType, "player", target);
                 this.setDeflection(target, "attacked", false);
-                playerDefending = false;
+                deflected = true;
               }
             }
 
@@ -13317,6 +13323,7 @@ class App extends Component {
             );
             this.handleProjectileDamage(bolt, ownerType, "player", target);
             this.setDeflection(target, "attacked", false);
+            deflected = true;
           }
 
           // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
@@ -13331,6 +13338,7 @@ class App extends Component {
             );
             this.handleProjectileDamage(bolt, ownerType, "player", target);
             this.setDeflection(target, "attacked", false);
+            deflected = true;
           }
         }
       }
