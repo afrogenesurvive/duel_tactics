@@ -1707,7 +1707,7 @@ class App extends Component {
         id: 0,
         trap: {
           state: true,
-          persistent: false,
+          persistent: true,
           remaining: 3,
           direction: "",
           target: {},
@@ -1718,7 +1718,7 @@ class App extends Component {
             limit: 65,
           },
           trigger: {
-            type: "player",
+            type: "any",
           },
           action: "attack",
           acting: {
@@ -2045,7 +2045,7 @@ class App extends Component {
         startPosition: {
           cell: {
             number: {
-              x: 1,
+              x: 0,
               y: 5,
             },
             center: {
@@ -11661,7 +11661,7 @@ class App extends Component {
           if (trap.acting.count >= trap.acting.limit) {
             trap.acting.count = 0;
             trap.acting.state = false;
-            console.log("trap action complete");
+            console.log("trap action complete", trap);
           }
         } else {
           // apply non attack action here
@@ -11689,8 +11689,8 @@ class App extends Component {
         });
       }
     };
-    const triggerTrap = () => {
-      if (trap.persitent) {
+    const triggerTrap = (triggerType) => {
+      if (trap.persistent) {
         if (trap.timer.enabled) {
           if (trap.timer.state === false) {
             trap.timer.state = true;
@@ -11699,14 +11699,16 @@ class App extends Component {
             if (trap.timer.count < trap.timer.limit) {
               trap.timer.count++;
               higlightCell();
-              console.log("persistent trap timer count up", trap.timer.count);
+
               if (trap.timer.count === 1) {
-                console.log("trap has been triggered at ", trap.target);
+                console.log("persistent trap timer count up", trap.timer.count);
+                console.log("trap has been triggered at ", trap.target, "by", triggerType);
               }
             }
             if (trap.timer.count >= trap.timer.limit) {
               trap.timer.count = 0;
               trap.timer.state = false;
+              console.log("persistent trap timer count finish", trap.timer.count);
               executeTrapAction();
             }
           }
@@ -11714,10 +11716,10 @@ class App extends Component {
         if (!trap.timer.enabled) {
           executeTrapAction();
           higlightCell();
-          console.log("trap has been triggered at ", trap.target);
+          console.log("trap has been triggered at ", trap.target, "by", triggerType);
         }
       }
-      if (!trap.persistent) {
+      if (trap.persistent === false) {
         if (trap.remaining <= 0) {
           trap.state = false;
           console.log(
@@ -11735,7 +11737,7 @@ class App extends Component {
                 higlightCell();
                 console.log("limited trap timer count up", trap.timer.count);
                 if (trap.timer.count === 1) {
-                  console.log("trap has been triggered at ", trap.target);
+                  console.log("trap has been triggered at ", trap.target, "by", triggerType);
                 }
               }
               if (trap.timer.count >= trap.timer.limit) {
@@ -11750,7 +11752,7 @@ class App extends Component {
             executeTrapAction();
             higlightCell();
             if (trap.timer.count === 1) {
-              console.log("trap has been triggered at ", trap.target);
+              console.log("trap has been triggered at ", trap.targe, "by", triggerType);
             }
           }
         }
@@ -11767,15 +11769,8 @@ class App extends Component {
               plyr.currentPosition.cell.number.x === trap.target.x &&
               plyr.currentPosition.cell.number.y === trap.target.y
             ) {
-              triggerTrap();
+              triggerTrap("player");
               triggered = true;
-              // console.log("trap has been triggered at ", trap.target, "by", plyr.number);
-            } else {
-              // if (trap.timer.enabled && trap.timer.state === true) {
-              //   console.log("trap trigger disengaged at", trap.target, " reset timer");
-              //   trap.timer.count = 0;
-              //   trap.timer.state = false;
-              // }
             }
           }
         }
@@ -11786,14 +11781,8 @@ class App extends Component {
               elem.number.x === trap.target.x &&
               elem.number.y === trap.target.y
             ) {
-              triggerTrap();
+              triggerTrap("obstacle");
               triggered = true;
-              // console.log(
-              //   "trap has been triggered at ",
-              //   trap.target,
-              //   "by obstacle w/ id",
-              //   elem.obstacle.id
-              // );
             }
           }
         }
@@ -11822,6 +11811,7 @@ class App extends Component {
     };
     if (trap.item.effect.split("+")[0] === "ammo") {
       trap.ammo = parseInt(trap.item.effect.split("+")[1]);
+      trap.ammo = 100;
       // trap.item.effect = "ammo+0";
     }
     if (trap.action === "attack" && trap.acting.limit === 0) {
@@ -11855,10 +11845,10 @@ class App extends Component {
               // console.log("obstacle trap target set", data.number, trap.target, trap.ammo);
             } else {
               trap.state = false;
-              console.log(
-                `${type} trap disabled because there is no appropriate target cell`,
-                data.number
-              );
+              // console.log(
+              //   `${type} trap disabled because there is no appropriate target cell`,
+              //   data.number
+              // );
             }
           } else {
             let cell;
@@ -11873,10 +11863,10 @@ class App extends Component {
             }
             if (!this.gridInfo.find((x) => cell.x === x.number.x && cell.y === x.number.y)) {
               trap.state = false;
-              console.log(
-                `${type} trap disabled because there is no appropriate target cell`,
-                data.number
-              );
+              // console.log(
+              //   `${type} trap disabled because there is no appropriate target cell`,
+              //   data.number
+              // );
             } else {
               trap.target = cell;
               // console.log("onstacle trap target set", data.number, trap.target, trap.ammo);
@@ -11902,12 +11892,9 @@ class App extends Component {
           }
           if (!this.gridInfo.find((x) => cell.x === x.number.x && cell.y === x.number.y)) {
             trap.state = false;
-            console.log(
-              `${type} trap disabled because there is no appropriate target cellx`,
-              data.number,
-              cell,
-              xDirection
-            );
+            // console.log(
+            //   `${type} trap disabled because there is no appropriate target cellx`,
+            //   data.number);
           } else {
             trap.target = cell;
             // console.log("barrier trap target set", data.number, trap.target, trap.ammo);
@@ -12229,7 +12216,6 @@ class App extends Component {
   meleeAttackParse = (ownerType, owner, cellNo) => {
     // console.log('meleeAttackParse',player.target['cell'+cellNo].occupant.type,this.players[player.target['cell'+cellNo].occupant.player-1]);
 
-    let attackerRef = player;
     let targetPlayerRef = undefined;
 
     let targetCell1;
@@ -12747,7 +12733,7 @@ class App extends Component {
           "melee",
           ownerType,
           owner,
-          targetCell,
+          targetCell1,
           targetCell2,
           myCell,
           undefined
@@ -12932,18 +12918,15 @@ class App extends Component {
         playerDefending = true;
       }
 
-      this.cellsUnderAttack.push({
-        number: {
-          x: target.currentPosition.cell.number.x,
-          y: target.currentPosition.cell.number.y,
-        },
-        count: 1,
-        limit: 8,
-      });
-
       //BOLT TARGET DODGING
       if (target.dodging.state === true) {
-        console.log("player ", target.number, " just dodged a bolt from ", bolt.owner);
+        console.log(
+          "player ",
+          target.number,
+          " just dodged a bolt from ",
+          bolt.ownerType,
+          bolt.owner
+        );
         target.stamina.current += this.staminaCostRef.dodge.pre;
       } else {
         // BOLT NOT DODGED MUST HIT PLAYER
@@ -12951,6 +12934,14 @@ class App extends Component {
         // BOLT TARGET NOT DODGING
         // BACK ATTACK
         if (target.direction === bolt.direction) {
+          console.log(
+            "bolt hit plyr",
+            target.number,
+            "from the back by",
+            bolt.ownerType,
+            bolt.owner,
+            "Damage & Deflect"
+          );
           this.handleProjectileDamage(bolt, ownerType, "player", target);
           this.setDeflection(target, "attacked", false);
         }
@@ -12964,6 +12955,14 @@ class App extends Component {
           if (target.attackPeak === true && weapon !== "unarmed") {
             // CHANCE TO KILL BOLT & PUSHBACK
             if (this.rnJesus(1, target.crits.pushBack) === 1) {
+              console.log(
+                "bolt hit plyr",
+                target.number,
+                "from the side. by",
+                bolt.ownerType,
+                bolt.owner,
+                "but they attacked it successfully. Pushback?"
+              );
               if (!target.popups.find((x) => x.msg === "boltKilled")) {
                 target.popups.push({
                   state: false,
@@ -12981,11 +12980,18 @@ class App extends Component {
                 count: 1,
                 limit: target.success.attackSuccess.limit,
               };
-              console.log("bolt attacked and killed: v2");
             }
 
             // OR BE INJURED
             else {
+              console.log(
+                "bolt hit plyr",
+                target.number,
+                "from the side. by",
+                bolt.ownerType,
+                bolt.owner,
+                "but they attacked it unsuccessfully. Damage & Deflect?"
+              );
               this.handleProjectileDamage(bolt, ownerType, "player", target);
               this.setDeflection(target, "attacked", false);
             }
@@ -12993,11 +12999,28 @@ class App extends Component {
 
           // UNARMED DEFENSE = DAMAGE. OFF-PEAK HAS CHANCE TO PUSHBACK OR DAMAGE + PB
           if (playerDefending === true) {
-            if (weapon === "unarmed") {
+            if (weapon === "unarmed" || defendType === "unarmed") {
+              console.log(
+                "bolt hit plyr",
+                target.number,
+                "from the side. by",
+                bolt.ownerType,
+                bolt.owner,
+                "Damage & Deflect"
+              );
               this.handleProjectileDamage(bolt, ownerType, "player", target);
               this.setDeflection(target, "attacked", false);
             } else {
+              // PEAK DEFEND
               if (target.defendPeak === true) {
+                console.log(
+                  "bolt hit plyr",
+                  target.number,
+                  "from the side. by",
+                  bolt.ownerType,
+                  bolt.owner,
+                  "but they parried"
+                );
                 target.stamina.current += this.staminaCostRef.defend.peak;
                 target.success.defendSuccess = {
                   state: true,
@@ -13022,11 +13045,19 @@ class App extends Component {
                   });
                 }
               }
-
+              // OFF PEAK DEFEND
               // if (target.defendDecay.state === true && target.defendPeak !== true) {
               if (target.defendPeak !== true) {
                 // CHANCE FOR DEFEND SUCCESS
                 if (this.rnJesus(0, target.crits.guardBreak) === 0) {
+                  console.log(
+                    "bolt hit plyr",
+                    target.number,
+                    "from the side. by",
+                    bolt.ownerType,
+                    bolt.owner,
+                    "but they off-peak defended successfully"
+                  );
                   target.success.defendSuccess = {
                     state: true,
                     count: 1,
@@ -13056,6 +13087,14 @@ class App extends Component {
 
                 // CHANCE TO BE DAMAGED, DEFLECT || DEFLECT + PUSHBACK
                 if (this.rnJesus(0, target.crits.guardBreak) === 1) {
+                  console.log(
+                    "bolt hit plyr",
+                    target.number,
+                    "from the side. by",
+                    bolt.ownerType,
+                    bolt.owner,
+                    "but they off-peak defended unsuccessfully. Damage, Deflect, Pushback?"
+                  );
                   this.handleProjectileDamage(bolt, ownerType, "player", target);
 
                   if (this.rnJesus(1, target.crits.pushBack) === 1) {
@@ -13070,12 +13109,28 @@ class App extends Component {
 
           //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE
           if (playerDefending !== true && target.attackPeak !== true) {
+            console.log(
+              "bolt hit plyr",
+              target.number,
+              "from the side. by",
+              bolt.ownerType,
+              bolt.owner,
+              "but defending or attacking or dodging. Damage, Deflect?"
+            );
             this.handleProjectileDamage(bolt, ownerType, "player", target);
             this.setDeflection(target, "attacked", false);
           }
 
           // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
           if (target.attackPeak === true && weapon === "unarmed") {
+            console.log(
+              "bolt hit plyr",
+              target.number,
+              "from the side. by",
+              bolt.ownerType,
+              bolt.owner,
+              "but they attacked successfully but unarmed. Damage, Deflect?"
+            );
             this.handleProjectileDamage(bolt, ownerType, "player", target);
             this.setDeflection(target, "attacked", false);
           }
@@ -13085,6 +13140,14 @@ class App extends Component {
         if (bolt.direction === this.getOppositeDirection(target.direction)) {
           // PLAYER ARMED AND ATTACKING
           if (target.attackPeak === true && weapon !== "unarmed") {
+            console.log(
+              "bolt hit plyr",
+              target.number,
+              "from the front. by",
+              bolt.ownerType,
+              bolt.owner,
+              "but they attacked successfully."
+            );
             if (!target.popups.find((x) => x.msg === "boltKilled")) {
               target.popups.push({
                 state: false,
@@ -13104,7 +13167,6 @@ class App extends Component {
               count: 1,
               limit: target.success.attackSuccess.limit,
             };
-            console.log("bolt attacked and killed: v3");
           }
 
           // PLAYER DEFENDING
@@ -13112,6 +13174,14 @@ class App extends Component {
             if (weapon === "unarmed") {
               // UNARMED PEAK DEFEND, SUCCESS
               if (target.defendPeak === true) {
+                console.log(
+                  "bolt hit plyr",
+                  target.number,
+                  "from the front. by",
+                  bolt.ownerType,
+                  bolt.owner,
+                  "but they parried successfully unarmed."
+                );
                 // target.stamina.current += this.staminaCostRef.defend.peak;
                 target.success.defendSuccess = {
                   state: true,
@@ -13140,39 +13210,30 @@ class App extends Component {
               // UNARMED OFF PEAK DEFEND, CHANCE TO DEFEND OR DAMAGE/DEFLECTED
               // if (target.defendDecay.state === true && target.defendPeak !== true) {
               if (target.defendPeak !== true) {
-                if (this.rnJesus(0, 1) === 0) {
-                  target.success.defendSuccess = {
-                    state: true,
-                    count: 1,
-                    limit: target.success.defendSuccess.limit,
-                  };
-                  target.statusDisplay = {
-                    state: true,
-                    status: "Defend",
-                    count: 1,
-                    limit: target.statusDisplay.limit,
-                  };
-                  if (!target.popups.find((x) => x.msg === "defendSuccess")) {
-                    target.popups.push({
-                      state: false,
-                      count: 0,
-                      limit: 25,
-                      type: "",
-                      position: "",
-                      msg: "defendSuccess",
-                      img: "",
-                    });
-                  }
-                } else {
-                  this.handleProjectileDamage(bolt, ownerType, "player", target);
-                  this.setDeflection(target, "attacked", false);
-                }
+                console.log(
+                  "bolt hit plyr",
+                  target.number,
+                  "from the front. by",
+                  bolt.ownerType,
+                  bolt.owner,
+                  "but they off-peak defended successfully unarmed. Damage deflect?"
+                );
+                this.handleProjectileDamage(bolt, ownerType, "player", target);
+                this.setDeflection(target, "attacked", false);
               }
             }
 
             // PLAYER DEFENDING AND ARMED, GUARANTEED DEFEND W/ CHANCE TO PUSH BACK
             else {
               if (target.defendPeak === true) {
+                console.log(
+                  "bolt hit plyr",
+                  target.number,
+                  "from the front. by",
+                  bolt.ownerType,
+                  bolt.owner,
+                  "but they parried successfully armed."
+                );
                 target.stamina.current += this.staminaCostRef.defend.peak;
                 target.success.defendSuccess = {
                   state: true,
@@ -13200,6 +13261,14 @@ class App extends Component {
 
               // if (target.defendDecay.state === true && target.defendPeak !== true) {
               if (target.defendPeak !== true) {
+                console.log(
+                  "bolt hit plyr",
+                  target.number,
+                  "from the front. by",
+                  bolt.ownerType,
+                  bolt.owner,
+                  "but they off-peak defended successfully armed. Pushback?"
+                );
                 target.success.defendSuccess = {
                   state: true,
                   count: 1,
@@ -13231,12 +13300,28 @@ class App extends Component {
 
           //PLAYER NOT DEFENDING OR ATTACKING, TAKE DAMAGE
           if (playerDefending !== true && target.attackPeak !== true) {
+            console.log(
+              "bolt hit plyr",
+              target.number,
+              "from the front. by",
+              bolt.ownerType,
+              bolt.owner,
+              "but arent defending or attacking. Damage Deflect?"
+            );
             this.handleProjectileDamage(bolt, ownerType, "player", target);
             this.setDeflection(target, "attacked", false);
           }
 
           // PLAYER IS ATTACKING BUT UNARMED, TAKE DAMAGE
           if (target.attackPeak === true && weapon === "unarmed") {
+            console.log(
+              "bolt hit plyr",
+              target.number,
+              "from the front. by",
+              bolt.ownerType,
+              bolt.owner,
+              "but they attack successfully unarmed. Damage Deflect?"
+            );
             this.handleProjectileDamage(bolt, ownerType, "player", target);
             this.setDeflection(target, "attacked", false);
           }
@@ -13244,9 +13329,38 @@ class App extends Component {
       }
 
       this.players[target.number - 1] = target;
-      let x = this.projectiles.find((x) => x.id === bolt.id);
-      x = bolt;
+    } else {
+      let cell = this.gridInfo.find((x) => x[targetType].id === target.id);
+      console.log(
+        "bolt hit ",
+        targetType,
+        "at",
+        target.number,
+        " by",
+        bolt.ownerType,
+        bolt.owner,
+        "attack cell contents"
+      );
+      this.attackCellContents(
+        "bolt",
+        bolt.ownerType,
+        cell[targetType],
+        cell,
+        undefined,
+        undefined,
+        bolt
+      );
     }
+    this.cellsUnderAttack.push({
+      number: {
+        x: target.currentPosition.cell.number.x,
+        y: target.currentPosition.cell.number.y,
+      },
+      count: 1,
+      limit: 8,
+    });
+    let x = this.projectiles.find((x) => x.id === bolt.id);
+    x = bolt;
   };
   setDeflection = (player, type, pushBack) => {
     // this.deflectedLengthRef = {
@@ -16022,13 +16136,13 @@ class App extends Component {
             ownerWeaponName = owner.trap.itemNameRef;
           }
           if (type === "bolt" || type === "flyOverBolt") {
-            if (targetCell.barrier.destructible.weapons.find((x) => x === "bolt")) {
+            if (targetCell.obstacle.destructible.weapons.find((x) => x === "bolt")) {
               weaponCheck = true;
             }
           }
           if (
             type === "melee" &&
-            targetCell.barrier.destructible.weapons.find((x) => x === ownerWeaponName)
+            targetCell.obstacle.destructible.weapons.find((x) => x === ownerWeaponName)
           ) {
             weaponCheck = true;
           }
@@ -16233,7 +16347,7 @@ class App extends Component {
                 }
 
                 if (owner.currentWeapon.name === "") {
-                  console.log("this barrier is stronger than your fist. Take damage?");
+                  console.log("this obstacle is stronger than your fist. Take damage?");
                   let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
                   if (takeDamage === 1) {
                     this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
@@ -16288,7 +16402,7 @@ class App extends Component {
               }
 
               if (owner.currentWeapon.name === "") {
-                console.log("this barrier is stronger than your fist. Take damage?");
+                console.log("this obstacle is stronger than your fist. Take damage?");
                 let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
                 if (takeDamage === 1) {
                   this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
@@ -16308,13 +16422,13 @@ class App extends Component {
             ownerWeaponName = owner.trap.itemNameRef;
           }
           if (type === "bolt" || type === "flyOverBolt") {
-            if (targetCell2.barrier.destructible.weapons.find((x) => x === "bolt")) {
+            if (targetCell2.obstacle.destructible.weapons.find((x) => x === "bolt")) {
               weaponCheck = true;
             }
           }
           if (
             type === "melee" &&
-            targetCell2.barrier.destructible.weapons.find((x) => x === ownerWeaponName)
+            targetCell2.obstacle.destructible.weapons.find((x) => x === ownerWeaponName)
           ) {
             weaponCheck = true;
           }
@@ -16523,7 +16637,7 @@ class App extends Component {
                 }
 
                 if (owner.currentWeapon.name === "") {
-                  console.log("this barrier is stronger than your fist. Take damage?");
+                  console.log("this obstacle is stronger than your fist. Take damage?");
                   let takeDamage = this.rnJesus(1, owner.crits.guardBreak);
                   if (takeDamage === 1) {
                     this.handleMiscPlayerDamage(owner, "obstacleBarrierInvulnurable");
@@ -17289,6 +17403,7 @@ class App extends Component {
     };
     // DESTROY ITEMS AND RUBBLE
     const handleNonObstacleBarrierDamage = (calcedDamage, range) => {
+      console.log("there");
       if (ownerType === "player") {
         ownerWeaponName = owner.currentWeapon.name;
       } else {
@@ -17333,8 +17448,9 @@ class App extends Component {
           };
         }
 
+        console.log("here");
         if ((targetCell.rubble === true) & (calcedDamage > 0)) {
-          // console.log('damage/clear rubble @ ',targetCell2.number);
+          console.log("damage/clear rubble @ ", targetCell2.number);
           this.gridInfo.find(
             (elem) => elem.number.x === targetCell.number.x && elem.number.y === targetCell.number.y
           ).rubble = false;
@@ -17403,7 +17519,6 @@ class App extends Component {
         ownerDirection = this.getDirectionFromCells(myCell.number, owner.trap.target);
       }
 
-      l;
       let doubleHit = this.rnJesus(1, doubleHitChance);
       let singleHit = this.rnJesus(1, singleHitChance);
 
@@ -17464,6 +17579,16 @@ class App extends Component {
             else if (fwdBarrier !== true && myCellBarrier !== true) {
               if (targetCell.obstacle.state === true) {
                 handleObstacleDamage(damage, 1);
+              } else {
+                // NO OBSTACLE. ITEM ON GROUND? DESTROY
+
+                handleNonObstacleBarrierDamage(damage, 1);
+
+                // NO OBSTACLE. ITEM OR RUBBLE. DESTROY REAR BARRIER
+
+                // else {
+                //   // do nothing
+                // }
               }
             }
           }
@@ -17642,7 +17767,7 @@ class App extends Component {
       else {
         if (targetCell.obstacle.state === true && targetCell.obstacle.height >= 1) {
           // console.log('player ',owner.number,'hit obstacle ',targetCell.obstacle.name,' @ ',targetCell.number,type,' for ',damage,' damage');
-          handleObstacleDamage(damage);
+          handleObstacleDamage(damage, 1);
         }
         // NO OBSTACLE. REAR BARRIER CHECK
         else {
@@ -17727,7 +17852,7 @@ class App extends Component {
       else {
         if (targetCell.obstacle.state === true && obstacleHeightCheck === true) {
           // console.log('targetCell.obstacle.hp',targetCell.obstacle.hp);
-          handleObstacleDamage(damage);
+          handleObstacleDamage(damage, 1);
         } else {
           // NO OBSTACLE. ITEM ON GROUND? DESTROY
           // console.log('bolt cant destroy item on ground');
@@ -18506,7 +18631,7 @@ class App extends Component {
     let moveSpeed;
     let staminaCheck;
     let ownerId;
-    // pushStrengthPlayer += 15;
+    pushStrengthPlayer += 15;
 
     const setSpeed = () => {
       preMoveSpeed = Math.ceil(pushStrengthPlayer / pushStrengthThreshold);
@@ -18689,23 +18814,28 @@ class App extends Component {
       ) {
         canPushStrength = true;
         extraPush = pushStrengthPlayer - pushStrengthThreshold;
-        console.log(
-          "you are strongh enough to push this obstacle",
-          pushStrengthPlayer,
-          pushStrengthThreshold,
-          player.crits.guardBreak - 2,
-          player.crits.pushBack - 2,
-          "extra",
-          extraPush
-        );
+        if (ownerType === "player") {
+          console.log(
+            "you are strongh enough to push this obstacle",
+            pushStrengthPlayer,
+            pushStrengthThreshold,
+            owner.crits.guardBreak - 2,
+            owner.crits.pushBack - 2,
+            "extra",
+            extraPush
+          );
+        }
       } else {
-        console.log(
-          "you are NOT strong enough to push this obstacle",
-          pushStrengthPlayer,
-          pushStrengthThreshold,
-          player.crits.guardBreak - 2,
-          player.crits.pushBack - 2
-        );
+        if (ownerType === "player") {
+          console.log(
+            "you are NOT strong enough to push this obstacle",
+            pushStrengthPlayer,
+            pushStrengthThreshold,
+            owner.crits.guardBreak - 2,
+            owner.crits.pushBack - 2
+          );
+        }
+
         resetPush = true;
       }
       if (extraPush > 5) {
@@ -18863,30 +18993,30 @@ class App extends Component {
       if (canPushStrength === true && canPushTargetFree === true && destCellRef) {
         // console.log("ready to push");
         if (ownerType === "player") {
-        }
-        if (!this.players[owner.number - 1].popups.find((x) => x.msg === "canPush")) {
-          this.players[owner.number - 1].popups.push({
-            state: false,
-            count: 0,
-            limit: 25,
-            type: "",
-            position: "",
-            msg: "canPush",
-            img: "",
-          });
-        }
+          if (!this.players[owner.number - 1].popups.find((x) => x.msg === "canPush")) {
+            this.players[owner.number - 1].popups.push({
+              state: false,
+              count: 0,
+              limit: 25,
+              type: "",
+              position: "",
+              msg: "canPush",
+              img: "",
+            });
+          }
 
-        if (this.players[owner.number - 1].popups.find((x) => x.msg === "prePush")) {
-          this.players[owner.number - 1].popups.splice(
-            this.players[owner.number - 1].popups.findIndex((x) => x.msg === "prePush"),
-            1
-          );
-        }
-        if (this.players[owner.number - 1].popups.find((x) => x.msg === "noPush")) {
-          this.players[owner.number - 1].popups.splice(
-            this.players[owner.number - 1].popups.findIndex((x) => x.msg === "noPush"),
-            1
-          );
+          if (this.players[owner.number - 1].popups.find((x) => x.msg === "prePush")) {
+            this.players[owner.number - 1].popups.splice(
+              this.players[owner.number - 1].popups.findIndex((x) => x.msg === "prePush"),
+              1
+            );
+          }
+          if (this.players[owner.number - 1].popups.find((x) => x.msg === "noPush")) {
+            this.players[owner.number - 1].popups.splice(
+              this.players[owner.number - 1].popups.findIndex((x) => x.msg === "noPush"),
+              1
+            );
+          }
         }
 
         let obstacleCrementObj = this.obstacleMoveCrementer(obstacleCell, destCellRef);
@@ -29281,10 +29411,10 @@ class App extends Component {
       //   "testing",
       //   this.getSurroundingCells({ x: 0, y: 4 }, 18, "walkable", false, false)
       // );
-      console.log(
-        "combat advantage: ",
-        this.checkCombatAdvantage(this.players[0], this.players[1])
-      );
+      // console.log(
+      //   "combat advantage: ",
+      //   this.checkCombatAdvantage(this.players[0], this.players[1])
+      // );
     }
 
     // DYING
@@ -35044,7 +35174,10 @@ class App extends Component {
                 // CHECK FOR OBSTACLE &  REAR BARRIER COLLISION
 
                 if (infoCell.obstacle.state === true && infoCell.obstacle.height >= 1) {
-                  if (bolt.ownerType === "obstacle" && infoCell.obstacle.id !== boltOwner.id) {
+                  if (
+                    bolt.ownerType !== "player" &&
+                    `obstacle_${infoCell.obstacle.id}` !== `${bolt.ownerType}_${boltOwner.id}`
+                  ) {
                     this.attackCellContents(
                       "bolt",
                       bolt.ownerType,
@@ -35080,16 +35213,19 @@ class App extends Component {
               } else {
                 // HANDLE FWD BARRIER BOLT COLLISION
                 if (infoCell.barrier.state === true && infoCell.barrier.height >= 1) {
-                  console.log("6");
-                  this.attackCellContents(
-                    "bolt",
-                    bolt.ownerType,
-                    boltOwner,
-                    infoCell,
-                    undefined,
-                    undefined,
-                    bolt
-                  );
+                  if (`barrier_${infoCell.barrier.id}` !== `${bolt.ownerType}_${boltOwner.id}`) {
+                    this.attackCellContents(
+                      "bolt",
+                      bolt.ownerType,
+                      boltOwner,
+                      infoCell,
+                      undefined,
+                      undefined,
+                      bolt
+                    );
+                  } else {
+                    console.log("this barrier is the same as the bolt owner. do nothing");
+                  }
                 }
               }
             } else {

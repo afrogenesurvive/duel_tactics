@@ -240,6 +240,16 @@ const CellInfo = (props) => {
                               {props.clicked.cell.barrier.trap.ammo})
                             </p>
                           </li>
+                          <li>
+                            <p>
+                              Persistent: {props.clicked.cell.barrier.trap.persistent.toString()}
+                            </p>
+                          </li>
+                          {props.clicked.cell.barrier.trap.persistent !== true && (
+                            <li>
+                              <p>Remaining: {props.clicked.cell.barrier.trap.remaining}</p>
+                            </li>
+                          )}
                         </ul>
                       )}
                     </ul>
@@ -266,3 +276,4 @@ const CellInfo = (props) => {
 // <path stroke="#000000" d="M14 1h6M13 2h1M20 2h1M12 3h1M21 3h1M9 4h3M22 4h3M6 5h3M25 5h3M5 6h1M28 6h1M4 7h1M29 7h1M4 8h1M29 8h1M4 9h1M8 9h1M25 9h1M29 9h1M4 10h1M29 10h1M4 11h1M29 11h1M4 12h1M29 12h1M4 13h1M29 13h1M4 14h1M29 14h1M4 15h1M29 15h1M4 16h1M29 16h1M4 17h1M29 17h1M4 18h1M29 18h1M5 19h1M9 19h1M25 19h1M28 19h1M5 20h1M28 20h1M5 21h1M28 21h1M6 22h1M27 22h1M6 23h1M27 23h1M7 24h1M26 24h1M8 25h1M13 25h1M21 25h1M25 25h1M9 26h1M24 26h1M10 27h1M23 27h1M11 28h1M22 28h1M12 29h1M17 29h1M21 29h1M13 30h1M20 30h1M14 31h1M19 31h1M15 32h4" />
 
 export default CellInfo;
+4;
