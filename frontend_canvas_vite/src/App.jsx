@@ -1727,7 +1727,7 @@ class App extends Component {
             peak: 0,
             limit: 0,
           },
-          itemNameRef: "crossbow1",
+          itemNameRef: "spear1",
           item: {},
           ammo: 0,
         },
@@ -11908,7 +11908,7 @@ class App extends Component {
   };
 
   meleeAttackPeak = (ownerType, owner) => {
-    console.log("meleeAttackPeak");
+    // console.log("meleeAttackPeak");
 
     let myCellBlock;
     let ownerWeaponName;
@@ -12016,16 +12016,16 @@ class App extends Component {
           cell1Rubble === true ||
           boltTarget1 === true
         ) {
-          console.log(
-            "melee attack peak:",
-            ownerType,
-            owner.number,
-            owner.id,
-            "hit player, obstacle, barrier, bolt, item or rubble w/ ",
-            ownerWeaponType,
-            " @ ",
-            targetCell1.number
-          );
+          // console.log(
+          //   "melee attack peak:",
+          //   ownerType,
+          //   owner.number,
+          //   owner.id,
+          //   "hit player, obstacle, barrier, bolt, item or rubble w/ ",
+          //   ownerWeaponType,
+          //   " @ ",
+          //   targetCell1.number
+          // );
           this.meleeAttackParse(ownerType, owner, 1);
         }
 
@@ -12043,16 +12043,16 @@ class App extends Component {
             cell2Rubble === true ||
             boltTarget2 === true
           ) {
-            console.log(
-              "melee attack peak:",
-              ownerType,
-              owner.number,
-              owner.id,
-              "hit player, obstacle, barrier, bolt, item or rubble w/ ",
-              ownerWeaponType,
-              " @ ",
-              targetCell2.number
-            );
+            // console.log(
+            //   "melee attack peak:",
+            //   ownerType,
+            //   owner.number,
+            //   owner.id,
+            //   "hit player, obstacle, barrier, bolt, item or rubble w/ ",
+            //   ownerWeaponType,
+            //   " @ ",
+            //   targetCell2.number
+            // );
             this.meleeAttackParse(ownerType, owner, 2);
           }
 
@@ -12127,7 +12127,7 @@ class App extends Component {
               owner.number,
               owner.id,
               " attacked empty cell @ ",
-              targetCell2.number,
+              targetCell1.number,
               "w/",
               ownerWeaponType
             );
@@ -12142,16 +12142,16 @@ class App extends Component {
           boltTarget1 === true
         ) {
           this.meleeAttackParse(ownerType, owner, 1);
-          console.log(
-            "melee attack peak: ",
-            ownerType,
-            owner.number,
-            owner.id,
-            " hit player, obstacle, barrier, bolt, item or rubble w/ ",
-            ownerWeaponType,
-            " @ ",
-            targetCell1.number
-          );
+          // console.log(
+          //   "melee attack peak: ",
+          //   ownerType,
+          //   owner.number,
+          //   owner.id,
+          //   " hit player, obstacle, barrier, bolt, item or rubble w/ ",
+          //   ownerWeaponType,
+          //   " @ ",
+          //   targetCell1.number
+          // );
         }
       }
 
@@ -12208,14 +12208,14 @@ class App extends Component {
             boltTarget1 === true
           ) {
             this.meleeAttackParse(ownerType, owner, 1);
-            console.log(
-              "melee attack peak: ",
-              ownerType,
-              owner.number,
-              owner.id,
-              " hit player, obstacle, barrier, bolt, item or rubble unarmed  @ ",
-              targetCell1.number
-            );
+            // console.log(
+            //   "melee attack peak: ",
+            //   ownerType,
+            //   owner.number,
+            //   owner.id,
+            //   " hit player, obstacle, barrier, bolt, item or rubble unarmed  @ ",
+            //   targetCell1.number
+            // );
           }
         }
 
@@ -12266,16 +12266,16 @@ class App extends Component {
               boltTarget1 === true
             ) {
               this.meleeAttackParse(ownerType, owner, 1);
-              console.log(
-                "melee attack peak: ",
-                ownerType,
-                owner.number,
-                owner.id,
-                " blunt attacked bolt, item or w/ ",
-                ownerWeaponType,
-                " @ ",
-                targetCell1.number
-              );
+              // console.log(
+              //   "melee attack peak: ",
+              //   ownerType,
+              //   owner.number,
+              //   owner.id,
+              //   " blunt attacked bolt, item or w/ ",
+              //   ownerWeaponType,
+              //   " @ ",
+              //   targetCell1.number
+              // );
             }
           }
         }
@@ -12307,7 +12307,7 @@ class App extends Component {
     }
   };
   meleeAttackParse = (ownerType, owner, cellNo) => {
-    // console.log('meleeAttackParse',player.target['cell'+cellNo].occupant.type,this.players[player.target['cell'+cellNo].occupant.player-1]);
+    console.log("meleeAttackParse");
 
     let targetPlayerRef = undefined;
 
@@ -12326,6 +12326,7 @@ class App extends Component {
     let backAttack;
     let logCellNo;
     let attackPosition;
+    let advantage;
 
     // ATTACK STAM UNARMED CHECK & AND POPUPS SET
     let playerAttackStamType;
@@ -12463,13 +12464,12 @@ class App extends Component {
       if (ownerType === "player") {
         adv = this.checkCombatAdvantage(player, targetPlayerRef);
       } else {
-        if (defendType === "unarmed") {
+        if (targetPlayerRef.currentWeapon.name === "") {
           adv = 1;
         } else {
           adv = 0;
         }
       }
-
       return adv;
     };
     const executeAttack = () => {
@@ -12903,7 +12903,8 @@ class App extends Component {
         if (this.rnJesus(0, 2) === 0) {
           if (ownerType === "obstacle") {
             this.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
-          } else {
+          }
+          if (ownerType === "player") {
             this.pushBack(owner, this.getOppositeDirection(owner.direction));
           }
         }
@@ -12915,7 +12916,8 @@ class App extends Component {
         if (this.rnJesus(0, 2) === 2) {
           if (ownerType === "obstacle") {
             this.canPushObstacle("player", targetPlayerRef, myCell, `hitPush`);
-          } else {
+          }
+          if (ownerType === "player") {
             this.pushBack(owner, this.getOppositeDirection(owner.direction));
           }
           this.pushBack(targetPlayerRef, this.getOppositeDirection(targetPlayerRef.direction));
@@ -12979,6 +12981,7 @@ class App extends Component {
       }
     };
 
+    // PROJECTILE, ITEM, RUBBLE, OBSTACLE, BARRIER TARGETS
     if (cellNo === 1) {
       logCellNo = targetCell1.number;
       //TARGET IS PROJECTILE!!
@@ -13018,31 +13021,33 @@ class App extends Component {
       }
 
       // TARGET IS BARRIER/OBSTACLE/ITEM/RUBBLE
-      if (
-        cell1Item === true ||
-        cell1Rubble === true ||
-        targetCell1.obstacle.state === true ||
-        targetCell1.barrier.state === true
-      ) {
-        console.log(
-          ownerType,
-          owner.mumber,
-          owner.id,
-          "attacked an obstacle, barrier, item or rubble @",
-          targetCell1.number,
-          "w/ ",
-          ownerWeaponType,
-          ". attackCellContents"
-        );
-        this.attackCellContents(
-          "melee",
-          ownerType,
-          owner,
-          targetCell1,
-          targetCell2,
-          myCell,
-          undefined
-        );
+      if (this.isBoltInCell(targetCell1.number) !== true) {
+        if (
+          cell1Item === true ||
+          cell1Rubble === true ||
+          targetCell1.obstacle.state === true ||
+          targetCell1.barrier.state === true
+        ) {
+          console.log(
+            ownerType,
+            owner.mumber,
+            owner.id,
+            "attacked an obstacle, barrier, item or rubble @",
+            targetCell1.number,
+            "w/ ",
+            ownerWeaponType,
+            ". attackCellContents"
+          );
+          this.attackCellContents(
+            "melee",
+            ownerType,
+            owner,
+            targetCell1,
+            targetCell2,
+            myCell,
+            undefined
+          );
+        }
       }
     }
     if (cellNo === 2) {
@@ -13081,36 +13086,36 @@ class App extends Component {
             this.pushBack(owner, this.getOppositeDirection(owner.direction));
           }
         }
-
-        console.log("bolt attacked and killed: v1");
       }
 
       // TARGET IS BARRIER/OBSTACLE/ITEM/RUBBLE
-      if (
-        cell2Item === true ||
-        cell2Rubble === true ||
-        targetCell2.obstacle.state === true ||
-        targetCell2.barrier.state === true
-      ) {
-        console.log(
-          ownerType,
-          owner.mumber,
-          owner.id,
-          "attacked an obstacle, barrier, item or rubble @",
-          targetCell2.number,
-          "w/ ",
-          ownerWeaponType,
-          ". attackCellContents"
-        );
-        this.attackCellContents(
-          "melee",
-          ownerType,
-          owner,
-          targetCell,
-          targetCell2,
-          myCell,
-          undefined
-        );
+      if (this.isBoltInCell(targetCell2.number) !== true) {
+        if (
+          cell2Item === true ||
+          cell2Rubble === true ||
+          targetCell2.obstacle.state === true ||
+          targetCell2.barrier.state === true
+        ) {
+          console.log(
+            ownerType,
+            owner.mumber,
+            owner.id,
+            "attacked an obstacle, barrier, item or rubble @",
+            targetCell2.number,
+            "w/ ",
+            ownerWeaponType,
+            ". attackCellContents"
+          );
+          this.attackCellContents(
+            "melee",
+            ownerType,
+            owner,
+            targetCell1,
+            targetCell2,
+            myCell,
+            undefined
+          );
+        }
       }
     }
 
@@ -13136,7 +13141,7 @@ class App extends Component {
     if (targetPlayerRef) {
       // IS TARGET DEFENDING?
       let targetDefending = setTargetDefending();
-      let advantage = setAdvantage();
+      advantage = setAdvantage();
 
       // BACK ATTACK
       if (ownerDirection === targetPlayerRef.direction) {
@@ -13186,7 +13191,8 @@ class App extends Component {
         }
 
         // TARGET ALSO ATTACKING
-        if (targetPlayerRef.attackPeak === true) {
+        // if (targetPlayerRef.attackPeak === true) {
+        if (targetPlayerRef.attacking.state === true) {
           handleTargetAttacking();
         }
 
@@ -13198,7 +13204,8 @@ class App extends Component {
         // TARGET NOT DEFENDING, DODGING OR ATTACKING, DAMAGE
         if (
           targetPlayerRef.dodging.state !== true &&
-          targetPlayerRef.attackPeak !== true &&
+          // targetPlayerRef.attackPeak !== true &&
+          targetPlayerRef.attacking.state !== true &&
           targetDefending !== true
         ) {
           executeAttack();
@@ -17835,7 +17842,6 @@ class App extends Component {
     };
     // DESTROY ITEMS AND RUBBLE
     const handleNonObstacleBarrierDamage = (calcedDamage, range) => {
-      console.log("there");
       if (ownerType === "player") {
         ownerWeaponName = owner.currentWeapon.name;
       } else {
@@ -17880,7 +17886,6 @@ class App extends Component {
           };
         }
 
-        console.log("here");
         if ((targetCell.rubble === true) & (calcedDamage > 0)) {
           console.log("damage/clear rubble @ ", targetCell2.number);
           this.gridInfo.find(
