@@ -1707,8 +1707,8 @@ class App extends Component {
         id: 0,
         trap: {
           state: true,
-          persistent: true,
-          remaining: 3,
+          persistent: false,
+          remaining: 5,
           direction: "",
           target: {},
           timer: {
@@ -11751,9 +11751,7 @@ class App extends Component {
           if (!trap.timer.enabled) {
             executeTrapAction();
             higlightCell();
-            if (trap.timer.count === 1) {
-              console.log("trap has been triggered at ", trap.targe, "by", triggerType);
-            }
+            trap.remaining--;
           }
         }
       }
