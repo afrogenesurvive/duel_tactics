@@ -1727,7 +1727,7 @@ class App extends Component {
             peak: 0,
             limit: 0,
           },
-          itemNameRef: "crossbow1",
+          itemNameRef: "spear1",
           item: {},
           ammo: 0,
         },
@@ -11908,7 +11908,7 @@ class App extends Component {
   };
 
   meleeAttackPeak = (ownerType, owner) => {
-    // console.log("meleeAttackPeak", owner.target);
+    console.log("meleeAttackPeak");
 
     let myCellBlock;
     let ownerWeaponName;
@@ -11962,7 +11962,7 @@ class App extends Component {
       myCellBlock = this.checkMyCellBarrier(ownerDirection, myCell);
 
       ownerWeaponType = owner.trap.item.subType;
-      ownerWeaponType = owner.trap.item.name;
+      ownerWeaponName = owner.trap.item.name;
       cell1Item = targetCell1.item.name !== "";
       cell1Rubble = targetCell1.rubble === true;
       cell2Item = targetCell2.item.name !== "";
@@ -11973,6 +11973,7 @@ class App extends Component {
       let boltTarget1 = this.isBoltInCell(targetCell1.number);
       let boltTarget2 = this.isBoltInCell(targetCell2.number);
 
+      // SET STAM TYPE
       if (ownerType === "player") {
         if (owner.currentWeapon.name === "") {
           playerAttackStamType = this.staminaCostRef.attack.unarmed.normal;
@@ -12015,6 +12016,16 @@ class App extends Component {
           cell1Rubble === true ||
           boltTarget1 === true
         ) {
+          console.log(
+            "melee attack peak:",
+            ownerType,
+            owner.number,
+            owner.id,
+            "hit player, obstacle, barrier, bolt, item or rubble w/ ",
+            ownerWeaponType,
+            " @ ",
+            targetCell1.number
+          );
           this.meleeAttackParse(ownerType, owner, 1);
         }
 
@@ -12032,6 +12043,16 @@ class App extends Component {
             cell2Rubble === true ||
             boltTarget2 === true
           ) {
+            console.log(
+              "melee attack peak:",
+              ownerType,
+              owner.number,
+              owner.id,
+              "hit player, obstacle, barrier, bolt, item or rubble w/ ",
+              ownerWeaponType,
+              " @ ",
+              targetCell2.number
+            );
             this.meleeAttackParse(ownerType, owner, 2);
           }
 
@@ -12054,8 +12075,17 @@ class App extends Component {
                   img: "",
                 });
               }
-
               owner.stamina.current -= playerAttackStamType.pre;
+              console.log(
+                "melee attack peak:",
+                ownerType,
+                owner.number,
+                owner.id,
+                " attacked empty cell @ ",
+                targetCell2.number,
+                "w/",
+                ownerWeaponType
+              );
             }
           }
         }
@@ -12091,6 +12121,16 @@ class App extends Component {
               });
             }
             owner.stamina.current -= playerAttackStamType.pre;
+            console.log(
+              "melee attack peak: ",
+              ownerType,
+              owner.number,
+              owner.id,
+              " attacked empty cell @ ",
+              targetCell2.number,
+              "w/",
+              ownerWeaponType
+            );
           }
         }
 
@@ -12102,6 +12142,16 @@ class App extends Component {
           boltTarget1 === true
         ) {
           this.meleeAttackParse(ownerType, owner, 1);
+          console.log(
+            "melee attack peak: ",
+            ownerType,
+            owner.number,
+            owner.id,
+            " hit player, obstacle, barrier, bolt, item or rubble w/ ",
+            ownerWeaponType,
+            " @ ",
+            targetCell1.number
+          );
         }
       }
 
@@ -12139,6 +12189,15 @@ class App extends Component {
             }
 
             owner.stamina.current -= playerAttackStamType.pre;
+            console.log(
+              "melee attack peak: ",
+              ownerType,
+              owner.number,
+              owner.id,
+              " attacked empty cell @ ",
+              targetCell1.number,
+              "unarmed"
+            );
           }
 
           // TARGET CELL 1 IS NOT FREE OR HAS BOLT OR ITEM, ATTACK
@@ -12149,6 +12208,14 @@ class App extends Component {
             boltTarget1 === true
           ) {
             this.meleeAttackParse(ownerType, owner, 1);
+            console.log(
+              "melee attack peak: ",
+              ownerType,
+              owner.number,
+              owner.id,
+              " hit player, obstacle, barrier, bolt, item or rubble unarmed  @ ",
+              targetCell1.number
+            );
           }
         }
 
@@ -12180,6 +12247,16 @@ class App extends Component {
               }
 
               owner.stamina.current -= playerAttackStamType.pre;
+              console.log(
+                "melee attack peak: ",
+                ownerType,
+                owner.number,
+                owner.id,
+                " blunt attacked empty cell @ ",
+                targetCell1.number,
+                "w/",
+                owner.currentWeapon.type
+              );
             }
 
             // TARGET CELL 1 NOT FREE, OR ITEM OR BOLT
@@ -12189,6 +12266,16 @@ class App extends Component {
               boltTarget1 === true
             ) {
               this.meleeAttackParse(ownerType, owner, 1);
+              console.log(
+                "melee attack peak: ",
+                ownerType,
+                owner.number,
+                owner.id,
+                " blunt attacked bolt, item or w/ ",
+                ownerWeaponType,
+                " @ ",
+                targetCell1.number
+              );
             }
           }
         }
@@ -12197,6 +12284,14 @@ class App extends Component {
 
     // ATTACK MY CELL BARRIER
     else {
+      console.log(
+        "melee attak peak: ",
+        ownerType,
+        owner.number,
+        owner.id,
+        "s mycell barrier is in the way at",
+        myCell.number
+      );
       this.attackCellContents(
         "melee",
         ownerType,
